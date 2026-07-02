@@ -1,0 +1,90 @@
+name: Capture Liquid Glass samples
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/capture.yml
+      - Sources/**
+
+concurrency:
+  group: capture-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    # Liquid Glass exists only on macOS 26 (Tahoe) — do not downgrade this label.
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Runner info
+        run: |
+          sw_vers
+          uname -m
+          xcodebuild -version
+          system_profiler SPDisplaysDataType | sed -n '1,40p'
+
+      - name: Require macOS 26+
+        run: |
+          major="$(sw_vers -productVersion | cut -d. -f1)"
+          if [ "$major" -lt 26 ]; then
+            echo "::error::Liquid Glass requires macOS 26, runner has $(sw_vers -productVersion)"
+            exit 1
+          fi
+
+      # Best effort: switch the virtual display to a HiDPI (2x) mode so
+      # captures come out at 2x backing resolution. If it fails we still get
+      # high-res output because the capture window is 3200x2000 points.
+      - name: Enable HiDPI display mode (best effort)
+        continue-on-error: true
+        run: |
+          brew install --quiet jakehilborn/jakehilborn/displayplacer || true
+          displayplacer list || true
+          id="$(displayplacer list | awk '/Persistent screen id/{print $NF; exit}')"
+          [ -n "$id" ] && displayplacer "id:$id res:1920x1080 hz:60 color_depth:8 scaling:on" || true
+          displayplacer list | grep -A2 Resolution || true
+
+      # Best effort: pre-grant Screen Recording so the `screencapture`
+      # fallback path works. The primary path (an app capturing its OWN
+      # window via CGWindowListCreateImage) does not need this.
+      - name: Grant Screen Recording TCC (fallback path, best effort)
+        continue-on-error: true
+        run: |
+          db="/Library/Application Support/com.apple.TCC/TCC.db"
+          for client in /usr/sbin/screencapture "$PWD/glasscap"; do
+            sudo sqlite3 "$db" \
+              "INSERT OR REPLACE INTO access (service, client, client_type, auth_value, auth_reason, auth_version, indirect_object_identifier, flags, last_modified)
+               VALUES ('kTCCServiceScreenCapture', '$client', 1, 2, 4, 1, 'UNUSED', 0, strftime('%s','now'));" || true
+          done
+
+      - name: Build
+        run: |
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassCapture/main.swift \
+            -o glasscap
+
+      - name: Capture
+        run: ./glasscap --out captures --width 3200 --height 2000
+
+      - name: Summarize
+        run: |
+          echo "captures: $(ls captures/shots | wc -l), references: $(ls captures/reference | wc -l)"
+          du -sh captures
+          python3 - <<'EOF'
+          import json
+          m = json.load(open("captures/manifest.json"))
+          c = m["captures"][0]
+          print(f"scale={m['backingScaleFactor']}x  pixels={c['pixelWidth']}x{c['pixelHeight']}  os={m['osVersion']}")
+          EOF
+
+      - name: Upload samples
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-captures-${{ github.run_id }}
+          path: captures
+          compression-level: 0   # PNGs are already compressed
+          if-no-files-found: error
+          retention-days: 90
