@@ -164,7 +164,17 @@ func sha256(of url: URL) -> String {
 // MARK: - Scene
 
 enum Overlay: String, CaseIterable {
-    case none, regular, clear, tinted
+    // `tinted` was .regular.tint(.blue.opacity(0.5)) in the first dataset;
+    // the half-opacity color pre-multiplies to near-neutral and measured as
+    // a plain gray platter. Full-opacity tints replace it, on both variants.
+    case none, regular, clear, tintedBlue, tintedOrange, clearTintedBlue
+}
+
+enum Appearance: String, CaseIterable {
+    case light, dark
+    var ns: NSAppearance? {
+        NSAppearance(named: self == .dark ? .darkAqua : .aqua)
+    }
 }
 
 @MainActor
@@ -188,7 +198,9 @@ struct CalibrationOverlay: View {
     var glass: Glass {
         switch overlay {
         case .clear: return .clear
-        case .tinted: return .regular.tint(.blue.opacity(0.5))
+        case .tintedBlue: return .regular.tint(.blue)
+        case .tintedOrange: return .regular.tint(.orange)
+        case .clearTintedBlue: return .clear.tint(.blue)
         default: return .regular
         }
     }
@@ -260,6 +272,7 @@ struct CaptureRecord: Codable {
     let file: String
     let background: String
     let overlay: String
+    let appearance: String
     let sha256: String
     let pixelWidth: Int
     let pixelHeight: Int
@@ -271,6 +284,7 @@ struct Manifest: Codable {
     let backingScaleFactor: Double
     let glassGeometry: GlassGeometry
     let overlays: [String]
+    let appearances: [String]
     var captures: [CaptureRecord] = []
 }
 
@@ -353,55 +367,72 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             windowPoints: [config.width, config.height],
             backingScaleFactor: Double(scale),
             glassGeometry: GlassGeometry(),
-            overlays: Overlay.allCases.map(\.rawValue))
+            overlays: Overlay.allCases.map(\.rawValue),
+            appearances: Appearance.allCases.map(\.rawValue))
 
         let pw = Int(CGFloat(config.width) * scale)
         let ph = Int(CGFloat(config.height) * scale)
         var failures = 0
         let settle = UInt64(config.settleSeconds * 1_000_000_000)
 
-        for bg in allBackgrounds() {
-            print("background: \(bg.name)")
-            let image = renderBackground(bg, width: pw, height: ph)
-            try? writePNG(image, to: refs.appendingPathComponent("\(bg.name).png"))
+        // Light keeps the original `bg__overlay.png` names so existing
+        // analysis keeps working; dark appends `__dark`.
+        func shotName(_ bg: String, _ overlay: String, _ ap: Appearance) -> String {
+            ap == .light ? "\(bg)__\(overlay).png" : "\(bg)__\(overlay)__dark.png"
+        }
 
-            for overlay in Overlay.allCases {
-                var tx = Transaction(); tx.disablesAnimations = true
-                withTransaction(tx) {
-                    model.higScene = false
-                    model.background = image
-                    model.overlay = overlay
+        for ap in Appearance.allCases {
+            window.appearance = ap.ns
+            try? await Task.sleep(nanoseconds: settle * 2)
+
+            for bg in allBackgrounds() {
+                print("appearance: \(ap.rawValue)  background: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                if ap == .light {
+                    try? writePNG(image, to: refs.appendingPathComponent("\(bg.name).png"))
                 }
-                try? await Task.sleep(nanoseconds: settle)
-                let name = "\(bg.name)__\(overlay.rawValue).png"
-                let url = shots.appendingPathComponent(name)
-                if let img = captureWindow(window, to: url) {
-                    manifest.captures.append(CaptureRecord(
-                        file: "shots/\(name)", background: bg.name,
-                        overlay: overlay.rawValue, sha256: sha256(of: url),
-                        pixelWidth: img.width, pixelHeight: img.height))
-                } else {
-                    failures += 1
-                    print("FAILED capture: \(name)")
+
+                for overlay in Overlay.allCases {
+                    var tx = Transaction(); tx.disablesAnimations = true
+                    withTransaction(tx) {
+                        model.higScene = false
+                        model.background = image
+                        model.overlay = overlay
+                    }
+                    try? await Task.sleep(nanoseconds: settle)
+                    let name = shotName(bg.name, overlay.rawValue, ap)
+                    let url = shots.appendingPathComponent(name)
+                    if let img = captureWindow(window, to: url) {
+                        manifest.captures.append(CaptureRecord(
+                            file: "shots/\(name)", background: bg.name,
+                            overlay: overlay.rawValue, appearance: ap.rawValue,
+                            sha256: sha256(of: url),
+                            pixelWidth: img.width, pixelHeight: img.height))
+                    } else {
+                        failures += 1
+                        print("FAILED capture: \(name)")
+                    }
                 }
             }
-        }
 
-        // Qualitative HIG recreation: interactive glass controls over brick.
-        var tx = Transaction(); tx.disablesAnimations = true
-        withTransaction(tx) {
-            model.background = renderBackground(
-                allBackgrounds().first { $0.name == "brick" }!, width: pw, height: ph)
-            model.higScene = true
+            // Qualitative HIG recreation: interactive glass controls over brick.
+            var tx = Transaction(); tx.disablesAnimations = true
+            withTransaction(tx) {
+                model.background = renderBackground(
+                    allBackgrounds().first { $0.name == "brick" }!, width: pw, height: ph)
+                model.higScene = true
+            }
+            try? await Task.sleep(nanoseconds: settle * 2)
+            let higName = ap == .light ? "hig-brick-wall.png" : "hig-brick-wall__dark.png"
+            let higURL = shots.appendingPathComponent(higName)
+            if let img = captureWindow(window, to: higURL) {
+                manifest.captures.append(CaptureRecord(
+                    file: "shots/\(higName)", background: "brick",
+                    overlay: "hig-scene", appearance: ap.rawValue,
+                    sha256: sha256(of: higURL),
+                    pixelWidth: img.width, pixelHeight: img.height))
+            } else { failures += 1 }
         }
-        try? await Task.sleep(nanoseconds: settle * 2)
-        let higURL = shots.appendingPathComponent("hig-brick-wall.png")
-        if let img = captureWindow(window, to: higURL) {
-            manifest.captures.append(CaptureRecord(
-                file: "shots/hig-brick-wall.png", background: "brick",
-                overlay: "hig-scene", sha256: sha256(of: higURL),
-                pixelWidth: img.width, pixelHeight: img.height))
-        } else { failures += 1 }
 
         let enc = JSONEncoder(); enc.outputFormatting = [.prettyPrinted, .sortedKeys]
         try? (try? enc.encode(manifest))?.write(to: out.appendingPathComponent("manifest.json"))

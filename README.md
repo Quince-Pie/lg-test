@@ -16,7 +16,11 @@ page.
    pixel-exact image (generated per-pixel in code — the ground truth is
    reproducible bit-for-bit and also saved to `reference/`).
 3. Composites real Liquid Glass shapes on top (`Glass.regular`, `.clear`,
-   `.regular.tint(blue)`) at fixed, manifest-recorded geometry.
+   `.regular.tint(.blue)`, `.regular.tint(.orange)`, `.clear.tint(.blue)`) at
+   fixed, manifest-recorded geometry — in BOTH window appearances (light and
+   dark; dark shots carry a `__dark` filename suffix). Earlier datasets used
+   `.tint(.blue.opacity(0.5))`, which pre-multiplies to near-neutral and
+   measured as a plain gray platter — hence the full-opacity tints.
 4. Screenshots **its own window** with `CGWindowListCreateImage`. Capturing
    your own window is exempt from the Screen Recording TCC prompt, which is
    what makes this work headlessly on CI. (`screencapture -l` is a fallback,
