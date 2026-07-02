@@ -83,8 +83,9 @@ gh run download -n "liquid-glass-captures-<run id>"
 
 ## Resolution notes
 
-- Window is 3200x2000 **points**; at 1x that is 3200x2000 px.
-- The workflow best-effort switches the runner's virtual display to a HiDPI
-  mode with `displayplacer`; if that sticks, captures are 6400x4000 px
-  (`.bestResolution`). `manifest.json` records the actual
-  `backingScaleFactor` — always read it rather than assuming.
+- Window is 3200x2000 **points**; at 1x that is 3200x2000 px. The window
+  extends past the runner's small virtual display — capture reads the full
+  window backing store, so nothing is clipped.
+- GitHub's macOS runners expose no HiDPI display modes, so `backingScaleFactor`
+  is 1 there (recorded in `manifest.json`). On a real Retina Mac the same
+  binary captures at 2x. Need more pixels on CI? Raise `--width/--height`.

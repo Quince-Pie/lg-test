@@ -177,9 +177,9 @@ final class SceneModel: ObservableObject {
 
 // Fixed glass geometry, recorded in the manifest (points, top-left origin).
 struct GlassGeometry: Codable {
-    let roundedRect = ["x": 1000, "y": 650, "w": 1200, "h": 700, "cornerRadius": 80]
-    let circle = ["cx": 600, "cy": 500, "d": 500]
-    let capsule = ["x": 1950, "y": 1490, "w": 900, "h": 220]
+    var roundedRect = ["x": 1000, "y": 650, "w": 1200, "h": 700, "cornerRadius": 80]
+    var circle = ["cx": 600, "cy": 500, "d": 500]
+    var capsule = ["x": 1950, "y": 1490, "w": 900, "h": 220]
 }
 
 struct CalibrationOverlay: View {
@@ -276,11 +276,24 @@ struct Manifest: Codable {
 
 // MARK: - Capture
 
+// CGWindowListCreateImage is obsoleted in the macOS 15+ SDK, but the symbol
+// still exists in CoreGraphics and — unlike ScreenCaptureKit — capturing our
+// OWN window through it needs no Screen Recording grant. Call it via dlsym.
+private typealias WindowImageFn =
+    @convention(c) (CGRect, UInt32, UInt32, UInt32) -> Unmanaged<CGImage>?
+
+private let legacyWindowImage: WindowImageFn? = {
+    guard let sym = dlsym(dlopen(nil, RTLD_NOW), "CGWindowListCreateImage") else { return nil }
+    return unsafeBitCast(sym, to: WindowImageFn.self)
+}()
+
 @MainActor
 func captureWindow(_ window: NSWindow, to url: URL) -> CGImage? {
     let wid = CGWindowID(window.windowNumber)
-    if let img = CGWindowListCreateImage(
-        .null, .optionIncludingWindow, wid, [.boundsIgnoreFraming, .bestResolution]) {
+    // listOption: kCGWindowListOptionIncludingWindow (1<<3)
+    // imageOption: kCGWindowImageBoundsIgnoreFraming (1<<0) | kCGWindowImageBestResolution (1<<3)
+    if let img = legacyWindowImage?(.null, 1 << 3, wid, (1 << 0) | (1 << 3))?
+        .takeRetainedValue() {
         try? writePNG(img, to: url)
         return img
     }
@@ -298,6 +311,7 @@ func captureWindow(_ window: NSWindow, to url: URL) -> CGImage? {
 
 // MARK: - App
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let config = Config.parse()
     let model = SceneModel()
@@ -399,6 +413,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 @main
 struct Main {
+    @MainActor
     static func main() {
         let app = NSApplication.shared
         let delegate = AppDelegate()

@@ -34,17 +34,18 @@ jobs:
             exit 1
           fi
 
-      # Best effort: switch the virtual display to a HiDPI (2x) mode so
-      # captures come out at 2x backing resolution. If it fails we still get
-      # high-res output because the capture window is 3200x2000 points.
-      - name: Enable HiDPI display mode (best effort)
+      # The runner's virtual display offers no HiDPI (scaling:on) modes, so 2x
+      # capture is not achievable; high resolution comes from the 3200x2000pt
+      # capture window instead (its full backing store is captured even while
+      # extending past the screen). Bumping to the largest 1x mode is a
+      # best-effort nicety only.
+      - name: Set largest display mode (best effort)
         continue-on-error: true
         run: |
           brew install --quiet jakehilborn/jakehilborn/displayplacer || true
-          displayplacer list || true
           id="$(displayplacer list | awk '/Persistent screen id/{print $NF; exit}')"
-          [ -n "$id" ] && displayplacer "id:$id res:1920x1080 hz:60 color_depth:8 scaling:on" || true
-          displayplacer list | grep -A2 Resolution || true
+          [ -n "$id" ] && displayplacer "id:$id res:1920x1080 hz:60 color_depth:7" || true
+          displayplacer list | grep -E 'Resolution|Scaling' || true
 
       # Best effort: pre-grant Screen Recording so the `screencapture`
       # fallback path works. The primary path (an app capturing its OWN
