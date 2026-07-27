@@ -2,9 +2,30 @@ name: Capture Liquid Glass samples
 
 on:
   workflow_dispatch:
+    inputs:
+      suite:
+        description: Capture suite
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - static
+          - dynamic
+      dynamic_frames:
+        description: Samples per dynamic sequence (including endpoints)
+        required: true
+        default: 61
+        type: number
+      dynamic_duration:
+        description: Linear animation duration in seconds
+        required: true
+        default: 1.0
+        type: number
   push:
     paths:
       - .github/workflows/capture.yml
+      - Analysis/**
       - Sources/**
 
 concurrency:
@@ -15,7 +36,7 @@ jobs:
   capture:
     # Liquid Glass exists only on macOS 26 (Tahoe) — do not downgrade this label.
     runs-on: macos-26
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -68,24 +89,86 @@ jobs:
             -o glasscap
 
       - name: Capture
-        run: ./glasscap --out captures --width 3200 --height 2000
+        id: capture
+        continue-on-error: true
+        run: |
+          ./glasscap \
+            --out captures \
+            --width 3200 \
+            --height 2000 \
+            --suite "${{ inputs.suite || 'all' }}" \
+            --dynamic-frames "${{ inputs.dynamic_frames || 61 }}" \
+            --dynamic-duration "${{ inputs.dynamic_duration || 1.0 }}"
+
+      - name: Set up analysis Python
+        if: always()
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: Analysis/requirements.txt
+
+      - name: Install analysis dependencies
+        if: always()
+        run: python -m pip install --disable-pip-version-check -r Analysis/requirements.txt
+
+      - name: Test artifact validator
+        if: always()
+        run: python -m unittest discover -s Analysis -v
+
+      - name: Validate artifact
+        if: always()
+        id: validate
+        continue-on-error: true
+        run: |
+          python Analysis/validate.py captures \
+            --strict \
+            --report captures/validation.json
 
       - name: Summarize
+        if: always()
         run: |
-          echo "captures: $(ls captures/shots | wc -l), references: $(ls captures/reference | wc -l)"
-          du -sh captures
           python3 - <<'EOF'
           import json
-          m = json.load(open("captures/manifest.json"))
-          c = m["captures"][0]
-          print(f"scale={m['backingScaleFactor']}x  pixels={c['pixelWidth']}x{c['pixelHeight']}  os={m['osVersion']}")
+          from pathlib import Path
+
+          path = Path("captures/manifest.json")
+          if not path.is_file():
+              print("manifest missing")
+              raise SystemExit()
+          manifest = json.loads(path.read_text())
+          dynamic = manifest["dynamicSequences"]
+          frames = sum(len(sequence["frames"]) for sequence in dynamic)
+          print(
+              f"references={len(manifest['references'])} "
+              f"static={len(manifest['captures'])} "
+              f"dynamic_sequences={len(dynamic)} dynamic_frames={frames}"
+          )
+          print(
+              f"scale={manifest['backingScaleFactor']}x "
+              f"os={manifest['osVersion']} build={manifest['osBuild']}"
+          )
           EOF
+          du -sh captures 2>/dev/null || true
 
       - name: Upload samples
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-captures-${{ github.run_id }}
+          name: liquid-glass-captures-${{ github.run_id }}-${{ inputs.suite || 'all' }}
           path: captures
           compression-level: 0   # PNGs are already compressed
           if-no-files-found: error
           retention-days: 90
+
+      - name: Enforce capture and validation
+        if: always()
+        run: |
+          if [ "${{ steps.capture.outcome }}" != success ]; then
+            echo "::error::The capture app reported incomplete or invalid evidence."
+            exit 1
+          fi
+          if [ "${{ steps.validate.outcome }}" != success ]; then
+            echo "::error::Artifact validation failed; inspect validation.json."
+            exit 1
+          fi

@@ -6,9 +6,9 @@
 // CGWindowListCreateImage (own-window capture does not require the Screen
 // Recording TCC grant, which makes this reliable on CI runners).
 //
-// Every background is captured once with no overlay (control) and once per
-// glass variant, with identical geometry, so analysis can work on paired
-// diffs and the display transform cancels out.
+// Every numerical background has paired no-overlay controls for both
+// appearances. Separate targeted matrices identify material transfer,
+// geometry/container behavior, and real transition-time response.
 
 import AppKit
 import SwiftUI
@@ -25,32 +25,83 @@ struct Config {
     var width = 3200   // points; at 1x scale this is also pixels
     var height = 2000
     var settleSeconds: Double = 0.45
+    var suite: CaptureSuite = .all
+    var dynamicFrames = 61
+    var dynamicDuration: Double = 1.0
 
     static func parse() -> Config {
         var c = Config()
         var args = ArraySlice(CommandLine.arguments.dropFirst())
         while let a = args.popFirst() {
             switch a {
-            case "--out": c.outDir = args.popFirst() ?? c.outDir
-            case "--width": c.width = Int(args.popFirst() ?? "") ?? c.width
-            case "--height": c.height = Int(args.popFirst() ?? "") ?? c.height
-            case "--settle": c.settleSeconds = Double(args.popFirst() ?? "") ?? c.settleSeconds
-            default: FileHandle.standardError.write(Data("unknown arg: \(a)\n".utf8))
+            case "--out":
+                guard let value = args.popFirst(), !value.isEmpty else {
+                    fatalError("--out requires a nonempty path")
+                }
+                c.outDir = value
+            case "--width":
+                guard let value = args.popFirst(), let width = Int(value) else {
+                    fatalError("--width requires an integer")
+                }
+                c.width = width
+            case "--height":
+                guard let value = args.popFirst(), let height = Int(value) else {
+                    fatalError("--height requires an integer")
+                }
+                c.height = height
+            case "--settle":
+                guard let value = args.popFirst(), let seconds = Double(value) else {
+                    fatalError("--settle requires seconds")
+                }
+                c.settleSeconds = seconds
+            case "--suite":
+                guard let value = args.popFirst(), let suite = CaptureSuite(rawValue: value) else {
+                    fatalError("--suite must be static, dynamic, or all")
+                }
+                c.suite = suite
+            case "--dynamic-frames":
+                guard let value = args.popFirst(), let frames = Int(value) else {
+                    fatalError("--dynamic-frames requires an integer")
+                }
+                c.dynamicFrames = frames
+            case "--dynamic-duration":
+                guard let value = args.popFirst(), let seconds = Double(value) else {
+                    fatalError("--dynamic-duration requires seconds")
+                }
+                c.dynamicDuration = seconds
+            default:
+                fatalError("unknown argument: \(a)")
             }
         }
+        precondition(c.width > 0 && c.height > 0, "capture dimensions must be positive")
+        precondition(c.settleSeconds >= 0, "settle duration cannot be negative")
+        precondition(c.dynamicFrames >= 3, "dynamic capture needs at least three frames")
+        precondition(c.dynamicDuration > 0, "dynamic duration must be positive")
         return c
     }
+}
+
+enum CaptureSuite: String, Codable {
+    case `static`, dynamic, all
+
+    var includesStatic: Bool { self != .dynamic }
+    var includesDynamic: Bool { self != .static }
 }
 
 // MARK: - Backgrounds (deterministic, per-pixel ground truth)
 
 struct Background {
     let name: String
+    let family: BackgroundFamily
     let pixel: (_ x: Int, _ y: Int, _ w: Int, _ h: Int) -> (UInt8, UInt8, UInt8)
 }
 
-func hash32(_ x: Int, _ y: Int) -> UInt32 {
-    var h = UInt32(truncatingIfNeeded: x) &* 0x9E3779B1
+enum BackgroundFamily: String, Codable {
+    case tone, color, coordinate, frequency, edge, noise, qualitative, dynamic
+}
+
+func hash32(_ x: Int, _ y: Int, seed: UInt32 = 0) -> UInt32 {
+    var h = (UInt32(truncatingIfNeeded: x) ^ seed) &* 0x9E3779B1
     h ^= UInt32(truncatingIfNeeded: y) &* 0x85EBCA77
     h ^= h >> 16; h &*= 0x7FEB_352D
     h ^= h >> 15; h &*= 0x846C_A68B
@@ -73,43 +124,68 @@ func sine(_ t: Double, period: Double, phase: Double) -> UInt8 {
     return UInt8((v * 255.0).rounded())
 }
 
-func allBackgrounds() -> [Background] {
+func flatBackground(_ name: String, _ family: BackgroundFamily,
+                    _ rgb: (UInt8, UInt8, UInt8)) -> Background {
+    Background(name: name, family: family) { _, _, _, _ in rgb }
+}
+
+func staticBackgrounds() -> [Background] {
     var list: [Background] = []
-    // Gray steps: tint / opacity transfer function.
-    for g in [0, 64, 128, 192, 255] {
+
+    // Seventeen full-field gray levels identify nonlinear or piecewise tone
+    // behavior without conflating it with a spatial blur, as a ramp does.
+    for g in Array(stride(from: 0, through: 240, by: 16)) + [255] {
         let v = UInt8(g)
-        list.append(Background(name: String(format: "gray-%03d", g)) { _, _, _, _ in (v, v, v) })
+        list.append(flatBackground(String(format: "gray-%03d", g), .tone, (v, v, v)))
     }
-    // Primaries: per-channel tint behavior.
-    list.append(Background(name: "red") { _, _, _, _ in (255, 0, 0) })
-    list.append(Background(name: "green") { _, _, _, _ in (0, 255, 0) })
-    list.append(Background(name: "blue") { _, _, _, _ in (0, 0, 255) })
-    // Linear ramps + UV map: coarse displacement / tonal response.
-    list.append(Background(name: "ramp-x") { x, _, w, _ in
+
+    // Full- and half-intensity RGB bases plus secondaries identify a 3x3
+    // cross-channel transfer and provide holdout colors for testing it.
+    let colors: [(String, (UInt8, UInt8, UInt8))] = [
+        ("red-255", (255, 0, 0)), ("green-255", (0, 255, 0)),
+        ("blue-255", (0, 0, 255)), ("cyan-255", (0, 255, 255)),
+        ("magenta-255", (255, 0, 255)), ("yellow-255", (255, 255, 0)),
+        ("red-128", (128, 0, 0)), ("green-128", (0, 128, 0)),
+        ("blue-128", (0, 0, 128)), ("cyan-128", (0, 128, 128)),
+        ("magenta-128", (128, 0, 128)), ("yellow-128", (128, 128, 0)),
+        ("orange", (255, 128, 0)), ("violet", (128, 0, 255)),
+    ]
+    for (name, rgb) in colors {
+        list.append(flatBackground(name, .color, rgb))
+    }
+
+    // Coarse absolute coordinates and slowly varying transfer probes.
+    list.append(Background(name: "ramp-x", family: .coordinate) { x, _, w, _ in
         let v = UInt8(x * 255 / max(w - 1, 1)); return (v, v, v)
     })
-    list.append(Background(name: "ramp-y") { _, y, _, h in
+    list.append(Background(name: "ramp-y", family: .coordinate) { _, y, _, h in
         let v = UInt8(y * 255 / max(h - 1, 1)); return (v, v, v)
     })
-    list.append(Background(name: "uv-map") { x, y, w, h in
+    list.append(Background(name: "uv-map", family: .coordinate) { x, y, w, h in
         (UInt8(x * 255 / max(w - 1, 1)), UInt8(y * 255 / max(h - 1, 1)), 128)
     })
-    // Checkerboards: edge response / blur at multiple scales.
-    for p in [8, 32, 128] {
-        list.append(Background(name: String(format: "checker-%03d", p)) { x, y, _, _ in
+
+    // A geometric MTF sweep spanning fine detail through the measured
+    // mega-blur scale.
+    for p in [4, 8, 16, 32, 64, 128, 256, 512] {
+        list.append(Background(
+            name: String(format: "checker-%04d", p), family: .frequency
+        ) { x, y, _, _ in
             let on = ((x / p) + (y / p)) % 2 == 0
             let v: UInt8 = on ? 255 : 0
             return (v, v, v)
         })
     }
-    // Phase-shifted sinusoids (structured light): sub-pixel refraction
-    // displacement decoding. Two frequencies for phase unwrapping,
-    // three phases per frequency, both orientations.
+
+    // Four-step, six-frequency structured light. Four phases are less
+    // sensitive than the old three-step decode to Liquid Glass' nonlinear
+    // transfer; the frequency ladder supplies robust phase unwrapping and a
+    // direct modulation-transfer curve.
     for axis in ["x", "y"] {
-        for period in [64.0, 256.0] {
-            for (i, phase) in [0.0, 1.0 / 3.0, 2.0 / 3.0].enumerated() {
-                let name = String(format: "sine-%@-p%03d-ph%d", axis, Int(period), i)
-                list.append(Background(name: name) { x, y, _, _ in
+        for period in [32.0, 64.0, 128.0, 256.0, 512.0, 1024.0] {
+            for (i, phase) in [0.0, 0.25, 0.5, 0.75].enumerated() {
+                let name = String(format: "sine-%@-p%04d-ph%d", axis, Int(period), i)
+                list.append(Background(name: name, family: .frequency) { x, y, _, _ in
                     let t = Double(axis == "x" ? x : y)
                     let v = sine(t, period: period, phase: phase)
                     return (v, v, v)
@@ -117,13 +193,67 @@ func allBackgrounds() -> [Background] {
             }
         }
     }
-    // Deterministic noise: full-spectrum input for kernel estimation.
-    list.append(Background(name: "noise") { x, y, _, _ in
+
+    // Full-spectrum holdout for validating a kernel fitted from the
+    // deterministic frequency sweep.
+    list.append(Background(name: "noise-gray", family: .noise) { x, y, _, _ in
         let v = UInt8(hash32(x, y) & 255); return (v, v, v)
     })
-    // Brick wall: the HIG materials example, procedural and reproducible.
-    list.append(Background(name: "brick") { x, y, _, _ in brickPixel(x, y) })
+
+    // Spatially localized PSF and edge-spread probes. These distinguish
+    // blur, refraction, shadow, and antialiasing instead of asking one noise
+    // image to identify a spatially varying nonlinear system.
+    list.append(Background(name: "edge-x", family: .edge) { x, _, w, _ in
+        let v: UInt8 = x < w / 2 ? 0 : 255; return (v, v, v)
+    })
+    list.append(Background(name: "edge-y", family: .edge) { _, y, _, h in
+        let v: UInt8 = y < h / 2 ? 0 : 255; return (v, v, v)
+    })
+    list.append(Background(name: "edge-slant", family: .edge) { x, y, w, h in
+        let v: UInt8 = 16 * x + y < 8 * w + h / 2 ? 0 : 255
+        return (v, v, v)
+    })
+    list.append(Background(name: "line-x", family: .edge) { x, _, w, _ in
+        let v: UInt8 = abs(x - w / 2) <= 1 ? 255 : 0; return (v, v, v)
+    })
+    list.append(Background(name: "line-y", family: .edge) { _, y, _, h in
+        let v: UInt8 = abs(y - h / 2) <= 1 ? 255 : 0; return (v, v, v)
+    })
+    list.append(Background(name: "radial-0128", family: .edge) { x, y, w, h in
+        let radius = Int(hypot(Double(x - w / 2), Double(y - h / 2)))
+        let v: UInt8 = (radius / 64) % 2 == 0 ? 255 : 0
+        return (v, v, v)
+    })
+
+    // Qualitative continuity with the HIG example.
+    list.append(Background(name: "brick", family: .qualitative) {
+        x, y, _, _ in brickPixel(x, y)
+    })
     return list
+}
+
+func dynamicBackground() -> Background {
+    Background(name: "dynamic-coded-field", family: .dynamic) { x, y, _, _ in
+        // An aperiodic, band-limited RGB code field gives optical-flow fitting
+        // gradients in both axes at every frame. Unlike random noise it stays
+        // compact as PNG and does not drown the renderer or artifact upload in
+        // high-frequency entropy.
+        let xd = Double(x)
+        let yd = Double(y)
+        func wave(_ coordinate: Double, _ period: Double) -> Double {
+            sin(2 * .pi * coordinate / period)
+        }
+        let r = 128 + 42 * wave(xd, 257) + 31 * wave(yd, 613)
+            + 20 * wave(xd + yd, 887)
+        let g = 128 + 39 * wave(yd, 293) + 33 * wave(xd, 557)
+            + 19 * wave(xd - yd, 941)
+        let b = 128 + 37 * wave(xd + 2 * yd, 347)
+            + 29 * wave(2 * xd - yd, 719) + 21 * wave(xd, 1091)
+        func channel(_ value: Double) -> UInt8 {
+            UInt8(max(0, min(255, Int(value.rounded()))))
+        }
+        return (channel(r), channel(g), channel(b))
+    }
 }
 
 func renderBackground(_ bg: Background, width: Int, height: Int) -> CGImage {
@@ -158,7 +288,84 @@ func writePNG(_ image: CGImage, to url: URL) throws {
 
 func sha256(of url: URL) -> String {
     guard let data = try? Data(contentsOf: url) else { return "" }
+    return sha256(of: data)
+}
+
+func sha256(of data: Data) -> String {
     return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+}
+
+func normalizedRGBA8(_ image: CGImage) -> Data? {
+    let bytesPerRow = image.width * 4
+    var pixels = Data(count: bytesPerRow * image.height)
+    let rendered = pixels.withUnsafeMutableBytes { bytes -> Bool in
+        guard let base = bytes.baseAddress,
+              let colorSpace = CGColorSpace(name: CGColorSpace.sRGB),
+              let context = CGContext(
+                  data: base, width: image.width, height: image.height,
+                  bitsPerComponent: 8, bytesPerRow: bytesPerRow,
+                  space: colorSpace,
+                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+                              | CGBitmapInfo.byteOrder32Big.rawValue)
+        else { return false }
+        context.interpolationQuality = .none
+        // Normalize the byte stream to top-left row order, matching the PNG.
+        context.translateBy(x: 0, y: CGFloat(image.height))
+        context.scaleBy(x: 1, y: -1)
+        context.draw(
+            image,
+            in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+        return true
+    }
+    return rendered ? pixels : nil
+}
+
+func describeImage(_ image: CGImage) -> ImageRecord {
+    ImageRecord(
+        bitsPerComponent: image.bitsPerComponent,
+        bitsPerPixel: image.bitsPerPixel,
+        bytesPerRow: image.bytesPerRow,
+        colorSpace: image.colorSpace.map { String(describing: $0) } ?? "unknown",
+        alphaInfo: UInt32(image.alphaInfo.rawValue),
+        bitmapInfo: UInt32(image.bitmapInfo.rawValue))
+}
+
+func comparePixels(_ reference: Data, _ captured: Data) -> PixelDiff {
+    guard reference.count == captured.count, reference.count % 4 == 0 else {
+        return PixelDiff(
+            changedPixels: max(reference.count, captured.count) / 4,
+            maxChannelDelta: 255,
+            meanAbsoluteChannelDelta: 255)
+    }
+    if reference == captured {
+        return PixelDiff(changedPixels: 0, maxChannelDelta: 0, meanAbsoluteChannelDelta: 0)
+    }
+
+    var changedPixels = 0
+    var maxDelta = 0
+    var absoluteSum: UInt64 = 0
+    reference.withUnsafeBytes { refBytes in
+        captured.withUnsafeBytes { capBytes in
+            let ref = refBytes.bindMemory(to: UInt8.self)
+            let cap = capBytes.bindMemory(to: UInt8.self)
+            for pixel in 0..<(reference.count / 4) {
+                var changed = false
+                for channel in 0..<3 {
+                    let index = pixel * 4 + channel
+                    let delta = abs(Int(ref[index]) - Int(cap[index]))
+                    absoluteSum += UInt64(delta)
+                    maxDelta = max(maxDelta, delta)
+                    changed = changed || delta != 0
+                }
+                if changed { changedPixels += 1 }
+            }
+        }
+    }
+    return PixelDiff(
+        changedPixels: changedPixels,
+        maxChannelDelta: maxDelta,
+        meanAbsoluteChannelDelta:
+            Double(absoluteSum) / Double((reference.count / 4) * 3))
 }
 
 // MARK: - Scene
@@ -181,19 +388,138 @@ enum Appearance: String, CaseIterable {
 final class SceneModel: ObservableObject {
     @Published var background: CGImage?
     @Published var overlay: Overlay = .none
+    @Published var scene: SceneSpec
     @Published var higScene = false
+    @Published var dynamicMode: DynamicMode?
+    @Published var dynamicVisible = false
+    @Published var dynamicEndState = false
     @Published var scale: CGFloat = 1
+
+    init(scene: SceneSpec) {
+        self.scene = scene
+    }
 }
 
-// Fixed glass geometry, recorded in the manifest (points, top-left origin).
-struct GlassGeometry: Codable {
-    var roundedRect = ["x": 1000, "y": 650, "w": 1200, "h": 700, "cornerRadius": 80]
-    var circle = ["cx": 600, "cy": 500, "d": 500]
-    var capsule = ["x": 1950, "y": 1490, "w": 900, "h": 220]
+enum GlassShapeKind: String, Codable {
+    case circle, capsule, roundedRect
+}
+
+// Points, SwiftUI/top-left coordinates. Fractional centers deliberately
+// exercise subpixel mask coverage on the runner's 1x display.
+struct GlassShapeSpec: Codable, Identifiable {
+    let id: String
+    let kind: GlassShapeKind
+    let centerX: Double
+    let centerY: Double
+    let width: Double
+    let height: Double
+    let cornerRadius: Double
+}
+
+struct SceneSpec: Codable, Identifiable {
+    var id: String { name }
+    let name: String
+    let shapes: [GlassShapeSpec]
+    let containerSpacing: Double?
+}
+
+func circleScene(_ name: String, centerX: Double, centerY: Double,
+                 diameter: Double) -> SceneSpec {
+    SceneSpec(
+        name: name,
+        shapes: [GlassShapeSpec(
+            id: "circle", kind: .circle, centerX: centerX, centerY: centerY,
+            width: diameter, height: diameter, cornerRadius: diameter / 2)],
+        containerSpacing: 0)
+}
+
+func calibrationScenes(width: Int, height: Int) -> [SceneSpec] {
+    let cx = Double(width) / 2
+    let cy = Double(height) / 2
+    var scenes = [
+        circleScene("circle-0128-center", centerX: cx, centerY: cy, diameter: 128),
+        circleScene("circle-0256-center", centerX: cx, centerY: cy, diameter: 256),
+        circleScene("circle-0500-center", centerX: cx, centerY: cy, diameter: 500),
+        circleScene("circle-1000-center", centerX: cx, centerY: cy, diameter: 1000),
+        circleScene("circle-1600-center", centerX: cx, centerY: cy, diameter: 1600),
+        circleScene(
+            "circle-0500-subpixel", centerX: cx + 0.25, centerY: cy + 0.75,
+            diameter: 500.5),
+        circleScene(
+            "circle-0500-upper-left", centerX: Double(width) * 0.25,
+            centerY: Double(height) * 0.30, diameter: 500),
+    ]
+    for radius in [0.0, 80.0, 240.0] {
+        scenes.append(SceneSpec(
+            name: String(format: "rect-1600x0900-r%03d", Int(radius)),
+            shapes: [GlassShapeSpec(
+                id: "rect", kind: .roundedRect, centerX: cx, centerY: cy,
+                width: 1600, height: 900, cornerRadius: radius)],
+            containerSpacing: 0))
+    }
+    for spacing in [0.0, 120.0] {
+        scenes.append(SceneSpec(
+            name: String(format: "pair-0400-gap0100-spacing%03d", Int(spacing)),
+            shapes: [
+                GlassShapeSpec(
+                    id: "left", kind: .circle, centerX: cx - 250, centerY: cy,
+                    width: 400, height: 400, cornerRadius: 200),
+                GlassShapeSpec(
+                    id: "right", kind: .circle, centerX: cx + 250, centerY: cy,
+                    width: 400, height: 400, cornerRadius: 200),
+            ],
+            containerSpacing: spacing))
+    }
+    scenes.append(SceneSpec(
+        name: "legacy-three-shapes",
+        shapes: [
+            GlassShapeSpec(
+                id: "rounded-rect", kind: .roundedRect, centerX: 1600, centerY: 1000,
+                width: 1200, height: 700, cornerRadius: 80),
+            GlassShapeSpec(
+                id: "circle", kind: .circle, centerX: 600, centerY: 500,
+                width: 500, height: 500, cornerRadius: 250),
+            GlassShapeSpec(
+                id: "capsule", kind: .capsule, centerX: 2400, centerY: 1600,
+                width: 900, height: 220, cornerRadius: 110),
+        ],
+        containerSpacing: nil))
+    return scenes
+}
+
+enum DynamicMode: String, Codable, CaseIterable {
+    case materialize, resize, translate, morph
+}
+
+struct GlassShapeView: View {
+    let shape: GlassShapeSpec
+    let glass: Glass
+
+    @ViewBuilder
+    var body: some View {
+        switch shape.kind {
+        case .circle:
+            Color.clear
+                .frame(width: CGFloat(shape.width), height: CGFloat(shape.height))
+                .glassEffect(glass, in: .circle)
+                .position(x: CGFloat(shape.centerX), y: CGFloat(shape.centerY))
+        case .capsule:
+            Color.clear
+                .frame(width: CGFloat(shape.width), height: CGFloat(shape.height))
+                .glassEffect(glass, in: .capsule)
+                .position(x: CGFloat(shape.centerX), y: CGFloat(shape.centerY))
+        case .roundedRect:
+            Color.clear
+                .frame(width: CGFloat(shape.width), height: CGFloat(shape.height))
+                .glassEffect(glass, in: .rect(cornerRadius: CGFloat(shape.cornerRadius)))
+                .position(x: CGFloat(shape.centerX), y: CGFloat(shape.centerY))
+        }
+    }
 }
 
 struct CalibrationOverlay: View {
     let overlay: Overlay
+    let scene: SceneSpec
 
     var glass: Glass {
         switch overlay {
@@ -207,19 +533,75 @@ struct CalibrationOverlay: View {
 
     var body: some View {
         if overlay != .none {
-            GlassEffectContainer {
+            GlassEffectContainer(spacing: scene.containerSpacing.map { CGFloat($0) }) {
                 ZStack {
-                    Color.clear.frame(width: 1200, height: 700)
-                        .glassEffect(glass, in: .rect(cornerRadius: 80))
-                        .position(x: 1600, y: 1000)
-                    Color.clear.frame(width: 500, height: 500)
-                        .glassEffect(glass, in: .circle)
-                        .position(x: 600, y: 500)
-                    Color.clear.frame(width: 900, height: 220)
-                        .glassEffect(glass, in: .capsule)
-                        .position(x: 2400, y: 1600)
+                    ForEach(scene.shapes) { shape in
+                        GlassShapeView(shape: shape, glass: glass)
+                    }
                 }
             }
+        }
+    }
+}
+
+struct DynamicOverlay: View {
+    @ObservedObject var model: SceneModel
+    let size: CGSize
+    @Namespace private var glassNamespace
+
+    var glass: Glass {
+        model.overlay == .clear ? .clear : .regular
+    }
+
+    @ViewBuilder
+    var dynamicShape: some View {
+        switch model.dynamicMode {
+        case .materialize:
+            if model.dynamicVisible {
+                Color.clear
+                    .frame(width: 1000, height: 1000)
+                    .glassEffect(glass, in: .circle)
+                    .glassEffectTransition(.materialize)
+                    .position(x: size.width / 2, y: size.height / 2)
+            }
+        case .resize:
+            Color.clear
+                .frame(
+                    width: model.dynamicEndState ? 1600 : 128,
+                    height: model.dynamicEndState ? 1600 : 128)
+                .glassEffect(glass, in: .circle)
+                .position(x: size.width / 2, y: size.height / 2)
+        case .translate:
+            Color.clear
+                .frame(width: 500, height: 500)
+                .glassEffect(glass, in: .circle)
+                .position(
+                    x: model.dynamicEndState ? size.width * 0.78 : size.width * 0.22,
+                    y: size.height / 2)
+        case .morph:
+            if model.dynamicEndState {
+                Color.clear
+                    .frame(width: 1200, height: 620)
+                    .glassEffect(glass, in: .rect(cornerRadius: 180))
+                    .glassEffectID("dynamic-morph", in: glassNamespace)
+                    .glassEffectTransition(.matchedGeometry)
+                    .position(x: size.width * 0.67, y: size.height / 2)
+            } else {
+                Color.clear
+                    .frame(width: 420, height: 420)
+                    .glassEffect(glass, in: .circle)
+                    .glassEffectID("dynamic-morph", in: glassNamespace)
+                    .glassEffectTransition(.matchedGeometry)
+                    .position(x: size.width * 0.33, y: size.height / 2)
+            }
+        case nil:
+            EmptyView()
+        }
+    }
+
+    var body: some View {
+        GlassEffectContainer(spacing: 0) {
+            dynamicShape
         }
     }
 }
@@ -257,8 +639,10 @@ struct RootView: View {
             }
             if model.higScene {
                 HIGScene()
+            } else if model.dynamicMode != nil {
+                DynamicOverlay(model: model, size: size)
             } else {
-                CalibrationOverlay(overlay: model.overlay)
+                CalibrationOverlay(overlay: model.overlay, scene: model.scene)
             }
         }
         .frame(width: size.width, height: size.height)
@@ -268,24 +652,116 @@ struct RootView: View {
 
 // MARK: - Manifest
 
-struct CaptureRecord: Codable {
+struct ImageRecord: Codable {
+    let bitsPerComponent: Int
+    let bitsPerPixel: Int
+    let bytesPerRow: Int
+    let colorSpace: String
+    let alphaInfo: UInt32
+    let bitmapInfo: UInt32
+}
+
+struct PixelDiff: Codable {
+    let changedPixels: Int
+    let maxChannelDelta: Int
+    let meanAbsoluteChannelDelta: Double
+}
+
+struct ReferenceRecord: Codable {
     let file: String
     let background: String
-    let overlay: String
-    let appearance: String
-    let sha256: String
+    let family: String
+    let fileSha256: String
+    let pixelSha256: String
     let pixelWidth: Int
     let pixelHeight: Int
 }
 
+struct CaptureRecord: Codable {
+    let file: String
+    let background: String
+    let family: String
+    let overlay: String
+    let appearance: String
+    let scene: String
+    let sha256: String
+    let pixelSha256: String
+    let pixelWidth: Int
+    let pixelHeight: Int
+    let captureBackend: String
+    let stable: Bool
+    let stabilitySamples: Int
+    let controlDiff: PixelDiff?
+    let image: ImageRecord
+}
+
+struct CropRecord: Codable {
+    let x: Int
+    let y: Int
+    let width: Int
+    let height: Int
+}
+
+struct DynamicFrameRecord: Codable {
+    let file: String
+    let index: Int
+    let targetSeconds: Double
+    let actualSeconds: Double
+    let timingErrorSeconds: Double
+    let captureDurationSeconds: Double
+    let fileSha256: String
+    let pixelSha256: String
+    let pixelWidth: Int
+    let pixelHeight: Int
+    let captureBackend: String
+}
+
+struct DynamicSequenceRecord: Codable {
+    let id: String
+    let mode: String
+    let overlay: String
+    let appearance: String
+    let background: String
+    let durationSeconds: Double
+    let animationCurve: String
+    let cropPixels: CropRecord
+    var frames: [DynamicFrameRecord]
+}
+
 struct Manifest: Codable {
+    let schemaVersion: Int
+    let rigVersion: String
+    let requestedSuite: String
     let osVersion: String
+    let osBuild: String
+    let architecture: String
+    let hostModel: String
+    let ciCommit: String
+    let runnerImageOS: String
+    let runnerImageVersion: String
+    let xcodeVersion: String
+    let captureStartedUTC: String
     let windowPoints: [Int]
     let backingScaleFactor: Double
-    let glassGeometry: GlassGeometry
+    let settleSeconds: Double
+    let dynamicFrameCount: Int
+    let dynamicDurationSeconds: Double
+    let windowColorSpace: String
+    let displayColorSpace: String
+    let displayName: String
+    let displayPixels: [Int]
+    let displayRefreshHz: Double
+    let applicationActive: Bool
+    let windowKey: Bool
+    let reduceTransparency: Bool
+    let increaseContrast: Bool
+    let reduceMotion: Bool
+    let scenes: [SceneSpec]
     let overlays: [String]
     let appearances: [String]
+    var references: [ReferenceRecord] = []
     var captures: [CaptureRecord] = []
+    var dynamicSequences: [DynamicSequenceRecord] = []
 }
 
 // MARK: - Capture
@@ -301,26 +777,199 @@ private let legacyWindowImage: WindowImageFn? = {
     return unsafeBitCast(sym, to: WindowImageFn.self)
 }()
 
+enum RigError: LocalizedError {
+    case capture(String)
+    case imageConversion
+    case invalidCrop(CropRecord)
+    case outputNotEmpty(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .capture(let detail): return "window capture failed: \(detail)"
+        case .imageConversion: return "could not normalize captured pixels"
+        case .invalidCrop(let crop): return "invalid image crop: \(crop)"
+        case .outputNotEmpty(let path):
+            return "refusing to mix datasets; output directory is not empty: \(path)"
+        }
+    }
+}
+
+struct CapturedFrame {
+    let image: CGImage
+    let backend: String
+    let pixels: Data
+    let pixelSha256: String
+    let midpointUptime: Double
+    let captureDurationSeconds: Double
+}
+
+struct RawCapturedFrame {
+    let image: CGImage
+    let backend: String
+    let midpointUptime: Double
+    let captureDurationSeconds: Double
+}
+
 @MainActor
-func captureWindow(_ window: NSWindow, to url: URL) -> CGImage? {
+func captureRawWindow(_ window: NSWindow) throws -> RawCapturedFrame {
+    window.contentView?.displayIfNeeded()
     let wid = CGWindowID(window.windowNumber)
+    let started = ProcessInfo.processInfo.systemUptime
+
     // listOption: kCGWindowListOptionIncludingWindow (1<<3)
     // imageOption: kCGWindowImageBoundsIgnoreFraming (1<<0) | kCGWindowImageBestResolution (1<<3)
     if let img = legacyWindowImage?(.null, 1 << 3, wid, (1 << 0) | (1 << 3))?
         .takeRetainedValue() {
-        try? writePNG(img, to: url)
-        return img
+        let finished = ProcessInfo.processInfo.systemUptime
+        return RawCapturedFrame(
+            image: img,
+            backend: "CGWindowListCreateImage",
+            midpointUptime: (started + finished) / 2,
+            captureDurationSeconds: finished - started)
     }
+
     // Fallback: system screencapture (needs the TCC grant done in CI).
+    let temporary = FileManager.default.temporaryDirectory
+        .appendingPathComponent("glasscap-\(UUID().uuidString).png")
+    defer { try? FileManager.default.removeItem(at: temporary) }
     let p = Process()
     p.executableURL = URL(fileURLWithPath: "/usr/sbin/screencapture")
-    p.arguments = ["-x", "-o", "-l", String(wid), url.path]
-    try? p.run(); p.waitUntilExit()
+    p.arguments = ["-x", "-o", "-l", String(wid), temporary.path]
+    try p.run()
+    p.waitUntilExit()
     guard p.terminationStatus == 0,
-          let data = try? Data(contentsOf: url),
+          let data = try? Data(contentsOf: temporary),
           let src = CGImageSourceCreateWithData(data as CFData, nil),
-          let img = CGImageSourceCreateImageAtIndex(src, 0, nil) else { return nil }
-    return img
+          let img = CGImageSourceCreateImageAtIndex(src, 0, nil)
+    else {
+        throw RigError.capture("screencapture exited \(p.terminationStatus)")
+    }
+    let finished = ProcessInfo.processInfo.systemUptime
+    return RawCapturedFrame(
+        image: img,
+        backend: "screencapture",
+        midpointUptime: (started + finished) / 2,
+        captureDurationSeconds: finished - started)
+}
+
+func normalizedFrame(_ frame: RawCapturedFrame) throws -> CapturedFrame {
+    guard let pixels = normalizedRGBA8(frame.image) else {
+        throw RigError.imageConversion
+    }
+    return CapturedFrame(
+        image: frame.image,
+        backend: frame.backend,
+        pixels: pixels,
+        pixelSha256: sha256(of: pixels),
+        midpointUptime: frame.midpointUptime,
+        captureDurationSeconds: frame.captureDurationSeconds)
+}
+
+@MainActor
+func captureWindow(_ window: NSWindow) throws -> CapturedFrame {
+    try normalizedFrame(captureRawWindow(window))
+}
+
+@MainActor
+func stableCapture(
+    _ window: NSWindow,
+    settleNanoseconds: UInt64,
+    maximumSamples: Int = 4
+) async throws -> (frame: CapturedFrame, stable: Bool, samples: Int) {
+    if settleNanoseconds > 0 {
+        try await Task.sleep(nanoseconds: settleNanoseconds)
+    }
+
+    var previous: CapturedFrame?
+    for sample in 1...maximumSamples {
+        let current = try captureWindow(window)
+        if let previous, previous.pixels == current.pixels {
+            return (current, true, sample)
+        }
+        previous = current
+        if sample != maximumSamples {
+            try await Task.sleep(nanoseconds: 16_666_667)
+        }
+    }
+    return (previous!, false, maximumSamples)
+}
+
+func croppedFrame(_ frame: RawCapturedFrame, crop: CropRecord) throws -> CapturedFrame {
+    let rect = CGRect(x: crop.x, y: crop.y, width: crop.width, height: crop.height)
+    guard crop.x >= 0, crop.y >= 0, crop.width > 0, crop.height > 0,
+          crop.x + crop.width <= frame.image.width,
+          crop.y + crop.height <= frame.image.height,
+          let image = frame.image.cropping(to: rect),
+          let pixels = normalizedRGBA8(image)
+    else {
+        throw RigError.invalidCrop(crop)
+    }
+    return CapturedFrame(
+        image: image,
+        backend: frame.backend,
+        pixels: pixels,
+        pixelSha256: sha256(of: pixels),
+        midpointUptime: frame.midpointUptime,
+        captureDurationSeconds: frame.captureDurationSeconds)
+}
+
+func centeredCrop(
+    imageWidth: Int,
+    imageHeight: Int,
+    desiredWidth: Int,
+    desiredHeight: Int
+) -> CropRecord {
+    let width = min(imageWidth, desiredWidth)
+    let height = min(imageHeight, desiredHeight)
+    return CropRecord(
+        x: (imageWidth - width) / 2,
+        y: (imageHeight - height) / 2,
+        width: width,
+        height: height)
+}
+
+func dynamicCrop(
+    for mode: DynamicMode,
+    imageWidth: Int,
+    imageHeight: Int,
+    pointWidth: Int,
+    pointHeight: Int
+) -> CropRecord {
+    let scaleX = Double(imageWidth) / Double(pointWidth)
+    let scaleY = Double(imageHeight) / Double(pointHeight)
+    switch mode {
+    case .materialize, .resize:
+        return centeredCrop(
+            imageWidth: imageWidth,
+            imageHeight: imageHeight,
+            desiredWidth: Int((1900 * scaleX).rounded()),
+            desiredHeight: Int((1900 * scaleY).rounded()))
+    case .translate, .morph:
+        return centeredCrop(
+            imageWidth: imageWidth,
+            imageHeight: imageHeight,
+            desiredWidth: Int((2800 * scaleX).rounded()),
+            desiredHeight: Int((1300 * scaleY).rounded()))
+    }
+}
+
+func commandOutput(_ executable: String, _ arguments: [String]) -> String {
+    let process = Process()
+    let pipe = Pipe()
+    process.executableURL = URL(fileURLWithPath: executable)
+    process.arguments = arguments
+    process.standardOutput = pipe
+    process.standardError = FileHandle.nullDevice
+    do {
+        try process.run()
+        process.waitUntilExit()
+    } catch {
+        return "unknown"
+    }
+    guard process.terminationStatus == 0 else { return "unknown" }
+    let data = pipe.fileHandleForReading.readDataToEndOfFile()
+    return String(decoding: data, as: UTF8.self)
+        .trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
 // MARK: - App
@@ -328,7 +977,8 @@ func captureWindow(_ window: NSWindow, to url: URL) -> CGImage? {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let config = Config.parse()
-    let model = SceneModel()
+    lazy var model = SceneModel(
+        scene: calibrationScenes(width: config.width, height: config.height)[0])
     var window: NSWindow!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -342,31 +992,81 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.backgroundColor = .black
         window.contentView = NSHostingView(rootView: RootView(model: model, size: size))
         window.setFrameOrigin(NSPoint(x: 0, y: 0))
-        window.orderFrontRegardless()
+        window.makeKeyAndOrderFront(nil)
+        NSApplication.shared.activate(ignoringOtherApps: true)
 
         Task { @MainActor in
-            await run()
+            do {
+                exit(Int32(try await run()))
+            } catch {
+                FileHandle.standardError.write(
+                    Data("fatal: \(error.localizedDescription)\n".utf8))
+                exit(1)
+            }
         }
     }
 
     @MainActor
-    func run() async {
+    func run() async throws -> Int {
         let fm = FileManager.default
         let out = URL(fileURLWithPath: config.outDir)
         let shots = out.appendingPathComponent("shots")
         let refs = out.appendingPathComponent("reference")
-        try? fm.createDirectory(at: shots, withIntermediateDirectories: true)
-        try? fm.createDirectory(at: refs, withIntermediateDirectories: true)
+        let dynamic = out.appendingPathComponent("dynamic")
+        let manifestURL = out.appendingPathComponent("manifest.json")
+        if fm.fileExists(atPath: out.path),
+           !(try fm.contentsOfDirectory(atPath: out.path)).isEmpty {
+            throw RigError.outputNotEmpty(out.path)
+        }
+        try fm.createDirectory(at: shots, withIntermediateDirectories: true)
+        try fm.createDirectory(at: refs, withIntermediateDirectories: true)
+        if config.suite.includesDynamic {
+            try fm.createDirectory(at: dynamic, withIntermediateDirectories: true)
+        }
 
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // let the window settle
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         let scale = window.backingScaleFactor
         model.scale = scale
+        let scenes = calibrationScenes(width: config.width, height: config.height)
+        let displayID = (window.screen?.deviceDescription[
+            NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)
+            .map { CGDirectDisplayID($0.uint32Value) } ?? CGMainDisplayID()
+        let displayMode = CGDisplayCopyDisplayMode(displayID)
 
         var manifest = Manifest(
+            schemaVersion: 2,
+            rigVersion: "2.0.0",
+            requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
+            osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
+            architecture: commandOutput("/usr/bin/uname", ["-m"]),
+            hostModel: commandOutput("/usr/sbin/sysctl", ["-n", "hw.model"]),
+            ciCommit: ProcessInfo.processInfo.environment["GITHUB_SHA"] ?? "local",
+            runnerImageOS:
+                ProcessInfo.processInfo.environment["ImageOS"] ?? "local",
+            runnerImageVersion:
+                ProcessInfo.processInfo.environment["ImageVersion"] ?? "local",
+            xcodeVersion: commandOutput("/usr/bin/xcodebuild", ["-version"]),
+            captureStartedUTC: ISO8601DateFormatter().string(from: Date()),
             windowPoints: [config.width, config.height],
             backingScaleFactor: Double(scale),
-            glassGeometry: GlassGeometry(),
+            settleSeconds: config.settleSeconds,
+            dynamicFrameCount: config.dynamicFrames,
+            dynamicDurationSeconds: config.dynamicDuration,
+            windowColorSpace: window.colorSpace.map { String(describing: $0) } ?? "unknown",
+            displayColorSpace:
+                window.screen?.colorSpace.map { String(describing: $0) } ?? "unknown",
+            displayName: window.screen?.localizedName ?? "unknown",
+            displayPixels: [displayMode?.pixelWidth ?? 0, displayMode?.pixelHeight ?? 0],
+            displayRefreshHz: displayMode?.refreshRate ?? 0,
+            applicationActive: NSApplication.shared.isActive,
+            windowKey: window.isKeyWindow,
+            reduceTransparency:
+                NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency,
+            increaseContrast:
+                NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast,
+            reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
+            scenes: scenes,
             overlays: Overlay.allCases.map(\.rawValue),
             appearances: Appearance.allCases.map(\.rawValue))
 
@@ -375,70 +1075,325 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         var failures = 0
         let settle = UInt64(config.settleSeconds * 1_000_000_000)
 
-        // Light keeps the original `bg__overlay.png` names so existing
-        // analysis keeps working; dark appends `__dark`.
-        func shotName(_ bg: String, _ overlay: String, _ ap: Appearance) -> String {
-            ap == .light ? "\(bg)__\(overlay).png" : "\(bg)__\(overlay)__dark.png"
+        func recordReference(_ bg: Background, _ image: CGImage) throws -> Data {
+            let name = "\(bg.name).png"
+            let url = refs.appendingPathComponent(name)
+            try writePNG(image, to: url)
+            guard let pixels = normalizedRGBA8(image) else { throw RigError.imageConversion }
+            manifest.references.append(ReferenceRecord(
+                file: "reference/\(name)",
+                background: bg.name,
+                family: bg.family.rawValue,
+                fileSha256: sha256(of: url),
+                pixelSha256: sha256(of: pixels),
+                pixelWidth: image.width,
+                pixelHeight: image.height))
+            return pixels
         }
 
-        for ap in Appearance.allCases {
-            window.appearance = ap.ns
-            try? await Task.sleep(nanoseconds: settle * 2)
-
-            for bg in allBackgrounds() {
-                print("appearance: \(ap.rawValue)  background: \(bg.name)")
-                let image = renderBackground(bg, width: pw, height: ph)
-                if ap == .light {
-                    try? writePNG(image, to: refs.appendingPathComponent("\(bg.name).png"))
+        func captureStatic(
+            background bg: Background,
+            image: CGImage,
+            referencePixels: Data?,
+            scene: SceneSpec,
+            overlay: Overlay,
+            appearance: Appearance
+        ) async {
+            let name =
+                "\(bg.name)__\(scene.name)__\(overlay.rawValue)__\(appearance.rawValue).png"
+            let url = shots.appendingPathComponent(name)
+            do {
+                window.appearance = appearance.ns
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    model.background = image
+                    model.scene = scene
+                    model.overlay = overlay
+                    model.higScene = false
+                    model.dynamicMode = nil
+                    model.dynamicVisible = false
+                    model.dynamicEndState = false
                 }
-
-                for overlay in Overlay.allCases {
-                    var tx = Transaction(); tx.disablesAnimations = true
-                    withTransaction(tx) {
-                        model.higScene = false
-                        model.background = image
-                        model.overlay = overlay
-                    }
-                    try? await Task.sleep(nanoseconds: settle)
-                    let name = shotName(bg.name, overlay.rawValue, ap)
-                    let url = shots.appendingPathComponent(name)
-                    if let img = captureWindow(window, to: url) {
-                        manifest.captures.append(CaptureRecord(
-                            file: "shots/\(name)", background: bg.name,
-                            overlay: overlay.rawValue, appearance: ap.rawValue,
-                            sha256: sha256(of: url),
-                            pixelWidth: img.width, pixelHeight: img.height))
-                    } else {
-                        failures += 1
-                        print("FAILED capture: \(name)")
-                    }
+                let result = try await stableCapture(
+                    window, settleNanoseconds: settle)
+                try writePNG(result.frame.image, to: url)
+                let diff = referencePixels.map {
+                    comparePixels($0, result.frame.pixels)
                 }
-            }
-
-            // Qualitative HIG recreation: interactive glass controls over brick.
-            var tx = Transaction(); tx.disablesAnimations = true
-            withTransaction(tx) {
-                model.background = renderBackground(
-                    allBackgrounds().first { $0.name == "brick" }!, width: pw, height: ph)
-                model.higScene = true
-            }
-            try? await Task.sleep(nanoseconds: settle * 2)
-            let higName = ap == .light ? "hig-brick-wall.png" : "hig-brick-wall__dark.png"
-            let higURL = shots.appendingPathComponent(higName)
-            if let img = captureWindow(window, to: higURL) {
                 manifest.captures.append(CaptureRecord(
-                    file: "shots/\(higName)", background: "brick",
-                    overlay: "hig-scene", appearance: ap.rawValue,
-                    sha256: sha256(of: higURL),
-                    pixelWidth: img.width, pixelHeight: img.height))
-            } else { failures += 1 }
+                    file: "shots/\(name)",
+                    background: bg.name,
+                    family: bg.family.rawValue,
+                    overlay: overlay.rawValue,
+                    appearance: appearance.rawValue,
+                    scene: scene.name,
+                    sha256: sha256(of: url),
+                    pixelSha256: result.frame.pixelSha256,
+                    pixelWidth: result.frame.image.width,
+                    pixelHeight: result.frame.image.height,
+                    captureBackend: result.frame.backend,
+                    stable: result.stable,
+                    stabilitySamples: result.samples,
+                    controlDiff: diff,
+                    image: describeImage(result.frame.image)))
+                if !result.stable {
+                    failures += 1
+                    print("UNSTABLE: \(name)")
+                }
+                if let diff, diff.changedPixels != 0 {
+                    failures += 1
+                    print(
+                        "CONTROL MISMATCH: \(name), \(diff.changedPixels) pixels, "
+                        + "max delta \(diff.maxChannelDelta)")
+                }
+            } catch {
+                failures += 1
+                print("FAILED: \(name): \(error.localizedDescription)")
+            }
         }
 
-        let enc = JSONEncoder(); enc.outputFormatting = [.prettyPrinted, .sortedKeys]
-        try? (try? enc.encode(manifest))?.write(to: out.appendingPathComponent("manifest.json"))
+        if config.suite.includesStatic {
+            let backgrounds = staticBackgrounds()
+            let baseScene = scenes.first { $0.name == "circle-0500-center" }!
+            let tintBackgrounds: Set<String> = [
+                "gray-000", "gray-128", "gray-255",
+                "red-255", "green-255", "blue-255", "uv-map",
+            ]
 
-        print("done: \(manifest.captures.count) captures, \(failures) failures, scale \(scale)x")
-        exit(failures == 0 && !manifest.captures.isEmpty ? 0 : 1)
+            // Primary system-identification matrix: one isolated 500-point
+            // circle, paired controls, two materials, both appearances.
+            for bg in backgrounds {
+                print("static base: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                let referencePixels = try recordReference(bg, image)
+                for appearance in Appearance.allCases {
+                    var overlays: [Overlay] = [.none, .regular, .clear]
+                    if tintBackgrounds.contains(bg.name) {
+                        overlays += [.tintedBlue, .tintedOrange, .clearTintedBlue]
+                    }
+                    for overlay in overlays {
+                        await captureStatic(
+                            background: bg,
+                            image: image,
+                            referencePixels: overlay == .none ? referencePixels : nil,
+                            scene: baseScene,
+                            overlay: overlay,
+                            appearance: appearance)
+                    }
+                }
+            }
+
+            // Geometry is swept on orthogonal, compressible probes. The base
+            // controls above remain valid because a no-overlay scene has no
+            // geometry-dependent pixels.
+            let geometryBackgrounds: Set<String> = [
+                "gray-128", "checker-0128", "uv-map", "radial-0128",
+            ]
+            for bg in backgrounds where geometryBackgrounds.contains(bg.name) {
+                print("static geometry: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                for scene in scenes where scene.name != baseScene.name {
+                    for appearance in Appearance.allCases {
+                        for overlay in [Overlay.regular, .clear] {
+                            await captureStatic(
+                                background: bg,
+                                image: image,
+                                referencePixels: nil,
+                                scene: scene,
+                                overlay: overlay,
+                                appearance: appearance)
+                        }
+                    }
+                }
+            }
+
+            // Qualitative continuity with Apple's controls-over-content
+            // example. This is deliberately excluded from numerical fitting.
+            let brick = backgrounds.first { $0.name == "brick" }!
+            let brickImage = renderBackground(brick, width: pw, height: ph)
+            for appearance in Appearance.allCases {
+                let name = "hig-brick-wall__\(appearance.rawValue).png"
+                let url = shots.appendingPathComponent(name)
+                do {
+                    window.appearance = appearance.ns
+                    var transaction = Transaction()
+                    transaction.disablesAnimations = true
+                    withTransaction(transaction) {
+                        model.background = brickImage
+                        model.higScene = true
+                        model.dynamicMode = nil
+                    }
+                    let result = try await stableCapture(
+                        window, settleNanoseconds: settle * 2)
+                    try writePNG(result.frame.image, to: url)
+                    manifest.captures.append(CaptureRecord(
+                        file: "shots/\(name)",
+                        background: brick.name,
+                        family: brick.family.rawValue,
+                        overlay: "hig-interactive-regular",
+                        appearance: appearance.rawValue,
+                        scene: "hig-interactive-controls",
+                        sha256: sha256(of: url),
+                        pixelSha256: result.frame.pixelSha256,
+                        pixelWidth: result.frame.image.width,
+                        pixelHeight: result.frame.image.height,
+                        captureBackend: result.frame.backend,
+                        stable: result.stable,
+                        stabilitySamples: result.samples,
+                        controlDiff: nil,
+                        image: describeImage(result.frame.image)))
+                    if !result.stable { failures += 1 }
+                } catch {
+                    failures += 1
+                    print("FAILED: \(name): \(error.localizedDescription)")
+                }
+            }
+        }
+
+        if config.suite.includesDynamic {
+            let bg = dynamicBackground()
+            let image = renderBackground(bg, width: pw, height: ph)
+            _ = try recordReference(bg, image)
+            model.background = image
+
+            for appearance in Appearance.allCases {
+                window.appearance = appearance.ns
+                for overlay in [Overlay.regular, .clear] {
+                    for mode in DynamicMode.allCases {
+                        let sequenceID =
+                            "\(mode.rawValue)__\(overlay.rawValue)__\(appearance.rawValue)"
+                        print("dynamic: \(sequenceID)")
+                        let sequenceDir = dynamic.appendingPathComponent(sequenceID)
+                        try fm.createDirectory(
+                            at: sequenceDir, withIntermediateDirectories: true)
+
+                        var transaction = Transaction()
+                        transaction.disablesAnimations = true
+                        withTransaction(transaction) {
+                            model.background = image
+                            model.overlay = overlay
+                            model.higScene = false
+                            model.dynamicMode = mode
+                            model.dynamicVisible = false
+                            model.dynamicEndState = false
+                        }
+
+                        do {
+                            let initial = try await stableCapture(
+                                window, settleNanoseconds: settle * 2)
+                            if !initial.stable {
+                                failures += 1
+                                print("UNSTABLE dynamic initial state: \(sequenceID)")
+                            }
+
+                            struct TimedFrame {
+                                let index: Int
+                                let target: Double
+                                let actual: Double
+                                let frame: RawCapturedFrame
+                            }
+                            var timed = [TimedFrame(
+                                index: 0, target: 0, actual: 0,
+                                frame: RawCapturedFrame(
+                                    image: initial.frame.image,
+                                    backend: initial.frame.backend,
+                                    midpointUptime: initial.frame.midpointUptime,
+                                    captureDurationSeconds:
+                                        initial.frame.captureDurationSeconds))]
+                            timed.reserveCapacity(config.dynamicFrames)
+
+                            let animationStart = ProcessInfo.processInfo.systemUptime
+                            withAnimation(.linear(duration: config.dynamicDuration)) {
+                                if mode == .materialize {
+                                    model.dynamicVisible = true
+                                } else {
+                                    model.dynamicEndState = true
+                                }
+                            }
+
+                            for index in 1..<config.dynamicFrames {
+                                let target = config.dynamicDuration
+                                    * Double(index) / Double(config.dynamicFrames - 1)
+                                let deadline = animationStart + target
+                                let now = ProcessInfo.processInfo.systemUptime
+                                if deadline > now {
+                                    try await Task.sleep(
+                                        nanoseconds: UInt64((deadline - now) * 1_000_000_000))
+                                }
+                                let frame = try captureRawWindow(window)
+                                timed.append(TimedFrame(
+                                    index: index,
+                                    target: target,
+                                    actual: frame.midpointUptime - animationStart,
+                                    frame: frame))
+                            }
+
+                            let crop = dynamicCrop(
+                                for: mode,
+                                imageWidth: initial.frame.image.width,
+                                imageHeight: initial.frame.image.height,
+                                pointWidth: config.width,
+                                pointHeight: config.height)
+                            var sequence = DynamicSequenceRecord(
+                                id: sequenceID,
+                                mode: mode.rawValue,
+                                overlay: overlay.rawValue,
+                                appearance: appearance.rawValue,
+                                background: bg.name,
+                                durationSeconds: config.dynamicDuration,
+                                animationCurve: "linear",
+                                cropPixels: crop,
+                                frames: [])
+
+                            // PNG encoding happens only after the animation so
+                            // compression cannot perturb sample timing.
+                            for sample in timed {
+                                let cropped = try croppedFrame(sample.frame, crop: crop)
+                                let name = String(format: "frame-%04d.png", sample.index)
+                                let url = sequenceDir.appendingPathComponent(name)
+                                try writePNG(cropped.image, to: url)
+                                sequence.frames.append(DynamicFrameRecord(
+                                    file: "dynamic/\(sequenceID)/\(name)",
+                                    index: sample.index,
+                                    targetSeconds: sample.target,
+                                    actualSeconds: sample.actual,
+                                    timingErrorSeconds: sample.actual - sample.target,
+                                    captureDurationSeconds:
+                                        sample.frame.captureDurationSeconds,
+                                    fileSha256: sha256(of: url),
+                                    pixelSha256: cropped.pixelSha256,
+                                    pixelWidth: cropped.image.width,
+                                    pixelHeight: cropped.image.height,
+                                    captureBackend: cropped.backend))
+                            }
+                            manifest.dynamicSequences.append(sequence)
+                        } catch {
+                            failures += 1
+                            print(
+                                "FAILED dynamic sequence \(sequenceID): "
+                                + error.localizedDescription)
+                        }
+                    }
+                }
+            }
+        }
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        try encoder.encode(manifest).write(to: manifestURL, options: .atomic)
+
+        let frameCount = manifest.dynamicSequences.reduce(0) {
+            $0 + $1.frames.count
+        }
+        print(
+            "done: \(manifest.captures.count) static captures, "
+            + "\(manifest.dynamicSequences.count) dynamic sequences/"
+            + "\(frameCount) frames, \(failures) failures, scale \(scale)x")
+        let producedRequestedData =
+            (!config.suite.includesStatic || !manifest.captures.isEmpty)
+            && (!config.suite.includesDynamic || !manifest.dynamicSequences.isEmpty)
+        return failures == 0 && producedRequestedData ? 0 : 1
     }
 }
 

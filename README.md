@@ -1,95 +1,184 @@
-# liquid-glass capture rig
+# Liquid Glass capture rig
 
-Captures high-resolution samples of **real** macOS 26 Liquid Glass (`glassEffect`,
-SwiftUI) over calibration backgrounds, on GitHub's `macos-26` runners, for
-offline analysis of the material's optical behavior. Also recreates the
-"controls over a brick wall" example from Apple's HIG
-[Materials](https://developer.apple.com/design/human-interface-guidelines/materials)
-page.
+This repository measures Apple's real macOS 26 Liquid Glass renderer. It does
+not use screenshots from articles, hand-tuned imitations, or an assumed blur
+model. A SwiftUI/AppKit program renders controlled inputs beneath
+`glassEffect`, captures its own window, and records enough provenance to reject
+bad evidence before it reaches Walle's shader.
 
-## How it works
+The target is observational parity: for the tested backgrounds, geometries,
+appearances, and transitions, Walle must match captured output within explicit
+pixel metrics. No shader change should be accepted merely because it looks
+closer.
 
-`Sources/GlassCapture/main.swift` is a single-file AppKit/SwiftUI app that:
+## Why the rig needed a v2
 
-1. Opens a borderless, shadowless, sRGB, 3200x2000-point window.
-2. Draws each calibration background **inside the window** as an unfiltered,
-   pixel-exact image (generated per-pixel in code — the ground truth is
-   reproducible bit-for-bit and also saved to `reference/`).
-3. Composites real Liquid Glass shapes on top (`Glass.regular`, `.clear`,
-   `.regular.tint(.blue)`, `.regular.tint(.orange)`, `.clear.tint(.blue)`) at
-   fixed, manifest-recorded geometry — in BOTH window appearances (light and
-   dark; dark shots carry a `__dark` filename suffix). Earlier datasets used
-   `.tint(.blue.opacity(0.5))`, which pre-multiplies to near-neutral and
-   measured as a plain gray platter — hence the full-opacity tints.
-4. Screenshots **its own window** with `CGWindowListCreateImage`. Capturing
-   your own window is exempt from the Screen Recording TCC prompt, which is
-   what makes this work headlessly on CI. (`screencapture -l` is a fallback,
-   pre-granted via TCC.db in the workflow.)
-5. Writes `manifest.json`: OS version, backing scale, glass geometry, and a
-   SHA-256 per capture.
+The first rig established a strong static baseline, but it put three shapes in
+every numerical sample, used too few tone and spatial-frequency probes, and
+captured no actual transition timeline. Its manifest also claimed control
+validation without recording the computed result.
 
-Because the background lives in the same window, the glass backdrop sampling
-sees exactly the calibration pattern — no desktop, menu bar, or other windows
-contaminate the samples.
+Two independent v1 CI artifacts were audited before this refactor. All 84
+common `none`, `regular`, and `clear` PNGs compared were byte-for-byte
+identical after decoding. V2 preserves that deterministic path and makes it a
+hard per-capture requirement.
 
-## Why these backgrounds (the accuracy argument)
+V2 isolates the unknowns:
 
-There is no single "best background" — the near-perfect setup is a
-**calibration suite plus paired control shots**:
+| Unknown | Evidence |
+| --- | --- |
+| Tone, tint, and cross-channel transfer | 17 full-field grays; full- and half-intensity primaries and secondaries; independent holdout colors |
+| Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px |
+| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, deterministic noise |
+| Size and shape dependence | Five centered circle sizes, a fractional-pixel circle, an off-center circle, and three rectangle corner radii |
+| Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
+| Appearance and material | Light/dark appearances and real `.regular`/`.clear` materials; targeted regular/clear tint probes |
+| Time response | Real `materialize`, resize, translation, and matched-geometry morph animations |
 
-- **Control pairs.** Every background is captured with `overlay=none` and with
-  each glass variant, same frame, same geometry. Analysis operates on the
-  *difference between the pair*, so window-server color transforms, gamma, and
-  any capture-pipeline quirks cancel out exactly.
-- **Phase-shifted sinusoids** (`sine-{x,y}-p{064,256}-ph{0,1,2}`) — the
-  structured-light technique. Per pixel, phase is recovered as
-  `φ = atan2(√3·(I₁ − I₂), 2·I₀ − I₁ − I₂)`; the two frequencies unwrap each
-  other. Recovered phase → **sub-pixel refraction displacement field** for the
-  glass, in both axes. This is the workhorse for "99.99999%" accuracy — far
-  beyond what an 8-bit UV map can encode.
-- **`uv-map` / `ramp-x` / `ramp-y`** — coarse absolute coordinates, used to
-  disambiguate the sinusoid unwrapping and sanity-check the phase decode.
-- **Gray steps + primaries** (`gray-000…255`, `red/green/blue`) — fit the
-  per-channel tone/tint transfer function (Liquid Glass brightens, dims, and
-  tints depending on backdrop luminance; this measures that curve directly).
-- **Checkerboards** (8/32/128 px) and **deterministic noise** — edge response
-  and full-spectrum input for estimating the blur kernel (e.g. by Wiener
-  deconvolution of glass shot against control shot).
-- **`brick`** — procedural brick wall (deterministic, no copyrighted Apple
-  asset) for the HIG recreation; `hig-brick-wall.png` shows real interactive
-  glass buttons over it.
+Apple documents `GlassEffectContainer` as the mechanism that combines nearby
+glass shapes, `glassEffectID` as the identity used to animate shapes into one
+another, and `GlassEffectTransition` as the transition behavior. V2 exercises
+those APIs directly rather than approximating their results:
 
-Validation built in: the `none` shot vs. the saved `reference/` PNG should
-match nearly exactly — if it doesn't, the manifest's diff tells you what the
-capture pipeline itself does before you attribute anything to the glass.
+- <https://developer.apple.com/documentation/swiftui/glasseffectcontainer>
+- <https://developer.apple.com/documentation/swiftui/view/glasseffectid(_:in:)>
+- <https://developer.apple.com/documentation/swiftui/glasseffecttransition/materialize>
+- <https://developer.apple.com/documentation/swiftui/glasseffecttransition/matchedgeometry>
 
-## Running
+## Capture design
 
-Push, or trigger **Capture Liquid Glass samples** via `workflow_dispatch`.
-Requires the `macos-26` runner image (Liquid Glass does not exist on
-`macos-15`). ~113 shots + 28 references upload as artifact
-`liquid-glass-captures-<run id>`.
+The app opens a borderless, shadowless, sRGB 3200x2000-point window. Every
+calibration background is generated per pixel and displayed inside that same
+window, so the system material samples known content rather than a desktop or
+another process.
 
-Locally on a Mac running Tahoe:
+Each static result waits for the view to settle and then requires two
+consecutive decoded RGBA frames to be exactly equal. It tries at most four
+frames and marks the sample invalid if stability is not reached. Every
+`overlay=none` result is also compared directly with its generated reference;
+one changed RGB pixel fails the run.
+
+The static suite contains:
+
+- 98 deterministic backgrounds and 98 saved references.
+- 588 base control/regular/clear samples: every background, both appearances.
+- 42 targeted tint samples.
+- 192 isolated geometry and container-interaction samples.
+- 2 qualitative HIG-style controls-over-content samples.
+
+That is 824 static captures. The numerical fit should use the isolated scenes;
+the HIG-style scene is a qualitative continuity check only.
+
+The dynamic suite contains 16 sequences:
+
+- Four modes: `materialize`, `resize`, `translate`, and `morph`.
+- Two real materials: `.regular` and `.clear`.
+- Two appearances: light and dark.
+- 61 target samples over a one-second linear animation, including endpoints.
+
+The app records the monotonic acquisition time, target time, timing error, and
+capture duration for every frame. It retains the frames in memory and writes
+PNGs only after the animation finishes, preventing PNG compression from
+perturbing sample timing.
+
+Dynamic sequences use a smooth, deterministic RGB code field whose independent
+frequencies supply local gradients in both axes. This supports quantitative
+optical-flow fitting of transient refraction and blur while remaining much
+smaller than random-noise video. The first `materialize` frame contains no
+glass and must match the corresponding crop of the generated reference
+exactly.
+
+With the default `all` suite, the artifact contains 99 references, 824 static
+captures, 16 dynamic sequences, and 976 dynamic frames.
+
+## Manifest and validation
+
+`manifest.json` records:
+
+- macOS version/build, host architecture/model, runner image, Xcode version,
+  commit SHA, UTC start time, and requested suite;
+- window/display geometry, backing scale, color spaces, refresh rate, and
+  active/key-window state;
+- Reduce Transparency, Increase Contrast, and Reduce Motion state;
+- every scene's exact point geometry and container spacing;
+- file and normalized-RGBA SHA-256 values, image metadata, capture backend,
+  stability result, and control diff;
+- every dynamic frame's crop and actual acquisition timing.
+
+`Analysis/validate.py` independently reopens every PNG. It verifies file and
+pixel hashes, dimensions, unique logical cases, the complete requested matrix,
+static stability, exact no-glass controls, complete dynamic sequences,
+monotonic timing, adequate unique frames, and materialization controls. A
+validation failure still uploads the artifact so the cause can be inspected,
+but the workflow ends red.
+
+## Run on GitHub
+
+Trigger **Capture Liquid Glass samples** in Actions. The default `all` suite is
+the dataset needed for a full Walle fit. `static` and `dynamic` inputs are
+available for quicker reruns after a capture-specific change.
+
+The workflow requires the `macos-26` runner label and uploads:
+
+```text
+liquid-glass-captures-<run-id>-<suite>
+```
+
+After V2 changes, return that complete artifact, including
+`manifest.json` and `validation.json`. Do not merge it into an old `shots/`
+directory; filenames and scene semantics changed.
+
+## Run locally on macOS 26
 
 ```sh
-swiftc -O -parse-as-library -target "$(uname -m)-apple-macos26.0" \
-  Sources/GlassCapture/main.swift -o glasscap
-./glasscap --out captures
+swiftc -O -parse-as-library \
+  -target "$(uname -m)-apple-macos26.0" \
+  Sources/GlassCapture/main.swift \
+  -o glasscap
+
+./glasscap \
+  --out captures \
+  --suite all \
+  --width 3200 \
+  --height 2000 \
+  --dynamic-frames 61 \
+  --dynamic-duration 1.0
 ```
+
+The app refuses to write into any nonempty output directory, which prevents
+accidental mixtures of runs.
 
 ## Analysis environment
 
+The flake is locked and does not hard-code a Nix store path:
+
 ```sh
-nix develop   # python3 + numpy/scipy/opencv/scikit-image/matplotlib, imagemagick, gh
-gh run download -n "liquid-glass-captures-<run id>"
+nix develop
+python -m unittest discover -s Analysis -v
+python Analysis/validate.py captures \
+  --strict \
+  --report captures/validation.json
 ```
 
-## Resolution notes
+The environment includes Python 3.14, NumPy, SciPy, OpenCV, scikit-image,
+Matplotlib, Pillow, ImageMagick, and `gh`.
 
-- Window is 3200x2000 **points**; at 1x that is 3200x2000 px. The window
-  extends past the runner's small virtual display — capture reads the full
-  window backing store, so nothing is clipped.
-- GitHub's macOS runners expose no HiDPI display modes, so `backingScaleFactor`
-  is 1 there (recorded in `manifest.json`). On a real Retina Mac the same
-  binary captures at 2x. Need more pixels on CI? Raise `--width/--height`.
+## What happens after capture
+
+The V2 artifact is the measurement input, not proof that Walle already matches.
+The next pass should:
+
+1. Fit static tone, color, refraction, blur, rim, and shadow components on
+   designated training probes.
+2. Estimate temporal materialization and geometry-response curves using actual
+   frame timestamps, not frame indices.
+3. Test the fitted shader on backgrounds and geometries withheld from fitting.
+4. Compare Walle and Apple captures with per-pixel, edge-weighted, and
+   perceptual metrics.
+5. Reject any optimization that worsens any protected quality metric, even if
+   it improves VRAM, throughput, or latency.
+
+Apple does not ship Walle's expanding wallpaper wipe as a public system
+transition. The rig can identify the Liquid Glass material and Apple's actual
+materialize/morph behavior; mapping those measurements onto Walle's
+application-specific wipe must be defined and tested explicitly.
