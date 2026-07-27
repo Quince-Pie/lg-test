@@ -83,9 +83,13 @@ def artifact_path(root: Path, relative: object, findings: Findings) -> Path | No
     if not isinstance(relative, str) or not relative:
         findings.error(f"invalid artifact path: {relative!r}")
         return None
-    candidate = (root / relative).resolve()
+    # macOS exposes temporary directories through /var, which is a symlink to
+    # /private/var.  Resolve both sides before the containment check so a safe
+    # fixture below TemporaryDirectory is not mistaken for an escape.
+    resolved_root = root.resolve()
+    candidate = (resolved_root / relative).resolve()
     try:
-        candidate.relative_to(root)
+        candidate.relative_to(resolved_root)
     except ValueError:
         findings.error(f"artifact path escapes root: {relative}")
         return None
@@ -264,8 +268,11 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
     schema = manifest.get("schemaVersion")
     if schema not in {3, 4}:
         findings.error(f"schemaVersion is {schema!r}; validator supports 3 and 4")
-    expected_rig = {3: "2.1.0", 4: "2.2.0"}.get(schema)
-    if manifest.get("rigVersion") != expected_rig:
+    expected_rigs = {
+        3: {"2.1.0"},
+        4: {"2.2.0", "2.3.0"},
+    }.get(schema, set())
+    if manifest.get("rigVersion") not in expected_rigs:
         findings.error(f"unexpected rigVersion: {manifest.get('rigVersion')!r}")
     if manifest.get("requestedSuite") not in {"static", "dynamic", "all"}:
         findings.error(f"invalid requestedSuite: {manifest.get('requestedSuite')!r}")
@@ -632,6 +639,23 @@ def validate_dynamic(
             findings.error(f"{label}: missing background reference")
         if sequence.get("animationCurve") != "linear":
             findings.error(f"{label}: animation curve is not linear")
+        if manifest.get("rigVersion") == "2.3.0":
+            if (
+                sequence.get("samplingMethod")
+                != "continuous-off-main-presentation-binned"
+            ):
+                findings.error(f"{label}: unexpected dynamic sampling method")
+            attempts = sequence.get("captureAttempts")
+            decoded_samples = sequence.get("decodedSamples")
+            transient_failures = sequence.get("transientFailures")
+            if (
+                not isinstance(attempts, int)
+                or not isinstance(decoded_samples, int)
+                or not isinstance(transient_failures, int)
+                or min(attempts, decoded_samples, transient_failures) < 0
+                or attempts != decoded_samples + transient_failures
+            ):
+                findings.error(f"{label}: inconsistent dynamic sampler counters")
         duration = sequence.get("durationSeconds")
         frames = sequence.get("frames")
         crop = sequence.get("cropPixels")
@@ -652,6 +676,14 @@ def validate_dynamic(
             findings.error(
                 f"{label}: captured only {len(frames)} deadline-reachable frames; "
                 f"expected at least {minimum_captured}"
+            )
+        if (
+            manifest.get("rigVersion") == "2.3.0"
+            and isinstance(sequence.get("decodedSamples"), int)
+            and sequence["decodedSamples"] < len(frames) - 1
+        ):
+            findings.error(
+                f"{label}: decoded fewer samples than the saved live frames"
             )
         configured_duration = manifest.get("dynamicDurationSeconds")
         if isinstance(configured_duration, (int, float)) and not math.isclose(
@@ -941,6 +973,10 @@ def validate_dynamic(
                 "presentationProgressSamples": len(presentation_progress),
                 "presentationProgressGapMax": max(progress_gaps, default=None),
                 "materializeSourceWithinTolerance": materialize_source_within_tolerance,
+                "samplingMethod": sequence.get("samplingMethod"),
+                "captureAttempts": sequence.get("captureAttempts"),
+                "decodedSamples": sequence.get("decodedSamples"),
+                "transientFailures": sequence.get("transientFailures"),
             }
         )
     if manifest.get("requestedSuite") in {"dynamic", "all"}:
@@ -1177,7 +1213,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Independently validate a GlassCapture v2.1/v2.2 artifact."
+        description="Independently validate a GlassCapture v2.1-v2.3 artifact."
     )
     parser.add_argument("artifact", type=Path, help="capture artifact directory")
     parser.add_argument("--report", type=Path, help="write a JSON validation report")

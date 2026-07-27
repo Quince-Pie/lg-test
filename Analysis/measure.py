@@ -742,6 +742,10 @@ class Measurements:
             result[str(sequence["id"])] = {
                 "capturedFrames": len(frames),
                 "uniqueFrames": unique_frames,
+                "samplingMethod": sequence.get("samplingMethod"),
+                "captureAttempts": sequence.get("captureAttempts"),
+                "decodedSamples": sequence.get("decodedSamples"),
+                "transientFailures": sequence.get("transientFailures"),
                 "acceptedForTemporalFit": (
                     unique_frames >= min(10, len(frames))
                     and maximum_gap <= 0.200

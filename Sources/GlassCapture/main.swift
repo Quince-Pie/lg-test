@@ -453,6 +453,7 @@ final class SceneModel: ObservableObject {
     @Published var dynamicEndState = false
     @Published var dynamicExplicitProgress = false
     @Published var dynamicProgress: CGFloat = 0
+    @Published var dynamicClockProgress: CGFloat = 0
     @Published var dynamicClockVisible = false
     @Published var scale: CGFloat = 1
 
@@ -629,6 +630,12 @@ struct DynamicOverlay: View {
         model.dynamicExplicitProgress ? model.dynamicProgress : endpointProgress
     }
 
+    var clockProgress: CGFloat {
+        model.dynamicExplicitProgress
+            ? model.dynamicProgress
+            : model.dynamicClockProgress
+    }
+
     func interpolated(_ start: CGFloat, _ end: CGFloat) -> CGFloat {
         start + (end - start) * progress
     }
@@ -709,7 +716,7 @@ struct DynamicOverlay: View {
             // progress to ~0.3 ms at 3200 px.
             if model.dynamicClockVisible {
                 Color(red: 1, green: 0, blue: 1)
-                    .frame(width: size.width * progress, height: 4)
+                    .frame(width: size.width * clockProgress, height: 4)
             }
         }
     }
@@ -846,6 +853,10 @@ struct DynamicSequenceRecord: Codable {
     let background: String
     let durationSeconds: Double
     let animationCurve: String
+    let samplingMethod: String
+    let captureAttempts: Int
+    let decodedSamples: Int
+    let transientFailures: Int
     let cropPixels: CropRecord
     let analysisExclusionPixels: [CropRecord]
     var frames: [DynamicFrameRecord]
@@ -924,9 +935,16 @@ struct Manifest: Codable {
 private typealias WindowImageFn =
     @convention(c) (CGRect, UInt32, UInt32, UInt32) -> Unmanaged<CGImage>?
 
-private let legacyWindowImage: WindowImageFn? = {
-    guard let sym = dlsym(dlopen(nil, RTLD_NOW), "CGWindowListCreateImage") else { return nil }
-    return unsafeBitCast(sym, to: WindowImageFn.self)
+private struct LegacyWindowImage: @unchecked Sendable {
+    let function: WindowImageFn?
+}
+
+private let legacyWindowImage: LegacyWindowImage = {
+    guard let sym = dlsym(dlopen(nil, RTLD_NOW), "CGWindowListCreateImage") else {
+        return LegacyWindowImage(function: nil)
+    }
+    return LegacyWindowImage(
+        function: unsafeBitCast(sym, to: WindowImageFn.self))
 }()
 
 enum RigError: LocalizedError {
@@ -959,22 +977,35 @@ struct CapturedFrame {
     let captureDurationSeconds: Double
 }
 
-struct RawCapturedFrame {
+struct RawCapturedFrame: @unchecked Sendable {
     let image: CGImage
     let backend: String
     let midpointUptime: Double
     let captureDurationSeconds: Double
 }
 
-@MainActor
-func captureRawWindow(_ window: NSWindow) throws -> RawCapturedFrame {
+struct DynamicTimedFrame: @unchecked Sendable {
+    let index: Int
+    let target: Double
+    let actual: Double
+    let presentationProgress: Double
+    let frame: RawCapturedFrame
+}
+
+struct DynamicCaptureResult: @unchecked Sendable {
+    let frames: [DynamicTimedFrame]
+    let captureAttempts: Int
+    let decodedSamples: Int
+    let transientFailures: Int
+}
+
+func captureRawWindow(_ wid: CGWindowID) throws -> RawCapturedFrame {
     let started = ProcessInfo.processInfo.systemUptime
-    window.contentView?.displayIfNeeded()
-    let wid = CGWindowID(window.windowNumber)
 
     // listOption: kCGWindowListOptionIncludingWindow (1<<3)
     // imageOption: kCGWindowImageBoundsIgnoreFraming (1<<0) | kCGWindowImageBestResolution (1<<3)
-    if let img = legacyWindowImage?(.null, 1 << 3, wid, (1 << 0) | (1 << 3))?
+    if let img = legacyWindowImage.function?(
+        .null, 1 << 3, wid, (1 << 0) | (1 << 3))?
         .takeRetainedValue() {
         let finished = ProcessInfo.processInfo.systemUptime
         return RawCapturedFrame(
@@ -1006,6 +1037,12 @@ func captureRawWindow(_ window: NSWindow) throws -> RawCapturedFrame {
         backend: "screencapture",
         midpointUptime: (started + finished) / 2,
         captureDurationSeconds: finished - started)
+}
+
+@MainActor
+func captureRawWindow(_ window: NSWindow) throws -> RawCapturedFrame {
+    window.contentView?.displayIfNeeded()
+    return try captureRawWindow(CGWindowID(window.windowNumber))
 }
 
 func canonicalFrame(_ frame: RawCapturedFrame) throws -> CapturedFrame {
@@ -1111,6 +1148,89 @@ func presentationProgress(
         throw RigError.presentationClock
     }
     return Double(median) / Double(canonical.image.width)
+}
+
+func capturePresentedAnimation(
+    windowID: CGWindowID,
+    animationStart: Double,
+    duration: Double,
+    frameCount: Int,
+    backingScale: CGFloat,
+    refreshRate: Double
+) throws -> DynamicCaptureResult {
+    let finalIndex = frameCount - 1
+    let endpointDeadline = animationStart + duration + 0.250
+    var bestByIndex: [Int: DynamicTimedFrame] = [:]
+    var lastError: Error?
+    var captureAttempts = 0
+    var decodedSamples = 0
+    var transientFailures = 0
+
+    while ProcessInfo.processInfo.systemUptime < endpointDeadline {
+        captureAttempts += 1
+        do {
+            let frame = try captureRawWindow(windowID)
+            let presented = min(
+                1,
+                max(0, try presentationProgress(
+                    in: frame, backingScale: backingScale)))
+            decodedSamples += 1
+            let index = min(
+                finalIndex,
+                max(0, Int((presented * Double(finalIndex)).rounded())))
+
+            if index > 0 {
+                let target = duration * Double(index) / Double(finalIndex)
+                let sample = DynamicTimedFrame(
+                    index: index,
+                    target: target,
+                    actual: frame.midpointUptime - animationStart,
+                    presentationProgress: presented,
+                    frame: frame)
+                let targetProgress = Double(index) / Double(finalIndex)
+                let distance = abs(presented - targetProgress)
+                let previousDistance = bestByIndex[index].map {
+                    abs($0.presentationProgress - targetProgress)
+                }
+                if let previousDistance {
+                    if distance < previousDistance {
+                        bestByIndex[index] = sample
+                    }
+                } else {
+                    bestByIndex[index] = sample
+                }
+            }
+
+            if presented >= 0.995,
+               frame.midpointUptime
+                   >= animationStart + duration + 1 / max(refreshRate, 1) {
+                break
+            }
+        } catch {
+            // A transient WindowServer miss must not discard the surrounding
+            // real frames. The endpoint requirement below still makes a
+            // persistently broken backend fail closed.
+            lastError = error
+            transientFailures += 1
+        }
+
+        // Keep screenshot acquisition off the main actor while leaving enough
+        // headroom for WindowServer. Duplicate presentation states are
+        // discarded by the target-bin map above.
+        Thread.sleep(forTimeInterval: 0.001)
+    }
+
+    guard let endpoint = bestByIndex[finalIndex],
+          endpoint.presentationProgress >= 0.995
+    else {
+        if let lastError { throw lastError }
+        throw RigError.capture("animation endpoint was not presented before deadline")
+    }
+    return DynamicCaptureResult(
+        frames: bestByIndex.keys.sorted().compactMap { bestByIndex[$0] },
+        captureAttempts: captureAttempts,
+        decodedSamples: decodedSamples,
+        transientFailures: transientFailures)
 }
 
 func centeredCrop(
@@ -1253,7 +1373,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 4,
-            rigVersion: "2.2.0",
+            rigVersion: "2.3.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -1373,6 +1493,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     model.dynamicEndState = false
                     model.dynamicExplicitProgress = false
                     model.dynamicProgress = 0
+                    model.dynamicClockProgress = 0
+                    model.dynamicClockVisible = false
                 }
                 let result = try await stableCapture(
                     window, settleNanoseconds: settle)
@@ -1552,6 +1674,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         model.dynamicMode = nil
                         model.dynamicExplicitProgress = false
                         model.dynamicProgress = 0
+                        model.dynamicClockProgress = 0
+                        model.dynamicClockVisible = false
                     }
                     let result = try await stableCapture(
                         window, settleNanoseconds: settle * 2)
@@ -1612,6 +1736,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             model.dynamicEndState = false
                             model.dynamicExplicitProgress = false
                             model.dynamicProgress = 0
+                            model.dynamicClockProgress = 0
                             model.dynamicClockVisible = true
                         }
 
@@ -1623,14 +1748,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 log("UNSTABLE dynamic initial state: \(sequenceID)")
                             }
 
-                            struct TimedFrame {
-                                let index: Int
-                                let target: Double
-                                let actual: Double
-                                let presentationProgress: Double
-                                let frame: RawCapturedFrame
-                            }
-                            var timed = [TimedFrame(
+                            var timed = [DynamicTimedFrame(
                                 index: 0, target: 0, actual: 0,
                                 presentationProgress: 0,
                                 frame: RawCapturedFrame(
@@ -1643,6 +1761,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
                             let animationStart = ProcessInfo.processInfo.systemUptime
                             withAnimation(.linear(duration: config.dynamicDuration)) {
+                                model.dynamicClockProgress = 1
                                 if mode == .materialize {
                                     model.dynamicVisible = true
                                 } else {
@@ -1650,87 +1769,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 }
                             }
 
-                            let finalIndex = config.dynamicFrames - 1
-                            let interval = config.dynamicDuration / Double(finalIndex)
-                            var estimatedCaptureDuration = max(
-                                initial.frame.captureDurationSeconds, 0.001)
-                            var index = 1
-                            while index < finalIndex {
-                                // Choose the next grid point whose midpoint is
-                                // still attainable. Missed targets are skipped,
-                                // not queued after the animation has ended.
-                                let now = ProcessInfo.processInfo.systemUptime
-                                let predictedMidpoint =
-                                    now + estimatedCaptureDuration / 2
-                                let idealIndex = Int(
-                                    ((predictedMidpoint - animationStart) / interval)
-                                        .rounded())
-                                index = max(index, idealIndex)
-                                if index >= finalIndex { break }
-
-                                let target = config.dynamicDuration
-                                    * Double(index) / Double(finalIndex)
-                                let acquisitionStart =
-                                    animationStart + target
-                                    - estimatedCaptureDuration / 2
-                                let beforeCapture =
-                                    ProcessInfo.processInfo.systemUptime
-                                if acquisitionStart > beforeCapture {
-                                    try await Task.sleep(
-                                        nanoseconds: UInt64(
-                                            (acquisitionStart - beforeCapture)
-                                                * 1_000_000_000))
-                                }
-                                let frame = try captureRawWindow(window)
-                                let presented = try presentationProgress(
-                                    in: frame, backingScale: scale)
-                                timed.append(TimedFrame(
-                                    index: index,
-                                    target: target,
-                                    actual: frame.midpointUptime - animationStart,
-                                    presentationProgress: presented,
-                                    frame: frame))
-                                estimatedCaptureDuration =
-                                    0.75 * estimatedCaptureDuration
-                                    + 0.25 * frame.captureDurationSeconds
-                                index += 1
-                            }
-
-                            let finalTarget = config.dynamicDuration
-                            // Acquire the endpoint after one full display
-                            // interval, then retry briefly if WindowServer has
-                            // not presented it yet. The decoded visual clock,
-                            // not a guessed sleep duration, decides whether
-                            // this is truly the final state.
                             let refresh = max(
                                 displayMode?.refreshRate ?? 60, 1)
-                            let finalStart =
-                                animationStart + finalTarget + 1 / refresh
-                            let beforeFinal = ProcessInfo.processInfo.systemUptime
-                            if finalStart > beforeFinal {
-                                try await Task.sleep(
-                                    nanoseconds: UInt64(
-                                        (finalStart - beforeFinal) * 1_000_000_000))
-                            }
-                            var finalFrame = try captureRawWindow(window)
-                            var finalPresented = try presentationProgress(
-                                in: finalFrame, backingScale: scale)
-                            let endpointDeadline =
-                                animationStart + finalTarget + 0.180
-                            while finalPresented < 0.995
-                                && ProcessInfo.processInfo.systemUptime
-                                    < endpointDeadline {
-                                try await Task.sleep(nanoseconds: 8_333_334)
-                                finalFrame = try captureRawWindow(window)
-                                finalPresented = try presentationProgress(
-                                    in: finalFrame, backingScale: scale)
-                            }
-                            timed.append(TimedFrame(
-                                index: finalIndex,
-                                target: finalTarget,
-                                actual: finalFrame.midpointUptime - animationStart,
-                                presentationProgress: finalPresented,
-                                frame: finalFrame))
+                            let windowID = CGWindowID(window.windowNumber)
+                            let duration = config.dynamicDuration
+                            let frameCount = config.dynamicFrames
+                            let captured = try await Task.detached(
+                                priority: .userInitiated
+                            ) {
+                                try capturePresentedAnimation(
+                                    windowID: windowID,
+                                    animationStart: animationStart,
+                                    duration: duration,
+                                    frameCount: frameCount,
+                                    backingScale: scale,
+                                    refreshRate: refresh)
+                            }.value
+                            timed.append(contentsOf: captured.frames)
 
                             let crop = dynamicCrop(
                                 for: mode,
@@ -1753,6 +1808,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 background: bg.name,
                                 durationSeconds: config.dynamicDuration,
                                 animationCurve: "linear",
+                                samplingMethod:
+                                    "continuous-off-main-presentation-binned",
+                                captureAttempts: captured.captureAttempts,
+                                decodedSamples: captured.decodedSamples,
+                                transientFailures: captured.transientFailures,
                                 cropPixels: crop,
                                 analysisExclusionPixels: exclusions,
                                 frames: [])
@@ -1844,6 +1904,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     model.dynamicEndState = false
                                     model.dynamicExplicitProgress = true
                                     model.dynamicProgress = CGFloat(progress)
+                                    model.dynamicClockProgress = 0
                                     model.dynamicClockVisible = false
                                 }
                                 let result = try await stableCapture(
@@ -1899,6 +1960,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             withTransaction(transaction) {
                 model.dynamicExplicitProgress = false
                 model.dynamicProgress = 0
+                model.dynamicClockProgress = 0
                 model.dynamicClockVisible = false
             }
         }

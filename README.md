@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## Why the rig needed v2.2
+## Why the rig needed v2.3
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -35,6 +35,15 @@ matched-geometry morph jumped from its first state directly to its last on the
 CI compositor. V2.2 therefore adds a pixel-coded presentation clock, replaces
 that failed morph probe with one continuously animatable shape, and adds
 settled exact-state sweeps that are independent of CI scheduling.
+
+The first v2.2 all-suite run then exposed a narrower capture problem. Snapshot
+acquisition itself took only about 1–2 ms, but the main-actor target scheduler
+left presentation holes as large as 205 ms. Its materialization clock was also
+derived from the Boolean that inserts the glass view, so it jumped directly
+from zero to one even while the transition pixels changed. V2.3 gives the
+clock its own continuously animated scalar and samples WindowServer
+continuously off the main actor. It keeps the real presented frame nearest
+each requested clock bin; no frame is interpolated or synthesized.
 
 ### Rejected artifact audit
 
@@ -74,7 +83,23 @@ actual acquisition time. Every actual sampling gap is below the new hard
 200 ms ceiling. Fitting the v2.1 live frames must use `actualSeconds`, never
 the requested grid index.
 
-V2.2 isolates the unknowns:
+GitHub run `30308735894` produced an intact 2,711,046,599-byte v2.2 archive
+(`SHA-256 378403c2839bbbde413e0cacec969a3d703012ff8a3c825a1e1ab34f26ff4122`).
+All 1,897 ZIP entries pass CRC. The environment preflight, 100 references,
+1,066 static captures, and all 16 exact sweeps/272 frames pass; every sweep
+frame is stable and unique. Thirteen of 20 live sequences pass temporal
+coverage. The other seven are rejected: all four materialize clocks skip from
+zero to one, and three sequences exceed a real or presented sampling-gap
+limit; `translate__regular__dark` also has only eight unique frames.
+
+The run's two Python unit-test failures are unrelated to its pixels. macOS
+resolves temporary paths from `/var` through `/private/var`, while the test
+called the lower-level validator with an unresolved root. V2.3 canonicalizes
+both operands before the path-containment check; it does not weaken that
+check. The workflow correctly uploaded the complete artifact despite ending
+red, which made both defects independently diagnosable.
+
+V2.3 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
@@ -137,19 +162,20 @@ The dynamic suite contains 20 sequences:
   endpoints.
 
 The app records the monotonic acquisition time, target time, timing error, and
-capture duration for every frame. V2.2 also renders a four-point-high magenta
-clock whose width is animated by the same SwiftUI transaction. It decodes that
-clock from the full raw screenshot before analytical cropping, recording the
-actual presented progress with 1/3200 resolution. The full-frame wallpaper
-wipe declares the four clock rows as an analysis exclusion. The endpoint is
-retried until the clock proves that the compositor presented it.
+capture duration for every frame. It also renders a four-point-high magenta
+clock whose independent scalar is animated by the same SwiftUI transaction.
+It decodes that clock from the full raw screenshot before analytical cropping,
+recording actual presented progress with 1/3200 resolution. The full-frame
+wallpaper wipe declares the four clock rows as an analysis exclusion.
 
 Frames stay in memory and PNGs are written only after each animation finishes,
-so compression cannot perturb sample timing. A screenshot whose midpoint can
-no longer reach a requested target is skipped. Requested-time error is
-diagnostic; strictly increasing actual time, no actual or presentation gap
-over 200 ms, both presented endpoints, and at least ten distinct frames are
-hard requirements.
+so compression cannot perturb sample timing. V2.3 captures continuously on a
+detached worker and retains the real screenshot closest to each presented
+target bin. The main actor remains free to drive SwiftUI and WindowServer.
+Attempted, decoded, and transiently failed sample counts are recorded in the
+manifest. Requested-time error is diagnostic; strictly increasing actual
+time, no actual or presentation gap over 200 ms, both presented endpoints,
+and at least ten distinct frames remain hard requirements.
 
 Dynamic sequences use a smooth, deterministic RGB code field whose independent
 frequencies supply local gradients in both axes. This supports quantitative
@@ -159,13 +185,13 @@ glass and must match the corresponding crop of the generated reference
 exactly.
 
 Live animations expose temporal material behavior, but they cannot separate a
-geometry response from CI scheduler jitter by themselves. V2.2 therefore also
+geometry response from CI scheduler jitter by themselves. V2.3 therefore also
 captures 16 settled sweeps: resize, translate, morph, and wallpaper-wipe,
 crossed with both materials and appearances. Every sweep has exactly 17
 strictly increasing states, each required to stabilize and have a unique pixel
 hash.
 
-With the default `all` suite, a v2.2 artifact contains 100 references, 1,066
+With the default `all` suite, a v2.3 artifact contains 100 references, 1,066
 static captures, 20 live dynamic sequences, and 16 exact sweeps containing
 272 frames.
 
@@ -183,9 +209,10 @@ static captures, 20 live dynamic sequences, and 16 exact sweeps containing
 - every scene's exact point geometry and container spacing;
 - file and canonical-RGBA SHA-256 values, captured-control relationships,
   capture backend, stability result, and measured source round-trip;
-- every dynamic frame's crop and actual acquisition timing.
+- every dynamic frame's crop and actual acquisition timing;
 - every dynamic frame's decoded presentation progress and any excluded clock
   rows;
+- each live sequence's sampling method and attempted/decoded/failure counters;
 - every exact sweep state, its requested progress, stability result, and
   hashes.
 
@@ -212,7 +239,7 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-After V2.2 changes, return that complete artifact, including
+After V2.3 changes, return that complete artifact, including
 `manifest.json` and `validation.json`. Do not merge it into an old `shots/`
 directory; filenames and scene semantics changed.
 
@@ -255,7 +282,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The V2.2 artifact is the measurement input, not proof that Walle already matches.
+The V2.3 artifact is the measurement input, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on

@@ -436,6 +436,10 @@ class ValidatorTests(unittest.TestCase):
                 "background": "dynamic-coded-field",
                 "durationSeconds": 1,
                 "animationCurve": "linear",
+                "samplingMethod": "continuous-off-main-presentation-binned",
+                "captureAttempts": 20,
+                "decodedSamples": 19,
+                "transientFailures": 1,
                 "cropPixels": {
                     "x": 0,
                     "y": 0,
@@ -447,6 +451,7 @@ class ValidatorTests(unittest.TestCase):
             }
             manifest = {
                 "schemaVersion": 4,
+                "rigVersion": "2.3.0",
                 "requestedSuite": "static",
                 "backingScaleFactor": 1,
                 "dynamicFrameCount": 10,
