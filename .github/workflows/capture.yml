@@ -141,6 +141,14 @@ jobs:
             --strict \
             --report captures/validation.json
 
+      - name: Measure optical evidence
+        if: always() && inputs.suite != 'dynamic'
+        id: measure
+        continue-on-error: true
+        run: |
+          python Analysis/measure.py captures \
+            --report captures/measurements.json
+
       - name: Summarize
         if: always()
         run: |
@@ -156,11 +164,15 @@ jobs:
           dynamic = manifest["dynamicSequences"]
           frames = sum(len(sequence["frames"]) for sequence in dynamic)
           targets = len(dynamic) * manifest["dynamicFrameCount"]
+          sweeps = manifest.get("sweepSequences", [])
+          sweep_frames = sum(len(sequence["frames"]) for sequence in sweeps)
           print(
               f"references={len(manifest['references'])} "
               f"static={len(manifest['captures'])} "
               f"dynamic_sequences={len(dynamic)} "
-              f"dynamic_frames={frames}/{targets}_targets"
+              f"dynamic_frames={frames}/{targets}_targets "
+              f"sweep_sequences={len(sweeps)} "
+              f"sweep_frames={sweep_frames}"
           )
           print(
               f"scale={manifest['backingScaleFactor']}x "
@@ -188,5 +200,10 @@ jobs:
           fi
           if [ "${{ steps.validate.outcome }}" != success ]; then
             echo "::error::Artifact validation failed; inspect validation.json."
+            exit 1
+          fi
+          if [ "${{ inputs.suite || 'all' }}" != dynamic ] &&
+             [ "${{ steps.measure.outcome }}" != success ]; then
+            echo "::error::Optical measurement failed; inspect the job log."
             exit 1
           fi

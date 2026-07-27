@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## Why the rig needed v2.1
+## Why the rig needed v2.2
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -24,11 +24,17 @@ both Reduce Transparency and Reduce Motion enabled. Apple therefore rendered
 the opaque accessibility fallback instead of normal Liquid Glass and removed
 the requested animation. Those artifacts must never be used for fitting.
 
-V2.1 makes the visual environment a fail-fast precondition, uses a borderless
+V2.1 made the visual environment a fail-fast precondition, used a borderless
 window subclass that can actually become key, and saves and hashes one
-canonical top-left sRGB representation. It also stops pretending synchronous
-full-window screenshots can be acquired at 60 Hz: missed target times are
-discarded instead of being captured after the animation has already ended.
+canonical top-left sRGB representation.
+
+The first valid normal-material artifact then exposed two remaining
+measurement errors. A synchronous screenshot's acquisition midpoint is not
+the SwiftUI presentation state visible in that screenshot, and the
+matched-geometry morph jumped from its first state directly to its last on the
+CI compositor. V2.2 therefore adds a pixel-coded presentation clock, replaces
+that failed morph probe with one continuously animatable shape, and adds
+settled exact-state sweeps that are independent of CI scheduling.
 
 ### Rejected artifact audit
 
@@ -49,27 +55,43 @@ The v2 legacy scene is pixel-exact with both earlier v1 artifacts for matching
 cases. That proves the earlier fit used the same fallback rendering; it does
 not rehabilitate any of those artifacts.
 
-V2.1 isolates the unknowns:
+### Current artifact audit
+
+GitHub run `30302954531` produced the 2,271,219,760-byte archive supplied for
+this analysis
+(`SHA-256 edfbda98f4bb0bfda4e4d43458f4419bb49968c52ab09e5ff14d524534012cf2`).
+Its ZIP CRCs, manifest hashes, PNG hashes, canonical pixel hashes, color
+metadata, source round trips, controls, and all 856 static stability checks
+pass. It records macOS 26.4 build 25E246, Xcode 26.5 build 17F42, runner image
+20260720.0258.1, an active key window, and all three visual accessibility
+settings disabled.
+
+The static corpus and 16 of 20 live sequences are accepted evidence. The four
+old morph sequences are rejected because each contains only its two endpoints.
+The original validator also reported 20 target-time errors; those are now
+diagnostics rather than evidence failures because the manifest records each
+actual acquisition time. Every actual sampling gap is below the new hard
+200 ms ceiling. Fitting the v2.1 live frames must use `actualSeconds`, never
+the requested grid index.
+
+V2.2 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
-| Tone, tint, and cross-channel transfer | 17 full-field grays; full- and half-intensity primaries and secondaries; independent holdout colors |
-| Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px |
+| Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube; independent holdout colors |
+| Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px, plus 64/256/1024 px local MTF probes at 256-, 500-, and 4000-point circle scales |
 | Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, deterministic noise |
 | Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, and three rectangle corner radii |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
 | Appearance and material | Light/dark appearances and real `.regular`/`.clear` materials; targeted regular/clear tint probes |
-| Time response | Real `materialize`, resize, translation, matched-geometry morph, and full-wallpaper circle expansion animations |
+| Time response | Real `materialize`, resize, translation, continuous circle-to-rounded-rectangle morph, and full-wallpaper expansion; presented-state clocks; 17 exact settled states per geometry mode |
 
 Apple documents `GlassEffectContainer` as the mechanism that combines nearby
-glass shapes, `glassEffectID` as the identity used to animate shapes into one
-another, and `GlassEffectTransition` as the transition behavior. V2.1 exercises
-those APIs directly rather than approximating their results:
+glass shapes and `GlassEffectTransition` as the transition behavior. The rig
+exercises those APIs directly rather than approximating their results:
 
 - <https://developer.apple.com/documentation/swiftui/glasseffectcontainer>
-- <https://developer.apple.com/documentation/swiftui/view/glasseffectid(_:in:)>
 - <https://developer.apple.com/documentation/swiftui/glasseffecttransition/materialize>
-- <https://developer.apple.com/documentation/swiftui/glasseffecttransition/matchedgeometry>
 - <https://developer.apple.com/documentation/appkit/nsworkspace/accessibilitydisplayshouldreducetransparency>
 - <https://developer.apple.com/documentation/appkit/nswindow/stylemask-swift.struct/borderless>
 
@@ -94,13 +116,15 @@ be pixel-exact with each other.
 
 The static suite contains:
 
-- 98 deterministic backgrounds and 98 saved references.
-- 588 base control/regular/clear samples: every background, both appearances.
+- 99 deterministic backgrounds and 99 saved static references.
+- 594 base control/regular/clear samples: every background, both appearances.
 - 42 targeted tint samples.
 - 224 isolated geometry, off-screen-scale, and container-interaction samples.
+- 12 edge-free giant-circle tone/color-transfer samples.
+- 192 scale-dependent, four-phase local-MTF/refraction samples.
 - 2 qualitative HIG-style controls-over-content samples.
 
-That is 856 static captures. The numerical fit should use the isolated scenes;
+That is 1,066 static captures. The numerical fit should use the isolated scenes;
 the HIG-style scene is a qualitative continuity check only.
 
 The dynamic suite contains 20 sequences:
@@ -113,11 +137,19 @@ The dynamic suite contains 20 sequences:
   endpoints.
 
 The app records the monotonic acquisition time, target time, timing error, and
-capture duration for every frame. It retains the frames in memory and writes
-PNGs only after the animation finishes, preventing PNG compression from
-perturbing sample timing. A screenshot whose midpoint can no longer reach a
-target is skipped. At least ten distinct, deadline-valid frames plus both
-endpoints are required; the manifest records the skipped grid indices.
+capture duration for every frame. V2.2 also renders a four-point-high magenta
+clock whose width is animated by the same SwiftUI transaction. It decodes that
+clock from the full raw screenshot before analytical cropping, recording the
+actual presented progress with 1/3200 resolution. The full-frame wallpaper
+wipe declares the four clock rows as an analysis exclusion. The endpoint is
+retried until the clock proves that the compositor presented it.
+
+Frames stay in memory and PNGs are written only after each animation finishes,
+so compression cannot perturb sample timing. A screenshot whose midpoint can
+no longer reach a requested target is skipped. Requested-time error is
+diagnostic; strictly increasing actual time, no actual or presentation gap
+over 200 ms, both presented endpoints, and at least ten distinct frames are
+hard requirements.
 
 Dynamic sequences use a smooth, deterministic RGB code field whose independent
 frequencies supply local gradients in both axes. This supports quantitative
@@ -126,10 +158,16 @@ smaller than random-noise video. The first `materialize` frame contains no
 glass and must match the corresponding crop of the generated reference
 exactly.
 
-With the default `all` suite, the artifact contains 99 references, 856 static
-captures, and 20 dynamic sequences. Each sequence contains as many of its 61
-target points as the measured capture backend can reach; it is invalid with
-fewer than ten distinct captured frames.
+Live animations expose temporal material behavior, but they cannot separate a
+geometry response from CI scheduler jitter by themselves. V2.2 therefore also
+captures 16 settled sweeps: resize, translate, morph, and wallpaper-wipe,
+crossed with both materials and appearances. Every sweep has exactly 17
+strictly increasing states, each required to stabilize and have a unique pixel
+hash.
+
+With the default `all` suite, a v2.2 artifact contains 100 references, 1,066
+static captures, 20 live dynamic sequences, and 16 exact sweeps containing
+272 frames.
 
 ## Manifest and validation
 
@@ -146,13 +184,18 @@ fewer than ten distinct captured frames.
 - file and canonical-RGBA SHA-256 values, captured-control relationships,
   capture backend, stability result, and measured source round-trip;
 - every dynamic frame's crop and actual acquisition timing.
+- every dynamic frame's decoded presentation progress and any excluded clock
+  rows;
+- every exact sweep state, its requested progress, stability result, and
+  hashes.
 
 `Analysis/validate.py` independently reopens every PNG. It verifies file and
 pixel hashes, dimensions, unique logical cases, the complete requested matrix,
 explicit sRGB tagging, static stability, cross-appearance no-glass identity,
-complete dynamic sequences, monotonic timing, adequate unique frames, and
-materialization controls. A validation failure still uploads the artifact so
-the cause can be inspected, but the workflow ends red.
+complete dynamic sequences, acquisition and presentation coverage, exact
+sweep matrices, unique states, and materialization controls. A validation
+failure still uploads the artifact so the cause can be inspected, but the
+workflow ends red.
 
 ## Run on GitHub
 
@@ -169,7 +212,7 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-After V2.1 changes, return that complete artifact, including
+After V2.2 changes, return that complete artifact, including
 `manifest.json` and `validation.json`. Do not merge it into an old `shots/`
 directory; filenames and scene semantics changed.
 
@@ -203,6 +246,8 @@ python -m unittest discover -s Analysis -v
 python Analysis/validate.py captures \
   --strict \
   --report captures/validation.json
+python Analysis/measure.py captures \
+  --report captures/measurements.json
 ```
 
 The environment includes Python 3.14, NumPy, SciPy, OpenCV, scikit-image,
@@ -210,7 +255,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The V2.1 artifact is the measurement input, not proof that Walle already matches.
+The V2.2 artifact is the measurement input, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on

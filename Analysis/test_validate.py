@@ -6,12 +6,17 @@ from pathlib import Path
 
 from PIL import Image, ImageCms
 
-from validate import pixel_diff, source_diff_is_within_tolerance, validate
+from validate import (
+    Findings,
+    pixel_diff,
+    source_diff_is_within_tolerance,
+    validate,
+    validate_dynamic,
+    validate_sweeps,
+)
 
 
-SRGB_PROFILE = ImageCms.ImageCmsProfile(
-    ImageCms.createProfile("sRGB")
-).tobytes()
+SRGB_PROFILE = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes()
 
 
 class ValidatorTests(unittest.TestCase):
@@ -110,8 +115,7 @@ class ValidatorTests(unittest.TestCase):
                         "file": relative,
                         "referenceFile": "reference/probe.png",
                         "controlFile": (
-                            "shots/probe__circle-0500-center__none__"
-                            f"{appearance}.png"
+                            f"shots/probe__circle-0500-center__none__{appearance}.png"
                         ),
                         "background": "probe",
                         "family": "tone",
@@ -137,15 +141,12 @@ class ValidatorTests(unittest.TestCase):
                     for appearance in ("light", "dark")
                     for overlay in ("none", "regular", "clear")
                     for relative in [
-                        "shots/probe__circle-0500-center__"
-                        f"{overlay}__{appearance}.png"
+                        f"shots/probe__circle-0500-center__{overlay}__{appearance}.png"
                     ]
                 ],
                 "dynamicSequences": [],
             }
-            (root / "manifest.json").write_text(
-                json.dumps(manifest), encoding="utf-8"
-            )
+            (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
             findings, report = validate(root)
 
@@ -275,9 +276,7 @@ class ValidatorTests(unittest.TestCase):
                 "captures": [],
                 "dynamicSequences": sequences,
             }
-            (root / "manifest.json").write_text(
-                json.dumps(manifest), encoding="utf-8"
-            )
+            (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
             findings, report = validate(root)
 
@@ -286,6 +285,194 @@ class ValidatorTests(unittest.TestCase):
             self.assertEqual(
                 {timing["droppedTargets"] for timing in report["dynamicTiming"]},
                 {51},
+            )
+
+    def test_exact_state_sweep_matrix(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "sweeps").mkdir()
+            image_metadata = {
+                "bitsPerComponent": 8,
+                "bitsPerPixel": 32,
+                "bytesPerRow": 8,
+                "colorSpace": "sRGB IEC61966-2.1",
+                "alphaInfo": 1,
+                "bitmapInfo": 16385,
+            }
+
+            sequences = []
+            for mode in ("resize", "translate", "morph", "wallpaper-wipe"):
+                for overlay in ("regular", "clear"):
+                    for appearance in ("light", "dark"):
+                        sequence_id = f"sweep__{mode}__{overlay}__{appearance}"
+                        sequence_dir = root / "sweeps" / sequence_id
+                        sequence_dir.mkdir()
+                        frames = []
+                        for index in range(17):
+                            pixels = bytes((index, index * 2, index * 3, 255)) * 4
+                            relative = f"sweeps/{sequence_id}/frame-{index:04d}.png"
+                            path = root / relative
+                            Image.frombytes("RGBA", (2, 2), pixels).save(
+                                path, icc_profile=SRGB_PROFILE
+                            )
+                            frames.append(
+                                {
+                                    "file": relative,
+                                    "index": index,
+                                    "progress": index / 16,
+                                    "fileSha256": hashlib.sha256(
+                                        path.read_bytes()
+                                    ).hexdigest(),
+                                    "pixelSha256": hashlib.sha256(pixels).hexdigest(),
+                                    "pixelWidth": 2,
+                                    "pixelHeight": 2,
+                                    "captureBackend": "unit-test",
+                                    "stable": True,
+                                    "stabilitySamples": 2,
+                                    "sourceImage": image_metadata,
+                                    "savedImage": image_metadata,
+                                }
+                            )
+                        sequences.append(
+                            {
+                                "id": sequence_id,
+                                "mode": mode,
+                                "overlay": overlay,
+                                "appearance": appearance,
+                                "background": "dynamic-coded-field",
+                                "cropPixels": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "width": 2,
+                                    "height": 2,
+                                },
+                                "frames": frames,
+                            }
+                        )
+
+            findings = Findings()
+            summary = validate_sweeps(
+                root,
+                {
+                    "schemaVersion": 4,
+                    "requestedSuite": "dynamic",
+                    "sweepSequences": sequences,
+                },
+                {"dynamic-coded-field": {}},
+                findings,
+            )
+
+            self.assertEqual(findings.errors, [])
+            self.assertEqual(summary, {"sequences": 16, "frames": 272})
+
+    def test_static_suite_does_not_require_dynamic_sweeps(self) -> None:
+        findings = Findings()
+        summary = validate_sweeps(
+            Path("."),
+            {
+                "schemaVersion": 4,
+                "requestedSuite": "static",
+                "sweepSequences": [],
+            },
+            {},
+            findings,
+        )
+
+        self.assertEqual(findings.errors, [])
+        self.assertEqual(summary, {"sequences": 0, "frames": 0})
+
+    def test_schema4_presentation_clock_and_exclusion(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "reference").mkdir()
+            sequence_id = "wallpaper-wipe__regular__light"
+            sequence_dir = root / "dynamic" / sequence_id
+            sequence_dir.mkdir(parents=True)
+            image_metadata = {
+                "bitsPerComponent": 8,
+                "bitsPerPixel": 32,
+                "bytesPerRow": 8,
+                "colorSpace": "sRGB IEC61966-2.1",
+                "alphaInfo": 1,
+                "bitmapInfo": 16385,
+            }
+            reference_path = root / "reference/dynamic-coded-field.png"
+            reference_pixels = bytes((0, 0, 0, 255)) * 4
+            Image.frombytes("RGBA", (2, 2), reference_pixels).save(
+                reference_path, icc_profile=SRGB_PROFILE
+            )
+            frames = []
+            for index in range(10):
+                pixels = bytes((index, index * 2, index * 3, 255)) * 4
+                relative = f"dynamic/{sequence_id}/frame-{index:04d}.png"
+                path = root / relative
+                Image.frombytes("RGBA", (2, 2), pixels).save(
+                    path, icc_profile=SRGB_PROFILE
+                )
+                progress = index / 9
+                frames.append(
+                    {
+                        "file": relative,
+                        "index": index,
+                        "targetSeconds": progress,
+                        "actualSeconds": progress,
+                        "timingErrorSeconds": 0,
+                        "captureDurationSeconds": 0.005,
+                        "presentationProgress": progress,
+                        "fileSha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                        "pixelSha256": hashlib.sha256(pixels).hexdigest(),
+                        "pixelWidth": 2,
+                        "pixelHeight": 2,
+                        "captureBackend": "unit-test",
+                        "sourceImage": image_metadata,
+                        "savedImage": image_metadata,
+                    }
+                )
+            sequence = {
+                "id": sequence_id,
+                "mode": "wallpaper-wipe",
+                "overlay": "regular",
+                "appearance": "light",
+                "background": "dynamic-coded-field",
+                "durationSeconds": 1,
+                "animationCurve": "linear",
+                "cropPixels": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 2,
+                    "height": 2,
+                },
+                "analysisExclusionPixels": [{"x": 0, "y": 0, "width": 2, "height": 2}],
+                "frames": frames,
+            }
+            manifest = {
+                "schemaVersion": 4,
+                "requestedSuite": "static",
+                "backingScaleFactor": 1,
+                "dynamicFrameCount": 10,
+                "dynamicDurationSeconds": 1,
+                "sourceRoundTripTolerance": {
+                    "maximumChangedPixelFraction": 0.005,
+                    "maximumChannelDelta": 1,
+                    "maximumMeanAbsoluteChannelDelta": 0.002,
+                },
+                "dynamicSequences": [sequence],
+            }
+            references = {
+                "dynamic-coded-field": {"file": "reference/dynamic-coded-field.png"}
+            }
+
+            findings = Findings()
+            summary, _ = validate_dynamic(root, manifest, references, findings)
+
+            self.assertEqual(findings.errors, [])
+            self.assertEqual(summary, {"sequences": 1, "frames": 10})
+
+            sequence["analysisExclusionPixels"] = []
+            invalid = Findings()
+            validate_dynamic(root, manifest, references, invalid)
+            self.assertTrue(
+                any("analysisExclusionPixels" in error for error in invalid.errors)
             )
 
 
