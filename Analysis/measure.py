@@ -742,6 +742,7 @@ class Measurements:
             result[str(sequence["id"])] = {
                 "capturedFrames": len(frames),
                 "uniqueFrames": unique_frames,
+                "presentationClock": sequence.get("presentationClock"),
                 "samplingMethod": sequence.get("samplingMethod"),
                 "captureAttempts": sequence.get("captureAttempts"),
                 "decodedSamples": sequence.get("decodedSamples"),

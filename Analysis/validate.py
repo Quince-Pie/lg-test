@@ -270,7 +270,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
         findings.error(f"schemaVersion is {schema!r}; validator supports 3 and 4")
     expected_rigs = {
         3: {"2.1.0"},
-        4: {"2.2.0", "2.3.0"},
+        4: {"2.2.0", "2.3.0", "2.4.0"},
     }.get(schema, set())
     if manifest.get("rigVersion") not in expected_rigs:
         findings.error(f"unexpected rigVersion: {manifest.get('rigVersion')!r}")
@@ -639,7 +639,7 @@ def validate_dynamic(
             findings.error(f"{label}: missing background reference")
         if sequence.get("animationCurve") != "linear":
             findings.error(f"{label}: animation curve is not linear")
-        if manifest.get("rigVersion") == "2.3.0":
+        if manifest.get("rigVersion") in {"2.3.0", "2.4.0"}:
             if (
                 sequence.get("samplingMethod")
                 != "continuous-off-main-presentation-binned"
@@ -656,6 +656,18 @@ def validate_dynamic(
                 or attempts != decoded_samples + transient_failures
             ):
                 findings.error(f"{label}: inconsistent dynamic sampler counters")
+        if manifest.get("rigVersion") == "2.4.0":
+            expected_clock = (
+                "core-animation-layer"
+                if sequence.get("mode") == "materialize"
+                else "swiftui-animatable-frame"
+            )
+            if sequence.get("presentationClock") != expected_clock:
+                findings.error(
+                    f"{label}: presentationClock is "
+                    f"{sequence.get('presentationClock')!r}, "
+                    f"expected {expected_clock!r}"
+                )
         duration = sequence.get("durationSeconds")
         frames = sequence.get("frames")
         crop = sequence.get("cropPixels")
@@ -678,7 +690,7 @@ def validate_dynamic(
                 f"expected at least {minimum_captured}"
             )
         if (
-            manifest.get("rigVersion") == "2.3.0"
+            manifest.get("rigVersion") in {"2.3.0", "2.4.0"}
             and isinstance(sequence.get("decodedSamples"), int)
             and sequence["decodedSamples"] < len(frames) - 1
         ):
@@ -973,6 +985,7 @@ def validate_dynamic(
                 "presentationProgressSamples": len(presentation_progress),
                 "presentationProgressGapMax": max(progress_gaps, default=None),
                 "materializeSourceWithinTolerance": materialize_source_within_tolerance,
+                "presentationClock": sequence.get("presentationClock"),
                 "samplingMethod": sequence.get("samplingMethod"),
                 "captureAttempts": sequence.get("captureAttempts"),
                 "decodedSamples": sequence.get("decodedSamples"),
@@ -1213,7 +1226,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Independently validate a GlassCapture v2.1-v2.3 artifact."
+        description="Independently validate a GlassCapture v2.1-v2.4 artifact."
     )
     parser.add_argument("artifact", type=Path, help="capture artifact directory")
     parser.add_argument("--report", type=Path, help="write a JSON validation report")

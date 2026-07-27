@@ -436,6 +436,7 @@ class ValidatorTests(unittest.TestCase):
                 "background": "dynamic-coded-field",
                 "durationSeconds": 1,
                 "animationCurve": "linear",
+                "presentationClock": "swiftui-animatable-frame",
                 "samplingMethod": "continuous-off-main-presentation-binned",
                 "captureAttempts": 20,
                 "decodedSamples": 19,
@@ -451,7 +452,7 @@ class ValidatorTests(unittest.TestCase):
             }
             manifest = {
                 "schemaVersion": 4,
-                "rigVersion": "2.3.0",
+                "rigVersion": "2.4.0",
                 "requestedSuite": "static",
                 "backingScaleFactor": 1,
                 "dynamicFrameCount": 10,
@@ -478,6 +479,16 @@ class ValidatorTests(unittest.TestCase):
             validate_dynamic(root, manifest, references, invalid)
             self.assertTrue(
                 any("analysisExclusionPixels" in error for error in invalid.errors)
+            )
+
+            sequence["analysisExclusionPixels"] = [
+                {"x": 0, "y": 0, "width": 2, "height": 2}
+            ]
+            sequence["presentationClock"] = "core-animation-layer"
+            wrong_clock = Findings()
+            validate_dynamic(root, manifest, references, wrong_clock)
+            self.assertTrue(
+                any("presentationClock" in error for error in wrong_clock.errors)
             )
 
 
