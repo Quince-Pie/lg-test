@@ -295,7 +295,12 @@ func sha256(of data: Data) -> String {
     return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
 }
 
-func normalizedRGBA8(_ image: CGImage) -> Data? {
+struct CanonicalImage {
+    let image: CGImage
+    let pixels: Data
+}
+
+func canonicalRGBA8(_ image: CGImage) -> CanonicalImage? {
     let bytesPerRow = image.width * 4
     var pixels = Data(count: bytesPerRow * image.height)
     let rendered = pixels.withUnsafeMutableBytes { bytes -> Bool in
@@ -309,15 +314,36 @@ func normalizedRGBA8(_ image: CGImage) -> Data? {
                               | CGBitmapInfo.byteOrder32Big.rawValue)
         else { return false }
         context.interpolationQuality = .none
-        // Normalize the byte stream to top-left row order, matching the PNG.
-        context.translateBy(x: 0, y: CGFloat(image.height))
-        context.scaleBy(x: 1, y: -1)
+        context.setBlendMode(.copy)
+        // CGContext's first output row already matches the row order emitted
+        // by ImageIO for this CGImage. Applying an extra UIKit-style flip
+        // makes the manifest hash describe a vertically inverted image.
         context.draw(
             image,
             in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
         return true
     }
-    return rendered ? pixels : nil
+    guard rendered,
+          let colorSpace = CGColorSpace(name: CGColorSpace.sRGB),
+          let provider = CGDataProvider(data: pixels as CFData),
+          let canonical = CGImage(
+              width: image.width,
+              height: image.height,
+              bitsPerComponent: 8,
+              bitsPerPixel: 32,
+              bytesPerRow: bytesPerRow,
+              space: colorSpace,
+              bitmapInfo: CGBitmapInfo(
+                  rawValue: CGImageAlphaInfo.premultipliedLast.rawValue
+                      | CGBitmapInfo.byteOrder32Big.rawValue),
+              provider: provider,
+              decode: nil,
+              shouldInterpolate: false,
+              intent: .defaultIntent)
+    else {
+        return nil
+    }
+    return CanonicalImage(image: canonical, pixels: pixels)
 }
 
 func describeImage(_ image: CGImage) -> ImageRecord {
@@ -366,6 +392,23 @@ func comparePixels(_ reference: Data, _ captured: Data) -> PixelDiff {
         maxChannelDelta: maxDelta,
         meanAbsoluteChannelDelta:
             Double(absoluteSum) / Double((reference.count / 4) * 3))
+}
+
+func sourceRoundTripIsWithinTolerance(
+    _ diff: PixelDiff,
+    pixelCount: Int,
+    tolerance: SourceRoundTripTolerance
+) -> Bool {
+    guard pixelCount > 0 else { return false }
+    return Double(diff.changedPixels) / Double(pixelCount)
+            <= tolerance.maximumChangedPixelFraction
+        && diff.maxChannelDelta <= tolerance.maximumChannelDelta
+        && diff.meanAbsoluteChannelDelta
+            <= tolerance.maximumMeanAbsoluteChannelDelta
+}
+
+func log(_ message: String) {
+    FileHandle.standardError.write(Data("\(message)\n".utf8))
 }
 
 // MARK: - Scene
@@ -442,12 +485,16 @@ func calibrationScenes(width: Int, height: Int) -> [SceneSpec] {
         circleScene("circle-0500-center", centerX: cx, centerY: cy, diameter: 500),
         circleScene("circle-1000-center", centerX: cx, centerY: cy, diameter: 1000),
         circleScene("circle-1600-center", centerX: cx, centerY: cy, diameter: 1600),
+        circleScene("circle-4000-center", centerX: cx, centerY: cy, diameter: 4000),
         circleScene(
             "circle-0500-subpixel", centerX: cx + 0.25, centerY: cy + 0.75,
             diameter: 500.5),
         circleScene(
             "circle-0500-upper-left", centerX: Double(width) * 0.25,
             centerY: Double(height) * 0.30, diameter: 500),
+        circleScene(
+            "circle-6000-upper-left", centerX: Double(width) * 0.25,
+            centerY: Double(height) * 0.30, diameter: 6000),
     ]
     for radius in [0.0, 80.0, 240.0] {
         scenes.append(SceneSpec(
@@ -489,6 +536,7 @@ func calibrationScenes(width: Int, height: Int) -> [SceneSpec] {
 
 enum DynamicMode: String, Codable, CaseIterable {
     case materialize, resize, translate, morph
+    case wallpaperWipe = "wallpaper-wipe"
 }
 
 struct GlassShapeView: View {
@@ -594,6 +642,22 @@ struct DynamicOverlay: View {
                     .glassEffectTransition(.matchedGeometry)
                     .position(x: size.width * 0.33, y: size.height / 2)
             }
+        case .wallpaperWipe:
+            let center = CGPoint(x: size.width * 0.25, y: size.height * 0.30)
+            let right = size.width - center.x
+            let top = size.height - center.y
+            let farthestRadiusSquared = [
+                center.x * center.x + center.y * center.y,
+                right * right + center.y * center.y,
+                center.x * center.x + top * top,
+                right * right + top * top,
+            ].max() ?? size.width * size.width + size.height * size.height
+            let farthestRadius = farthestRadiusSquared.squareRoot()
+            let diameter = model.dynamicEndState ? farthestRadius * 2.06 : 128
+            Color.clear
+                .frame(width: diameter, height: diameter)
+                .glassEffect(glass, in: .circle)
+                .position(x: center.x, y: center.y)
         case nil:
             EmptyView()
         }
@@ -667,6 +731,12 @@ struct PixelDiff: Codable {
     let meanAbsoluteChannelDelta: Double
 }
 
+struct SourceRoundTripTolerance: Codable {
+    let maximumChangedPixelFraction: Double
+    let maximumChannelDelta: Int
+    let maximumMeanAbsoluteChannelDelta: Double
+}
+
 struct ReferenceRecord: Codable {
     let file: String
     let background: String
@@ -675,10 +745,13 @@ struct ReferenceRecord: Codable {
     let pixelSha256: String
     let pixelWidth: Int
     let pixelHeight: Int
+    let image: ImageRecord
 }
 
 struct CaptureRecord: Codable {
     let file: String
+    let referenceFile: String
+    let controlFile: String
     let background: String
     let family: String
     let overlay: String
@@ -691,8 +764,9 @@ struct CaptureRecord: Codable {
     let captureBackend: String
     let stable: Bool
     let stabilitySamples: Int
-    let controlDiff: PixelDiff?
-    let image: ImageRecord
+    let sourceDiff: PixelDiff?
+    let sourceImage: ImageRecord
+    let savedImage: ImageRecord
 }
 
 struct CropRecord: Codable {
@@ -714,6 +788,8 @@ struct DynamicFrameRecord: Codable {
     let pixelWidth: Int
     let pixelHeight: Int
     let captureBackend: String
+    let sourceImage: ImageRecord
+    let savedImage: ImageRecord
 }
 
 struct DynamicSequenceRecord: Codable {
@@ -746,6 +822,8 @@ struct Manifest: Codable {
     let settleSeconds: Double
     let dynamicFrameCount: Int
     let dynamicDurationSeconds: Double
+    let canonicalPixelEncoding: String
+    let sourceRoundTripTolerance: SourceRoundTripTolerance
     let windowColorSpace: String
     let displayColorSpace: String
     let displayName: String
@@ -759,6 +837,7 @@ struct Manifest: Codable {
     let scenes: [SceneSpec]
     let overlays: [String]
     let appearances: [String]
+    var preflightErrors: [String] = []
     var references: [ReferenceRecord] = []
     var captures: [CaptureRecord] = []
     var dynamicSequences: [DynamicSequenceRecord] = []
@@ -796,6 +875,8 @@ enum RigError: LocalizedError {
 
 struct CapturedFrame {
     let image: CGImage
+    let source: CGImage
+    let sourceImage: ImageRecord
     let backend: String
     let pixels: Data
     let pixelSha256: String
@@ -812,9 +893,9 @@ struct RawCapturedFrame {
 
 @MainActor
 func captureRawWindow(_ window: NSWindow) throws -> RawCapturedFrame {
+    let started = ProcessInfo.processInfo.systemUptime
     window.contentView?.displayIfNeeded()
     let wid = CGWindowID(window.windowNumber)
-    let started = ProcessInfo.processInfo.systemUptime
 
     // listOption: kCGWindowListOptionIncludingWindow (1<<3)
     // imageOption: kCGWindowImageBoundsIgnoreFraming (1<<0) | kCGWindowImageBestResolution (1<<3)
@@ -852,22 +933,24 @@ func captureRawWindow(_ window: NSWindow) throws -> RawCapturedFrame {
         captureDurationSeconds: finished - started)
 }
 
-func normalizedFrame(_ frame: RawCapturedFrame) throws -> CapturedFrame {
-    guard let pixels = normalizedRGBA8(frame.image) else {
+func canonicalFrame(_ frame: RawCapturedFrame) throws -> CapturedFrame {
+    guard let canonical = canonicalRGBA8(frame.image) else {
         throw RigError.imageConversion
     }
     return CapturedFrame(
-        image: frame.image,
+        image: canonical.image,
+        source: frame.image,
+        sourceImage: describeImage(frame.image),
         backend: frame.backend,
-        pixels: pixels,
-        pixelSha256: sha256(of: pixels),
+        pixels: canonical.pixels,
+        pixelSha256: sha256(of: canonical.pixels),
         midpointUptime: frame.midpointUptime,
         captureDurationSeconds: frame.captureDurationSeconds)
 }
 
 @MainActor
 func captureWindow(_ window: NSWindow) throws -> CapturedFrame {
-    try normalizedFrame(captureRawWindow(window))
+    try canonicalFrame(captureRawWindow(window))
 }
 
 @MainActor
@@ -900,15 +983,17 @@ func croppedFrame(_ frame: RawCapturedFrame, crop: CropRecord) throws -> Capture
           crop.x + crop.width <= frame.image.width,
           crop.y + crop.height <= frame.image.height,
           let image = frame.image.cropping(to: rect),
-          let pixels = normalizedRGBA8(image)
+          let canonical = canonicalRGBA8(image)
     else {
         throw RigError.invalidCrop(crop)
     }
     return CapturedFrame(
-        image: image,
+        image: canonical.image,
+        source: image,
+        sourceImage: describeImage(image),
         backend: frame.backend,
-        pixels: pixels,
-        pixelSha256: sha256(of: pixels),
+        pixels: canonical.pixels,
+        pixelSha256: sha256(of: canonical.pixels),
         midpointUptime: frame.midpointUptime,
         captureDurationSeconds: frame.captureDurationSeconds)
 }
@@ -950,6 +1035,9 @@ func dynamicCrop(
             imageHeight: imageHeight,
             desiredWidth: Int((2800 * scaleX).rounded()),
             desiredHeight: Int((1300 * scaleY).rounded()))
+    case .wallpaperWipe:
+        return CropRecord(
+            x: 0, y: 0, width: imageWidth, height: imageHeight)
     }
 }
 
@@ -974,6 +1062,11 @@ func commandOutput(_ executable: String, _ arguments: [String]) -> String {
 
 // MARK: - App
 
+final class CaptureWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let config = Config.parse()
@@ -983,7 +1076,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let size = CGSize(width: config.width, height: config.height)
-        window = NSWindow(
+        window = CaptureWindow(
             contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.borderless], backing: .buffered, defer: false)
         window.hasShadow = false
@@ -992,8 +1085,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.backgroundColor = .black
         window.contentView = NSHostingView(rootView: RootView(model: model, size: size))
         window.setFrameOrigin(NSPoint(x: 0, y: 0))
-        window.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+        window.makeMain()
 
         Task { @MainActor in
             do {
@@ -1025,6 +1119,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         try await Task.sleep(nanoseconds: 1_000_000_000)
+        window.makeKey()
+        window.makeMain()
+        await Task.yield()
         let scale = window.backingScaleFactor
         model.scale = scale
         let scenes = calibrationScenes(width: config.width, height: config.height)
@@ -1032,10 +1129,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)
             .map { CGDirectDisplayID($0.uint32Value) } ?? CGMainDisplayID()
         let displayMode = CGDisplayCopyDisplayMode(displayID)
+        let sourceTolerance = SourceRoundTripTolerance(
+            maximumChangedPixelFraction: 0.005,
+            maximumChannelDelta: 1,
+            maximumMeanAbsoluteChannelDelta: 0.002)
 
         var manifest = Manifest(
-            schemaVersion: 2,
-            rigVersion: "2.0.0",
+            schemaVersion: 3,
+            rigVersion: "2.1.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -1053,6 +1154,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             settleSeconds: config.settleSeconds,
             dynamicFrameCount: config.dynamicFrames,
             dynamicDurationSeconds: config.dynamicDuration,
+            canonicalPixelEncoding: "sRGB RGBA8 top-left opaque-alpha",
+            sourceRoundTripTolerance: sourceTolerance,
             windowColorSpace: window.colorSpace.map { String(describing: $0) } ?? "unknown",
             displayColorSpace:
                 window.screen?.colorSpace.map { String(describing: $0) } ?? "unknown",
@@ -1070,6 +1173,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             overlays: Overlay.allCases.map(\.rawValue),
             appearances: Appearance.allCases.map(\.rawValue))
 
+        func persistManifest(_ value: Manifest) throws {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            try encoder.encode(value).write(to: manifestURL, options: .atomic)
+        }
+
+        if !manifest.applicationActive {
+            manifest.preflightErrors.append("capture application is not active")
+        }
+        if !manifest.windowKey {
+            manifest.preflightErrors.append("capture window is not key")
+        }
+        if manifest.reduceTransparency {
+            manifest.preflightErrors.append("Reduce Transparency is enabled")
+        }
+        if manifest.increaseContrast {
+            manifest.preflightErrors.append("Increase Contrast is enabled")
+        }
+        if manifest.reduceMotion {
+            manifest.preflightErrors.append("Reduce Motion is enabled")
+        }
+        if !manifest.preflightErrors.isEmpty {
+            try persistManifest(manifest)
+            for issue in manifest.preflightErrors {
+                log("PREFLIGHT FAILED: \(issue)")
+            }
+            log("capture aborted before rendering any samples")
+            return 1
+        }
+
         let pw = Int(CGFloat(config.width) * scale)
         let ph = Int(CGFloat(config.height) * scale)
         var failures = 0
@@ -1078,17 +1211,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         func recordReference(_ bg: Background, _ image: CGImage) throws -> Data {
             let name = "\(bg.name).png"
             let url = refs.appendingPathComponent(name)
-            try writePNG(image, to: url)
-            guard let pixels = normalizedRGBA8(image) else { throw RigError.imageConversion }
+            guard let canonical = canonicalRGBA8(image) else {
+                throw RigError.imageConversion
+            }
+            try writePNG(canonical.image, to: url)
             manifest.references.append(ReferenceRecord(
                 file: "reference/\(name)",
                 background: bg.name,
                 family: bg.family.rawValue,
                 fileSha256: sha256(of: url),
-                pixelSha256: sha256(of: pixels),
-                pixelWidth: image.width,
-                pixelHeight: image.height))
-            return pixels
+                pixelSha256: sha256(of: canonical.pixels),
+                pixelWidth: canonical.image.width,
+                pixelHeight: canonical.image.height,
+                image: describeImage(canonical.image)))
+            return canonical.pixels
+        }
+
+        func controlFile(for bg: Background, appearance: Appearance) -> String {
+            "shots/\(bg.name)__circle-0500-center__none__\(appearance.rawValue).png"
         }
 
         func captureStatic(
@@ -1123,6 +1263,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 manifest.captures.append(CaptureRecord(
                     file: "shots/\(name)",
+                    referenceFile: "reference/\(bg.name).png",
+                    controlFile: controlFile(for: bg, appearance: appearance),
                     background: bg.name,
                     family: bg.family.rawValue,
                     overlay: overlay.rawValue,
@@ -1135,21 +1277,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     captureBackend: result.frame.backend,
                     stable: result.stable,
                     stabilitySamples: result.samples,
-                    controlDiff: diff,
-                    image: describeImage(result.frame.image)))
+                    sourceDiff: diff,
+                    sourceImage: result.frame.sourceImage,
+                    savedImage: describeImage(result.frame.image)))
                 if !result.stable {
                     failures += 1
-                    print("UNSTABLE: \(name)")
+                    log("UNSTABLE: \(name)")
                 }
-                if let diff, diff.changedPixels != 0 {
+                if let diff,
+                   !sourceRoundTripIsWithinTolerance(
+                       diff,
+                       pixelCount: result.frame.pixels.count / 4,
+                       tolerance: sourceTolerance) {
                     failures += 1
-                    print(
-                        "CONTROL MISMATCH: \(name), \(diff.changedPixels) pixels, "
+                    log(
+                        "SOURCE ROUND-TRIP OUT OF BOUNDS: \(name), "
+                        + "\(diff.changedPixels) pixels, "
                         + "max delta \(diff.maxChannelDelta)")
                 }
             } catch {
                 failures += 1
-                print("FAILED: \(name): \(error.localizedDescription)")
+                log("FAILED: \(name): \(error.localizedDescription)")
             }
         }
 
@@ -1164,7 +1312,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Primary system-identification matrix: one isolated 500-point
             // circle, paired controls, two materials, both appearances.
             for bg in backgrounds {
-                print("static base: \(bg.name)")
+                log("static base: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
                 let referencePixels = try recordReference(bg, image)
                 for appearance in Appearance.allCases {
@@ -1191,7 +1339,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 "gray-128", "checker-0128", "uv-map", "radial-0128",
             ]
             for bg in backgrounds where geometryBackgrounds.contains(bg.name) {
-                print("static geometry: \(bg.name)")
+                log("static geometry: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
                 for scene in scenes where scene.name != baseScene.name {
                     for appearance in Appearance.allCases {
@@ -1229,6 +1377,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     try writePNG(result.frame.image, to: url)
                     manifest.captures.append(CaptureRecord(
                         file: "shots/\(name)",
+                        referenceFile: "reference/\(brick.name).png",
+                        controlFile: controlFile(
+                            for: brick, appearance: appearance),
                         background: brick.name,
                         family: brick.family.rawValue,
                         overlay: "hig-interactive-regular",
@@ -1241,12 +1392,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         captureBackend: result.frame.backend,
                         stable: result.stable,
                         stabilitySamples: result.samples,
-                        controlDiff: nil,
-                        image: describeImage(result.frame.image)))
+                        sourceDiff: nil,
+                        sourceImage: result.frame.sourceImage,
+                        savedImage: describeImage(result.frame.image)))
                     if !result.stable { failures += 1 }
                 } catch {
                     failures += 1
-                    print("FAILED: \(name): \(error.localizedDescription)")
+                    log("FAILED: \(name): \(error.localizedDescription)")
                 }
             }
         }
@@ -1263,7 +1415,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     for mode in DynamicMode.allCases {
                         let sequenceID =
                             "\(mode.rawValue)__\(overlay.rawValue)__\(appearance.rawValue)"
-                        print("dynamic: \(sequenceID)")
+                        log("dynamic: \(sequenceID)")
                         let sequenceDir = dynamic.appendingPathComponent(sequenceID)
                         try fm.createDirectory(
                             at: sequenceDir, withIntermediateDirectories: true)
@@ -1284,7 +1436,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 window, settleNanoseconds: settle * 2)
                             if !initial.stable {
                                 failures += 1
-                                print("UNSTABLE dynamic initial state: \(sequenceID)")
+                                log("UNSTABLE dynamic initial state: \(sequenceID)")
                             }
 
                             struct TimedFrame {
@@ -1296,7 +1448,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             var timed = [TimedFrame(
                                 index: 0, target: 0, actual: 0,
                                 frame: RawCapturedFrame(
-                                    image: initial.frame.image,
+                                    image: initial.frame.source,
                                     backend: initial.frame.backend,
                                     midpointUptime: initial.frame.midpointUptime,
                                     captureDurationSeconds:
@@ -1312,14 +1464,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 }
                             }
 
-                            for index in 1..<config.dynamicFrames {
-                                let target = config.dynamicDuration
-                                    * Double(index) / Double(config.dynamicFrames - 1)
-                                let deadline = animationStart + target
+                            let finalIndex = config.dynamicFrames - 1
+                            let interval = config.dynamicDuration / Double(finalIndex)
+                            var estimatedCaptureDuration = max(
+                                initial.frame.captureDurationSeconds, 0.001)
+                            var index = 1
+                            while index < finalIndex {
+                                // Choose the next grid point whose midpoint is
+                                // still attainable. Missed targets are skipped,
+                                // not queued after the animation has ended.
                                 let now = ProcessInfo.processInfo.systemUptime
-                                if deadline > now {
+                                let predictedMidpoint =
+                                    now + estimatedCaptureDuration / 2
+                                let idealIndex = Int(
+                                    ((predictedMidpoint - animationStart) / interval)
+                                        .rounded())
+                                index = max(index, idealIndex)
+                                if index >= finalIndex { break }
+
+                                let target = config.dynamicDuration
+                                    * Double(index) / Double(finalIndex)
+                                let acquisitionStart =
+                                    animationStart + target
+                                    - estimatedCaptureDuration / 2
+                                let beforeCapture =
+                                    ProcessInfo.processInfo.systemUptime
+                                if acquisitionStart > beforeCapture {
                                     try await Task.sleep(
-                                        nanoseconds: UInt64((deadline - now) * 1_000_000_000))
+                                        nanoseconds: UInt64(
+                                            (acquisitionStart - beforeCapture)
+                                                * 1_000_000_000))
                                 }
                                 let frame = try captureRawWindow(window)
                                 timed.append(TimedFrame(
@@ -1327,12 +1501,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     target: target,
                                     actual: frame.midpointUptime - animationStart,
                                     frame: frame))
+                                estimatedCaptureDuration =
+                                    0.75 * estimatedCaptureDuration
+                                    + 0.25 * frame.captureDurationSeconds
+                                index += 1
                             }
+
+                            let finalTarget = config.dynamicDuration
+                            let finalStart =
+                                animationStart + finalTarget
+                                - estimatedCaptureDuration / 2
+                            let beforeFinal = ProcessInfo.processInfo.systemUptime
+                            if finalStart > beforeFinal {
+                                try await Task.sleep(
+                                    nanoseconds: UInt64(
+                                        (finalStart - beforeFinal) * 1_000_000_000))
+                            }
+                            let finalFrame = try captureRawWindow(window)
+                            timed.append(TimedFrame(
+                                index: finalIndex,
+                                target: finalTarget,
+                                actual: finalFrame.midpointUptime - animationStart,
+                                frame: finalFrame))
 
                             let crop = dynamicCrop(
                                 for: mode,
-                                imageWidth: initial.frame.image.width,
-                                imageHeight: initial.frame.image.height,
+                                imageWidth: initial.frame.source.width,
+                                imageHeight: initial.frame.source.height,
                                 pointWidth: config.width,
                                 pointHeight: config.height)
                             var sequence = DynamicSequenceRecord(
@@ -1365,12 +1560,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     pixelSha256: cropped.pixelSha256,
                                     pixelWidth: cropped.image.width,
                                     pixelHeight: cropped.image.height,
-                                    captureBackend: cropped.backend))
+                                    captureBackend: cropped.backend,
+                                    sourceImage: cropped.sourceImage,
+                                    savedImage: describeImage(cropped.image)))
                             }
                             manifest.dynamicSequences.append(sequence)
+                            log(
+                                "dynamic complete: \(sequenceID), "
+                                + "\(timed.count)/\(config.dynamicFrames) target frames")
                         } catch {
                             failures += 1
-                            print(
+                            log(
                                 "FAILED dynamic sequence \(sequenceID): "
                                 + error.localizedDescription)
                         }
@@ -1379,14 +1579,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        try encoder.encode(manifest).write(to: manifestURL, options: .atomic)
+        try persistManifest(manifest)
 
         let frameCount = manifest.dynamicSequences.reduce(0) {
             $0 + $1.frames.count
         }
-        print(
+        log(
             "done: \(manifest.captures.count) static captures, "
             + "\(manifest.dynamicSequences.count) dynamic sequences/"
             + "\(frameCount) frames, \(failures) failures, scale \(scale)x")
@@ -1404,7 +1602,7 @@ struct Main {
         let app = NSApplication.shared
         let delegate = AppDelegate()
         app.delegate = delegate
-        app.setActivationPolicy(.accessory)
+        app.setActivationPolicy(.regular)
         app.run()
     }
 }

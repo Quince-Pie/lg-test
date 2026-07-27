@@ -13,7 +13,7 @@ on:
           - static
           - dynamic
       dynamic_frames:
-        description: Samples per dynamic sequence (including endpoints)
+        description: Target grid points per dynamic sequence (including endpoints)
         required: true
         default: 61
         type: number
@@ -67,6 +67,22 @@ jobs:
           id="$(displayplacer list | awk '/Persistent screen id/{print $NF; exit}')"
           [ -n "$id" ] && displayplacer "id:$id res:1920x1080 hz:60 color_depth:7" || true
           displayplacer list | grep -E 'Resolution|Scaling' || true
+
+      # GitHub's macOS image currently boots with Reduce Transparency and
+      # Reduce Motion enabled. That substitutes opaque accessibility platters
+      # for Liquid Glass and suppresses the transition frames we are trying
+      # to measure. The app independently checks these values and aborts
+      # before the expensive matrix if changing them did not take effect.
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+          sleep 2
+          defaults read com.apple.universalAccess reduceTransparency
+          defaults read com.apple.universalAccess reduceMotion
+          defaults read com.apple.universalAccess increaseContrast
 
       # Best effort: pre-grant Screen Recording so the `screencapture`
       # fallback path works. The primary path (an app capturing its OWN
@@ -139,10 +155,12 @@ jobs:
           manifest = json.loads(path.read_text())
           dynamic = manifest["dynamicSequences"]
           frames = sum(len(sequence["frames"]) for sequence in dynamic)
+          targets = len(dynamic) * manifest["dynamicFrameCount"]
           print(
               f"references={len(manifest['references'])} "
               f"static={len(manifest['captures'])} "
-              f"dynamic_sequences={len(dynamic)} dynamic_frames={frames}"
+              f"dynamic_sequences={len(dynamic)} "
+              f"dynamic_frames={frames}/{targets}_targets"
           )
           print(
               f"scale={manifest['backingScaleFactor']}x "

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""Validate a GlassCapture v2 artifact without trusting its manifest hashes."""
-
-from __future__ import annotations
+"""Validate a GlassCapture artifact without trusting its manifest hashes."""
 
 import argparse
 import hashlib
@@ -11,10 +9,11 @@ import statistics
 import sys
 from dataclasses import dataclass, field
 from functools import lru_cache
+from io import BytesIO
 from pathlib import Path
 from typing import Any
 
-from PIL import Image
+from PIL import Image, ImageCms
 
 
 type JsonObject = dict[str, Any]
@@ -38,6 +37,9 @@ class DecodedImage:
     height: int
     rgba: bytes
     pixel_sha256: str
+    declared_srgb: bool
+    color_description: str
+    opaque_alpha: bool
 
 
 def file_sha256(path: Path) -> str:
@@ -52,13 +54,28 @@ def file_sha256(path: Path) -> str:
 def decode_image(path: Path) -> DecodedImage:
     with Image.open(path) as source:
         source.load()
+        color_description = "unlabeled"
+        declared_srgb = "srgb" in source.info
+        if declared_srgb:
+            color_description = "sRGB PNG chunk"
+        elif profile_data := source.info.get("icc_profile"):
+            try:
+                profile = ImageCms.ImageCmsProfile(BytesIO(profile_data))
+                color_description = ImageCms.getProfileDescription(profile).strip()
+                declared_srgb = "srgb" in color_description.casefold()
+            except (OSError, TypeError, ValueError):
+                color_description = "invalid ICC profile"
         rgba = source.convert("RGBA")
         pixels = rgba.tobytes()
+        alpha_extrema = rgba.getextrema()[3]
         return DecodedImage(
             width=rgba.width,
             height=rgba.height,
             rgba=pixels,
             pixel_sha256=hashlib.sha256(pixels).hexdigest(),
+            declared_srgb=declared_srgb,
+            color_description=color_description,
+            opaque_alpha=alpha_extrema == (255, 255),
         )
 
 
@@ -107,6 +124,13 @@ def verify_image_record(
             f"{label}: RGBA pixel SHA-256 is {decoded.pixel_sha256}, expected "
             f"{expected_pixel_hash!r}"
         )
+    if not decoded.declared_srgb:
+        findings.error(
+            f"{label}: PNG is not explicitly tagged sRGB "
+            f"({decoded.color_description})"
+        )
+    if not decoded.opaque_alpha:
+        findings.error(f"{label}: canonical PNG contains non-opaque alpha")
     expected_size = (record.get("pixelWidth"), record.get("pixelHeight"))
     if (decoded.width, decoded.height) != expected_size:
         findings.error(
@@ -114,6 +138,46 @@ def verify_image_record(
             f"{expected_size[0]}x{expected_size[1]}"
         )
     return decoded
+
+
+def verify_image_metadata(
+    *,
+    record: JsonObject,
+    decoded: DecodedImage,
+    saved_key: str,
+    label: str,
+    findings: Findings,
+    require_source: bool,
+) -> None:
+    saved = record.get(saved_key)
+    if not isinstance(saved, dict):
+        findings.error(f"{label}: missing {saved_key} metadata")
+    else:
+        expected = {
+            "bitsPerComponent": 8,
+            "bitsPerPixel": 32,
+            "bytesPerRow": decoded.width * 4,
+        }
+        for key, value in expected.items():
+            if saved.get(key) != value:
+                findings.error(
+                    f"{label}: {saved_key}.{key} is {saved.get(key)!r}, "
+                    f"expected {value}"
+                )
+        color_space = str(saved.get("colorSpace", ""))
+        if "srgb" not in color_space.casefold():
+            findings.error(
+                f"{label}: {saved_key} is not canonical sRGB: {color_space!r}"
+            )
+    if require_source:
+        source = record.get("sourceImage")
+        if not isinstance(source, dict):
+            findings.error(f"{label}: missing sourceImage metadata")
+        elif source.get("bitsPerComponent") != 8:
+            findings.error(
+                f"{label}: sourceImage.bitsPerComponent is "
+                f"{source.get('bitsPerComponent')!r}, expected 8"
+            )
 
 
 def pixel_diff(reference: bytes, capture: bytes) -> tuple[int, int, float]:
@@ -134,6 +198,30 @@ def pixel_diff(reference: bytes, capture: bytes) -> tuple[int, int, float]:
             changed |= delta != 0
         changed_pixels += changed
     return changed_pixels, maximum, absolute_sum / (len(reference) // 4 * 3)
+
+
+def source_diff_is_within_tolerance(
+    diff: tuple[int, int, float],
+    pixel_count: int,
+    tolerance: JsonObject,
+) -> bool:
+    if pixel_count <= 0:
+        return False
+    changed_fraction = diff[0] / pixel_count
+    maximum_fraction = tolerance.get("maximumChangedPixelFraction")
+    maximum_delta = tolerance.get("maximumChannelDelta")
+    maximum_mean = tolerance.get("maximumMeanAbsoluteChannelDelta")
+    return (
+        isinstance(maximum_fraction, (int, float))
+        and isinstance(maximum_delta, int)
+        and isinstance(maximum_mean, (int, float))
+        and 0 <= maximum_fraction <= 1
+        and maximum_delta >= 0
+        and maximum_mean >= 0
+        and changed_fraction <= maximum_fraction
+        and diff[1] <= maximum_delta
+        and diff[2] <= maximum_mean
+    )
 
 
 def crop_rgba(image: DecodedImage, crop: JsonObject) -> bytes:
@@ -174,12 +262,22 @@ def percentile(values: list[float], fraction: float) -> float:
 
 
 def validate_environment(manifest: JsonObject, findings: Findings) -> None:
-    if manifest.get("schemaVersion") != 2:
+    if manifest.get("schemaVersion") != 3:
         findings.error(
-            f"schemaVersion is {manifest.get('schemaVersion')!r}; validator requires 2"
+            f"schemaVersion is {manifest.get('schemaVersion')!r}; validator requires 3"
         )
-    if manifest.get("rigVersion") != "2.0.0":
+    if manifest.get("rigVersion") != "2.1.0":
         findings.error(f"unexpected rigVersion: {manifest.get('rigVersion')!r}")
+    if manifest.get("requestedSuite") not in {"static", "dynamic", "all"}:
+        findings.error(f"invalid requestedSuite: {manifest.get('requestedSuite')!r}")
+    if (
+        manifest.get("canonicalPixelEncoding")
+        != "sRGB RGBA8 top-left opaque-alpha"
+    ):
+        findings.error(
+            "unexpected canonicalPixelEncoding: "
+            f"{manifest.get('canonicalPixelEncoding')!r}"
+        )
     version = str(manifest.get("osVersion", ""))
     if "Version 26." not in version and "macOS 26." not in version:
         findings.error(f"capture did not report macOS 26: {version!r}")
@@ -193,6 +291,16 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
         findings.error("capture application was not active")
     if manifest.get("windowKey") is not True:
         findings.error("capture window was not key")
+    preflight_errors = manifest.get("preflightErrors")
+    if not isinstance(preflight_errors, list):
+        findings.error("preflightErrors is not a list")
+    elif preflight_errors:
+        findings.error(f"capture preflight failed: {preflight_errors}")
+    tolerance = manifest.get("sourceRoundTripTolerance")
+    if not isinstance(tolerance, dict) or not source_diff_is_within_tolerance(
+        (0, 0, 0.0), 1, tolerance
+    ):
+        findings.error(f"invalid sourceRoundTripTolerance: {tolerance!r}")
     scale = manifest.get("backingScaleFactor")
     if not isinstance(scale, (int, float)) or scale <= 0:
         findings.error(f"invalid backing scale: {scale!r}")
@@ -210,8 +318,11 @@ def validate_static(
         return {"count": 0}
 
     seen_files: set[str] = set()
-    base_controls: set[tuple[str, str]] = set()
+    base_controls: dict[tuple[str, str], str] = {}
+    decoded_hashes: dict[str, str] = {}
     actual_cases: set[tuple[str, str, str, str]] = set()
+    tolerance_value = manifest.get("sourceRoundTripTolerance")
+    tolerance = tolerance_value if isinstance(tolerance_value, dict) else {}
     unstable = 0
     for index, value in enumerate(captures):
         if not isinstance(value, dict):
@@ -231,6 +342,17 @@ def validate_static(
             label=label,
             findings=findings,
         )
+        if decoded is not None and isinstance(relative, str):
+            decoded_hashes[relative] = decoded.pixel_sha256
+        if decoded is not None:
+            verify_image_metadata(
+                record=record,
+                decoded=decoded,
+                saved_key="savedImage",
+                label=label,
+                findings=findings,
+                require_source=True,
+            )
         if record.get("stable") is not True:
             unstable += 1
             findings.error(f"{label}: static pixels did not stabilize")
@@ -242,17 +364,37 @@ def validate_static(
         appearance = record.get("appearance")
         overlay = record.get("overlay")
         scene = record.get("scene")
+        reference_entry = references.get(str(background))
+        expected_reference_file = (
+            reference_entry.get("file") if reference_entry is not None else None
+        )
+        if record.get("referenceFile") != expected_reference_file:
+            findings.error(
+                f"{label}: referenceFile is {record.get('referenceFile')!r}, "
+                f"expected {expected_reference_file!r}"
+            )
+        expected_control_file = (
+            f"shots/{background}__circle-0500-center__none__{appearance}.png"
+        )
+        if record.get("controlFile") != expected_control_file:
+            findings.error(
+                f"{label}: controlFile is {record.get('controlFile')!r}, "
+                f"expected {expected_control_file!r}"
+            )
         case = (str(background), str(scene), str(overlay), str(appearance))
         if case in actual_cases:
             findings.error(f"{label}: duplicate logical capture case {case}")
         actual_cases.add(case)
         if overlay == "none" and scene == "circle-0500-center":
             if isinstance(background, str) and isinstance(appearance, str):
-                base_controls.add((background, appearance))
-            reference_entry = references.get(str(background))
-            stored_diff = record.get("controlDiff")
+                pair = (background, appearance)
+                if isinstance(relative, str):
+                    if pair in base_controls:
+                        findings.error(f"{label}: duplicate base control {pair}")
+                    base_controls[pair] = relative
+            stored_diff = record.get("sourceDiff")
             if reference_entry is None:
-                findings.error(f"{label}: no reference for control")
+                findings.error(f"{label}: no generated source reference")
             elif decoded is not None:
                 reference_path = artifact_path(
                     root, reference_entry.get("file"), findings
@@ -272,33 +414,46 @@ def validate_static(
                     else None
                 )
                 if expected_diff is None:
-                    findings.error(f"{label}: missing controlDiff")
+                    findings.error(f"{label}: missing sourceDiff")
                 elif actual_diff[:2] != expected_diff[:2] or not math.isclose(
                     actual_diff[2], expected_diff[2], rel_tol=0, abs_tol=1e-12
                 ):
                     findings.error(
-                        f"{label}: stored controlDiff {expected_diff} does not "
+                        f"{label}: stored sourceDiff {expected_diff} does not "
                         f"match recomputed {actual_diff}"
                     )
-                if actual_diff != (0, 0, 0.0):
+                if not source_diff_is_within_tolerance(
+                    actual_diff, decoded.width * decoded.height, tolerance
+                ):
                     findings.error(
-                        f"{label}: control is not pixel-exact: {actual_diff}"
+                        f"{label}: source round-trip exceeds tolerance: {actual_diff}"
                     )
-        elif overlay != "hig-interactive-regular":
-            if (str(background), str(appearance)) not in base_controls:
-                # Ordering is not a scientific requirement; check again after
-                # collecting all records below.
-                pass
+        elif record.get("sourceDiff") is not None:
+            findings.error(f"{label}: sourceDiff is only valid on base controls")
 
     for value in captures:
         if not isinstance(value, dict):
-            continue
-        if value.get("overlay") in {"none", "hig-interactive-regular"}:
             continue
         pair = (str(value.get("background")), str(value.get("appearance")))
         if pair not in base_controls:
             findings.error(
                 f"{value.get('file')}: no base no-glass control for {pair[0]}/{pair[1]}"
+            )
+        elif value.get("controlFile") != base_controls[pair]:
+            findings.error(
+                f"{value.get('file')}: does not reference the captured base "
+                f"control {base_controls[pair]}"
+            )
+
+    backgrounds_with_controls = {background for background, _ in base_controls}
+    for background in backgrounds_with_controls:
+        light = base_controls.get((background, "light"))
+        dark = base_controls.get((background, "dark"))
+        if light is None or dark is None:
+            continue
+        if decoded_hashes.get(light) != decoded_hashes.get(dark):
+            findings.error(
+                f"no-glass controls differ between appearances for {background}"
             )
     if manifest.get("requestedSuite") in {"static", "all"}:
         static_backgrounds = {
@@ -409,6 +564,14 @@ def validate_references(
             findings=findings,
         )
         if decoded is not None:
+            verify_image_metadata(
+                record=record,
+                decoded=decoded,
+                saved_key="image",
+                label=label,
+                findings=findings,
+                require_source=False,
+            )
             references[background] = record
     return references
 
@@ -426,8 +589,11 @@ def validate_dynamic(
 
     seen_ids: set[str] = set()
     seen_files: set[str] = set()
+    materialize_controls: dict[tuple[str, str], str] = {}
     timing_reports: list[JsonObject] = []
     total_frames = 0
+    tolerance_value = manifest.get("sourceRoundTripTolerance")
+    tolerance = tolerance_value if isinstance(tolerance_value, dict) else {}
     for sequence_index, value in enumerate(values):
         if not isinstance(value, dict):
             findings.error(f"dynamicSequences[{sequence_index}] is not an object")
@@ -459,9 +625,16 @@ def validate_dynamic(
             findings.error(f"{label}: too few frames")
             continue
         configured_frames = manifest.get("dynamicFrameCount")
-        if isinstance(configured_frames, int) and len(frames) != configured_frames:
+        if not isinstance(configured_frames, int) or configured_frames < 3:
             findings.error(
-                f"{label}: has {len(frames)} frames, configured for {configured_frames}"
+                f"{label}: invalid configured target frame count {configured_frames!r}"
+            )
+            continue
+        minimum_captured = min(10, configured_frames)
+        if len(frames) < minimum_captured:
+            findings.error(
+                f"{label}: captured only {len(frames)} deadline-reachable frames; "
+                f"expected at least {minimum_captured}"
             )
         configured_duration = manifest.get("dynamicDurationSeconds")
         if isinstance(configured_duration, (int, float)) and not math.isclose(
@@ -480,16 +653,22 @@ def validate_dynamic(
         timing_errors: list[float] = []
         capture_durations: list[float] = []
         pixel_hashes: list[str] = []
+        grid_indices: list[int] = []
         first_decoded: DecodedImage | None = None
-        for frame_index, frame_value in enumerate(frames):
+        for frame_position, frame_value in enumerate(frames):
             if not isinstance(frame_value, dict):
-                findings.error(f"{label}: frame[{frame_index}] is not an object")
+                findings.error(f"{label}: frame[{frame_position}] is not an object")
                 continue
             frame: JsonObject = frame_value
-            frame_label = f"{label} frame[{frame_index}]"
-            if frame.get("index") != frame_index:
-                findings.error(f"{frame_label}: stored index is {frame.get('index')!r}")
-            expected_target = duration * frame_index / (len(frames) - 1)
+            frame_label = f"{label} frame[{frame_position}]"
+            grid_index = frame.get("index")
+            if not isinstance(grid_index, int) or not 0 <= grid_index < configured_frames:
+                findings.error(
+                    f"{frame_label}: invalid target-grid index {grid_index!r}"
+                )
+                continue
+            grid_indices.append(grid_index)
+            expected_target = duration * grid_index / (configured_frames - 1)
             target = frame.get("targetSeconds")
             actual = frame.get("actualSeconds")
             error = frame.get("timingErrorSeconds")
@@ -511,7 +690,7 @@ def validate_dynamic(
                 or not math.isclose(error, actual - target, rel_tol=0, abs_tol=1e-9)
             ):
                 findings.error(f"{frame_label}: inconsistent timingErrorSeconds")
-            elif frame_index:
+            elif grid_index:
                 timing_errors.append(abs(float(error)))
             if not isinstance(capture_duration, (int, float)) or capture_duration < 0:
                 findings.error(f"{frame_label}: invalid capture duration")
@@ -531,7 +710,15 @@ def validate_dynamic(
                 findings=findings,
             )
             if decoded is not None:
-                if frame_index == 0:
+                verify_image_metadata(
+                    record=frame,
+                    decoded=decoded,
+                    saved_key="savedImage",
+                    label=frame_label,
+                    findings=findings,
+                    require_source=True,
+                )
+                if frame_position == 0:
                     first_decoded = decoded
                 expected_size = (crop.get("width"), crop.get("height"))
                 if (decoded.width, decoded.height) != expected_size:
@@ -540,16 +727,25 @@ def validate_dynamic(
                     )
                 pixel_hashes.append(decoded.pixel_sha256)
 
+        if any(right <= left for left, right in zip(grid_indices, grid_indices[1:])):
+            findings.error(f"{label}: target-grid indices are not strictly increasing")
+        if grid_indices and (
+            grid_indices[0] != 0 or grid_indices[-1] != configured_frames - 1
+        ):
+            findings.error(
+                f"{label}: target-grid endpoints are {grid_indices[0]} and "
+                f"{grid_indices[-1]}, expected 0 and {configured_frames - 1}"
+            )
         if any(right <= left for left, right in zip(actual_times, actual_times[1:])):
             findings.error(f"{label}: actual sample times are not strictly increasing")
         unique_frames = len(set(pixel_hashes))
-        minimum_unique = min(10, max(3, len(frames) // 4))
+        minimum_unique = min(10, len(frames))
         if unique_frames < minimum_unique:
             findings.error(
                 f"{label}: only {unique_frames} unique frames; expected at least "
                 f"{minimum_unique}"
             )
-        materialize_control_exact: bool | None = None
+        materialize_source_within_tolerance: bool | None = None
         if sequence.get("mode") == "materialize" and first_decoded is not None:
             reference_record = references.get(str(sequence.get("background")))
             if reference_record is not None:
@@ -560,17 +756,34 @@ def validate_dynamic(
                     try:
                         reference_crop = crop_rgba(decode_image(reference_path), crop)
                         control_diff = pixel_diff(reference_crop, first_decoded.rgba)
-                        materialize_control_exact = control_diff == (0, 0, 0.0)
-                        if not materialize_control_exact:
+                        materialize_source_within_tolerance = (
+                            source_diff_is_within_tolerance(
+                                control_diff,
+                                first_decoded.width * first_decoded.height,
+                                tolerance,
+                            )
+                        )
+                        if not materialize_source_within_tolerance:
                             findings.error(
-                                f"{label}: pre-materialization control is not "
-                                f"pixel-exact: {control_diff}"
+                                f"{label}: pre-materialization source round-trip "
+                                f"exceeds tolerance: {control_diff}"
                             )
                     except (KeyError, TypeError, ValueError) as error:
                         findings.error(
                             f"{label}: cannot validate materialize control: {error}"
                         )
-        interval = duration / (len(frames) - 1)
+            control_key = (
+                str(sequence.get("background")),
+                str(sequence.get("appearance")),
+            )
+            previous_hash = materialize_controls.setdefault(
+                control_key, first_decoded.pixel_sha256
+            )
+            if first_decoded.pixel_sha256 != previous_hash:
+                findings.error(
+                    f"{label}: pre-materialization frame differs between materials"
+                )
+        interval = duration / (configured_frames - 1)
         maximum_error = max(timing_errors, default=0)
         timing_limit = max(0.050, interval * 3)
         if maximum_error > timing_limit:
@@ -581,7 +794,9 @@ def validate_dynamic(
         timing_reports.append(
             {
                 "id": sequence_id,
-                "frames": len(frames),
+                "targetFrames": configured_frames,
+                "capturedFrames": len(frames),
+                "droppedTargets": configured_frames - len(frames),
                 "uniqueFrames": unique_frames,
                 "timingErrorMedianSeconds": statistics.median(timing_errors)
                 if timing_errors
@@ -592,13 +807,20 @@ def validate_dynamic(
                 if capture_durations
                 else 0,
                 "captureDurationP95Seconds": percentile(capture_durations, 0.95),
-                "materializeControlExact": materialize_control_exact,
+                "materializeSourceWithinTolerance":
+                    materialize_source_within_tolerance,
             }
         )
     if manifest.get("requestedSuite") in {"dynamic", "all"}:
         expected_ids = {
             f"{mode}__{overlay}__{appearance}"
-            for mode in ("materialize", "resize", "translate", "morph")
+            for mode in (
+                "materialize",
+                "resize",
+                "translate",
+                "morph",
+                "wallpaper-wipe",
+            )
             for overlay in ("regular", "clear")
             for appearance in ("light", "dark")
         }
@@ -617,7 +839,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
 
     def unreadable_report() -> JsonObject:
         return {
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "valid": False,
             "artifact": str(root),
             "summary": {
@@ -654,7 +876,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
         findings.error("requested dynamic suite produced no sequences")
 
     report: JsonObject = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "valid": not findings.errors,
         "artifact": str(root),
         "captureManifest": {
@@ -681,7 +903,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Independently validate a GlassCapture v2 artifact."
+        description="Independently validate a GlassCapture v2.1 artifact."
     )
     parser.add_argument("artifact", type=Path, help="capture artifact directory")
     parser.add_argument("--report", type=Path, help="write a JSON validation report")
