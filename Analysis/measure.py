@@ -223,6 +223,71 @@ class Measurements:
             "meanAbsoluteChannelDelta": float(delta.mean()) if delta.size else 0,
         }
 
+    @staticmethod
+    def phase_cycle_fit(
+        source: ComplexImage,
+        output: ComplexImage,
+        *,
+        axis: str,
+        period: int,
+        center_x: int,
+        center_y: int,
+        radius: float,
+    ) -> JsonObject | None:
+        """Fit one complete source cycle well inside a circular glass body."""
+        if period <= 0 or period % 2 != 0 or source.shape != output.shape:
+            return None
+        half_axis = period // 2
+        half_cross = 16
+        if math.hypot(half_axis, half_cross) + 8 > radius:
+            return None
+
+        if axis == "x":
+            region = (
+                slice(center_y - half_cross, center_y + half_cross + 1),
+                slice(center_x - half_axis, center_x + half_axis),
+            )
+        elif axis == "y":
+            region = (
+                slice(center_y - half_axis, center_y + half_axis),
+                slice(center_x - half_cross, center_x + half_cross + 1),
+            )
+        else:
+            return None
+
+        source_region = source[region]
+        output_region = output[region]
+        expected_shape = (
+            (2 * half_cross + 1, period)
+            if axis == "x"
+            else (period, 2 * half_cross + 1)
+        )
+        if (
+            source_region.shape != expected_shape
+            or output_region.shape != expected_shape
+        ):
+            return None
+
+        source_vector = source_region.ravel()
+        output_vector = output_region.ravel()
+        source_energy = float(np.vdot(source_vector, source_vector).real)
+        output_energy = float(np.vdot(output_vector, output_vector).real)
+        if source_energy <= 0 or output_energy <= 0:
+            return None
+
+        transfer = np.vdot(source_vector, output_vector) / source_energy
+        residual = output_vector - transfer * source_vector
+        residual_energy = float(np.vdot(residual, residual).real)
+        return {
+            "axisSamples": period,
+            "crossAxisSamples": 2 * half_cross + 1,
+            "amplitudeRatio": float(abs(transfer)),
+            "apparentDisplacementPixels": float(
+                np.angle(transfer) * period / (2 * np.pi)
+            ),
+            "normalizedComplexResidual": math.sqrt(residual_energy / output_energy),
+        }
+
     def deep_median(
         self, background: str, overlay: str, appearance: str
     ) -> NDArray[np.float64]:
@@ -738,6 +803,17 @@ class Measurements:
                                     np.angle(center_unit) * period / (2 * np.pi)
                                 ),
                             }
+                            cycle_fit = self.phase_cycle_fit(
+                                source,
+                                output_complex,
+                                axis=axis,
+                                period=period,
+                                center_x=center_x,
+                                center_y=center_y,
+                                radius=radius,
+                            )
+                            if cycle_fit is not None:
+                                period_result["cycleFit"] = cycle_fit
 
                             # The 4000-point circle's boundary is intentionally
                             # off-screen; it provides an edge-free interior MTF.
@@ -809,12 +885,58 @@ class Measurements:
                         scene_result[f"{appearance}/{overlay}"] = variant_result
             if scene_result:
                 result[scene_name] = scene_result
+
+        spatial_variants: JsonObject = {}
+        for appearance in ("light", "dark"):
+            for overlay in ("regular", "clear"):
+                variant = f"{appearance}/{overlay}"
+                axes: JsonObject = {}
+                for axis in ("x", "y"):
+                    samples = {
+                        scene: result.get(scene, {})
+                        .get(variant, {})
+                        .get(axis, {})
+                        .get("256", {})
+                        .get("cycleFit")
+                        for scene in POSITION_SCENES
+                    }
+                    if not all(isinstance(sample, dict) for sample in samples.values()):
+                        continue
+                    amplitudes = [
+                        float(sample["amplitudeRatio"]) for sample in samples.values()
+                    ]
+                    displacements = [
+                        float(sample["apparentDisplacementPixels"])
+                        for sample in samples.values()
+                    ]
+                    residuals = [
+                        float(sample["normalizedComplexResidual"])
+                        for sample in samples.values()
+                    ]
+                    axes[axis] = {
+                        "periodPixels": 256,
+                        "scenes": samples,
+                        "amplitudeRange": max(amplitudes) - min(amplitudes),
+                        "displacementRangePixels": max(displacements)
+                        - min(displacements),
+                        "normalizedResidualRange": max(residuals) - min(residuals),
+                    }
+                if axes:
+                    spatial_variants[variant] = axes
         return {
             "available": bool(result),
             "phaseConvention": (
                 "positive displacement is apparent motion toward the named "
                 "outward edge; values are wrapped to +/- period/2"
             ),
+            "spatialCycleConsistency": {
+                "available": bool(spatial_variants),
+                "method": (
+                    "source-normalized complex least-squares fit over one complete "
+                    "p256 cycle inside each 500-point circle"
+                ),
+                "variants": spatial_variants,
+            },
             "scenes": result,
         }
 
@@ -1130,7 +1252,7 @@ class Measurements:
         dynamic_sequences = manifest.get("dynamicSequences", [])
         sweep_sequences = manifest.get("sweepSequences", [])
         return {
-            "analysisSchemaVersion": 3,
+            "analysisSchemaVersion": 4,
             "analysisImplementation": {
                 "file": "Analysis/measure.py",
                 "sha256": file_sha256(Path(__file__).resolve()),

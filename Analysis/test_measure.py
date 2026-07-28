@@ -9,6 +9,47 @@ from measure import Artifact, Measurements
 
 
 class MeasurementTests(unittest.TestCase):
+    def test_phase_cycle_fit_recovers_complex_transfer(self) -> None:
+        height = width = 300
+        y, x = np.indices((height, width))
+        source = np.exp(1j * (2 * np.pi * x / 256)).astype(np.complex128)
+        expected_amplitude = 0.245
+        expected_displacement = 3.75
+        transfer = expected_amplitude * np.exp(
+            1j * 2 * np.pi * expected_displacement / 256
+        )
+        output = source * transfer
+
+        result = Measurements.phase_cycle_fit(
+            source,
+            output,
+            axis="x",
+            period=256,
+            center_x=150,
+            center_y=150,
+            radius=250,
+        )
+
+        self.assertIsNotNone(result)
+        assert result is not None
+        self.assertAlmostEqual(result["amplitudeRatio"], expected_amplitude)
+        self.assertAlmostEqual(
+            result["apparentDisplacementPixels"],
+            expected_displacement,
+        )
+        self.assertAlmostEqual(result["normalizedComplexResidual"], 0)
+        self.assertIsNone(
+            Measurements.phase_cycle_fit(
+                source,
+                output,
+                axis="x",
+                period=256,
+                center_x=150,
+                center_y=150,
+                radius=100,
+            )
+        )
+
     def test_geometry_coordinates_honor_backing_scale(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

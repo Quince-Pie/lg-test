@@ -111,6 +111,23 @@ reports aligned spatial consistency and exact source endpoints, and measures
 the magnitude of traversal differences instead of reporting only unequal
 hashes. This is required before a real 2x capture can be interpreted correctly.
 
+Run `30326591212` is the first wholly valid v2.7 all-suite result. Its
+8,335,182,555-byte archive (`SHA-256
+d0fb036b613e7db50e11f38a2550e8baad417688b98e8641aa8e18f288a24fa4`)
+contains 101 references, 1,242 stable static captures, 32 valid live sequences
+with 865 retained frames and 32 delayed endpoints, and 24 stable sweep
+matrices with 1,224 frames. Independent validation reproduces CI's zero-error
+report exactly. The worst actual and presented gaps are 177.789 ms and 0.1925,
+respectively, below the unchanged 200 ms hard limits.
+
+The new quadrant captures also exposed an analysis confound rather than a
+capture defect. A 33-pixel local p256 estimate samples different portions of
+the material's nonlinear sine response at different coordinates. Analysis
+schema v4 therefore adds a source-normalized complex least-squares fit over
+one complete p256 cycle inside each circle. It preserves every legacy
+measurement while reducing the maximum measured five-position spread to
+0.0451 physical pixels of displacement and 0.000237 amplitude ratio.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
@@ -352,10 +369,11 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-For the first v2.7 fit, collect and return:
+Run `30326591212` satisfies the first item below. For the remaining v2.7 fit,
+collect and return:
 
-1. Two independent `all`, 1.0-second, 61-frame runs with exact sweeps enabled.
-   The duplicate run bounds runner-to-runner variance.
+1. One further independent `all`, 1.0-second, 61-frame run with exact sweeps
+   enabled. Together with `30326591212`, it bounds runner-to-runner variance.
 2. A `dynamic`, 0.35-second, 31-frame run with
    `dynamic_modes=materialize,dematerialize,wallpaper-transition,wallpaper-transition-reverse`
    and exact sweeps disabled.
@@ -408,6 +426,8 @@ python Analysis/validate.py captures \
   --report captures/validation.json
 python Analysis/measure.py captures \
   --report captures/measurements.json
+python Analysis/compare_runs.py previous-captures captures \
+  --report cross-run.json
 ```
 
 The environment includes Python 3.14, NumPy, SciPy, OpenCV, scikit-image,
