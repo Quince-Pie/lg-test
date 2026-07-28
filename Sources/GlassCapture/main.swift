@@ -167,6 +167,24 @@ func flatBackground(_ name: String, _ family: BackgroundFamily,
     Background(name: name, family: family) { _, _, _, _ in rgb }
 }
 
+func deterministicPermutation(count: Int, seed: UInt64) -> [Int] {
+    precondition(count >= 0)
+    var values = Array(0..<count)
+    guard count > 1 else { return values }
+
+    var state = seed
+    for upper in stride(from: count - 1, through: 1, by: -1) {
+        // SplitMix64 keeps the layout stable across Swift and OS revisions.
+        state &+= 0x9E37_79B9_7F4A_7C15
+        var mixed = state
+        mixed = (mixed ^ (mixed >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        mixed = (mixed ^ (mixed >> 27)) &* 0x94D0_49BB_1331_11EB
+        mixed ^= mixed >> 31
+        values.swapAt(upper, Int(mixed % UInt64(upper + 1)))
+    }
+    return values
+}
+
 func staticBackgrounds() -> [Background] {
     var list: [Background] = []
 
@@ -222,6 +240,22 @@ func staticBackgrounds() -> [Background] {
             cubeLevels[(sourceIndex / 81) % 9])
     })
 
+    // The affine permutation above retains lattice structure. This seeded
+    // Fisher-Yates layout is an independent spatial holdout for kernel fits.
+    let shuffledCubeIndexes = deterministicPermutation(
+        count: 729,
+        seed: 0xC0A5_7EED_29A1_0049)
+    list.append(Background(name: "color-cube-9-shuffled", family: .colorCube) {
+        x, y, w, h in
+        let column = min(26, x * 27 / max(w, 1))
+        let row = min(26, y * 27 / max(h, 1))
+        let sourceIndex = shuffledCubeIndexes[row * 27 + column]
+        return (
+            cubeLevels[sourceIndex % 9],
+            cubeLevels[(sourceIndex / 9) % 9],
+            cubeLevels[(sourceIndex / 81) % 9])
+    })
+
     // Midpoints between every color-cube-9 knot form an independent 8³
     // holdout. A 32×16 tile layout covers all 512 combinations exactly once.
     // None of these codes occurs in the fitting cube, so this detects
@@ -236,6 +270,24 @@ func staticBackgrounds() -> [Background] {
             holdoutLevels[index % 8],
             holdoutLevels[(index / 8) % 8],
             holdoutLevels[(index / 64) % 8])
+    })
+
+    // Repeat every off-grid color in a shuffled neighborhood so interpolation
+    // and spatial-model errors remain independently observable.
+    let shuffledHoldoutIndexes = deterministicPermutation(
+        count: 512,
+        seed: 0xA11C_E5E1_D0FF_6A7D)
+    list.append(Background(
+        name: "color-cube-holdout-8-shuffled",
+        family: .colorCube
+    ) { x, y, w, h in
+        let column = min(31, x * 32 / max(w, 1))
+        let row = min(15, y * 16 / max(h, 1))
+        let sourceIndex = shuffledHoldoutIndexes[row * 32 + column]
+        return (
+            holdoutLevels[sourceIndex % 8],
+            holdoutLevels[(sourceIndex / 8) % 8],
+            holdoutLevels[(sourceIndex / 64) % 8])
     })
 
     // Coarse absolute coordinates and slowly varying transfer probes.
@@ -1743,13 +1795,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .map { CGDirectDisplayID($0.uint32Value) } ?? CGMainDisplayID()
         let displayMode = CGDisplayCopyDisplayMode(displayID)
         let sourceTolerance = SourceRoundTripTolerance(
-            maximumChangedPixelFraction: 0.005,
+            maximumChangedPixelFraction: 0.01,
             maximumChannelDelta: 1,
-            maximumMeanAbsoluteChannelDelta: 0.002)
+            maximumMeanAbsoluteChannelDelta: 0.0033)
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.8.0",
+            rigVersion: "2.9.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -1999,15 +2051,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             // Dense transfer functions. The giant circle covers every output
             // pixel. Orthogonal ramps expose all 256 tone codes and also
-            // reveal any screen-space bias; color-cube-9 supplies 729 RGB
-            // fitting combinations, color-cube-9-permuted repeats the same
-            // colors in new neighborhoods, and color-cube-holdout-8 supplies
-            // 512 strictly off-grid validation combinations, all without an
+            // reveal any screen-space bias. The fitting and midpoint cubes
+            // each have independent spatial contexts, all without a visible
             // optical boundary.
             let giantScene = scenes.first { $0.name == "circle-4000-center" }!
             let denseTransferNames: Set<String> = [
                 "ramp-x", "ramp-y", "color-cube-9",
-                "color-cube-9-permuted", "color-cube-holdout-8",
+                "color-cube-9-permuted", "color-cube-9-shuffled",
+                "color-cube-holdout-8",
+                "color-cube-holdout-8-shuffled",
             ]
             for bg in backgrounds where denseTransferNames.contains(bg.name) {
                 log("static dense transfer: \(bg.name)")
@@ -2058,6 +2110,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 appearance: appearance)
                         }
                     }
+                }
+            }
+
+            // V2.8 exposed a second regular-material response between p256 and
+            // p1024. Fill the missing giant-circle frequencies without
+            // recapturing the pointwise-exact clear material.
+            let regularGiantPhaseNames: Set<String> = Set(
+                ["x", "y"].flatMap { axis in
+                    [32, 128, 512].flatMap { period in
+                        (0..<4).map {
+                            String(
+                                format: "sine-%@-p%04d-ph%d",
+                                axis, period, $0)
+                        }
+                    }
+                })
+            for bg in backgrounds where regularGiantPhaseNames.contains(bg.name) {
+                log("static regular giant phase: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                for appearance in Appearance.allCases {
+                    await captureStatic(
+                        background: bg,
+                        image: image,
+                        referencePixels: nil,
+                        scene: giantScene,
+                        overlay: .regular,
+                        appearance: appearance)
+                }
+            }
+
+            // These giant-circle probes expose the broad response tail without
+            // mixing it with a visible glass boundary.
+            let regularGiantKernelNames: Set<String> = [
+                "edge-x", "edge-y", "edge-slant", "line-x", "line-y",
+                "noise-gray", "checker-0032", "checker-0064",
+                "checker-0256", "checker-0512",
+            ]
+            for bg in backgrounds where regularGiantKernelNames.contains(bg.name) {
+                log("static regular giant kernel: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                for appearance in Appearance.allCases {
+                    await captureStatic(
+                        background: bg,
+                        image: image,
+                        referencePixels: nil,
+                        scene: giantScene,
+                        overlay: .regular,
+                        appearance: appearance)
                 }
             }
 

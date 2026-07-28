@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## How the rig reached v2.8
+## How the rig reached v2.9
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -164,8 +164,32 @@ probe or threshold:
 Both charts are also retained in the 500-point base matrix. The measurement
 report's analysis schema v5 preserves raw sparse inputs/outputs and emits the
 two new dense validation tables plus per-sample geometry for all three charts
-in the 500-point scene. This is a capture change: a new v2.8 artifact is
-required to complete the color-context gate.
+in the 500-point scene.
+
+Run `30379034310` returned the complete v2.8 matrix. All 1,242 cases shared
+with the accepted v2.7 run are pixel-exact. Clear glass is pixel-exact for all
+729 same-color context repeats. Regular glass is not pointwise: changing only
+the color layout changes an output channel by as much as 60 codes in dark
+appearance and 124 codes in light appearance. The independent midpoint cube
+also rejects a trilinear pointwise LUT by up to 29 and 37.33 codes.
+
+The same run exposes two final identification gaps. The affine permutation is
+bijective but retains lattice structure, so it cannot be both kernel-fitting
+data and an independent spatial holdout. Regular glass also has a broad
+low-frequency response between the existing p256 and p1024 giant-circle
+samples. V2.9 therefore adds:
+
+- one seeded Fisher-Yates layout of all 729 fitting colors;
+- one seeded Fisher-Yates layout of all 512 midpoint colors;
+- giant-circle regular-material phase samples at p32, p128, and p512; and
+- giant-circle regular-material step, line, checker, and deterministic-noise
+  probes without an on-screen glass boundary.
+
+The v2.8 source controls also measured a deterministic one-code display
+conversion in five of 512 midpoint tiles. V2.9 keeps the hard one-code maximum
+and expands only the prevalence bound enough to include those five measured
+tiles. Captured no-glass codes are now emitted alongside nominal chart codes;
+this source calibration is not a renderer error budget.
 
 ### Earlier rejected artifact audits
 
@@ -243,12 +267,12 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.8 isolates the unknowns:
+V2.9 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
-| Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB fitting cube; the same cube in a permuted context; all 512 midpoint RGB holdouts |
-| Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px, plus 64/256/1024 px local MTF probes at 256-, 500-, and 4000-point circle scales and p256 probes at all four quadrant positions |
+| Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB fitting cube in ordered, affine-permuted, and independently shuffled contexts; all 512 midpoint RGB holdouts in ordered and independently shuffled contexts |
+| Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px; a complete six-period regular-material giant-circle MTF; 64/256/1024 px probes at 256-, 500-, and 4000-point circle scales; and p256 probes at all four quadrant positions |
 | Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, deterministic noise |
 | Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, and three rectangle corner radii |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
@@ -277,26 +301,28 @@ consecutive decoded RGBA frames to be exactly equal. It tries at most four
 frames and marks the sample invalid if stability is not reached. The generated
 source and captured no-glass control traverse different color-management
 paths, so their measured round trip may differ by one quantization level. That
-source calibration is accepted only within the manifest's tight, explicit
-bound (at most 0.5% changed pixels, maximum delta 1, mean channel delta
-0.002). It is not a shader-parity tolerance. Every glass sample instead points
-to its real, stable no-glass capture, and the light/dark no-glass controls must
-be pixel-exact with each other.
+V2.8 accepted at most 0.5% changed pixels, maximum delta 1, and mean channel
+delta 0.002. V2.9's chart-calibrated bound is at most 1.0% changed pixels,
+maximum delta 1, and mean channel delta 0.0033. It is not a shader-parity
+tolerance. Every glass sample instead points to its real, stable no-glass
+capture, and the light/dark no-glass controls must be pixel-exact with each
+other.
 
-The v2.8 static suite contains:
+The v2.9 static suite contains:
 
-- 101 deterministic backgrounds and 101 saved static references.
-- 606 base control/regular/clear samples: every background, both appearances.
+- 103 deterministic backgrounds and 103 saved static references.
+- 618 base control/regular/clear samples: every background, both appearances.
 - 42 targeted tint samples.
 - 272 isolated geometry, screen-position, off-screen-scale, and
   container-interaction samples.
-- 20 edge-free giant-circle tone/color-transfer and color-validation samples.
-- 192 scale-dependent, four-phase local-MTF/refraction samples.
+- 28 edge-free giant-circle tone/color-transfer and color-validation samples.
+- 240 scale-dependent, four-phase local-MTF/refraction samples.
 - 128 four-phase p256 refraction/MTF samples across the four quadrant
   positions.
+- 20 giant-circle regular-material edge, line, checker, and noise samples.
 - 2 qualitative HIG-style controls-over-content samples.
 
-That is 1,262 static captures. The numerical fit should use the isolated scenes;
+That is 1,350 static captures. The numerical fit should use the isolated scenes;
 the HIG-style scene is a qualitative continuity check only.
 
 The dynamic suite contains 32 sequences:
@@ -318,7 +344,7 @@ real insertion/removal transitions suppress sibling SwiftUI interpolation.
 The clock is decoded from the full raw screenshot before analytical cropping,
 recording actual presented progress with 1/3200 resolution. Both full-frame
 wallpaper probes declare the four clock rows as an analysis exclusion. Before
-starting the expensive matrix, the v2.8 preflight
+starting the expensive matrix, the v2.9 preflight
 requires visible settled 25% and 75% widths plus a live non-endpoint sample and
 the final endpoint.
 
@@ -343,7 +369,7 @@ source reference.
 
 Live animations expose temporal material behavior, but they cannot separate a
 geometry response from CI scheduler jitter or renderer history by themselves.
-V2.8 therefore captures 24 settled sweep matrices: resize, translate, morph,
+V2.9 therefore captures 24 settled sweep matrices: resize, translate, morph,
 single-source expansion, and two-source expansion in both source directions,
 crossed with both materials and appearances. Each matrix has 17 cold-forward
 states, the same states in warm reverse order, and a second 17-state cold
@@ -352,7 +378,7 @@ within its traversal and must pass the delayed stability check.
 Cross-traversal differences are retained and reported as
 repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.8 artifact contains 103 references, 1,262
+With the default `all` suite, a v2.9 artifact contains 105 references, 1,350
 static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 24 exact sweep matrices containing 1,224 frames.
 
@@ -392,8 +418,10 @@ workflow ends red.
 
 ## Run on GitHub
 
-Trigger **Capture Liquid Glass samples** in Actions. The default `all` suite is
-the dataset needed for a full Walle fit. Before capture, CI disables Reduce
+Trigger **Capture Liquid Glass samples** in Actions. A manual dispatch defaults
+to `all`; a source push runs the focused `static` suite so a static-model
+change cannot be held hostage by unrelated WindowServer timing holes. Before
+capture, CI disables Reduce
 Transparency, Reduce Motion, and Increase Contrast. The app independently
 checks those settings plus application/key-window state and aborts before the
 matrix if any precondition is wrong. `static` and `dynamic` inputs are
@@ -408,9 +436,13 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
+Return the automatic v2.9 `static` artifact first. It contains every new chart,
+phase, and kernel probe needed for the spatial fit; rerunning the unchanged
+dynamic and exact-sweep matrices is unnecessary.
+
 Runs `30326591212` and `30365533488` complete the two-run static, exact-state,
 and endpoint repeatability corpus. The latter has four rejected live
-traversals, so collect and return:
+traversals. After the v2.9 static fit, the remaining focused temporal work is:
 
 1. A focused `dynamic`, 1.0-second, 61-frame recovery run with
    `dynamic_modes=wallpaper-transition,wallpaper-transition-reverse` and exact
@@ -478,7 +510,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The v2.8 artifacts are measurement inputs, not proof that Walle already matches.
+The v2.9 artifacts are measurement inputs, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on

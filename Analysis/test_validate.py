@@ -26,17 +26,19 @@ class ValidatorTests(unittest.TestCase):
         capture = bytes((10, 20, 30, 255, 43, 45, 67, 0))
         self.assertEqual(pixel_diff(reference, capture), (1, 7, 15 / 6))
 
-    def test_source_round_trip_tolerance_is_tight(self) -> None:
+    def test_source_round_trip_tolerance_caps_extent_and_delta(self) -> None:
         tolerance = {
-            "maximumChangedPixelFraction": 0.005,
+            "maximumChangedPixelFraction": 0.01,
             "maximumChannelDelta": 1,
-            "maximumMeanAbsoluteChannelDelta": 0.002,
+            "maximumMeanAbsoluteChannelDelta": 0.0033,
         }
         self.assertTrue(
-            source_diff_is_within_tolerance((20_287, 1, 0.0011), 6_400_000, tolerance)
+            source_diff_is_within_tolerance(
+                (62_500, 1, 0.0032553), 6_400_000, tolerance
+            )
         )
         self.assertFalse(
-            source_diff_is_within_tolerance((32_001, 1, 0.0011), 6_400_000, tolerance)
+            source_diff_is_within_tolerance((64_001, 1, 0.0033), 6_400_000, tolerance)
         )
         self.assertFalse(
             source_diff_is_within_tolerance((1, 2, 0.0001), 6_400_000, tolerance)
@@ -448,6 +450,11 @@ class ValidatorTests(unittest.TestCase):
         v28 = Findings()
         validate_environment(manifest, v28)
         self.assertEqual(v28.errors, [])
+
+        manifest["rigVersion"] = "2.9.0"
+        v29 = Findings()
+        validate_environment(manifest, v29)
+        self.assertEqual(v29.errors, [])
 
     def test_schema4_presentation_clock_and_exclusion(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

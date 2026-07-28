@@ -141,7 +141,7 @@ jobs:
             --out captures \
             --width "${{ inputs.capture_width || 3200 }}" \
             --height "${{ inputs.capture_height || 2000 }}" \
-            --suite "${{ inputs.suite || 'all' }}" \
+            --suite "${{ github.event_name == 'workflow_dispatch' && inputs.suite || 'static' }}" \
             --dynamic-frames "${{ inputs.dynamic_frames || 61 }}" \
             --dynamic-duration "${{ inputs.dynamic_duration || 1.0 }}" \
             --dynamic-modes "${{ inputs.dynamic_modes || 'all' }}" \
@@ -174,7 +174,9 @@ jobs:
             --report captures/validation.json
 
       - name: Measure optical evidence
-        if: steps.capture.outcome == 'success' && inputs.suite != 'dynamic'
+        if: >-
+          steps.capture.outcome == 'success' &&
+          (github.event_name != 'workflow_dispatch' || inputs.suite != 'dynamic')
         id: measure
         continue-on-error: true
         run: |
@@ -223,7 +225,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-captures-${{ github.run_id }}-${{ inputs.suite || 'all' }}
+          name: liquid-glass-captures-${{ github.run_id }}-${{ github.event_name == 'workflow_dispatch' && inputs.suite || 'static' }}
           path: captures
           compression-level: 0   # PNGs are already compressed
           if-no-files-found: error
@@ -240,7 +242,7 @@ jobs:
             echo "::error::Artifact validation failed; inspect validation.json."
             exit 1
           fi
-          if [ "${{ inputs.suite || 'all' }}" != dynamic ] &&
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.suite || 'static' }}" != dynamic ] &&
              [ "${{ steps.measure.outcome }}" != success ]; then
             echo "::error::Optical measurement failed; inspect the job log."
             exit 1

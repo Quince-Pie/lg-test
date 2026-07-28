@@ -504,6 +504,22 @@ class Measurements:
             "inputCodes": input_codes,
             "sampleGeometry": sample_geometry,
         }
+        control_codes: JsonObject = {}
+        for appearance in ("light", "dark"):
+            control_case = (
+                background,
+                "circle-0500-center",
+                "none",
+                appearance,
+            )
+            if control_case not in self.records:
+                continue
+            control = self.image(*control_case)
+            control_codes[appearance] = [
+                np.median(control[patch], axis=(0, 1)).tolist() for patch in patches
+            ]
+        if control_codes:
+            result["capturedControlInputCodes"] = control_codes
         for appearance in ("light", "dark"):
             for overlay in ("regular", "clear"):
                 output = self.image(background, scene, overlay, appearance)
@@ -551,6 +567,32 @@ class Measurements:
             )
         return result
 
+    def dense_color_context_holdout(self) -> JsonObject:
+        result = self.color_transfer_chart(
+            "color-cube-9-shuffled",
+            columns=27,
+            rows=27,
+        )
+        if result.get("available"):
+            result["gridLevels"] = [0, 32, 64, 96, 128, 160, 192, 224, 255]
+            result["relationship"] = (
+                "same fitting colors in an independently shuffled spatial order"
+            )
+        return result
+
+    def dense_color_holdout_context_repeat(self) -> JsonObject:
+        result = self.color_transfer_chart(
+            "color-cube-holdout-8-shuffled",
+            columns=32,
+            rows=16,
+        )
+        if result.get("available"):
+            result["gridLevels"] = [16, 48, 80, 112, 144, 176, 208, 240]
+            result["relationship"] = (
+                "same off-grid colors in an independently shuffled spatial order"
+            )
+        return result
+
     def base_color_charts(self) -> JsonObject:
         return {
             "fitting": self.color_transfer_chart(
@@ -565,8 +607,20 @@ class Measurements:
                 rows=27,
                 scene="circle-0500-center",
             ),
+            "contextHoldout": self.color_transfer_chart(
+                "color-cube-9-shuffled",
+                columns=27,
+                rows=27,
+                scene="circle-0500-center",
+            ),
             "offGridHoldout": self.color_transfer_chart(
                 "color-cube-holdout-8",
+                columns=32,
+                rows=16,
+                scene="circle-0500-center",
+            ),
+            "offGridContextRepeat": self.color_transfer_chart(
+                "color-cube-holdout-8-shuffled",
                 columns=32,
                 rows=16,
                 scene="circle-0500-center",
@@ -830,7 +884,7 @@ class Measurements:
         return result
 
     def phase_response(self) -> JsonObject:
-        periods = (64, 256, 1024)
+        periods = (32, 64, 128, 256, 512, 1024)
         candidate_scenes = (
             "circle-0256-center",
             "circle-0500-center",
@@ -1366,7 +1420,7 @@ class Measurements:
         dynamic_sequences = manifest.get("dynamicSequences", [])
         sweep_sequences = manifest.get("sweepSequences", [])
         return {
-            "analysisSchemaVersion": 5,
+            "analysisSchemaVersion": 6,
             "analysisImplementation": {
                 "file": "Analysis/measure.py",
                 "sha256": file_sha256(Path(__file__).resolve()),
@@ -1429,6 +1483,10 @@ class Measurements:
             "denseColorTransfer": self.dense_color_transfer(),
             "denseColorHoldout": self.dense_color_holdout(),
             "denseColorContextRepeat": self.dense_color_context_repeat(),
+            "denseColorContextHoldout": self.dense_color_context_holdout(),
+            "denseColorHoldoutContextRepeat": (
+                self.dense_color_holdout_context_repeat()
+            ),
             "baseColorCharts": self.base_color_charts(),
             "checkerEdgeSpread": self.checker_blur(),
             "edgeGeometry": self.edge_geometry(),

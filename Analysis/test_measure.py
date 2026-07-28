@@ -202,6 +202,15 @@ class MeasurementTests(unittest.TestCase):
                 ),
                 axis=2,
             )
+            shuffled_indices = (indices * 365 + 271) % 729
+            shuffled_cube = np.stack(
+                (
+                    levels[shuffled_indices % 9],
+                    levels[(shuffled_indices // 9) % 9],
+                    levels[(shuffled_indices // 81) % 9],
+                ),
+                axis=2,
+            )
             holdout_levels = np.arange(16, 241, 32, dtype=np.uint8)
             holdout_columns = np.minimum(31, np.arange(width) * 32 // width)
             holdout_rows = np.minimum(15, np.arange(height) * 16 // height)
@@ -214,12 +223,23 @@ class MeasurementTests(unittest.TestCase):
                 ),
                 axis=2,
             )
+            shuffled_holdout_indices = (holdout_indices * 257 + 97) % 512
+            shuffled_holdout = np.stack(
+                (
+                    holdout_levels[shuffled_holdout_indices % 8],
+                    holdout_levels[(shuffled_holdout_indices // 8) % 8],
+                    holdout_levels[(shuffled_holdout_indices // 64) % 8],
+                ),
+                axis=2,
+            )
             sources = {
                 "ramp-x": np.repeat(ramp_x[:, :, None], 3, axis=2).astype(np.uint8),
                 "ramp-y": np.repeat(ramp_y[:, :, None], 3, axis=2).astype(np.uint8),
                 "color-cube-9": cube,
                 "color-cube-9-permuted": permuted_cube,
+                "color-cube-9-shuffled": shuffled_cube,
                 "color-cube-holdout-8": holdout_cube,
+                "color-cube-holdout-8-shuffled": shuffled_holdout,
             }
 
             references = []
@@ -230,6 +250,21 @@ class MeasurementTests(unittest.TestCase):
 
             captures = []
             for appearance in ("light", "dark"):
+                for background, source in sources.items():
+                    relative = (
+                        f"shots/{background}__circle-0500-center__"
+                        f"none__{appearance}.png"
+                    )
+                    Image.fromarray(source).save(root / relative)
+                    captures.append(
+                        {
+                            "background": background,
+                            "scene": "circle-0500-center",
+                            "overlay": "none",
+                            "appearance": appearance,
+                            "file": relative,
+                        }
+                    )
                 for overlay in ("regular", "clear"):
                     for background, source in sources.items():
                         if background.startswith("ramp"):
@@ -283,6 +318,8 @@ class MeasurementTests(unittest.TestCase):
             color = measurements.dense_color_transfer()
             holdout = measurements.dense_color_holdout()
             context_repeat = measurements.dense_color_context_repeat()
+            context_holdout = measurements.dense_color_context_holdout()
+            holdout_context_repeat = measurements.dense_color_holdout_context_repeat()
 
             self.assertTrue(tone["available"])
             self.assertEqual(
@@ -310,6 +347,10 @@ class MeasurementTests(unittest.TestCase):
                 [1.0, 2.0, 3.0],
             )
             self.assertEqual(
+                color["capturedControlInputCodes"]["light"][0],
+                [0.0, 0.0, 0.0],
+            )
+            self.assertEqual(
                 color["light/regular"]["outputCodes"][-1],
                 [255.0, 255.0, 255.0],
             )
@@ -326,6 +367,18 @@ class MeasurementTests(unittest.TestCase):
             self.assertEqual(
                 sorted(context_repeat["inputCodes"]),
                 sorted(color["inputCodes"]),
+            )
+            self.assertTrue(context_holdout["available"])
+            self.assertEqual(context_holdout["sampleCount"], 729)
+            self.assertEqual(
+                sorted(context_holdout["inputCodes"]),
+                sorted(color["inputCodes"]),
+            )
+            self.assertTrue(holdout_context_repeat["available"])
+            self.assertEqual(holdout_context_repeat["sampleCount"], 512)
+            self.assertEqual(
+                sorted(holdout_context_repeat["inputCodes"]),
+                sorted(holdout["inputCodes"]),
             )
 
     def test_sparse_transfer_preserves_holdout_samples(self) -> None:
