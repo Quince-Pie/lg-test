@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## Why the rig needed v2.5
+## How the rig reached v2.6
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -62,6 +62,36 @@ the clock is a topmost AppKit sibling view whose prefix is rasterized from
 monotonic time. Its preflight first proves that settled 25% and 75% widths are
 visible, then proves that a live midpoint and endpoint advance. Those four
 decoded values and the backend name are retained in the manifest.
+
+Run `30317142057` proved that v2.5's live clock works, but it also exposed two
+scope errors that prevent a parity claim. The `wallpaper-wipe` probe grew glass
+over one coded field; Walle actually reveals one wallpaper through another.
+Also, 13 of 272 settled states differed from both earlier runs even though each
+run had accepted two adjacent equal screenshots as stable. The differences
+followed the glass geometry, so they cannot be dismissed as clock-marker noise.
+
+V2.6 closes those gaps without changing the meaning of the historical probe:
+
+- `wallpaper-wipe` remains the single-source optical control.
+- `wallpaper-transition` and `wallpaper-transition-reverse` use independent,
+  deterministic outgoing and incoming fields in both directions. They reveal
+  the incoming field through a zero-to-full-screen circle, apply real Apple
+  glass, then use Apple's real materialize-out behavior so the delayed endpoint
+  must be the incoming source alone.
+- `dematerialize` complements the existing insertion probe.
+- Every live sequence starts with a fresh SwiftUI glass subtree and gains a
+  delayed, clock-free post-settle capture.
+- Every settled geometry matrix now records a cold forward traversal, a warm
+  reverse traversal, and a second forward traversal after rebuilding the glass
+  subtree. A state is accepted only after a third identical screenshot 100 ms
+  after the adjacent-frame equality check.
+- The 500-point static circle is measured at the center and all four quadrants,
+  exposing any window-space lighting or refraction bias.
+
+There is no public Apple wallpaper-transition API. `wallpaper-transition` is
+therefore an explicitly specified Apple-native composition for Walle, not a
+claim that macOS contains a hidden wallpaper effect. Pixel parity means matching
+that captured composition and its stated schedule.
 
 ### Rejected artifact audit
 
@@ -139,17 +169,17 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.5 isolates the unknowns:
+V2.6 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
 | Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube; independent holdout colors |
 | Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px, plus 64/256/1024 px local MTF probes at 256-, 500-, and 4000-point circle scales |
 | Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, deterministic noise |
-| Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, and three rectangle corner radii |
+| Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, and three rectangle corner radii |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
 | Appearance and material | Light/dark appearances and real `.regular`/`.clear` materials; targeted regular/clear tint probes |
-| Time response | Real `materialize`, resize, translation, continuous circle-to-rounded-rectangle morph, and full-wallpaper expansion; presented-state clocks; 17 exact settled states per geometry mode |
+| Time response | Real `materialize` and `dematerialize`, resize, translation, continuous circle-to-rounded-rectangle morph, single-source expansion, and a two-wallpaper reference transition; presented-state clocks; three traversals of 17 exact settled states per geometry mode |
 
 Apple documents `GlassEffectContainer` as the mechanism that combines nearby
 glass shapes and `GlassEffectTransition` as the transition behavior. The rig
@@ -184,18 +214,20 @@ The static suite contains:
 - 99 deterministic backgrounds and 99 saved static references.
 - 594 base control/regular/clear samples: every background, both appearances.
 - 42 targeted tint samples.
-- 224 isolated geometry, off-screen-scale, and container-interaction samples.
+- 272 isolated geometry, screen-position, off-screen-scale, and
+  container-interaction samples.
 - 12 edge-free giant-circle tone/color-transfer samples.
 - 192 scale-dependent, four-phase local-MTF/refraction samples.
 - 2 qualitative HIG-style controls-over-content samples.
 
-That is 1,066 static captures. The numerical fit should use the isolated scenes;
+That is 1,114 static captures. The numerical fit should use the isolated scenes;
 the HIG-style scene is a qualitative continuity check only.
 
-The dynamic suite contains 20 sequences:
+The dynamic suite contains 32 sequences:
 
-- Five modes: `materialize`, `resize`, `translate`, `morph`, and
-  `wallpaper-wipe`.
+- Eight modes: `materialize`, `dematerialize`, `resize`, `translate`, `morph`,
+  `wallpaper-wipe`, `wallpaper-transition`, and
+  `wallpaper-transition-reverse`.
 - Two real materials: `.regular` and `.clear`.
 - Two appearances: light and dark.
 - A 61-point target grid over a one-second linear animation, including
@@ -204,13 +236,13 @@ The dynamic suite contains 20 sequences:
 The app records the monotonic acquisition time, target time, timing error, and
 capture duration for every frame. It also renders a four-point-high magenta
 clock. Geometry modes animate its scalar in the same SwiftUI transaction.
-Materialize uses a separate topmost AppKit sibling view, rasterized from
-monotonic time, because the real insertion transition suppresses sibling
-SwiftUI interpolation and the v2.4 Core Animation child was not observable
-through this capture path. The clock is decoded from the full raw screenshot
-before analytical cropping, recording actual presented progress with 1/3200
-resolution. The full-frame wallpaper wipe declares the four clock rows as an
-analysis exclusion. Before starting the expensive matrix, the v2.5 preflight
+Materialize, dematerialize, and the integrated wallpaper transition use a
+separate topmost AppKit sibling view, rasterized from monotonic time, because
+real insertion/removal transitions suppress sibling SwiftUI interpolation.
+The clock is decoded from the full raw screenshot before analytical cropping,
+recording actual presented progress with 1/3200 resolution. Both full-frame
+wallpaper probes declare the four clock rows as an analysis exclusion. Before
+starting the expensive matrix, the v2.6 preflight
 requires visible settled 25% and 75% widths plus a live non-endpoint sample and
 the final endpoint.
 
@@ -223,30 +255,38 @@ manifest. Requested-time error is diagnostic; strictly increasing actual
 time, no actual or presentation gap over 200 ms, both presented endpoints,
 and at least ten distinct frames remain hard requirements.
 
-Dynamic sequences use a smooth, deterministic RGB code field whose independent
+Dynamic sequences use smooth, deterministic RGB code fields whose independent
 frequencies supply local gradients in both axes. This supports quantitative
 optical-flow fitting of transient refraction and blur while remaining much
-smaller than random-noise video. The first `materialize` frame contains no
-glass and must match the corresponding crop of the generated reference
-exactly.
+smaller than random-noise video. The two-source fields are independent, so a
+boundary fit can attribute sampled pixels to the outgoing or incoming image.
+The first `materialize` and two-wallpaper frames must match their outgoing
+reference within the measured source round-trip bound. Delayed, clock-free
+`dematerialize` and two-wallpaper endpoints must likewise match the appropriate
+source reference.
 
 Live animations expose temporal material behavior, but they cannot separate a
-geometry response from CI scheduler jitter by themselves. V2.5 therefore also
-captures 16 settled sweeps: resize, translate, morph, and wallpaper-wipe,
-crossed with both materials and appearances. Every sweep has exactly 17
-strictly increasing states, each required to stabilize and have a unique pixel
-hash.
+geometry response from CI scheduler jitter or renderer history by themselves.
+V2.6 therefore captures 24 settled sweep matrices: resize, translate, morph,
+single-source expansion, and two-source expansion in both source directions,
+crossed with both materials and appearances. Each matrix has 17 cold-forward
+states, the same states in warm reverse order, and a second 17-state cold
+traversal after rebuilding the SwiftUI subtree. Every state must be unique
+within its traversal and must pass the delayed stability check.
+Cross-traversal differences are retained and reported as
+repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.5 artifact contains 100 references, 1,066
-static captures, 20 live dynamic sequences, and 16 exact sweeps containing
-272 frames.
+With the default `all` suite, a v2.6 artifact contains 101 references, 1,114
+static captures, 32 live dynamic sequences plus 32 post-settle controls, and
+24 exact sweep matrices containing 1,224 frames.
 
 ## Manifest and validation
 
 `manifest.json` records:
 
 - macOS version/build, host architecture/model, runner image, Xcode version,
-  commit SHA, UTC start time, and requested suite;
+  commit SHA, UTC start time, requested suite, requested dynamic modes,
+  duration, and normalized transition origin;
 - window/display geometry, backing scale, color spaces, refresh rate, and
   active/key-window state;
 - Reduce Transparency, Increase Contrast, and Reduce Motion state;
@@ -258,16 +298,19 @@ static captures, 20 live dynamic sequences, and 16 exact sweeps containing
 - every dynamic frame's crop and actual acquisition timing;
 - every dynamic frame's decoded presentation progress and any excluded clock
   rows;
-- each live sequence's presentation-clock backend;
+- each live sequence's outgoing/incoming source identities, probe role, phase
+  schedule, subtree isolation, presentation-clock backend, and delayed
+  post-settle control;
 - each live sequence's sampling method and attempted/decoded/failure counters;
-- every exact sweep state, its requested progress, stability result, and
-  hashes.
+- every exact sweep state, direction/trial, requested progress, delayed
+  stability result, and hashes.
 
 `Analysis/validate.py` independently reopens every PNG. It verifies file and
 pixel hashes, dimensions, unique logical cases, the complete requested matrix,
 explicit sRGB tagging, static stability, cross-appearance no-glass identity,
 complete dynamic sequences, acquisition and presentation coverage, exact
-sweep matrices, unique states, and materialization controls. A validation
+sweep matrices, unique states, two-source endpoints, and material topology
+controls. A validation
 failure still uploads the artifact so the cause can be inspected, but the
 workflow ends red.
 
@@ -278,7 +321,10 @@ the dataset needed for a full Walle fit. Before capture, CI disables Reduce
 Transparency, Reduce Motion, and Increase Contrast. The app independently
 checks those settings plus application/key-window state and aborts before the
 matrix if any precondition is wrong. `static` and `dynamic` inputs are
-available for focused reruns after a capture-specific change.
+available for focused reruns after a capture-specific change. `dynamic_modes`
+can restrict a temporal run without changing any probe semantics, and
+`exact_sweeps=false` avoids repeating the large settled corpus in a
+duration-only run.
 
 The workflow requires the `macos-26` runner label and uploads:
 
@@ -286,9 +332,27 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-After V2.5 changes, return that complete artifact, including
-`manifest.json` and `validation.json`. Do not merge it into an old `shots/`
-directory; filenames and scene semantics changed.
+For the first v2.6 fit, collect and return:
+
+1. Two independent `all`, 1.0-second, 61-frame runs with exact sweeps enabled.
+   The duplicate run bounds runner-to-runner variance.
+2. A `dynamic`, 0.35-second, 31-frame run with
+   `dynamic_modes=materialize,dematerialize,wallpaper-transition,wallpaper-transition-reverse`
+   and exact sweeps disabled.
+3. A `dynamic`, 2.0-second, 121-frame run with the same three modes and exact
+   sweeps disabled.
+4. A `dynamic` run at Walle's actual configured transition duration, restricted
+   to `wallpaper-transition,wallpaper-transition-reverse`, with exact sweeps
+   disabled. Use enough target points to keep the requested grid at or above
+   15 Hz.
+5. Focused 1.0-second runs of those two wallpaper modes at the center and the
+   other three quadrants (`0.75,0.30`, `0.25,0.70`, `0.75,0.70`, and
+   `0.50,0.50`). Set `capture_width` and `capture_height` to each production
+   aspect ratio at least once.
+
+Return each complete artifact, including `manifest.json` and
+`validation.json`. Do not merge their directories: the manifest duration and
+state history are part of the evidence.
 
 ## Run locally on macOS 26
 
@@ -304,7 +368,9 @@ swiftc -O -parse-as-library \
   --width 3200 \
   --height 2000 \
   --dynamic-frames 61 \
-  --dynamic-duration 1.0
+  --dynamic-duration 1.0 \
+  --dynamic-modes all \
+  --transition-origin 0.25,0.30
 ```
 
 The app refuses to write into any nonempty output directory, which prevents
@@ -329,7 +395,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The V2.5 artifact is the measurement input, not proof that Walle already matches.
+The v2.6 artifacts are measurement inputs, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on
@@ -342,7 +408,9 @@ The next pass should:
 5. Reject any optimization that worsens any protected quality metric, even if
    it improves VRAM, throughput, or latency.
 
-Apple does not ship Walle's expanding wallpaper wipe as a public system
-transition. The rig can identify the Liquid Glass material and Apple's actual
-materialize/morph behavior; mapping those measurements onto Walle's
-application-specific wipe must be defined and tested explicitly.
+Parity is scoped to the recorded macOS build, sRGB SDR, backing scale, material,
+appearance, geometry, source pair, and duration. GitHub's macOS virtual display
+currently exposes only 1x modes, so a real 2x Mac capture remains required
+before claiming Retina parity. A final claim additionally requires zero
+unexplained pixel regression on held-out captures; visual similarity alone is
+not acceptance.

@@ -421,6 +421,24 @@ class ValidatorTests(unittest.TestCase):
             any("liveMidpointProgress" in error for error in invalid.errors)
         )
 
+        manifest.update(
+            {
+                "schemaVersion": 5,
+                "rigVersion": "2.6.0",
+                "requestedDynamicModes": [
+                    "materialize",
+                    "dematerialize",
+                    "wallpaper-transition",
+                ],
+                "transitionOriginNormalized": [0.25, 0.30],
+                "exactSweepsRequested": False,
+            }
+        )
+        manifest["presentationClockPreflight"]["liveMidpointProgress"] = 0.51
+        v26 = Findings()
+        validate_environment(manifest, v26)
+        self.assertEqual(v26.errors, [])
+
     def test_schema4_presentation_clock_and_exclusion(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -550,6 +568,242 @@ class ValidatorTests(unittest.TestCase):
             self.assertTrue(
                 any("presentationClock" in error for error in obsolete_clock.errors)
             )
+
+    def test_schema5_two_source_transition_and_post_settle_control(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "reference").mkdir()
+            sequence_id = "wallpaper-transition__regular__light"
+            sequence_dir = root / "dynamic" / sequence_id
+            sequence_dir.mkdir(parents=True)
+            image_metadata = {
+                "bitsPerComponent": 8,
+                "bitsPerPixel": 32,
+                "bytesPerRow": 8,
+                "colorSpace": "sRGB IEC61966-2.1",
+                "alphaInfo": 1,
+                "bitmapInfo": 16385,
+            }
+            outgoing_pixels = bytes((0, 0, 0, 255)) * 10
+            incoming_pixels = bytes((200, 100, 50, 255)) * 10
+
+            def save(relative: str, pixels: bytes) -> Path:
+                path = root / relative
+                Image.frombytes("RGBA", (2, 5), pixels).save(
+                    path, icc_profile=SRGB_PROFILE
+                )
+                return path
+
+            outgoing_path = save("reference/dynamic-coded-field.png", outgoing_pixels)
+            incoming_path = save(
+                "reference/dynamic-coded-field-incoming.png", incoming_pixels
+            )
+
+            def reference_record(
+                path: Path, name: str, pixels: bytes
+            ) -> dict[str, object]:
+                return {
+                    "file": str(path.relative_to(root)),
+                    "background": name,
+                    "family": "dynamic",
+                    "fileSha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    "pixelSha256": hashlib.sha256(pixels).hexdigest(),
+                    "pixelWidth": 2,
+                    "pixelHeight": 5,
+                    "image": image_metadata,
+                }
+
+            frames = []
+            for index in range(10):
+                pixels = (
+                    outgoing_pixels
+                    if index == 0
+                    else bytes((index, index * 2, index * 3, 255)) * 10
+                )
+                relative = f"dynamic/{sequence_id}/frame-{index:04d}.png"
+                path = save(relative, pixels)
+                progress = index / 9
+                frames.append(
+                    {
+                        "file": relative,
+                        "index": index,
+                        "targetSeconds": progress,
+                        "actualSeconds": progress,
+                        "timingErrorSeconds": 0,
+                        "captureDurationSeconds": 0.005,
+                        "presentationProgress": progress,
+                        "fileSha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                        "pixelSha256": hashlib.sha256(pixels).hexdigest(),
+                        "pixelWidth": 2,
+                        "pixelHeight": 5,
+                        "captureBackend": "unit-test",
+                        "sourceImage": image_metadata,
+                        "savedImage": image_metadata,
+                    }
+                )
+            post_relative = f"dynamic/{sequence_id}/post-settle.png"
+            post_path = save(post_relative, incoming_pixels)
+            sequence = {
+                "id": sequence_id,
+                "mode": "wallpaper-transition",
+                "overlay": "regular",
+                "appearance": "light",
+                "background": "dynamic-coded-field",
+                "outgoingBackground": "dynamic-coded-field",
+                "incomingBackground": "dynamic-coded-field-incoming",
+                "probeRole": "walle-two-wallpaper-reference",
+                "stateIsolation": "fresh-swiftui-dynamic-subtree-per-sequence",
+                "durationSeconds": 1,
+                "animationCurve": "linear",
+                "phaseSchedule": {
+                    "expansionEnd": 0.62,
+                    "dematerializeStart": 0.66,
+                    "dematerializeEnd": 1.0,
+                },
+                "presentationClock": "appkit-raster-monotonic",
+                "samplingMethod": "continuous-off-main-presentation-binned",
+                "captureAttempts": 20,
+                "decodedSamples": 19,
+                "transientFailures": 1,
+                "cropPixels": {"x": 0, "y": 0, "width": 2, "height": 5},
+                "analysisExclusionPixels": [{"x": 0, "y": 0, "width": 2, "height": 4}],
+                "frames": frames,
+                "postSettleDelaySeconds": 0.9,
+                "postSettleFrame": {
+                    "file": post_relative,
+                    "fileSha256": hashlib.sha256(post_path.read_bytes()).hexdigest(),
+                    "pixelSha256": hashlib.sha256(incoming_pixels).hexdigest(),
+                    "pixelWidth": 2,
+                    "pixelHeight": 5,
+                    "captureBackend": "unit-test",
+                    "stable": True,
+                    "stabilitySamples": 3,
+                    "sourceImage": image_metadata,
+                    "savedImage": image_metadata,
+                },
+            }
+            references = {
+                "dynamic-coded-field": reference_record(
+                    outgoing_path, "dynamic-coded-field", outgoing_pixels
+                ),
+                "dynamic-coded-field-incoming": reference_record(
+                    incoming_path,
+                    "dynamic-coded-field-incoming",
+                    incoming_pixels,
+                ),
+            }
+            manifest = {
+                "schemaVersion": 5,
+                "rigVersion": "2.6.0",
+                "requestedSuite": "static",
+                "backingScaleFactor": 1,
+                "settleSeconds": 0.45,
+                "dynamicFrameCount": 10,
+                "dynamicDurationSeconds": 1,
+                "sourceRoundTripTolerance": {
+                    "maximumChangedPixelFraction": 0.005,
+                    "maximumChannelDelta": 1,
+                    "maximumMeanAbsoluteChannelDelta": 0.002,
+                },
+                "dynamicSequences": [sequence],
+            }
+
+            findings = Findings()
+            summary, timing = validate_dynamic(root, manifest, references, findings)
+
+            self.assertEqual(findings.errors, [])
+            self.assertEqual(
+                summary,
+                {"sequences": 1, "frames": 10, "postSettleFrames": 1},
+            )
+            self.assertTrue(timing[0]["initialControlWithinTolerance"])
+            self.assertTrue(timing[0]["postSettleControlWithinTolerance"])
+
+    def test_schema5_sweeps_measure_repeatability_and_hysteresis(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            sequence_id = "sweep__wallpaper-transition__regular__light"
+            sequence_dir = root / "sweeps" / sequence_id
+            sequence_dir.mkdir(parents=True)
+            image_metadata = {
+                "bitsPerComponent": 8,
+                "bitsPerPixel": 32,
+                "bytesPerRow": 8,
+                "colorSpace": "sRGB IEC61966-2.1",
+                "alphaInfo": 1,
+                "bitmapInfo": 16385,
+            }
+
+            def traversal(key: str, indices: list[int]) -> list[dict[str, object]]:
+                records = []
+                for index in indices:
+                    pixels = bytes((index, index * 2, index * 3, 255)) * 4
+                    relative = f"sweeps/{sequence_id}/{key}-{index:04d}.png"
+                    path = root / relative
+                    Image.frombytes("RGBA", (2, 2), pixels).save(
+                        path, icc_profile=SRGB_PROFILE
+                    )
+                    records.append(
+                        {
+                            "file": relative,
+                            "index": index,
+                            "progress": index / 16,
+                            "fileSha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                            "pixelSha256": hashlib.sha256(pixels).hexdigest(),
+                            "pixelWidth": 2,
+                            "pixelHeight": 2,
+                            "captureBackend": "unit-test",
+                            "stable": True,
+                            "stabilitySamples": 3,
+                            "sourceImage": image_metadata,
+                            "savedImage": image_metadata,
+                        }
+                    )
+                return records
+
+            sequence = {
+                "id": sequence_id,
+                "mode": "wallpaper-transition",
+                "overlay": "regular",
+                "appearance": "light",
+                "background": "dynamic-coded-field",
+                "outgoingBackground": "dynamic-coded-field",
+                "incomingBackground": "dynamic-coded-field-incoming",
+                "probeRole": "walle-two-wallpaper-expansion",
+                "stateIsolation": "cold-forward/warm-reverse/cold-repeat",
+                "traversals": [
+                    "forward-cold",
+                    "reverse-warm",
+                    "forward-cold-repeat",
+                ],
+                "stabilityConfirmationSeconds": 0.1,
+                "cropPixels": {"x": 0, "y": 0, "width": 2, "height": 2},
+                "frames": traversal("frame", list(range(17))),
+                "reverseFrames": traversal("reverse-frame", list(reversed(range(17)))),
+                "repeatFrames": traversal("repeat-frame", list(range(17))),
+            }
+            findings = Findings()
+            summary = validate_sweeps(
+                root,
+                {
+                    "schemaVersion": 5,
+                    "requestedSuite": "static",
+                    "exactSweepsRequested": True,
+                    "sweepSequences": [sequence],
+                },
+                {
+                    "dynamic-coded-field": {},
+                    "dynamic-coded-field-incoming": {},
+                },
+                findings,
+            )
+
+            self.assertEqual(findings.errors, [])
+            self.assertEqual(findings.warnings, [])
+            self.assertEqual(summary["sequences"], 1)
+            self.assertEqual(summary["frames"], 51)
+            self.assertEqual(summary["coldRepeatDifferingStates"], 0)
+            self.assertEqual(summary["warmReverseDifferingStates"], 0)
 
 
 if __name__ == "__main__":

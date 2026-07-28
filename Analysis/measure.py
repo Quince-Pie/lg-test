@@ -794,14 +794,44 @@ class Measurements:
         sequences = self.artifact.manifest.get("sweepSequences", [])
         result: JsonObject = {}
         for sequence in sequences:
-            frames = sequence.get("frames", [])
+            traversal_keys = {
+                "forwardCold": "frames",
+                "reverseWarm": "reverseFrames",
+                "forwardColdRepeat": "repeatFrames",
+            }
+            traversals: JsonObject = {}
+            hashes: dict[str, dict[int, str]] = {}
+            for traversal, key in traversal_keys.items():
+                frames = sequence.get(key, [])
+                if not frames and key != "frames":
+                    continue
+                hashes[traversal] = {
+                    int(frame["index"]): str(frame.get("pixelSha256"))
+                    for frame in frames
+                }
+                traversals[traversal] = {
+                    "frames": len(frames),
+                    "uniqueFrames": len(
+                        {str(frame.get("pixelSha256")) for frame in frames}
+                    ),
+                    "stableFrames": sum(
+                        frame.get("stable") is True for frame in frames
+                    ),
+                    "progress": [frame.get("progress") for frame in frames],
+                }
+            forward = hashes.get("forwardCold", {})
+            reverse = hashes.get("reverseWarm", {})
+            repeat = hashes.get("forwardColdRepeat", {})
             result[str(sequence.get("id"))] = {
-                "frames": len(frames),
-                "uniqueFrames": len(
-                    {str(frame.get("pixelSha256")) for frame in frames}
+                "traversals": traversals,
+                "coldRepeatDifferingStates": sum(
+                    forward.get(index) != repeat.get(index)
+                    for index in forward.keys() & repeat.keys()
                 ),
-                "stableFrames": sum(frame.get("stable") is True for frame in frames),
-                "progress": [frame.get("progress") for frame in frames],
+                "warmReverseDifferingStates": sum(
+                    forward.get(index) != reverse.get(index)
+                    for index in forward.keys() & reverse.keys()
+                ),
             }
         return {
             "available": bool(sequences),
@@ -840,6 +870,12 @@ class Measurements:
                     "presentationClockPreflight"
                 ),
                 "backingScaleFactor": manifest.get("backingScaleFactor"),
+                "requestedDynamicModes": manifest.get("requestedDynamicModes"),
+                "dynamicDurationSeconds": manifest.get("dynamicDurationSeconds"),
+                "transitionOriginNormalized": manifest.get(
+                    "transitionOriginNormalized"
+                ),
+                "exactSweepsRequested": manifest.get("exactSweepsRequested"),
                 "reduceTransparency": manifest.get("reduceTransparency"),
                 "increaseContrast": manifest.get("increaseContrast"),
                 "reduceMotion": manifest.get("reduceMotion"),
@@ -851,9 +887,17 @@ class Measurements:
                 "dynamicFrames": sum(
                     len(sequence.get("frames", [])) for sequence in dynamic_sequences
                 ),
+                "dynamicPostSettleFrames": sum(
+                    isinstance(sequence.get("postSettleFrame"), dict)
+                    for sequence in dynamic_sequences
+                ),
                 "sweepSequences": len(sweep_sequences),
                 "sweepFrames": sum(
-                    len(sequence.get("frames", [])) for sequence in sweep_sequences
+                    sum(
+                        len(sequence.get(key, []))
+                        for key in ("frames", "reverseFrames", "repeatFrames")
+                    )
+                    for sequence in sweep_sequences
                 ),
             },
             "toneTransfer": self.tone_transfer(),

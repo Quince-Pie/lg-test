@@ -251,6 +251,40 @@ def crop_rgba(image: DecodedImage, crop: JsonObject) -> bytes:
     )
 
 
+def rgba_excluding_regions(
+    rgba: bytes,
+    *,
+    width: int,
+    height: int,
+    regions: list[JsonObject],
+) -> bytes:
+    """Return row-major RGBA pixels outside a small set of rectangles."""
+    if not regions:
+        return rgba
+    chunks: list[bytes] = []
+    row_bytes = width * 4
+    for y in range(height):
+        intervals = sorted(
+            (
+                max(0, int(region["x"])),
+                min(width, int(region["x"]) + int(region["width"])),
+            )
+            for region in regions
+            if int(region["y"]) <= y < int(region["y"]) + int(region["height"])
+        )
+        cursor = 0
+        row_start = y * row_bytes
+        for start, end in intervals:
+            if end <= cursor:
+                continue
+            if start > cursor:
+                chunks.append(rgba[row_start + cursor * 4 : row_start + start * 4])
+            cursor = max(cursor, end)
+        if cursor < width:
+            chunks.append(rgba[row_start + cursor * 4 : row_start + row_bytes])
+    return b"".join(chunks)
+
+
 def percentile(values: list[float], fraction: float) -> float:
     if not values:
         return 0.0
@@ -266,16 +300,50 @@ def percentile(values: list[float], fraction: float) -> float:
 
 def validate_environment(manifest: JsonObject, findings: Findings) -> None:
     schema = manifest.get("schemaVersion")
-    if schema not in {3, 4}:
-        findings.error(f"schemaVersion is {schema!r}; validator supports 3 and 4")
+    if schema not in {3, 4, 5}:
+        findings.error(f"schemaVersion is {schema!r}; validator supports 3, 4, and 5")
     expected_rigs = {
         3: {"2.1.0"},
         4: {"2.2.0", "2.3.0", "2.4.0", "2.5.0"},
+        5: {"2.6.0"},
     }.get(schema, set())
     if manifest.get("rigVersion") not in expected_rigs:
         findings.error(f"unexpected rigVersion: {manifest.get('rigVersion')!r}")
     if manifest.get("requestedSuite") not in {"static", "dynamic", "all"}:
         findings.error(f"invalid requestedSuite: {manifest.get('requestedSuite')!r}")
+    if schema == 5:
+        known_modes = {
+            "materialize",
+            "dematerialize",
+            "resize",
+            "translate",
+            "morph",
+            "wallpaper-wipe",
+            "wallpaper-transition",
+            "wallpaper-transition-reverse",
+        }
+        requested_modes = manifest.get("requestedDynamicModes")
+        if (
+            not isinstance(requested_modes, list)
+            or not requested_modes
+            or any(not isinstance(mode, str) for mode in requested_modes)
+            or len(set(requested_modes)) != len(requested_modes)
+            or not set(requested_modes) <= known_modes
+        ):
+            findings.error(f"invalid requestedDynamicModes: {requested_modes!r}")
+        origin = manifest.get("transitionOriginNormalized")
+        if (
+            not isinstance(origin, list)
+            or len(origin) != 2
+            or any(
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(value)
+                or not 0 <= value <= 1
+                for value in origin
+            )
+        ):
+            findings.error(f"invalid transitionOriginNormalized: {origin!r}")
     if manifest.get("canonicalPixelEncoding") != "sRGB RGBA8 top-left opaque-alpha":
         findings.error(
             "unexpected canonicalPixelEncoding: "
@@ -300,7 +368,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
     elif preflight_errors:
         findings.error(f"capture preflight failed: {preflight_errors}")
     if (
-        manifest.get("rigVersion") == "2.5.0"
+        manifest.get("rigVersion") in {"2.5.0", "2.6.0"}
         and manifest.get("requestedSuite") != "static"
     ):
         clock = manifest.get("presentationClockPreflight")
@@ -536,7 +604,7 @@ def validate_static(
             for overlay in ("regular", "clear")
             for appearance in appearances
         }
-        if manifest.get("schemaVersion") == 4:
+        if manifest.get("schemaVersion") in {4, 5}:
             expected_cases |= {
                 (background, "circle-4000-center", overlay, appearance)
                 for background in {"ramp-x", "ramp-y", "color-cube-9"}
@@ -645,9 +713,10 @@ def validate_dynamic(
 
     seen_ids: set[str] = set()
     seen_files: set[str] = set()
-    materialize_controls: dict[tuple[str, str], str] = {}
+    materialize_controls: dict[tuple[str, str, str], str] = {}
     timing_reports: list[JsonObject] = []
     total_frames = 0
+    total_post_settle_frames = 0
     tolerance_value = manifest.get("sourceRoundTripTolerance")
     tolerance = tolerance_value if isinstance(tolerance_value, dict) else {}
     for sequence_index, value in enumerate(values):
@@ -671,7 +740,7 @@ def validate_dynamic(
             findings.error(f"{label}: missing background reference")
         if sequence.get("animationCurve") != "linear":
             findings.error(f"{label}: animation curve is not linear")
-        if manifest.get("rigVersion") in {"2.3.0", "2.4.0", "2.5.0"}:
+        if manifest.get("rigVersion") in {"2.3.0", "2.4.0", "2.5.0", "2.6.0"}:
             if (
                 sequence.get("samplingMethod")
                 != "continuous-off-main-presentation-binned"
@@ -688,9 +757,14 @@ def validate_dynamic(
                 or attempts != decoded_samples + transient_failures
             ):
                 findings.error(f"{label}: inconsistent dynamic sampler counters")
-        if manifest.get("rigVersion") in {"2.4.0", "2.5.0"}:
+        if manifest.get("rigVersion") in {"2.4.0", "2.5.0", "2.6.0"}:
             expected_clock = "swiftui-animatable-frame"
-            if sequence.get("mode") == "materialize":
+            if sequence.get("mode") in {
+                "materialize",
+                "dematerialize",
+                "wallpaper-transition",
+                "wallpaper-transition-reverse",
+            }:
                 expected_clock = (
                     "core-animation-layer"
                     if manifest.get("rigVersion") == "2.4.0"
@@ -701,6 +775,71 @@ def validate_dynamic(
                     f"{label}: presentationClock is "
                     f"{sequence.get('presentationClock')!r}, "
                     f"expected {expected_clock!r}"
+                )
+        if manifest.get("schemaVersion") == 5:
+            mode = sequence.get("mode")
+            outgoing = sequence.get("outgoingBackground")
+            incoming = sequence.get("incomingBackground")
+            if outgoing != sequence.get("background") or outgoing not in references:
+                findings.error(f"{label}: invalid outgoingBackground {outgoing!r}")
+            expected_sources = {
+                "wallpaper-transition": (
+                    "dynamic-coded-field",
+                    "dynamic-coded-field-incoming",
+                ),
+                "wallpaper-transition-reverse": (
+                    "dynamic-coded-field-incoming",
+                    "dynamic-coded-field",
+                ),
+            }
+            expected_outgoing, expected_incoming = expected_sources.get(
+                str(mode), ("dynamic-coded-field", None)
+            )
+            if outgoing != expected_outgoing:
+                findings.error(
+                    f"{label}: outgoingBackground is {outgoing!r}, "
+                    f"expected {expected_outgoing!r}"
+                )
+            if incoming != expected_incoming:
+                findings.error(
+                    f"{label}: incomingBackground is {incoming!r}, "
+                    f"expected {expected_incoming!r}"
+                )
+            if isinstance(incoming, str) and incoming not in references:
+                findings.error(f"{label}: missing incoming background reference")
+            expected_role = {
+                "materialize": "material-topology-response",
+                "dematerialize": "material-topology-response",
+                "resize": "geometry-system-identification",
+                "translate": "geometry-system-identification",
+                "morph": "geometry-system-identification",
+                "wallpaper-wipe": "single-source-expansion-control",
+                "wallpaper-transition": "walle-two-wallpaper-reference",
+                "wallpaper-transition-reverse": "walle-two-wallpaper-reference",
+            }.get(str(mode))
+            if sequence.get("probeRole") != expected_role:
+                findings.error(
+                    f"{label}: probeRole is {sequence.get('probeRole')!r}, "
+                    f"expected {expected_role!r}"
+                )
+            if (
+                sequence.get("stateIsolation")
+                != "fresh-swiftui-dynamic-subtree-per-sequence"
+            ):
+                findings.error(f"{label}: missing fresh subtree isolation")
+            expected_schedule = (
+                {
+                    "expansionEnd": 0.62,
+                    "dematerializeStart": 0.66,
+                    "dematerializeEnd": 1.0,
+                }
+                if mode in {"wallpaper-transition", "wallpaper-transition-reverse"}
+                else {"end": 1.0}
+            )
+            if sequence.get("phaseSchedule") != expected_schedule:
+                findings.error(
+                    f"{label}: phaseSchedule is {sequence.get('phaseSchedule')!r}, "
+                    f"expected {expected_schedule!r}"
                 )
         duration = sequence.get("durationSeconds")
         frames = sequence.get("frames")
@@ -724,13 +863,11 @@ def validate_dynamic(
                 f"expected at least {minimum_captured}"
             )
         if (
-            manifest.get("rigVersion") in {"2.3.0", "2.4.0", "2.5.0"}
+            manifest.get("rigVersion") in {"2.3.0", "2.4.0", "2.5.0", "2.6.0"}
             and isinstance(sequence.get("decodedSamples"), int)
             and sequence["decodedSamples"] < len(frames) - 1
         ):
-            findings.error(
-                f"{label}: decoded fewer samples than the saved live frames"
-            )
+            findings.error(f"{label}: decoded fewer samples than the saved live frames")
         configured_duration = manifest.get("dynamicDurationSeconds")
         if isinstance(configured_duration, (int, float)) and not math.isclose(
             duration, configured_duration, rel_tol=0, abs_tol=1e-12
@@ -742,7 +879,8 @@ def validate_dynamic(
         if not isinstance(crop, dict):
             findings.error(f"{label}: missing cropPixels")
             continue
-        if manifest.get("schemaVersion") == 4:
+        analysis_exclusions: list[JsonObject] = []
+        if manifest.get("schemaVersion") in {4, 5}:
             exclusions = sequence.get("analysisExclusionPixels")
             scale = manifest.get("backingScaleFactor")
             marker_height = (
@@ -762,7 +900,12 @@ def validate_dynamic(
                         else marker_height,
                     }
                 ]
-                if sequence.get("mode") == "wallpaper-wipe"
+                if sequence.get("mode")
+                in {
+                    "wallpaper-wipe",
+                    "wallpaper-transition",
+                    "wallpaper-transition-reverse",
+                }
                 else []
             )
             if exclusions != expected_exclusions:
@@ -770,6 +913,10 @@ def validate_dynamic(
                     f"{label}: analysisExclusionPixels is {exclusions!r}, "
                     f"expected {expected_exclusions!r}"
                 )
+            elif isinstance(exclusions, list):
+                analysis_exclusions = [
+                    exclusion for exclusion in exclusions if isinstance(exclusion, dict)
+                ]
 
         total_frames += len(frames)
         actual_times: list[float] = []
@@ -779,6 +926,7 @@ def validate_dynamic(
         pixel_hashes: list[str] = []
         grid_indices: list[int] = []
         first_decoded: DecodedImage | None = None
+        post_settle_decoded: DecodedImage | None = None
         for frame_position, frame_value in enumerate(frames):
             if not isinstance(frame_value, dict):
                 findings.error(f"{label}: frame[{frame_position}] is not an object")
@@ -862,6 +1010,61 @@ def validate_dynamic(
                     )
                 pixel_hashes.append(decoded.pixel_sha256)
 
+        if manifest.get("schemaVersion") == 5:
+            expected_delay = float(manifest.get("settleSeconds", 0)) * 2
+            delay = sequence.get("postSettleDelaySeconds")
+            if not isinstance(delay, (int, float)) or not math.isclose(
+                delay, expected_delay, rel_tol=0, abs_tol=1e-12
+            ):
+                findings.error(
+                    f"{label}: postSettleDelaySeconds is {delay!r}, "
+                    f"expected {expected_delay}"
+                )
+            post_value = sequence.get("postSettleFrame")
+            if not isinstance(post_value, dict):
+                findings.error(f"{label}: missing postSettleFrame")
+            else:
+                total_post_settle_frames += 1
+                post_record: JsonObject = post_value
+                post_label = f"{label} post-settle"
+                relative = post_record.get("file")
+                if isinstance(relative, str):
+                    if relative in seen_files:
+                        findings.error(f"duplicate dynamic frame path: {relative}")
+                    seen_files.add(relative)
+                post_settle_decoded = verify_image_record(
+                    root=root,
+                    record=post_record,
+                    file_hash_key="fileSha256",
+                    label=post_label,
+                    findings=findings,
+                )
+                if post_settle_decoded is not None:
+                    verify_image_metadata(
+                        record=post_record,
+                        decoded=post_settle_decoded,
+                        saved_key="savedImage",
+                        label=post_label,
+                        findings=findings,
+                        require_source=True,
+                    )
+                    expected_size = (crop.get("width"), crop.get("height"))
+                    if (
+                        post_settle_decoded.width,
+                        post_settle_decoded.height,
+                    ) != expected_size:
+                        findings.error(
+                            f"{post_label}: dimensions disagree with crop "
+                            f"{expected_size}"
+                        )
+                if post_record.get("stable") is not True:
+                    findings.error(f"{post_label}: pixels did not stabilize")
+                samples = post_record.get("stabilitySamples")
+                if not isinstance(samples, int) or not 3 <= samples <= 6:
+                    findings.error(
+                        f"{post_label}: invalid stabilitySamples {samples!r}"
+                    )
+
         if any(right <= left for left, right in zip(grid_indices, grid_indices[1:])):
             findings.error(f"{label}: target-grid indices are not strictly increasing")
         if grid_indices and (
@@ -894,7 +1097,7 @@ def validate_dynamic(
             )
 
         schema = manifest.get("schemaVersion")
-        if schema == 4:
+        if schema in {4, 5}:
             if len(presentation_progress) != len(frames):
                 findings.error(
                     f"{label}: presentation clock decoded for "
@@ -938,9 +1141,17 @@ def validate_dynamic(
                 f"{label}: only {unique_frames} unique frames; expected at least "
                 f"{minimum_unique}"
             )
-        materialize_source_within_tolerance: bool | None = None
-        if sequence.get("mode") == "materialize" and first_decoded is not None:
-            reference_record = references.get(str(sequence.get("background")))
+        initial_control_within_tolerance: bool | None = None
+        post_settle_control_within_tolerance: bool | None = None
+
+        def check_source_control(
+            decoded: DecodedImage,
+            *,
+            reference_name: str,
+            context: str,
+            exclusions: list[JsonObject],
+        ) -> bool | None:
+            reference_record = references.get(reference_name)
             if reference_record is not None:
                 reference_path = artifact_path(
                     root, reference_record.get("file"), findings
@@ -948,41 +1159,97 @@ def validate_dynamic(
                 if reference_path is not None:
                     try:
                         reference_crop = crop_rgba(decode_image(reference_path), crop)
-                        control_diff = pixel_diff(reference_crop, first_decoded.rgba)
-                        materialize_source_within_tolerance = (
-                            source_diff_is_within_tolerance(
-                                control_diff,
-                                first_decoded.width * first_decoded.height,
-                                tolerance,
-                            )
+                        reference_pixels = rgba_excluding_regions(
+                            reference_crop,
+                            width=decoded.width,
+                            height=decoded.height,
+                            regions=exclusions,
                         )
-                        if not materialize_source_within_tolerance:
+                        captured_pixels = rgba_excluding_regions(
+                            decoded.rgba,
+                            width=decoded.width,
+                            height=decoded.height,
+                            regions=exclusions,
+                        )
+                        control_diff = pixel_diff(reference_pixels, captured_pixels)
+                        within_tolerance = source_diff_is_within_tolerance(
+                            control_diff,
+                            len(reference_pixels) // 4,
+                            tolerance,
+                        )
+                        if not within_tolerance:
                             findings.error(
-                                f"{label}: pre-materialization source round-trip "
+                                f"{label}: {context} source round-trip "
                                 f"exceeds tolerance: {control_diff}"
                             )
+                        return within_tolerance
                     except (KeyError, TypeError, ValueError) as error:
                         findings.error(
-                            f"{label}: cannot validate materialize control: {error}"
+                            f"{label}: cannot validate {context} control: {error}"
                         )
+            return None
+
+        mode = sequence.get("mode")
+        if (
+            mode
+            in {
+                "materialize",
+                "wallpaper-transition",
+                "wallpaper-transition-reverse",
+            }
+            and first_decoded
+        ):
+            initial_control_within_tolerance = check_source_control(
+                first_decoded,
+                reference_name=str(
+                    sequence.get(
+                        "outgoingBackground",
+                        sequence.get("background"),
+                    )
+                ),
+                context="initial",
+                exclusions=analysis_exclusions,
+            )
             control_key = (
-                str(sequence.get("background")),
+                str(mode),
+                str(sequence.get("outgoingBackground", sequence.get("background"))),
                 str(sequence.get("appearance")),
             )
             previous_hash = materialize_controls.setdefault(
                 control_key, first_decoded.pixel_sha256
             )
             if first_decoded.pixel_sha256 != previous_hash:
-                findings.error(
-                    f"{label}: pre-materialization frame differs between materials"
-                )
+                findings.error(f"{label}: initial control differs between materials")
+        if (
+            mode
+            in {
+                "dematerialize",
+                "wallpaper-transition",
+                "wallpaper-transition-reverse",
+            }
+            and post_settle_decoded is not None
+        ):
+            reference_name = (
+                sequence.get("incomingBackground")
+                if mode in {"wallpaper-transition", "wallpaper-transition-reverse"}
+                else sequence.get("outgoingBackground", sequence.get("background"))
+            )
+            post_settle_control_within_tolerance = check_source_control(
+                post_settle_decoded,
+                reference_name=str(reference_name),
+                context="post-settle",
+                exclusions=[],
+            )
+        materialize_source_within_tolerance = (
+            initial_control_within_tolerance if mode == "materialize" else None
+        )
         interval = duration / (configured_frames - 1)
         maximum_error = max(timing_errors, default=0)
         timing_limit = max(0.050, interval * 3)
         if maximum_error > timing_limit:
             timing_basis = (
                 "actualSeconds and presentationProgress"
-                if manifest.get("schemaVersion") == 4
+                if manifest.get("schemaVersion") in {4, 5}
                 else "actualSeconds"
             )
             findings.warn(
@@ -1019,6 +1286,8 @@ def validate_dynamic(
                 "presentationProgressSamples": len(presentation_progress),
                 "presentationProgressGapMax": max(progress_gaps, default=None),
                 "materializeSourceWithinTolerance": materialize_source_within_tolerance,
+                "initialControlWithinTolerance": initial_control_within_tolerance,
+                "postSettleControlWithinTolerance": post_settle_control_within_tolerance,
                 "presentationClock": sequence.get("presentationClock"),
                 "samplingMethod": sequence.get("samplingMethod"),
                 "captureAttempts": sequence.get("captureAttempts"),
@@ -1027,15 +1296,23 @@ def validate_dynamic(
             }
         )
     if manifest.get("requestedSuite") in {"dynamic", "all"}:
+        modes = [
+            "materialize",
+            "resize",
+            "translate",
+            "morph",
+            "wallpaper-wipe",
+        ]
+        if manifest.get("schemaVersion") == 5:
+            requested_modes = manifest.get("requestedDynamicModes")
+            modes = (
+                [str(mode) for mode in requested_modes]
+                if isinstance(requested_modes, list)
+                else []
+            )
         expected_ids = {
             f"{mode}__{overlay}__{appearance}"
-            for mode in (
-                "materialize",
-                "resize",
-                "translate",
-                "morph",
-                "wallpaper-wipe",
-            )
+            for mode in modes
             for overlay in ("regular", "clear")
             for appearance in ("light", "dark")
         }
@@ -1045,7 +1322,10 @@ def validate_dynamic(
             findings.error(f"missing dynamic sequences: {sorted(missing)}")
         if unexpected:
             findings.error(f"unexpected dynamic sequences: {sorted(unexpected)}")
-    return {"sequences": len(values), "frames": total_frames}, timing_reports
+    summary: JsonObject = {"sequences": len(values), "frames": total_frames}
+    if manifest.get("schemaVersion") == 5:
+        summary["postSettleFrames"] = total_post_settle_frames
+    return summary, timing_reports
 
 
 def validate_sweeps(
@@ -1053,7 +1333,7 @@ def validate_sweeps(
     manifest: JsonObject,
     references: dict[str, JsonObject],
     findings: Findings,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     values = manifest.get("sweepSequences")
     if manifest.get("schemaVersion") == 3 and values is None:
         return {"sequences": 0, "frames": 0}
@@ -1061,15 +1341,47 @@ def validate_sweeps(
         findings.error("sweepSequences is not a list")
         return {"sequences": 0, "frames": 0}
 
+    schema = manifest.get("schemaVersion")
+    exact_requested = (
+        manifest.get("exactSweepsRequested") is True if schema == 5 else True
+    )
+    if schema == 5 and not isinstance(manifest.get("exactSweepsRequested"), bool):
+        findings.error("exactSweepsRequested is not a Boolean")
+    if schema == 5 and not exact_requested and values:
+        findings.error("exact sweeps were skipped but sweepSequences is not empty")
+
+    modes = ["resize", "translate", "morph", "wallpaper-wipe"]
+    if schema == 5:
+        requested_modes = manifest.get("requestedDynamicModes")
+        modes = [
+            mode
+            for mode in (
+                [str(value) for value in requested_modes]
+                if isinstance(requested_modes, list)
+                else []
+            )
+            if mode
+            in {
+                "resize",
+                "translate",
+                "morph",
+                "wallpaper-wipe",
+                "wallpaper-transition",
+                "wallpaper-transition-reverse",
+            }
+        ]
     expected_ids = {
         f"sweep__{mode}__{overlay}__{appearance}"
-        for mode in ("resize", "translate", "morph", "wallpaper-wipe")
+        for mode in modes
         for overlay in ("regular", "clear")
         for appearance in ("light", "dark")
     }
     seen_ids: set[str] = set()
     seen_files: set[str] = set()
     total_frames = 0
+    cold_repeat_differences = 0
+    warm_reverse_differences = 0
+    repeatability: list[JsonObject] = []
     for sequence_index, value in enumerate(values):
         if not isinstance(value, dict):
             findings.error(f"sweepSequences[{sequence_index}] is not an object")
@@ -1090,95 +1402,236 @@ def validate_sweeps(
         if sequence.get("background") not in references:
             findings.error(f"{label}: missing background reference")
         crop = sequence.get("cropPixels")
-        frames = sequence.get("frames")
         if not isinstance(crop, dict):
             findings.error(f"{label}: missing cropPixels")
             continue
-        if not isinstance(frames, list) or len(frames) != 17:
-            count = len(frames) if isinstance(frames, list) else 0
-            findings.error(f"{label}: has {count} frames; expected 17 exact states")
-            continue
-
-        total_frames += len(frames)
-        pixel_hashes: list[str] = []
-        progress_values: list[float] = []
-        for frame_position, frame_value in enumerate(frames):
-            if not isinstance(frame_value, dict):
-                findings.error(f"{label}: frame[{frame_position}] is not an object")
-                continue
-            frame: JsonObject = frame_value
-            frame_label = f"{label} frame[{frame_position}]"
-            if frame.get("index") != frame_position:
+        if schema == 5:
+            mode = sequence.get("mode")
+            outgoing = sequence.get("outgoingBackground")
+            incoming = sequence.get("incomingBackground")
+            if outgoing != sequence.get("background") or outgoing not in references:
+                findings.error(f"{label}: invalid outgoingBackground {outgoing!r}")
+            expected_sources = {
+                "wallpaper-transition": (
+                    "dynamic-coded-field",
+                    "dynamic-coded-field-incoming",
+                ),
+                "wallpaper-transition-reverse": (
+                    "dynamic-coded-field-incoming",
+                    "dynamic-coded-field",
+                ),
+            }
+            expected_outgoing, expected_incoming = expected_sources.get(
+                str(mode), ("dynamic-coded-field", None)
+            )
+            if outgoing != expected_outgoing:
                 findings.error(
-                    f"{frame_label}: index is {frame.get('index')!r}, "
-                    f"expected {frame_position}"
+                    f"{label}: outgoingBackground is {outgoing!r}, "
+                    f"expected {expected_outgoing!r}"
                 )
-            expected_progress = frame_position / (len(frames) - 1)
-            progress = frame.get("progress")
-            if not isinstance(progress, (int, float)) or not math.isclose(
-                progress, expected_progress, rel_tol=0, abs_tol=1e-12
+            if incoming != expected_incoming:
+                findings.error(
+                    f"{label}: incomingBackground is {incoming!r}, "
+                    f"expected {expected_incoming!r}"
+                )
+            if isinstance(incoming, str) and incoming not in references:
+                findings.error(f"{label}: missing incoming background reference")
+            expected_role = (
+                "walle-two-wallpaper-expansion"
+                if mode in {"wallpaper-transition", "wallpaper-transition-reverse"}
+                else "settled-geometry-control"
+            )
+            if sequence.get("probeRole") != expected_role:
+                findings.error(
+                    f"{label}: probeRole is {sequence.get('probeRole')!r}, "
+                    f"expected {expected_role!r}"
+                )
+            if (
+                sequence.get("stateIsolation")
+                != "cold-forward/warm-reverse/cold-repeat"
+            ):
+                findings.error(f"{label}: invalid stateIsolation")
+            expected_traversals = [
+                "forward-cold",
+                "reverse-warm",
+                "forward-cold-repeat",
+            ]
+            if sequence.get("traversals") != expected_traversals:
+                findings.error(f"{label}: invalid traversals")
+            confirmation = sequence.get("stabilityConfirmationSeconds")
+            if not isinstance(confirmation, (int, float)) or not math.isclose(
+                confirmation, 0.10, rel_tol=0, abs_tol=1e-12
             ):
                 findings.error(
-                    f"{frame_label}: progress is {progress!r}, "
-                    f"expected {expected_progress}"
+                    f"{label}: invalid stabilityConfirmationSeconds {confirmation!r}"
                 )
-            else:
-                progress_values.append(float(progress))
-            if frame.get("stable") is not True:
-                findings.error(f"{frame_label}: pixels did not stabilize")
-            samples = frame.get("stabilitySamples")
-            if not isinstance(samples, int) or not 2 <= samples <= 4:
-                findings.error(f"{frame_label}: invalid stabilitySamples {samples!r}")
-            relative = frame.get("file")
-            if isinstance(relative, str):
-                if relative in seen_files:
-                    findings.error(f"duplicate sweep frame path: {relative}")
-                seen_files.add(relative)
-            decoded = verify_image_record(
-                root=root,
-                record=frame,
-                file_hash_key="fileSha256",
-                label=frame_label,
-                findings=findings,
-            )
-            if decoded is None:
-                continue
-            verify_image_metadata(
-                record=frame,
-                decoded=decoded,
-                saved_key="savedImage",
-                label=frame_label,
-                findings=findings,
-                require_source=True,
-            )
-            expected_size = (crop.get("width"), crop.get("height"))
-            if (decoded.width, decoded.height) != expected_size:
+
+        traversals = [
+            ("frames", list(range(17)), "forward-cold"),
+        ]
+        if schema == 5:
+            traversals += [
+                ("reverseFrames", list(reversed(range(17))), "reverse-warm"),
+                ("repeatFrames", list(range(17)), "forward-cold-repeat"),
+            ]
+        hashes_by_traversal: dict[str, dict[int, str]] = {}
+        for key, expected_indices, traversal_name in traversals:
+            frames = sequence.get(key)
+            if not isinstance(frames, list) or len(frames) != 17:
+                count = len(frames) if isinstance(frames, list) else 0
                 findings.error(
-                    f"{frame_label}: dimensions disagree with crop {expected_size}"
+                    f"{label} {traversal_name}: has {count} frames; "
+                    "expected 17 exact states"
                 )
-            pixel_hashes.append(decoded.pixel_sha256)
+                continue
+            total_frames += len(frames)
+            pixel_hashes: list[str] = []
+            hashes_by_index: dict[int, str] = {}
+            progress_values: list[float] = []
+            for frame_position, (frame_value, expected_index) in enumerate(
+                zip(frames, expected_indices, strict=True)
+            ):
+                if not isinstance(frame_value, dict):
+                    findings.error(
+                        f"{label} {traversal_name}: "
+                        f"frame[{frame_position}] is not an object"
+                    )
+                    continue
+                frame: JsonObject = frame_value
+                frame_label = f"{label} {traversal_name} frame[{frame_position}]"
+                if frame.get("index") != expected_index:
+                    findings.error(
+                        f"{frame_label}: index is {frame.get('index')!r}, "
+                        f"expected {expected_index}"
+                    )
+                expected_progress = expected_index / 16
+                progress = frame.get("progress")
+                if not isinstance(progress, (int, float)) or not math.isclose(
+                    progress, expected_progress, rel_tol=0, abs_tol=1e-12
+                ):
+                    findings.error(
+                        f"{frame_label}: progress is {progress!r}, "
+                        f"expected {expected_progress}"
+                    )
+                else:
+                    progress_values.append(float(progress))
+                if frame.get("stable") is not True:
+                    findings.error(f"{frame_label}: pixels did not stabilize")
+                samples = frame.get("stabilitySamples")
+                minimum_samples = 3 if schema == 5 else 2
+                maximum_samples = 6 if schema == 5 else 4
+                if (
+                    not isinstance(samples, int)
+                    or not minimum_samples <= samples <= maximum_samples
+                ):
+                    findings.error(
+                        f"{frame_label}: invalid stabilitySamples {samples!r}"
+                    )
+                relative = frame.get("file")
+                if isinstance(relative, str):
+                    if relative in seen_files:
+                        findings.error(f"duplicate sweep frame path: {relative}")
+                    seen_files.add(relative)
+                decoded = verify_image_record(
+                    root=root,
+                    record=frame,
+                    file_hash_key="fileSha256",
+                    label=frame_label,
+                    findings=findings,
+                )
+                if decoded is None:
+                    continue
+                verify_image_metadata(
+                    record=frame,
+                    decoded=decoded,
+                    saved_key="savedImage",
+                    label=frame_label,
+                    findings=findings,
+                    require_source=True,
+                )
+                expected_size = (crop.get("width"), crop.get("height"))
+                if (decoded.width, decoded.height) != expected_size:
+                    findings.error(
+                        f"{frame_label}: dimensions disagree with crop {expected_size}"
+                    )
+                pixel_hashes.append(decoded.pixel_sha256)
+                hashes_by_index[expected_index] = decoded.pixel_sha256
 
-        if any(
-            right <= left for left, right in zip(progress_values, progress_values[1:])
-        ):
-            findings.error(f"{label}: progress values are not strictly increasing")
-        if len(set(pixel_hashes)) != len(frames):
-            findings.error(
-                f"{label}: only {len(set(pixel_hashes))}/{len(frames)} "
-                "exact geometry states are unique"
+            pairs = zip(progress_values, progress_values[1:])
+            if traversal_name == "reverse-warm":
+                if any(right >= left for left, right in pairs):
+                    findings.error(
+                        f"{label}: reverse progress values are not strictly decreasing"
+                    )
+            elif any(right <= left for left, right in pairs):
+                findings.error(
+                    f"{label}: {traversal_name} progress values are not "
+                    "strictly increasing"
+                )
+            if len(set(pixel_hashes)) != len(frames):
+                findings.error(
+                    f"{label} {traversal_name}: only "
+                    f"{len(set(pixel_hashes))}/{len(frames)} exact geometry "
+                    "states are unique"
+                )
+            hashes_by_traversal[traversal_name] = hashes_by_index
+
+        if schema == 5:
+            forward = hashes_by_traversal.get("forward-cold", {})
+            reverse = hashes_by_traversal.get("reverse-warm", {})
+            repeat = hashes_by_traversal.get("forward-cold-repeat", {})
+            cold_changed = sum(
+                forward.get(index) != repeat.get(index) for index in range(17)
             )
+            reverse_changed = sum(
+                forward.get(index) != reverse.get(index) for index in range(17)
+            )
+            cold_repeat_differences += cold_changed
+            warm_reverse_differences += reverse_changed
+            repeatability.append(
+                {
+                    "id": sequence_id,
+                    "coldRepeatDifferingStates": cold_changed,
+                    "warmReverseDifferingStates": reverse_changed,
+                }
+            )
+            if cold_changed:
+                findings.warn(
+                    f"{label}: {cold_changed}/17 settled states differ across "
+                    "fresh cold traversals; retain both trials as the measured "
+                    "repeatability envelope"
+                )
+            if reverse_changed:
+                findings.warn(
+                    f"{label}: {reverse_changed}/17 settled states differ after "
+                    "reverse traversal; retain both directions as hysteresis "
+                    "evidence"
+                )
 
-    if manifest.get("schemaVersion") == 4 and manifest.get("requestedSuite") in {
-        "dynamic",
-        "all",
-    }:
+    if (
+        schema in {4, 5}
+        and exact_requested
+        and manifest.get("requestedSuite") in {"dynamic", "all"}
+    ):
         missing = expected_ids - seen_ids
         unexpected = seen_ids - expected_ids
         if missing:
             findings.error(f"missing sweep sequences: {sorted(missing)}")
         if unexpected:
             findings.error(f"unexpected sweep sequences: {sorted(unexpected)}")
-    return {"sequences": len(values), "frames": total_frames}
+    summary: dict[str, Any] = {
+        "sequences": len(values),
+        "frames": total_frames,
+    }
+    if schema == 5:
+        summary.update(
+            {
+                "coldRepeatDifferingStates": cold_repeat_differences,
+                "warmReverseDifferingStates": warm_reverse_differences,
+                "repeatability": repeatability,
+            }
+        )
+    return summary
 
 
 def validate(root: Path) -> tuple[Findings, JsonObject]:
@@ -1225,8 +1678,12 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
     if requested in {"dynamic", "all"} and dynamic_summary["sequences"] == 0:
         findings.error("requested dynamic suite produced no sequences")
     if (
-        manifest.get("schemaVersion") == 4
+        manifest.get("schemaVersion") in {4, 5}
         and requested in {"dynamic", "all"}
+        and (
+            manifest.get("schemaVersion") == 4
+            or manifest.get("exactSweepsRequested") is True
+        )
         and sweep_summary["sequences"] == 0
     ):
         findings.error("requested dynamic suite produced no exact-state sweeps")
@@ -1238,13 +1695,15 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
         "captureManifest": {
             "rigVersion": manifest.get("rigVersion"),
             "requestedSuite": requested,
+            "requestedDynamicModes": manifest.get("requestedDynamicModes"),
+            "dynamicDurationSeconds": manifest.get("dynamicDurationSeconds"),
+            "transitionOriginNormalized": manifest.get("transitionOriginNormalized"),
+            "exactSweepsRequested": manifest.get("exactSweepsRequested"),
             "osVersion": manifest.get("osVersion"),
             "osBuild": manifest.get("osBuild"),
             "architecture": manifest.get("architecture"),
             "ciCommit": manifest.get("ciCommit"),
-            "presentationClockPreflight": manifest.get(
-                "presentationClockPreflight"
-            ),
+            "presentationClockPreflight": manifest.get("presentationClockPreflight"),
         },
         "summary": {
             "references": len(references),
@@ -1263,7 +1722,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Independently validate a GlassCapture v2.1-v2.5 artifact."
+        description="Independently validate a GlassCapture v2.1-v2.6 artifact."
     )
     parser.add_argument("artifact", type=Path, help="capture artifact directory")
     parser.add_argument("--report", type=Path, help="write a JSON validation report")

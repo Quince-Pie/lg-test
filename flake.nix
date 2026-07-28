@@ -30,7 +30,7 @@
             # (the captures themselves are produced on GitHub's macos-26
             # runners by .github/workflows/capture.yml).
             packages = with pkgs; [
-              (python3.withPackages (
+              (python314.withPackages (
                 ps: with ps; [
                   numpy
                   scipy

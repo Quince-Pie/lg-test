@@ -28,6 +28,10 @@ struct Config {
     var suite: CaptureSuite = .all
     var dynamicFrames = 61
     var dynamicDuration: Double = 1.0
+    var exactSweeps = true
+    var dynamicModes = DynamicMode.allCases
+    var transitionOriginX = 0.25
+    var transitionOriginY = 0.30
 
     static func parse() -> Config {
         var c = Config()
@@ -69,6 +73,39 @@ struct Config {
                     fatalError("--dynamic-duration requires seconds")
                 }
                 c.dynamicDuration = seconds
+            case "--skip-exact-sweeps":
+                c.exactSweeps = false
+            case "--dynamic-modes":
+                guard let value = args.popFirst(), !value.isEmpty else {
+                    fatalError("--dynamic-modes requires all or a comma-separated list")
+                }
+                if value == "all" {
+                    c.dynamicModes = DynamicMode.allCases
+                } else {
+                    let names = value.split(separator: ",").map(String.init)
+                    let modes = names.compactMap(DynamicMode.init(rawValue:))
+                    guard modes.count == names.count,
+                          Set(modes.map(\.rawValue)).count == modes.count
+                    else {
+                        fatalError("--dynamic-modes contains an unknown or duplicate mode")
+                    }
+                    c.dynamicModes = modes
+                }
+            case "--transition-origin":
+                guard let value = args.popFirst() else {
+                    fatalError("--transition-origin requires normalized x,y")
+                }
+                let components = value.split(separator: ",")
+                guard components.count == 2,
+                      let x = Double(components[0]),
+                      let y = Double(components[1]),
+                      (0...1).contains(x),
+                      (0...1).contains(y)
+                else {
+                    fatalError("--transition-origin requires normalized x,y in [0,1]")
+                }
+                c.transitionOriginX = x
+                c.transitionOriginY = y
             default:
                 fatalError("unknown argument: \(a)")
             }
@@ -77,6 +114,7 @@ struct Config {
         precondition(c.settleSeconds >= 0, "settle duration cannot be negative")
         precondition(c.dynamicFrames >= 3, "dynamic capture needs at least three frames")
         precondition(c.dynamicDuration > 0, "dynamic duration must be positive")
+        precondition(!c.dynamicModes.isEmpty, "at least one dynamic mode is required")
         return c
     }
 }
@@ -271,6 +309,32 @@ func dynamicBackground() -> Background {
     }
 }
 
+func incomingDynamicBackground() -> Background {
+    Background(name: "dynamic-coded-field-incoming", family: .dynamic) {
+        x, y, _, _ in
+        // This field is deliberately independent of dynamic-coded-field while
+        // retaining the same useful properties: gradients in both axes,
+        // broad RGB coverage, and compact lossless encoding. A two-source
+        // transition can therefore identify which side of its moving boundary
+        // contributes every refracted pixel.
+        let xd = Double(x)
+        let yd = Double(y)
+        func wave(_ coordinate: Double, _ period: Double) -> Double {
+            cos(2 * .pi * coordinate / period)
+        }
+        let r = 116 + 47 * wave(2 * xd + yd, 431)
+            + 28 * wave(yd, 769) + 23 * wave(xd - yd, 1151)
+        let g = 139 + 41 * wave(xd - 2 * yd, 389)
+            + 35 * wave(xd, 683) + 17 * wave(xd + yd, 997)
+        let b = 124 + 44 * wave(yd, 337)
+            + 32 * wave(2 * xd - yd, 821) + 22 * wave(xd, 1237)
+        func channel(_ value: Double) -> UInt8 {
+            UInt8(max(0, min(255, Int(value.rounded()))))
+        }
+        return (channel(r), channel(g), channel(b))
+    }
+}
+
 func renderBackground(_ bg: Background, width: Int, height: Int) -> CGImage {
     var rgba = [UInt8](repeating: 255, count: width * height * 4)
     for y in 0..<height {
@@ -445,6 +509,7 @@ enum Appearance: String, CaseIterable {
 @MainActor
 final class SceneModel: ObservableObject {
     @Published var background: CGImage?
+    @Published var incomingBackground: CGImage?
     @Published var overlay: Overlay = .none
     @Published var scene: SceneSpec
     @Published var higScene = false
@@ -455,6 +520,9 @@ final class SceneModel: ObservableObject {
     @Published var dynamicProgress: CGFloat = 0
     @Published var dynamicClockProgress: CGFloat = 0
     @Published var dynamicClockVisible = false
+    @Published var dynamicGeneration = 0
+    @Published var dynamicOriginX: CGFloat = 0.25
+    @Published var dynamicOriginY: CGFloat = 0.30
     @Published var scale: CGFloat = 1
 
     init(scene: SceneSpec) {
@@ -512,6 +580,15 @@ func calibrationScenes(width: Int, height: Int) -> [SceneSpec] {
             "circle-0500-upper-left", centerX: Double(width) * 0.25,
             centerY: Double(height) * 0.30, diameter: 500),
         circleScene(
+            "circle-0500-upper-right", centerX: Double(width) * 0.75,
+            centerY: Double(height) * 0.30, diameter: 500),
+        circleScene(
+            "circle-0500-lower-left", centerX: Double(width) * 0.25,
+            centerY: Double(height) * 0.70, diameter: 500),
+        circleScene(
+            "circle-0500-lower-right", centerX: Double(width) * 0.75,
+            centerY: Double(height) * 0.70, diameter: 500),
+        circleScene(
             "circle-6000-upper-left", centerX: Double(width) * 0.25,
             centerY: Double(height) * 0.30, diameter: 6000),
     ]
@@ -554,8 +631,24 @@ func calibrationScenes(width: Int, height: Int) -> [SceneSpec] {
 }
 
 enum DynamicMode: String, Codable, CaseIterable {
-    case materialize, resize, translate, morph
+    case materialize, dematerialize, resize, translate, morph
     case wallpaperWipe = "wallpaper-wipe"
+    case wallpaperTransition = "wallpaper-transition"
+    case wallpaperTransitionReverse = "wallpaper-transition-reverse"
+
+    var isWallpaperTransition: Bool {
+        self == .wallpaperTransition || self == .wallpaperTransitionReverse
+    }
+
+    var usesRasterClock: Bool {
+        self == .materialize
+            || self == .dematerialize
+            || isWallpaperTransition
+    }
+
+    var hasExactGeometrySweep: Bool {
+        self != .materialize && self != .dematerialize
+    }
 }
 
 struct GlassShapeView: View {
@@ -620,7 +713,8 @@ struct DynamicOverlay: View {
     }
 
     var endpointProgress: CGFloat {
-        if model.dynamicMode == .materialize {
+        if model.dynamicMode == .materialize
+            || model.dynamicMode == .dematerialize {
             return model.dynamicVisible ? 1 : 0
         }
         return model.dynamicEndState ? 1 : 0
@@ -640,10 +734,44 @@ struct DynamicOverlay: View {
         start + (end - start) * progress
     }
 
+    var wipeCenter: CGPoint {
+        CGPoint(
+            x: size.width * model.dynamicOriginX,
+            y: size.height * model.dynamicOriginY)
+    }
+
+    var wipeDiameter: CGFloat {
+        let center = wipeCenter
+        let right = size.width - center.x
+        let bottom = size.height - center.y
+        let farthestRadiusSquared = [
+            center.x * center.x + center.y * center.y,
+            right * right + center.y * center.y,
+            center.x * center.x + bottom * bottom,
+            right * right + bottom * bottom,
+        ].max() ?? size.width * size.width + size.height * size.height
+        return interpolated(0, farthestRadiusSquared.squareRoot() * 2.06)
+    }
+
+    @ViewBuilder
+    var wallpaperReveal: some View {
+        if model.dynamicMode?.isWallpaperTransition == true,
+           let incoming = model.incomingBackground {
+            Image(decorative: incoming, scale: model.scale)
+                .interpolation(.none)
+                .antialiased(false)
+                .mask {
+                    Circle()
+                        .frame(width: wipeDiameter, height: wipeDiameter)
+                        .position(x: wipeCenter.x, y: wipeCenter.y)
+                }
+        }
+    }
+
     @ViewBuilder
     var dynamicShape: some View {
         switch model.dynamicMode {
-        case .materialize:
+        case .materialize, .dematerialize:
             if model.dynamicVisible {
                 Color.clear
                     .frame(width: 1000, height: 1000)
@@ -683,21 +811,19 @@ struct DynamicOverlay: View {
                     x: interpolated(size.width * 0.33, size.width * 0.67),
                     y: size.height / 2)
         case .wallpaperWipe:
-            let center = CGPoint(x: size.width * 0.25, y: size.height * 0.30)
-            let right = size.width - center.x
-            let top = size.height - center.y
-            let farthestRadiusSquared = [
-                center.x * center.x + center.y * center.y,
-                right * right + center.y * center.y,
-                center.x * center.x + top * top,
-                right * right + top * top,
-            ].max() ?? size.width * size.width + size.height * size.height
-            let farthestRadius = farthestRadiusSquared.squareRoot()
-            let diameter = interpolated(128, farthestRadius * 2.06)
+            let diameter = wipeDiameter + 128 * (1 - progress)
             Color.clear
                 .frame(width: diameter, height: diameter)
                 .glassEffect(glass, in: .circle)
-                .position(x: center.x, y: center.y)
+                .position(x: wipeCenter.x, y: wipeCenter.y)
+        case .wallpaperTransition, .wallpaperTransitionReverse:
+            if model.dynamicVisible {
+                Color.clear
+                    .frame(width: wipeDiameter, height: wipeDiameter)
+                    .glassEffect(glass, in: .circle)
+                    .glassEffectTransition(.materialize)
+                    .position(x: wipeCenter.x, y: wipeCenter.y)
+            }
         case nil:
             EmptyView()
         }
@@ -705,6 +831,7 @@ struct DynamicOverlay: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
+            wallpaperReveal
             GlassEffectContainer(spacing: 0) {
                 dynamicShape
             }
@@ -756,6 +883,7 @@ struct RootView: View {
                 HIGScene()
             } else if model.dynamicMode != nil {
                 DynamicOverlay(model: model, size: size)
+                    .id(model.dynamicGeneration)
             } else {
                 CalibrationOverlay(overlay: model.overlay, scene: model.scene)
             }
@@ -850,8 +978,13 @@ struct DynamicSequenceRecord: Codable {
     let overlay: String
     let appearance: String
     let background: String
+    let outgoingBackground: String
+    let incomingBackground: String?
+    let probeRole: String
+    let stateIsolation: String
     let durationSeconds: Double
     let animationCurve: String
+    let phaseSchedule: [String: Double]
     let presentationClock: String
     let samplingMethod: String
     let captureAttempts: Int
@@ -860,6 +993,8 @@ struct DynamicSequenceRecord: Codable {
     let cropPixels: CropRecord
     let analysisExclusionPixels: [CropRecord]
     var frames: [DynamicFrameRecord]
+    let postSettleDelaySeconds: Double
+    var postSettleFrame: SettledFrameRecord?
 }
 
 struct PresentationClockPreflightRecord: Codable {
@@ -885,14 +1020,35 @@ struct SweepFrameRecord: Codable {
     let savedImage: ImageRecord
 }
 
+struct SettledFrameRecord: Codable {
+    let file: String
+    let fileSha256: String
+    let pixelSha256: String
+    let pixelWidth: Int
+    let pixelHeight: Int
+    let captureBackend: String
+    let stable: Bool
+    let stabilitySamples: Int
+    let sourceImage: ImageRecord
+    let savedImage: ImageRecord
+}
+
 struct SweepSequenceRecord: Codable {
     let id: String
     let mode: String
     let overlay: String
     let appearance: String
     let background: String
+    let outgoingBackground: String
+    let incomingBackground: String?
+    let probeRole: String
+    let stateIsolation: String
+    let traversals: [String]
+    let stabilityConfirmationSeconds: Double
     let cropPixels: CropRecord
     var frames: [SweepFrameRecord]
+    var reverseFrames: [SweepFrameRecord]
+    var repeatFrames: [SweepFrameRecord]
 }
 
 struct Manifest: Codable {
@@ -913,6 +1069,9 @@ struct Manifest: Codable {
     let settleSeconds: Double
     let dynamicFrameCount: Int
     let dynamicDurationSeconds: Double
+    let requestedDynamicModes: [String]
+    let transitionOriginNormalized: [Double]
+    let exactSweepsRequested: Bool
     let canonicalPixelEncoding: String
     let sourceRoundTripTolerance: SourceRoundTripTolerance
     let windowColorSpace: String
@@ -1078,19 +1237,36 @@ func captureWindow(_ window: NSWindow) throws -> CapturedFrame {
 func stableCapture(
     _ window: NSWindow,
     settleNanoseconds: UInt64,
-    maximumSamples: Int = 4
+    maximumSamples: Int = 4,
+    confirmationNanoseconds: UInt64 = 0
 ) async throws -> (frame: CapturedFrame, stable: Bool, samples: Int) {
     if settleNanoseconds > 0 {
         try await Task.sleep(nanoseconds: settleNanoseconds)
     }
 
+    precondition(maximumSamples >= 2)
     var previous: CapturedFrame?
-    for sample in 1...maximumSamples {
+    var sample = 0
+    while sample < maximumSamples {
         let current = try captureWindow(window)
-        if let previous, previous.pixels == current.pixels {
-            return (current, true, sample)
+        sample += 1
+        if let prior = previous, prior.pixels == current.pixels {
+            guard confirmationNanoseconds > 0 else {
+                return (current, true, sample)
+            }
+            if sample == maximumSamples {
+                return (current, false, sample)
+            }
+            try await Task.sleep(nanoseconds: confirmationNanoseconds)
+            let confirmed = try captureWindow(window)
+            sample += 1
+            if current.pixels == confirmed.pixels {
+                return (confirmed, true, sample)
+            }
+            previous = confirmed
+        } else {
+            previous = current
         }
-        previous = current
         if sample != maximumSamples {
             try await Task.sleep(nanoseconds: 16_666_667)
         }
@@ -1267,7 +1443,7 @@ func dynamicCrop(
     let scaleX = Double(imageWidth) / Double(pointWidth)
     let scaleY = Double(imageHeight) / Double(pointHeight)
     switch mode {
-    case .materialize, .resize:
+    case .materialize, .dematerialize, .resize:
         return centeredCrop(
             imageWidth: imageWidth,
             imageHeight: imageHeight,
@@ -1279,7 +1455,7 @@ func dynamicCrop(
             imageHeight: imageHeight,
             desiredWidth: Int((2800 * scaleX).rounded()),
             desiredHeight: Int((1300 * scaleY).rounded()))
-    case .wallpaperWipe:
+    case .wallpaperWipe, .wallpaperTransition, .wallpaperTransitionReverse:
         return CropRecord(
             x: 0, y: 0, width: imageWidth, height: imageHeight)
     }
@@ -1541,8 +1717,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             maximumMeanAbsoluteChannelDelta: 0.002)
 
         var manifest = Manifest(
-            schemaVersion: 4,
-            rigVersion: "2.5.0",
+            schemaVersion: 5,
+            rigVersion: "2.6.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -1560,6 +1736,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             settleSeconds: config.settleSeconds,
             dynamicFrameCount: config.dynamicFrames,
             dynamicDurationSeconds: config.dynamicDuration,
+            requestedDynamicModes:
+                config.dynamicModes.map(\.rawValue),
+            transitionOriginNormalized: [
+                config.transitionOriginX,
+                config.transitionOriginY,
+            ],
+            exactSweepsRequested: config.exactSweeps,
             canonicalPixelEncoding: "sRGB RGBA8 top-left opaque-alpha",
             sourceRoundTripTolerance: sourceTolerance,
             windowColorSpace: window.colorSpace.map { String(describing: $0) } ?? "unknown",
@@ -1896,16 +2079,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         if config.suite.includesDynamic {
             let bg = dynamicBackground()
+            let incomingBG = incomingDynamicBackground()
             let image = renderBackground(bg, width: pw, height: ph)
+            let incomingImage = renderBackground(
+                incomingBG, width: pw, height: ph)
             _ = try recordReference(bg, image)
+            _ = try recordReference(incomingBG, incomingImage)
             model.background = image
+            model.incomingBackground = incomingImage
+            model.dynamicOriginX = CGFloat(config.transitionOriginX)
+            model.dynamicOriginY = CGFloat(config.transitionOriginY)
 
             for appearance in Appearance.allCases {
                 window.appearance = appearance.ns
                 for overlay in [Overlay.regular, .clear] {
-                    for mode in DynamicMode.allCases {
+                    for mode in config.dynamicModes {
                         let sequenceID =
                             "\(mode.rawValue)__\(overlay.rawValue)__\(appearance.rawValue)"
+                        let reverseSources =
+                            mode == .wallpaperTransitionReverse
+                        let outgoingSpec = reverseSources ? incomingBG : bg
+                        let outgoingImage =
+                            reverseSources ? incomingImage : image
+                        let incomingSpec = reverseSources ? bg : incomingBG
+                        let transitionIncomingImage =
+                            reverseSources ? image : incomingImage
                         log("dynamic: \(sequenceID)")
                         let sequenceDir = dynamic.appendingPathComponent(sequenceID)
                         try fm.createDirectory(
@@ -1914,23 +2112,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         var transaction = Transaction()
                         transaction.disablesAnimations = true
                         withTransaction(transaction) {
-                            model.background = image
+                            model.background = outgoingImage
+                            model.incomingBackground =
+                                transitionIncomingImage
                             model.overlay = overlay
                             model.higScene = false
                             model.dynamicMode = mode
-                            model.dynamicVisible = false
+                            model.dynamicVisible =
+                                mode == .dematerialize
+                                || mode.isWallpaperTransition
                             model.dynamicEndState = false
                             model.dynamicExplicitProgress = false
                             model.dynamicProgress = 0
                             model.dynamicClockProgress = 0
-                            model.dynamicClockVisible = mode != .materialize
+                            model.dynamicClockVisible = !mode.usesRasterClock
+                            model.dynamicGeneration += 1
                         }
-                        if mode == .materialize {
+                        if mode.usesRasterClock {
                             materializeClock.prepare()
                         } else {
                             materializeClock.deactivate()
                         }
 
+                        var phaseTask: Task<Void, Never>?
                         do {
                             let initial = try await stableCapture(
                                 window, settleNanoseconds: settle * 2)
@@ -1953,16 +2157,47 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             let refresh = max(
                                 displayMode?.refreshRate ?? 60, 1)
                             let animationStart = ProcessInfo.processInfo.systemUptime
-                            if mode == .materialize {
+                            if mode.usesRasterClock {
                                 materializeClock.animate(
                                     startTime: animationStart,
                                     duration: config.dynamicDuration,
                                     refreshRate: refresh)
                             }
-                            withAnimation(.linear(duration: config.dynamicDuration)) {
-                                if mode == .materialize {
+                            switch mode {
+                            case .materialize:
+                                withAnimation(.linear(
+                                    duration: config.dynamicDuration
+                                )) {
                                     model.dynamicVisible = true
-                                } else {
+                                }
+                            case .dematerialize:
+                                withAnimation(.linear(
+                                    duration: config.dynamicDuration
+                                )) {
+                                    model.dynamicVisible = false
+                                }
+                            case .wallpaperTransition,
+                                 .wallpaperTransitionReverse:
+                                withAnimation(.linear(
+                                    duration: config.dynamicDuration * 0.62
+                                )) {
+                                    model.dynamicEndState = true
+                                }
+                                phaseTask = Task { @MainActor in
+                                    try? await Task.sleep(nanoseconds: UInt64(
+                                        config.dynamicDuration * 0.66
+                                            * 1_000_000_000))
+                                    guard !Task.isCancelled else { return }
+                                    withAnimation(.linear(
+                                        duration: config.dynamicDuration * 0.34
+                                    )) {
+                                        model.dynamicVisible = false
+                                    }
+                                }
+                            case .resize, .translate, .morph, .wallpaperWipe:
+                                withAnimation(.linear(
+                                    duration: config.dynamicDuration
+                                )) {
                                     model.dynamicClockProgress = 1
                                     model.dynamicEndState = true
                                 }
@@ -1983,6 +2218,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     refreshRate: refresh)
                             }.value
                             timed.append(contentsOf: captured.frames)
+                            phaseTask?.cancel()
 
                             let crop = dynamicCrop(
                                 for: mode,
@@ -2002,10 +2238,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 mode: mode.rawValue,
                                 overlay: overlay.rawValue,
                                 appearance: appearance.rawValue,
-                                background: bg.name,
+                                background: outgoingSpec.name,
+                                outgoingBackground: outgoingSpec.name,
+                                incomingBackground:
+                                    mode.isWallpaperTransition
+                                    ? incomingSpec.name : nil,
+                                probeRole: {
+                                    switch mode {
+                                    case .materialize, .dematerialize:
+                                        return "material-topology-response"
+                                    case .wallpaperWipe:
+                                        return "single-source-expansion-control"
+                                    case .wallpaperTransition,
+                                         .wallpaperTransitionReverse:
+                                        return "walle-two-wallpaper-reference"
+                                    case .resize, .translate, .morph:
+                                        return "geometry-system-identification"
+                                    }
+                                }(),
+                                stateIsolation:
+                                    "fresh-swiftui-dynamic-subtree-per-sequence",
                                 durationSeconds: config.dynamicDuration,
                                 animationCurve: "linear",
-                                presentationClock: mode == .materialize
+                                phaseSchedule:
+                                    mode.isWallpaperTransition
+                                    ? [
+                                        "expansionEnd": 0.62,
+                                        "dematerializeStart": 0.66,
+                                        "dematerializeEnd": 1.0,
+                                    ]
+                                    : ["end": 1.0],
+                                presentationClock: mode.usesRasterClock
                                     ? "appkit-raster-monotonic"
                                     : "swiftui-animatable-frame",
                                 samplingMethod:
@@ -2015,7 +2278,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 transientFailures: captured.transientFailures,
                                 cropPixels: crop,
                                 analysisExclusionPixels: exclusions,
-                                frames: [])
+                                frames: [],
+                                postSettleDelaySeconds:
+                                    config.settleSeconds * 2,
+                                postSettleFrame: nil)
 
                             // PNG encoding happens only after the animation so
                             // compression cannot perturb sample timing.
@@ -2042,11 +2308,59 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     sourceImage: cropped.sourceImage,
                                     savedImage: describeImage(cropped.image)))
                             }
+
+                            // The live endpoint still contains its encoded
+                            // clock. Capture a delayed, clock-free control to
+                            // expose any compositor tail after nominal time
+                            // and to prove exact source replacement for
+                            // dematerialize and the two-wallpaper transition.
+                            materializeClock.deactivate()
+                            var endTransaction = Transaction()
+                            endTransaction.disablesAnimations = true
+                            withTransaction(endTransaction) {
+                                model.dynamicClockVisible = false
+                                model.dynamicClockProgress = 0
+                            }
+                            let postSettle = try await stableCapture(
+                                window,
+                                settleNanoseconds: settle * 2,
+                                maximumSamples: 6,
+                                confirmationNanoseconds: 100_000_000)
+                            let postRaw = RawCapturedFrame(
+                                image: postSettle.frame.source,
+                                backend: postSettle.frame.backend,
+                                midpointUptime: postSettle.frame.midpointUptime,
+                                captureDurationSeconds:
+                                    postSettle.frame.captureDurationSeconds)
+                            let postCropped = try croppedFrame(
+                                postRaw, crop: crop)
+                            let postName = "post-settle.png"
+                            let postURL =
+                                sequenceDir.appendingPathComponent(postName)
+                            try writePNG(postCropped.image, to: postURL)
+                            sequence.postSettleFrame = SettledFrameRecord(
+                                file: "dynamic/\(sequenceID)/\(postName)",
+                                fileSha256: sha256(of: postURL),
+                                pixelSha256: postCropped.pixelSha256,
+                                pixelWidth: postCropped.image.width,
+                                pixelHeight: postCropped.image.height,
+                                captureBackend: postCropped.backend,
+                                stable: postSettle.stable,
+                                stabilitySamples: postSettle.samples,
+                                sourceImage: postCropped.sourceImage,
+                                savedImage: describeImage(postCropped.image))
+                            if !postSettle.stable {
+                                failures += 1
+                                log(
+                                    "UNSTABLE dynamic post-settle: "
+                                    + sequenceID)
+                            }
                             manifest.dynamicSequences.append(sequence)
                             log(
                                 "dynamic complete: \(sequenceID), "
                                 + "\(timed.count)/\(config.dynamicFrames) target frames")
                         } catch {
+                            phaseTask?.cancel()
                             failures += 1
                             log(
                                 "FAILED dynamic sequence \(sequenceID): "
@@ -2062,15 +2376,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // These orthogonal, settled sweeps provide exact geometry states
             // for fitting; comparing them with the live sequences also exposes
             // any genuinely velocity-dependent rendering.
-            let sweepFrameCount = 17
-            let sweepModes = DynamicMode.allCases.filter { $0 != .materialize }
-            for appearance in Appearance.allCases {
-                window.appearance = appearance.ns
-                for overlay in [Overlay.regular, .clear] {
-                    for mode in sweepModes {
+            if config.exactSweeps {
+                let sweepFrameCount = 17
+                let confirmationSeconds = 0.10
+                let confirmationNanoseconds = UInt64(
+                    confirmationSeconds * 1_000_000_000)
+                let sweepModes = config.dynamicModes.filter(
+                    \.hasExactGeometrySweep)
+                for appearance in Appearance.allCases {
+                    window.appearance = appearance.ns
+                    for overlay in [Overlay.regular, .clear] {
+                        for mode in sweepModes {
                         let sequenceID =
                             "sweep__\(mode.rawValue)__\(overlay.rawValue)"
                             + "__\(appearance.rawValue)"
+                        let reverseSources =
+                            mode == .wallpaperTransitionReverse
+                        let outgoingSpec = reverseSources ? incomingBG : bg
+                        let outgoingImage =
+                            reverseSources ? incomingImage : image
+                        let incomingSpec = reverseSources ? bg : incomingBG
+                        let transitionIncomingImage =
+                            reverseSources ? image : incomingImage
                         log("sweep: \(sequenceID)")
                         let sequenceDir = sweeps.appendingPathComponent(sequenceID)
                         try fm.createDirectory(
@@ -2086,72 +2413,136 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             mode: mode.rawValue,
                             overlay: overlay.rawValue,
                             appearance: appearance.rawValue,
-                            background: bg.name,
+                            background: outgoingSpec.name,
+                            outgoingBackground: outgoingSpec.name,
+                            incomingBackground:
+                                mode.isWallpaperTransition
+                                ? incomingSpec.name : nil,
+                            probeRole:
+                                mode.isWallpaperTransition
+                                ? "walle-two-wallpaper-expansion"
+                                : "settled-geometry-control",
+                            stateIsolation:
+                                "cold-forward/warm-reverse/cold-repeat",
+                            traversals: [
+                                "forward-cold",
+                                "reverse-warm",
+                                "forward-cold-repeat",
+                            ],
+                            stabilityConfirmationSeconds:
+                                confirmationSeconds,
                             cropPixels: crop,
-                            frames: [])
+                            frames: [],
+                            reverseFrames: [],
+                            repeatFrames: [])
 
                         do {
-                            for index in 0..<sweepFrameCount {
-                                let progress =
-                                    Double(index) / Double(sweepFrameCount - 1)
-                                var transaction = Transaction()
-                                transaction.disablesAnimations = true
-                                withTransaction(transaction) {
-                                    model.background = image
-                                    model.overlay = overlay
-                                    model.higScene = false
-                                    model.dynamicMode = mode
-                                    model.dynamicVisible = false
-                                    model.dynamicEndState = false
-                                    model.dynamicExplicitProgress = true
-                                    model.dynamicProgress = CGFloat(progress)
-                                    model.dynamicClockProgress = 0
-                                    model.dynamicClockVisible = false
+                            func captureTraversal(
+                                indices: [Int],
+                                filenamePrefix: String,
+                                traversal: String,
+                                freshSubtree: Bool
+                            ) async throws -> [SweepFrameRecord] {
+                                var records: [SweepFrameRecord] = []
+                                records.reserveCapacity(indices.count)
+                                for (position, index) in indices.enumerated() {
+                                    let progress = Double(index)
+                                        / Double(sweepFrameCount - 1)
+                                    var transaction = Transaction()
+                                    transaction.disablesAnimations = true
+                                    withTransaction(transaction) {
+                                        model.background = outgoingImage
+                                        model.incomingBackground =
+                                            transitionIncomingImage
+                                        model.overlay = overlay
+                                        model.higScene = false
+                                        model.dynamicMode = mode
+                                        model.dynamicVisible = true
+                                        model.dynamicEndState = false
+                                        model.dynamicExplicitProgress = true
+                                        model.dynamicProgress = CGFloat(progress)
+                                        model.dynamicClockProgress = 0
+                                        model.dynamicClockVisible = false
+                                        if freshSubtree && position == 0 {
+                                            model.dynamicGeneration += 1
+                                        }
+                                    }
+                                    let result = try await stableCapture(
+                                        window,
+                                        settleNanoseconds:
+                                            freshSubtree && position == 0
+                                            ? settle * 2 : settle,
+                                        maximumSamples: 6,
+                                        confirmationNanoseconds:
+                                            confirmationNanoseconds)
+                                    let raw = RawCapturedFrame(
+                                        image: result.frame.source,
+                                        backend: result.frame.backend,
+                                        midpointUptime:
+                                            result.frame.midpointUptime,
+                                        captureDurationSeconds:
+                                            result.frame.captureDurationSeconds)
+                                    let cropped = try croppedFrame(raw, crop: crop)
+                                    let name = String(
+                                        format: "\(filenamePrefix)-%04d.png",
+                                        index)
+                                    let url =
+                                        sequenceDir.appendingPathComponent(name)
+                                    try writePNG(cropped.image, to: url)
+                                    records.append(SweepFrameRecord(
+                                        file:
+                                            "sweeps/\(sequenceID)/\(name)",
+                                        index: index,
+                                        progress: progress,
+                                        fileSha256: sha256(of: url),
+                                        pixelSha256: cropped.pixelSha256,
+                                        pixelWidth: cropped.image.width,
+                                        pixelHeight: cropped.image.height,
+                                        captureBackend: cropped.backend,
+                                        stable: result.stable,
+                                        stabilitySamples: result.samples,
+                                        sourceImage: cropped.sourceImage,
+                                        savedImage:
+                                            describeImage(cropped.image)))
+                                    if !result.stable {
+                                        failures += 1
+                                        log(
+                                            "UNSTABLE sweep frame: "
+                                            + "\(sequenceID) \(traversal) "
+                                            + "index \(index)")
+                                    }
                                 }
-                                let result = try await stableCapture(
-                                    window,
-                                    settleNanoseconds:
-                                        index == 0 ? settle * 2 : settle)
-                                let raw = RawCapturedFrame(
-                                    image: result.frame.source,
-                                    backend: result.frame.backend,
-                                    midpointUptime: result.frame.midpointUptime,
-                                    captureDurationSeconds:
-                                        result.frame.captureDurationSeconds)
-                                let cropped = try croppedFrame(raw, crop: crop)
-                                let name = String(
-                                    format: "frame-%04d.png", index)
-                                let url = sequenceDir.appendingPathComponent(name)
-                                try writePNG(cropped.image, to: url)
-                                sequence.frames.append(SweepFrameRecord(
-                                    file: "sweeps/\(sequenceID)/\(name)",
-                                    index: index,
-                                    progress: progress,
-                                    fileSha256: sha256(of: url),
-                                    pixelSha256: cropped.pixelSha256,
-                                    pixelWidth: cropped.image.width,
-                                    pixelHeight: cropped.image.height,
-                                    captureBackend: cropped.backend,
-                                    stable: result.stable,
-                                    stabilitySamples: result.samples,
-                                    sourceImage: cropped.sourceImage,
-                                    savedImage: describeImage(cropped.image)))
-                                if !result.stable {
-                                    failures += 1
-                                    log(
-                                        "UNSTABLE sweep frame: \(sequenceID)"
-                                        + " index \(index)")
-                                }
+                                return records
                             }
+
+                            sequence.frames = try await captureTraversal(
+                                indices: Array(0..<sweepFrameCount),
+                                filenamePrefix: "frame",
+                                traversal: "forward-cold",
+                                freshSubtree: true)
+                            sequence.reverseFrames = try await captureTraversal(
+                                indices: Array((0..<sweepFrameCount).reversed()),
+                                filenamePrefix: "reverse-frame",
+                                traversal: "reverse-warm",
+                                freshSubtree: false)
+                            sequence.repeatFrames = try await captureTraversal(
+                                indices: Array(0..<sweepFrameCount),
+                                filenamePrefix: "repeat-frame",
+                                traversal: "forward-cold-repeat",
+                                freshSubtree: true)
                             manifest.sweepSequences.append(sequence)
                             log(
                                 "sweep complete: \(sequenceID), "
-                                + "\(sequence.frames.count) exact states")
+                                + "\(sequence.frames.count)"
+                                + " + \(sequence.reverseFrames.count)"
+                                + " + \(sequence.repeatFrames.count)"
+                                + " exact states")
                         } catch {
                             failures += 1
                             log(
                                 "FAILED sweep sequence \(sequenceID): "
                                 + error.localizedDescription)
+                        }
                         }
                     }
                 }
@@ -2163,6 +2554,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 model.dynamicProgress = 0
                 model.dynamicClockProgress = 0
                 model.dynamicClockVisible = false
+                model.incomingBackground = nil
             }
         }
 
@@ -2173,6 +2565,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let sweepFrameCount = manifest.sweepSequences.reduce(0) {
             $0 + $1.frames.count
+                + $1.reverseFrames.count
+                + $1.repeatFrames.count
         }
         log(
             "done: \(manifest.captures.count) static captures, "
