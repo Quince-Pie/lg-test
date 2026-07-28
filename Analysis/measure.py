@@ -409,9 +409,52 @@ class Measurements:
                 }
         return result
 
-    def dense_color_transfer(self) -> JsonObject:
-        background = "color-cube-9"
-        scene = "circle-4000-center"
+    def color_patch_samples(
+        self,
+        background: str,
+        *,
+        columns: int,
+        rows: int,
+    ) -> tuple[
+        list[list[float]],
+        list[tuple[slice, slice]],
+        list[tuple[int, int]],
+    ]:
+        source = self.reference_image(background)
+        height, width = source.shape[:2]
+        input_codes: list[list[float]] = []
+        patches: list[tuple[slice, slice]] = []
+        centers: list[tuple[int, int]] = []
+        for row in range(rows):
+            y0 = math.ceil(row * height / rows)
+            y1 = math.ceil((row + 1) * height / rows)
+            for column in range(columns):
+                x0 = math.ceil(column * width / columns)
+                x1 = math.ceil((column + 1) * width / columns)
+                center_x = (x0 + x1) // 2
+                center_y = (y0 + y1) // 2
+                half_size = min(8, (x1 - x0 - 1) // 2, (y1 - y0 - 1) // 2)
+                if half_size < 1:
+                    raise ValueError(
+                        f"{background} tiles are too small for robust sampling"
+                    )
+                patch = (
+                    slice(center_y - half_size, center_y + half_size + 1),
+                    slice(center_x - half_size, center_x + half_size + 1),
+                )
+                patches.append(patch)
+                centers.append((center_x, center_y))
+                input_codes.append(np.median(source[patch], axis=(0, 1)).tolist())
+        return input_codes, patches, centers
+
+    def color_transfer_chart(
+        self,
+        background: str,
+        *,
+        columns: int,
+        rows: int,
+        scene: str = "circle-4000-center",
+    ) -> JsonObject:
         required = [
             (background, scene, overlay, appearance)
             for appearance in ("light", "dark")
@@ -422,34 +465,44 @@ class Measurements:
         ):
             return {
                 "available": False,
-                "reason": "requires the v2.2 9x9x9 color-cube captures",
+                "reason": (
+                    f"requires {scene} {background} captures for both "
+                    "materials and appearances"
+                ),
             }
 
-        source = self.reference_image(background)
-        height, width = source.shape[:2]
-        input_codes: list[list[float]] = []
-        patches: list[tuple[slice, slice]] = []
-        for row in range(27):
-            y0 = math.ceil(row * height / 27)
-            y1 = math.ceil((row + 1) * height / 27)
-            for column in range(27):
-                x0 = math.ceil(column * width / 27)
-                x1 = math.ceil((column + 1) * width / 27)
-                center_x = (x0 + x1) // 2
-                center_y = (y0 + y1) // 2
-                half_size = min(8, (x1 - x0 - 1) // 2, (y1 - y0 - 1) // 2)
-                patch = (
-                    slice(center_y - half_size, center_y + half_size + 1),
-                    slice(center_x - half_size, center_x + half_size + 1),
-                )
-                patches.append(patch)
-                input_codes.append(np.median(source[patch], axis=(0, 1)).tolist())
+        input_codes, patches, centers = self.color_patch_samples(
+            background,
+            columns=columns,
+            rows=rows,
+        )
+        center_x, center_y, shape_width, shape_height = self.shape_pixels(scene)
+        radius_x = shape_width / 2
+        radius_y = shape_height / 2
+        sample_geometry = []
+        for x, y in centers:
+            normalized_radius = math.hypot(
+                (x - center_x) / radius_x,
+                (y - center_y) / radius_y,
+            )
+            sample_geometry.append(
+                {
+                    "x": x,
+                    "y": y,
+                    "depthInsideShapePixels": (
+                        (1 - normalized_radius) * min(radius_x, radius_y)
+                    ),
+                }
+            )
 
         result: JsonObject = {
             "available": True,
-            "gridLevels": [0, 32, 64, 96, 128, 160, 192, 224, 255],
+            "background": background,
+            "scene": scene,
+            "layout": {"columns": columns, "rows": rows},
             "sampleCount": len(patches),
             "inputCodes": input_codes,
+            "sampleGeometry": sample_geometry,
         }
         for appearance in ("light", "dark"):
             for overlay in ("regular", "clear"):
@@ -461,6 +514,64 @@ class Measurements:
                     ]
                 }
         return result
+
+    def dense_color_transfer(self) -> JsonObject:
+        result = self.color_transfer_chart(
+            "color-cube-9",
+            columns=27,
+            rows=27,
+        )
+        if result.get("available"):
+            result["gridLevels"] = [0, 32, 64, 96, 128, 160, 192, 224, 255]
+        return result
+
+    def dense_color_holdout(self) -> JsonObject:
+        result = self.color_transfer_chart(
+            "color-cube-holdout-8",
+            columns=32,
+            rows=16,
+        )
+        if result.get("available"):
+            result["gridLevels"] = [16, 48, 80, 112, 144, 176, 208, 240]
+            result["relationship"] = (
+                "strict midpoints between color-cube-9 fitting knots"
+            )
+        return result
+
+    def dense_color_context_repeat(self) -> JsonObject:
+        result = self.color_transfer_chart(
+            "color-cube-9-permuted",
+            columns=27,
+            rows=27,
+        )
+        if result.get("available"):
+            result["gridLevels"] = [0, 32, 64, 96, 128, 160, 192, 224, 255]
+            result["relationship"] = (
+                "same fitting colors in a bijectively permuted spatial order"
+            )
+        return result
+
+    def base_color_charts(self) -> JsonObject:
+        return {
+            "fitting": self.color_transfer_chart(
+                "color-cube-9",
+                columns=27,
+                rows=27,
+                scene="circle-0500-center",
+            ),
+            "contextRepeat": self.color_transfer_chart(
+                "color-cube-9-permuted",
+                columns=27,
+                rows=27,
+                scene="circle-0500-center",
+            ),
+            "offGridHoldout": self.color_transfer_chart(
+                "color-cube-holdout-8",
+                columns=32,
+                rows=16,
+                scene="circle-0500-center",
+            ),
+        }
 
     def sparse_color_transfer(self) -> JsonObject:
         backgrounds = [
@@ -507,6 +618,9 @@ class Measurements:
                 result[f"{appearance}/{overlay}"] = {
                     "model": "affine-srgb-diagnostic",
                     "sampleCount": len(backgrounds),
+                    "backgrounds": backgrounds,
+                    "inputCodes": (inputs * 255).tolist(),
+                    "outputCodes": (outputs * 255).tolist(),
                     "matrixRowsAndOffset": np.column_stack(
                         (transform[:3].T, transform[3])
                     ).tolist(),
@@ -1252,7 +1366,7 @@ class Measurements:
         dynamic_sequences = manifest.get("dynamicSequences", [])
         sweep_sequences = manifest.get("sweepSequences", [])
         return {
-            "analysisSchemaVersion": 4,
+            "analysisSchemaVersion": 5,
             "analysisImplementation": {
                 "file": "Analysis/measure.py",
                 "sha256": file_sha256(Path(__file__).resolve()),
@@ -1313,6 +1427,9 @@ class Measurements:
             "denseToneTransfer": self.dense_tone_transfer(),
             "sparseColorTransfer": self.sparse_color_transfer(),
             "denseColorTransfer": self.dense_color_transfer(),
+            "denseColorHoldout": self.dense_color_holdout(),
+            "denseColorContextRepeat": self.dense_color_context_repeat(),
+            "baseColorCharts": self.base_color_charts(),
             "checkerEdgeSpread": self.checker_blur(),
             "edgeGeometry": self.edge_geometry(),
             "phaseRefraction": self.phase_refraction(),

@@ -1,11 +1,12 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 from PIL import Image
 
-from measure import Artifact, Measurements
+from measure import Artifact, COLOR_BACKGROUNDS, GRAY_LEVELS, Measurements
 
 
 class MeasurementTests(unittest.TestCase):
@@ -192,10 +193,33 @@ class MeasurementTests(unittest.TestCase):
                 ),
                 axis=2,
             )
+            permuted_indices = (indices * 257 + 113) % 729
+            permuted_cube = np.stack(
+                (
+                    levels[permuted_indices % 9],
+                    levels[(permuted_indices // 9) % 9],
+                    levels[(permuted_indices // 81) % 9],
+                ),
+                axis=2,
+            )
+            holdout_levels = np.arange(16, 241, 32, dtype=np.uint8)
+            holdout_columns = np.minimum(31, np.arange(width) * 32 // width)
+            holdout_rows = np.minimum(15, np.arange(height) * 16 // height)
+            holdout_indices = holdout_rows[:, None] * 32 + holdout_columns
+            holdout_cube = np.stack(
+                (
+                    holdout_levels[holdout_indices % 8],
+                    holdout_levels[(holdout_indices // 8) % 8],
+                    holdout_levels[(holdout_indices // 64) % 8],
+                ),
+                axis=2,
+            )
             sources = {
                 "ramp-x": np.repeat(ramp_x[:, :, None], 3, axis=2).astype(np.uint8),
                 "ramp-y": np.repeat(ramp_y[:, :, None], 3, axis=2).astype(np.uint8),
                 "color-cube-9": cube,
+                "color-cube-9-permuted": permuted_cube,
+                "color-cube-holdout-8": holdout_cube,
             }
 
             references = []
@@ -239,12 +263,26 @@ class MeasurementTests(unittest.TestCase):
                     manifest={
                         "references": references,
                         "captures": captures,
-                        "scenes": [],
+                        "scenes": [
+                            {
+                                "name": "circle-4000-center",
+                                "shapes": [
+                                    {
+                                        "centerX": width / 2,
+                                        "centerY": height / 2,
+                                        "width": 4000,
+                                        "height": 4000,
+                                    }
+                                ],
+                            }
+                        ],
                     },
                 )
             )
             tone = measurements.dense_tone_transfer()
             color = measurements.dense_color_transfer()
+            holdout = measurements.dense_color_holdout()
+            context_repeat = measurements.dense_color_context_repeat()
 
             self.assertTrue(tone["available"])
             self.assertEqual(
@@ -259,6 +297,14 @@ class MeasurementTests(unittest.TestCase):
             self.assertEqual(color["sampleCount"], 729)
             self.assertEqual(color["inputCodes"][0], [0.0, 0.0, 0.0])
             self.assertEqual(color["inputCodes"][-1], [255.0, 255.0, 255.0])
+            self.assertEqual(len(color["sampleGeometry"]), 729)
+            self.assertGreater(
+                min(
+                    sample["depthInsideShapePixels"]
+                    for sample in color["sampleGeometry"]
+                ),
+                0,
+            )
             self.assertEqual(
                 color["light/regular"]["outputCodes"][0],
                 [1.0, 2.0, 3.0],
@@ -267,6 +313,71 @@ class MeasurementTests(unittest.TestCase):
                 color["light/regular"]["outputCodes"][-1],
                 [255.0, 255.0, 255.0],
             )
+            self.assertTrue(holdout["available"])
+            self.assertEqual(holdout["sampleCount"], 512)
+            self.assertEqual(holdout["inputCodes"][0], [16.0, 16.0, 16.0])
+            self.assertEqual(holdout["inputCodes"][-1], [240.0, 240.0, 240.0])
+            self.assertEqual(
+                holdout["light/regular"]["outputCodes"][0],
+                [17.0, 18.0, 19.0],
+            )
+            self.assertTrue(context_repeat["available"])
+            self.assertEqual(context_repeat["sampleCount"], 729)
+            self.assertEqual(
+                sorted(context_repeat["inputCodes"]),
+                sorted(color["inputCodes"]),
+            )
+
+    def test_sparse_transfer_preserves_holdout_samples(self) -> None:
+        color_inputs = {
+            name: np.asarray(
+                [
+                    (index * 47 + 13) % 256,
+                    (index * 83 + 29) % 256,
+                    (index * 131 + 7) % 256,
+                ],
+                dtype=np.float64,
+            )
+            for index, name in enumerate(COLOR_BACKGROUNDS)
+        }
+
+        def sample(
+            _measurements: Measurements,
+            background: str,
+            overlay: str,
+            _appearance: str,
+        ) -> np.ndarray:
+            if background.startswith("gray-"):
+                code = float(background.removeprefix("gray-"))
+                source = np.full(3, code)
+            else:
+                source = color_inputs[background]
+            if overlay == "none":
+                return source
+            return np.clip(source * 0.75 + [11, 17, 23], 0, 255)
+
+        measurements = Measurements(
+            Artifact(
+                path=Path("."),
+                manifest={
+                    "references": [],
+                    "captures": [],
+                    "scenes": [],
+                },
+            )
+        )
+        with patch.object(Measurements, "deep_median", sample):
+            result = measurements.sparse_color_transfer()
+
+        record = result["dark/regular"]
+        expected_samples = len(GRAY_LEVELS) + len(COLOR_BACKGROUNDS)
+        self.assertEqual(record["sampleCount"], expected_samples)
+        self.assertEqual(len(record["backgrounds"]), expected_samples)
+        self.assertEqual(len(record["inputCodes"]), expected_samples)
+        self.assertEqual(len(record["outputCodes"]), expected_samples)
+        self.assertEqual(record["backgrounds"][0], "gray-000")
+        self.assertEqual(record["inputCodes"][0], [0.0, 0.0, 0.0])
+        self.assertEqual(record["outputCodes"][0], [11.0, 17.0, 23.0])
 
 
 if __name__ == "__main__":

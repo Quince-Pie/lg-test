@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## How the rig reached v2.7
+## How the rig reached v2.8
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -128,6 +128,45 @@ one complete p256 cycle inside each circle. It preserves every legacy
 measurement while reducing the maximum measured five-position spread to
 0.0451 physical pixels of displacement and 0.000237 amplitude ratio.
 
+Run `30365533488` is the second independent v2.7 all-suite capture. Its
+7,931,617,677-byte archive (`SHA-256
+def52e047656519400606a300a83c1d905b4068b5b85b705118a923180ca7242`)
+is intact. All 101 references, all 1,242 static captures, and all 64 live
+initial/delayed endpoints are pixel-exact with run `30326591212`. Of 1,224
+settled sweep frames, 1,164 are pixel-exact; the other 60 measure the retained
+Apple repeatability/history envelope.
+
+The run is not wholly valid for live timing. Four two-wallpaper sequences have
+actual acquisition gaps of 208.006 to 444.923 ms; the unchanged limit is
+200 ms. All 857 attempts decoded with zero transient failures, so these are
+runner sampling holes rather than corrupt or synthetic frames. The valid
+static, sweep, endpoint, and 28/32 live-sequence subsets remain accepted with
+their original provenance.
+
+Fitting the accepted v2.7 evidence exposed a color-identification confound.
+For `.clear`, all 23 RGB inputs shared by the full-field and tiled color probes
+are pixel-exact. For `.regular`, those nominally identical inputs differ by as
+much as 49 codes in dark appearance and 67 codes in light appearance. The
+existing sparse off-grid inputs are all achromatic, so they cannot distinguish
+cross-channel interpolation error from geometry, neighborhood, or
+screen-position behavior.
+
+V2.8 adds two edge-free giant-circle charts without weakening any existing
+probe or threshold:
+
+- `color-cube-9-permuted` repeats all 729 fitting colors exactly once in a
+  bijectively permuted spatial order. Same-color differences now measure
+  neighborhood/position dependence directly.
+- `color-cube-holdout-8` samples all 512 RGB midpoints between the fitting
+  cube's knots. None is a training color, so it is a strict cross-channel
+  interpolation holdout.
+
+Both charts are also retained in the 500-point base matrix. The measurement
+report's analysis schema v5 preserves raw sparse inputs/outputs and emits the
+two new dense validation tables plus per-sample geometry for all three charts
+in the 500-point scene. This is a capture change: a new v2.8 artifact is
+required to complete the color-context gate.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
@@ -204,11 +243,11 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.7 isolates the unknowns:
+V2.8 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
-| Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube; independent holdout colors |
+| Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB fitting cube; the same cube in a permuted context; all 512 midpoint RGB holdouts |
 | Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px, plus 64/256/1024 px local MTF probes at 256-, 500-, and 4000-point circle scales and p256 probes at all four quadrant positions |
 | Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, deterministic noise |
 | Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, and three rectangle corner radii |
@@ -244,20 +283,20 @@ bound (at most 0.5% changed pixels, maximum delta 1, mean channel delta
 to its real, stable no-glass capture, and the light/dark no-glass controls must
 be pixel-exact with each other.
 
-The static suite contains:
+The v2.8 static suite contains:
 
-- 99 deterministic backgrounds and 99 saved static references.
-- 594 base control/regular/clear samples: every background, both appearances.
+- 101 deterministic backgrounds and 101 saved static references.
+- 606 base control/regular/clear samples: every background, both appearances.
 - 42 targeted tint samples.
 - 272 isolated geometry, screen-position, off-screen-scale, and
   container-interaction samples.
-- 12 edge-free giant-circle tone/color-transfer samples.
+- 20 edge-free giant-circle tone/color-transfer and color-validation samples.
 - 192 scale-dependent, four-phase local-MTF/refraction samples.
 - 128 four-phase p256 refraction/MTF samples across the four quadrant
   positions.
 - 2 qualitative HIG-style controls-over-content samples.
 
-That is 1,242 static captures. The numerical fit should use the isolated scenes;
+That is 1,262 static captures. The numerical fit should use the isolated scenes;
 the HIG-style scene is a qualitative continuity check only.
 
 The dynamic suite contains 32 sequences:
@@ -279,7 +318,7 @@ real insertion/removal transitions suppress sibling SwiftUI interpolation.
 The clock is decoded from the full raw screenshot before analytical cropping,
 recording actual presented progress with 1/3200 resolution. Both full-frame
 wallpaper probes declare the four clock rows as an analysis exclusion. Before
-starting the expensive matrix, the v2.7 preflight
+starting the expensive matrix, the v2.8 preflight
 requires visible settled 25% and 75% widths plus a live non-endpoint sample and
 the final endpoint.
 
@@ -304,7 +343,7 @@ source reference.
 
 Live animations expose temporal material behavior, but they cannot separate a
 geometry response from CI scheduler jitter or renderer history by themselves.
-V2.7 therefore captures 24 settled sweep matrices: resize, translate, morph,
+V2.8 therefore captures 24 settled sweep matrices: resize, translate, morph,
 single-source expansion, and two-source expansion in both source directions,
 crossed with both materials and appearances. Each matrix has 17 cold-forward
 states, the same states in warm reverse order, and a second 17-state cold
@@ -313,7 +352,7 @@ within its traversal and must pass the delayed stability check.
 Cross-traversal differences are retained and reported as
 repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.7 artifact contains 101 references, 1,242
+With the default `all` suite, a v2.8 artifact contains 103 references, 1,262
 static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 24 exact sweep matrices containing 1,224 frames.
 
@@ -369,20 +408,24 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-Run `30326591212` satisfies the first item below. For the remaining v2.7 fit,
-collect and return:
+Runs `30326591212` and `30365533488` complete the two-run static, exact-state,
+and endpoint repeatability corpus. The latter has four rejected live
+traversals, so collect and return:
 
-1. One further independent `all`, 1.0-second, 61-frame run with exact sweeps
-   enabled. Together with `30326591212`, it bounds runner-to-runner variance.
+1. A focused `dynamic`, 1.0-second, 61-frame recovery run with
+   `dynamic_modes=wallpaper-transition,wallpaper-transition-reverse` and exact
+   sweeps disabled. This replaces the four sampling-hole traversals without
+   rerunning the already repeated static and exact-state matrices.
 2. A `dynamic`, 0.35-second, 31-frame run with
    `dynamic_modes=materialize,dematerialize,wallpaper-transition,wallpaper-transition-reverse`
    and exact sweeps disabled.
 3. A `dynamic`, 2.0-second, 121-frame run with the same four modes and exact
    sweeps disabled.
-4. A `dynamic` run at Walle's actual configured transition duration, restricted
-   to `wallpaper-transition,wallpaper-transition-reverse`, with exact sweeps
-   disabled. Use enough target points to keep the requested grid at or above
-   15 Hz.
+4. `dynamic` runs at Walle's configured 8.0-second clear and 10.0-second
+   regular transition durations, restricted to
+   `wallpaper-transition,wallpaper-transition-reverse`, with exact sweeps
+   disabled. Use at least 121 and 151 target points, respectively, to keep the
+   requested grid at or above 15 Hz.
 5. Focused 1.0-second runs of those two wallpaper modes at the center and the
    other three quadrants (`0.75,0.30`, `0.25,0.70`, `0.75,0.70`, and
    `0.50,0.50`). Set `capture_width` and `capture_height` to each production
@@ -435,7 +478,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The v2.7 artifacts are measurement inputs, not proof that Walle already matches.
+The v2.8 artifacts are measurement inputs, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on

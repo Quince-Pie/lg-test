@@ -207,6 +207,37 @@ func staticBackgrounds() -> [Background] {
             cubeLevels[(index / 81) % 9])
     })
 
+    // The same 729 fitting colors in a bijectively permuted spatial order
+    // separate a pointwise color transform from neighborhood or screen-space
+    // behavior. 257 is coprime to 729, so every source index occurs once.
+    list.append(Background(name: "color-cube-9-permuted", family: .colorCube) {
+        x, y, w, h in
+        let column = min(26, x * 27 / max(w, 1))
+        let row = min(26, y * 27 / max(h, 1))
+        let index = (row * 27 + column) * 257 + 113
+        let sourceIndex = index % 729
+        return (
+            cubeLevels[sourceIndex % 9],
+            cubeLevels[(sourceIndex / 9) % 9],
+            cubeLevels[(sourceIndex / 81) % 9])
+    })
+
+    // Midpoints between every color-cube-9 knot form an independent 8³
+    // holdout. A 32×16 tile layout covers all 512 combinations exactly once.
+    // None of these codes occurs in the fitting cube, so this detects
+    // interpolation error rather than merely replaying calibration samples.
+    let holdoutLevels: [UInt8] = [16, 48, 80, 112, 144, 176, 208, 240]
+    list.append(Background(name: "color-cube-holdout-8", family: .colorCube) {
+        x, y, w, h in
+        let column = min(31, x * 32 / max(w, 1))
+        let row = min(15, y * 16 / max(h, 1))
+        let index = row * 32 + column
+        return (
+            holdoutLevels[index % 8],
+            holdoutLevels[(index / 8) % 8],
+            holdoutLevels[(index / 64) % 8])
+    })
+
     // Coarse absolute coordinates and slowly varying transfer probes.
     list.append(Background(name: "ramp-x", family: .coordinate) { x, _, w, _ in
         let v = UInt8(x * 255 / max(w - 1, 1)); return (v, v, v)
@@ -1718,7 +1749,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.7.0",
+            rigVersion: "2.8.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -1969,10 +2000,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Dense transfer functions. The giant circle covers every output
             // pixel. Orthogonal ramps expose all 256 tone codes and also
             // reveal any screen-space bias; color-cube-9 supplies 729 RGB
-            // combinations without an optical boundary.
+            // fitting combinations, color-cube-9-permuted repeats the same
+            // colors in new neighborhoods, and color-cube-holdout-8 supplies
+            // 512 strictly off-grid validation combinations, all without an
+            // optical boundary.
             let giantScene = scenes.first { $0.name == "circle-4000-center" }!
             let denseTransferNames: Set<String> = [
                 "ramp-x", "ramp-y", "color-cube-9",
+                "color-cube-9-permuted", "color-cube-holdout-8",
             ]
             for bg in backgrounds where denseTransferNames.contains(bg.name) {
                 log("static dense transfer: \(bg.name)")
