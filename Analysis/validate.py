@@ -305,7 +305,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
     expected_rigs = {
         3: {"2.1.0"},
         4: {"2.2.0", "2.3.0", "2.4.0", "2.5.0"},
-        5: {"2.6.0", "2.7.0", "2.8.0", "2.9.0"},
+        5: {"2.6.0", "2.7.0", "2.8.0", "2.9.0", "2.10.0"},
     }.get(schema, set())
     if manifest.get("rigVersion") not in expected_rigs:
         findings.error(f"unexpected rigVersion: {manifest.get('rigVersion')!r}")
@@ -368,7 +368,8 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
     elif preflight_errors:
         findings.error(f"capture preflight failed: {preflight_errors}")
     if (
-        manifest.get("rigVersion") in {"2.5.0", "2.6.0", "2.7.0", "2.8.0", "2.9.0"}
+        manifest.get("rigVersion")
+        in {"2.5.0", "2.6.0", "2.7.0", "2.8.0", "2.9.0", "2.10.0"}
         and manifest.get("requestedSuite") != "static"
     ):
         clock = manifest.get("presentationClockPreflight")
@@ -564,7 +565,7 @@ def validate_static(
             for name, record in references.items()
             if record.get("family") != "dynamic"
         }
-        if manifest.get("rigVersion") in {"2.8.0", "2.9.0"}:
+        if manifest.get("rigVersion") in {"2.8.0", "2.9.0", "2.10.0"}:
             required_v28_backgrounds = {
                 "color-cube-9-permuted",
                 "color-cube-holdout-8",
@@ -575,7 +576,7 @@ def validate_static(
                     "v2.8 static references are missing "
                     f"{sorted(missing_v28_backgrounds)}"
                 )
-        if manifest.get("rigVersion") == "2.9.0":
+        if manifest.get("rigVersion") in {"2.9.0", "2.10.0"}:
             required_v29_backgrounds = {
                 "color-cube-9-shuffled",
                 "color-cube-holdout-8-shuffled",
@@ -585,6 +586,26 @@ def validate_static(
                 findings.error(
                     "v2.9 static references are missing "
                     f"{sorted(missing_v29_backgrounds)}"
+                )
+        if manifest.get("rigVersion") == "2.10.0":
+            required_v210_backgrounds = {
+                *{f"color-cube-9-context-train-{index:02d}" for index in range(4)},
+                *{
+                    f"color-cube-holdout-8-context-train-{index:02d}"
+                    for index in range(4)
+                },
+                *{
+                    f"noise-{channel}-a{amplitude:03d}-{role}"
+                    for channel in ("gray", "rgb")
+                    for amplitude in (16, 64)
+                    for role in ("train", "holdout")
+                },
+            }
+            missing_v210_backgrounds = required_v210_backgrounds - static_backgrounds
+            if missing_v210_backgrounds:
+                findings.error(
+                    "v2.10 static references are missing "
+                    f"{sorted(missing_v210_backgrounds)}"
                 )
         appearances = {"light", "dark"}
         expected_cases = {
@@ -628,15 +649,23 @@ def validate_static(
         }
         if manifest.get("schemaVersion") in {4, 5}:
             dense_transfer_backgrounds = {"ramp-x", "ramp-y", "color-cube-9"}
-            if manifest.get("rigVersion") in {"2.8.0", "2.9.0"}:
+            if manifest.get("rigVersion") in {"2.8.0", "2.9.0", "2.10.0"}:
                 dense_transfer_backgrounds |= {
                     "color-cube-9-permuted",
                     "color-cube-holdout-8",
                 }
-            if manifest.get("rigVersion") == "2.9.0":
+            if manifest.get("rigVersion") in {"2.9.0", "2.10.0"}:
                 dense_transfer_backgrounds |= {
                     "color-cube-9-shuffled",
                     "color-cube-holdout-8-shuffled",
+                }
+            if manifest.get("rigVersion") == "2.10.0":
+                dense_transfer_backgrounds |= {
+                    *{f"color-cube-9-context-train-{index:02d}" for index in range(4)},
+                    *{
+                        f"color-cube-holdout-8-context-train-{index:02d}"
+                        for index in range(4)
+                    },
                 }
             expected_cases |= {
                 (background, "circle-4000-center", overlay, appearance)
@@ -657,7 +686,7 @@ def validate_static(
                 for overlay in ("regular", "clear")
                 for appearance in appearances
             }
-            if manifest.get("rigVersion") == "2.9.0":
+            if manifest.get("rigVersion") in {"2.9.0", "2.10.0"}:
                 expected_cases |= {
                     (
                         background,
@@ -674,6 +703,23 @@ def validate_static(
                     & static_backgrounds
                     for appearance in appearances
                 }
+                if manifest.get("rigVersion") == "2.10.0":
+                    expected_cases |= {
+                        (
+                            background,
+                            "circle-4000-center",
+                            "regular",
+                            appearance,
+                        )
+                        for background in {
+                            f"noise-{channel}-a{amplitude:03d}-{role}"
+                            for channel in ("gray", "rgb")
+                            for amplitude in (16, 64)
+                            for role in ("train", "holdout")
+                        }
+                        & static_backgrounds
+                        for appearance in appearances
+                    }
                 expected_cases |= {
                     (
                         background,
@@ -696,7 +742,12 @@ def validate_static(
                     & static_backgrounds
                     for appearance in appearances
                 }
-        if manifest.get("rigVersion") in {"2.7.0", "2.8.0", "2.9.0"}:
+        if manifest.get("rigVersion") in {
+            "2.7.0",
+            "2.8.0",
+            "2.9.0",
+            "2.10.0",
+        }:
             expected_cases |= {
                 (background, scene, overlay, appearance)
                 for background in {
@@ -837,6 +888,7 @@ def validate_dynamic(
             "2.7.0",
             "2.8.0",
             "2.9.0",
+            "2.10.0",
         }:
             if (
                 sequence.get("samplingMethod")
@@ -976,6 +1028,7 @@ def validate_dynamic(
                 "2.7.0",
                 "2.8.0",
                 "2.9.0",
+                "2.10.0",
             }
             and isinstance(sequence.get("decodedSamples"), int)
             and sequence["decodedSamples"] < len(frames) - 1

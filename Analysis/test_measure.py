@@ -10,6 +10,29 @@ from measure import Artifact, COLOR_BACKGROUNDS, GRAY_LEVELS, Measurements
 
 
 class MeasurementTests(unittest.TestCase):
+    def test_channel_statistics_preserve_cross_channel_covariance(self) -> None:
+        image = np.array(
+            [
+                [[0.0, 1.0, 2.0], [2.0, 3.0, 4.0]],
+                [[4.0, 5.0, 6.0], [6.0, 7.0, 8.0]],
+            ]
+        )
+
+        result = Measurements.channel_statistics(image)
+
+        self.assertEqual(result["pixelCount"], 4)
+        self.assertEqual(result["meanCodes"], [3.0, 4.0, 5.0])
+        self.assertEqual(result["minimumCodes"], [0.0, 1.0, 2.0])
+        self.assertEqual(result["maximumCodes"], [6.0, 7.0, 8.0])
+        np.testing.assert_allclose(
+            result["standardDeviationCodes"],
+            [np.sqrt(5.0), np.sqrt(5.0), np.sqrt(5.0)],
+        )
+        np.testing.assert_allclose(
+            result["covarianceCodes"],
+            np.full((3, 3), 5.0),
+        )
+
     def test_phase_cycle_fit_recovers_complex_transfer(self) -> None:
         height = width = 300
         y, x = np.indices((height, width))
@@ -241,6 +264,29 @@ class MeasurementTests(unittest.TestCase):
                 "color-cube-holdout-8": holdout_cube,
                 "color-cube-holdout-8-shuffled": shuffled_holdout,
             }
+            for training_index in range(4):
+                training_indices = (indices + (training_index + 1) * 137) % 729
+                sources[f"color-cube-9-context-train-{training_index:02d}"] = np.stack(
+                    (
+                        levels[training_indices % 9],
+                        levels[(training_indices // 9) % 9],
+                        levels[(training_indices // 81) % 9],
+                    ),
+                    axis=2,
+                )
+                training_holdout_indices = (
+                    holdout_indices + (training_index + 1) * 73
+                ) % 512
+                sources[f"color-cube-holdout-8-context-train-{training_index:02d}"] = (
+                    np.stack(
+                        (
+                            holdout_levels[training_holdout_indices % 8],
+                            holdout_levels[(training_holdout_indices // 8) % 8],
+                            holdout_levels[(training_holdout_indices // 64) % 8],
+                        ),
+                        axis=2,
+                    )
+                )
 
             references = []
             for background, pixels in sources.items():
@@ -320,6 +366,10 @@ class MeasurementTests(unittest.TestCase):
             context_repeat = measurements.dense_color_context_repeat()
             context_holdout = measurements.dense_color_context_holdout()
             holdout_context_repeat = measurements.dense_color_holdout_context_repeat()
+            context_training = measurements.dense_color_context_training()
+            holdout_context_training = (
+                measurements.dense_color_holdout_context_training()
+            )
 
             self.assertTrue(tone["available"])
             self.assertEqual(
@@ -380,6 +430,23 @@ class MeasurementTests(unittest.TestCase):
                 sorted(holdout_context_repeat["inputCodes"]),
                 sorted(holdout["inputCodes"]),
             )
+            self.assertTrue(context_training["available"])
+            self.assertEqual(context_training["availableChartCount"], 4)
+            self.assertTrue(holdout_context_training["available"])
+            self.assertEqual(
+                holdout_context_training["availableChartCount"],
+                4,
+            )
+            for chart in context_training["charts"].values():
+                self.assertEqual(
+                    sorted(chart["inputCodes"]),
+                    sorted(color["inputCodes"]),
+                )
+            for chart in holdout_context_training["charts"].values():
+                self.assertEqual(
+                    sorted(chart["inputCodes"]),
+                    sorted(holdout["inputCodes"]),
+                )
 
     def test_sparse_transfer_preserves_holdout_samples(self) -> None:
         color_inputs = {

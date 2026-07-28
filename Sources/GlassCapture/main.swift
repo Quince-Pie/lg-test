@@ -162,6 +162,13 @@ func sine(_ t: Double, period: Double, phase: Double) -> UInt8 {
     return UInt8((v * 255.0).rounded())
 }
 
+func binaryNoise(_ x: Int, _ y: Int, amplitude: Int, seed: UInt32) -> UInt8 {
+    precondition((1...127).contains(amplitude))
+    return hash32(x, y, seed: seed) & 1 == 0
+        ? UInt8(128 - amplitude)
+        : UInt8(128 + amplitude)
+}
+
 func flatBackground(_ name: String, _ family: BackgroundFamily,
                     _ rgb: (UInt8, UInt8, UInt8)) -> Background {
     Background(name: name, family: family) { _, _, _, _ in rgb }
@@ -290,6 +297,56 @@ func staticBackgrounds() -> [Background] {
             holdoutLevels[(sourceIndex / 64) % 8])
     })
 
+    // The affine layout and one random holdout cannot span arbitrary
+    // neighborhoods. Four additional, independently seeded layouts are
+    // fitting evidence; the original shuffled charts remain untouched final
+    // holdouts.
+    let cubeTrainingSeeds: [UInt64] = [
+        0x1BF5_84D6_3C91_A207,
+        0x753A_C9E1_402F_68BD,
+        0xD804_27B9_6EA3_51CF,
+        0x49CE_F217_8B65_D30A,
+    ]
+    for (trainingIndex, seed) in cubeTrainingSeeds.enumerated() {
+        let permutation = deterministicPermutation(count: 729, seed: seed)
+        let name = String(
+            format: "color-cube-9-context-train-%02d",
+            trainingIndex)
+        list.append(Background(name: name, family: .colorCube) {
+            x, y, w, h in
+            let column = min(26, x * 27 / max(w, 1))
+            let row = min(26, y * 27 / max(h, 1))
+            let sourceIndex = permutation[row * 27 + column]
+            return (
+                cubeLevels[sourceIndex % 9],
+                cubeLevels[(sourceIndex / 9) % 9],
+                cubeLevels[(sourceIndex / 81) % 9])
+        })
+    }
+
+    let holdoutTrainingSeeds: [UInt64] = [
+        0x265B_91E7_C40A_3DF8,
+        0x8CA7_30D2_59BE_F164,
+        0xF103_6E4A_BD82_795C,
+        0x57D9_A81F_24C6_E30B,
+    ]
+    for (trainingIndex, seed) in holdoutTrainingSeeds.enumerated() {
+        let permutation = deterministicPermutation(count: 512, seed: seed)
+        let name = String(
+            format: "color-cube-holdout-8-context-train-%02d",
+            trainingIndex)
+        list.append(Background(name: name, family: .colorCube) {
+            x, y, w, h in
+            let column = min(31, x * 32 / max(w, 1))
+            let row = min(15, y * 16 / max(h, 1))
+            let sourceIndex = permutation[row * 32 + column]
+            return (
+                holdoutLevels[sourceIndex % 8],
+                holdoutLevels[(sourceIndex / 8) % 8],
+                holdoutLevels[(sourceIndex / 64) % 8])
+        })
+    }
+
     // Coarse absolute coordinates and slowly varying transfer probes.
     list.append(Background(name: "ramp-x", family: .coordinate) { x, _, w, _ in
         let v = UInt8(x * 255 / max(w - 1, 1)); return (v, v, v)
@@ -335,6 +392,46 @@ func staticBackgrounds() -> [Background] {
     list.append(Background(name: "noise-gray", family: .noise) { x, y, _, _ in
         let v = UInt8(hash32(x, y) & 255); return (v, v, v)
     })
+
+    // Binary, source-round-trip-safe stochastic probes identify the
+    // small-signal response around neutral gray. Independent train/holdout
+    // seeds prevent a fitted FFT response from certifying itself. RGB
+    // variants expose the full 3x3 cross-channel frequency response.
+    let noiseSeeds: [(String, UInt32)] = [
+        ("train", 0x3141_5926),
+        ("holdout", 0xA7F4_3C19),
+    ]
+    for amplitude in [16, 64] {
+        for (role, seed) in noiseSeeds {
+            let grayName = String(
+                format: "noise-gray-a%03d-%@",
+                amplitude, role)
+            list.append(Background(name: grayName, family: .noise) {
+                x, y, _, _ in
+                let value = binaryNoise(
+                    x, y, amplitude: amplitude, seed: seed)
+                return (value, value, value)
+            })
+
+            let rgbName = String(
+                format: "noise-rgb-a%03d-%@",
+                amplitude, role)
+            list.append(Background(name: rgbName, family: .noise) {
+                x, y, _, _ in
+                (
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x243F_6A88),
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x85A3_08D3),
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x1319_8A2E)
+                )
+            })
+        }
+    }
 
     // Spatially localized PSF and edge-spread probes. These distinguish
     // blur, refraction, shadow, and antialiasing instead of asking one noise
@@ -1801,7 +1898,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.9.0",
+            rigVersion: "2.10.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2055,12 +2152,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // each have independent spatial contexts, all without a visible
             // optical boundary.
             let giantScene = scenes.first { $0.name == "circle-4000-center" }!
-            let denseTransferNames: Set<String> = [
+            let denseTransferNames = Set([
                 "ramp-x", "ramp-y", "color-cube-9",
                 "color-cube-9-permuted", "color-cube-9-shuffled",
                 "color-cube-holdout-8",
                 "color-cube-holdout-8-shuffled",
-            ]
+            ]).union(
+                (0..<4).flatMap { trainingIndex in
+                    [
+                        String(
+                            format: "color-cube-9-context-train-%02d",
+                            trainingIndex),
+                        String(
+                            format:
+                            "color-cube-holdout-8-context-train-%02d",
+                            trainingIndex),
+                    ]
+                })
             for bg in backgrounds where denseTransferNames.contains(bg.name) {
                 log("static dense transfer: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
@@ -2142,11 +2250,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             // These giant-circle probes expose the broad response tail without
             // mixing it with a visible glass boundary.
-            let regularGiantKernelNames: Set<String> = [
+            let regularGiantKernelNames = Set([
                 "edge-x", "edge-y", "edge-slant", "line-x", "line-y",
                 "noise-gray", "checker-0032", "checker-0064",
                 "checker-0256", "checker-0512",
-            ]
+            ]).union(
+                [16, 64].flatMap { amplitude in
+                    ["train", "holdout"].flatMap { role in
+                        [
+                            String(
+                                format: "noise-gray-a%03d-%@",
+                                amplitude, role),
+                            String(
+                                format: "noise-rgb-a%03d-%@",
+                                amplitude, role),
+                        ]
+                    }
+                })
             for bg in backgrounds where regularGiantKernelNames.contains(bg.name) {
                 log("static regular giant kernel: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)

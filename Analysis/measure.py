@@ -60,6 +60,18 @@ COLOR_BACKGROUNDS = [
     "orange",
     "violet",
 ]
+CUBE_CONTEXT_TRAINING_BACKGROUNDS = [
+    f"color-cube-9-context-train-{index:02d}" for index in range(4)
+]
+HOLDOUT_CONTEXT_TRAINING_BACKGROUNDS = [
+    f"color-cube-holdout-8-context-train-{index:02d}" for index in range(4)
+]
+STOCHASTIC_BACKGROUNDS = [
+    f"noise-{channel}-a{amplitude:03d}-{role}"
+    for channel in ("gray", "rgb")
+    for amplitude in (16, 64)
+    for role in ("train", "holdout")
+]
 
 
 @dataclass(slots=True)
@@ -592,6 +604,122 @@ class Measurements:
                 "same off-grid colors in an independently shuffled spatial order"
             )
         return result
+
+    def color_context_training_charts(
+        self,
+        backgrounds: list[str],
+        *,
+        columns: int,
+        rows: int,
+        grid_levels: list[int],
+        relationship: str,
+    ) -> JsonObject:
+        charts = {
+            background: self.color_transfer_chart(
+                background,
+                columns=columns,
+                rows=rows,
+            )
+            for background in backgrounds
+        }
+        for chart in charts.values():
+            if chart.get("available"):
+                chart["gridLevels"] = grid_levels
+                chart["relationship"] = relationship
+        available = [
+            background for background, chart in charts.items() if chart.get("available")
+        ]
+        return {
+            "available": len(available) == len(backgrounds),
+            "requiredChartCount": len(backgrounds),
+            "availableChartCount": len(available),
+            "charts": charts,
+        }
+
+    def dense_color_context_training(self) -> JsonObject:
+        return self.color_context_training_charts(
+            CUBE_CONTEXT_TRAINING_BACKGROUNDS,
+            columns=27,
+            rows=27,
+            grid_levels=[0, 32, 64, 96, 128, 160, 192, 224, 255],
+            relationship=(
+                "independently seeded fitting contexts; the legacy shuffled "
+                "chart remains an untouched holdout"
+            ),
+        )
+
+    def dense_color_holdout_context_training(self) -> JsonObject:
+        return self.color_context_training_charts(
+            HOLDOUT_CONTEXT_TRAINING_BACKGROUNDS,
+            columns=32,
+            rows=16,
+            grid_levels=[16, 48, 80, 112, 144, 176, 208, 240],
+            relationship=(
+                "independently seeded off-grid fitting contexts; the legacy "
+                "shuffled midpoint chart remains an untouched holdout"
+            ),
+        )
+
+    @staticmethod
+    def channel_statistics(image: FloatImage) -> JsonObject:
+        flattened = image.reshape(-1, 3)
+        return {
+            "pixelCount": int(flattened.shape[0]),
+            "meanCodes": flattened.mean(axis=0).tolist(),
+            "standardDeviationCodes": flattened.std(axis=0).tolist(),
+            "minimumCodes": flattened.min(axis=0).tolist(),
+            "maximumCodes": flattened.max(axis=0).tolist(),
+            "covarianceCodes": np.cov(
+                flattened,
+                rowvar=False,
+                bias=True,
+            ).tolist(),
+        }
+
+    def stochastic_probe_statistics(self) -> JsonObject:
+        scene = "circle-4000-center"
+        available = [
+            background
+            for background in STOCHASTIC_BACKGROUNDS
+            if background in self.references
+            and all(
+                self.has_image(background, scene, "regular", appearance)
+                for appearance in ("light", "dark")
+            )
+        ]
+        if not available:
+            return {
+                "available": False,
+                "reason": "requires v2.10 train/holdout stochastic probes",
+            }
+
+        records: JsonObject = {}
+        margin = round(512 * self.backing_scale)
+        for background in available:
+            source = self.reference_image(background)
+            region = (
+                slice(margin, source.shape[0] - margin),
+                slice(margin, source.shape[1] - margin),
+            )
+            record: JsonObject = {
+                "source": self.channel_statistics(source[region]),
+            }
+            for appearance in ("light", "dark"):
+                output = self.image(
+                    background,
+                    scene,
+                    "regular",
+                    appearance,
+                )
+                record[appearance] = self.channel_statistics(output[region])
+            records[background] = record
+        return {
+            "available": len(available) == len(STOCHASTIC_BACKGROUNDS),
+            "requiredProbeCount": len(STOCHASTIC_BACKGROUNDS),
+            "availableProbeCount": len(available),
+            "boundaryExclusionPixels": margin,
+            "records": records,
+        }
 
     def base_color_charts(self) -> JsonObject:
         return {
@@ -1420,7 +1548,7 @@ class Measurements:
         dynamic_sequences = manifest.get("dynamicSequences", [])
         sweep_sequences = manifest.get("sweepSequences", [])
         return {
-            "analysisSchemaVersion": 6,
+            "analysisSchemaVersion": 7,
             "analysisImplementation": {
                 "file": "Analysis/measure.py",
                 "sha256": file_sha256(Path(__file__).resolve()),
@@ -1487,6 +1615,11 @@ class Measurements:
             "denseColorHoldoutContextRepeat": (
                 self.dense_color_holdout_context_repeat()
             ),
+            "denseColorContextTraining": self.dense_color_context_training(),
+            "denseColorHoldoutContextTraining": (
+                self.dense_color_holdout_context_training()
+            ),
+            "stochasticProbeStatistics": self.stochastic_probe_statistics(),
             "baseColorCharts": self.base_color_charts(),
             "checkerEdgeSpread": self.checker_blur(),
             "edgeGeometry": self.edge_geometry(),

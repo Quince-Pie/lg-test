@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## How the rig reached v2.9
+## How the rig reached v2.10
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -191,6 +191,36 @@ and expands only the prevalence bound enough to include those five measured
 tiles. Captured no-glass codes are now emitted alongside nominal chart codes;
 this source calibration is not a renderer error budget.
 
+Run `30387500844` returned the complete, independently validated v2.9 static
+matrix. It makes the next gap measurable instead of speculative:
+
+- a two/three-scale, appearance-specific kernel fitted from the horizontal
+  six-frequency response predicts the untouched vertical response within
+  0.875 output code of modulation;
+- on 1.30 to 1.55 million central deterministic-noise pixels, that model still
+  underestimates residual contrast (0.37/0.58-code mean error and 3/5-code
+  maximum error for dark/light);
+- a color model fitted on the ordered and affine-permuted charts misses the
+  untouched Fisher-Yates chart by 3.19 codes mean/42.3 maximum in dark
+  appearance and 5.28 mean/72.3 maximum in light appearance; and
+- a flexible multiscale model selected within the affine layout extrapolates
+  catastrophically to the independent shuffle. One structured permutation is
+  not an adequate training distribution.
+
+V2.10 preserves the v2.9 shuffled charts as final holdouts and adds:
+
+- four independently seeded on-grid training layouts;
+- four independently seeded midpoint training layouts;
+- binary small-signal gray noise at ±16 and ±64 around code 128, each with
+  independent fit and holdout seeds; and
+- matching independent-channel RGB probes, which identify the complete 3x3
+  cross-channel frequency response.
+
+The binary probes use only previously calibrated source codes. No source or
+renderer tolerance was widened. Analysis schema v7 emits every new training
+chart plus central per-channel means, variances, ranges, and covariance
+matrices for all eight stochastic probes.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
@@ -267,13 +297,13 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.9 isolates the unknowns:
+V2.10 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
-| Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB fitting cube in ordered, affine-permuted, and independently shuffled contexts; all 512 midpoint RGB holdouts in ordered and independently shuffled contexts |
+| Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube in ordered, affine-permuted, four independently shuffled training contexts, and one untouched shuffled holdout; all 512 midpoint RGB colors in ordered, four training contexts, and one untouched shuffled holdout |
 | Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px; a complete six-period regular-material giant-circle MTF; 64/256/1024 px probes at 256-, 500-, and 4000-point circle scales; and p256 probes at all four quadrant positions |
-| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, deterministic noise |
+| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, and independent fit/holdout gray/RGB binary noise at two amplitudes |
 | Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, and three rectangle corner radii |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
 | Appearance and material | Light/dark appearances and real `.regular`/`.clear` materials; targeted regular/clear tint probes |
@@ -302,27 +332,27 @@ frames and marks the sample invalid if stability is not reached. The generated
 source and captured no-glass control traverse different color-management
 paths, so their measured round trip may differ by one quantization level. That
 V2.8 accepted at most 0.5% changed pixels, maximum delta 1, and mean channel
-delta 0.002. V2.9's chart-calibrated bound is at most 1.0% changed pixels,
+delta 0.002. V2.9 and v2.10's chart-calibrated bound is at most 1.0% changed pixels,
 maximum delta 1, and mean channel delta 0.0033. It is not a shader-parity
 tolerance. Every glass sample instead points to its real, stable no-glass
 capture, and the light/dark no-glass controls must be pixel-exact with each
 other.
 
-The v2.9 static suite contains:
+The v2.10 static suite contains:
 
-- 103 deterministic backgrounds and 103 saved static references.
-- 618 base control/regular/clear samples: every background, both appearances.
+- 119 deterministic backgrounds and 119 saved static references.
+- 714 base control/regular/clear samples: every background, both appearances.
 - 42 targeted tint samples.
 - 272 isolated geometry, screen-position, off-screen-scale, and
   container-interaction samples.
-- 28 edge-free giant-circle tone/color-transfer and color-validation samples.
+- 60 edge-free giant-circle tone/color-transfer and color-validation samples.
 - 240 scale-dependent, four-phase local-MTF/refraction samples.
 - 128 four-phase p256 refraction/MTF samples across the four quadrant
   positions.
-- 20 giant-circle regular-material edge, line, checker, and noise samples.
+- 36 giant-circle regular-material edge, line, checker, and stochastic samples.
 - 2 qualitative HIG-style controls-over-content samples.
 
-That is 1,350 static captures. The numerical fit should use the isolated scenes;
+That is 1,494 static captures. The numerical fit should use the isolated scenes;
 the HIG-style scene is a qualitative continuity check only.
 
 The dynamic suite contains 32 sequences:
@@ -378,7 +408,7 @@ within its traversal and must pass the delayed stability check.
 Cross-traversal differences are retained and reported as
 repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.9 artifact contains 105 references, 1,350
+With the default `all` suite, a v2.10 artifact contains 121 references, 1,494
 static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 24 exact sweep matrices containing 1,224 frames.
 
@@ -436,13 +466,14 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-Return the automatic v2.9 `static` artifact first. It contains every new chart,
-phase, and kernel probe needed for the spatial fit; rerunning the unchanged
+Return the automatic v2.10 `static` artifact first. It contains the additional
+training contexts and small-signal stochastic holdouts needed for the spatial
+fit; rerunning the unchanged
 dynamic and exact-sweep matrices is unnecessary.
 
 Runs `30326591212` and `30365533488` complete the two-run static, exact-state,
 and endpoint repeatability corpus. The latter has four rejected live
-traversals. After the v2.9 static fit, the remaining focused temporal work is:
+traversals. After the v2.10 static fit, the remaining focused temporal work is:
 
 1. A focused `dynamic`, 1.0-second, 61-frame recovery run with
    `dynamic_modes=wallpaper-transition,wallpaper-transition-reverse` and exact
@@ -510,7 +541,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The v2.9 artifacts are measurement inputs, not proof that Walle already matches.
+The v2.10 artifacts are measurement inputs, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on
