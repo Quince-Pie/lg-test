@@ -9,6 +9,122 @@ from measure import Artifact, Measurements
 
 
 class MeasurementTests(unittest.TestCase):
+    def test_geometry_coordinates_honor_backing_scale(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "shots").mkdir()
+            pixels = np.zeros((400, 400, 3), dtype=np.uint8)
+            pixels[136:265, 136:265] = 77
+            relative = "shots/scaled.png"
+            Image.fromarray(pixels).save(root / relative)
+            measurements = Measurements(
+                Artifact(
+                    path=root,
+                    manifest={
+                        "backingScaleFactor": 2,
+                        "references": [],
+                        "captures": [
+                            {
+                                "background": "probe",
+                                "scene": "circle-0500-center",
+                                "overlay": "regular",
+                                "appearance": "light",
+                                "file": relative,
+                            }
+                        ],
+                        "scenes": [
+                            {
+                                "name": "circle-0500-center",
+                                "shapes": [
+                                    {
+                                        "centerX": 100,
+                                        "centerY": 100,
+                                        "width": 100,
+                                        "height": 100,
+                                    }
+                                ],
+                            }
+                        ],
+                    },
+                )
+            )
+
+            self.assertEqual(
+                measurements.shape_pixels("circle-0500-center"),
+                (200.0, 200.0, 200.0, 200.0),
+            )
+            np.testing.assert_array_equal(
+                measurements.deep_median("probe", "regular", "light"),
+                [77, 77, 77],
+            )
+
+    def test_sweep_differences_report_pixel_magnitude(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "sweeps").mkdir()
+            base = np.zeros((2, 2, 3), dtype=np.uint8)
+            changed = base.copy()
+            changed[1, 1] = [2, 0, 0]
+            paths = {
+                "frame": "sweeps/frame.png",
+                "reverse": "sweeps/reverse.png",
+                "repeat": "sweeps/repeat.png",
+            }
+            Image.fromarray(base).save(root / paths["frame"])
+            Image.fromarray(base).save(root / paths["reverse"])
+            Image.fromarray(changed).save(root / paths["repeat"])
+            manifest = {
+                "references": [],
+                "captures": [],
+                "scenes": [],
+                "sweepSequences": [
+                    {
+                        "id": "sweep__probe",
+                        "frames": [
+                            {
+                                "index": 0,
+                                "progress": 0,
+                                "file": paths["frame"],
+                                "pixelSha256": "base",
+                                "stable": True,
+                            }
+                        ],
+                        "reverseFrames": [
+                            {
+                                "index": 0,
+                                "progress": 0,
+                                "file": paths["reverse"],
+                                "pixelSha256": "base",
+                                "stable": True,
+                            }
+                        ],
+                        "repeatFrames": [
+                            {
+                                "index": 0,
+                                "progress": 0,
+                                "file": paths["repeat"],
+                                "pixelSha256": "changed",
+                                "stable": True,
+                            }
+                        ],
+                    }
+                ],
+            }
+
+            result = Measurements(Artifact(path=root, manifest=manifest)).sweep_states()
+            sequence = result["sequences"]["sweep__probe"]
+
+            self.assertEqual(sequence["coldRepeatDifferingStates"], 1)
+            self.assertEqual(
+                sequence["coldRepeatDifference"]["maximumChangedPixels"],
+                1,
+            )
+            self.assertEqual(
+                sequence["coldRepeatDifference"]["maximumChannelDelta"],
+                2,
+            )
+            self.assertEqual(sequence["warmReverseDifferingStates"], 0)
+
     def test_dense_transfer_extracts_every_tone_and_color_knot(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

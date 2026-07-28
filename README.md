@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## How the rig reached v2.6
+## How the rig reached v2.7
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -93,7 +93,25 @@ therefore an explicitly specified Apple-native composition for Walle, not a
 claim that macOS contains a hidden wallpaper effect. Pixel parity means matching
 that captured composition and its stated schedule.
 
-### Rejected artifact audit
+Run `30321772562` is the first v2.6 all-suite result. Its 7,836,739,979-byte
+archive (`SHA-256
+d2ca866cbca173e3dbaf8ddac3e3836baad7ca6f5f8e3613d2b7c50451af78ae`)
+is intact and contains the complete static and exact-sweep matrices. All 24
+source endpoint controls are pixel-exact, all eight new two-wallpaper cold
+repeats are pixel-exact, and every settled frame passes the three-sample
+stability gate. The artifact as a whole is nevertheless rejected: one
+one-second live sequence has a real 338.604 ms acquisition hole and a 0.261875
+presented-progress hole. The hard 200 ms limits remain unchanged.
+
+That run also exposed an analysis gap. V2.6 captured a five-position grid, but
+the measurement code only quantified centered scenes and interpreted point
+coordinates as pixels. V2.7 makes every geometry measurement backing-scale
+aware, adds four-phase p256 probes in both axes at all four quadrant positions,
+reports aligned spatial consistency and exact source endpoints, and measures
+the magnitude of traversal differences instead of reporting only unequal
+hashes. This is required before a real 2x capture can be interpreted correctly.
+
+### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
 (`SHA-256 89e103a0540fdb04cbc352842fdac2d021a5fcdf1c057828e859ca2850441cf9`)
@@ -112,7 +130,7 @@ The v2 legacy scene is pixel-exact with both earlier v1 artifacts for matching
 cases. That proves the earlier fit used the same fallback rendering; it does
 not rehabilitate any of those artifacts.
 
-### Current artifact audit
+### Subsequent historical audits
 
 GitHub run `30302954531` produced the 2,271,219,760-byte archive supplied for
 this analysis
@@ -169,12 +187,12 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.6 isolates the unknowns:
+V2.7 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
 | Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube; independent holdout colors |
-| Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px, plus 64/256/1024 px local MTF probes at 256-, 500-, and 4000-point circle scales |
+| Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px, plus 64/256/1024 px local MTF probes at 256-, 500-, and 4000-point circle scales and p256 probes at all four quadrant positions |
 | Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, deterministic noise |
 | Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, and three rectangle corner radii |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
@@ -218,9 +236,11 @@ The static suite contains:
   container-interaction samples.
 - 12 edge-free giant-circle tone/color-transfer samples.
 - 192 scale-dependent, four-phase local-MTF/refraction samples.
+- 128 four-phase p256 refraction/MTF samples across the four quadrant
+  positions.
 - 2 qualitative HIG-style controls-over-content samples.
 
-That is 1,114 static captures. The numerical fit should use the isolated scenes;
+That is 1,242 static captures. The numerical fit should use the isolated scenes;
 the HIG-style scene is a qualitative continuity check only.
 
 The dynamic suite contains 32 sequences:
@@ -242,7 +262,7 @@ real insertion/removal transitions suppress sibling SwiftUI interpolation.
 The clock is decoded from the full raw screenshot before analytical cropping,
 recording actual presented progress with 1/3200 resolution. Both full-frame
 wallpaper probes declare the four clock rows as an analysis exclusion. Before
-starting the expensive matrix, the v2.6 preflight
+starting the expensive matrix, the v2.7 preflight
 requires visible settled 25% and 75% widths plus a live non-endpoint sample and
 the final endpoint.
 
@@ -267,7 +287,7 @@ source reference.
 
 Live animations expose temporal material behavior, but they cannot separate a
 geometry response from CI scheduler jitter or renderer history by themselves.
-V2.6 therefore captures 24 settled sweep matrices: resize, translate, morph,
+V2.7 therefore captures 24 settled sweep matrices: resize, translate, morph,
 single-source expansion, and two-source expansion in both source directions,
 crossed with both materials and appearances. Each matrix has 17 cold-forward
 states, the same states in warm reverse order, and a second 17-state cold
@@ -276,7 +296,7 @@ within its traversal and must pass the delayed stability check.
 Cross-traversal differences are retained and reported as
 repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.6 artifact contains 101 references, 1,114
+With the default `all` suite, a v2.7 artifact contains 101 references, 1,242
 static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 24 exact sweep matrices containing 1,224 frames.
 
@@ -332,14 +352,14 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-For the first v2.6 fit, collect and return:
+For the first v2.7 fit, collect and return:
 
 1. Two independent `all`, 1.0-second, 61-frame runs with exact sweeps enabled.
    The duplicate run bounds runner-to-runner variance.
 2. A `dynamic`, 0.35-second, 31-frame run with
    `dynamic_modes=materialize,dematerialize,wallpaper-transition,wallpaper-transition-reverse`
    and exact sweeps disabled.
-3. A `dynamic`, 2.0-second, 121-frame run with the same three modes and exact
+3. A `dynamic`, 2.0-second, 121-frame run with the same four modes and exact
    sweeps disabled.
 4. A `dynamic` run at Walle's actual configured transition duration, restricted
    to `wallpaper-transition,wallpaper-transition-reverse`, with exact sweeps
@@ -395,7 +415,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The v2.6 artifacts are measurement inputs, not proof that Walle already matches.
+The v2.7 artifacts are measurement inputs, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on

@@ -1718,7 +1718,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.6.0",
+            rigVersion: "2.7.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2012,6 +2012,45 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 log("static phase geometry: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
                 for scene in phaseScenes {
+                    for appearance in Appearance.allCases {
+                        for overlay in [Overlay.regular, .clear] {
+                            await captureStatic(
+                                background: bg,
+                                image: image,
+                                referencePixels: nil,
+                                scene: scene,
+                                overlay: overlay,
+                                appearance: appearance)
+                        }
+                    }
+                }
+            }
+
+            // The four quadrant probes need phase-resolved evidence, not only
+            // an 8-bit coordinate map. One unambiguous 256-pixel period in
+            // both axes resolves subpixel refraction and local MTF while
+            // keeping the all-suite artifact tractable.
+            let positionPhaseSceneNames: Set<String> = [
+                "circle-0500-upper-left",
+                "circle-0500-upper-right",
+                "circle-0500-lower-left",
+                "circle-0500-lower-right",
+            ]
+            let positionPhaseScenes = scenes.filter {
+                positionPhaseSceneNames.contains($0.name)
+            }
+            let positionPhaseNames: Set<String> = Set(
+                ["x", "y"].flatMap { axis in
+                    (0..<4).map {
+                        String(
+                            format: "sine-%@-p0256-ph%d",
+                            axis, $0)
+                    }
+                })
+            for bg in backgrounds where positionPhaseNames.contains(bg.name) {
+                log("static position phase: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                for scene in positionPhaseScenes {
                     for appearance in Appearance.allCases {
                         for overlay in [Overlay.regular, .clear] {
                             await captureStatic(

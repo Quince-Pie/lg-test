@@ -25,6 +25,7 @@ from scipy.special import ndtr
 type JsonObject = dict[str, Any]
 type FloatImage = NDArray[np.float64]
 type ComplexImage = NDArray[np.complex128]
+type CodeImage = NDArray[np.uint8]
 
 LUMA = np.array([0.2126, 0.7152, 0.0722])
 GRAY_LEVELS = [*range(0, 241, 16), 255]
@@ -35,6 +36,13 @@ CIRCLE_SCENES = [
     "circle-1000-center",
     "circle-1600-center",
     "circle-4000-center",
+]
+POSITION_SCENES = [
+    "circle-0500-center",
+    "circle-0500-upper-left",
+    "circle-0500-upper-right",
+    "circle-0500-lower-left",
+    "circle-0500-lower-right",
 ]
 COLOR_BACKGROUNDS = [
     "red-255",
@@ -92,9 +100,17 @@ class Artifact:
             return self.archive.read(f"{self.prefix}{relative}")
         return (self.path / relative).read_bytes()
 
-    def image(self, relative: str) -> FloatImage:
+    def code_image(self, relative: str) -> CodeImage:
         with Image.open(BytesIO(self.read_bytes(relative))) as source:
-            return np.asarray(source.convert("RGB"), dtype=np.float64)
+            return np.asarray(source.convert("RGB"), dtype=np.uint8)
+
+    def image(self, relative: str) -> FloatImage:
+        return self.code_image(relative).astype(np.float64)
+
+    def image_channel(self, relative: str, channel: str = "R") -> FloatImage:
+        with Image.open(BytesIO(self.read_bytes(relative))) as source:
+            rgb = source.convert("RGB")
+            return np.asarray(rgb.getchannel(channel), dtype=np.float64)
 
 
 @dataclass(slots=True)
@@ -128,22 +144,100 @@ class Measurements:
         record = self.records[(background, scene, overlay, appearance)]
         return self.artifact.image(str(record["file"]))
 
+    def code_image(
+        self, background: str, scene: str, overlay: str, appearance: str
+    ) -> CodeImage:
+        record = self.records[(background, scene, overlay, appearance)]
+        return self.artifact.code_image(str(record["file"]))
+
+    def image_channel(
+        self, background: str, scene: str, overlay: str, appearance: str
+    ) -> FloatImage:
+        record = self.records[(background, scene, overlay, appearance)]
+        return self.artifact.image_channel(str(record["file"]))
+
     def reference_image(self, background: str) -> FloatImage:
         return self.artifact.image(str(self.references[background]["file"]))
+
+    def reference_code_image(self, background: str) -> CodeImage:
+        return self.artifact.code_image(str(self.references[background]["file"]))
+
+    def reference_channel(self, background: str) -> FloatImage:
+        return self.artifact.image_channel(str(self.references[background]["file"]))
 
     def has_image(
         self, background: str, scene: str, overlay: str, appearance: str
     ) -> bool:
         return (background, scene, overlay, appearance) in self.records
 
+    @property
+    def backing_scale(self) -> float:
+        return float(self.artifact.manifest.get("backingScaleFactor", 1))
+
+    def shape_pixels(self, scene: str) -> tuple[float, float, float, float]:
+        shape = self.scenes[scene]["shapes"][0]
+        scale = self.backing_scale
+        return (
+            float(shape["centerX"]) * scale,
+            float(shape["centerY"]) * scale,
+            float(shape["width"]) * scale,
+            float(shape["height"]) * scale,
+        )
+
+    @staticmethod
+    def pixel_difference(
+        reference: NDArray[Any],
+        capture: NDArray[Any],
+        exclusions: list[JsonObject] | None = None,
+    ) -> JsonObject:
+        if reference.shape != capture.shape:
+            return {
+                "shapeMismatch": {
+                    "reference": list(reference.shape),
+                    "capture": list(capture.shape),
+                }
+            }
+        delta = np.abs(
+            reference.astype(np.int16, copy=False)
+            - capture.astype(np.int16, copy=False)
+        )
+        if exclusions:
+            keep = np.ones(reference.shape[:2], dtype=np.bool_)
+            for region in exclusions:
+                x = int(region["x"])
+                y = int(region["y"])
+                width = int(region["width"])
+                height = int(region["height"])
+                keep[y : y + height, x : x + width] = False
+            delta = delta[keep]
+            changed = np.any(delta != 0, axis=1)
+        else:
+            changed = np.any(delta != 0, axis=2)
+        changed_pixels = int(np.count_nonzero(changed))
+        pixel_count = int(changed.size)
+        return {
+            "pixels": pixel_count,
+            "changedPixels": changed_pixels,
+            "changedFraction": changed_pixels / pixel_count if pixel_count else 0,
+            "maximumChannelDelta": int(delta.max(initial=0)),
+            "meanAbsoluteChannelDelta": float(delta.mean()) if delta.size else 0,
+        }
+
     def deep_median(
         self, background: str, overlay: str, appearance: str
     ) -> NDArray[np.float64]:
         image = self.image(background, "circle-0500-center", overlay, appearance)
-        shape = self.scenes["circle-0500-center"]["shapes"][0]
-        x = round(float(shape["centerX"]))
-        y = round(float(shape["centerY"]))
-        return np.median(image[y - 32 : y + 33, x - 32 : x + 33], axis=(0, 1))
+        center_x, center_y, _, _ = self.shape_pixels("circle-0500-center")
+        half_width = max(1, round(32 * self.backing_scale))
+        x = round(center_x)
+        y = round(center_y)
+        return np.median(
+            image[
+                y - half_width : y + half_width + 1,
+                x - half_width : x + half_width + 1,
+            ],
+            axis=(0, 1),
+        )
 
     def tone_transfer(self) -> JsonObject:
         source = np.asarray(GRAY_LEVELS, dtype=np.float64) / 255
@@ -361,14 +455,12 @@ class Measurements:
 
     def checker_blur(self) -> JsonObject:
         result: JsonObject = {}
-        for scene_name in CIRCLE_SCENES:
+        for scene_name in dict.fromkeys([*CIRCLE_SCENES, *POSITION_SCENES]):
             if ("checker-0128", scene_name, "regular", "light") not in self.records:
                 continue
-            shape = self.scenes[scene_name]["shapes"][0]
-            center_x = float(shape["centerX"])
-            center_y = float(shape["centerY"])
-            radius_x = float(shape["width"]) / 2
-            radius_y = float(shape["height"]) / 2
+            center_x, center_y, width, height = self.shape_pixels(scene_name)
+            radius_x = width / 2
+            radius_y = height / 2
             if min(radius_x, radius_y) <= 119:
                 continue
             scene_result: JsonObject = {}
@@ -445,13 +537,13 @@ class Measurements:
             self.image("gray-128", "circle-0500-center", "none", "light") @ LUMA / 255
         )
         result: JsonObject = {}
-        for scene_name in CIRCLE_SCENES:
+        for scene_name in dict.fromkeys([*CIRCLE_SCENES, *POSITION_SCENES]):
             if scene_name == "circle-4000-center":
                 continue
-            shape = self.scenes[scene_name]["shapes"][0]
-            center_x = float(shape["centerX"])
-            center_y = float(shape["centerY"])
-            radius = float(shape["width"]) / 2
+            if not self.has_image("gray-128", scene_name, "regular", "light"):
+                continue
+            center_x, center_y, width, _ = self.shape_pixels(scene_name)
+            radius = width / 2
             scene_result: JsonObject = {}
             for appearance in ("light", "dark"):
                 for overlay in ("regular", "clear"):
@@ -514,7 +606,9 @@ class Measurements:
     def phase_refraction(self) -> JsonObject:
         result: JsonObject = {}
         period = 256
-        offsets = [180, 200, 220, 230, 235, 240, 245, 248]
+        depths = [70, 50, 30, 20, 15, 10, 5, 2]
+        center_x, center_y, width, _ = self.shape_pixels("circle-0500-center")
+        radius = width / 2
         for appearance in ("light", "dark"):
             for overlay in ("regular", "clear"):
                 source: list[FloatImage] = []
@@ -522,30 +616,32 @@ class Measurements:
                 for phase in range(4):
                     background = f"sine-x-p{period:04d}-ph{phase}"
                     source.append(
-                        self.image(
+                        self.image_channel(
                             background,
                             "circle-0500-center",
                             "none",
                             appearance,
-                        )[:, :, 0]
+                        )
                     )
                     output.append(
-                        self.image(
+                        self.image_channel(
                             background,
                             "circle-0500-center",
                             overlay,
                             appearance,
-                        )[:, :, 0]
+                        )
                     )
                 source_complex = (source[0] - source[2]) + 1j * (source[1] - source[3])
                 output_complex = (output[0] - output[2]) + 1j * (output[1] - output[3])
                 response = output_complex / source_complex
                 samples: JsonObject = {}
-                for offset in offsets:
-                    values = response[995:1006, 1600 + offset]
+                for depth in depths:
+                    x = round(center_x + radius - depth)
+                    y = round(center_y)
+                    values = response[y - 5 : y + 6, x]
                     unit = np.mean(values / np.maximum(np.abs(values), 1e-12))
-                    samples[str(250 - offset)] = {
-                        "depthInsidePixels": 250 - offset,
+                    samples[str(depth)] = {
+                        "depthInsidePixels": depth,
                         "apparentOutwardDisplacementPixels": float(
                             np.angle(unit) * period / (2 * np.pi)
                         ),
@@ -560,6 +656,10 @@ class Measurements:
             "circle-0256-center",
             "circle-0500-center",
             "circle-4000-center",
+            "circle-0500-upper-left",
+            "circle-0500-upper-right",
+            "circle-0500-lower-left",
+            "circle-0500-lower-right",
         )
         result: JsonObject = {}
         source_cache: dict[tuple[str, int], ComplexImage] = {}
@@ -568,9 +668,7 @@ class Measurements:
             key = (axis, period)
             if key not in source_cache:
                 phases = [
-                    self.reference_image(f"sine-{axis}-p{period:04d}-ph{phase}")[
-                        :, :, 0
-                    ]
+                    self.reference_channel(f"sine-{axis}-p{period:04d}-ph{phase}")
                     for phase in range(4)
                 ]
                 source_cache[key] = (phases[0] - phases[2]) + 1j * (
@@ -582,10 +680,10 @@ class Measurements:
             if scene_name not in self.scenes:
                 continue
             scene_result: JsonObject = {}
-            shape = self.scenes[scene_name]["shapes"][0]
-            center_x = round(float(shape["centerX"]))
-            center_y = round(float(shape["centerY"]))
-            radius = float(shape["width"]) / 2
+            center_x_value, center_y_value, width, _ = self.shape_pixels(scene_name)
+            center_x = round(center_x_value)
+            center_y = round(center_y_value)
+            radius = width / 2
             for appearance in ("light", "dark"):
                 for overlay in ("regular", "clear"):
                     variant_result: JsonObject = {}
@@ -607,12 +705,12 @@ class Measurements:
                             ):
                                 continue
                             phases = [
-                                self.image(
+                                self.image_channel(
                                     background,
                                     scene_name,
                                     overlay,
                                     appearance,
-                                )[:, :, 0]
+                                )
                                 for background in backgrounds
                             ]
                             output_complex = (phases[0] - phases[2]) + 1j * (
@@ -720,6 +818,126 @@ class Measurements:
             "scenes": result,
         }
 
+    def spatial_consistency(self) -> JsonObject:
+        required = [
+            ("gray-128", scene, overlay, appearance)
+            for scene in POSITION_SCENES
+            for appearance in ("light", "dark")
+            for overlay in ("regular", "clear")
+        ]
+        if not all(case in self.records for case in required):
+            return {
+                "available": False,
+                "reason": "requires the v2.6 five-position gray-128 matrix",
+            }
+
+        result: JsonObject = {
+            "available": True,
+            "comparison": (
+                "shape-aligned crops on uniform gray-128; all distances are "
+                "physical capture pixels"
+            ),
+            "variants": {},
+        }
+        margin = max(1, round(100 * self.backing_scale))
+        body_half_width = max(1, round(32 * self.backing_scale))
+        for appearance in ("light", "dark"):
+            for overlay in ("regular", "clear"):
+                crops: dict[str, CodeImage] = {}
+                body_medians: JsonObject = {}
+                for scene in POSITION_SCENES:
+                    image = self.code_image("gray-128", scene, overlay, appearance)
+                    center_x, center_y, width, height = self.shape_pixels(scene)
+                    half_width = round(width / 2) + margin
+                    half_height = round(height / 2) + margin
+                    x = round(center_x)
+                    y = round(center_y)
+                    crops[scene] = image[
+                        y - half_height : y + half_height,
+                        x - half_width : x + half_width,
+                    ].copy()
+                    body = image[
+                        y - body_half_width : y + body_half_width + 1,
+                        x - body_half_width : x + body_half_width + 1,
+                    ]
+                    body_medians[scene] = np.median(body, axis=(0, 1)).tolist()
+
+                center = crops["circle-0500-center"]
+                result["variants"][f"{appearance}/{overlay}"] = {
+                    "bodyMedianRGB": body_medians,
+                    "alignedCropVsCenter": {
+                        scene: self.pixel_difference(center, crop)
+                        for scene, crop in crops.items()
+                        if scene != "circle-0500-center"
+                    },
+                }
+        return result
+
+    def dynamic_source_controls(self) -> JsonObject:
+        sequences: JsonObject = {}
+        for sequence in self.artifact.manifest.get("dynamicSequences", []):
+            mode = str(sequence.get("mode"))
+            crop = sequence.get("cropPixels")
+            frames = sequence.get("frames")
+            if not isinstance(crop, dict) or not isinstance(frames, list) or not frames:
+                continue
+
+            def reference_crop(background: str) -> CodeImage:
+                source = self.reference_code_image(background)
+                x = int(crop["x"])
+                y = int(crop["y"])
+                width = int(crop["width"])
+                height = int(crop["height"])
+                return source[y : y + height, x : x + width]
+
+            controls: JsonObject = {}
+            if mode in {
+                "materialize",
+                "wallpaper-transition",
+                "wallpaper-transition-reverse",
+            }:
+                first = min(frames, key=lambda frame: int(frame["index"]))
+                outgoing = str(
+                    sequence.get(
+                        "outgoingBackground",
+                        sequence.get("background"),
+                    )
+                )
+                controls["initialOutgoing"] = self.pixel_difference(
+                    reference_crop(outgoing),
+                    self.artifact.code_image(str(first["file"])),
+                    sequence.get("analysisExclusionPixels", []),
+                )
+
+            post_settle = sequence.get("postSettleFrame")
+            if mode in {
+                "dematerialize",
+                "wallpaper-transition",
+                "wallpaper-transition-reverse",
+            } and isinstance(post_settle, dict):
+                expected = (
+                    sequence.get("incomingBackground")
+                    if mode
+                    in {
+                        "wallpaper-transition",
+                        "wallpaper-transition-reverse",
+                    }
+                    else sequence.get(
+                        "outgoingBackground",
+                        sequence.get("background"),
+                    )
+                )
+                controls["postSettleSource"] = self.pixel_difference(
+                    reference_crop(str(expected)),
+                    self.artifact.code_image(str(post_settle["file"])),
+                )
+            if controls:
+                sequences[str(sequence["id"])] = controls
+        return {
+            "available": bool(sequences),
+            "sequences": sequences,
+        }
+
     def dynamic_timing(self) -> JsonObject:
         result: JsonObject = {}
         for sequence in self.artifact.manifest["dynamicSequences"]:
@@ -822,6 +1040,73 @@ class Measurements:
             forward = hashes.get("forwardCold", {})
             reverse = hashes.get("reverseWarm", {})
             repeat = hashes.get("forwardColdRepeat", {})
+            records = {
+                traversal: {
+                    int(frame["index"]): frame for frame in sequence.get(key, [])
+                }
+                for traversal, key in traversal_keys.items()
+            }
+
+            def compare_traversal(name: str) -> JsonObject:
+                candidate = records.get(name, {})
+                differences: list[JsonObject] = []
+                for index in sorted(records["forwardCold"].keys() & candidate.keys()):
+                    left = records["forwardCold"][index]
+                    right = candidate[index]
+                    if left.get("pixelSha256") == right.get("pixelSha256"):
+                        continue
+                    difference = self.pixel_difference(
+                        self.artifact.code_image(str(left["file"])),
+                        self.artifact.code_image(str(right["file"])),
+                    )
+                    differences.append(
+                        {
+                            "index": index,
+                            "progress": left.get("progress"),
+                            **difference,
+                        }
+                    )
+                return {
+                    "differingStates": len(differences),
+                    "differences": differences,
+                    "maximumChangedPixels": max(
+                        (
+                            int(difference["changedPixels"])
+                            for difference in differences
+                        ),
+                        default=0,
+                    ),
+                    "maximumChangedFraction": max(
+                        (
+                            float(difference["changedFraction"])
+                            for difference in differences
+                        ),
+                        default=0,
+                    ),
+                    "maximumChannelDelta": max(
+                        (
+                            float(difference["maximumChannelDelta"])
+                            for difference in differences
+                        ),
+                        default=0,
+                    ),
+                    "maximumMeanAbsoluteChannelDelta": max(
+                        (
+                            float(difference["meanAbsoluteChannelDelta"])
+                            for difference in differences
+                        ),
+                        default=0,
+                    ),
+                }
+
+            cold_comparison = (
+                compare_traversal("forwardColdRepeat")
+                if records.get("forwardColdRepeat")
+                else None
+            )
+            reverse_comparison = (
+                compare_traversal("reverseWarm") if records.get("reverseWarm") else None
+            )
             result[str(sequence.get("id"))] = {
                 "traversals": traversals,
                 "coldRepeatDifferingStates": sum(
@@ -832,6 +1117,8 @@ class Measurements:
                     forward.get(index) != reverse.get(index)
                     for index in forward.keys() & reverse.keys()
                 ),
+                "coldRepeatDifference": cold_comparison,
+                "warmReverseDifference": reverse_comparison,
             }
         return {
             "available": bool(sequences),
@@ -843,7 +1130,7 @@ class Measurements:
         dynamic_sequences = manifest.get("dynamicSequences", [])
         sweep_sequences = manifest.get("sweepSequences", [])
         return {
-            "analysisSchemaVersion": 2,
+            "analysisSchemaVersion": 3,
             "analysisImplementation": {
                 "file": "Analysis/measure.py",
                 "sha256": file_sha256(Path(__file__).resolve()),
@@ -908,7 +1195,9 @@ class Measurements:
             "edgeGeometry": self.edge_geometry(),
             "phaseRefraction": self.phase_refraction(),
             "phaseResponse": self.phase_response(),
+            "spatialConsistency": self.spatial_consistency(),
             "dynamicTiming": self.dynamic_timing(),
+            "dynamicSourceControls": self.dynamic_source_controls(),
             "sweepStates": self.sweep_states(),
         }
 
