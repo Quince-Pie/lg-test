@@ -836,6 +836,9 @@ class Measurements:
                 "xcodeVersion": manifest.get("xcodeVersion"),
                 "ciCommit": manifest.get("ciCommit"),
                 "runnerImageVersion": manifest.get("runnerImageVersion"),
+                "presentationClockPreflight": manifest.get(
+                    "presentationClockPreflight"
+                ),
                 "backingScaleFactor": manifest.get("backingScaleFactor"),
                 "reduceTransparency": manifest.get("reduceTransparency"),
                 "increaseContrast": manifest.get("increaseContrast"),

@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## Why the rig needed v2.4
+## Why the rig needed v2.5
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -52,6 +52,16 @@ SwiftUI clock stayed at zero until the endpoint. V2.4 keeps the successful
 SwiftUI clock for geometry and gives materialize an independent, linear Core
 Animation layer above the hosting view. Both clocks are captured in the same
 window pixels; the manifest identifies which backend each sequence used.
+
+Run 30315225943 then supplied a clean negative result: the v2.4 Core Animation
+transform decoded as zero at both the midpoint and endpoint. The fail-fast
+preflight correctly prevented that clock from contaminating a full capture,
+but those two zeroes alone cannot distinguish an occluded child overlay from a
+snapshot path that omits the server-side transform. V2.5 removes both unknowns:
+the clock is a topmost AppKit sibling view whose prefix is rasterized from
+monotonic time. Its preflight first proves that settled 25% and 75% widths are
+visible, then proves that a live midpoint and endpoint advance. Those four
+decoded values and the backend name are retained in the manifest.
 
 ### Rejected artifact audit
 
@@ -122,7 +132,14 @@ All 100 references and 1,066 static captures are pixel-exact with run
 This measured repeatability envelope must bound cross-run comparisons; it is
 not permission for a shader regression.
 
-V2.4 isolates the unknowns:
+GitHub run `30315225943` produced an intact 9,806-byte v2.4 failure artifact
+(`SHA-256 4885dbd900a2785c2e7a2559757ca9de1467955847bda11ac87f1c654dcf8c6a`).
+Both ZIP entries pass CRC. It contains only `manifest.json` and
+`validation.json`, with no images: the Core Animation clock preflight decoded
+`midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
+This archive is useful diagnostic evidence but contains no optical samples.
+
+V2.5 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
@@ -187,16 +204,18 @@ The dynamic suite contains 20 sequences:
 The app records the monotonic acquisition time, target time, timing error, and
 capture duration for every frame. It also renders a four-point-high magenta
 clock. Geometry modes animate its scalar in the same SwiftUI transaction.
-Materialize uses a separate Core Animation layer because the real insertion
-transition suppresses sibling SwiftUI interpolation on the CI compositor.
-The clock is decoded from the full raw screenshot before analytical cropping,
-recording actual presented progress with 1/3200 resolution. The full-frame
-wallpaper wipe declares the four clock rows as an analysis exclusion.
-Before starting the expensive matrix, a 0.4-second compositor preflight
-requires both a non-endpoint clock sample and the final endpoint.
+Materialize uses a separate topmost AppKit sibling view, rasterized from
+monotonic time, because the real insertion transition suppresses sibling
+SwiftUI interpolation and the v2.4 Core Animation child was not observable
+through this capture path. The clock is decoded from the full raw screenshot
+before analytical cropping, recording actual presented progress with 1/3200
+resolution. The full-frame wallpaper wipe declares the four clock rows as an
+analysis exclusion. Before starting the expensive matrix, the v2.5 preflight
+requires visible settled 25% and 75% widths plus a live non-endpoint sample and
+the final endpoint.
 
 Frames stay in memory and PNGs are written only after each animation finishes,
-so compression cannot perturb sample timing. V2.4 captures continuously on a
+so compression cannot perturb sample timing. V2.5 captures continuously on a
 detached worker and retains the real screenshot closest to each presented
 target bin. The main actor remains free to drive SwiftUI and WindowServer.
 Attempted, decoded, and transiently failed sample counts are recorded in the
@@ -212,13 +231,13 @@ glass and must match the corresponding crop of the generated reference
 exactly.
 
 Live animations expose temporal material behavior, but they cannot separate a
-geometry response from CI scheduler jitter by themselves. V2.4 therefore also
+geometry response from CI scheduler jitter by themselves. V2.5 therefore also
 captures 16 settled sweeps: resize, translate, morph, and wallpaper-wipe,
 crossed with both materials and appearances. Every sweep has exactly 17
 strictly increasing states, each required to stabilize and have a unique pixel
 hash.
 
-With the default `all` suite, a v2.4 artifact contains 100 references, 1,066
+With the default `all` suite, a v2.5 artifact contains 100 references, 1,066
 static captures, 20 live dynamic sequences, and 16 exact sweeps containing
 272 frames.
 
@@ -267,7 +286,7 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-After V2.4 changes, return that complete artifact, including
+After V2.5 changes, return that complete artifact, including
 `manifest.json` and `validation.json`. Do not merge it into an old `shots/`
 directory; filenames and scene semantics changed.
 
@@ -310,7 +329,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The V2.4 artifact is the measurement input, not proof that Walle already matches.
+The V2.5 artifact is the measurement input, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on

@@ -17,7 +17,6 @@ import ImageIO
 import UniformTypeIdentifiers
 import CryptoKit
 import Foundation
-import QuartzCore
 
 // MARK: - Configuration
 
@@ -711,9 +710,9 @@ struct DynamicOverlay: View {
             }
             // Geometry modes use this SwiftUI clock. Materialize insertion
             // suppresses sibling interpolation on the CI compositor, so that
-            // mode uses the independent Core Animation layer installed by the
-            // AppDelegate. Both clocks occupy the same four top rows and encode
-            // presented linear progress to ~0.3 ms at 3200 px.
+            // mode uses the independent rasterized AppKit sibling installed by
+            // the AppDelegate. Both clocks occupy the same four top rows and
+            // encode presented linear progress to ~0.3 ms at 3200 px.
             if model.dynamicClockVisible {
                 Color(red: 1, green: 0, blue: 1)
                     .frame(width: size.width * clockProgress, height: 4)
@@ -863,6 +862,14 @@ struct DynamicSequenceRecord: Codable {
     var frames: [DynamicFrameRecord]
 }
 
+struct PresentationClockPreflightRecord: Codable {
+    let backend: String
+    let staticQuarterProgress: Double
+    let staticThreeQuarterProgress: Double
+    let liveMidpointProgress: Double
+    let liveEndpointProgress: Double
+}
+
 struct SweepFrameRecord: Codable {
     let file: String
     let index: Int
@@ -922,6 +929,7 @@ struct Manifest: Codable {
     let overlays: [String]
     let appearances: [String]
     var preflightErrors: [String] = []
+    var presentationClockPreflight: PresentationClockPreflightRecord? = nil
     var references: [ReferenceRecord] = []
     var captures: [CaptureRecord] = []
     var dynamicSequences: [DynamicSequenceRecord] = []
@@ -1303,61 +1311,82 @@ final class CaptureWindow: NSWindow {
     override var canBecomeMain: Bool { true }
 }
 
+final class CaptureRootView: NSView {
+    override var isFlipped: Bool { true }
+}
+
 @MainActor
 final class MaterializeClockView: NSView {
-    private let barLayer = CALayer()
+    private var progress: CGFloat = 0
+    private var animationTask: Task<Void, Never>?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
+        layerContentsRedrawPolicy = .onSetNeedsDisplay
         layer?.masksToBounds = true
-        barLayer.backgroundColor = NSColor(
-            srgbRed: 1, green: 0, blue: 1, alpha: 1
-        ).cgColor
-        layer?.addSublayer(barLayer)
         isHidden = true
-        resetBar()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func resetBar() {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        barLayer.removeAllAnimations()
-        barLayer.bounds = bounds
-        barLayer.anchorPoint = CGPoint(x: 0, y: 0.5)
-        barLayer.position = CGPoint(x: 0, y: bounds.midY)
-        barLayer.transform = CATransform3DMakeScale(0, 1, 1)
-        CATransaction.commit()
+    override var isOpaque: Bool { false }
+
+    override func draw(_ dirtyRect: NSRect) {
+        guard let context = NSGraphicsContext.current?.cgContext else { return }
+        context.clear(bounds)
+        context.setFillColor(NSColor(
+            srgbRed: 1, green: 0, blue: 1, alpha: 1
+        ).cgColor)
+        context.fill(CGRect(
+            x: 0,
+            y: 0,
+            width: bounds.width * progress,
+            height: bounds.height))
+    }
+
+    func present(progress value: Double) {
+        progress = CGFloat(min(1, max(0, value)))
+        needsDisplay = true
+        displayIfNeeded()
     }
 
     func prepare() {
+        animationTask?.cancel()
+        animationTask = nil
         isHidden = false
-        resetBar()
+        present(progress: 0)
     }
 
-    func animate(duration: Double) {
-        let animation = CABasicAnimation(keyPath: "transform.scale.x")
-        animation.fromValue = 0.0
-        animation.toValue = 1.0
-        animation.duration = duration
-        animation.timingFunction = CAMediaTimingFunction(name: .linear)
-        animation.fillMode = .forwards
-        animation.isRemovedOnCompletion = false
-
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        barLayer.transform = CATransform3DMakeScale(1, 1, 1)
-        barLayer.add(animation, forKey: "presentation-clock")
-        CATransaction.commit()
+    func animate(
+        startTime: Double,
+        duration: Double,
+        refreshRate: Double
+    ) {
+        animationTask?.cancel()
+        present(progress: 0)
+        let updateInterval = 1 / max(refreshRate * 2, 120)
+        animationTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            while !Task.isCancelled {
+                let elapsed =
+                    ProcessInfo.processInfo.systemUptime - startTime
+                let value = min(1, max(0, elapsed / duration))
+                self.present(progress: value)
+                if value >= 1 { return }
+                try? await Task.sleep(
+                    nanoseconds: UInt64(updateInterval * 1_000_000_000))
+            }
+        }
     }
 
     func deactivate() {
+        animationTask?.cancel()
+        animationTask = nil
         isHidden = true
-        resetBar()
+        present(progress: 0)
     }
 }
 
@@ -1372,18 +1401,39 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func verifyMaterializeClock(
         backingScale: CGFloat,
         refreshRate: Double
-    ) async throws {
+    ) async throws -> PresentationClockPreflightRecord {
         let duration = 0.4
+        let frameInterval = 1 / max(refreshRate, 1)
         materializeClock.prepare()
         defer { materializeClock.deactivate() }
 
+        func settleRaster() async throws {
+            try await Task.sleep(
+                nanoseconds: UInt64(max(2 * frameInterval, 0.04)
+                    * 1_000_000_000))
+        }
+
+        materializeClock.present(progress: 0.25)
+        try await settleRaster()
+        let staticQuarter = try presentationProgress(
+            in: captureRawWindow(window), backingScale: backingScale)
+        materializeClock.present(progress: 0.75)
+        try await settleRaster()
+        let staticThreeQuarter = try presentationProgress(
+            in: captureRawWindow(window), backingScale: backingScale)
+
+        materializeClock.present(progress: 0)
+        try await settleRaster()
         let started = ProcessInfo.processInfo.systemUptime
-        materializeClock.animate(duration: duration)
+        materializeClock.animate(
+            startTime: started,
+            duration: duration,
+            refreshRate: refreshRate)
         try await Task.sleep(nanoseconds: UInt64(duration * 0.5 * 1_000_000_000))
         let middle = try presentationProgress(
             in: captureRawWindow(window), backingScale: backingScale)
 
-        let endpointTime = started + duration + 1 / max(refreshRate, 1)
+        let endpointTime = started + duration + 2 * frameInterval
         let now = ProcessInfo.processInfo.systemUptime
         if endpointTime > now {
             try await Task.sleep(
@@ -1391,12 +1441,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let endpoint = try presentationProgress(
             in: captureRawWindow(window), backingScale: backingScale)
-        guard middle > 0.05, middle < 0.95, endpoint >= 0.995 else {
+        guard staticQuarter > 0.20,
+              staticQuarter < 0.30,
+              staticThreeQuarter > 0.70,
+              staticThreeQuarter < 0.80,
+              middle > 0.05,
+              middle < 0.95,
+              endpoint >= 0.995
+        else {
             throw RigError.capture(
-                "Core Animation clock preflight decoded "
-                + "midpoint \(middle), endpoint \(endpoint)")
+                "AppKit raster clock preflight decoded "
+                + "static-quarter \(staticQuarter), "
+                + "static-three-quarter \(staticThreeQuarter), "
+                + "live-midpoint \(middle), live-endpoint \(endpoint)")
         }
-        log("clock preflight: midpoint \(middle), endpoint \(endpoint)")
+        let result = PresentationClockPreflightRecord(
+            backend: "appkit-raster-monotonic",
+            staticQuarterProgress: staticQuarter,
+            staticThreeQuarterProgress: staticThreeQuarter,
+            liveMidpointProgress: middle,
+            liveEndpointProgress: endpoint)
+        log(
+            "clock preflight: static-quarter \(staticQuarter), "
+            + "static-three-quarter \(staticThreeQuarter), "
+            + "live-midpoint \(middle), live-endpoint \(endpoint)")
+        return result
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -1408,12 +1477,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.isOpaque = true
         window.colorSpace = .sRGB
         window.backgroundColor = .black
+        let root = CaptureRootView(frame: NSRect(origin: .zero, size: size))
         let hosting = NSHostingView(rootView: RootView(model: model, size: size))
-        window.contentView = hosting
-        let clockY = hosting.isFlipped ? 0 : size.height - 4
+        hosting.frame = root.bounds
+        hosting.autoresizingMask = [.width, .height]
+        root.addSubview(hosting)
         materializeClock = MaterializeClockView(frame: NSRect(
-            x: 0, y: clockY, width: size.width, height: 4))
-        hosting.addSubview(materializeClock)
+            x: 0, y: 0, width: size.width, height: 4))
+        materializeClock.autoresizingMask = [.width]
+        root.addSubview(
+            materializeClock, positioned: .above, relativeTo: hosting)
+        window.contentView = root
         window.setFrameOrigin(NSPoint(x: 0, y: 0))
         NSApplication.shared.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
@@ -1468,7 +1542,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 4,
-            rigVersion: "2.4.0",
+            rigVersion: "2.5.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -1536,7 +1610,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         if config.suite.includesDynamic {
             do {
-                try await verifyMaterializeClock(
+                manifest.presentationClockPreflight =
+                    try await verifyMaterializeClock(
                     backingScale: scale,
                     refreshRate: displayMode?.refreshRate ?? 60)
             } catch {
@@ -1875,10 +1950,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                         initial.frame.captureDurationSeconds))]
                             timed.reserveCapacity(config.dynamicFrames)
 
+                            let refresh = max(
+                                displayMode?.refreshRate ?? 60, 1)
                             let animationStart = ProcessInfo.processInfo.systemUptime
                             if mode == .materialize {
                                 materializeClock.animate(
-                                    duration: config.dynamicDuration)
+                                    startTime: animationStart,
+                                    duration: config.dynamicDuration,
+                                    refreshRate: refresh)
                             }
                             withAnimation(.linear(duration: config.dynamicDuration)) {
                                 if mode == .materialize {
@@ -1889,8 +1968,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 }
                             }
 
-                            let refresh = max(
-                                displayMode?.refreshRate ?? 60, 1)
                             let windowID = CGWindowID(window.windowNumber)
                             let duration = config.dynamicDuration
                             let frameCount = config.dynamicFrames
@@ -1929,7 +2006,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 durationSeconds: config.dynamicDuration,
                                 animationCurve: "linear",
                                 presentationClock: mode == .materialize
-                                    ? "core-animation-layer"
+                                    ? "appkit-raster-monotonic"
                                     : "swiftui-animatable-frame",
                                 samplingMethod:
                                     "continuous-off-main-presentation-binned",

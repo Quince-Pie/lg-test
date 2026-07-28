@@ -142,7 +142,7 @@ jobs:
             --report captures/validation.json
 
       - name: Measure optical evidence
-        if: always() && inputs.suite != 'dynamic'
+        if: steps.capture.outcome == 'success' && inputs.suite != 'dynamic'
         id: measure
         continue-on-error: true
         run: |

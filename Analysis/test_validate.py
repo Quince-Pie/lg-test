@@ -12,6 +12,7 @@ from validate import (
     source_diff_is_within_tolerance,
     validate,
     validate_dynamic,
+    validate_environment,
     validate_sweeps,
 )
 
@@ -381,6 +382,45 @@ class ValidatorTests(unittest.TestCase):
         self.assertEqual(findings.errors, [])
         self.assertEqual(summary, {"sequences": 0, "frames": 0})
 
+    def test_v25_requires_measured_raster_clock_preflight(self) -> None:
+        manifest = {
+            "schemaVersion": 4,
+            "rigVersion": "2.5.0",
+            "requestedSuite": "dynamic",
+            "canonicalPixelEncoding": "sRGB RGBA8 top-left opaque-alpha",
+            "osVersion": "Version 26.4",
+            "reduceTransparency": False,
+            "increaseContrast": False,
+            "reduceMotion": False,
+            "applicationActive": True,
+            "windowKey": True,
+            "preflightErrors": [],
+            "presentationClockPreflight": {
+                "backend": "appkit-raster-monotonic",
+                "staticQuarterProgress": 0.25,
+                "staticThreeQuarterProgress": 0.75,
+                "liveMidpointProgress": 0.51,
+                "liveEndpointProgress": 1.0,
+            },
+            "sourceRoundTripTolerance": {
+                "maximumChangedPixelFraction": 0.005,
+                "maximumChannelDelta": 1,
+                "maximumMeanAbsoluteChannelDelta": 0.002,
+            },
+            "backingScaleFactor": 1,
+        }
+
+        valid = Findings()
+        validate_environment(manifest, valid)
+        self.assertEqual(valid.errors, [])
+
+        manifest["presentationClockPreflight"]["liveMidpointProgress"] = 0
+        invalid = Findings()
+        validate_environment(manifest, invalid)
+        self.assertTrue(
+            any("liveMidpointProgress" in error for error in invalid.errors)
+        )
+
     def test_schema4_presentation_clock_and_exclusion(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -489,6 +529,26 @@ class ValidatorTests(unittest.TestCase):
             validate_dynamic(root, manifest, references, wrong_clock)
             self.assertTrue(
                 any("presentationClock" in error for error in wrong_clock.errors)
+            )
+
+            manifest["rigVersion"] = "2.5.0"
+            sequence.update(
+                {
+                    "id": "materialize__regular__light",
+                    "mode": "materialize",
+                    "analysisExclusionPixels": [],
+                    "presentationClock": "appkit-raster-monotonic",
+                }
+            )
+            raster_clock = Findings()
+            validate_dynamic(root, manifest, references, raster_clock)
+            self.assertEqual(raster_clock.errors, [])
+
+            sequence["presentationClock"] = "core-animation-layer"
+            obsolete_clock = Findings()
+            validate_dynamic(root, manifest, references, obsolete_clock)
+            self.assertTrue(
+                any("presentationClock" in error for error in obsolete_clock.errors)
             )
 
 

@@ -270,7 +270,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
         findings.error(f"schemaVersion is {schema!r}; validator supports 3 and 4")
     expected_rigs = {
         3: {"2.1.0"},
-        4: {"2.2.0", "2.3.0", "2.4.0"},
+        4: {"2.2.0", "2.3.0", "2.4.0", "2.5.0"},
     }.get(schema, set())
     if manifest.get("rigVersion") not in expected_rigs:
         findings.error(f"unexpected rigVersion: {manifest.get('rigVersion')!r}")
@@ -299,6 +299,38 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
         findings.error("preflightErrors is not a list")
     elif preflight_errors:
         findings.error(f"capture preflight failed: {preflight_errors}")
+    if (
+        manifest.get("rigVersion") == "2.5.0"
+        and manifest.get("requestedSuite") != "static"
+    ):
+        clock = manifest.get("presentationClockPreflight")
+        if not isinstance(clock, dict):
+            findings.error("missing presentationClockPreflight evidence")
+        else:
+            if clock.get("backend") != "appkit-raster-monotonic":
+                findings.error(
+                    "presentationClockPreflight.backend is "
+                    f"{clock.get('backend')!r}, expected "
+                    "'appkit-raster-monotonic'"
+                )
+            expected_ranges = {
+                "staticQuarterProgress": (0.20, 0.30),
+                "staticThreeQuarterProgress": (0.70, 0.80),
+                "liveMidpointProgress": (0.05, 0.95),
+                "liveEndpointProgress": (0.995, 1.000_001),
+            }
+            for key, (lower, upper) in expected_ranges.items():
+                value = clock.get(key)
+                if (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(value)
+                    or not lower <= value < upper
+                ):
+                    findings.error(
+                        f"presentationClockPreflight.{key} is {value!r}; "
+                        f"expected {lower} <= value < {upper}"
+                    )
     tolerance = manifest.get("sourceRoundTripTolerance")
     if not isinstance(tolerance, dict) or not source_diff_is_within_tolerance(
         (0, 0, 0.0), 1, tolerance
@@ -639,7 +671,7 @@ def validate_dynamic(
             findings.error(f"{label}: missing background reference")
         if sequence.get("animationCurve") != "linear":
             findings.error(f"{label}: animation curve is not linear")
-        if manifest.get("rigVersion") in {"2.3.0", "2.4.0"}:
+        if manifest.get("rigVersion") in {"2.3.0", "2.4.0", "2.5.0"}:
             if (
                 sequence.get("samplingMethod")
                 != "continuous-off-main-presentation-binned"
@@ -656,12 +688,14 @@ def validate_dynamic(
                 or attempts != decoded_samples + transient_failures
             ):
                 findings.error(f"{label}: inconsistent dynamic sampler counters")
-        if manifest.get("rigVersion") == "2.4.0":
-            expected_clock = (
-                "core-animation-layer"
-                if sequence.get("mode") == "materialize"
-                else "swiftui-animatable-frame"
-            )
+        if manifest.get("rigVersion") in {"2.4.0", "2.5.0"}:
+            expected_clock = "swiftui-animatable-frame"
+            if sequence.get("mode") == "materialize":
+                expected_clock = (
+                    "core-animation-layer"
+                    if manifest.get("rigVersion") == "2.4.0"
+                    else "appkit-raster-monotonic"
+                )
             if sequence.get("presentationClock") != expected_clock:
                 findings.error(
                     f"{label}: presentationClock is "
@@ -690,7 +724,7 @@ def validate_dynamic(
                 f"expected at least {minimum_captured}"
             )
         if (
-            manifest.get("rigVersion") in {"2.3.0", "2.4.0"}
+            manifest.get("rigVersion") in {"2.3.0", "2.4.0", "2.5.0"}
             and isinstance(sequence.get("decodedSamples"), int)
             and sequence["decodedSamples"] < len(frames) - 1
         ):
@@ -1208,6 +1242,9 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
             "osBuild": manifest.get("osBuild"),
             "architecture": manifest.get("architecture"),
             "ciCommit": manifest.get("ciCommit"),
+            "presentationClockPreflight": manifest.get(
+                "presentationClockPreflight"
+            ),
         },
         "summary": {
             "references": len(references),
@@ -1226,7 +1263,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Independently validate a GlassCapture v2.1-v2.4 artifact."
+        description="Independently validate a GlassCapture v2.1-v2.5 artifact."
     )
     parser.add_argument("artifact", type=Path, help="capture artifact directory")
     parser.add_argument("--report", type=Path, help="write a JSON validation report")
