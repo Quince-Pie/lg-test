@@ -244,26 +244,6 @@ private func runtimeClassDescription(_ cls: AnyClass) -> [String: Any] {
     return record
 }
 
-private func runtimePropertyNames(_ cls: AnyClass) -> [String] {
-    var names: Set<String> = []
-    var current: AnyClass? = cls
-    while let inspectedClass = current {
-        var propertyCount: UInt32 = 0
-        let propertyList = class_copyPropertyList(
-            inspectedClass,
-            &propertyCount)
-        if let propertyList {
-            for index in 0..<Int(propertyCount) {
-                names.insert(
-                    String(cString: property_getName(propertyList[index])))
-            }
-            free(propertyList)
-        }
-        current = class_getSuperclass(inspectedClass)
-    }
-    return names.sorted()
-}
-
 private let linkedRuntimeObjectKeys = [
     "effect",
     "shape",
@@ -538,9 +518,6 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 report["runtimeObjectValues"] = Dictionary(
                     uniqueKeysWithValues: names.map { name in
                         let object = runtimeObjects[name]!
-                        let propertyKeys = object is CALayer
-                            ? []
-                            : runtimePropertyNames(type(of: object))
                         return (
                             name,
                             knownRuntimeValues(
@@ -578,7 +555,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     "effectOffset",
                                     "mergeElements",
                                     "hitTestsAsFill",
-                                ] + propertyKeys))
+                                ]))
                     })
             }
         }
