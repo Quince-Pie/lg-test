@@ -1,0 +1,70 @@
+name: Capture Liquid Glass point sweep
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/point-sweep.yml
+      - Sources/GlassPointSweep/**
+
+concurrency:
+  group: point-sweep-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  point-sweep:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Build exhaustive point sweep
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p point-sweep
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassPointSweep/main.swift \
+            -o glass-point-sweep 2>&1 |
+            tee point-sweep/build.log
+
+      - name: Capture exhaustive point sweep
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: ./glass-point-sweep point-sweep
+
+      - name: Inventory point sweep
+        if: always()
+        run: |
+          find point-sweep -maxdepth 1 -type f -print -exec du -h {} \;
+
+      - name: Upload point sweep
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-point-sweep-${{ github.run_id }}
+          path: point-sweep
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce point sweep
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test -s point-sweep/manifest.json
