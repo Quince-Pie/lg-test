@@ -63,6 +63,23 @@ ADAPTIVE_SPATIAL_PROBES: dict[str, dict[str, Any]] = {
     },
 }
 
+CLEAR_KERNEL_PROBES: dict[str, dict[str, Any]] = {
+    f"noise-rgb-a064-kernel-{name_role}-{index:02d}": {
+        "probeKind": "independent-rgb-binary-pixels",
+        "role": metadata_role,
+        "blockSizePixels": 1,
+        "centerCode": 128,
+        "amplitudeCodes": 64,
+        "levels": [64, 192],
+        "seed": f"0x{seed:08x}",
+    }
+    for name_role, metadata_role, seeds in (
+        ("train", "training", (0xD1B54A32, 0x94D049BB, 0x8538ECB5, 0xC2B2AE35)),
+        ("holdout", "holdout", (0x27D4EB2F, 0x165667B1)),
+    )
+    for index, seed in enumerate(seeds)
+}
+
 
 def hash32(
     x: UInt32Image,
@@ -242,3 +259,24 @@ def expected_adaptive_reference(
             independent_rgb=kind == "rgb-binary-blocks",
         )
     raise ValueError(f"unknown adaptive probe kind: {kind}")
+
+
+def expected_clear_kernel_reference(
+    background: str,
+    *,
+    width: int,
+    height: int,
+) -> CodeImage:
+    """Regenerate one v2.13 clear-kernel source independently."""
+    if width <= 0 or height <= 0:
+        raise ValueError("reference dimensions must be positive")
+    metadata = CLEAR_KERNEL_PROBES[background]
+    return binary_blocks(
+        width=width,
+        height=height,
+        block=int(metadata["blockSizePixels"]),
+        center=int(metadata["centerCode"]),
+        amplitude=int(metadata["amplitudeCodes"]),
+        seed=int(str(metadata["seed"]), 0),
+        independent_rgb=True,
+    )

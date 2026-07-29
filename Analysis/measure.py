@@ -21,7 +21,7 @@ from scipy.ndimage import map_coordinates
 from scipy.optimize import least_squares
 from scipy.special import ndtr
 
-from probe_catalog import ADAPTIVE_SPATIAL_PROBES
+from probe_catalog import ADAPTIVE_SPATIAL_PROBES, CLEAR_KERNEL_PROBES
 
 
 type JsonObject = dict[str, Any]
@@ -73,6 +73,16 @@ STOCHASTIC_BACKGROUNDS = [
     for channel in ("gray", "rgb")
     for amplitude in (16, 64)
     for role in ("train", "holdout")
+]
+CLEAR_KERNEL_BACKGROUNDS = [
+    "noise-rgb-a064-train",
+    "noise-rgb-a064-holdout",
+    *CLEAR_KERNEL_PROBES,
+]
+CLEAR_KERNEL_SCENES = [
+    "circle-4000-center",
+    "circle-6000-upper-left",
+    "rect-6000x4000-r000-center",
 ]
 
 
@@ -887,6 +897,115 @@ class Measurements:
             "boundaryExclusionPixels": margin,
             "records": records,
             "translationEquivariance": translation,
+        }
+
+    def clear_kernel_geometry_statistics(self) -> JsonObject:
+        complete = [
+            background
+            for background in CLEAR_KERNEL_BACKGROUNDS
+            if background in self.references
+            and all(
+                self.has_image(background, scene, "clear", appearance)
+                for scene in CLEAR_KERNEL_SCENES
+                for appearance in ("light", "dark")
+            )
+        ]
+        if not complete:
+            return {
+                "available": False,
+                "reason": (
+                    "requires v2.13 independent clear-kernel probes across "
+                    "centered-circle, translated-circle, and rectangle scenes"
+                ),
+            }
+
+        margin = round(512 * self.backing_scale)
+        records: JsonObject = {}
+
+        def region_description(codes: CodeImage) -> JsonObject:
+            contiguous = np.ascontiguousarray(codes)
+            return {
+                "rgbPixelSha256": hashlib.sha256(contiguous.tobytes()).hexdigest(),
+                **self.channel_statistics(contiguous),
+            }
+
+        for background in complete:
+            source = self.reference_code_image(background)
+            region = (
+                slice(margin, source.shape[0] - margin),
+                slice(margin, source.shape[1] - margin),
+            )
+            outputs = {
+                scene: {
+                    appearance: self.code_image(
+                        background,
+                        scene,
+                        "clear",
+                        appearance,
+                    )[region]
+                    for appearance in ("light", "dark")
+                }
+                for scene in CLEAR_KERNEL_SCENES
+            }
+            metadata = CLEAR_KERNEL_PROBES.get(background)
+            if metadata is None:
+                metadata = {
+                    "probeKind": "historical-independent-rgb-binary-pixels",
+                    "role": (
+                        "training" if background.endswith("-train") else "holdout"
+                    ),
+                    "blockSizePixels": 1,
+                    "centerCode": 128,
+                    "amplitudeCodes": 64,
+                    "levels": [64, 192],
+                    "seed": (
+                        "0x31415926"
+                        if background.endswith("-train")
+                        else "0xa7f43c19"
+                    ),
+                }
+            records[background] = {
+                **metadata,
+                "source": region_description(source[region]),
+                "outputs": {
+                    scene: {
+                        appearance: region_description(codes)
+                        for appearance, codes in appearances.items()
+                    }
+                    for scene, appearances in outputs.items()
+                },
+                "appearanceDifferences": {
+                    scene: self.pixel_difference(
+                        appearances["light"],
+                        appearances["dark"],
+                    )
+                    for scene, appearances in outputs.items()
+                },
+                "geometryDifferencesFromCenteredCircle": {
+                    scene: {
+                        appearance: self.pixel_difference(
+                            outputs["circle-4000-center"][appearance],
+                            outputs[scene][appearance],
+                        )
+                        for appearance in ("light", "dark")
+                    }
+                    for scene in CLEAR_KERNEL_SCENES
+                    if scene != "circle-4000-center"
+                },
+            }
+
+        return {
+            "available": len(complete) == len(CLEAR_KERNEL_BACKGROUNDS),
+            "requiredProbeCount": len(CLEAR_KERNEL_BACKGROUNDS),
+            "availableProbeCount": len(complete),
+            "requiredOutputCount": (
+                len(CLEAR_KERNEL_BACKGROUNDS) * len(CLEAR_KERNEL_SCENES) * 2
+            ),
+            "boundaryExclusionPixels": margin,
+            "scenes": {
+                scene: self.scenes.get(scene) for scene in CLEAR_KERNEL_SCENES
+            },
+            "records": records,
         }
 
     def base_color_charts(self) -> JsonObject:
@@ -1719,6 +1838,7 @@ class Measurements:
         analysis_schema_version = {
             "2.11.0": 8,
             "2.12.0": 9,
+            "2.13.0": 10,
         }.get(str(rig_version), 7)
         result = {
             "analysisSchemaVersion": analysis_schema_version,
@@ -1803,13 +1923,17 @@ class Measurements:
             "dynamicSourceControls": self.dynamic_source_controls(),
             "sweepStates": self.sweep_states(),
         }
-        if rig_version in {"2.11.0", "2.12.0"}:
+        if rig_version in {"2.11.0", "2.12.0", "2.13.0"}:
             result["adaptiveSpatialProbeStatistics"] = (
                 self.adaptive_spatial_probe_statistics()
             )
-        if rig_version == "2.12.0":
+        if rig_version in {"2.12.0", "2.13.0"}:
             result["pixelScaleGiantProbeStatistics"] = (
                 self.pixel_scale_giant_probe_statistics()
+            )
+        if rig_version == "2.13.0":
+            result["clearKernelGeometryStatistics"] = (
+                self.clear_kernel_geometry_statistics()
             )
         return result
 

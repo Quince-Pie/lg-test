@@ -8,6 +8,8 @@ from PIL import Image
 
 from measure import (
     Artifact,
+    CLEAR_KERNEL_BACKGROUNDS,
+    CLEAR_KERNEL_SCENES,
     COLOR_BACKGROUNDS,
     GRAY_LEVELS,
     STOCHASTIC_BACKGROUNDS,
@@ -15,7 +17,9 @@ from measure import (
 )
 from probe_catalog import (
     ADAPTIVE_SPATIAL_PROBES,
+    CLEAR_KERNEL_PROBES,
     expected_adaptive_reference,
+    expected_clear_kernel_reference,
     hash32,
     palette_blocks,
     source_safe_midpoint_blocks,
@@ -23,6 +27,146 @@ from probe_catalog import (
 
 
 class MeasurementTests(unittest.TestCase):
+    def test_v213_probe_catalog_matches_capture_source(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "Sources"
+            / "GlassCapture"
+            / "main.swift"
+        ).read_text(encoding="utf-8")
+        for role, seed in (
+            ("train-00", "0xD1B5_4A32"),
+            ("train-01", "0x94D0_49BB"),
+            ("train-02", "0x8538_ECB5"),
+            ("train-03", "0xC2B2_AE35"),
+            ("holdout-00", "0x27D4_EB2F"),
+            ("holdout-01", "0x1656_67B1"),
+        ):
+            self.assertIn(f'("{role}", {seed})', source)
+        self.assertIn('rigVersion: "2.13.0"', source)
+        self.assertIn('name: "rect-6000x4000-r000-center"', source)
+
+    def test_v213_clear_kernel_generators_are_independent_and_split(self) -> None:
+        roles = [str(record["role"]) for record in CLEAR_KERNEL_PROBES.values()]
+        seeds = [str(record["seed"]) for record in CLEAR_KERNEL_PROBES.values()]
+
+        self.assertEqual(len(CLEAR_KERNEL_PROBES), 6)
+        self.assertEqual(
+            list(CLEAR_KERNEL_PROBES),
+            [
+                "noise-rgb-a064-kernel-train-00",
+                "noise-rgb-a064-kernel-train-01",
+                "noise-rgb-a064-kernel-train-02",
+                "noise-rgb-a064-kernel-train-03",
+                "noise-rgb-a064-kernel-holdout-00",
+                "noise-rgb-a064-kernel-holdout-01",
+            ],
+        )
+        self.assertEqual(roles.count("training"), 4)
+        self.assertEqual(roles.count("holdout"), 2)
+        self.assertEqual(
+            seeds,
+            [
+                "0xd1b54a32",
+                "0x94d049bb",
+                "0x8538ecb5",
+                "0xc2b2ae35",
+                "0x27d4eb2f",
+                "0x165667b1",
+            ],
+        )
+
+        hashes = set()
+        for background, metadata in CLEAR_KERNEL_PROBES.items():
+            image = expected_clear_kernel_reference(
+                background,
+                width=73,
+                height=61,
+            )
+            self.assertEqual(image.shape, (61, 73, 3))
+            self.assertEqual(image.dtype, np.uint8)
+            self.assertEqual(set(np.unique(image).tolist()), {64, 192})
+            self.assertEqual(metadata["blockSizePixels"], 1)
+            hashes.add(image.tobytes())
+        self.assertEqual(len(hashes), 6)
+
+    def test_v213_clear_kernel_statistics_compare_exact_geometry_pixels(
+        self,
+    ) -> None:
+        manifest = {
+            "backingScaleFactor": 1 / 512,
+            "references": [
+                {"background": background, "file": f"{background}.png"}
+                for background in CLEAR_KERNEL_BACKGROUNDS
+            ],
+            "captures": [
+                {
+                    "background": background,
+                    "scene": scene,
+                    "overlay": "clear",
+                    "appearance": appearance,
+                    "file": f"{background}-{scene}-{appearance}.png",
+                }
+                for background in CLEAR_KERNEL_BACKGROUNDS
+                for scene in CLEAR_KERNEL_SCENES
+                for appearance in ("light", "dark")
+            ],
+            "scenes": [
+                {"name": scene, "shapes": [{"id": "shape"}]}
+                for scene in CLEAR_KERNEL_SCENES
+            ],
+        }
+        measurements = Measurements(
+            Artifact(path=Path("."), manifest=manifest),
+        )
+        source = np.arange(108, dtype=np.uint8).reshape(6, 6, 3)
+        scene_offsets = {
+            "circle-4000-center": 0,
+            "circle-6000-upper-left": 1,
+            "rect-6000x4000-r000-center": 2,
+        }
+
+        def output(
+            _background: str,
+            scene: str,
+            _overlay: str,
+            _appearance: str,
+        ) -> np.ndarray:
+            return (source.astype(np.uint16) + scene_offsets[scene]).astype(np.uint8)
+
+        with (
+            patch.object(
+                Measurements,
+                "reference_code_image",
+                return_value=source,
+            ),
+            patch.object(Measurements, "code_image", side_effect=output),
+        ):
+            report = measurements.clear_kernel_geometry_statistics()
+
+        self.assertTrue(report["available"])
+        self.assertEqual(report["requiredProbeCount"], 8)
+        self.assertEqual(report["availableProbeCount"], 8)
+        self.assertEqual(report["requiredOutputCount"], 48)
+        self.assertEqual(report["boundaryExclusionPixels"], 1)
+        first = report["records"][CLEAR_KERNEL_BACKGROUNDS[0]]
+        self.assertEqual(first["source"]["pixelCount"], 16)
+        self.assertEqual(
+            first["appearanceDifferences"]["circle-4000-center"]["changedPixels"],
+            0,
+        )
+        geometry = first["geometryDifferencesFromCenteredCircle"]
+        self.assertEqual(
+            geometry["circle-6000-upper-left"]["light"]["maximumChannelDelta"],
+            1,
+        )
+        self.assertEqual(
+            geometry["rect-6000x4000-r000-center"]["dark"][
+                "maximumChannelDelta"
+            ],
+            2,
+        )
+
     def test_v212_pixel_scale_giant_statistics_cover_both_materials(self) -> None:
         manifest = {
             "backingScaleFactor": 1 / 512,

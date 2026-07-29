@@ -16,7 +16,12 @@ from typing import Any
 import numpy as np
 from PIL import Image, ImageCms
 
-from probe_catalog import ADAPTIVE_SPATIAL_PROBES, expected_adaptive_reference
+from probe_catalog import (
+    ADAPTIVE_SPATIAL_PROBES,
+    CLEAR_KERNEL_PROBES,
+    expected_adaptive_reference,
+    expected_clear_kernel_reference,
+)
 
 
 type JsonObject = dict[str, Any]
@@ -316,6 +321,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
             "2.10.0",
             "2.11.0",
             "2.12.0",
+            "2.13.0",
         },
     }.get(schema, set())
     if manifest.get("rigVersion") not in expected_rigs:
@@ -389,6 +395,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
             "2.10.0",
             "2.11.0",
             "2.12.0",
+            "2.13.0",
         }
         and manifest.get("requestedSuite") != "static"
     ):
@@ -591,6 +598,7 @@ def validate_static(
             "2.10.0",
             "2.11.0",
             "2.12.0",
+            "2.13.0",
         }:
             required_v28_backgrounds = {
                 "color-cube-9-permuted",
@@ -607,6 +615,7 @@ def validate_static(
             "2.10.0",
             "2.11.0",
             "2.12.0",
+            "2.13.0",
         }:
             required_v29_backgrounds = {
                 "color-cube-9-shuffled",
@@ -618,7 +627,12 @@ def validate_static(
                     "v2.9 static references are missing "
                     f"{sorted(missing_v29_backgrounds)}"
                 )
-        if manifest.get("rigVersion") in {"2.10.0", "2.11.0", "2.12.0"}:
+        if manifest.get("rigVersion") in {
+            "2.10.0",
+            "2.11.0",
+            "2.12.0",
+            "2.13.0",
+        }:
             required_v210_backgrounds = {
                 *{f"color-cube-9-context-train-{index:02d}" for index in range(4)},
                 *{
@@ -638,7 +652,7 @@ def validate_static(
                     "v2.10 static references are missing "
                     f"{sorted(missing_v210_backgrounds)}"
                 )
-        if manifest.get("rigVersion") in {"2.11.0", "2.12.0"}:
+        if manifest.get("rigVersion") in {"2.11.0", "2.12.0", "2.13.0"}:
             required_v211_backgrounds = set(ADAPTIVE_SPATIAL_PROBES)
             missing_v211_backgrounds = required_v211_backgrounds - static_backgrounds
             if missing_v211_backgrounds:
@@ -673,6 +687,44 @@ def validate_static(
                     findings.error(
                         f"{background}: archived reference does not match "
                         "the v2.11+ deterministic generator "
+                        f"({np.count_nonzero(changed)} changed pixels, "
+                        f"maximum channel delta {delta.max(initial=0)})"
+                    )
+        if manifest.get("rigVersion") == "2.13.0":
+            required_v213_backgrounds = set(CLEAR_KERNEL_PROBES)
+            missing_v213_backgrounds = required_v213_backgrounds - static_backgrounds
+            if missing_v213_backgrounds:
+                findings.error(
+                    "v2.13 clear-kernel references are missing "
+                    f"{sorted(missing_v213_backgrounds)}"
+                )
+            for background in sorted(required_v213_backgrounds & static_backgrounds):
+                reference = references[background]
+                path = artifact_path(root, reference.get("file"), findings)
+                if path is None:
+                    continue
+                try:
+                    decoded = decode_image(path)
+                    expected = expected_clear_kernel_reference(
+                        background,
+                        width=decoded.width,
+                        height=decoded.height,
+                    )
+                    actual = np.frombuffer(
+                        decoded.rgba,
+                        dtype=np.uint8,
+                    ).reshape(decoded.height, decoded.width, 4)[:, :, :3]
+                except Exception as error:
+                    findings.error(
+                        f"{background}: cannot verify v2.13 probe generator: {error}"
+                    )
+                    continue
+                if not np.array_equal(expected, actual):
+                    delta = np.abs(expected.astype(np.int16) - actual.astype(np.int16))
+                    changed = np.any(delta != 0, axis=2)
+                    findings.error(
+                        f"{background}: archived reference does not match "
+                        "the v2.13 deterministic generator "
                         f"({np.count_nonzero(changed)} changed pixels, "
                         f"maximum channel delta {delta.max(initial=0)})"
                     )
@@ -724,6 +776,7 @@ def validate_static(
                 "2.10.0",
                 "2.11.0",
                 "2.12.0",
+                "2.13.0",
             }:
                 dense_transfer_backgrounds |= {
                     "color-cube-9-permuted",
@@ -734,12 +787,18 @@ def validate_static(
                 "2.10.0",
                 "2.11.0",
                 "2.12.0",
+                "2.13.0",
             }:
                 dense_transfer_backgrounds |= {
                     "color-cube-9-shuffled",
                     "color-cube-holdout-8-shuffled",
                 }
-            if manifest.get("rigVersion") in {"2.10.0", "2.11.0", "2.12.0"}:
+            if manifest.get("rigVersion") in {
+                "2.10.0",
+                "2.11.0",
+                "2.12.0",
+                "2.13.0",
+            }:
                 dense_transfer_backgrounds |= {
                     *{f"color-cube-9-context-train-{index:02d}" for index in range(4)},
                     *{
@@ -771,6 +830,7 @@ def validate_static(
                 "2.10.0",
                 "2.11.0",
                 "2.12.0",
+                "2.13.0",
             }:
                 expected_cases |= {
                     (
@@ -792,6 +852,7 @@ def validate_static(
                     "2.10.0",
                     "2.11.0",
                     "2.12.0",
+                    "2.13.0",
                 }:
                     expected_cases |= {
                         (
@@ -809,7 +870,11 @@ def validate_static(
                         & static_backgrounds
                         for appearance in appearances
                     }
-                if manifest.get("rigVersion") in {"2.11.0", "2.12.0"}:
+                if manifest.get("rigVersion") in {
+                    "2.11.0",
+                    "2.12.0",
+                    "2.13.0",
+                }:
                     expected_cases |= {
                         (
                             background,
@@ -844,7 +909,7 @@ def validate_static(
                     & static_backgrounds
                     for appearance in appearances
                 }
-                if manifest.get("rigVersion") == "2.12.0":
+                if manifest.get("rigVersion") in {"2.12.0", "2.13.0"}:
                     clear_giant_identification_backgrounds = {
                         *{
                             f"sine-{axis}-p{period:04d}-ph{phase}"
@@ -880,6 +945,37 @@ def validate_static(
                         & static_backgrounds
                         for appearance in appearances
                     }
+            if manifest.get("rigVersion") == "2.13.0":
+                clear_kernel_scenes = {
+                    "circle-4000-center",
+                    "circle-6000-upper-left",
+                    "rect-6000x4000-r000-center",
+                }
+                missing_clear_kernel_scenes = clear_kernel_scenes - scene_names
+                if missing_clear_kernel_scenes:
+                    findings.error(
+                        "v2.13 clear-kernel scenes are missing "
+                        f"{sorted(missing_clear_kernel_scenes)}"
+                    )
+                expected_cases |= {
+                    (background, scene, "clear", appearance)
+                    for background in set(CLEAR_KERNEL_PROBES) & static_backgrounds
+                    for scene in clear_kernel_scenes
+                    for appearance in appearances
+                }
+                expected_cases |= {
+                    (background, scene, "clear", appearance)
+                    for background in {
+                        "noise-rgb-a064-train",
+                        "noise-rgb-a064-holdout",
+                    }
+                    & static_backgrounds
+                    for scene in {
+                        "circle-6000-upper-left",
+                        "rect-6000x4000-r000-center",
+                    }
+                    for appearance in appearances
+                }
         if manifest.get("rigVersion") in {
             "2.7.0",
             "2.8.0",
@@ -887,6 +983,7 @@ def validate_static(
             "2.10.0",
             "2.11.0",
             "2.12.0",
+            "2.13.0",
         }:
             expected_cases |= {
                 (background, scene, overlay, appearance)
@@ -1031,6 +1128,7 @@ def validate_dynamic(
             "2.10.0",
             "2.11.0",
             "2.12.0",
+            "2.13.0",
         }:
             if (
                 sequence.get("samplingMethod")
@@ -1058,6 +1156,7 @@ def validate_dynamic(
             "2.10.0",
             "2.11.0",
             "2.12.0",
+            "2.13.0",
         }:
             expected_clock = "swiftui-animatable-frame"
             if sequence.get("mode") in {
@@ -1176,6 +1275,7 @@ def validate_dynamic(
                 "2.10.0",
                 "2.11.0",
                 "2.12.0",
+                "2.13.0",
             }
             and isinstance(sequence.get("decodedSamples"), int)
             and sequence["decodedSamples"] < len(frames) - 1
@@ -2035,7 +2135,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Independently validate a GlassCapture v2.1-v2.12 artifact."
+        description="Independently validate a GlassCapture v2.1-v2.13 artifact."
     )
     parser.add_argument("artifact", type=Path, help="capture artifact directory")
     parser.add_argument("--report", type=Path, help="write a JSON validation report")

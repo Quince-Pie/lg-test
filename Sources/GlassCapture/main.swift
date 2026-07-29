@@ -490,6 +490,36 @@ func staticBackgrounds() -> [Background] {
         }
     }
 
+    // Independent pixel-scale RGB realizations provide enough rank to
+    // identify clear material's reconstruction kernel without fitting and
+    // validating on the same stochastic field. Their names encode the split,
+    // and the final two seeds remain strict holdouts.
+    let clearKernelSeeds: [(String, UInt32)] = [
+        ("train-00", 0xD1B5_4A32),
+        ("train-01", 0x94D0_49BB),
+        ("train-02", 0x8538_ECB5),
+        ("train-03", 0xC2B2_AE35),
+        ("holdout-00", 0x27D4_EB2F),
+        ("holdout-01", 0x1656_67B1),
+    ]
+    for (role, seed) in clearKernelSeeds {
+        let name = "noise-rgb-a064-kernel-\(role)"
+        list.append(Background(name: name, family: .noise) {
+            x, y, _, _ in
+            (
+                binaryNoise(
+                    x, y, amplitude: 64,
+                    seed: seed ^ 0x243F_6A88),
+                binaryNoise(
+                    x, y, amplitude: 64,
+                    seed: seed ^ 0x85A3_08D3),
+                binaryNoise(
+                    x, y, amplitude: 64,
+                    seed: seed ^ 0x1319_8A2E)
+            )
+        })
+    }
+
     // V2.10's pixel-scale, neutral-centered binary probes do not identify the
     // measured nonlinear response across color range and spatial scale. These
     // paired fields bridge that gap without consuming the historical chart or
@@ -961,6 +991,12 @@ func calibrationScenes(width: Int, height: Int) -> [SceneSpec] {
                 width: 900, height: 220, cornerRadius: 110),
         ],
         containerSpacing: nil))
+    scenes.append(SceneSpec(
+        name: "rect-6000x4000-r000-center",
+        shapes: [GlassShapeSpec(
+            id: "rect", kind: .roundedRect, centerX: cx, centerY: cy,
+            width: 6000, height: 4000, cornerRadius: 0)],
+        containerSpacing: 0))
     return scenes
 }
 
@@ -2052,7 +2088,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.12.0",
+            rigVersion: "2.13.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2252,10 +2288,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 "gray-000", "gray-128", "gray-255",
                 "red-255", "green-255", "blue-255", "uv-map",
             ]
+            let clearKernelNames: Set<String> = Set(
+                ["train-00", "train-01", "train-02", "train-03",
+                 "holdout-00", "holdout-01"].map {
+                    "noise-rgb-a064-kernel-\($0)"
+                })
+            let oversizedRectSceneName = "rect-6000x4000-r000-center"
 
             // Primary system-identification matrix: one isolated 500-point
             // circle, paired controls, two materials, both appearances.
-            for bg in backgrounds {
+            for bg in backgrounds where !clearKernelNames.contains(bg.name) {
                 log("static base: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
                 let referencePixels = try recordReference(bg, image)
@@ -2285,7 +2327,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             for bg in backgrounds where geometryBackgrounds.contains(bg.name) {
                 log("static geometry: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
-                for scene in scenes where scene.name != baseScene.name {
+                for scene in scenes
+                    where scene.name != baseScene.name
+                        && scene.name != oversizedRectSceneName
+                {
                     for appearance in Appearance.allCases {
                         for overlay in [Overlay.regular, .clear] {
                             await captureStatic(
@@ -2593,6 +2638,90 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         scene: giantScene,
                         overlay: .clear,
                         appearance: appearance)
+                }
+            }
+
+            // Keep the complete v2.12 capture stream as an unchanged prefix.
+            // The new rectangle's ordinary geometry controls and every new
+            // background/reference are recorded only after the historical
+            // matrix has finished.
+            let oversizedRectScene = scenes.first {
+                $0.name == oversizedRectSceneName
+            }!
+            for bg in backgrounds where geometryBackgrounds.contains(bg.name) {
+                log("static v2.13 oversized rectangle geometry: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                for appearance in Appearance.allCases {
+                    for overlay in [Overlay.regular, .clear] {
+                        await captureStatic(
+                            background: bg,
+                            image: image,
+                            referencePixels: nil,
+                            scene: oversizedRectScene,
+                            overlay: overlay,
+                            appearance: appearance)
+                    }
+                }
+            }
+
+            for bg in backgrounds where clearKernelNames.contains(bg.name) {
+                log("static v2.13 base: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                let referencePixels = try recordReference(bg, image)
+                for appearance in Appearance.allCases {
+                    for overlay in [Overlay.none, .regular, .clear] {
+                        await captureStatic(
+                            background: bg,
+                            image: image,
+                            referencePixels: (
+                                overlay == .none ? referencePixels : nil),
+                            scene: baseScene,
+                            overlay: overlay,
+                            appearance: appearance)
+                    }
+                }
+            }
+
+            // V2.13 separates a fixed clear reconstruction kernel from
+            // circle-local geometry. Six independent RGB fields span the
+            // kernel with untouched holdouts. Replaying the same pixels
+            // through centered-circle, translated-circle, and rectangular
+            // containers makes geometry dependence directly bit-comparable.
+            // The two historical a064 fields already have centered giant
+            // captures, so only their new geometry cases are appended.
+            let historicalClearKernelNames: Set<String> = [
+                "noise-rgb-a064-train",
+                "noise-rgb-a064-holdout",
+            ]
+            let clearKernelSceneNames: Set<String> = [
+                "circle-4000-center",
+                "circle-6000-upper-left",
+                "rect-6000x4000-r000-center",
+            ]
+            let newClearKernelSceneNames = clearKernelSceneNames.subtracting(
+                ["circle-4000-center"])
+            let clearKernelScenes = scenes.filter {
+                clearKernelSceneNames.contains($0.name)
+            }
+            for bg in backgrounds
+                where clearKernelNames.contains(bg.name)
+                    || historicalClearKernelNames.contains(bg.name)
+            {
+                log("static clear kernel geometry: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                for scene in clearKernelScenes
+                    where clearKernelNames.contains(bg.name)
+                        || newClearKernelSceneNames.contains(scene.name)
+                {
+                    for appearance in Appearance.allCases {
+                        await captureStatic(
+                            background: bg,
+                            image: image,
+                            referencePixels: nil,
+                            scene: scene,
+                            overlay: .clear,
+                            appearance: appearance)
+                    }
                 }
             }
         }
