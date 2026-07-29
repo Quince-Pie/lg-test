@@ -255,26 +255,70 @@ jobs:
 
             capture lipo-architectures lipo -archs "$library"
             air_slice="introspection/quartzcore-air64.metallib"
-            if lipo "$library" -thin air64 -output "$air_slice"; then
+            python3 - "$library" "$air_slice" <<'PY'
+          import pathlib
+          import struct
+          import sys
+
+          source = pathlib.Path(sys.argv[1])
+          destination = pathlib.Path(sys.argv[2])
+          with source.open("rb") as stream:
+              magic, count = struct.unpack(">II", stream.read(8))
+              if magic != 0xCAFEBABE:
+                  raise SystemExit(f"unexpected fat magic: 0x{magic:08x}")
+              selected = None
+              for _ in range(count):
+                  cpu_type, cpu_subtype, offset, size, alignment = struct.unpack(
+                      ">IIIII", stream.read(20)
+                  )
+                  if cpu_type == 0x01000017:
+                      selected = (cpu_subtype, offset, size, alignment)
+              if selected is None:
+                  raise SystemExit("air64 architecture is absent")
+              cpu_subtype, offset, size, alignment = selected
+              stream.seek(offset)
+              payload = stream.read(size)
+              if len(payload) != size:
+                  raise SystemExit("short read extracting air64 architecture")
+          destination.write_bytes(payload)
+          print(
+              "AIR64 FAT ENTRY "
+              f"subtype={cpu_subtype} offset={offset} "
+              f"size={size} alignment={alignment}"
+          )
+          PY
+
+            if test -s "$air_slice"; then
               file "$air_slice"
               stat -f 'AIR64 BYTES %z' "$air_slice"
               shasum -a 256 "$air_slice"
               capture air64-metal-nm xcrun metal-nm "$air_slice"
+              capture air64-metal-nm-sizes \
+                xcrun metal-nm --print-size --size-sort "$air_slice"
               capture air64-reflection \
                 xcrun metal-objdump --metallib --reflection "$air_slice"
-              capture air64-glass-background-lph \
-                xcrun metal-objdump \
+              air_ir="introspection/quartzcore-air64-glass-background-lph.ll"
+              air_error="introspection/quartzcore-air64-glass-background-lph.stderr"
+              if xcrun metal-objdump \
                   --metallib \
                   --disassemble-symbols=glass_background_lph \
                   --print-imm-hex \
-                  "$air_slice"
+                  "$air_slice" > "$air_ir" 2> "$air_error"
+              then
+                echo "AIR64 DISASSEMBLY EXIT 0"
+              else
+                echo "AIR64 DISASSEMBLY EXIT $?"
+              fi
+              stat -f 'AIR64 IR BYTES %z' "$air_ir"
+              shasum -a 256 "$air_ir"
+              sed -n '1,200p' "$air_error"
             else
               echo "AIR64 EXTRACTION FAILED"
             fi
 
             function_slice="introspection/quartzcore-glass-background-lph.metallib"
             if xcrun metallib \
-              "$library" \
+              "$air_slice" \
               --function-name=glass_background_lph \
               -o "$function_slice"
             then
