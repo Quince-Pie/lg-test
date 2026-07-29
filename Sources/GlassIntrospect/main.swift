@@ -245,6 +245,125 @@ private func exportedCodeEvidence() -> [[String: Any]] {
     }
 }
 
+private func matrixProbeRecord(
+    name: String,
+    parameter: Float? = nil,
+    call: (UnsafeMutablePointer<Float>) -> Int32
+) -> [String: Any] {
+    var output = [Float](
+        repeating: 0,
+        count: Int(LG_CA_COLOR_MATRIX_FLOAT_COUNT))
+    let succeeded = output.withUnsafeMutableBufferPointer {
+        guard let baseAddress = $0.baseAddress else { return 0 }
+        return call(baseAddress)
+    } != 0
+    var record: [String: Any] = [
+        "name": name,
+        "succeeded": succeeded,
+    ]
+    if let parameter {
+        record["parameterFloat32"] = parameter
+        record["parameterBits"] = String(
+            format: "%08x",
+            parameter.bitPattern)
+    }
+    if succeeded {
+        record["matrixFloat32"] = output
+        record["matrixBits"] = output.map {
+            String(format: "%08x", $0.bitPattern)
+        }
+    }
+    return record
+}
+
+private func constructedMatrixEvidence() -> [[String: Any]] {
+    let scalarParameters: [Float] = [
+        0,
+        0.075,
+        0.97,
+        1,
+        1.06,
+        1.15,
+    ]
+    var records: [[String: Any]] = []
+    for parameter in scalarParameters {
+        records.append(matrixProbeRecord(
+            name: "CAColorMatrixMakeSaturation",
+            parameter: parameter
+        ) {
+            lg_ca_color_matrix_make_saturation(parameter, $0)
+        })
+        records.append(matrixProbeRecord(
+            name: "CAColorMatrixMakeBrightness",
+            parameter: parameter
+        ) {
+            lg_ca_color_matrix_make_brightness(parameter, $0)
+        })
+        records.append(matrixProbeRecord(
+            name: "CAColorMatrixMakeContrast",
+            parameter: parameter
+        ) {
+            lg_ca_color_matrix_make_contrast(parameter, $0)
+        })
+    }
+
+    let liveMatrix: [Float] = [
+        1.2023999691009521,
+        -1.0013999938964844,
+        -0.10099999606609344,
+        0,
+        0.8999999761581421,
+        -0.29760000109672546,
+        0.49869999289512634,
+        -0.10109999775886536,
+        0,
+        0.8999999761581421,
+        -0.2976999878883362,
+        -1.0011999607086182,
+        1.3988999128341675,
+        0,
+        0.8999999761581421,
+        0,
+        0,
+        0,
+        1,
+        0,
+    ]
+    records.append(matrixProbeRecord(
+        name: "_MTCAColorMatrixFloydRound(liveGlassMatrix)"
+    ) { output in
+        liveMatrix.withUnsafeBufferPointer { input in
+            lg_mt_ca_color_matrix_floyd_round(
+                input.baseAddress!,
+                output)
+        }
+    })
+
+    let saturation: Float = 1.06
+    var saturationMatrix = [Float](
+        repeating: 0,
+        count: Int(LG_CA_COLOR_MATRIX_FLOAT_COUNT))
+    let saturationSucceeded =
+        saturationMatrix.withUnsafeMutableBufferPointer {
+            lg_ca_color_matrix_make_saturation(
+                saturation,
+                $0.baseAddress!)
+        } != 0
+    if saturationSucceeded {
+        records.append(matrixProbeRecord(
+            name: "_MTCAColorMatrixFloydRound(saturation=1.06)",
+            parameter: saturation
+        ) { output in
+            saturationMatrix.withUnsafeBufferPointer { input in
+                lg_mt_ca_color_matrix_floyd_round(
+                    input.baseAddress!,
+                    output)
+            }
+        })
+    }
+    return records
+}
+
 private func knownRuntimeValues(
     _ object: NSObject,
     keys: [String]
@@ -398,6 +517,147 @@ private let runtimeClassTokens = [
     "sdf",
     "vibrant",
 ]
+
+private struct RuntimeMethodCodeProbe {
+    let className: String
+    let selectorName: String
+    let byteCount: Int
+}
+
+private let runtimeMethodCodeProbes = [
+    RuntimeMethodCodeProbe(
+        className: "CABackdropLayer",
+        selectorName:
+            "mt_applyMaterialDescription:removingIfIdentity:",
+        byteCount: 0x1000),
+    RuntimeMethodCodeProbe(
+        className: "CABackdropLayer",
+        selectorName:
+            "_mt_applyFilterDescription:remainingExistingFilters:"
+                + "filterOrder:removingIfIdentity:",
+        byteCount: 0x1000),
+    RuntimeMethodCodeProbe(
+        className: "CABackdropLayer",
+        selectorName:
+            "_mt_setColorMatrix:withName:filterOrder:"
+                + "removingIfIdentity:",
+        byteCount: 0x800),
+    RuntimeMethodCodeProbe(
+        className: "CABackdropLayer",
+        selectorName:
+            "_mt_configureFilterOfType:ifNecessaryWithName:"
+                + "andFilterOrder:",
+        byteCount: 0x800),
+    RuntimeMethodCodeProbe(
+        className: "CABackdropLayer",
+        selectorName: "_copyRenderLayer:layerFlags:commitFlags:",
+        byteCount: 0x1000),
+    RuntimeMethodCodeProbe(
+        className: "CAFilter",
+        selectorName: "setDefaults",
+        byteCount: 0x800),
+    RuntimeMethodCodeProbe(
+        className: "CAFilter",
+        selectorName: "CA_copyRenderValue",
+        byteCount: 0x1000),
+    RuntimeMethodCodeProbe(
+        className: "CAFilter",
+        selectorName: "setValue:forKey:",
+        byteCount: 0x800),
+]
+
+private func runtimeMethodCodeEvidence() -> [[String: Any]] {
+    runtimeMethodCodeProbes.map { probe in
+        guard let cls = NSClassFromString(probe.className) else {
+            return [
+                "class": probe.className,
+                "selector": probe.selectorName,
+                "error": "class not found",
+            ]
+        }
+        let selector = NSSelectorFromString(probe.selectorName)
+        guard let method = class_getInstanceMethod(cls, selector) else {
+            return [
+                "class": probe.className,
+                "selector": probe.selectorName,
+                "error": "instance method not found",
+            ]
+        }
+        let implementation = method_getImplementation(method)
+        let address = unsafeBitCast(
+            implementation,
+            to: UnsafeRawPointer.self)
+        let bytes = Array(UnsafeRawBufferPointer(
+            start: address,
+            count: probe.byteCount))
+        var record = serializedRuntimeBytes(
+            bytes,
+            className: "mapped arm64e Objective-C implementation")
+        record["class"] = probe.className
+        record["selector"] = probe.selectorName
+        record["requestedByteCount"] = probe.byteCount
+        record["typeEncoding"] = method_getTypeEncoding(method).map {
+            String(cString: $0)
+        } ?? ""
+        record["runtimeAddress"] = String(
+            format: "0x%016llx",
+            UInt64(UInt(bitPattern: address)))
+
+        var info = Dl_info()
+        if dladdr(address, &info) != 0 {
+            if let imagePath = info.dli_fname {
+                record["imagePath"] = String(cString: imagePath)
+            }
+            if let imageBase = info.dli_fbase {
+                let base = UInt(bitPattern: imageBase)
+                let methodAddress = UInt(bitPattern: address)
+                record["imageBase"] = String(
+                    format: "0x%016llx",
+                    UInt64(base))
+                record["imageOffset"] = String(
+                    format: "0x%llx",
+                    UInt64(methodAddress - base))
+            }
+            if let resolvedName = info.dli_sname {
+                record["resolvedName"] = String(cString: resolvedName)
+            }
+        }
+        return record
+    }
+}
+
+private func matchingLoadedRuntimeClassNames() -> [[String: String]] {
+    var classCount: UInt32 = 0
+    guard let classes = objc_copyClassList(&classCount) else {
+        return []
+    }
+    defer { free(classes) }
+
+    var records: [[String: String]] = []
+    for index in 0..<Int(classCount) {
+        let cls: AnyClass = classes[index]
+        let name = NSStringFromClass(cls)
+        let lowercased = name.lowercased()
+        guard runtimeClassTokens.contains(where: {
+            lowercased.contains($0)
+        }),
+        name.hasPrefix("CA")
+            || name.hasPrefix("MT")
+            || name.hasPrefix("_MT")
+            || name.contains("Glass")
+        else {
+            continue
+        }
+        var record = ["name": name]
+        if let imageName = class_getImageName(cls) {
+            record["image"] = String(cString: imageName)
+        }
+        records.append(record)
+    }
+    return records.sorted {
+        ($0["name"] ?? "") < ($1["name"] ?? "")
+    }
+}
 
 private func matchingRuntimeClasses(
     in imagePaths: [String]
@@ -679,7 +939,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 6,
+            "schemaVersion": 7,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -697,6 +957,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 $0.bundleURL.path
             },
             "exportedCode": exportedCodeEvidence(),
+            "constructedMatrices": constructedMatrixEvidence(),
+            "runtimeMethodCode": runtimeMethodCodeEvidence(),
+            "matchingLoadedRuntimeClassNames":
+                matchingLoadedRuntimeClassNames(),
         ]
         if let captureError {
             report["captureError"] = captureError

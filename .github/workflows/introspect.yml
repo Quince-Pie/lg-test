@@ -36,11 +36,23 @@ jobs:
         run: |
           mkdir -p introspection
           set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o introspection/MatrixBridge.o 2>&1 |
+            tee introspection/build.log
           swiftc -O -parse-as-library \
             -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
             Sources/GlassIntrospect/main.swift \
+            introspection/MatrixBridge.o \
             -o glassintrospect 2>&1 |
-            tee introspection/build.log
+            tee -a introspection/build.log
 
       - name: Probe real Liquid Glass render pipeline
         if: always()
