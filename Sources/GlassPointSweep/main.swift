@@ -11,8 +11,10 @@ private let imageWidth = 1024
 private let imageHeight = 1024
 private let pairSweepMode =
     CommandLine.arguments.contains("--pair-sweep")
-private let blockSize = pairSweepMode ? 16 : 64
+private let blockSize = pairSweepMode ? 32 : 64
 private let gridSide = imageWidth / blockSize
+private let pairPageCount = 65_536 / (gridSide * gridSide)
+private let pairCenterPatchRadius = 5
 
 private struct RGB {
     let red: UInt8
@@ -218,7 +220,7 @@ private let pairSweepPatterns: [Pattern] = {
     var result: [Pattern] = []
 
     for blue in [0, 128, 255] {
-        for page in 0..<16 {
+        for page in 0..<pairPageCount {
             result.append(Pattern(
                 name: String(
                     format: "pair-rg-b%03d-p%02d",
@@ -237,7 +239,7 @@ private let pairSweepPatterns: [Pattern] = {
         }
     }
 
-    for page in 0..<16 {
+    for page in 0..<pairPageCount {
         result.append(Pattern(
             name: String(format: "pair-rb-g128-p%02d", page)
         ) { row, column in
@@ -263,7 +265,7 @@ private let pairSweepPatterns: [Pattern] = {
         (name: "b", red: 151, green: 73, offset: 19),
     ]
     for coefficients in latinCoefficients {
-        for page in 0..<16 {
+        for page in 0..<pairPageCount {
             result.append(Pattern(
                 name: String(
                     format: "latin-rgb-%@-p%02d",
@@ -378,6 +380,7 @@ private enum SweepError: LocalizedError {
     case capture(String)
     case conversion
     case dimensions(Int, Int)
+    case nonuniformCenter(String, Int, Int)
     case unstable(String)
 
     var errorDescription: String? {
@@ -388,6 +391,9 @@ private enum SweepError: LocalizedError {
             return "could not convert capture to canonical sRGB RGBA8"
         case .dimensions(let width, let height):
             return "capture is \(width)x\(height), expected 1024x1024"
+        case .nonuniformCenter(let name, let row, let column):
+            return "\(name) has a nonuniform center patch at "
+                + "(\(row), \(column))"
         case .unstable(let name):
             return "capture did not stabilize: \(name)"
         }
@@ -550,6 +556,50 @@ private func sha256(_ url: URL) -> String {
     return sha256(data)
 }
 
+private func requireUniformPairCenters(
+    _ capture: CanonicalImage,
+    name: String
+) throws {
+    guard pairSweepMode else { return }
+    try capture.pixels.withUnsafeBytes { rawBytes in
+        guard let bytes = rawBytes.bindMemory(
+            to: UInt8.self
+        ).baseAddress else {
+            throw SweepError.conversion
+        }
+        for row in 0..<gridSide {
+            let centerY = row * blockSize + blockSize / 2
+            for column in 0..<gridSide {
+                let centerX = column * blockSize + blockSize / 2
+                let centerOffset =
+                    (centerY * imageWidth + centerX) * 4
+                for y in
+                    (centerY - pairCenterPatchRadius)
+                    ...((centerY + pairCenterPatchRadius))
+                {
+                    for x in
+                        (centerX - pairCenterPatchRadius)
+                        ...((centerX + pairCenterPatchRadius))
+                    {
+                        let offset = (y * imageWidth + x) * 4
+                        if bytes[offset] != bytes[centerOffset]
+                            || bytes[offset + 1]
+                                != bytes[centerOffset + 1]
+                            || bytes[offset + 2]
+                                != bytes[centerOffset + 2]
+                        {
+                            throw SweepError.nonuniformCenter(
+                                name,
+                                row,
+                                column)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 private func cellManifest(_ pattern: Pattern) -> [[String: Int]] {
     (0..<gridSide).flatMap { row in
         (0..<gridSide).map { column in
@@ -636,6 +686,9 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                     window,
                     name: "\(pattern.name)-control",
                     settleNanoseconds: 250_000_000)
+                try requireUniformPairCenters(
+                    control,
+                    name: "\(pattern.name)-control")
                 let controlURL = outputDirectory
                     .appendingPathComponent(
                         "\(pattern.name)-control.png")
@@ -648,6 +701,9 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                     window,
                     name: "\(pattern.name)-clear",
                     settleNanoseconds: 450_000_000)
+                try requireUniformPairCenters(
+                    clear,
+                    name: "\(pattern.name)-clear")
                 let clearURL = outputDirectory
                     .appendingPathComponent(
                         "\(pattern.name)-clear.png")
@@ -676,9 +732,9 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
             }
 
             var report: [String: Any] = [
-                "schemaVersion": pairSweepMode ? 3 : 2,
+                "schemaVersion": pairSweepMode ? 4 : 2,
                 "rigVersion": pairSweepMode
-                    ? "pair-sweep-1.0.0"
+                    ? "pair-sweep-1.1.0"
                     : "point-sweep-1.1.0",
                 "sweepKind": pairSweepMode
                     ? "exhaustive-pairs-and-latin-rgb"
@@ -711,8 +767,10 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
             ]
             if pairSweepMode {
                 report["pairSweepDesign"] = [
-                    "pairPageCount": 16,
+                    "pairPageCount": pairPageCount,
                     "pairsPerPage": gridSide * gridSide,
+                    "uniformCenterPatchRadius":
+                        pairCenterPatchRadius,
                     "redGreenBlueAnchors": [0, 128, 255],
                     "redBlueGreenAnchor": 128,
                     "greenBlueRedAnchor": 128,
