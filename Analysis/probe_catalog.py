@@ -155,6 +155,71 @@ CLEAR_AMPLITUDE_SWEEP_PROBES: dict[str, dict[str, Any]] = {
     for amplitude in amplitudes
 }
 
+CLEAR_GRID_BASIS_BOUNDARY_AMPLITUDES = (
+    1,
+    2,
+    3,
+    15,
+    16,
+    17,
+    31,
+    32,
+    33,
+    47,
+    48,
+    49,
+    63,
+    64,
+)
+CLEAR_GRID_BASIS_CELL_AMPLITUDES = (1, 17, 32, 63, 64)
+CLEAR_GRID_BASIS_SEED = 0x6A09E667
+CLEAR_GRID_BASIS_PROBES: dict[str, dict[str, Any]] = {
+    **{
+        f"noise-rgb-a{amplitude:03d}-grid2-shift-{phase_y}{phase_x}-train": {
+            "probeKind": "phase-shifted-rgb-binary-2x2-blocks",
+            "role": "training",
+            "blockSizePixels": 2,
+            "phasePixels": [phase_x, phase_y],
+            "centerCode": 128,
+            "amplitudeCodes": amplitude,
+            "levels": [128 - amplitude, 128 + amplitude],
+            "seed": f"0x{CLEAR_GRID_BASIS_SEED:08x}",
+            "amplitudeGroup": f"grid2-shift-{phase_y}{phase_x}",
+            "scenes": ("circle-4000-center",),
+            "sourceControl": (
+                (phase_x, phase_y) == (0, 0)
+                and amplitude in (1, 17, 32, 64)
+            )
+            or ((phase_x, phase_y) != (0, 0) and amplitude == 32),
+        }
+        for phase_y in range(2)
+        for phase_x in range(2)
+        for amplitude in (
+            range(1, 65)
+            if (phase_x, phase_y) == (0, 0)
+            else CLEAR_GRID_BASIS_BOUNDARY_AMPLITUDES
+        )
+    },
+    **{
+        f"noise-rgb-a{amplitude:03d}-cell2-basis-{phase_y}{phase_x}-train": {
+            "probeKind": "rgb-binary-2x2-cell-basis",
+            "role": "training",
+            "blockSizePixels": 2,
+            "phasePixels": [phase_x, phase_y],
+            "centerCode": 128,
+            "amplitudeCodes": amplitude,
+            "levels": [128 - amplitude, 128, 128 + amplitude],
+            "seed": f"0x{CLEAR_GRID_BASIS_SEED:08x}",
+            "amplitudeGroup": f"cell2-basis-{phase_y}{phase_x}",
+            "scenes": ("circle-4000-center",),
+            "sourceControl": amplitude == 32,
+        }
+        for phase_y in range(2)
+        for phase_x in range(2)
+        for amplitude in CLEAR_GRID_BASIS_CELL_AMPLITUDES
+    },
+}
+
 
 def hash32(
     x: UInt32Image,
@@ -396,4 +461,77 @@ def expected_clear_amplitude_sweep_reference(
         amplitude=int(metadata["amplitudeCodes"]),
         seed=int(str(metadata["seed"]), 0),
         independent_rgb=True,
+    )
+
+
+def clear_grid_basis_blocks(
+    *,
+    width: int,
+    height: int,
+    phase_x: int,
+    phase_y: int,
+    center: int,
+    amplitude: int,
+    seed: int,
+    cell_basis: bool,
+) -> CodeImage:
+    if (
+        width <= 0
+        or height <= 0
+        or phase_x not in (0, 1)
+        or phase_y not in (0, 1)
+    ):
+        raise ValueError("invalid clear grid-basis geometry")
+    pixel_x = np.arange(width, dtype=np.int64)
+    pixel_y = np.arange(height, dtype=np.int64)
+    if cell_basis:
+        block_x = pixel_x // 2
+        block_y = pixel_y // 2
+    else:
+        block_x = (pixel_x + phase_x) // 2
+        block_y = (pixel_y + phase_y) // 2
+    unique_x = np.arange(int(block_x.max()) + 1, dtype=np.uint32)
+    unique_y = np.arange(int(block_y.max()) + 1, dtype=np.uint32)
+    x, y = np.meshgrid(unique_x, unique_y)
+    channels = [
+        np.where(
+            hash32(x, y, seed=seed ^ channel_seed) & np.uint32(1),
+            center + amplitude,
+            center - amplitude,
+        ).astype(np.uint8)
+        for channel_seed in (0x243F6A88, 0x85A308D3, 0x13198A2E)
+    ]
+    expanded = np.stack(channels, axis=2)[
+        block_y[:, np.newaxis],
+        block_x[np.newaxis, :],
+    ]
+    if not cell_basis:
+        return np.ascontiguousarray(expanded)
+    active = (
+        (pixel_y[:, np.newaxis] % 2 == phase_y)
+        & (pixel_x[np.newaxis, :] % 2 == phase_x)
+    )
+    return np.ascontiguousarray(
+        np.where(active[:, :, np.newaxis], expanded, center).astype(np.uint8)
+    )
+
+
+def expected_clear_grid_basis_reference(
+    background: str,
+    *,
+    width: int,
+    height: int,
+) -> CodeImage:
+    """Regenerate one v2.16 phase-aligned source independently."""
+    metadata = CLEAR_GRID_BASIS_PROBES[background]
+    phase_x, phase_y = (int(value) for value in metadata["phasePixels"])
+    return clear_grid_basis_blocks(
+        width=width,
+        height=height,
+        phase_x=phase_x,
+        phase_y=phase_y,
+        center=int(metadata["centerCode"]),
+        amplitude=int(metadata["amplitudeCodes"]),
+        seed=int(str(metadata["seed"]), 0),
+        cell_basis=metadata["probeKind"] == "rgb-binary-2x2-cell-basis",
     )

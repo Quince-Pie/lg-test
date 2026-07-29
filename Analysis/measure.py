@@ -24,6 +24,7 @@ from scipy.special import ndtr
 from probe_catalog import (
     ADAPTIVE_SPATIAL_PROBES,
     CLEAR_AMPLITUDE_SWEEP_PROBES,
+    CLEAR_GRID_BASIS_PROBES,
     CLEAR_KERNEL_PROBES,
     CLEAR_TOMOGRAPHY_PROBES,
 )
@@ -1020,7 +1021,7 @@ class Measurements:
     def clear_amplitude_tomography_inventory(self) -> JsonObject:
         rig_version = self.artifact.manifest.get("rigVersion")
         tomography_probes = dict(CLEAR_TOMOGRAPHY_PROBES)
-        if rig_version == "2.15.0":
+        if rig_version in {"2.15.0", "2.16.0"}:
             tomography_probes.update(CLEAR_AMPLITUDE_SWEEP_PROBES)
 
         groups: dict[str, list[str]] = {}
@@ -1110,7 +1111,7 @@ class Measurements:
             "catalogReferenceCount": len(tomography_probes),
             "versionReferenceDelta": (
                 len(CLEAR_AMPLITUDE_SWEEP_PROBES)
-                if rig_version == "2.15.0"
+                if rig_version in {"2.15.0", "2.16.0"}
                 else len(CLEAR_TOMOGRAPHY_PROBES)
             ),
             "trainingGroupCount": sum(
@@ -1118,6 +1119,104 @@ class Measurements:
             ),
             "protectedHoldoutGroupCount": sum(
                 role == "holdout" for role in roles.values()
+            ),
+            "protectedHoldoutOutputsDecodedByThisAnalysis": False,
+            "records": records,
+        }
+
+    def clear_grid_basis_inventory(self) -> JsonObject:
+        groups: dict[str, list[str]] = {}
+        for background, metadata in CLEAR_GRID_BASIS_PROBES.items():
+            groups.setdefault(
+                str(metadata["amplitudeGroup"]),
+                [],
+            ).append(background)
+
+        records: JsonObject = {}
+        for group in sorted(groups):
+            backgrounds = sorted(
+                groups[group],
+                key=lambda background: (
+                    int(CLEAR_GRID_BASIS_PROBES[background]["amplitudeCodes"]),
+                    background,
+                ),
+            )
+            cases = [
+                {
+                    "background": background,
+                    "scene": scene,
+                    "overlay": "clear",
+                    "appearance": "dark",
+                    "available": self.has_image(
+                        background,
+                        scene,
+                        "clear",
+                        "dark",
+                    ),
+                    "sourceControlRequired": bool(
+                        CLEAR_GRID_BASIS_PROBES[background]["sourceControl"]
+                    ),
+                    "sourceControlAvailable": self.has_image(
+                        background,
+                        "circle-0500-center",
+                        "none",
+                        "dark",
+                    ),
+                }
+                for background in backgrounds
+                for scene in CLEAR_GRID_BASIS_PROBES[background]["scenes"]
+            ]
+            records[group] = {
+                "probeKind": CLEAR_GRID_BASIS_PROBES[backgrounds[0]][
+                    "probeKind"
+                ],
+                "role": "training",
+                "backgrounds": backgrounds,
+                "amplitudesCodes": [
+                    int(CLEAR_GRID_BASIS_PROBES[background]["amplitudeCodes"])
+                    for background in backgrounds
+                ],
+                "requiredOutputCount": len(cases),
+                "availableOutputCount": sum(
+                    bool(case["available"]) for case in cases
+                ),
+                "requiredSourceControlCount": sum(
+                    bool(case["sourceControlRequired"]) for case in cases
+                ),
+                "availableRequiredSourceControlCount": sum(
+                    bool(
+                        case["sourceControlRequired"]
+                        and case["sourceControlAvailable"]
+                    )
+                    for case in cases
+                ),
+                "cases": cases,
+            }
+
+        required_references = set(CLEAR_GRID_BASIS_PROBES)
+        return {
+            "available": (
+                required_references <= self.references.keys()
+                and all(
+                    record["availableOutputCount"]
+                    == record["requiredOutputCount"]
+                    and record["availableRequiredSourceControlCount"]
+                    == record["requiredSourceControlCount"]
+                    for record in records.values()
+                )
+            ),
+            "purpose": (
+                "identify clear-filter stage ordering, absolute 2x2 grid "
+                "phase, and within-cell source contributions"
+            ),
+            "catalogReferenceCount": len(CLEAR_GRID_BASIS_PROBES),
+            "sourceControlCount": sum(
+                bool(metadata["sourceControl"])
+                for metadata in CLEAR_GRID_BASIS_PROBES.values()
+            ),
+            "referenceOnlyOutputCount": sum(
+                not bool(metadata["sourceControl"])
+                for metadata in CLEAR_GRID_BASIS_PROBES.values()
             ),
             "protectedHoldoutOutputsDecodedByThisAnalysis": False,
             "records": records,
@@ -1956,6 +2055,7 @@ class Measurements:
             "2.13.0": 10,
             "2.14.0": 11,
             "2.15.0": 12,
+            "2.16.0": 13,
         }.get(str(rig_version), 7)
         result = {
             "analysisSchemaVersion": analysis_schema_version,
@@ -2046,22 +2146,31 @@ class Measurements:
             "2.13.0",
             "2.14.0",
             "2.15.0",
+            "2.16.0",
         }:
             result["adaptiveSpatialProbeStatistics"] = (
                 self.adaptive_spatial_probe_statistics()
             )
-        if rig_version in {"2.12.0", "2.13.0", "2.14.0", "2.15.0"}:
+        if rig_version in {
+            "2.12.0",
+            "2.13.0",
+            "2.14.0",
+            "2.15.0",
+            "2.16.0",
+        }:
             result["pixelScaleGiantProbeStatistics"] = (
                 self.pixel_scale_giant_probe_statistics()
             )
-        if rig_version in {"2.13.0", "2.14.0", "2.15.0"}:
+        if rig_version in {"2.13.0", "2.14.0", "2.15.0", "2.16.0"}:
             result["clearKernelGeometryStatistics"] = (
                 self.clear_kernel_geometry_statistics()
             )
-        if rig_version in {"2.14.0", "2.15.0"}:
+        if rig_version in {"2.14.0", "2.15.0", "2.16.0"}:
             result["clearAmplitudeTomographyInventory"] = (
                 self.clear_amplitude_tomography_inventory()
             )
+        if rig_version == "2.16.0":
+            result["clearGridBasisInventory"] = self.clear_grid_basis_inventory()
         return result
 
 

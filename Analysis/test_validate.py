@@ -11,9 +11,11 @@ from validate import (
     full_geometry_matrix_scenes,
     pixel_diff,
     source_diff_is_within_tolerance,
+    static_capture_requires_control,
     validate,
     validate_dynamic,
     validate_environment,
+    validate_static,
     validate_sweeps,
 )
 
@@ -22,7 +24,7 @@ SRGB_PROFILE = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes(
 
 
 class ValidatorTests(unittest.TestCase):
-    def test_v214_and_v215_transposed_rectangle_is_not_a_full_geometry_matrix(
+    def test_v214_through_v216_transposed_rectangle_is_not_a_full_geometry_matrix(
         self,
     ) -> None:
         scenes = {
@@ -46,10 +48,132 @@ class ValidatorTests(unittest.TestCase):
                 "rect-6000x4000-r000-center",
             },
         )
+        self.assertEqual(
+            full_geometry_matrix_scenes({"rigVersion": "2.16.0"}, scenes),
+            {
+                "circle-1000-center",
+                "rect-6000x4000-r000-center",
+            },
+        )
         self.assertIn(
             "rect-4000x6000-r000-center",
             full_geometry_matrix_scenes({"rigVersion": "2.13.0"}, scenes),
         )
+
+    def test_v216_control_exemption_is_exactly_scoped(self) -> None:
+        record = {
+            "background": "noise-rgb-a002-grid2-shift-00-train",
+            "scene": "circle-4000-center",
+            "overlay": "clear",
+            "appearance": "dark",
+        }
+
+        self.assertFalse(
+            static_capture_requires_control(
+                {"rigVersion": "2.16.0"},
+                record,
+            )
+        )
+        for key, value in (
+            ("scene", "circle-0500-center"),
+            ("overlay", "none"),
+            ("appearance", "light"),
+            ("background", "noise-rgb-a032-grid2-shift-00-train"),
+        ):
+            modified = {**record, key: value}
+            self.assertTrue(
+                static_capture_requires_control(
+                    {"rigVersion": "2.16.0"},
+                    modified,
+                )
+            )
+        self.assertTrue(
+            static_capture_requires_control(
+                {"rigVersion": "2.15.0"},
+                record,
+            )
+        )
+
+    def test_v216_reference_only_capture_has_no_phantom_control(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "reference").mkdir()
+            (root / "shots").mkdir()
+            background = "noise-rgb-a002-grid2-shift-00-train"
+            reference_relative = f"reference/{background}.png"
+            capture_relative = (
+                f"shots/{background}__circle-4000-center__clear__dark.png"
+            )
+            pixels = bytes((126, 128, 130, 255)) * 4
+            for relative in (reference_relative, capture_relative):
+                Image.frombytes("RGBA", (2, 2), pixels).save(
+                    root / relative,
+                    icc_profile=SRGB_PROFILE,
+                )
+            image_metadata = {
+                "bitsPerComponent": 8,
+                "bitsPerPixel": 32,
+                "bytesPerRow": 8,
+                "colorSpace": "sRGB IEC61966-2.1",
+                "alphaInfo": 1,
+                "bitmapInfo": 16385,
+            }
+            reference = {
+                "file": reference_relative,
+                "background": background,
+            }
+            capture = {
+                "file": capture_relative,
+                "referenceFile": reference_relative,
+                "background": background,
+                "family": "noise",
+                "overlay": "clear",
+                "appearance": "dark",
+                "scene": "circle-4000-center",
+                "sha256": hashlib.sha256(
+                    (root / capture_relative).read_bytes()
+                ).hexdigest(),
+                "pixelSha256": hashlib.sha256(pixels).hexdigest(),
+                "pixelWidth": 2,
+                "pixelHeight": 2,
+                "stable": True,
+                "stabilitySamples": 2,
+                "sourceDiff": None,
+                "sourceImage": image_metadata,
+                "savedImage": image_metadata,
+            }
+            manifest = {
+                "rigVersion": "2.16.0",
+                "requestedSuite": "dynamic",
+                "sourceRoundTripTolerance": {},
+                "captures": [capture],
+            }
+            findings = Findings()
+
+            summary = validate_static(
+                root,
+                manifest,
+                {background: reference},
+                findings,
+            )
+
+            self.assertEqual(findings.errors, [])
+            self.assertEqual(summary["count"], 1)
+            self.assertEqual(summary["controls"], 0)
+
+            historical_findings = Findings()
+            validate_static(
+                root,
+                {**manifest, "rigVersion": "2.15.0"},
+                {background: reference},
+                historical_findings,
+            )
+            self.assertTrue(
+                any(
+                    "controlFile" in error or "no base no-glass control" in error
+                    for error in historical_findings.errors
+                )
+            )
 
     def test_pixel_diff_ignores_alpha(self) -> None:
         reference = bytes((10, 20, 30, 0, 40, 50, 60, 255))
@@ -515,6 +639,11 @@ class ValidatorTests(unittest.TestCase):
         v215 = Findings()
         validate_environment(manifest, v215)
         self.assertEqual(v215.errors, [])
+
+        manifest["rigVersion"] = "2.16.0"
+        v216 = Findings()
+        validate_environment(manifest, v216)
+        self.assertEqual(v216.errors, [])
 
     def test_schema4_presentation_clock_and_exclusion(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -21,10 +21,15 @@ from probe_catalog import (
     CLEAR_AMPLITUDE_SWEEP_HOLDOUT_AMPLITUDES,
     CLEAR_AMPLITUDE_SWEEP_PROBES,
     CLEAR_AMPLITUDE_SWEEP_TRAINING_AMPLITUDES,
+    CLEAR_GRID_BASIS_BOUNDARY_AMPLITUDES,
+    CLEAR_GRID_BASIS_CELL_AMPLITUDES,
+    CLEAR_GRID_BASIS_PROBES,
+    CLEAR_GRID_BASIS_SEED,
     CLEAR_KERNEL_PROBES,
     CLEAR_TOMOGRAPHY_PROBES,
     expected_adaptive_reference,
     expected_clear_amplitude_sweep_reference,
+    expected_clear_grid_basis_reference,
     expected_clear_kernel_reference,
     expected_clear_tomography_reference,
     hash32,
@@ -34,7 +39,7 @@ from probe_catalog import (
 
 
 class MeasurementTests(unittest.TestCase):
-    def test_v215_probe_catalog_matches_capture_source(self) -> None:
+    def test_v216_probe_catalog_matches_capture_source(self) -> None:
         source = (
             Path(__file__).resolve().parents[1]
             / "Sources"
@@ -59,7 +64,7 @@ class MeasurementTests(unittest.TestCase):
             ("holdout-01", "0x9FB2_1C65"),
         ):
             self.assertIn(f'("{role}", {seed}', source)
-        self.assertIn('rigVersion: "2.15.0"', source)
+        self.assertIn('rigVersion: "2.16.0"', source)
         self.assertIn('name: "rect-6000x4000-r000-center"', source)
         self.assertIn('name: "rect-4000x6000-r000-center"', source)
         self.assertIn(
@@ -68,6 +73,30 @@ class MeasurementTests(unittest.TestCase):
         )
         self.assertIn(
             "let protectedSweepAmplitudes = [2, 7, 14, 23, 32, 40, 48, 56, 63]",
+            source,
+        )
+        self.assertIn(
+            "let clearGridBasisSeed: UInt32 = 0x6A09_E667",
+            source,
+        )
+        self.assertIn(
+            "1, 2, 3, 15, 16, 17, 31, 32, 33, 47, 48, 49, 63, 64,",
+            source,
+        )
+        self.assertIn(
+            "let clearGridCellAmplitudes = [1, 17, 32, 63, 64]",
+            source,
+        )
+        self.assertIn(
+            "[1, 17, 32, 64].map",
+            source,
+        )
+        self.assertIn(
+            "let controlFile: String?",
+            source,
+        )
+        self.assertIn(
+            "includeControlReference:",
             source,
         )
 
@@ -222,6 +251,89 @@ class MeasurementTests(unittest.TestCase):
             generated.add(image.tobytes())
         self.assertEqual(len(generated), len(CLEAR_AMPLITUDE_SWEEP_PROBES))
 
+    def test_v216_grid_basis_is_phase_complete_and_deterministic(self) -> None:
+        shifted = {
+            background: metadata
+            for background, metadata in CLEAR_GRID_BASIS_PROBES.items()
+            if metadata["probeKind"]
+            == "phase-shifted-rgb-binary-2x2-blocks"
+        }
+        cell_basis = {
+            background: metadata
+            for background, metadata in CLEAR_GRID_BASIS_PROBES.items()
+            if metadata["probeKind"] == "rgb-binary-2x2-cell-basis"
+        }
+
+        self.assertEqual(CLEAR_GRID_BASIS_SEED, 0x6A09E667)
+        self.assertEqual(len(shifted), 106)
+        self.assertEqual(len(cell_basis), 20)
+        self.assertEqual(len(CLEAR_GRID_BASIS_PROBES), 126)
+        self.assertEqual(
+            CLEAR_GRID_BASIS_BOUNDARY_AMPLITUDES,
+            (1, 2, 3, 15, 16, 17, 31, 32, 33, 47, 48, 49, 63, 64),
+        )
+        self.assertEqual(
+            CLEAR_GRID_BASIS_CELL_AMPLITUDES,
+            (1, 17, 32, 63, 64),
+        )
+
+        groups: dict[str, list[int]] = {}
+        generated = set()
+        source_controls = 0
+        for background, metadata in CLEAR_GRID_BASIS_PROBES.items():
+            amplitude = int(metadata["amplitudeCodes"])
+            groups.setdefault(
+                str(metadata["amplitudeGroup"]),
+                [],
+            ).append(amplitude)
+            source_controls += bool(metadata["sourceControl"])
+            image = expected_clear_grid_basis_reference(
+                background,
+                width=17,
+                height=15,
+            )
+            self.assertEqual(image.shape, (15, 17, 3))
+            self.assertEqual(image.dtype, np.uint8)
+            generated.add(image.tobytes())
+
+        self.assertEqual(source_controls, 11)
+        self.assertEqual(len(generated), len(CLEAR_GRID_BASIS_PROBES))
+        self.assertEqual(
+            sorted(groups["grid2-shift-00"]),
+            list(range(1, 65)),
+        )
+        for phase in ("01", "10", "11"):
+            self.assertEqual(
+                sorted(groups[f"grid2-shift-{phase}"]),
+                list(CLEAR_GRID_BASIS_BOUNDARY_AMPLITUDES),
+            )
+        for phase in ("00", "01", "10", "11"):
+            self.assertEqual(
+                sorted(groups[f"cell2-basis-{phase}"]),
+                list(CLEAR_GRID_BASIS_CELL_AMPLITUDES),
+            )
+
+    def test_v216_cell_basis_changes_only_its_declared_phase(self) -> None:
+        for phase_y in range(2):
+            for phase_x in range(2):
+                background = (
+                    "noise-rgb-a032-cell2-basis-"
+                    f"{phase_y}{phase_x}-train"
+                )
+                image = expected_clear_grid_basis_reference(
+                    background,
+                    width=18,
+                    height=16,
+                )
+                changed = np.any(image != 128, axis=2)
+                expected = np.zeros((16, 18), dtype=np.bool_)
+                expected[phase_y::2, phase_x::2] = True
+                np.testing.assert_array_equal(changed, expected)
+                self.assertEqual(
+                    set(np.unique(image[changed]).tolist()),
+                    {96, 160},
+                )
+
     def test_v215_inventory_tracks_dense_cases_without_decoding_holdout(
         self,
     ) -> None:
@@ -281,6 +393,62 @@ class MeasurementTests(unittest.TestCase):
         self.assertEqual(report["records"]["train-00"]["requiredOutputCount"], 76)
         self.assertEqual(report["records"]["holdout-00"]["requiredOutputCount"], 52)
         self.assertFalse(report["protectedHoldoutOutputsDecodedByThisAnalysis"])
+
+    def test_v216_inventory_tracks_all_fit_cases_and_selected_controls(
+        self,
+    ) -> None:
+        references = [
+            {"background": background, "file": f"{background}.png"}
+            for background in CLEAR_GRID_BASIS_PROBES
+        ]
+        captures = [
+            {
+                "background": background,
+                "scene": "circle-4000-center",
+                "overlay": "clear",
+                "appearance": "dark",
+                "file": f"{background}-clear.png",
+            }
+            for background in CLEAR_GRID_BASIS_PROBES
+        ]
+        captures.extend(
+            {
+                "background": background,
+                "scene": "circle-0500-center",
+                "overlay": "none",
+                "appearance": "dark",
+                "file": f"{background}-control.png",
+            }
+            for background, metadata in CLEAR_GRID_BASIS_PROBES.items()
+            if metadata["sourceControl"]
+        )
+        measurements = Measurements(
+            Artifact(
+                path=Path("."),
+                manifest={
+                    "rigVersion": "2.16.0",
+                    "references": references,
+                    "captures": captures,
+                    "scenes": [],
+                },
+            )
+        )
+
+        report = measurements.clear_grid_basis_inventory()
+
+        self.assertTrue(report["available"])
+        self.assertEqual(report["catalogReferenceCount"], 126)
+        self.assertEqual(report["sourceControlCount"], 11)
+        self.assertEqual(report["referenceOnlyOutputCount"], 115)
+        self.assertFalse(report["protectedHoldoutOutputsDecodedByThisAnalysis"])
+        self.assertEqual(
+            report["records"]["grid2-shift-00"]["amplitudesCodes"],
+            list(range(1, 65)),
+        )
+        self.assertEqual(
+            report["records"]["cell2-basis-11"]["requiredOutputCount"],
+            5,
+        )
 
     def test_v213_clear_kernel_statistics_compare_exact_geometry_pixels(
         self,

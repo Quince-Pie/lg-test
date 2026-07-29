@@ -178,6 +178,43 @@ func binaryNoise(
         : UInt8(center + amplitude)
 }
 
+func grid2ShiftedBinaryNoise(
+    _ x: Int,
+    _ y: Int,
+    amplitude: Int,
+    phaseX: Int,
+    phaseY: Int,
+    seed: UInt32
+) -> UInt8 {
+    precondition((0...1).contains(phaseX))
+    precondition((0...1).contains(phaseY))
+    return binaryNoise(
+        x + phaseX,
+        y + phaseY,
+        amplitude: amplitude,
+        blockSize: 2,
+        seed: seed)
+}
+
+func cell2BasisNoise(
+    _ x: Int,
+    _ y: Int,
+    amplitude: Int,
+    phaseX: Int,
+    phaseY: Int,
+    seed: UInt32
+) -> UInt8 {
+    precondition((0...1).contains(phaseX))
+    precondition((0...1).contains(phaseY))
+    guard x % 2 == phaseX, y % 2 == phaseY else { return 128 }
+    return binaryNoise(
+        x,
+        y,
+        amplitude: amplitude,
+        blockSize: 2,
+        seed: seed)
+}
+
 func paletteNoise(
     _ x: Int,
     _ y: Int,
@@ -586,6 +623,68 @@ func staticBackgrounds() -> [Background] {
                         seed: seed ^ 0x1319_8A2E)
                 )
             })
+        }
+    }
+
+    // V2.16 removes the stage-order ambiguity left by pixel noise. The
+    // exhaustive aligned 2x2 field bypasses within-cell averaging; three
+    // shifted versions identify the renderer-grid origin around every
+    // observed code-band transition. Four sparse cell bases independently
+    // identify each source phase without opening a protected output.
+    let clearGridBasisSeed: UInt32 = 0x6A09_E667
+    let clearGridBoundaryAmplitudes = [
+        1, 2, 3, 15, 16, 17, 31, 32, 33, 47, 48, 49, 63, 64,
+    ]
+    let clearGridCellAmplitudes = [1, 17, 32, 63, 64]
+    for phaseY in 0...1 {
+        for phaseX in 0...1 {
+            let amplitudes = phaseX == 0 && phaseY == 0
+                ? Array(1...64)
+                : clearGridBoundaryAmplitudes
+            for amplitude in amplitudes {
+                let name = String(
+                    format: "noise-rgb-a%03d-grid2-shift-%d%d-train",
+                    amplitude, phaseY, phaseX)
+                list.append(Background(name: name, family: .noise) {
+                    x, y, _, _ in
+                    (
+                        grid2ShiftedBinaryNoise(
+                            x, y, amplitude: amplitude,
+                            phaseX: phaseX, phaseY: phaseY,
+                            seed: clearGridBasisSeed ^ 0x243F_6A88),
+                        grid2ShiftedBinaryNoise(
+                            x, y, amplitude: amplitude,
+                            phaseX: phaseX, phaseY: phaseY,
+                            seed: clearGridBasisSeed ^ 0x85A3_08D3),
+                        grid2ShiftedBinaryNoise(
+                            x, y, amplitude: amplitude,
+                            phaseX: phaseX, phaseY: phaseY,
+                            seed: clearGridBasisSeed ^ 0x1319_8A2E)
+                    )
+                })
+            }
+            for amplitude in clearGridCellAmplitudes {
+                let name = String(
+                    format: "noise-rgb-a%03d-cell2-basis-%d%d-train",
+                    amplitude, phaseY, phaseX)
+                list.append(Background(name: name, family: .noise) {
+                    x, y, _, _ in
+                    (
+                        cell2BasisNoise(
+                            x, y, amplitude: amplitude,
+                            phaseX: phaseX, phaseY: phaseY,
+                            seed: clearGridBasisSeed ^ 0x243F_6A88),
+                        cell2BasisNoise(
+                            x, y, amplitude: amplitude,
+                            phaseX: phaseX, phaseY: phaseY,
+                            seed: clearGridBasisSeed ^ 0x85A3_08D3),
+                        cell2BasisNoise(
+                            x, y, amplitude: amplitude,
+                            phaseX: phaseX, phaseY: phaseY,
+                            seed: clearGridBasisSeed ^ 0x1319_8A2E)
+                    )
+                })
+            }
         }
     }
 
@@ -1375,7 +1474,7 @@ struct ReferenceRecord: Codable {
 struct CaptureRecord: Codable {
     let file: String
     let referenceFile: String
-    let controlFile: String
+    let controlFile: String?
     let background: String
     let family: String
     let overlay: String
@@ -2163,7 +2262,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.15.0",
+            rigVersion: "2.16.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2288,7 +2387,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             referencePixels: Data?,
             scene: SceneSpec,
             overlay: Overlay,
-            appearance: Appearance
+            appearance: Appearance,
+            includeControlReference: Bool = true
         ) async {
             let name =
                 "\(bg.name)__\(scene.name)__\(overlay.rawValue)__\(appearance.rawValue).png"
@@ -2319,7 +2419,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 manifest.captures.append(CaptureRecord(
                     file: "shots/\(name)",
                     referenceFile: "reference/\(bg.name).png",
-                    controlFile: controlFile(for: bg, appearance: appearance),
+                    controlFile: includeControlReference
+                        ? controlFile(for: bg, appearance: appearance)
+                        : nil,
                     background: bg.name,
                     family: bg.family.rawValue,
                     overlay: overlay.rawValue,
@@ -2376,6 +2478,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 backgrounds.lazy.map(\.name).filter {
                     $0.contains("-sweep-")
                 })
+            let clearGridBasisNames: Set<String> = Set(
+                backgrounds.lazy.map(\.name).filter {
+                    $0.contains("-grid2-shift-")
+                        || $0.contains("-cell2-basis-")
+                })
+            let clearGridBasisControlNames: Set<String> = Set(
+                [1, 17, 32, 64].map {
+                    String(
+                        format: "noise-rgb-a%03d-grid2-shift-00-train",
+                        $0)
+                }
+            )
+            .union(
+                [(0, 1), (1, 0), (1, 1)].map {
+                    String(
+                        format: "noise-rgb-a032-grid2-shift-%d%d-train",
+                        $0.0, $0.1)
+                }
+            )
+            .union(
+                (0...1).flatMap { phaseY in
+                    (0...1).map { phaseX in
+                        String(
+                            format: "noise-rgb-a032-cell2-basis-%d%d-train",
+                            phaseY, phaseX)
+                    }
+                }
+            )
             let oversizedRectSceneName = "rect-6000x4000-r000-center"
             let transposedRectSceneName = "rect-4000x6000-r000-center"
             let focusedOversizedSceneNames: Set<String> = [
@@ -2389,6 +2519,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 where !clearKernelNames.contains(bg.name)
                     && !clearTomographyNames.contains(bg.name)
                     && !clearAmplitudeSweepNames.contains(bg.name)
+                    && !clearGridBasisNames.contains(bg.name)
             {
                 log("static base: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
@@ -2914,6 +3045,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         overlay: .clear,
                         appearance: .dark)
                 }
+            }
+
+            // Preserve all 2,201 v2.15 captures as an unchanged prefix.
+            // Every v2.16 source has one clear training output. Eleven fixed
+            // controls verify both generators and every absolute 2x2 phase;
+            // the other outputs deliberately carry no controlFile rather
+            // than naming a no-glass capture that was never taken.
+            for bg in backgrounds where clearGridBasisNames.contains(bg.name) {
+                log("static v2.16 clear grid basis: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                let referencePixels = try recordReference(bg, image)
+                if clearGridBasisControlNames.contains(bg.name) {
+                    await captureStatic(
+                        background: bg,
+                        image: image,
+                        referencePixels: referencePixels,
+                        scene: baseScene,
+                        overlay: .none,
+                        appearance: .dark)
+                }
+                await captureStatic(
+                    background: bg,
+                    image: image,
+                    referencePixels: nil,
+                    scene: denseSweepScene,
+                    overlay: .clear,
+                    appearance: .dark,
+                    includeControlReference:
+                        clearGridBasisControlNames.contains(bg.name))
             }
         }
 
