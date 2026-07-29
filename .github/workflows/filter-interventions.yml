@@ -1,0 +1,70 @@
+name: Probe Liquid Glass filter interventions
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/filter-interventions.yml
+      - Sources/GlassFilterProbe/**
+
+concurrency:
+  group: filter-interventions-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  filter-interventions:
+    runs-on: macos-26
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Build filter intervention probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p filter-interventions
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassFilterProbe/main.swift \
+            -o glass-filter-probe 2>&1 |
+            tee filter-interventions/build.log
+
+      - name: Capture filter interventions
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: ./glass-filter-probe filter-interventions
+
+      - name: Inventory filter interventions
+        if: always()
+        run: |
+          find filter-interventions -maxdepth 1 -type f -print -exec du -h {} \;
+
+      - name: Upload filter interventions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-filter-interventions-${{ github.run_id }}
+          path: filter-interventions
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce filter interventions
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test -s filter-interventions/manifest.json
