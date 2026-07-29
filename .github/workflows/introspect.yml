@@ -95,6 +95,82 @@ jobs:
             done
           } > "$framework_output"
 
+      - name: Disassemble exported Apple color-matrix routines
+        if: always()
+        continue-on-error: true
+        run: |
+          output="introspection/matrix-disassembly.txt"
+          quartz_core="/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore"
+          core_material="/System/Library/PrivateFrameworks/CoreMaterial.framework/Versions/A/CoreMaterial"
+
+          disassemble_symbol() {
+            binary="$1"
+            symbol="$2"
+            unprefixed="${symbol#_}"
+
+            echo "SYMBOL $symbol"
+            echo "LLVM-OBJDUMP (Mach-O export spelling)"
+            xcrun llvm-objdump \
+              --macho \
+              --arch-name=arm64e \
+              --disassemble-symbols="$symbol" \
+              --symbolize-operands \
+              "$binary" 2>&1 || true
+
+            echo "LLVM-OBJDUMP (source spelling)"
+            xcrun llvm-objdump \
+              --macho \
+              --arch-name=arm64e \
+              --disassemble-symbols="$unprefixed" \
+              --symbolize-operands \
+              "$binary" 2>&1 || true
+
+            echo "LLDB (Mach-O export spelling)"
+            xcrun lldb --batch \
+              -o "target create \"$binary\"" \
+              -o "disassemble --name \"$symbol\"" 2>&1 || true
+
+            echo "LLDB (source spelling)"
+            xcrun lldb --batch \
+              -o "target create \"$binary\"" \
+              -o "disassemble --name \"$unprefixed\"" 2>&1 || true
+          }
+
+          {
+            sw_vers
+            uname -a
+            xcrun llvm-objdump --version 2>&1 || true
+
+            echo "QUARTZCORE SYMBOL NEIGHBORHOOD"
+            nm -nm "$quartz_core" 2>/dev/null |
+              grep -E 'CAColorMatrix(Make|Concat|Identity)' || true
+            for symbol in \
+              _CAColorMatrixMakeSaturation \
+              _CAColorMatrixMakeBrightness \
+              _CAColorMatrixMakeContrast \
+              _CAColorMatrixMakeMultiplyColor \
+              _CAColorMatrixMakeColorSourceOver \
+              _CAColorMatrixMakePlusL \
+              _CAColorMatrixMakePlusD \
+              _CAColorMatrixConcat
+            do
+              disassemble_symbol "$quartz_core" "$symbol"
+            done
+
+            echo "COREMATERIAL SYMBOL NEIGHBORHOOD"
+            nm -nm "$core_material" 2>/dev/null |
+              grep -E 'MTCAColorMatrix|FloydRound' || true
+            for symbol in \
+              __MTCAColorMatrixFloydRound \
+              _MTCAColorMatrixMakeWithVibrantShadowAttributes \
+              _MTCAColorMatrixInterpolate \
+              _MTCAColorMatrixMakeWithDictionaryRepresentation \
+              _MTCAColorMatrixCreateDictionaryRepresentation
+            do
+              disassemble_symbol "$core_material" "$symbol"
+            done
+          } > "$output"
+
       - name: Upload Liquid Glass introspection
         if: always()
         uses: actions/upload-artifact@v4
