@@ -441,6 +441,16 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
         findings.error(f"invalid backing scale: {scale!r}")
 
 
+def full_geometry_matrix_scenes(
+    manifest: JsonObject,
+    scene_names: set[str],
+) -> set[str]:
+    scenes = scene_names - {"circle-0500-center"}
+    if manifest.get("rigVersion") == "2.14.0":
+        scenes -= {"rect-4000x6000-r000-center"}
+    return scenes
+
+
 def validate_static(
     root: Path,
     manifest: JsonObject,
@@ -821,7 +831,7 @@ def validate_static(
             (background, scene, overlay, appearance)
             for background in {"gray-128", "checker-0128", "uv-map", "radial-0128"}
             & static_backgrounds
-            for scene in scene_names - {"circle-0500-center"}
+            for scene in full_geometry_matrix_scenes(manifest, scene_names)
             for overlay in ("regular", "clear")
             for appearance in appearances
         }

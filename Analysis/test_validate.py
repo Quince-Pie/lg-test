@@ -8,6 +8,7 @@ from PIL import Image, ImageCms
 
 from validate import (
     Findings,
+    full_geometry_matrix_scenes,
     pixel_diff,
     source_diff_is_within_tolerance,
     validate,
@@ -21,6 +22,26 @@ SRGB_PROFILE = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes(
 
 
 class ValidatorTests(unittest.TestCase):
+    def test_v214_transposed_rectangle_is_not_a_full_geometry_matrix(self) -> None:
+        scenes = {
+            "circle-0500-center",
+            "circle-1000-center",
+            "rect-6000x4000-r000-center",
+            "rect-4000x6000-r000-center",
+        }
+
+        self.assertEqual(
+            full_geometry_matrix_scenes({"rigVersion": "2.14.0"}, scenes),
+            {
+                "circle-1000-center",
+                "rect-6000x4000-r000-center",
+            },
+        )
+        self.assertIn(
+            "rect-4000x6000-r000-center",
+            full_geometry_matrix_scenes({"rigVersion": "2.13.0"}, scenes),
+        )
+
     def test_pixel_diff_ignores_alpha(self) -> None:
         reference = bytes((10, 20, 30, 0, 40, 50, 60, 255))
         capture = bytes((10, 20, 30, 255, 43, 45, 67, 0))
