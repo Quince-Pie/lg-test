@@ -906,7 +906,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 7,
+            "schemaVersion": 8,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -940,6 +940,15 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 "recommendedMaxWorkingSetSize":
                     device.recommendedMaxWorkingSetSize,
             ]
+            do {
+                report["halfDotEvidence"] = try writeHalfDotEvidence(
+                    device: device,
+                    outputDirectory: outputDirectory)
+            } catch {
+                report["halfDotEvidence"] = [
+                    "error": error.localizedDescription,
+                ]
+            }
         }
         let inspectedFrameworks = Bundle.allFrameworks.filter {
             let name = $0.bundleURL.lastPathComponent.lowercased()
