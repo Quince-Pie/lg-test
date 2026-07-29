@@ -340,6 +340,116 @@ jobs:
             fi
           } > "$output"
 
+      - name: Disassemble Apple reduction and mip-filter kernels
+        if: always()
+        continue-on-error: true
+        run: |
+          library="/System/Library/Frameworks/CoreImage.framework/Versions/A/Resources/ci_filters.metallib"
+          air_slice="introspection/coreimage-air64.metallib"
+          output="introspection/coreimage-reduction-kernels.txt"
+
+          python3 - "$library" "$air_slice" <<'PY'
+          import pathlib
+          import struct
+          import sys
+
+          source = pathlib.Path(sys.argv[1])
+          destination = pathlib.Path(sys.argv[2])
+          with source.open("rb") as stream:
+              magic, count = struct.unpack(">II", stream.read(8))
+              if magic != 0xCAFEBABE:
+                  raise SystemExit(f"unexpected fat magic: 0x{magic:08x}")
+              selected = None
+              for _ in range(count):
+                  cpu_type, cpu_subtype, offset, size, alignment = struct.unpack(
+                      ">IIIII", stream.read(20)
+                  )
+                  if cpu_type == 0x01000017:
+                      selected = (cpu_subtype, offset, size, alignment)
+              if selected is None:
+                  raise SystemExit("air64 architecture is absent")
+              cpu_subtype, offset, size, alignment = selected
+              stream.seek(offset)
+              payload = stream.read(size)
+              if len(payload) != size:
+                  raise SystemExit("short read extracting air64 architecture")
+          destination.write_bytes(payload)
+          print(
+              "AIR64 FAT ENTRY "
+              f"subtype={cpu_subtype} offset={offset} "
+              f"size={size} alignment={alignment}"
+          )
+          PY
+
+          {
+            file "$library"
+            stat -f 'LIBRARY BYTES %z' "$library"
+            shasum -a 256 "$library"
+            file "$air_slice"
+            stat -f 'AIR64 BYTES %z' "$air_slice"
+            shasum -a 256 "$air_slice"
+            echo "MATCHED SYMBOLS"
+            xcrun metal-nm "$air_slice" 2>&1 |
+              grep -E \
+                'gaussianReduce|ASG[hv]|asgDown|lanczosDown|betterDown2|CIPyramidGenerateLevel|downhalf|areaAvg2|cubicDownsample2' ||
+              true
+            echo "REFLECTION"
+            xcrun metal-objdump \
+              --metallib \
+              --reflection \
+              "$air_slice" 2>&1 |
+              grep -E \
+                'gaussianReduce|ASG[hv]|asgDown|lanczosDown|betterDown2|CIPyramidGenerateLevel|downhalf|areaAvg2|cubicDownsample2' ||
+              true
+          } > "$output"
+
+          for symbol in \
+            gaussianReduce4o \
+            gaussianReduce4 \
+            gaussianReduce2o \
+            gaussianReduce2 \
+            ASGh50 \
+            ASGv50 \
+            ASGh60 \
+            ASGv60 \
+            ASGh66 \
+            ASGv66 \
+            ASGh75 \
+            ASGv75 \
+            ASGh80 \
+            ASGv80 \
+            asgDownH \
+            asgDownV \
+            lanczosDown2 \
+            lanczosDownH \
+            lanczosDownV \
+            betterDown2 \
+            CIPyramidGenerateLevel \
+            downhalf \
+            areaAvg2 \
+            cubicDownsample2
+          do
+            ir="introspection/coreimage-air64-${symbol}.ll"
+            error="introspection/coreimage-air64-${symbol}.stderr"
+            if xcrun metal-objdump \
+                --metallib \
+                --disassemble-symbols="$symbol" \
+                --print-imm-hex \
+                "$air_slice" > "$ir" 2> "$error"
+            then
+              status=0
+            else
+              status=$?
+            fi
+            {
+              echo "SYMBOL $symbol"
+              echo "EXIT $status"
+              stat -f 'IR BYTES %z' "$ir"
+              shasum -a 256 "$ir"
+              sed -n '1,80p' "$error"
+            } >> "$output"
+          done
+
       - name: Disassemble exported Apple color-matrix routines
         if: always()
         continue-on-error: true

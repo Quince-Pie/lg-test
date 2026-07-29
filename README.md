@@ -612,6 +612,11 @@ The v2.19 workflow also builds a separate best-effort introspection companion.
 It renders one independent `.clear` diagnostic view, requests a programmatic
 Metal GPU trace, records the public AppKit/Core Animation view, layer, and
 filter trees, and inventories narrowly matched framework symbols and strings.
+The focused introspection workflow also preserves AIR64 disassemblies for
+Apple's own CoreImage Gaussian-reduction, adaptive-scaling, Lanczos, pyramid,
+and downsample kernels. These are candidate source-pyramid implementations,
+not assumed parts of Liquid Glass; their coefficients must predict the
+independent spatial captures before use.
 This companion does not alter the capture app, manifest, reference catalog,
 case order, validator, or measurement report. Its output is forensic evidence,
 not a pixel-parity oracle: a trace may be unsupported on the hosted runner,
