@@ -107,6 +107,67 @@ jobs:
             done
           } > "$framework_output"
 
+      - name: Inventory Apple Metal renderer assets
+        if: always()
+        continue-on-error: true
+        run: |
+          output="introspection/metal-inventory.txt"
+          {
+            echo "DEVELOPER TOOLS"
+            for tool in \
+              metal \
+              metal-ar \
+              metal-objdump \
+              metal-nm \
+              metallib \
+              llvm-dis \
+              llvm-objdump
+            do
+              printf '%s: ' "$tool"
+              xcrun --find "$tool" 2>&1 || true
+            done
+
+            echo "METAL ASSETS"
+            find \
+              /System/Library/Frameworks \
+              /System/Library/PrivateFrameworks \
+              /System/Library/CoreServices/WindowServer.app \
+              -type f \
+              \( \
+                -iname '*.air' \
+                -o -iname '*.metalarc' \
+                -o -iname '*.metallib' \
+                -o -iname '*metal*.bin' \
+              \) \
+              -print 2>/dev/null |
+              sort |
+              while IFS= read -r asset
+              do
+                stat -f 'FILE %z %N' "$asset"
+                shasum -a 256 "$asset"
+                strings -a "$asset" 2>/dev/null |
+                  grep -Ei \
+                    'glass|backdrop|holding.?tone|face.?color|refraction|bleed|vibrant|sdf' |
+                  sort -u |
+                  head -n 120 || true
+              done
+
+            echo "MACH-O METAL SECTIONS"
+            for binary in \
+              /System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore \
+              /System/Library/PrivateFrameworks/CoreMaterial.framework/Versions/A/CoreMaterial \
+              /System/Library/PrivateFrameworks/RenderBox.framework/Versions/A/RenderBox \
+              /System/Library/CoreServices/WindowServer.app/Contents/MacOS/WindowServer
+            do
+              test -f "$binary" || continue
+              echo "BINARY $binary"
+              otool -l "$binary" 2>/dev/null |
+                grep -E \
+                  '(^Load command|cmd |segname |sectname |offset |size |filesize )' ||
+                true
+            done
+          } > "$output"
+
       - name: Disassemble exported Apple color-matrix routines
         if: always()
         continue-on-error: true
