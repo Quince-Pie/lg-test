@@ -162,11 +162,68 @@ func sine(_ t: Double, period: Double, phase: Double) -> UInt8 {
     return UInt8((v * 255.0).rounded())
 }
 
-func binaryNoise(_ x: Int, _ y: Int, amplitude: Int, seed: UInt32) -> UInt8 {
-    precondition((1...127).contains(amplitude))
-    return hash32(x, y, seed: seed) & 1 == 0
-        ? UInt8(128 - amplitude)
-        : UInt8(128 + amplitude)
+func binaryNoise(
+    _ x: Int,
+    _ y: Int,
+    center: Int = 128,
+    amplitude: Int,
+    blockSize: Int = 1,
+    seed: UInt32
+) -> UInt8 {
+    precondition(blockSize > 0)
+    precondition(amplitude > 0)
+    precondition(center - amplitude >= 0 && center + amplitude <= 255)
+    return hash32(x / blockSize, y / blockSize, seed: seed) & 1 == 0
+        ? UInt8(center - amplitude)
+        : UInt8(center + amplitude)
+}
+
+func paletteNoise(
+    _ x: Int,
+    _ y: Int,
+    blockSize: Int,
+    levels: [UInt8],
+    seed: UInt32
+) -> (UInt8, UInt8, UInt8) {
+    precondition(blockSize > 0 && !levels.isEmpty)
+    let blockX = x / blockSize
+    let blockY = y / blockSize
+    let count = UInt32(levels.count)
+    return (
+        levels[Int(hash32(
+            blockX, blockY, seed: seed ^ 0x243F_6A88) % count)],
+        levels[Int(hash32(
+            blockX, blockY, seed: seed ^ 0x85A3_08D3) % count)],
+        levels[Int(hash32(
+            blockX, blockY, seed: seed ^ 0x1319_8A2E) % count)]
+    )
+}
+
+func sourceSafeMidpointNoise(
+    _ x: Int,
+    _ y: Int,
+    blockSize: Int,
+    levels: [UInt8],
+    seed: UInt32
+) -> (UInt8, UInt8, UInt8) {
+    precondition(blockSize > 0 && levels.count == 8)
+    // V2.8 measured a one-code display conversion in exactly these five
+    // midpoint combinations. The complete historical chart retains them with
+    // captured-input calibration; sparse large blocks cannot include even one
+    // without potentially exceeding the unchanged 1% source-control bound.
+    let excludedIndexes = [312, 376, 440, 496, 504]
+    let blockX = x / blockSize
+    let blockY = y / blockSize
+    var sourceIndex = Int(hash32(
+        blockX, blockY, seed: seed) % UInt32(512 - excludedIndexes.count))
+    for excludedIndex in excludedIndexes where sourceIndex >= excludedIndex {
+        sourceIndex += 1
+    }
+    return (
+        levels[sourceIndex % 8],
+        levels[(sourceIndex / 8) % 8],
+        levels[(sourceIndex / 64) % 8]
+    )
 }
 
 func flatBackground(_ name: String, _ family: BackgroundFamily,
@@ -427,6 +484,103 @@ func staticBackgrounds() -> [Background] {
                         seed: seed ^ 0x85A3_08D3),
                     binaryNoise(
                         x, y, amplitude: amplitude,
+                        seed: seed ^ 0x1319_8A2E)
+                )
+            })
+        }
+    }
+
+    // V2.10's pixel-scale, neutral-centered binary probes do not identify the
+    // measured nonlinear response across color range and spatial scale. These
+    // paired fields bridge that gap without consuming the historical chart or
+    // stochastic holdouts. Fitting uses calibrated 9-cube codes; independently
+    // seeded midpoint codes remain strict interpolation/scale holdouts.
+    let contextBlockSizes = [4, 16, 64, 256]
+    let contextTrainingSeed: UInt32 = 0x7308_C145
+    let contextHoldoutSeed: UInt32 = 0x49F7_B8C3
+    for blockSize in contextBlockSizes {
+        let trainingName = String(
+            format: "context-rgb-grid-b%04d-train",
+            blockSize)
+        list.append(Background(name: trainingName, family: .noise) {
+            x, y, _, _ in
+            paletteNoise(
+                x, y,
+                blockSize: blockSize,
+                levels: cubeLevels,
+                seed: contextTrainingSeed)
+        })
+
+        let holdoutName = String(
+            format: "context-rgb-midpoint-b%04d-holdout",
+            blockSize)
+        list.append(Background(name: holdoutName, family: .noise) {
+            x, y, _, _ in
+            sourceSafeMidpointNoise(
+                x, y,
+                blockSize: blockSize,
+                levels: holdoutLevels,
+                seed: contextHoldoutSeed)
+        })
+    }
+
+    // A known periodic translation of one training field distinguishes a
+    // content-locked operator from fixed window-space structure. This is a
+    // diagnostic check, never fitting evidence.
+    list.append(Background(
+        name: "context-rgb-grid-b0016-shifted-check",
+        family: .noise
+    ) { x, y, w, h in
+        paletteNoise(
+            (x + 37) % max(w, 1),
+            (y + 53) % max(h, 1),
+            blockSize: 16,
+            levels: cubeLevels,
+            seed: contextTrainingSeed)
+    })
+
+    // Pair the same binary fields above and below neutral gray. The values
+    // are already calibrated cube knots, and reusing each role's bit field
+    // isolates local-mean dependence from a new random realization.
+    for center in [64, 128, 192] {
+        for (role, seed) in noiseSeeds {
+            let grayName = String(
+                format: "noise-gray-m%03d-a032-b0016-%@",
+                center, role)
+            list.append(Background(name: grayName, family: .noise) {
+                x, y, _, _ in
+                let value = binaryNoise(
+                    x, y,
+                    center: center,
+                    amplitude: 32,
+                    blockSize: 16,
+                    seed: seed)
+                return (value, value, value)
+            })
+
+            let rgbName = String(
+                format: "noise-rgb-m%03d-a032-b0016-%@",
+                center, role)
+            list.append(Background(name: rgbName, family: .noise) {
+                x, y, _, _ in
+                (
+                    binaryNoise(
+                        x, y,
+                        center: center,
+                        amplitude: 32,
+                        blockSize: 16,
+                        seed: seed ^ 0x243F_6A88),
+                    binaryNoise(
+                        x, y,
+                        center: center,
+                        amplitude: 32,
+                        blockSize: 16,
+                        seed: seed ^ 0x85A3_08D3),
+                    binaryNoise(
+                        x, y,
+                        center: center,
+                        amplitude: 32,
+                        blockSize: 16,
                         seed: seed ^ 0x1319_8A2E)
                 )
             })
@@ -1898,7 +2052,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.10.0",
+            rigVersion: "2.11.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2278,6 +2432,53 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         scene: giantScene,
                         overlay: .regular,
                         appearance: appearance)
+                }
+            }
+
+            // Pointwise-exact clear chart centers do not certify clear
+            // behavior at colored boundaries. The new adaptive fields are
+            // therefore giant-circle evidence for both real materials.
+            let adaptiveGiantNames = Set(
+                [4, 16, 64, 256].flatMap { blockSize in
+                    [
+                        String(
+                            format: "context-rgb-grid-b%04d-train",
+                            blockSize),
+                        String(
+                            format:
+                            "context-rgb-midpoint-b%04d-holdout",
+                            blockSize),
+                    ]
+                })
+            .union(["context-rgb-grid-b0016-shifted-check"])
+            .union(
+                [64, 128, 192].flatMap { center in
+                    ["train", "holdout"].flatMap { role in
+                        [
+                            String(
+                                format:
+                                "noise-gray-m%03d-a032-b0016-%@",
+                                center, role),
+                            String(
+                                format:
+                                "noise-rgb-m%03d-a032-b0016-%@",
+                                center, role),
+                        ]
+                    }
+                })
+            for bg in backgrounds where adaptiveGiantNames.contains(bg.name) {
+                log("static adaptive giant: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                for appearance in Appearance.allCases {
+                    for overlay in [Overlay.regular, .clear] {
+                        await captureStatic(
+                            background: bg,
+                            image: image,
+                            referencePixels: nil,
+                            scene: giantScene,
+                            overlay: overlay,
+                            appearance: appearance)
+                    }
                 }
             }
 

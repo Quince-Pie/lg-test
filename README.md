@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## How the rig reached v2.10
+## How the rig reached v2.11
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -221,6 +221,56 @@ renderer tolerance was widened. Analysis schema v7 emits every new training
 chart plus central per-channel means, variances, ranges, and covariance
 matrices for all eight stochastic probes.
 
+Run `30395758967` returned the complete v2.10 static matrix. Its
+763,016,359-byte archive (`SHA-256
+7efbd9785cbe0848cf6a0ca2be2ba7b29656aeecefe6478e82c0c3bb56e92213`)
+contains 119 references and 1,494 stable captures with zero validation errors
+or warnings. All 103 references and all 1,350 captures shared with v2.9 are
+pixel-exact; the only additions are the intended 16 references and 144
+captures. Independent strict validation reproduces CI exactly, and an
+independent schema-v7 replay has zero numerical failures across 286,141
+comparable report leaves.
+
+The protected holdouts reject the remaining model assumptions:
+
+- all new and historical `.clear` context charts remain pixel-exact;
+- a 191-term, ten-scale regular-material color model selected by
+  leave-one-layout-out validation still misses the untouched on-grid shuffle
+  by 39.91 codes in dark appearance and 59.47 codes in light appearance;
+- a raw-inclusive Gaussian bank spanning the unfiltered source through
+  256 pixels raises independent RGB-noise correlation to 0.87–0.92, but its
+  ±64 holdouts still reach 2.77/2.60 codes of error and only 32.7%/30.1% exact
+  pixels for dark/light; and
+- training-only selection chooses the linear 63-term model. Higher polynomial
+  degrees do not generalize, so adding more terms to the same stimulus
+  distribution would be curve-fitting rather than system identification.
+
+V2.11 therefore preserves every historical holdout and adds only the missing
+interventions:
+
+- independent RGB palette fields at 4-, 16-, 64-, and 256-pixel block scales;
+  calibrated 9-cube codes are fitting evidence and an independently seeded
+  set of 507 source-safe midpoint codes is strict holdout evidence, all under
+  both real materials;
+- paired gray and independent-RGB binary fields at local means 64, 128, and 192,
+  using ±32 code amplitude and 16-pixel blocks, with separate train/holdout
+  seeds; and
+- a known `(37, 53)`-pixel periodic translation of the 16-pixel fitting field,
+  used only to measure translation equivariance and fixed window-space
+  structure.
+
+These 21 backgrounds bridge the previously unmeasured color-range × spatial-
+scale × local-mean axes. Analysis schema v8 records every role and generator
+parameter, central statistics, and the aligned translation residual so a
+fitting script cannot silently consume a holdout.
+
+The five omitted multiscale midpoint combinations are exactly the five whose
+red channel was measured one code low in the complete historical 512-color
+chart. That chart remains an untouched holdout with captured-input
+calibration. Excluding them only from sparse 256-pixel blocks prevents one
+large block from exceeding the unchanged 1% source-control prevalence bound;
+it does not remove them from the parity gate or widen any tolerance.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
@@ -297,13 +347,14 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.10 isolates the unknowns:
+V2.11 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
 | Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube in ordered, affine-permuted, four independently shuffled training contexts, and one untouched shuffled holdout; all 512 midpoint RGB colors in ordered, four training contexts, and one untouched shuffled holdout |
 | Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px; a complete six-period regular-material giant-circle MTF; 64/256/1024 px probes at 256-, 500-, and 4000-point circle scales; and p256 probes at all four quadrant positions |
-| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, and independent fit/holdout gray/RGB binary noise at two amplitudes |
+| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, independent fit/holdout gray/RGB binary noise at two amplitudes, and calibrated multiscale RGB block fields |
+| Adaptive spatial/color response | RGB palette blocks at 4/16/64/256 px with grid-code training and 507 source-safe midpoint-code holdouts; paired 16 px binary fields at means 64/128/192; and a known periodic translation check |
 | Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, and three rectangle corner radii |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
 | Appearance and material | Light/dark appearances and real `.regular`/`.clear` materials; targeted regular/clear tint probes |
@@ -330,18 +381,27 @@ Each static result waits for the view to settle and then requires two
 consecutive decoded RGBA frames to be exactly equal. It tries at most four
 frames and marks the sample invalid if stability is not reached. The generated
 source and captured no-glass control traverse different color-management
-paths, so their measured round trip may differ by one quantization level. That
-V2.8 accepted at most 0.5% changed pixels, maximum delta 1, and mean channel
-delta 0.002. V2.9 and v2.10's chart-calibrated bound is at most 1.0% changed pixels,
-maximum delta 1, and mean channel delta 0.0033. It is not a shader-parity
-tolerance. Every glass sample instead points to its real, stable no-glass
-capture, and the light/dark no-glass controls must be pixel-exact with each
-other.
+paths, so their measured round trip may differ by one quantization level. V2.8
+accepted at most 0.5% changed pixels, maximum delta 1, and mean channel delta
+0.002. V2.9 through v2.11's chart-calibrated bound is at most 1.0% changed
+pixels, maximum delta 1, and mean channel delta 0.0033. It is not a
+shader-parity tolerance. Every glass sample instead points to its real, stable
+no-glass capture, and the light/dark no-glass controls must be pixel-exact with
+each other.
 
-The v2.10 static suite contains:
+The v2.11 full-color field seeds were fixed before any Apple output existed.
+For each role, the rig evaluated the first 500,000 UInt32 candidates generated
+by SplitMix64 and minimized the maximum of three source-only b256 errors:
+pixel-area-weighted cross-channel correlation error, channel-mean error
+normalized by the target-population standard deviation, and twice the maximum
+marginal probability error. The training seed `0x7308c145` scores 0.05981; the
+disjoint-palette holdout seed `0x49f7b8c3` scores 0.05043. This prevents an
+accidental coarse-field correlation from being mistaken for Apple behavior.
 
-- 119 deterministic backgrounds and 119 saved static references.
-- 714 base control/regular/clear samples: every background, both appearances.
+The v2.11 static suite contains:
+
+- 140 deterministic backgrounds and 140 saved static references.
+- 840 base control/regular/clear samples: every background, both appearances.
 - 42 targeted tint samples.
 - 272 isolated geometry, screen-position, off-screen-scale, and
   container-interaction samples.
@@ -349,10 +409,11 @@ The v2.10 static suite contains:
 - 240 scale-dependent, four-phase local-MTF/refraction samples.
 - 128 four-phase p256 refraction/MTF samples across the four quadrant
   positions.
-- 36 giant-circle regular-material edge, line, checker, and stochastic samples.
+- 120 giant-circle edge, line, checker, stochastic, and adaptive-spatial
+  samples. Every new adaptive field covers both real materials.
 - 2 qualitative HIG-style controls-over-content samples.
 
-That is 1,494 static captures. The numerical fit should use the isolated scenes;
+That is 1,704 static captures. The numerical fit should use the isolated scenes;
 the HIG-style scene is a qualitative continuity check only.
 
 The dynamic suite contains 32 sequences:
@@ -408,7 +469,7 @@ within its traversal and must pass the delayed stability check.
 Cross-traversal differences are retained and reported as
 repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.10 artifact contains 121 references, 1,494
+With the default `all` suite, a v2.11 artifact contains 142 references, 1,704
 static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 24 exact sweep matrices containing 1,224 frames.
 
@@ -442,7 +503,9 @@ pixel hashes, dimensions, unique logical cases, the complete requested matrix,
 explicit sRGB tagging, static stability, cross-appearance no-glass identity,
 complete dynamic sequences, acquisition and presentation coverage, exact
 sweep matrices, unique states, two-source endpoints, and material topology
-controls. A validation
+controls. For v2.11 it also regenerates all 21 adaptive references from the
+declared seeds, palettes, block sizes, means, amplitudes, and translation, then
+requires pixel-exact equality with the archive. A validation
 failure still uploads the artifact so the cause can be inspected, but the
 workflow ends red.
 
@@ -466,14 +529,14 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-Return the automatic v2.10 `static` artifact first. It contains the additional
-training contexts and small-signal stochastic holdouts needed for the spatial
-fit; rerunning the unchanged
+Return the automatic v2.11 `static` artifact first. It contains the additional
+multiscale context, local-mean, and translation-equivariance evidence needed
+for the spatial fit; rerunning the unchanged
 dynamic and exact-sweep matrices is unnecessary.
 
 Runs `30326591212` and `30365533488` complete the two-run static, exact-state,
 and endpoint repeatability corpus. The latter has four rejected live
-traversals. After the v2.10 static fit, the remaining focused temporal work is:
+traversals. After the v2.11 static fit, the remaining focused temporal work is:
 
 1. A focused `dynamic`, 1.0-second, 61-frame recovery run with
    `dynamic_modes=wallpaper-transition,wallpaper-transition-reverse` and exact
@@ -541,7 +604,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The v2.10 artifacts are measurement inputs, not proof that Walle already matches.
+The v2.11 artifacts are measurement inputs, not proof that Walle already matches.
 The next pass should:
 
 1. Fit static tone, color, refraction, blur, rim, and shadow components on

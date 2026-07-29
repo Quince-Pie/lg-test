@@ -21,6 +21,8 @@ from scipy.ndimage import map_coordinates
 from scipy.optimize import least_squares
 from scipy.special import ndtr
 
+from probe_catalog import ADAPTIVE_SPATIAL_PROBES
+
 
 type JsonObject = dict[str, Any]
 type FloatImage = NDArray[np.float64]
@@ -719,6 +721,118 @@ class Measurements:
             "availableProbeCount": len(available),
             "boundaryExclusionPixels": margin,
             "records": records,
+        }
+
+    def adaptive_spatial_probe_statistics(self) -> JsonObject:
+        scene = "circle-4000-center"
+        available = [
+            background
+            for background in ADAPTIVE_SPATIAL_PROBES
+            if background in self.references
+            and all(
+                self.has_image(background, scene, material, appearance)
+                for material in ("regular", "clear")
+                for appearance in ("light", "dark")
+            )
+        ]
+        if not available:
+            return {
+                "available": False,
+                "reason": "requires v2.11 adaptive spatial probes",
+            }
+
+        margin = round(512 * self.backing_scale)
+        records: JsonObject = {}
+        for background in available:
+            source = self.reference_image(background)
+            region = (
+                slice(margin, source.shape[0] - margin),
+                slice(margin, source.shape[1] - margin),
+            )
+            record: JsonObject = {
+                **ADAPTIVE_SPATIAL_PROBES[background],
+                "source": self.channel_statistics(source[region]),
+            }
+            record["outputs"] = {
+                material: {
+                    appearance: self.channel_statistics(
+                        self.image(
+                            background,
+                            scene,
+                            material,
+                            appearance,
+                        )[region]
+                    )
+                    for appearance in ("light", "dark")
+                }
+                for material in ("regular", "clear")
+            }
+            records[background] = record
+
+        translation: JsonObject = {"available": False}
+        base_name = "context-rgb-grid-b0016-train"
+        shifted_name = "context-rgb-grid-b0016-shifted-check"
+        if base_name in available and shifted_name in available:
+            shift_x = 37
+            shift_y = 53
+
+            def aligned_center(values: NDArray[Any]) -> NDArray[Any]:
+                aligned = np.roll(
+                    values,
+                    shift=(shift_y, shift_x),
+                    axis=(0, 1),
+                )
+                return aligned[
+                    margin : aligned.shape[0] - margin,
+                    margin : aligned.shape[1] - margin,
+                ]
+
+            base_source = self.reference_code_image(base_name)
+            shifted_source = self.reference_code_image(shifted_name)
+            center = (
+                slice(margin, base_source.shape[0] - margin),
+                slice(margin, base_source.shape[1] - margin),
+            )
+            translation = {
+                "available": True,
+                "baseBackground": base_name,
+                "shiftedBackground": shifted_name,
+                "sourceShiftPixels": [shift_x, shift_y],
+                "sourceAfterAlignment": self.pixel_difference(
+                    base_source[center],
+                    aligned_center(shifted_source),
+                ),
+                "materialAfterAlignment": {
+                    material: {
+                        appearance: self.pixel_difference(
+                            self.code_image(
+                                base_name,
+                                scene,
+                                material,
+                                appearance,
+                            )[center],
+                            aligned_center(
+                                self.code_image(
+                                    shifted_name,
+                                    scene,
+                                    material,
+                                    appearance,
+                                )
+                            ),
+                        )
+                        for appearance in ("light", "dark")
+                    }
+                    for material in ("regular", "clear")
+                },
+            }
+
+        return {
+            "available": len(available) == len(ADAPTIVE_SPATIAL_PROBES),
+            "requiredProbeCount": len(ADAPTIVE_SPATIAL_PROBES),
+            "availableProbeCount": len(available),
+            "boundaryExclusionPixels": margin,
+            "records": records,
+            "translationEquivariance": translation,
         }
 
     def base_color_charts(self) -> JsonObject:
@@ -1547,8 +1661,9 @@ class Measurements:
         manifest = self.artifact.manifest
         dynamic_sequences = manifest.get("dynamicSequences", [])
         sweep_sequences = manifest.get("sweepSequences", [])
-        return {
-            "analysisSchemaVersion": 7,
+        rig_version = manifest.get("rigVersion")
+        result = {
+            "analysisSchemaVersion": 8 if rig_version == "2.11.0" else 7,
             "analysisImplementation": {
                 "file": "Analysis/measure.py",
                 "sha256": file_sha256(Path(__file__).resolve()),
@@ -1630,6 +1745,11 @@ class Measurements:
             "dynamicSourceControls": self.dynamic_source_controls(),
             "sweepStates": self.sweep_states(),
         }
+        if rig_version == "2.11.0":
+            result["adaptiveSpatialProbeStatistics"] = (
+                self.adaptive_spatial_probe_statistics()
+            )
+        return result
 
 
 def file_sha256(path: Path) -> str:

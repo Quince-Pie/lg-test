@@ -461,6 +461,11 @@ class ValidatorTests(unittest.TestCase):
         validate_environment(manifest, v210)
         self.assertEqual(v210.errors, [])
 
+        manifest["rigVersion"] = "2.11.0"
+        v211 = Findings()
+        validate_environment(manifest, v211)
+        self.assertEqual(v211.errors, [])
+
     def test_schema4_presentation_clock_and_exclusion(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

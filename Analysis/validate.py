@@ -13,7 +13,10 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 from PIL import Image, ImageCms
+
+from probe_catalog import ADAPTIVE_SPATIAL_PROBES, expected_adaptive_reference
 
 
 type JsonObject = dict[str, Any]
@@ -305,7 +308,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
     expected_rigs = {
         3: {"2.1.0"},
         4: {"2.2.0", "2.3.0", "2.4.0", "2.5.0"},
-        5: {"2.6.0", "2.7.0", "2.8.0", "2.9.0", "2.10.0"},
+        5: {"2.6.0", "2.7.0", "2.8.0", "2.9.0", "2.10.0", "2.11.0"},
     }.get(schema, set())
     if manifest.get("rigVersion") not in expected_rigs:
         findings.error(f"unexpected rigVersion: {manifest.get('rigVersion')!r}")
@@ -369,7 +372,15 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
         findings.error(f"capture preflight failed: {preflight_errors}")
     if (
         manifest.get("rigVersion")
-        in {"2.5.0", "2.6.0", "2.7.0", "2.8.0", "2.9.0", "2.10.0"}
+        in {
+            "2.5.0",
+            "2.6.0",
+            "2.7.0",
+            "2.8.0",
+            "2.9.0",
+            "2.10.0",
+            "2.11.0",
+        }
         and manifest.get("requestedSuite") != "static"
     ):
         clock = manifest.get("presentationClockPreflight")
@@ -565,7 +576,12 @@ def validate_static(
             for name, record in references.items()
             if record.get("family") != "dynamic"
         }
-        if manifest.get("rigVersion") in {"2.8.0", "2.9.0", "2.10.0"}:
+        if manifest.get("rigVersion") in {
+            "2.8.0",
+            "2.9.0",
+            "2.10.0",
+            "2.11.0",
+        }:
             required_v28_backgrounds = {
                 "color-cube-9-permuted",
                 "color-cube-holdout-8",
@@ -576,7 +592,7 @@ def validate_static(
                     "v2.8 static references are missing "
                     f"{sorted(missing_v28_backgrounds)}"
                 )
-        if manifest.get("rigVersion") in {"2.9.0", "2.10.0"}:
+        if manifest.get("rigVersion") in {"2.9.0", "2.10.0", "2.11.0"}:
             required_v29_backgrounds = {
                 "color-cube-9-shuffled",
                 "color-cube-holdout-8-shuffled",
@@ -587,7 +603,7 @@ def validate_static(
                     "v2.9 static references are missing "
                     f"{sorted(missing_v29_backgrounds)}"
                 )
-        if manifest.get("rigVersion") == "2.10.0":
+        if manifest.get("rigVersion") in {"2.10.0", "2.11.0"}:
             required_v210_backgrounds = {
                 *{f"color-cube-9-context-train-{index:02d}" for index in range(4)},
                 *{
@@ -607,6 +623,44 @@ def validate_static(
                     "v2.10 static references are missing "
                     f"{sorted(missing_v210_backgrounds)}"
                 )
+        if manifest.get("rigVersion") == "2.11.0":
+            required_v211_backgrounds = set(ADAPTIVE_SPATIAL_PROBES)
+            missing_v211_backgrounds = required_v211_backgrounds - static_backgrounds
+            if missing_v211_backgrounds:
+                findings.error(
+                    "v2.11 static references are missing "
+                    f"{sorted(missing_v211_backgrounds)}"
+                )
+            for background in sorted(required_v211_backgrounds & static_backgrounds):
+                reference = references[background]
+                path = artifact_path(root, reference.get("file"), findings)
+                if path is None:
+                    continue
+                try:
+                    decoded = decode_image(path)
+                    expected = expected_adaptive_reference(
+                        background,
+                        width=decoded.width,
+                        height=decoded.height,
+                    )
+                    actual = np.frombuffer(
+                        decoded.rgba,
+                        dtype=np.uint8,
+                    ).reshape(decoded.height, decoded.width, 4)[:, :, :3]
+                except Exception as error:
+                    findings.error(
+                        f"{background}: cannot verify v2.11 probe generator: {error}"
+                    )
+                    continue
+                if not np.array_equal(expected, actual):
+                    delta = np.abs(expected.astype(np.int16) - actual.astype(np.int16))
+                    changed = np.any(delta != 0, axis=2)
+                    findings.error(
+                        f"{background}: archived reference does not match "
+                        "the v2.11 deterministic generator "
+                        f"({np.count_nonzero(changed)} changed pixels, "
+                        f"maximum channel delta {delta.max(initial=0)})"
+                    )
         appearances = {"light", "dark"}
         expected_cases = {
             (background, "circle-0500-center", overlay, appearance)
@@ -649,17 +703,26 @@ def validate_static(
         }
         if manifest.get("schemaVersion") in {4, 5}:
             dense_transfer_backgrounds = {"ramp-x", "ramp-y", "color-cube-9"}
-            if manifest.get("rigVersion") in {"2.8.0", "2.9.0", "2.10.0"}:
+            if manifest.get("rigVersion") in {
+                "2.8.0",
+                "2.9.0",
+                "2.10.0",
+                "2.11.0",
+            }:
                 dense_transfer_backgrounds |= {
                     "color-cube-9-permuted",
                     "color-cube-holdout-8",
                 }
-            if manifest.get("rigVersion") in {"2.9.0", "2.10.0"}:
+            if manifest.get("rigVersion") in {
+                "2.9.0",
+                "2.10.0",
+                "2.11.0",
+            }:
                 dense_transfer_backgrounds |= {
                     "color-cube-9-shuffled",
                     "color-cube-holdout-8-shuffled",
                 }
-            if manifest.get("rigVersion") == "2.10.0":
+            if manifest.get("rigVersion") in {"2.10.0", "2.11.0"}:
                 dense_transfer_backgrounds |= {
                     *{f"color-cube-9-context-train-{index:02d}" for index in range(4)},
                     *{
@@ -686,7 +749,11 @@ def validate_static(
                 for overlay in ("regular", "clear")
                 for appearance in appearances
             }
-            if manifest.get("rigVersion") in {"2.9.0", "2.10.0"}:
+            if manifest.get("rigVersion") in {
+                "2.9.0",
+                "2.10.0",
+                "2.11.0",
+            }:
                 expected_cases |= {
                     (
                         background,
@@ -703,7 +770,7 @@ def validate_static(
                     & static_backgrounds
                     for appearance in appearances
                 }
-                if manifest.get("rigVersion") == "2.10.0":
+                if manifest.get("rigVersion") in {"2.10.0", "2.11.0"}:
                     expected_cases |= {
                         (
                             background,
@@ -718,6 +785,19 @@ def validate_static(
                             for role in ("train", "holdout")
                         }
                         & static_backgrounds
+                        for appearance in appearances
+                    }
+                if manifest.get("rigVersion") == "2.11.0":
+                    expected_cases |= {
+                        (
+                            background,
+                            "circle-4000-center",
+                            overlay,
+                            appearance,
+                        )
+                        for background in set(ADAPTIVE_SPATIAL_PROBES)
+                        & static_backgrounds
+                        for overlay in ("regular", "clear")
                         for appearance in appearances
                     }
                 expected_cases |= {
@@ -747,6 +827,7 @@ def validate_static(
             "2.8.0",
             "2.9.0",
             "2.10.0",
+            "2.11.0",
         }:
             expected_cases |= {
                 (background, scene, overlay, appearance)
@@ -889,6 +970,7 @@ def validate_dynamic(
             "2.8.0",
             "2.9.0",
             "2.10.0",
+            "2.11.0",
         }:
             if (
                 sequence.get("samplingMethod")
@@ -913,6 +995,8 @@ def validate_dynamic(
             "2.7.0",
             "2.8.0",
             "2.9.0",
+            "2.10.0",
+            "2.11.0",
         }:
             expected_clock = "swiftui-animatable-frame"
             if sequence.get("mode") in {
@@ -1029,6 +1113,7 @@ def validate_dynamic(
                 "2.8.0",
                 "2.9.0",
                 "2.10.0",
+                "2.11.0",
             }
             and isinstance(sequence.get("decodedSamples"), int)
             and sequence["decodedSamples"] < len(frames) - 1
@@ -1888,7 +1973,7 @@ def validate(root: Path) -> tuple[Findings, JsonObject]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Independently validate a GlassCapture v2.1-v2.9 artifact."
+        description="Independently validate a GlassCapture v2.1-v2.11 artifact."
     )
     parser.add_argument("artifact", type=Path, help="capture artifact directory")
     parser.add_argument("--report", type=Path, help="write a JSON validation report")

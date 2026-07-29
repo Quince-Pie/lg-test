@@ -7,9 +7,215 @@ import numpy as np
 from PIL import Image
 
 from measure import Artifact, COLOR_BACKGROUNDS, GRAY_LEVELS, Measurements
+from probe_catalog import (
+    ADAPTIVE_SPATIAL_PROBES,
+    expected_adaptive_reference,
+    hash32,
+    palette_blocks,
+    source_safe_midpoint_blocks,
+)
 
 
 class MeasurementTests(unittest.TestCase):
+    def test_probe_hash_matches_glass_capture_uint32_vectors(self) -> None:
+        x = np.asarray([[0, 1, 37, 3199]], dtype=np.uint32)
+        y = np.asarray([[0, 2, 53, 1999]], dtype=np.uint32)
+
+        np.testing.assert_array_equal(
+            hash32(x, y, seed=0x31415926),
+            np.asarray(
+                [[0x827F2122, 0x393F7FDE, 0x0D4912A1, 0xF95AE17D]],
+                dtype=np.uint32,
+            ),
+        )
+
+    def test_v211_adaptive_probe_roles_are_explicit_and_balanced(self) -> None:
+        roles = [str(record["role"]) for record in ADAPTIVE_SPATIAL_PROBES.values()]
+
+        self.assertEqual(len(ADAPTIVE_SPATIAL_PROBES), 21)
+        self.assertEqual(roles.count("training"), 10)
+        self.assertEqual(roles.count("holdout"), 10)
+        self.assertEqual(roles.count("translation-equivariance-check"), 1)
+        self.assertEqual(
+            {
+                int(record["blockSizePixels"])
+                for record in ADAPTIVE_SPATIAL_PROBES.values()
+            },
+            {4, 16, 64, 256},
+        )
+        mean_records = [
+            record
+            for record in ADAPTIVE_SPATIAL_PROBES.values()
+            if "centerCode" in record
+        ]
+        self.assertEqual(
+            {int(record["centerCode"]) for record in mean_records},
+            {64, 128, 192},
+        )
+        midpoint_records = [
+            record
+            for record in ADAPTIVE_SPATIAL_PROBES.values()
+            if record["probeKind"] == "source-safe-rgb-palette-blocks"
+        ]
+        self.assertEqual(len(midpoint_records), 4)
+        self.assertTrue(
+            all(record["combinationCount"] == 507 for record in midpoint_records)
+        )
+
+    def test_v211_reference_generators_honor_declared_palettes(self) -> None:
+        excluded = {
+            (16, 240, 144),
+            (16, 240, 176),
+            (16, 240, 208),
+            (16, 208, 240),
+            (16, 240, 240),
+        }
+        for background, metadata in ADAPTIVE_SPATIAL_PROBES.items():
+            image = expected_adaptive_reference(
+                background,
+                width=73,
+                height=61,
+            )
+            self.assertEqual(image.shape, (61, 73, 3))
+            self.assertEqual(image.dtype, np.uint8)
+            self.assertLessEqual(
+                set(np.unique(image).tolist()),
+                set(metadata["levels"]),
+            )
+            if metadata["probeKind"] == "source-safe-rgb-palette-blocks":
+                colors = {
+                    tuple(int(channel) for channel in color)
+                    for color in image.reshape(-1, 3)
+                }
+                self.assertTrue(colors.isdisjoint(excluded))
+
+        base = expected_adaptive_reference(
+            "context-rgb-grid-b0016-train",
+            width=80,
+            height=64,
+        )
+        shifted = expected_adaptive_reference(
+            "context-rgb-grid-b0016-shifted-check",
+            width=80,
+            height=64,
+        )
+        np.testing.assert_array_equal(
+            shifted,
+            np.roll(base, shift=(-53, -37), axis=(0, 1)),
+        )
+
+    def test_v211_coarsest_rgb_fields_are_source_balanced(self) -> None:
+        widths = np.minimum(256, 3200 - np.arange(13) * 256)
+        heights = np.minimum(256, 2000 - np.arange(8) * 256)
+        weights = np.outer(heights, widths).reshape(-1).astype(np.float64)
+
+        def maximum_correlation(values: np.ndarray) -> float:
+            flat = values.reshape(-1, 3).astype(np.float64)
+            mean = np.average(flat, axis=0, weights=weights)
+            centered = flat - mean
+            covariance = np.einsum(
+                "nc,nd,n->cd",
+                centered,
+                centered,
+                weights / weights.sum(),
+            )
+            standard_deviation = np.sqrt(np.diag(covariance))
+            correlation = covariance / np.outer(
+                standard_deviation,
+                standard_deviation,
+            )
+            return float(np.max(np.abs(correlation[np.triu_indices(3, k=1)])))
+
+        training = palette_blocks(
+            width=13,
+            height=8,
+            block=1,
+            levels=[0, 32, 64, 96, 128, 160, 192, 224, 255],
+            seed=0x7308C145,
+        )
+        holdout = source_safe_midpoint_blocks(
+            width=13,
+            height=8,
+            block=1,
+            levels=[16, 48, 80, 112, 144, 176, 208, 240],
+            seed=0x49F7B8C3,
+        )
+
+        self.assertLess(maximum_correlation(training), 0.061)
+        self.assertLess(maximum_correlation(holdout), 0.034)
+
+    def test_v211_translation_check_aligns_both_materials(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "reference").mkdir()
+            (root / "shots").mkdir()
+            y, x = np.indices((64, 64), dtype=np.uint16)
+            base = np.stack(
+                (
+                    (3 * x + 5 * y) % 256,
+                    (7 * x + 11 * y) % 256,
+                    (13 * x + 17 * y) % 256,
+                ),
+                axis=2,
+            ).astype(np.uint8)
+            shifted = np.roll(base, shift=(-53, -37), axis=(0, 1))
+            base_name = "context-rgb-grid-b0016-train"
+            shifted_name = "context-rgb-grid-b0016-shifted-check"
+            references = []
+            captures = []
+            for name, pixels in ((base_name, base), (shifted_name, shifted)):
+                relative = f"reference/{name}.png"
+                Image.fromarray(pixels).save(root / relative)
+                references.append({"background": name, "file": relative})
+                for material_index, material in enumerate(("regular", "clear")):
+                    for appearance_index, appearance in enumerate(("light", "dark")):
+                        offset = 20 * material_index + 3 * appearance_index
+                        output = (pixels.astype(np.uint16) + offset).astype(np.uint8)
+                        shot = (
+                            f"shots/{name}__circle-4000-center__"
+                            f"{material}__{appearance}.png"
+                        )
+                        Image.fromarray(output).save(root / shot)
+                        captures.append(
+                            {
+                                "background": name,
+                                "scene": "circle-4000-center",
+                                "overlay": material,
+                                "appearance": appearance,
+                                "file": shot,
+                            }
+                        )
+            measurements = Measurements(
+                Artifact(
+                    path=root,
+                    manifest={
+                        # A zero scale makes the production 512 px exclusion
+                        # empty for this small, pure alignment fixture.
+                        "backingScaleFactor": 0,
+                        "references": references,
+                        "captures": captures,
+                        "scenes": [],
+                    },
+                )
+            )
+
+            result = measurements.adaptive_spatial_probe_statistics()
+
+            translation = result["translationEquivariance"]
+            self.assertTrue(translation["available"])
+            self.assertEqual(
+                translation["sourceAfterAlignment"]["changedPixels"],
+                0,
+            )
+            for material in ("regular", "clear"):
+                for appearance in ("light", "dark"):
+                    self.assertEqual(
+                        translation["materialAfterAlignment"][material][appearance][
+                            "changedPixels"
+                        ],
+                        0,
+                    )
+
     def test_channel_statistics_preserve_cross_channel_covariance(self) -> None:
         image = np.array(
             [
