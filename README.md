@@ -617,6 +617,14 @@ Apple's own CoreImage Gaussian-reduction, adaptive-scaling, Lanczos, pyramid,
 and downsample kernels. These are candidate source-pyramid implementations,
 not assumed parts of Liquid Glass; their coefficients must predict the
 independent spatial captures before use.
+The separate native spatial sweep holds 36 non-overlapping aligned 2x2
+impulses inside the constant deep-interior glass region, crosses all four
+half-grid mip phases and all RGB axes/signs, and captures every integer
+amplitude from 0 through 127. It stores radius-16 control/glass patches in the
+WindowServer capture color space before canonical sRGB conversion, plus the
+capture ICC profile and a small audited PNG subset. This focused evidence
+removes display-conversion and geometry-state mixing without changing or
+rerunning the multi-gigabyte static matrix.
 This companion does not alter the capture app, manifest, reference catalog,
 case order, validator, or measurement report. Its output is forensic evidence,
 not a pixel-parity oracle: a trace may be unsupported on the hosted runner,
