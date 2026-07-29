@@ -834,6 +834,51 @@ private func writeJSON(_ object: Any, to url: URL) throws {
     try data.write(to: url, options: .atomic)
 }
 
+private func colorSpaceEvidence(
+    window: NSWindow,
+    outputDirectory: URL
+) -> [[String: Any]] {
+    let spaces: [(String, CGColorSpace?)] = [
+        ("window", window.colorSpace?.cgColorSpace),
+        ("screen", window.screen?.colorSpace?.cgColorSpace),
+        ("main-display", CGDisplayCopyColorSpace(CGMainDisplayID())),
+    ]
+    return spaces.map { label, optionalSpace in
+        guard let space = optionalSpace else {
+            return [
+                "label": label,
+                "available": false,
+            ]
+        }
+        var record: [String: Any] = [
+            "label": label,
+            "available": true,
+            "description": String(describing: space),
+            "name": space.name.map { String(describing: $0) } ?? "unnamed",
+            "modelRawValue": space.model.rawValue,
+            "numberOfComponents": space.numberOfComponents,
+            "usesExtendedRange": space.usesExtendedRange,
+            "supportsOutput": space.supportsOutput,
+        ]
+        if let icc = space.copyICCData() {
+            let data = icc as Data
+            let filename = "\(label)-colorspace.icc"
+            do {
+                try data.write(
+                    to: outputDirectory.appendingPathComponent(filename),
+                    options: .atomic)
+                record["iccFile"] = filename
+                record["iccBytes"] = data.count
+            } catch {
+                record["iccWriteError"] = error.localizedDescription
+            }
+        } else {
+            record["iccAvailable"] = false
+        }
+        return record
+    }
+}
+
 @MainActor
 private final class ProbeDelegate: NSObject, NSApplicationDelegate {
     private let outputDirectory: URL
@@ -906,7 +951,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 8,
+            "schemaVersion": 9,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -920,6 +965,9 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             "screenColorSpace":
                 window.screen?.colorSpace.map { String(describing: $0) }
                     ?? "unknown",
+            "colorSpaces": colorSpaceEvidence(
+                window: window,
+                outputDirectory: outputDirectory),
             "loadedFrameworks": Bundle.allFrameworks.map {
                 $0.bundleURL.path
             },
