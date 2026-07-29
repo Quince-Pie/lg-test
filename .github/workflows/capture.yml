@@ -129,6 +129,15 @@ jobs:
             Sources/GlassCapture/main.swift \
             -o glasscap
 
+      - name: Build Liquid Glass introspection probe
+        id: introspection_build
+        continue-on-error: true
+        run: |
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassIntrospect/main.swift \
+            -o glassintrospect
+
       - name: Capture
         id: capture
         continue-on-error: true
@@ -147,6 +156,44 @@ jobs:
             --dynamic-modes "${{ inputs.dynamic_modes || 'all' }}" \
             --transition-origin "${{ inputs.transition_origin || '0.25,0.30' }}" \
             "${extra_args[@]}"
+
+      - name: Probe real Liquid Glass render pipeline
+        if: always()
+        id: introspection
+        continue-on-error: true
+        env:
+          MTL_CAPTURE_ENABLED: "1"
+        run: |
+          mkdir -p captures/introspection
+          if [ "${{ steps.introspection_build.outcome }}" = success ]; then
+            ./glassintrospect captures/introspection ||
+              echo "introspection app exited nonzero; retaining diagnostics"
+          else
+            echo "introspection app did not build" \
+              > captures/introspection/runtime-error.txt
+          fi
+
+          framework_output="captures/introspection/framework-evidence.txt"
+          {
+            for binary in \
+              /System/Library/Frameworks/SwiftUI.framework/Versions/A/SwiftUI \
+              /System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore \
+              /System/Library/Frameworks/CoreImage.framework/Versions/A/CoreImage
+            do
+              echo "BINARY $binary"
+              strings -a "$binary" 2>/dev/null |
+                grep -Ei 'liquid.?glass|glass.?effect|backdrop|gaussian|blur|color.?matrix|downsample|upsample' |
+                sort -u |
+                head -n 400 || true
+              nm -gjU "$binary" 2>/dev/null |
+                grep -Ei 'glass|backdrop|gaussian|blur' |
+                swift-demangle |
+                sort -u |
+                head -n 400 || true
+            done
+          } > "$framework_output"
+
+          find captures/introspection -maxdepth 3 -type f -print -exec du -h {} \;
 
       - name: Set up analysis Python
         if: always()

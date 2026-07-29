@@ -608,6 +608,16 @@ prefix. Analysis schema v16 inventories size, spacing, neutral gap, reduced
 geometry, amplitude, and control coverage without decoding any protected
 fresh-seed output.
 
+The v2.19 workflow also builds a separate best-effort introspection companion.
+It renders one independent `.clear` diagnostic view, requests a programmatic
+Metal GPU trace, records the public AppKit/Core Animation view, layer, and
+filter trees, and inventories narrowly matched framework symbols and strings.
+This companion does not alter the capture app, manifest, reference catalog,
+case order, validator, or measurement report. Its output is forensic evidence,
+not a pixel-parity oracle: a trace may be unsupported on the hosted runner,
+and any exposed render stages still have to predict the independently
+captured pixels exactly before they can be accepted.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
