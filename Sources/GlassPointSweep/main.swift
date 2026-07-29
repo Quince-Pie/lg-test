@@ -573,14 +573,12 @@ private func requireUniformPairCenters(
                 let centerX = column * blockSize + blockSize / 2
                 let centerOffset =
                     (centerY * imageWidth + centerX) * 4
-                for y in
-                    (centerY - pairCenterPatchRadius)
-                    ...((centerY + pairCenterPatchRadius))
-                {
-                    for x in
-                        (centerX - pairCenterPatchRadius)
-                        ...((centerX + pairCenterPatchRadius))
-                    {
+                let minimumY = centerY - pairCenterPatchRadius
+                let maximumY = centerY + pairCenterPatchRadius
+                let minimumX = centerX - pairCenterPatchRadius
+                let maximumX = centerX + pairCenterPatchRadius
+                for y in minimumY...maximumY {
+                    for x in minimumX...maximumX {
                         let offset = (y * imageWidth + x) * 4
                         if bytes[offset] != bytes[centerOffset]
                             || bytes[offset + 1]
