@@ -4,6 +4,7 @@ import CryptoKit
 import Darwin
 import Foundation
 import ImageIO
+import ObjectiveC.runtime
 import QuartzCore
 import SwiftUI
 import UniformTypeIdentifiers
@@ -136,6 +137,70 @@ private let interventions = [
         values: [
             ("inputFaceOpacity", NSNumber(value: Float(0))),
         ]),
+    Intervention(
+        name: "black-only",
+        values: [
+            ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "gain-0.9-only",
+        values: [
+            ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+            ("inputFaceColorMatrixWhite", NSNumber(value: Float(0.9))),
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "gain-1.15-only",
+        values: [
+            ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "grayscale-affine",
+        values: [
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(0))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "saturation-0.5-only",
+        values: [
+            ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+            ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(0.5))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "saturation-1.5-only",
+        values: [
+            ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+            ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1.5))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "holding-0.5-only",
+        values: [
+            ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+            ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1))),
+            ("inputSDRHoldingToneWhite", NSNumber(value: Float(0.5))),
+        ]),
+    Intervention(
+        name: "face-opacity-0.5-no-holding",
+        values: [
+            ("inputFaceOpacity", NSNumber(value: Float(0.5))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "affine-holding-0.5",
+        values: [
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1))),
+            ("inputSDRHoldingToneWhite", NSNumber(value: Float(0.5))),
+        ]),
 ]
 
 private func renderPattern(_ pattern: Pattern) -> CGImage {
@@ -227,6 +292,8 @@ private enum ProbeError: LocalizedError {
     case glassFilterMissing
     case inputMissing(String)
     case nonuniformCenter(String, Int, Int)
+    case renderValueAllocationMissing
+    case renderValueMethodMissing
     case unstable(String)
 
     var errorDescription: String? {
@@ -246,6 +313,10 @@ private enum ProbeError: LocalizedError {
         case .nonuniformCenter(let name, let row, let column):
             return "\(name) has a nonuniform center patch at "
                 + "(\(row), \(column))"
+        case .renderValueAllocationMissing:
+            return "CA_copyRenderValue returned a non-malloc allocation"
+        case .renderValueMethodMissing:
+            return "CA_copyRenderValue or a required CAFilter ivar is missing"
         case .unstable(let name):
             return "capture did not stabilize: \(name)"
         }
@@ -522,6 +593,118 @@ private func filterValues(
     return result
 }
 
+private func allocationRecord(
+    _ pointer: UnsafeRawPointer,
+    maximumBytes: Int = 4096
+) -> [String: Any]? {
+    let allocationSize = malloc_size(pointer)
+    guard allocationSize > 0 else { return nil }
+    let capturedSize = min(allocationSize, maximumBytes)
+    let bytes = UnsafeRawBufferPointer(
+        start: pointer,
+        count: capturedSize)
+    return [
+        "allocationSizeBytes": allocationSize,
+        "capturedSizeBytes": capturedSize,
+        "truncated": capturedSize != allocationSize,
+        "hex": bytes.map {
+            String(format: "%02x", $0)
+        }.joined(),
+    ]
+}
+
+private func pointerIvar(
+    _ name: String,
+    in object: NSObject
+) -> UnsafeRawPointer? {
+    guard let cls: AnyClass = object_getClass(object),
+          let ivar = class_getInstanceVariable(cls, name)
+    else {
+        return nil
+    }
+    let objectPointer = UnsafeRawPointer(
+        Unmanaged.passUnretained(object).toOpaque())
+    return objectPointer
+        .advanced(by: ivar_getOffset(ivar))
+        .load(as: UnsafeRawPointer?.self)
+}
+
+private func allocationArrayRecord(
+    _ pointer: UnsafeRawPointer
+) -> [String: Any]? {
+    guard var record = allocationRecord(pointer) else {
+        return nil
+    }
+    let allocationSize = malloc_size(pointer)
+    let slotCount = min(
+        allocationSize / MemoryLayout<UnsafeRawPointer?>.stride,
+        128)
+    var children: [[String: Any]] = []
+    for slot in 0..<slotCount {
+        let child = pointer
+            .advanced(
+                by: slot * MemoryLayout<UnsafeRawPointer?>.stride)
+            .load(as: UnsafeRawPointer?.self)
+        guard let child else { break }
+        var childRecord: [String: Any] = ["slot": slot]
+        if let allocation = allocationRecord(child) {
+            childRecord["allocation"] = allocation
+        } else {
+            childRecord["allocation"] = NSNull()
+        }
+        children.append(childRecord)
+    }
+    record["nonnullPrefixEntries"] = children.count
+    record["children"] = children
+    return record
+}
+
+private typealias CopyRenderValueFunction =
+    @convention(c) (
+        UnsafeRawPointer,
+        Selector
+    ) -> UnsafeMutableRawPointer?
+
+private func renderValueEvidence(
+    _ filter: NSObject
+) throws -> [String: Any] {
+    let selector = NSSelectorFromString("CA_copyRenderValue")
+    guard let cls: AnyClass = object_getClass(filter),
+          let method = class_getInstanceMethod(cls, selector),
+          let attributes = pointerIvar("_attr", in: filter),
+          let attributeRecord = allocationArrayRecord(attributes)
+    else {
+        throw ProbeError.renderValueMethodMissing
+    }
+    let function = unsafeBitCast(
+        method_getImplementation(method),
+        to: CopyRenderValueFunction.self)
+    let objectPointer = UnsafeRawPointer(
+        Unmanaged.passUnretained(filter).toOpaque())
+    guard let renderValue = function(objectPointer, selector),
+          let root = allocationRecord(
+            UnsafeRawPointer(renderValue))
+    else {
+        throw ProbeError.renderValueAllocationMissing
+    }
+    var record: [String: Any] = [
+        "methodTypeEncoding":
+            method_getTypeEncoding(method).map {
+                String(cString: $0)
+            } ?? "",
+        "root": root,
+        "attributes": attributeRecord,
+    ]
+    if let cache = pointerIvar("_cache", in: filter),
+       let cacheRecord = allocationRecord(cache)
+    {
+        record["cache"] = cacheRecord
+    } else {
+        record["cache"] = NSNull()
+    }
+    return record
+}
+
 private func patternCells(_ pattern: Pattern) -> [[String: Int]] {
     (0..<(gridSide * gridSide)).map { index in
         let color = pattern.color(index)
@@ -595,6 +778,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 }
             )).sorted()
             var patternRecords: [[String: Any]] = []
+            var renderValueRecords: [[String: Any]] = []
 
             for pattern in patterns {
                 let source = renderPattern(pattern)
@@ -647,6 +831,16 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         outputDirectory.appendingPathComponent(
                             "\(captureName).png")
                     try writePNG(capture.image, to: captureURL)
+                    if pattern.name == patterns[0].name {
+                        renderValueRecords.append([
+                            "name": intervention.name,
+                            "filterInputs": try filterValues(
+                                stateFilter,
+                                keys: mutatedKeys),
+                            "renderValue": try renderValueEvidence(
+                                stateFilter),
+                        ])
+                    }
                     outputRecords.append([
                         "name": intervention.name,
                         "file": captureURL.lastPathComponent,
@@ -674,8 +868,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             }
 
             let report: [String: Any] = [
-                "schemaVersion": 3,
-                "rigVersion": "filter-intervention-1.2.0",
+                "schemaVersion": 4,
+                "rigVersion": "filter-intervention-1.3.0",
                 "ciCommit":
                     ProcessInfo.processInfo.environment["GITHUB_SHA"]
                     ?? "local",
@@ -707,6 +901,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                 }),
                     ]
                 },
+                "renderValues": renderValueRecords,
                 "patterns": patternRecords,
             ]
             let manifest = try JSONSerialization.data(
