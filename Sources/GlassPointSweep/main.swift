@@ -403,6 +403,13 @@ private enum SweepError: LocalizedError {
 private struct CanonicalImage {
     let image: CGImage
     let pixels: Data
+    let nativeImage: CGImage
+    let nativePixels: Data
+    let captureColorSpace: CGColorSpace
+    let captureBitsPerComponent: Int
+    let captureBitsPerPixel: Int
+    let captureBytesPerRow: Int
+    let captureBitmapInfo: UInt32
     let backend: String
 }
 
@@ -445,18 +452,14 @@ private func captureWindow(_ window: NSWindow) throws -> (CGImage, String) {
     return (image, "screencapture")
 }
 
-private func canonicalImage(
+private func rasterizedImage(
     _ image: CGImage,
-    backend: String
-) throws -> CanonicalImage {
-    guard image.width == imageWidth, image.height == imageHeight else {
-        throw SweepError.dimensions(image.width, image.height)
-    }
+    colorSpace: CGColorSpace
+) throws -> (image: CGImage, pixels: Data) {
     let bytesPerRow = imageWidth * 4
     var pixels = Data(count: bytesPerRow * imageHeight)
     let rendered = pixels.withUnsafeMutableBytes { bytes -> Bool in
         guard let baseAddress = bytes.baseAddress,
-              let colorSpace = CGColorSpace(name: CGColorSpace.sRGB),
               let context = CGContext(
                 data: baseAddress,
                 width: imageWidth,
@@ -482,9 +485,8 @@ private func canonicalImage(
         return true
     }
     guard rendered,
-          let colorSpace = CGColorSpace(name: CGColorSpace.sRGB),
           let provider = CGDataProvider(data: pixels as CFData),
-          let canonical = CGImage(
+          let output = CGImage(
             width: imageWidth,
             height: imageHeight,
             bitsPerComponent: 8,
@@ -502,9 +504,38 @@ private func canonicalImage(
     else {
         throw SweepError.conversion
     }
+    return (output, pixels)
+}
+
+private func canonicalImage(
+    _ image: CGImage,
+    backend: String
+) throws -> CanonicalImage {
+    guard image.width == imageWidth, image.height == imageHeight else {
+        throw SweepError.dimensions(image.width, image.height)
+    }
+    guard let captureColorSpace = image.colorSpace,
+          let canonicalColorSpace = CGColorSpace(
+            name: CGColorSpace.sRGB)
+    else {
+        throw SweepError.conversion
+    }
+    let native = try rasterizedImage(
+        image,
+        colorSpace: captureColorSpace)
+    let canonical = try rasterizedImage(
+        image,
+        colorSpace: canonicalColorSpace)
     return CanonicalImage(
-        image: canonical,
-        pixels: pixels,
+        image: canonical.image,
+        pixels: canonical.pixels,
+        nativeImage: native.image,
+        nativePixels: native.pixels,
+        captureColorSpace: captureColorSpace,
+        captureBitsPerComponent: image.bitsPerComponent,
+        captureBitsPerPixel: image.bitsPerPixel,
+        captureBytesPerRow: image.bytesPerRow,
+        captureBitmapInfo: image.bitmapInfo.rawValue,
         backend: backend)
 }
 
@@ -519,7 +550,10 @@ private func stableCapture(
     for sample in 1...4 {
         let (raw, backend) = try captureWindow(window)
         let current = try canonicalImage(raw, backend: backend)
-        if let previous, previous.pixels == current.pixels {
+        if let previous,
+           previous.pixels == current.pixels,
+           previous.nativePixels == current.nativePixels
+        {
             return (current, sample)
         }
         previous = current
@@ -557,11 +591,11 @@ private func sha256(_ url: URL) -> String {
 }
 
 private func requireUniformPairCenters(
-    _ capture: CanonicalImage,
+    _ pixels: Data,
     name: String
 ) throws {
     guard pairSweepMode else { return }
-    try capture.pixels.withUnsafeBytes { rawBytes in
+    try pixels.withUnsafeBytes { rawBytes in
         guard let bytes = rawBytes.bindMemory(
             to: UInt8.self
         ).baseAddress else {
@@ -596,6 +630,42 @@ private func requireUniformPairCenters(
             }
         }
     }
+}
+
+private func centerRGBData(_ pixels: Data) throws -> Data {
+    let centerCount = gridSide * gridSide
+    var result = Data(count: centerCount * 3)
+    try pixels.withUnsafeBytes { rawBytes in
+        guard let source = rawBytes.bindMemory(
+            to: UInt8.self
+        ).baseAddress else {
+            throw SweepError.conversion
+        }
+        result.withUnsafeMutableBytes { resultBytes in
+            guard let destination = resultBytes.bindMemory(
+                to: UInt8.self
+            ).baseAddress else {
+                return
+            }
+            for row in 0..<gridSide {
+                let centerY = row * blockSize + blockSize / 2
+                for column in 0..<gridSide {
+                    let centerX = column * blockSize + blockSize / 2
+                    let sourceOffset =
+                        (centerY * imageWidth + centerX) * 4
+                    let destinationOffset =
+                        (row * gridSide + column) * 3
+                    destination[destinationOffset] =
+                        source[sourceOffset]
+                    destination[destinationOffset + 1] =
+                        source[sourceOffset + 1]
+                    destination[destinationOffset + 2] =
+                        source[sourceOffset + 2]
+                }
+            }
+        }
+    }
+    return result
 }
 
 private func cellManifest(_ pattern: Pattern) -> [[String: Int]] {
@@ -670,6 +740,11 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
     private func run() async {
         do {
             var records: [[String: Any]] = []
+            var nativeControlCenters = Data()
+            var nativeClearCenters = Data()
+            var captureColorSpaceICC: Data?
+            var captureFormatSignature: String?
+            var captureFormat: [String: Any]?
             for pattern in patterns {
                 let source = renderPattern(pattern)
                 let sourceURL = outputDirectory
@@ -685,8 +760,11 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                     name: "\(pattern.name)-control",
                     settleNanoseconds: 250_000_000)
                 try requireUniformPairCenters(
-                    control,
-                    name: "\(pattern.name)-control")
+                    control.pixels,
+                    name: "\(pattern.name)-control-canonical")
+                try requireUniformPairCenters(
+                    control.nativePixels,
+                    name: "\(pattern.name)-control-native")
                 let controlURL = outputDirectory
                     .appendingPathComponent(
                         "\(pattern.name)-control.png")
@@ -700,8 +778,11 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                     name: "\(pattern.name)-clear",
                     settleNanoseconds: 450_000_000)
                 try requireUniformPairCenters(
-                    clear,
-                    name: "\(pattern.name)-clear")
+                    clear.pixels,
+                    name: "\(pattern.name)-clear-canonical")
+                try requireUniformPairCenters(
+                    clear.nativePixels,
+                    name: "\(pattern.name)-clear-native")
                 let clearURL = outputDirectory
                     .appendingPathComponent(
                         "\(pattern.name)-clear.png")
@@ -723,6 +804,69 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                 ]
                 if pairSweepMode {
                     record["cellCount"] = gridSide * gridSide
+                    nativeControlCenters.append(
+                        try centerRGBData(control.nativePixels))
+                    nativeClearCenters.append(
+                        try centerRGBData(clear.nativePixels))
+
+                    let icc = control.captureColorSpace.copyICCData()
+                        .map { $0 as Data }
+                    let signature = [
+                        String(control.captureBitsPerComponent),
+                        String(control.captureBitsPerPixel),
+                        String(control.captureBytesPerRow),
+                        String(control.captureBitmapInfo),
+                        icc.map { sha256($0) } ?? "no-icc",
+                    ].joined(separator: ":")
+                    let clearICC = clear.captureColorSpace
+                        .copyICCData()
+                        .map { $0 as Data }
+                    let clearSignature = [
+                        String(clear.captureBitsPerComponent),
+                        String(clear.captureBitsPerPixel),
+                        String(clear.captureBytesPerRow),
+                        String(clear.captureBitmapInfo),
+                        clearICC.map { sha256($0) } ?? "no-icc",
+                    ].joined(separator: ":")
+                    guard signature == clearSignature else {
+                        throw SweepError.capture(
+                            "native capture format changed "
+                                + "between control and glass")
+                    }
+                    if let captureFormatSignature {
+                        guard captureFormatSignature == signature else {
+                            throw SweepError.capture(
+                                "native capture format changed")
+                        }
+                    } else {
+                        captureFormatSignature = signature
+                        captureColorSpaceICC = icc
+                        captureFormat = [
+                            "description": String(
+                                describing:
+                                    control.captureColorSpace),
+                            "name":
+                                control.captureColorSpace.name.map {
+                                    String(describing: $0)
+                                } ?? "unnamed",
+                            "modelRawValue":
+                                control.captureColorSpace.model.rawValue,
+                            "numberOfComponents":
+                                control.captureColorSpace
+                                    .numberOfComponents,
+                            "bitsPerComponent":
+                                control.captureBitsPerComponent,
+                            "bitsPerPixel":
+                                control.captureBitsPerPixel,
+                            "bytesPerRow":
+                                control.captureBytesPerRow,
+                            "bitmapInfoRawValue":
+                                control.captureBitmapInfo,
+                            "iccSha256":
+                                icc.map { sha256($0) } ?? "",
+                            "iccBytes": icc?.count ?? 0,
+                        ]
+                    }
                 } else {
                     record["cells"] = cellManifest(pattern)
                 }
@@ -764,6 +908,54 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                 "patterns": records,
             ]
             if pairSweepMode {
+                let nativeControlURL = outputDirectory
+                    .appendingPathComponent(
+                        "native-control-centers.rgb8")
+                let nativeClearURL = outputDirectory
+                    .appendingPathComponent(
+                        "native-clear-centers.rgb8")
+                try nativeControlCenters.write(
+                    to: nativeControlURL,
+                    options: .atomic)
+                try nativeClearCenters.write(
+                    to: nativeClearURL,
+                    options: .atomic)
+                var nativeEvidence: [String: Any] = [
+                    "schemaVersion": 1,
+                    "recordOrder":
+                        "manifest pattern order, then row-major cells",
+                    "recordFormat": "RGB8",
+                    "recordStrideBytes": 3,
+                    "recordCount":
+                        patterns.count * gridSide * gridSide,
+                    "controlFile":
+                        nativeControlURL.lastPathComponent,
+                    "controlFileSha256":
+                        sha256(nativeControlCenters),
+                    "controlFileBytes":
+                        nativeControlCenters.count,
+                    "clearFile":
+                        nativeClearURL.lastPathComponent,
+                    "clearFileSha256":
+                        sha256(nativeClearCenters),
+                    "clearFileBytes":
+                        nativeClearCenters.count,
+                    "captureFormat":
+                        captureFormat as Any? ?? NSNull(),
+                ]
+                if let captureColorSpaceICC {
+                    let iccURL = outputDirectory
+                        .appendingPathComponent(
+                            "native-capture-colorspace.icc")
+                    try captureColorSpaceICC.write(
+                        to: iccURL,
+                        options: .atomic)
+                    nativeEvidence["iccFile"] =
+                        iccURL.lastPathComponent
+                    nativeEvidence["iccFileSha256"] =
+                        sha256(captureColorSpaceICC)
+                }
+                report["nativeCaptureEvidence"] = nativeEvidence
                 report["pairSweepDesign"] = [
                     "pairPageCount": pairPageCount,
                     "pairsPerPage": gridSide * gridSide,
