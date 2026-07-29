@@ -631,7 +631,10 @@ private func matchingLoadedRuntimeClassNames() -> [[String: String]] {
     guard let classes = objc_copyClassList(&classCount) else {
         return []
     }
-    defer { free(classes) }
+    let rawClasses = unsafeBitCast(
+        classes,
+        to: UnsafeMutableRawPointer.self)
+    defer { free(rawClasses) }
 
     var records: [[String: String]] = []
     for index in 0..<Int(classCount) {
