@@ -256,6 +256,44 @@ func clearStageImpulse(
     return UInt8(128 + sign * amplitude)
 }
 
+func clearFixedImpulseSweepPixel(
+    _ x: Int,
+    _ y: Int,
+    amplitude: Int,
+    spacing: Int,
+    offsetX: Int,
+    offsetY: Int,
+    seed: UInt32
+) -> (UInt8, UInt8, UInt8) {
+    precondition((1...127).contains(amplitude))
+    precondition(spacing > 2 && spacing % 2 == 0)
+    precondition(offsetX >= 0 && offsetX % 2 == 0)
+    precondition(offsetY >= 0 && offsetY % 2 == 0)
+    let relativeX = x - offsetX
+    let relativeY = y - offsetY
+    guard relativeX >= 0, relativeY >= 0,
+          relativeX % spacing < 2, relativeY % spacing < 2 else {
+        return (128, 128, 128)
+    }
+    let h = hash32(
+        relativeX / spacing,
+        relativeY / spacing,
+        seed: seed)
+    let channelMask = 1 + h % 7
+
+    func channel(_ mask: UInt32, signBit: UInt32) -> UInt8 {
+        guard channelMask & mask != 0 else { return 128 }
+        let sign = (h >> signBit) & 1 == 0 ? -1 : 1
+        return UInt8(128 + sign * amplitude)
+    }
+
+    return (
+        channel(1, signBit: 8),
+        channel(2, signBit: 9),
+        channel(4, signBit: 10)
+    )
+}
+
 func paletteNoise(
     _ x: Int,
     _ y: Int,
@@ -796,6 +834,28 @@ func staticBackgrounds() -> [Background] {
                 seed: clearGridBasisSeed ^ 0x1319_8A2E)
         )
     })
+
+    // V2.18 reuses exactly the same isolated, aligned 2x2 impulse sites for
+    // every source amplitude. Their 66-pixel spacing becomes 33 cells after
+    // the proven first reduction, phase-cycling the sites while keeping the
+    // measured radius-12 responses disjoint. This exposes every integer
+    // transition without confounding amplitude, site, channel mask, or sign.
+    let clearFixedImpulseSeed: UInt32 = 0x510E_527F
+    for amplitude in 1...127 {
+        let name = String(
+            format: "clear-fixed-impulse-a%03d-train",
+            amplitude)
+        list.append(Background(name: name, family: .noise) {
+            x, y, _, _ in
+            clearFixedImpulseSweepPixel(
+                x, y,
+                amplitude: amplitude,
+                spacing: 66,
+                offsetX: 32,
+                offsetY: 32,
+                seed: clearFixedImpulseSeed)
+        })
+    }
 
     // V2.10's pixel-scale, neutral-centered binary probes do not identify the
     // measured nonlinear response across color range and spatial scale. These
@@ -2371,7 +2431,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.17.0",
+            rigVersion: "2.18.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2619,6 +2679,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 backgrounds.lazy.map(\.name).filter {
                     $0.hasPrefix("clear-stage-")
                 })
+            let clearFixedImpulseNames: Set<String> = Set(
+                backgrounds.lazy.map(\.name).filter {
+                    $0.hasPrefix("clear-fixed-impulse-")
+                })
+            let clearFixedImpulseControlNames: Set<String> = Set(
+                [
+                    1, 2, 3, 7, 8, 15, 16, 17, 31,
+                    32, 33, 47, 48, 49, 63, 64, 95, 127,
+                ].map {
+                    String(
+                        format: "clear-fixed-impulse-a%03d-train",
+                        $0)
+                }
+            )
             let oversizedRectSceneName = "rect-6000x4000-r000-center"
             let transposedRectSceneName = "rect-4000x6000-r000-center"
             let focusedOversizedSceneNames: Set<String> = [
@@ -2634,6 +2708,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     && !clearAmplitudeSweepNames.contains(bg.name)
                     && !clearGridBasisNames.contains(bg.name)
                     && !clearFilterStageNames.contains(bg.name)
+                    && !clearFixedImpulseNames.contains(bg.name)
             {
                 log("static base: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
@@ -3210,6 +3285,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     scene: denseSweepScene,
                     overlay: .clear,
                     appearance: .dark)
+            }
+
+            // Preserve all 2,350 v2.17 captures as an unchanged prefix. Every
+            // amplitude has one isolated clear output; selected boundary
+            // amplitudes carry real controls, and reference-only outputs name
+            // no phantom control capture.
+            for bg in backgrounds where clearFixedImpulseNames.contains(bg.name) {
+                log("static v2.18 fixed impulse amplitude: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                let referencePixels = try recordReference(bg, image)
+                if clearFixedImpulseControlNames.contains(bg.name) {
+                    await captureStatic(
+                        background: bg,
+                        image: image,
+                        referencePixels: referencePixels,
+                        scene: baseScene,
+                        overlay: .none,
+                        appearance: .dark)
+                }
+                await captureStatic(
+                    background: bg,
+                    image: image,
+                    referencePixels: nil,
+                    scene: denseSweepScene,
+                    overlay: .clear,
+                    appearance: .dark,
+                    includeControlReference:
+                        clearFixedImpulseControlNames.contains(bg.name))
             }
         }
 

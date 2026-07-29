@@ -24,6 +24,12 @@ from probe_catalog import (
     CLEAR_FILTER_STAGE_IMPULSE_AMPLITUDES,
     CLEAR_FILTER_STAGE_IMPULSE_CHARTS,
     CLEAR_FILTER_STAGE_PROBES,
+    CLEAR_FIXED_IMPULSE_AMPLITUDES,
+    CLEAR_FIXED_IMPULSE_CONTROL_AMPLITUDES,
+    CLEAR_FIXED_IMPULSE_OFFSET,
+    CLEAR_FIXED_IMPULSE_SEED,
+    CLEAR_FIXED_IMPULSE_SPACING,
+    CLEAR_FIXED_IMPULSE_SWEEP_PROBES,
     CLEAR_GRID_BASIS_BOUNDARY_AMPLITUDES,
     CLEAR_GRID_BASIS_CELL_AMPLITUDES,
     CLEAR_GRID_BASIS_PROBES,
@@ -33,6 +39,7 @@ from probe_catalog import (
     expected_adaptive_reference,
     expected_clear_amplitude_sweep_reference,
     expected_clear_filter_stage_reference,
+    expected_clear_fixed_impulse_reference,
     expected_clear_grid_basis_reference,
     expected_clear_kernel_reference,
     expected_clear_tomography_reference,
@@ -43,7 +50,7 @@ from probe_catalog import (
 
 
 class MeasurementTests(unittest.TestCase):
-    def test_v217_probe_catalog_matches_capture_source(self) -> None:
+    def test_v218_probe_catalog_matches_capture_source(self) -> None:
         source = (
             Path(__file__).resolve().parents[1]
             / "Sources"
@@ -68,7 +75,7 @@ class MeasurementTests(unittest.TestCase):
             ("holdout-01", "0x9FB2_1C65"),
         ):
             self.assertIn(f'("{role}", {seed}', source)
-        self.assertIn('rigVersion: "2.17.0"', source)
+        self.assertIn('rigVersion: "2.18.0"', source)
         self.assertIn('name: "rect-6000x4000-r000-center"', source)
         self.assertIn('name: "rect-4000x6000-r000-center"', source)
         self.assertIn(
@@ -107,6 +114,15 @@ class MeasurementTests(unittest.TestCase):
             "let clearStageImpulseAmplitudes = [",
             source,
         )
+        self.assertIn(
+            "let clearFixedImpulseSeed: UInt32 = 0x510E_527F",
+            source,
+        )
+        self.assertIn(
+            'format: "clear-fixed-impulse-a%03d-train"',
+            source,
+        )
+        self.assertIn("spacing: 66", source)
         for chart, seed in (
             ("00", "0xBB67_AE85"),
             ("01", "0x3C6E_F372"),
@@ -445,6 +461,56 @@ class MeasurementTests(unittest.TestCase):
             np.all(np.isin(cell_means, np.array([127.5, 128.5])))
         )
 
+    def test_v218_fixed_impulse_sweep_reuses_exact_phase_cycling_sites(
+        self,
+    ) -> None:
+        self.assertEqual(
+            CLEAR_FIXED_IMPULSE_AMPLITUDES,
+            tuple(range(1, 128)),
+        )
+        self.assertEqual(len(CLEAR_FIXED_IMPULSE_SWEEP_PROBES), 127)
+        self.assertEqual(
+            sum(
+                bool(metadata["sourceControl"])
+                for metadata in CLEAR_FIXED_IMPULSE_SWEEP_PROBES.values()
+            ),
+            len(CLEAR_FIXED_IMPULSE_CONTROL_AMPLITUDES),
+        )
+        self.assertEqual(CLEAR_FIXED_IMPULSE_SPACING, 66)
+        self.assertEqual(CLEAR_FIXED_IMPULSE_OFFSET, (32, 32))
+        self.assertEqual(CLEAR_FIXED_IMPULSE_SEED, 0x510E527F)
+
+        low = expected_clear_fixed_impulse_reference(
+            "clear-fixed-impulse-a001-train",
+            width=562,
+            height=232,
+        )
+        high = expected_clear_fixed_impulse_reference(
+            "clear-fixed-impulse-a127-train",
+            width=562,
+            height=232,
+        )
+        low_sites = np.any(low != 128, axis=2)
+        high_sites = np.any(high != 128, axis=2)
+        np.testing.assert_array_equal(low_sites, high_sites)
+
+        expected_sites = np.zeros(low_sites.shape, dtype=np.bool_)
+        offset_x, offset_y = CLEAR_FIXED_IMPULSE_OFFSET
+        for delta_y in range(2):
+            for delta_x in range(2):
+                expected_sites[
+                    offset_y + delta_y :: CLEAR_FIXED_IMPULSE_SPACING,
+                    offset_x + delta_x :: CLEAR_FIXED_IMPULSE_SPACING,
+                ] = True
+        np.testing.assert_array_equal(low_sites, expected_sites)
+        self.assertTrue(np.all(np.isin(low, np.array([127, 128, 129]))))
+        self.assertTrue(np.all(np.isin(high, np.array([1, 128, 255]))))
+
+        reduced_x = (
+            np.arange(offset_x, 562, CLEAR_FIXED_IMPULSE_SPACING) // 2
+        )
+        self.assertEqual(set((reduced_x[:8] % 8).tolist()), set(range(8)))
+
     def test_v215_inventory_tracks_dense_cases_without_decoding_holdout(
         self,
     ) -> None:
@@ -618,6 +684,65 @@ class MeasurementTests(unittest.TestCase):
         )
         self.assertFalse(
             measurements.clear_filter_stage_inventory()["available"]
+        )
+
+    def test_v218_inventory_requires_all_outputs_and_declared_controls(
+        self,
+    ) -> None:
+        references = [
+            {"background": background, "file": f"{background}.png"}
+            for background in CLEAR_FIXED_IMPULSE_SWEEP_PROBES
+        ]
+        captures = [
+            {
+                "background": background,
+                "scene": "circle-4000-center",
+                "overlay": "clear",
+                "appearance": "dark",
+                "file": f"{background}-clear.png",
+            }
+            for background in CLEAR_FIXED_IMPULSE_SWEEP_PROBES
+        ]
+        captures.extend(
+            {
+                "background": background,
+                "scene": "circle-0500-center",
+                "overlay": "none",
+                "appearance": "dark",
+                "file": f"{background}-control.png",
+            }
+            for background, metadata in CLEAR_FIXED_IMPULSE_SWEEP_PROBES.items()
+            if metadata["sourceControl"]
+        )
+        measurements = Measurements(
+            Artifact(
+                path=Path("."),
+                manifest={
+                    "rigVersion": "2.18.0",
+                    "references": references,
+                    "captures": captures,
+                    "scenes": [],
+                },
+            )
+        )
+
+        report = measurements.clear_fixed_impulse_inventory()
+
+        self.assertTrue(report["available"])
+        self.assertEqual(report["catalogReferenceCount"], 127)
+        self.assertEqual(report["requiredSourceControlCount"], 18)
+        self.assertEqual(report["requiredOutputCount"], 127)
+        self.assertFalse(report["protectedHoldoutOutputsDecodedByThisAnalysis"])
+        measurements.records.pop(
+            (
+                "clear-fixed-impulse-a064-train",
+                "circle-4000-center",
+                "clear",
+                "dark",
+            )
+        )
+        self.assertFalse(
+            measurements.clear_fixed_impulse_inventory()["available"]
         )
 
     def test_v213_clear_kernel_statistics_compare_exact_geometry_pixels(

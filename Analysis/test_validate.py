@@ -24,7 +24,7 @@ SRGB_PROFILE = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes(
 
 
 class ValidatorTests(unittest.TestCase):
-    def test_v214_through_v217_transposed_rectangle_is_not_a_full_geometry_matrix(
+    def test_v214_through_v218_transposed_rectangle_is_not_a_full_geometry_matrix(
         self,
     ) -> None:
         scenes = {
@@ -57,6 +57,13 @@ class ValidatorTests(unittest.TestCase):
         )
         self.assertEqual(
             full_geometry_matrix_scenes({"rigVersion": "2.17.0"}, scenes),
+            {
+                "circle-1000-center",
+                "rect-6000x4000-r000-center",
+            },
+        )
+        self.assertEqual(
+            full_geometry_matrix_scenes({"rigVersion": "2.18.0"}, scenes),
             {
                 "circle-1000-center",
                 "rect-6000x4000-r000-center",
@@ -104,6 +111,40 @@ class ValidatorTests(unittest.TestCase):
             static_capture_requires_control(
                 {"rigVersion": "2.17.0"},
                 record,
+            )
+        )
+        self.assertFalse(
+            static_capture_requires_control(
+                {"rigVersion": "2.18.0"},
+                record,
+            )
+        )
+
+        fixed_record = {
+            "background": "clear-fixed-impulse-a004-train",
+            "scene": "circle-4000-center",
+            "overlay": "clear",
+            "appearance": "dark",
+        }
+        self.assertFalse(
+            static_capture_requires_control(
+                {"rigVersion": "2.18.0"},
+                fixed_record,
+            )
+        )
+        self.assertTrue(
+            static_capture_requires_control(
+                {"rigVersion": "2.18.0"},
+                {
+                    **fixed_record,
+                    "background": "clear-fixed-impulse-a003-train",
+                },
+            )
+        )
+        self.assertTrue(
+            static_capture_requires_control(
+                {"rigVersion": "2.17.0"},
+                fixed_record,
             )
         )
 
@@ -662,6 +703,11 @@ class ValidatorTests(unittest.TestCase):
         v217 = Findings()
         validate_environment(manifest, v217)
         self.assertEqual(v217.errors, [])
+
+        manifest["rigVersion"] = "2.18.0"
+        v218 = Findings()
+        validate_environment(manifest, v218)
+        self.assertEqual(v218.errors, [])
 
     def test_schema4_presentation_clock_and_exclusion(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

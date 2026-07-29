@@ -291,6 +291,50 @@ CLEAR_FILTER_STAGE_PROBES: dict[str, dict[str, Any]] = {
     },
 }
 
+CLEAR_FIXED_IMPULSE_AMPLITUDES = tuple(range(1, 128))
+CLEAR_FIXED_IMPULSE_CONTROL_AMPLITUDES = (
+    1,
+    2,
+    3,
+    7,
+    8,
+    15,
+    16,
+    17,
+    31,
+    32,
+    33,
+    47,
+    48,
+    49,
+    63,
+    64,
+    95,
+    127,
+)
+CLEAR_FIXED_IMPULSE_SPACING = 66
+CLEAR_FIXED_IMPULSE_OFFSET = (32, 32)
+CLEAR_FIXED_IMPULSE_SEED = 0x510E527F
+CLEAR_FIXED_IMPULSE_SWEEP_PROBES: dict[str, dict[str, Any]] = {
+    f"clear-fixed-impulse-a{amplitude:03d}-train": {
+        "probeKind": "aligned-rgb-2x2-fixed-site-amplitude-sweep",
+        "role": "training",
+        "blockSizePixels": 2,
+        "centerCode": 128,
+        "amplitudeCodes": amplitude,
+        "levels": [128 - amplitude, 128, 128 + amplitude],
+        "latticeSpacingPixels": CLEAR_FIXED_IMPULSE_SPACING,
+        "latticeOffsetPixels": list(CLEAR_FIXED_IMPULSE_OFFSET),
+        "reducedGridSpacingCells": CLEAR_FIXED_IMPULSE_SPACING // 2,
+        "seed": f"0x{CLEAR_FIXED_IMPULSE_SEED:08x}",
+        "channelMaskRule": "1 + hash32(siteX, siteY, seed) % 7",
+        "channelSignBitOffsets": [8, 9, 10],
+        "scenes": ("circle-4000-center",),
+        "sourceControl": amplitude in CLEAR_FIXED_IMPULSE_CONTROL_AMPLITUDES,
+    }
+    for amplitude in CLEAR_FIXED_IMPULSE_AMPLITUDES
+}
+
 
 def hash32(
     x: UInt32Image,
@@ -730,3 +774,83 @@ def expected_clear_filter_stage_reference(
             cell_basis=True,
         )
     raise ValueError(f"unknown clear filter-stage probe kind: {probe_kind!r}")
+
+
+def clear_fixed_impulse_sweep(
+    *,
+    width: int,
+    height: int,
+    spacing: int,
+    offset_x: int,
+    offset_y: int,
+    center: int,
+    amplitude: int,
+    seed: int,
+) -> CodeImage:
+    """Generate one fixed-site, aligned 2x2 impulse amplitude chart."""
+    if (
+        width <= 0
+        or height <= 0
+        or spacing <= 2
+        or spacing % 2 != 0
+        or offset_x < 0
+        or offset_y < 0
+        or offset_x % 2 != 0
+        or offset_y % 2 != 0
+        or not 1 <= amplitude <= 127
+        or not amplitude <= center <= 255 - amplitude
+    ):
+        raise ValueError("invalid fixed-impulse sweep geometry")
+
+    origin_x = np.arange(offset_x, width, spacing, dtype=np.int64)
+    origin_y = np.arange(offset_y, height, spacing, dtype=np.int64)
+    lattice_x = np.arange(origin_x.size, dtype=np.uint32)
+    lattice_y = np.arange(origin_y.size, dtype=np.uint32)
+    lattice_grid_x, lattice_grid_y = np.meshgrid(lattice_x, lattice_y)
+    hashed = hash32(lattice_grid_x, lattice_grid_y, seed=seed)
+    channel_mask = np.uint32(1) + hashed % np.uint32(7)
+    output = np.full((height, width, 3), center, dtype=np.uint8)
+
+    for channel in range(3):
+        active = channel_mask & np.uint32(1 << channel) != 0
+        sign = np.where(
+            (hashed >> np.uint32(8 + channel)) & np.uint32(1),
+            1,
+            -1,
+        )
+        value = np.where(active, center + amplitude * sign, center)
+        for delta_y in range(2):
+            valid_y = origin_y + delta_y < height
+            y = origin_y[valid_y] + delta_y
+            for delta_x in range(2):
+                valid_x = origin_x + delta_x < width
+                x = origin_x[valid_x] + delta_x
+                output[
+                    y[:, np.newaxis],
+                    x[np.newaxis, :],
+                    channel,
+                ] = value[np.ix_(valid_y, valid_x)]
+    return np.ascontiguousarray(output)
+
+
+def expected_clear_fixed_impulse_reference(
+    background: str,
+    *,
+    width: int,
+    height: int,
+) -> CodeImage:
+    """Regenerate one v2.18 fixed-site amplitude source independently."""
+    metadata = CLEAR_FIXED_IMPULSE_SWEEP_PROBES[background]
+    offset_x, offset_y = (
+        int(value) for value in metadata["latticeOffsetPixels"]
+    )
+    return clear_fixed_impulse_sweep(
+        width=width,
+        height=height,
+        spacing=int(metadata["latticeSpacingPixels"]),
+        offset_x=offset_x,
+        offset_y=offset_y,
+        center=int(metadata["centerCode"]),
+        amplitude=int(metadata["amplitudeCodes"]),
+        seed=int(str(metadata["seed"]), 0),
+    )

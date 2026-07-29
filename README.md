@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## How the rig reached v2.17
+## How the rig reached v2.18
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -530,6 +530,48 @@ new clear output has a real dark no-glass control. V2.17 adds 6 references and
 preserving all 2,338 v2.16 captures as an unchanged prefix. The v2.14/v2.15
 fresh-seed output holdouts remain sealed.
 
+Run `30453165013` returned the complete v2.17 static matrix. Its
+8,140,075,802-byte archive (`SHA-256
+a4101974071f0a8191a08459b54e2c5a70f84814fa386d93d51f9c82e7de8ac1`)
+contains all 376 references and 2,350 stable captures from macOS 26.4 build
+25E246. The ZIP CRC, manifest, CI validation, independent local validation,
+and independent local measurement replay all pass. All 370 inherited
+references are bit-exact with v2.16.
+
+The half-tie intervention resolves the first discrete stage exactly: the
+observable top-left-aligned 2x2 source-code arithmetic mean rounds
+half-to-even. All 6,371,328 measured interior tie channels output code 128.
+The isolated impulses bound the observed remaining spatial support to radius
+12 on the reduced grid; sampled radii 13 through 16 are neutral.
+
+Those facts are necessary but not sufficient for a shader. A continuous
+per-state impulse kernel appears 97.8390% exact only because most sampled
+outputs are neutral; it explains just 55.9308% of nonzero responses. Adding
+the observed state-linear gain raises nonzero exactness to 85.3343%, but
+convolving that fit over inherited dense aligned fields falls from 92.49%
+exact at amplitude 3 to 48.75% at amplitude 32 and 27.50% at amplitude 64.
+That protected-quality failure falsifies the current linear-kernel
+generalization. It must not be translated into Walle's production shader.
+
+V2.18 therefore holds every other variable fixed while sweeping the missing
+amplitude dimension:
+
+- all integer amplitudes from 1 through 127 reuse exactly the same aligned 2x2
+  impulse sites, channel masks, and signs;
+- 66-pixel source spacing becomes 33 cells after the proven first reduction,
+  so the sites cycle every power-of-two filter phase while their measured
+  radius-12 responses remain non-overlapping;
+- all 127 sources and clear outputs are required, while 18 boundary and
+  representative amplitudes carry real no-glass controls; and
+- the Python validator independently regenerates every source from the
+  declared seed and permits an omitted `controlFile` only for the 109 exact
+  catalogued reference-only outputs.
+
+V2.18 adds 127 references and 145 captures, for 503 static references and
+2,495 static captures, preserving all 2,350 v2.17 captures as an unchanged
+prefix. Analysis schema v15 inventories the complete amplitude trace without
+decoding any protected fresh-seed output.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
@@ -606,13 +648,13 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.17 isolates the unknowns:
+V2.18 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
 | Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube in ordered, affine-permuted, four independently shuffled training contexts, and one untouched shuffled holdout; all 512 midpoint RGB colors in ordered, four training contexts, and one untouched shuffled holdout |
 | Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px; complete six-period regular/clear giant-circle MTFs; 64/256/1024 px probes at 256-, 500-, and 4000-point circle scales; and p256 probes at all four quadrant positions |
-| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, independent fit/holdout gray/RGB binary noise at two amplitudes under both materials, six additional independent clear-kernel fields, an exhaustive 1–64 training amplitude sweep, two protected fresh-seed amplitude checks, calibrated multiscale RGB block fields, phase-aligned 2x2 block/cell-basis interventions, complementary half-grid ramps, and amplitude-coded impulse lattices |
+| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, independent fit/holdout gray/RGB binary noise at two amplitudes under both materials, six additional independent clear-kernel fields, an exhaustive 1–64 training amplitude sweep, two protected fresh-seed amplitude checks, calibrated multiscale RGB block fields, phase-aligned 2x2 block/cell-basis interventions, complementary half-grid ramps, amplitude-coded impulse lattices, and a fixed-site 1–127 impulse amplitude trace |
 | Adaptive spatial/color response | RGB palette blocks at 4/16/64/256 px with grid-code training and 507 source-safe midpoint-code holdouts; paired 16 px binary fields at means 64/128/192; and a known periodic translation check |
 | Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, three visible rectangle corner radii, and orthogonal 6000x4000- and 4000x6000-point boundary-free rectangles |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
@@ -732,7 +774,7 @@ within its traversal and must pass the delayed stability check.
 Cross-traversal differences are retained and reported as
 repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.17 artifact contains 378 references, 2,350
+With the default `all` suite, a v2.18 artifact contains 505 references, 2,495
 static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 24 exact sweep matrices containing 1,224 frames.
 
@@ -773,15 +815,18 @@ requires the three-geometry capture matrix. For v2.14 onward it independently
 regenerates all 20 amplitude-tomography sources and requires their focused
 four-geometry matrix plus the transposed-rectangle controls. For v2.15 onward
 it also regenerates all 78 dense-amplitude sources and requires the
-one-geometry training matrix and four-geometry protected matrix. For v2.16 it
-additionally regenerates all 126 phase-aligned block/cell-basis sources,
+one-geometry training matrix and four-geometry protected matrix. For v2.16
+onward it additionally regenerates all 126 phase-aligned block/cell-basis sources,
 requires every clear output and all 11 selected controls, and rejects a
 missing `controlFile` outside the 115 explicitly reference-only cases. Every
-regenerated source must be pixel-exact with the archive. For v2.17 it also
+regenerated source must be pixel-exact with the archive. For v2.17 onward it also
 regenerates all six filter-stage interventions and requires a captured control
-plus one clear output for each. Analysis schema v14 records both complete
-matrices without decoding a protected output. A validation failure still
-uploads the artifact so the cause can be inspected, but the workflow ends red.
+plus one clear output for each. For v2.18 it additionally regenerates all 127
+fixed-site amplitude sources, requires every clear output and all 18 selected
+controls, and scopes the 109 control exemptions to those exact catalogued
+records. Analysis schema v15 records all three complete matrices without
+decoding a protected output. A validation failure still uploads the artifact
+so the cause can be inspected, but the workflow ends red.
 
 ## Run on GitHub
 
@@ -803,11 +848,10 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-Return the automatic v2.17 `static` artifact first. It contains the
-filter-stage interventions needed to locate the remaining internal
-quantization. The v2.15 protected fresh-seed checks remain sealed for the
-final gate. Rerunning the unchanged dynamic and exact-sweep matrices is
-unnecessary.
+Return the automatic v2.18 `static` artifact first. It contains the fixed-site
+amplitude trace needed to identify the remaining internal quantization. The
+v2.15 protected fresh-seed checks remain sealed for the final gate. Rerunning
+the unchanged dynamic and exact-sweep matrices is unnecessary.
 
 Runs `30326591212` and `30365533488` complete the two-run static, exact-state,
 and endpoint repeatability corpus. The latter has four rejected live
@@ -880,7 +924,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The v2.11 through v2.17 artifacts are measurement inputs, not proof that Walle
+The v2.11 through v2.18 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
 
