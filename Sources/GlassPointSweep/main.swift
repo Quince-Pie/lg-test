@@ -9,8 +9,10 @@ import UniformTypeIdentifiers
 
 private let imageWidth = 1024
 private let imageHeight = 1024
-private let blockSize = 64
-private let gridSide = 16
+private let pairSweepMode =
+    CommandLine.arguments.contains("--pair-sweep")
+private let blockSize = pairSweepMode ? 16 : 64
+private let gridSide = imageWidth / blockSize
 
 private struct RGB {
     let red: UInt8
@@ -199,8 +201,95 @@ private let repeatedGridPatterns: [Pattern] = [
     },
 ]
 
-private let patterns =
-    basePatterns + permutedPatterns + repeatedGridPatterns
+private func exhaustivePair(
+    page: Int,
+    row: Int,
+    column: Int
+) -> (UInt8, UInt8) {
+    let index =
+        page * gridSide * gridSide + row * gridSide + column
+    return (
+        UInt8((index >> 8) & 255),
+        UInt8(index & 255)
+    )
+}
+
+private let pairSweepPatterns: [Pattern] = {
+    var result: [Pattern] = []
+
+    for blue in [0, 128, 255] {
+        for page in 0..<16 {
+            result.append(Pattern(
+                name: String(
+                    format: "pair-rg-b%03d-p%02d",
+                    blue,
+                    page)
+            ) { row, column in
+                let (red, green) = exhaustivePair(
+                    page: page,
+                    row: row,
+                    column: column)
+                return RGB(
+                    red: red,
+                    green: green,
+                    blue: UInt8(blue))
+            })
+        }
+    }
+
+    for page in 0..<16 {
+        result.append(Pattern(
+            name: String(format: "pair-rb-g128-p%02d", page)
+        ) { row, column in
+            let (red, blue) = exhaustivePair(
+                page: page,
+                row: row,
+                column: column)
+            return RGB(red: red, green: 128, blue: blue)
+        })
+        result.append(Pattern(
+            name: String(format: "pair-gb-r128-p%02d", page)
+        ) { row, column in
+            let (green, blue) = exhaustivePair(
+                page: page,
+                row: row,
+                column: column)
+            return RGB(red: 128, green: green, blue: blue)
+        })
+    }
+
+    let latinCoefficients = [
+        (name: "a", red: 73, green: 151, offset: 37),
+        (name: "b", red: 151, green: 73, offset: 19),
+    ]
+    for coefficients in latinCoefficients {
+        for page in 0..<16 {
+            result.append(Pattern(
+                name: String(
+                    format: "latin-rgb-%@-p%02d",
+                    coefficients.name,
+                    page)
+            ) { row, column in
+                let (red, green) = exhaustivePair(
+                    page: page,
+                    row: row,
+                    column: column)
+                let blue = UInt8(
+                    (
+                        coefficients.red * Int(red)
+                        + coefficients.green * Int(green)
+                        + coefficients.offset
+                    ) & 255)
+                return RGB(red: red, green: green, blue: blue)
+            })
+        }
+    }
+    return result
+}()
+
+private let patterns = pairSweepMode
+    ? pairSweepPatterns
+    : basePatterns + permutedPatterns + repeatedGridPatterns
 
 private func renderPattern(_ pattern: Pattern) -> CGImage {
     var rgba = [UInt8](
@@ -564,9 +653,8 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                         "\(pattern.name)-clear.png")
                 try writePNG(clear.image, to: clearURL)
 
-                records.append([
+                var record: [String: Any] = [
                     "name": pattern.name,
-                    "cells": cellManifest(pattern),
                     "sourceFile": sourceURL.lastPathComponent,
                     "sourceFileSha256": sha256(sourceURL),
                     "controlFile": controlURL.lastPathComponent,
@@ -578,12 +666,23 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                     "clearPixelSha256": sha256(clear.pixels),
                     "clearStabilitySamples": clearSamples,
                     "captureBackend": clear.backend,
-                ])
+                ]
+                if pairSweepMode {
+                    record["cellCount"] = gridSide * gridSide
+                } else {
+                    record["cells"] = cellManifest(pattern)
+                }
+                records.append(record)
             }
 
-            let report: [String: Any] = [
-                "schemaVersion": 2,
-                "rigVersion": "point-sweep-1.1.0",
+            var report: [String: Any] = [
+                "schemaVersion": pairSweepMode ? 3 : 2,
+                "rigVersion": pairSweepMode
+                    ? "pair-sweep-1.0.0"
+                    : "point-sweep-1.1.0",
+                "sweepKind": pairSweepMode
+                    ? "exhaustive-pairs-and-latin-rgb"
+                    : "compact-point-sweep",
                 "ciCommit":
                     ProcessInfo.processInfo.environment["GITHUB_SHA"]
                     ?? "local",
@@ -610,6 +709,31 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
                 ],
                 "patterns": records,
             ]
+            if pairSweepMode {
+                report["pairSweepDesign"] = [
+                    "pairPageCount": 16,
+                    "pairsPerPage": gridSide * gridSide,
+                    "redGreenBlueAnchors": [0, 128, 255],
+                    "redBlueGreenAnchor": 128,
+                    "greenBlueRedAnchor": 128,
+                    "latinBlueFunctions": [
+                        [
+                            "name": "a",
+                            "redCoefficient": 73,
+                            "greenCoefficient": 151,
+                            "offset": 37,
+                            "modulus": 256,
+                        ],
+                        [
+                            "name": "b",
+                            "redCoefficient": 151,
+                            "greenCoefficient": 73,
+                            "offset": 19,
+                            "modulus": 256,
+                        ],
+                    ],
+                ]
+            }
             let manifest = try JSONSerialization.data(
                 withJSONObject: report,
                 options: [.prettyPrinted, .sortedKeys])
