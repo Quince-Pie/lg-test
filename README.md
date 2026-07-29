@@ -634,6 +634,16 @@ evidence, uploads that small directory even on failure, and then enforces both
 a successful build and a nonempty `runtime.json`. Changes confined to the
 probe therefore do not launch another multi-gigabyte static capture.
 
+Run `30487878788` completed that probe in 39 seconds. It recovered all 55
+live `glassBackground` inputs, the full 80-byte `vibrantColorMatrix` without
+description truncation, both real SDF effect classes and their scalar
+parameters. In particular, the backdrop scale is `0.5`; face white, black,
+saturation, and SDR holding-tone white are `1.15`, `0.075`, `1.06`, and
+`0.97`; and the SDF key/fill layer reports smoothness `8`, curvature `0.7`,
+amounts `0.5`, heights `1`, and opposing `-π/4` and `3π/4` angles. These are
+observed runtime constants, not an assertion that the still-private sampling
+and quantization equations are known.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
