@@ -193,7 +193,7 @@ def expected_adaptive_reference(
     width: int,
     height: int,
 ) -> CodeImage:
-    """Regenerate one v2.11 source independently from the capture app."""
+    """Regenerate one v2.11+ source independently from the capture app."""
     if width <= 0 or height <= 0:
         raise ValueError("reference dimensions must be positive")
     metadata = ADAPTIVE_SPATIAL_PROBES[background]

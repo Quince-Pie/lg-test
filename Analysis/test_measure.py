@@ -6,7 +6,13 @@ from unittest.mock import patch
 import numpy as np
 from PIL import Image
 
-from measure import Artifact, COLOR_BACKGROUNDS, GRAY_LEVELS, Measurements
+from measure import (
+    Artifact,
+    COLOR_BACKGROUNDS,
+    GRAY_LEVELS,
+    STOCHASTIC_BACKGROUNDS,
+    Measurements,
+)
 from probe_catalog import (
     ADAPTIVE_SPATIAL_PROBES,
     expected_adaptive_reference,
@@ -17,6 +23,46 @@ from probe_catalog import (
 
 
 class MeasurementTests(unittest.TestCase):
+    def test_v212_pixel_scale_giant_statistics_cover_both_materials(self) -> None:
+        manifest = {
+            "backingScaleFactor": 1 / 512,
+            "references": [
+                {"background": background, "file": f"{background}.png"}
+                for background in STOCHASTIC_BACKGROUNDS
+            ],
+            "captures": [
+                {
+                    "background": background,
+                    "scene": "circle-4000-center",
+                    "overlay": material,
+                    "appearance": appearance,
+                    "file": f"{background}-{material}-{appearance}.png",
+                }
+                for background in STOCHASTIC_BACKGROUNDS
+                for material in ("regular", "clear")
+                for appearance in ("light", "dark")
+            ],
+            "scenes": [],
+        }
+        measurements = Measurements(
+            Artifact(path=Path("."), manifest=manifest),
+        )
+        image = np.arange(48, dtype=np.float64).reshape(4, 4, 3)
+        with (
+            patch.object(Measurements, "reference_image", return_value=image),
+            patch.object(Measurements, "image", return_value=image),
+        ):
+            report = measurements.pixel_scale_giant_probe_statistics()
+
+        self.assertTrue(report["available"])
+        self.assertEqual(report["requiredProbeCount"], 8)
+        self.assertEqual(report["availableProbeCount"], 8)
+        self.assertEqual(report["boundaryExclusionPixels"], 1)
+        first = report["records"][STOCHASTIC_BACKGROUNDS[0]]
+        self.assertEqual(set(first["outputs"]), {"regular", "clear"})
+        self.assertEqual(set(first["outputs"]["clear"]), {"light", "dark"})
+        self.assertEqual(first["source"]["pixelCount"], 4)
+
     def test_probe_hash_matches_glass_capture_uint32_vectors(self) -> None:
         x = np.asarray([[0, 1, 37, 3199]], dtype=np.uint32)
         y = np.asarray([[0, 2, 53, 1999]], dtype=np.uint32)

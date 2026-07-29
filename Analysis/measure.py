@@ -723,6 +723,60 @@ class Measurements:
             "records": records,
         }
 
+    def pixel_scale_giant_probe_statistics(self) -> JsonObject:
+        scene = "circle-4000-center"
+        available = [
+            background
+            for background in STOCHASTIC_BACKGROUNDS
+            if background in self.references
+            and all(
+                self.has_image(background, scene, material, appearance)
+                for material in ("regular", "clear")
+                for appearance in ("light", "dark")
+            )
+        ]
+        if not available:
+            return {
+                "available": False,
+                "reason": (
+                    "requires v2.12 boundary-free regular/clear pixel-scale "
+                    "train/holdout probes"
+                ),
+            }
+
+        margin = round(512 * self.backing_scale)
+        records: JsonObject = {}
+        for background in available:
+            source = self.reference_image(background)
+            region = (
+                slice(margin, source.shape[0] - margin),
+                slice(margin, source.shape[1] - margin),
+            )
+            records[background] = {
+                "source": self.channel_statistics(source[region]),
+                "outputs": {
+                    material: {
+                        appearance: self.channel_statistics(
+                            self.image(
+                                background,
+                                scene,
+                                material,
+                                appearance,
+                            )[region]
+                        )
+                        for appearance in ("light", "dark")
+                    }
+                    for material in ("regular", "clear")
+                },
+            }
+        return {
+            "available": len(available) == len(STOCHASTIC_BACKGROUNDS),
+            "requiredProbeCount": len(STOCHASTIC_BACKGROUNDS),
+            "availableProbeCount": len(available),
+            "boundaryExclusionPixels": margin,
+            "records": records,
+        }
+
     def adaptive_spatial_probe_statistics(self) -> JsonObject:
         scene = "circle-4000-center"
         available = [
@@ -1662,8 +1716,12 @@ class Measurements:
         dynamic_sequences = manifest.get("dynamicSequences", [])
         sweep_sequences = manifest.get("sweepSequences", [])
         rig_version = manifest.get("rigVersion")
+        analysis_schema_version = {
+            "2.11.0": 8,
+            "2.12.0": 9,
+        }.get(str(rig_version), 7)
         result = {
-            "analysisSchemaVersion": 8 if rig_version == "2.11.0" else 7,
+            "analysisSchemaVersion": analysis_schema_version,
             "analysisImplementation": {
                 "file": "Analysis/measure.py",
                 "sha256": file_sha256(Path(__file__).resolve()),
@@ -1745,9 +1803,13 @@ class Measurements:
             "dynamicSourceControls": self.dynamic_source_controls(),
             "sweepStates": self.sweep_states(),
         }
-        if rig_version == "2.11.0":
+        if rig_version in {"2.11.0", "2.12.0"}:
             result["adaptiveSpatialProbeStatistics"] = (
                 self.adaptive_spatial_probe_statistics()
+            )
+        if rig_version == "2.12.0":
+            result["pixelScaleGiantProbeStatistics"] = (
+                self.pixel_scale_giant_probe_statistics()
             )
         return result
 

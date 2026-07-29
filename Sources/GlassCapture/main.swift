@@ -2052,7 +2052,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.11.0",
+            rigVersion: "2.12.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2568,6 +2568,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 } catch {
                     failures += 1
                     log("FAILED: \(name): \(error.localizedDescription)")
+                }
+            }
+
+            // V2.11's pixel-scale stochastic, edge, and intermediate-frequency
+            // giant-circle samples covered only regular material. The held-out
+            // fit exposed a real two-pixel clear-material sampling grid, but
+            // the existing clear samples mix that grid with the 500-point
+            // circle's coordinate warp. Append the missing boundary-free clear
+            // cases after every historical static case so shared v2.11 files
+            // retain their capture order and remain strict regression evidence.
+            let clearGiantIdentificationNames =
+                regularGiantPhaseNames.union(regularGiantKernelNames)
+            for bg in backgrounds
+                where clearGiantIdentificationNames.contains(bg.name)
+            {
+                log("static clear giant identification: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                for appearance in Appearance.allCases {
+                    await captureStatic(
+                        background: bg,
+                        image: image,
+                        referencePixels: nil,
+                        scene: giantScene,
+                        overlay: .clear,
+                        appearance: appearance)
                 }
             }
         }
