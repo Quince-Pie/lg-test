@@ -8,7 +8,7 @@ on:
       - Sources/GlassIntrospect/**
 
 concurrency:
-  group: introspect-${{ github.ref }}
+  group: introspect-v2-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
