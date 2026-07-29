@@ -322,6 +322,49 @@ jobs:
               stat -f 'AIR64 IR BYTES %z' "$air_ir"
               shasum -a 256 "$air_ir"
               sed -n '1,200p' "$air_error"
+
+              for symbol in \
+                downsample_4_frag_lpf \
+                downsample_4_frag_lph \
+                downsample_6_frag_lpf \
+                downsample_6_frag_lph \
+                downsample_8_frag_lpf \
+                downsample_8_frag_lph \
+                downsample_blur_2_frag_lpf \
+                downsample_blur_2_frag_lph \
+                downsample_blur_4_frag_lpf \
+                downsample_blur_4_frag_lph \
+                downsample_blur_vert_lpf \
+                downsample_blur_vert_lph \
+                variable_blur_downsample_frag_lpf \
+                variable_blur_downsample_frag_lph \
+                variable_blur_clamp_downsample_frag_lpf \
+                variable_blur_clamp_downsample_frag_lph \
+                variable_blur_downsample_compute \
+                variable_blur_downsample_compute_agx2 \
+                tile_downsample_1 \
+                tile_downsample_2 \
+                tile_downsample_4 \
+                tile_downsample_8
+              do
+                symbol_ir="introspection/quartzcore-air64-${symbol}.ll"
+                symbol_error="introspection/quartzcore-air64-${symbol}.stderr"
+                if xcrun metal-objdump \
+                    --metallib \
+                    --disassemble-symbols="$symbol" \
+                    --print-imm-hex \
+                    "$air_slice" > "$symbol_ir" 2> "$symbol_error"
+                then
+                  symbol_status=0
+                else
+                  symbol_status=$?
+                fi
+                echo "AIR64 SYMBOL $symbol"
+                echo "AIR64 SYMBOL EXIT $symbol_status"
+                stat -f 'AIR64 SYMBOL IR BYTES %z' "$symbol_ir"
+                shasum -a 256 "$symbol_ir"
+                sed -n '1,80p' "$symbol_error"
+              done
             else
               echo "AIR64 EXTRACTION FAILED"
             fi
