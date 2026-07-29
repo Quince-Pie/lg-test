@@ -150,7 +150,7 @@ jobs:
                     'glass|backdrop|holding.?tone|face.?color|refraction|bleed|vibrant|sdf' |
                   sort -u |
                   head -n 120 || true
-            done
+              done
 
             echo "MACH-O METAL SECTIONS"
             for binary in \
@@ -165,7 +165,7 @@ jobs:
                 grep -E \
                   '(^Load command|cmd |segname |sectname |offset |size |filesize )' ||
                 true
-              done
+            done
           } > "$output"
 
       - name: Probe QuartzCore Liquid Glass Metal library
@@ -230,6 +230,69 @@ jobs:
               xcrun metal-objdump --section-headers "$library"
             capture_filtered metal-objdump-headers \
               xcrun metal-objdump -h "$library"
+
+            capture metal-objdump-metallib-syms \
+              xcrun metal-objdump --metallib --syms "$library"
+            capture metal-objdump-metallib-reflection \
+              xcrun metal-objdump --metallib --reflection "$library"
+            capture metal-objdump-metallib-script \
+              xcrun metal-objdump --metallib --script "$library"
+            capture metal-objdump-metallib-build-tables \
+              xcrun metal-objdump --metallib --build-table=all "$library"
+            capture metal-objdump-metallib-compressed-sections \
+              xcrun metal-objdump --metallib --compressed-sections "$library"
+            capture metal-objdump-glass-background-air-version \
+              xcrun metal-objdump \
+                --metallib \
+                --air-version=glass_background_lph \
+                "$library"
+            capture metal-objdump-glass-background-lph \
+              xcrun metal-objdump \
+                --metallib \
+                --disassemble-symbols=glass_background_lph \
+                --print-imm-hex \
+                "$library"
+
+            capture lipo-architectures lipo -archs "$library"
+            air_slice="introspection/quartzcore-air64.metallib"
+            if lipo "$library" -thin air64 -output "$air_slice"; then
+              file "$air_slice"
+              stat -f 'AIR64 BYTES %z' "$air_slice"
+              shasum -a 256 "$air_slice"
+              capture air64-metal-nm xcrun metal-nm "$air_slice"
+              capture air64-reflection \
+                xcrun metal-objdump --metallib --reflection "$air_slice"
+              capture air64-glass-background-lph \
+                xcrun metal-objdump \
+                  --metallib \
+                  --disassemble-symbols=glass_background_lph \
+                  --print-imm-hex \
+                  "$air_slice"
+            else
+              echo "AIR64 EXTRACTION FAILED"
+            fi
+
+            function_slice="introspection/quartzcore-glass-background-lph.metallib"
+            if xcrun metallib \
+              "$library" \
+              --function-name=glass_background_lph \
+              -o "$function_slice"
+            then
+              file "$function_slice"
+              stat -f 'FUNCTION BYTES %z' "$function_slice"
+              shasum -a 256 "$function_slice"
+              capture function-metal-nm xcrun metal-nm "$function_slice"
+              capture function-reflection \
+                xcrun metal-objdump --metallib --reflection "$function_slice"
+              capture function-disassembly \
+                xcrun metal-objdump \
+                  --metallib \
+                  --disassemble-symbols=glass_background_lph \
+                  --print-imm-hex \
+                  "$function_slice"
+            else
+              echo "FUNCTION EXTRACTION FAILED"
+            fi
           } > "$output"
 
       - name: Disassemble exported Apple color-matrix routines
