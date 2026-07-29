@@ -22,7 +22,9 @@ SRGB_PROFILE = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes(
 
 
 class ValidatorTests(unittest.TestCase):
-    def test_v214_transposed_rectangle_is_not_a_full_geometry_matrix(self) -> None:
+    def test_v214_and_v215_transposed_rectangle_is_not_a_full_geometry_matrix(
+        self,
+    ) -> None:
         scenes = {
             "circle-0500-center",
             "circle-1000-center",
@@ -32,6 +34,13 @@ class ValidatorTests(unittest.TestCase):
 
         self.assertEqual(
             full_geometry_matrix_scenes({"rigVersion": "2.14.0"}, scenes),
+            {
+                "circle-1000-center",
+                "rect-6000x4000-r000-center",
+            },
+        )
+        self.assertEqual(
+            full_geometry_matrix_scenes({"rigVersion": "2.15.0"}, scenes),
             {
                 "circle-1000-center",
                 "rect-6000x4000-r000-center",
@@ -501,6 +510,11 @@ class ValidatorTests(unittest.TestCase):
         v214 = Findings()
         validate_environment(manifest, v214)
         self.assertEqual(v214.errors, [])
+
+        manifest["rigVersion"] = "2.15.0"
+        v215 = Findings()
+        validate_environment(manifest, v215)
+        self.assertEqual(v215.errors, [])
 
     def test_schema4_presentation_clock_and_exclusion(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

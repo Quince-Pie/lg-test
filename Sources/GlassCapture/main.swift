@@ -553,6 +553,42 @@ func staticBackgrounds() -> [Background] {
         }
     }
 
+    // V2.15 resolves the underdetermined four-point ladder without opening a
+    // holdout. One training bit field spans every source-code amplitude; the
+    // three v2.14 points and a064 endpoint are reused rather than duplicated.
+    // Two protected seeds add disjoint parity/residue checks under all four
+    // boundary-free geometries.
+    let existingTrainingAmplitudes: Set<Int> = [17, 31, 47, 64]
+    let denseTrainingAmplitudes = (1...64).filter {
+        !existingTrainingAmplitudes.contains($0)
+    }
+    let protectedSweepAmplitudes = [2, 7, 14, 23, 32, 40, 48, 56, 63]
+    let clearAmplitudeSweepSeeds: [(String, UInt32, [Int])] = [
+        ("train-00", 0xD1B5_4A32, denseTrainingAmplitudes),
+        ("holdout-00", 0xA24B_AED4, protectedSweepAmplitudes),
+        ("holdout-01", 0x9FB2_1C65, protectedSweepAmplitudes),
+    ]
+    for (role, seed, amplitudes) in clearAmplitudeSweepSeeds {
+        for amplitude in amplitudes {
+            let name = String(
+                format: "noise-rgb-a%03d-sweep-%@", amplitude, role)
+            list.append(Background(name: name, family: .noise) {
+                x, y, _, _ in
+                (
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x243F_6A88),
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x85A3_08D3),
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x1319_8A2E)
+                )
+            })
+        }
+    }
+
     // V2.10's pixel-scale, neutral-centered binary probes do not identify the
     // measured nonlinear response across color range and spatial scale. These
     // paired fields bridge that gap without consuming the historical chart or
@@ -2127,7 +2163,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.14.0",
+            rigVersion: "2.15.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2336,6 +2372,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 backgrounds.lazy.map(\.name).filter {
                     $0.contains("-tomography-")
                 })
+            let clearAmplitudeSweepNames: Set<String> = Set(
+                backgrounds.lazy.map(\.name).filter {
+                    $0.contains("-sweep-")
+                })
             let oversizedRectSceneName = "rect-6000x4000-r000-center"
             let transposedRectSceneName = "rect-4000x6000-r000-center"
             let focusedOversizedSceneNames: Set<String> = [
@@ -2348,6 +2388,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             for bg in backgrounds
                 where !clearKernelNames.contains(bg.name)
                     && !clearTomographyNames.contains(bg.name)
+                    && !clearAmplitudeSweepNames.contains(bg.name)
             {
                 log("static base: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
@@ -2834,6 +2875,39 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 {
                     await captureStatic(
                         background: gray,
+                        image: image,
+                        referencePixels: nil,
+                        scene: scene,
+                        overlay: .clear,
+                        appearance: .dark)
+                }
+            }
+
+            // Preserve all 1,991 v2.14 captures as an unchanged prefix.
+            // Dense training needs one all-state circle; protected additions
+            // retain the complete orthogonal four-geometry gate.
+            let denseSweepScene = scenes.first {
+                $0.name == "circle-4000-center"
+            }!
+            for bg in backgrounds
+                where clearAmplitudeSweepNames.contains(bg.name)
+            {
+                log("static v2.15 dense amplitude sweep: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                let referencePixels = try recordReference(bg, image)
+                await captureStatic(
+                    background: bg,
+                    image: image,
+                    referencePixels: referencePixels,
+                    scene: baseScene,
+                    overlay: .none,
+                    appearance: .dark)
+                let targetScenes = bg.name.contains("-sweep-holdout-")
+                    ? tomographyScenes
+                    : [denseSweepScene]
+                for scene in targetScenes {
+                    await captureStatic(
+                        background: bg,
                         image: image,
                         referencePixels: nil,
                         scene: scene,

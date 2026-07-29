@@ -23,6 +23,7 @@ from scipy.special import ndtr
 
 from probe_catalog import (
     ADAPTIVE_SPATIAL_PROBES,
+    CLEAR_AMPLITUDE_SWEEP_PROBES,
     CLEAR_KERNEL_PROBES,
     CLEAR_TOMOGRAPHY_PROBES,
 )
@@ -1017,9 +1018,14 @@ class Measurements:
         }
 
     def clear_amplitude_tomography_inventory(self) -> JsonObject:
+        rig_version = self.artifact.manifest.get("rigVersion")
+        tomography_probes = dict(CLEAR_TOMOGRAPHY_PROBES)
+        if rig_version == "2.15.0":
+            tomography_probes.update(CLEAR_AMPLITUDE_SWEEP_PROBES)
+
         groups: dict[str, list[str]] = {}
         roles: dict[str, str] = {}
-        for background, metadata in CLEAR_TOMOGRAPHY_PROBES.items():
+        for background, metadata in tomography_probes.items():
             group = str(metadata["amplitudeGroup"])
             groups.setdefault(group, []).append(background)
             roles[group] = str(metadata["role"])
@@ -1035,7 +1041,7 @@ class Measurements:
                 groups[group],
                 key=lambda background: (
                     int(
-                        CLEAR_TOMOGRAPHY_PROBES.get(
+                        tomography_probes.get(
                             background,
                             {"amplitudeCodes": 64},
                         )["amplitudeCodes"]
@@ -1057,14 +1063,19 @@ class Measurements:
                     ),
                 }
                 for background in backgrounds
-                for scene in CLEAR_TOMOGRAPHY_SCENES
+                for scene in (
+                    tomography_probes.get(
+                        background,
+                        {"scenes": CLEAR_TOMOGRAPHY_SCENES},
+                    ).get("scenes", CLEAR_TOMOGRAPHY_SCENES)
+                )
             ]
             records[group] = {
                 "role": roles[group],
                 "backgrounds": backgrounds,
                 "amplitudesCodes": [
                     int(
-                        CLEAR_TOMOGRAPHY_PROBES.get(
+                        tomography_probes.get(
                             background,
                             {"amplitudeCodes": 64},
                         )["amplitudeCodes"]
@@ -1078,7 +1089,7 @@ class Measurements:
                 "cases": cases,
             }
 
-        required_references = set(CLEAR_TOMOGRAPHY_PROBES)
+        required_references = set(tomography_probes)
         return {
             "available": (
                 required_references <= self.references.keys()
@@ -1090,13 +1101,18 @@ class Measurements:
             ),
             "purpose": (
                 "constrain the hidden continuous clear filter through "
-                "integer output-code transitions at coprime source amplitudes"
+                "integer output-code transitions across source amplitudes"
             ),
             "scenes": {
                 scene: self.scenes.get(scene)
                 for scene in CLEAR_TOMOGRAPHY_SCENES
             },
-            "newReferenceCount": len(CLEAR_TOMOGRAPHY_PROBES),
+            "catalogReferenceCount": len(tomography_probes),
+            "versionReferenceDelta": (
+                len(CLEAR_AMPLITUDE_SWEEP_PROBES)
+                if rig_version == "2.15.0"
+                else len(CLEAR_TOMOGRAPHY_PROBES)
+            ),
             "trainingGroupCount": sum(
                 role == "training" for role in roles.values()
             ),
@@ -1939,6 +1955,7 @@ class Measurements:
             "2.12.0": 9,
             "2.13.0": 10,
             "2.14.0": 11,
+            "2.15.0": 12,
         }.get(str(rig_version), 7)
         result = {
             "analysisSchemaVersion": analysis_schema_version,
@@ -2023,19 +2040,25 @@ class Measurements:
             "dynamicSourceControls": self.dynamic_source_controls(),
             "sweepStates": self.sweep_states(),
         }
-        if rig_version in {"2.11.0", "2.12.0", "2.13.0", "2.14.0"}:
+        if rig_version in {
+            "2.11.0",
+            "2.12.0",
+            "2.13.0",
+            "2.14.0",
+            "2.15.0",
+        }:
             result["adaptiveSpatialProbeStatistics"] = (
                 self.adaptive_spatial_probe_statistics()
             )
-        if rig_version in {"2.12.0", "2.13.0", "2.14.0"}:
+        if rig_version in {"2.12.0", "2.13.0", "2.14.0", "2.15.0"}:
             result["pixelScaleGiantProbeStatistics"] = (
                 self.pixel_scale_giant_probe_statistics()
             )
-        if rig_version in {"2.13.0", "2.14.0"}:
+        if rig_version in {"2.13.0", "2.14.0", "2.15.0"}:
             result["clearKernelGeometryStatistics"] = (
                 self.clear_kernel_geometry_statistics()
             )
-        if rig_version == "2.14.0":
+        if rig_version in {"2.14.0", "2.15.0"}:
             result["clearAmplitudeTomographyInventory"] = (
                 self.clear_amplitude_tomography_inventory()
             )

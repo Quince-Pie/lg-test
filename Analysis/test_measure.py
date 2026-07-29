@@ -18,9 +18,13 @@ from measure import (
 )
 from probe_catalog import (
     ADAPTIVE_SPATIAL_PROBES,
+    CLEAR_AMPLITUDE_SWEEP_HOLDOUT_AMPLITUDES,
+    CLEAR_AMPLITUDE_SWEEP_PROBES,
+    CLEAR_AMPLITUDE_SWEEP_TRAINING_AMPLITUDES,
     CLEAR_KERNEL_PROBES,
     CLEAR_TOMOGRAPHY_PROBES,
     expected_adaptive_reference,
+    expected_clear_amplitude_sweep_reference,
     expected_clear_kernel_reference,
     expected_clear_tomography_reference,
     hash32,
@@ -30,7 +34,7 @@ from probe_catalog import (
 
 
 class MeasurementTests(unittest.TestCase):
-    def test_v214_probe_catalog_matches_capture_source(self) -> None:
+    def test_v215_probe_catalog_matches_capture_source(self) -> None:
         source = (
             Path(__file__).resolve().parents[1]
             / "Sources"
@@ -55,9 +59,17 @@ class MeasurementTests(unittest.TestCase):
             ("holdout-01", "0x9FB2_1C65"),
         ):
             self.assertIn(f'("{role}", {seed}', source)
-        self.assertIn('rigVersion: "2.14.0"', source)
+        self.assertIn('rigVersion: "2.15.0"', source)
         self.assertIn('name: "rect-6000x4000-r000-center"', source)
         self.assertIn('name: "rect-4000x6000-r000-center"', source)
+        self.assertIn(
+            "let existingTrainingAmplitudes: Set<Int> = [17, 31, 47, 64]",
+            source,
+        )
+        self.assertIn(
+            "let protectedSweepAmplitudes = [2, 7, 14, 23, 32, 40, 48, 56, 63]",
+            source,
+        )
 
     def test_v213_clear_kernel_generators_are_independent_and_split(self) -> None:
         roles = [str(record["role"]) for record in CLEAR_KERNEL_PROBES.values()]
@@ -180,6 +192,94 @@ class MeasurementTests(unittest.TestCase):
         self.assertTrue(report["available"])
         self.assertEqual(report["trainingGroupCount"], 4)
         self.assertEqual(report["protectedHoldoutGroupCount"], 2)
+        self.assertFalse(report["protectedHoldoutOutputsDecodedByThisAnalysis"])
+
+    def test_v215_sweep_generator_exhausts_training_amplitudes(self) -> None:
+        training_amplitudes = set(range(1, 65))
+        training_amplitudes -= {17, 31, 47, 64}
+        self.assertEqual(
+            set(CLEAR_AMPLITUDE_SWEEP_TRAINING_AMPLITUDES),
+            training_amplitudes,
+        )
+        self.assertEqual(
+            CLEAR_AMPLITUDE_SWEEP_HOLDOUT_AMPLITUDES,
+            (2, 7, 14, 23, 32, 40, 48, 56, 63),
+        )
+        self.assertEqual(len(CLEAR_AMPLITUDE_SWEEP_PROBES), 78)
+
+        generated = set()
+        for background, metadata in CLEAR_AMPLITUDE_SWEEP_PROBES.items():
+            amplitude = int(metadata["amplitudeCodes"])
+            image = expected_clear_amplitude_sweep_reference(
+                background,
+                width=73,
+                height=61,
+            )
+            self.assertEqual(
+                set(np.unique(image).tolist()),
+                {128 - amplitude, 128 + amplitude},
+            )
+            generated.add(image.tobytes())
+        self.assertEqual(len(generated), len(CLEAR_AMPLITUDE_SWEEP_PROBES))
+
+    def test_v215_inventory_tracks_dense_cases_without_decoding_holdout(
+        self,
+    ) -> None:
+        probes = {
+            **CLEAR_TOMOGRAPHY_PROBES,
+            **CLEAR_AMPLITUDE_SWEEP_PROBES,
+        }
+        backgrounds = [
+            *probes,
+            *(
+                f"noise-rgb-a064-kernel-train-{index:02d}"
+                for index in range(4)
+            ),
+        ]
+
+        def scenes_for(background: str) -> tuple[str, ...] | list[str]:
+            return probes.get(
+                background,
+                {"scenes": CLEAR_TOMOGRAPHY_SCENES},
+            ).get("scenes", CLEAR_TOMOGRAPHY_SCENES)
+
+        manifest = {
+            "rigVersion": "2.15.0",
+            "backingScaleFactor": 1,
+            "references": [
+                {"background": background, "file": f"{background}.png"}
+                for background in backgrounds
+            ],
+            "captures": [
+                {
+                    "background": background,
+                    "scene": scene,
+                    "overlay": "clear",
+                    "appearance": "dark",
+                    "file": f"{background}-{scene}.png",
+                }
+                for background in backgrounds
+                for scene in scenes_for(background)
+            ],
+            "scenes": [
+                {"name": scene, "shapes": [{"id": "shape"}]}
+                for scene in CLEAR_TOMOGRAPHY_SCENES
+            ],
+        }
+
+        report = Measurements(
+            Artifact(path=Path("."), manifest=manifest),
+        ).clear_amplitude_tomography_inventory()
+
+        self.assertTrue(report["available"])
+        self.assertEqual(report["catalogReferenceCount"], 98)
+        self.assertEqual(report["versionReferenceDelta"], 78)
+        self.assertEqual(
+            report["records"]["train-00"]["amplitudesCodes"],
+            list(range(1, 65)),
+        )
+        self.assertEqual(report["records"]["train-00"]["requiredOutputCount"], 76)
+        self.assertEqual(report["records"]["holdout-00"]["requiredOutputCount"], 52)
         self.assertFalse(report["protectedHoldoutOutputsDecodedByThisAnalysis"])
 
     def test_v213_clear_kernel_statistics_compare_exact_geometry_pixels(

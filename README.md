@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## How the rig reached v2.14
+## How the rig reached v2.15
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -404,6 +404,40 @@ records only the protected holdout inventory; it does not decode those output
 images during fitting. V2.14 adds 20 references and 107 captures while
 preserving the complete v2.13 capture stream as an unchanged prefix.
 
+Run `30427894592` is the successful unchanged-source v2.14 confirmation. Its
+3,734,700,662-byte static archive (`SHA-256
+e67b70982edc7ff8e6a066ba980047caebb12e277761ee574303f492e7d972ee`)
+contains 166 references and 1,991 stable captures from macOS 26.4 build
+25E246. CI and an independent local replay both report zero errors and zero
+warnings. All 166 references are pixel-exact with the preceding unchanged
+run. Only three of 1,991 captures differ; the two training-visible differences
+have maximum channel delta one, and the protected output remains unopened.
+
+The four-point training ladder is not enough to identify the amplitude law
+without guessing. A linear-plus-quadratic-plus-odd-residue model can explain
+95.462% of the available training channels when all four amplitudes are fitted,
+but leave-one-amplitude-out exactness collapses to roughly 49–57%. Several
+incompatible laws therefore interpolate the four observed points almost
+equally well. Opening the protected holdout to choose among them would
+invalidate the final gate.
+
+V2.15 resolves that ambiguity with evidence:
+
+- the `train-00` source field is captured at every integer amplitude from 1
+  through 64, reusing v2.13/v2.14 amplitudes 17, 31, 47, and 64;
+- the 60 new training references use the boundary-free centered 4000-point
+  circle, giving an exhaustive output-code transition trace without repeating
+  already identified geometry;
+- each of the two protected seeds adds nine independently specified
+  amplitudes under all four orthogonal geometries; their output pixels remain
+  unavailable to fitting; and
+- the complete v2.14 stream remains an unchanged prefix.
+
+V2.15 adds 78 references and 210 captures, for 244 static references and 2,201
+static captures. The catalog, Swift generator, matrix validator, and
+metadata-only measurement inventory independently agree on every amplitude,
+seed, geometry, and expected case.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
@@ -480,13 +514,13 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.14 isolates the unknowns:
+V2.15 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
 | Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube in ordered, affine-permuted, four independently shuffled training contexts, and one untouched shuffled holdout; all 512 midpoint RGB colors in ordered, four training contexts, and one untouched shuffled holdout |
 | Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px; complete six-period regular/clear giant-circle MTFs; 64/256/1024 px probes at 256-, 500-, and 4000-point circle scales; and p256 probes at all four quadrant positions |
-| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, independent fit/holdout gray/RGB binary noise at two amplitudes under both materials, six additional independent clear-kernel fields, four training and two protected-holdout amplitude ladders, and calibrated multiscale RGB block fields |
+| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, independent fit/holdout gray/RGB binary noise at two amplitudes under both materials, six additional independent clear-kernel fields, an exhaustive 1–64 training amplitude sweep, two protected fresh-seed amplitude checks, and calibrated multiscale RGB block fields |
 | Adaptive spatial/color response | RGB palette blocks at 4/16/64/256 px with grid-code training and 507 source-safe midpoint-code holdouts; paired 16 px binary fields at means 64/128/192; and a known periodic translation check |
 | Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, three visible rectangle corner radii, and orthogonal 6000x4000- and 4000x6000-point boundary-free rectangles |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
@@ -604,7 +638,7 @@ within its traversal and must pass the delayed stability check.
 Cross-traversal differences are retained and reported as
 repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.14 artifact contains 168 references, 1,991
+With the default `all` suite, a v2.15 artifact contains 246 references, 2,201
 static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 24 exact sweep matrices containing 1,224 frames.
 
@@ -641,12 +675,13 @@ sweep matrices, unique states, two-source endpoints, and material topology
 controls. For v2.11 onward it also regenerates all 21 adaptive references from
 the declared seeds, palettes, block sizes, means, amplitudes, and translation.
 For v2.13 onward it independently regenerates all six clear-kernel fields and
-requires the three-geometry capture matrix. For v2.14 it also independently
+requires the three-geometry capture matrix. For v2.14 onward it independently
 regenerates all 20 amplitude-tomography sources and requires their focused
-four-geometry matrix plus the transposed-rectangle controls. Every regenerated
-source must be pixel-exact with the archive. A validation
-failure still uploads the artifact so the cause can be inspected, but the
-workflow ends red.
+four-geometry matrix plus the transposed-rectangle controls. For v2.15 it also
+regenerates all 78 dense-amplitude sources and requires the one-geometry
+training matrix and four-geometry protected matrix. Every regenerated source
+must be pixel-exact with the archive. A validation failure still uploads the
+artifact so the cause can be inspected, but the workflow ends red.
 
 ## Run on GitHub
 
@@ -668,14 +703,14 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-Return the automatic v2.14 `static` artifact first. It contains the amplitude
-ladders, protected fresh seeds, and transposed-rectangle controls needed to
-freeze and test the exact clear filter. Rerunning the unchanged dynamic and
-exact-sweep matrices is unnecessary.
+Return the automatic v2.15 `static` artifact first. It contains the exhaustive
+training amplitude sweep and protected fresh-seed checks needed to freeze and
+test the exact clear filter. Rerunning the unchanged dynamic and exact-sweep
+matrices is unnecessary.
 
 Runs `30326591212` and `30365533488` complete the two-run static, exact-state,
 and endpoint repeatability corpus. The latter has four rejected live
-traversals. After the v2.14 static fit, the remaining focused temporal work is:
+traversals. After the v2.15 static fit, the remaining focused temporal work is:
 
 1. A focused `dynamic`, 1.0-second, 61-frame recovery run with
    `dynamic_modes=wallpaper-transition,wallpaper-transition-reverse` and exact
@@ -743,7 +778,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The v2.11 through v2.14 artifacts are measurement inputs, not proof that Walle
+The v2.11 through v2.15 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
 

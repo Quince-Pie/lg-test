@@ -102,6 +102,59 @@ CLEAR_TOMOGRAPHY_PROBES: dict[str, dict[str, Any]] = {
     )
 }
 
+CLEAR_AMPLITUDE_SWEEP_TRAINING_AMPLITUDES = tuple(
+    amplitude
+    for amplitude in range(1, 64)
+    if amplitude not in (17, 31, 47)
+)
+CLEAR_AMPLITUDE_SWEEP_HOLDOUT_AMPLITUDES = (
+    2,
+    7,
+    14,
+    23,
+    32,
+    40,
+    48,
+    56,
+    63,
+)
+CLEAR_AMPLITUDE_SWEEP_PROBES: dict[str, dict[str, Any]] = {
+    f"noise-rgb-a{amplitude:03d}-sweep-{name_role}-{index:02d}": {
+        "probeKind": "independent-rgb-binary-pixels",
+        "role": metadata_role,
+        "blockSizePixels": 1,
+        "centerCode": 128,
+        "amplitudeCodes": amplitude,
+        "levels": [128 - amplitude, 128 + amplitude],
+        "seed": f"0x{seed:08x}",
+        "amplitudeGroup": f"{name_role}-{index:02d}",
+        "scenes": scenes,
+    }
+    for name_role, metadata_role, seeds, amplitudes, scenes in (
+        (
+            "train",
+            "training",
+            (0xD1B54A32,),
+            CLEAR_AMPLITUDE_SWEEP_TRAINING_AMPLITUDES,
+            ("circle-4000-center",),
+        ),
+        (
+            "holdout",
+            "holdout",
+            (0xA24BAED4, 0x9FB21C65),
+            CLEAR_AMPLITUDE_SWEEP_HOLDOUT_AMPLITUDES,
+            (
+                "circle-4000-center",
+                "circle-6000-upper-left",
+                "rect-6000x4000-r000-center",
+                "rect-4000x6000-r000-center",
+            ),
+        ),
+    )
+    for index, seed in enumerate(seeds)
+    for amplitude in amplitudes
+}
+
 
 def hash32(
     x: UInt32Image,
@@ -314,6 +367,27 @@ def expected_clear_tomography_reference(
     if width <= 0 or height <= 0:
         raise ValueError("reference dimensions must be positive")
     metadata = CLEAR_TOMOGRAPHY_PROBES[background]
+    return binary_blocks(
+        width=width,
+        height=height,
+        block=int(metadata["blockSizePixels"]),
+        center=int(metadata["centerCode"]),
+        amplitude=int(metadata["amplitudeCodes"]),
+        seed=int(str(metadata["seed"]), 0),
+        independent_rgb=True,
+    )
+
+
+def expected_clear_amplitude_sweep_reference(
+    background: str,
+    *,
+    width: int,
+    height: int,
+) -> CodeImage:
+    """Regenerate one v2.15 dense-amplitude source independently."""
+    if width <= 0 or height <= 0:
+        raise ValueError("reference dimensions must be positive")
+    metadata = CLEAR_AMPLITUDE_SWEEP_PROBES[background]
     return binary_blocks(
         width=width,
         height=height,
