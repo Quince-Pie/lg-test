@@ -150,7 +150,7 @@ jobs:
                     'glass|backdrop|holding.?tone|face.?color|refraction|bleed|vibrant|sdf' |
                   sort -u |
                   head -n 120 || true
-              done
+            done
 
             echo "MACH-O METAL SECTIONS"
             for binary in \
@@ -165,7 +165,71 @@ jobs:
                 grep -E \
                   '(^Load command|cmd |segname |sectname |offset |size |filesize )' ||
                 true
-            done
+              done
+          } > "$output"
+
+      - name: Probe QuartzCore Liquid Glass Metal library
+        if: always()
+        continue-on-error: true
+        run: |
+          library="/System/Library/Frameworks/QuartzCore.framework/Versions/A/Resources/default.metallib"
+          output="introspection/quartzcore-metal-tools.txt"
+
+          capture() {
+            label="$1"
+            shift
+            temporary="$RUNNER_TEMP/metal-probe-$(printf '%s' "$label" | tr -c '[:alnum:]' '-').txt"
+            if "$@" > "$temporary" 2>&1; then
+              status=0
+            else
+              status=$?
+            fi
+            echo "PROBE $label"
+            echo "EXIT $status"
+            stat -f 'BYTES %z' "$temporary"
+            sed -n '1,500p' "$temporary"
+          }
+
+          capture_filtered() {
+            label="$1"
+            shift
+            temporary="$RUNNER_TEMP/metal-probe-$(printf '%s' "$label" | tr -c '[:alnum:]' '-').txt"
+            if "$@" > "$temporary" 2>&1; then
+              status=0
+            else
+              status=$?
+            fi
+            echo "PROBE $label"
+            echo "EXIT $status"
+            stat -f 'BYTES %z' "$temporary"
+            grep -Ei \
+              'glass|backdrop|holding.?tone|face.?cm|bleed.?cm|shadow.?cm|sdf' \
+              "$temporary" |
+              head -n 1000 || true
+          }
+
+          {
+            test -f "$library"
+            file "$library"
+            stat -f 'LIBRARY BYTES %z' "$library"
+            shasum -a 256 "$library"
+            od -An -tx1 -N64 "$library"
+
+            capture metal-nm-help xcrun metal-nm --help
+            capture metal-objdump-help xcrun metal-objdump --help
+            capture metallib-help xcrun metallib --help
+            capture metallib-short-help xcrun metallib -h
+
+            capture_filtered metal-nm xcrun metal-nm "$library"
+            capture_filtered metal-nm-all xcrun metal-nm -a "$library"
+            capture_filtered metal-objdump-syms \
+              xcrun metal-objdump --syms "$library"
+            capture_filtered metal-objdump-table \
+              xcrun metal-objdump -t "$library"
+            capture_filtered metal-objdump-section-headers \
+              xcrun metal-objdump --section-headers "$library"
+            capture_filtered metal-objdump-headers \
+              xcrun metal-objdump -h "$library"
           } > "$output"
 
       - name: Disassemble exported Apple color-matrix routines
