@@ -857,7 +857,6 @@ private func colorSpaceEvidence(
             "name": space.name.map { String(describing: $0) } ?? "unnamed",
             "modelRawValue": space.model.rawValue,
             "numberOfComponents": space.numberOfComponents,
-            "usesExtendedRange": space.usesExtendedRange,
             "supportsOutput": space.supportsOutput,
         ]
         if let icc = space.copyICCData() {
