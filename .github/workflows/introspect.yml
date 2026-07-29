@@ -265,6 +265,15 @@ jobs:
           destination = pathlib.Path(sys.argv[2])
           with source.open("rb") as stream:
               magic, count = struct.unpack(">II", stream.read(8))
+              if magic == 0x4D544C42:
+                  stream.seek(0)
+                  payload = stream.read()
+                  destination.write_bytes(payload)
+                  print(
+                      "AIR64 DIRECT MTLB "
+                      f"size={len(payload)}"
+                  )
+                  raise SystemExit(0)
               if magic != 0xCAFEBABE:
                   raise SystemExit(f"unexpected fat magic: 0x{magic:08x}")
               selected = None
@@ -357,6 +366,15 @@ jobs:
           destination = pathlib.Path(sys.argv[2])
           with source.open("rb") as stream:
               magic, count = struct.unpack(">II", stream.read(8))
+              if magic == 0x4D544C42:
+                  stream.seek(0)
+                  payload = stream.read()
+                  destination.write_bytes(payload)
+                  print(
+                      "AIR64 DIRECT MTLB "
+                      f"size={len(payload)}"
+                  )
+                  raise SystemExit(0)
               if magic != 0xCAFEBABE:
                   raise SystemExit(f"unexpected fat magic: 0x{magic:08x}")
               selected = None
