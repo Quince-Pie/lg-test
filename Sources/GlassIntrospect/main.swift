@@ -58,20 +58,69 @@ private func scalarDescription(_ value: Any?) -> String? {
     return String(reflecting: value)
 }
 
+private func serializedRuntimeValue(_ optionalValue: Any?) -> Any {
+    guard let value = optionalValue else { return NSNull() }
+    if let data = value as? Data {
+        let bytes = [UInt8](data)
+        let words = stride(from: 0, to: bytes.count - bytes.count % 4, by: 4)
+            .map { offset in
+                UInt32(bytes[offset])
+                    | UInt32(bytes[offset + 1]) << 8
+                    | UInt32(bytes[offset + 2]) << 16
+                    | UInt32(bytes[offset + 3]) << 24
+            }
+        return [
+            "class": String(reflecting: type(of: value)),
+            "lengthBytes": bytes.count,
+            "hex": bytes.map {
+                String(format: "%02x", $0)
+            }.joined(),
+            "float32LittleEndian": words.map {
+                Double(Float(bitPattern: $0))
+            },
+            "uint32LittleEndianHex": words.map {
+                String(format: "%08x", $0)
+            },
+        ] as [String: Any]
+    }
+    if let values = value as? [Any] {
+        return values.map(serializedRuntimeValue)
+    }
+    if let values = value as? [AnyHashable: Any] {
+        return Dictionary(
+            uniqueKeysWithValues: values.map {
+                (
+                    String(describing: $0.key),
+                    serializedRuntimeValue($0.value)
+                )
+            })
+    }
+    if let number = value as? NSNumber {
+        return number
+    }
+    if let string = value as? String {
+        return string
+    }
+    return [
+        "class": String(reflecting: type(of: value)),
+        "description": String(reflecting: value),
+    ]
+}
+
 private func knownRuntimeValues(
     _ object: NSObject,
     keys: [String]
-) -> [String: String] {
-    var values: [String: String] = [:]
+) -> [String: Any] {
+    var values: [String: Any] = [:]
     for key in keys {
         let selector = NSSelectorFromString(key)
         guard object.responds(to: selector) else { continue }
-        values[key] = String(reflecting: object.value(forKey: key))
+        values[key] = serializedRuntimeValue(object.value(forKey: key))
     }
     return values
 }
 
-private func filterInputValues(_ object: NSObject) -> [String: String] {
+private func filterInputValues(_ object: NSObject) -> [String: Any] {
     let selector = NSSelectorFromString("inputKeys")
     guard object.responds(to: selector),
           let keys = object.value(forKey: "inputKeys") as? [String]
@@ -81,7 +130,7 @@ private func filterInputValues(_ object: NSObject) -> [String: String] {
 
     return Dictionary(
         uniqueKeysWithValues: keys.sorted().map { key in
-            (key, String(reflecting: object.value(forKey: key)))
+            (key, serializedRuntimeValue(object.value(forKey: key)))
         })
 }
 
@@ -195,23 +244,73 @@ private func runtimeClassDescription(_ cls: AnyClass) -> [String: Any] {
     return record
 }
 
+private func runtimePropertyNames(_ cls: AnyClass) -> [String] {
+    var names: Set<String> = []
+    var current: AnyClass? = cls
+    while let inspectedClass = current {
+        var propertyCount: UInt32 = 0
+        let propertyList = class_copyPropertyList(
+            inspectedClass,
+            &propertyCount)
+        if let propertyList {
+            for index in 0..<Int(propertyCount) {
+                names.insert(
+                    String(cString: property_getName(propertyList[index])))
+            }
+            free(propertyList)
+        }
+        current = class_getSuperclass(inspectedClass)
+    }
+    return names.sorted()
+}
+
+private let linkedRuntimeObjectKeys = [
+    "effect",
+    "shape",
+    "portal",
+    "sourceLayer",
+]
+
+private func collectRuntimeObject(
+    _ object: NSObject,
+    into objects: inout [String: NSObject],
+    depth: Int = 0
+) {
+    let className = NSStringFromClass(type(of: object))
+    let isNewClass = objects[className] == nil
+    objects[className] = object
+    guard isNewClass, depth < 4 else { return }
+    for key in linkedRuntimeObjectKeys {
+        let selector = NSSelectorFromString(key)
+        guard object.responds(to: selector),
+              let child = object.value(forKey: key) as? NSObject
+        else {
+            continue
+        }
+        collectRuntimeObject(
+            child,
+            into: &objects,
+            depth: depth + 1)
+    }
+}
+
 private func collectRuntimeObjects(
     _ layer: CALayer,
     into objects: inout [String: NSObject]
 ) {
-    objects[NSStringFromClass(type(of: layer))] = layer
+    collectRuntimeObject(layer, into: &objects)
     for filter in layer.filters ?? [] {
         if let object = filter as? NSObject {
-            objects[NSStringFromClass(type(of: object))] = object
+            collectRuntimeObject(object, into: &objects)
         }
     }
     for filter in layer.backgroundFilters ?? [] {
         if let object = filter as? NSObject {
-            objects[NSStringFromClass(type(of: object))] = object
+            collectRuntimeObject(object, into: &objects)
         }
     }
     if let object = layer.compositingFilter as? NSObject {
-        objects[NSStringFromClass(type(of: object))] = object
+        collectRuntimeObject(object, into: &objects)
     }
     for child in layer.sublayers ?? [] {
         collectRuntimeObjects(child, into: &objects)
@@ -280,6 +379,12 @@ private func layerDescription(_ layer: CALayer) -> [String: Any] {
             "shape",
             "effect",
             "mode",
+            "allowsFilteredLuma",
+            "smoothness",
+            "gaussianRadius",
+            "effectOffset",
+            "mergeElements",
+            "hitTestsAsFill",
         ])
     record["contents"] = scalarDescription(layer.contents)
     record["delegate"] = scalarDescription(layer.delegate)
@@ -382,7 +487,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -432,10 +537,14 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 }
                 report["runtimeObjectValues"] = Dictionary(
                     uniqueKeysWithValues: names.map { name in
-                        (
+                        let object = runtimeObjects[name]!
+                        let propertyKeys = object is CALayer
+                            ? []
+                            : runtimePropertyNames(type(of: object))
+                        return (
                             name,
                             knownRuntimeValues(
-                                runtimeObjects[name]!,
+                                object,
                                 keys: [
                                     "name",
                                     "type",
@@ -463,7 +572,13 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     "shape",
                                     "effect",
                                     "mode",
-                                ]))
+                                    "allowsFilteredLuma",
+                                    "smoothness",
+                                    "gaussianRadius",
+                                    "effectOffset",
+                                    "mergeElements",
+                                    "hitTestsAsFill",
+                                ] + propertyKeys))
                     })
             }
         }
