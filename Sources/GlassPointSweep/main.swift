@@ -23,7 +23,7 @@ private struct Pattern {
     let color: (_ row: Int, _ column: Int) -> RGB
 }
 
-private let patterns: [Pattern] = [
+private let basePatterns: [Pattern] = [
     Pattern(name: "axis-red") { row, column in
         RGB(
             red: UInt8(row * gridSide + column),
@@ -77,6 +77,130 @@ private let patterns: [Pattern] = [
             blue: UInt8(row * 17))
     },
 ]
+
+private func permutedCode(
+    row: Int,
+    column: Int,
+    multiplier: Int,
+    offset: Int
+) -> UInt8 {
+    UInt8(
+        (multiplier * (row * gridSide + column) + offset)
+            & 255)
+}
+
+private let codePermutations: [
+    (name: String, multiplier: Int, offset: Int)
+] = [
+    ("reverse", 255, 255),
+    ("p073-o019", 73, 19),
+    ("p151-o037", 151, 37),
+]
+
+private let permutedPatterns: [Pattern] = codePermutations.flatMap {
+    permutation in
+    let code: (Int, Int) -> UInt8 = { row, column in
+        permutedCode(
+            row: row,
+            column: column,
+            multiplier: permutation.multiplier,
+            offset: permutation.offset)
+    }
+    return [
+        Pattern(name: "axis-red-\(permutation.name)") {
+            row, column in
+            RGB(
+                red: code(row, column),
+                green: 128,
+                blue: 128)
+        },
+        Pattern(name: "axis-green-\(permutation.name)") {
+            row, column in
+            RGB(
+                red: 128,
+                green: code(row, column),
+                blue: 128)
+        },
+        Pattern(name: "axis-blue-\(permutation.name)") {
+            row, column in
+            RGB(
+                red: 128,
+                green: 128,
+                blue: code(row, column))
+        },
+        Pattern(name: "axis-gray-\(permutation.name)") {
+            row, column in
+            let value = code(row, column)
+            return RGB(red: value, green: value, blue: value)
+        },
+        Pattern(name: "complement-red-green-\(permutation.name)") {
+            row, column in
+            let value = code(row, column)
+            return RGB(
+                red: value,
+                green: 255 - value,
+                blue: 128)
+        },
+        Pattern(name: "complement-red-blue-\(permutation.name)") {
+            row, column in
+            let value = code(row, column)
+            return RGB(
+                red: value,
+                green: 128,
+                blue: 255 - value)
+        },
+        Pattern(name: "complement-green-blue-\(permutation.name)") {
+            row, column in
+            let value = code(row, column)
+            return RGB(
+                red: 128,
+                green: value,
+                blue: 255 - value)
+        },
+    ]
+}
+
+private let repeatedGridPatterns: [Pattern] = [
+    Pattern(name: "grid-red-green-transposed") { row, column in
+        RGB(
+            red: UInt8(row * 17),
+            green: UInt8(column * 17),
+            blue: 128)
+    },
+    Pattern(name: "grid-red-blue-transposed") { row, column in
+        RGB(
+            red: UInt8(row * 17),
+            green: 128,
+            blue: UInt8(column * 17))
+    },
+    Pattern(name: "grid-green-blue-transposed") { row, column in
+        RGB(
+            red: 128,
+            green: UInt8(row * 17),
+            blue: UInt8(column * 17))
+    },
+    Pattern(name: "grid-red-green-reversed") { row, column in
+        RGB(
+            red: UInt8((15 - column) * 17),
+            green: UInt8((15 - row) * 17),
+            blue: 128)
+    },
+    Pattern(name: "grid-red-blue-reversed") { row, column in
+        RGB(
+            red: UInt8((15 - column) * 17),
+            green: 128,
+            blue: UInt8((15 - row) * 17))
+    },
+    Pattern(name: "grid-green-blue-reversed") { row, column in
+        RGB(
+            red: 128,
+            green: UInt8((15 - column) * 17),
+            blue: UInt8((15 - row) * 17))
+    },
+]
+
+private let patterns =
+    basePatterns + permutedPatterns + repeatedGridPatterns
 
 private func renderPattern(_ pattern: Pattern) -> CGImage {
     var rgba = [UInt8](
@@ -458,8 +582,8 @@ private final class SweepDelegate: NSObject, NSApplicationDelegate {
             }
 
             let report: [String: Any] = [
-                "schemaVersion": 1,
-                "rigVersion": "point-sweep-1.0.0",
+                "schemaVersion": 2,
+                "rigVersion": "point-sweep-1.1.0",
                 "ciCommit":
                     ProcessInfo.processInfo.environment["GITHUB_SHA"]
                     ?? "local",
