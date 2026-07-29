@@ -185,6 +185,7 @@ private enum ProbeError: LocalizedError {
     case capture(String)
     case conversion
     case dimensions(Int, Int)
+    case filterCopyFailed
     case glassFilterMissing
     case inputMissing(String)
     case nonuniformCenter(String, Int, Int)
@@ -198,6 +199,8 @@ private enum ProbeError: LocalizedError {
             return "could not convert capture to canonical sRGB RGBA8"
         case .dimensions(let width, let height):
             return "capture is \(width)x\(height), expected 1024x1024"
+        case .filterCopyFailed:
+            return "glassBackground CAFilter does not support NSCopying"
         case .glassFilterMissing:
             return "live glassBackground CAFilter was not found"
         case .inputMissing(let key):
@@ -408,10 +411,16 @@ private func requireUniformCenters(
     }
 }
 
+private struct GlassFilterTarget {
+    let layer: CALayer
+    let index: Int
+    let filter: NSObject
+}
+
 private func glassBackgroundFilter(
     in layer: CALayer
-) -> (layer: CALayer, filter: NSObject)? {
-    for candidate in layer.filters ?? [] {
+) -> GlassFilterTarget? {
+    for (index, candidate) in (layer.filters ?? []).enumerated() {
         guard let object = candidate as? NSObject,
               object.responds(to: NSSelectorFromString("type")),
               let type = object.value(forKey: "type") as? String,
@@ -419,7 +428,10 @@ private func glassBackgroundFilter(
         else {
             continue
         }
-        return (layer, object)
+        return GlassFilterTarget(
+            layer: layer,
+            index: index,
+            filter: object)
     }
     for child in layer.sublayers ?? [] {
         if let result = glassBackgroundFilter(in: child) {
@@ -429,18 +441,31 @@ private func glassBackgroundFilter(
     return nil
 }
 
-private func setFilterValues(
-    layer: CALayer,
+private func copiedFilter(
+    _ source: NSObject
+) throws -> NSObject {
+    guard let copying = source as? NSCopying,
+          let copied = copying.copy(with: nil) as? NSObject
+    else {
+        throw ProbeError.filterCopyFailed
+    }
+    return copied
+}
+
+private func installFilter(
+    target: GlassFilterTarget,
     filter: NSObject,
     values: [(key: String, value: NSNumber)]
 ) {
-    CATransaction.begin()
-    CATransaction.setDisableActions(true)
     for entry in values {
         filter.setValue(entry.value, forKey: entry.key)
     }
-    layer.filters = layer.filters
-    layer.setNeedsDisplay()
+    var filters = target.layer.filters ?? []
+    filters[target.index] = filter
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    target.layer.filters = filters
+    target.layer.setNeedsDisplay()
     CATransaction.commit()
     CATransaction.flush()
 }
@@ -563,24 +588,12 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 else {
                     throw ProbeError.glassFilterMissing
                 }
-                let originalValues = try mutatedKeys.map { key in
-                    guard let value =
-                        target.filter.value(forKey: key) as? NSNumber
-                    else {
-                        throw ProbeError.inputMissing(key)
-                    }
-                    return (key: key, value: value)
-                }
-
                 var outputRecords: [[String: Any]] = []
                 for intervention in interventions {
-                    setFilterValues(
-                        layer: target.layer,
-                        filter: target.filter,
-                        values: originalValues)
-                    setFilterValues(
-                        layer: target.layer,
-                        filter: target.filter,
+                    let stateFilter = try copiedFilter(target.filter)
+                    installFilter(
+                        target: target,
+                        filter: stateFilter,
                         values: intervention.values)
                     let captureName =
                         "\(pattern.name)-\(intervention.name)"
@@ -604,7 +617,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         "stabilitySamples": stabilitySamples,
                         "captureBackend": capture.backend,
                         "filterInputs": try filterValues(
-                            target.filter,
+                            stateFilter,
                             keys: mutatedKeys),
                     ])
                 }
@@ -623,8 +636,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             }
 
             let report: [String: Any] = [
-                "schemaVersion": 1,
-                "rigVersion": "filter-intervention-1.0.0",
+                "schemaVersion": 2,
+                "rigVersion": "filter-intervention-1.1.0",
                 "ciCommit":
                     ProcessInfo.processInfo.environment["GITHUB_SHA"]
                     ?? "local",
