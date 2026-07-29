@@ -626,42 +626,6 @@ private func runtimeMethodCodeEvidence() -> [[String: Any]] {
     }
 }
 
-private func matchingLoadedRuntimeClassNames() -> [[String: String]] {
-    var classCount: UInt32 = 0
-    guard let classes = objc_copyClassList(&classCount) else {
-        return []
-    }
-    let rawClasses = unsafeBitCast(
-        classes,
-        to: UnsafeMutableRawPointer.self)
-    defer { free(rawClasses) }
-
-    var records: [[String: String]] = []
-    for index in 0..<Int(classCount) {
-        let cls: AnyClass = classes[index]
-        let name = NSStringFromClass(cls)
-        let lowercased = name.lowercased()
-        guard runtimeClassTokens.contains(where: {
-            lowercased.contains($0)
-        }),
-        name.hasPrefix("CA")
-            || name.hasPrefix("MT")
-            || name.hasPrefix("_MT")
-            || name.contains("Glass")
-        else {
-            continue
-        }
-        var record = ["name": name]
-        if let imageName = class_getImageName(cls) {
-            record["image"] = String(cString: imageName)
-        }
-        records.append(record)
-    }
-    return records.sorted {
-        ($0["name"] ?? "") < ($1["name"] ?? "")
-    }
-}
-
 private func matchingRuntimeClasses(
     in imagePaths: [String]
 ) -> [[String: Any]] {
@@ -962,8 +926,6 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             "exportedCode": exportedCodeEvidence(),
             "constructedMatrices": constructedMatrixEvidence(),
             "runtimeMethodCode": runtimeMethodCodeEvidence(),
-            "matchingLoadedRuntimeClassNames":
-                matchingLoadedRuntimeClassNames(),
         ]
         if let captureError {
             report["captureError"] = captureError
