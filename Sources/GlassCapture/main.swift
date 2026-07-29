@@ -520,6 +520,39 @@ func staticBackgrounds() -> [Background] {
         })
     }
 
+    // V2.14 samples the same training bit fields at coprime amplitudes. The
+    // resulting integer code transitions constrain the hidden continuous
+    // filter below one output code. Two new seeds, including their a064
+    // endpoints, remain sealed final holdouts.
+    let clearTomographySeeds: [(String, UInt32, [Int])] = [
+        ("train-00", 0xD1B5_4A32, [17, 31, 47]),
+        ("train-01", 0x94D0_49BB, [17, 31, 47]),
+        ("train-02", 0x8538_ECB5, [17, 31, 47]),
+        ("train-03", 0xC2B2_AE35, [17, 31, 47]),
+        ("holdout-00", 0xA24B_AED4, [17, 31, 47, 64]),
+        ("holdout-01", 0x9FB2_1C65, [17, 31, 47, 64]),
+    ]
+    for (role, seed, amplitudes) in clearTomographySeeds {
+        for amplitude in amplitudes {
+            let name = String(
+                format: "noise-rgb-a%03d-tomography-%@", amplitude, role)
+            list.append(Background(name: name, family: .noise) {
+                x, y, _, _ in
+                (
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x243F_6A88),
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x85A3_08D3),
+                    binaryNoise(
+                        x, y, amplitude: amplitude,
+                        seed: seed ^ 0x1319_8A2E)
+                )
+            })
+        }
+    }
+
     // V2.10's pixel-scale, neutral-centered binary probes do not identify the
     // measured nonlinear response across color range and spatial scale. These
     // paired fields bridge that gap without consuming the historical chart or
@@ -996,6 +1029,12 @@ func calibrationScenes(width: Int, height: Int) -> [SceneSpec] {
         shapes: [GlassShapeSpec(
             id: "rect", kind: .roundedRect, centerX: cx, centerY: cy,
             width: 6000, height: 4000, cornerRadius: 0)],
+        containerSpacing: 0))
+    scenes.append(SceneSpec(
+        name: "rect-4000x6000-r000-center",
+        shapes: [GlassShapeSpec(
+            id: "rect", kind: .roundedRect, centerX: cx, centerY: cy,
+            width: 4000, height: 6000, cornerRadius: 0)],
         containerSpacing: 0))
     return scenes
 }
@@ -2088,7 +2127,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.13.0",
+            rigVersion: "2.14.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2293,11 +2332,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                  "holdout-00", "holdout-01"].map {
                     "noise-rgb-a064-kernel-\($0)"
                 })
+            let clearTomographyNames: Set<String> = Set(
+                backgrounds.lazy.map(\.name).filter {
+                    $0.contains("-tomography-")
+                })
             let oversizedRectSceneName = "rect-6000x4000-r000-center"
+            let transposedRectSceneName = "rect-4000x6000-r000-center"
+            let focusedOversizedSceneNames: Set<String> = [
+                oversizedRectSceneName,
+                transposedRectSceneName,
+            ]
 
             // Primary system-identification matrix: one isolated 500-point
             // circle, paired controls, two materials, both appearances.
-            for bg in backgrounds where !clearKernelNames.contains(bg.name) {
+            for bg in backgrounds
+                where !clearKernelNames.contains(bg.name)
+                    && !clearTomographyNames.contains(bg.name)
+            {
                 log("static base: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
                 let referencePixels = try recordReference(bg, image)
@@ -2329,7 +2380,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 let image = renderBackground(bg, width: pw, height: ph)
                 for scene in scenes
                     where scene.name != baseScene.name
-                        && scene.name != oversizedRectSceneName
+                        && !focusedOversizedSceneNames.contains(scene.name)
                 {
                     for appearance in Appearance.allCases {
                         for overlay in [Overlay.regular, .clear] {
@@ -2722,6 +2773,72 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             overlay: .clear,
                             appearance: appearance)
                     }
+                }
+            }
+
+            // Keep the complete v2.13 stream as an unchanged prefix. Focused
+            // v2.14 sources get one exact no-glass control and dark clear
+            // captures only; prior evidence already proves clear is
+            // appearance-invariant. The transposed rectangle makes the
+            // signed-distance bands orthogonal in screen space.
+            let tomographySceneNames: Set<String> = [
+                "circle-4000-center",
+                "circle-6000-upper-left",
+                "rect-6000x4000-r000-center",
+                "rect-4000x6000-r000-center",
+            ]
+            let tomographyScenes = scenes.filter {
+                tomographySceneNames.contains($0.name)
+            }
+            for bg in backgrounds where clearTomographyNames.contains(bg.name) {
+                log("static v2.14 amplitude tomography: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                let referencePixels = try recordReference(bg, image)
+                await captureStatic(
+                    background: bg,
+                    image: image,
+                    referencePixels: referencePixels,
+                    scene: baseScene,
+                    overlay: .none,
+                    appearance: .dark)
+                for scene in tomographyScenes {
+                    await captureStatic(
+                        background: bg,
+                        image: image,
+                        referencePixels: nil,
+                        scene: scene,
+                        overlay: .clear,
+                        appearance: .dark)
+                }
+            }
+
+            let transposedRectangle = scenes.first {
+                $0.name == transposedRectSceneName
+            }!
+            for bg in backgrounds
+                where clearKernelNames.contains(bg.name)
+            {
+                let image = renderBackground(bg, width: pw, height: ph)
+                await captureStatic(
+                    background: bg,
+                    image: image,
+                    referencePixels: nil,
+                    scene: transposedRectangle,
+                    overlay: .clear,
+                    appearance: .dark)
+            }
+            if let gray = backgrounds.first(where: { $0.name == "gray-128" }) {
+                let image = renderBackground(gray, width: pw, height: ph)
+                for scene in tomographyScenes
+                    where scene.name == transposedRectSceneName
+                {
+                    await captureStatic(
+                        background: gray,
+                        image: image,
+                        referencePixels: nil,
+                        scene: scene,
+                        overlay: .clear,
+                        appearance: .dark)
                 }
             }
         }

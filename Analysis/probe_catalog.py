@@ -80,6 +80,28 @@ CLEAR_KERNEL_PROBES: dict[str, dict[str, Any]] = {
     for index, seed in enumerate(seeds)
 }
 
+CLEAR_TOMOGRAPHY_AMPLITUDES = (17, 31, 47, 64)
+CLEAR_TOMOGRAPHY_PROBES: dict[str, dict[str, Any]] = {
+    f"noise-rgb-a{amplitude:03d}-tomography-{name_role}-{index:02d}": {
+        "probeKind": "independent-rgb-binary-pixels",
+        "role": metadata_role,
+        "blockSizePixels": 1,
+        "centerCode": 128,
+        "amplitudeCodes": amplitude,
+        "levels": [128 - amplitude, 128 + amplitude],
+        "seed": f"0x{seed:08x}",
+        "amplitudeGroup": f"{name_role}-{index:02d}",
+    }
+    for name_role, metadata_role, seeds in (
+        ("train", "training", (0xD1B54A32, 0x94D049BB, 0x8538ECB5, 0xC2B2AE35)),
+        ("holdout", "holdout", (0xA24BAED4, 0x9FB21C65)),
+    )
+    for index, seed in enumerate(seeds)
+    for amplitude in (
+        (17, 31, 47) if metadata_role == "training" else CLEAR_TOMOGRAPHY_AMPLITUDES
+    )
+}
+
 
 def hash32(
     x: UInt32Image,
@@ -271,6 +293,27 @@ def expected_clear_kernel_reference(
     if width <= 0 or height <= 0:
         raise ValueError("reference dimensions must be positive")
     metadata = CLEAR_KERNEL_PROBES[background]
+    return binary_blocks(
+        width=width,
+        height=height,
+        block=int(metadata["blockSizePixels"]),
+        center=int(metadata["centerCode"]),
+        amplitude=int(metadata["amplitudeCodes"]),
+        seed=int(str(metadata["seed"]), 0),
+        independent_rgb=True,
+    )
+
+
+def expected_clear_tomography_reference(
+    background: str,
+    *,
+    width: int,
+    height: int,
+) -> CodeImage:
+    """Regenerate one v2.14 amplitude-tomography source independently."""
+    if width <= 0 or height <= 0:
+        raise ValueError("reference dimensions must be positive")
+    metadata = CLEAR_TOMOGRAPHY_PROBES[background]
     return binary_blocks(
         width=width,
         height=height,

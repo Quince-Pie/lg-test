@@ -11,7 +11,7 @@ appearances, and transitions, Walle must match captured output within explicit
 pixel metrics. No shader change should be accepted merely because it looks
 closer.
 
-## How the rig reached v2.13
+## How the rig reached v2.14
 
 The first rig established a strong static baseline, but it put three shapes in
 every numerical sample, used too few tone and spatial-frequency probes, and
@@ -361,6 +361,49 @@ whether the residual is a fixed convolution/reconstruction kernel or a
 shape-local coordinate transform. V2.13 appends 6 references and 96 captures
 without changing any earlier case or its order.
 
+Run `30420761535` returned the complete v2.13 matrix. Its
+2,354,059,562-byte archive (`SHA-256
+7498867d67df9b8405c746d911e773ec1d24a221d44d41b5cffb84e3780080b8`)
+contains 146 references and 1,884 stable captures with zero validation errors
+or warnings. Of the 1,788 captures inherited from v2.12, 1,787 are
+pixel-exact. The only difference is one pixel with maximum channel delta one
+among 6.4 million pixels in
+`checker-0064|circle-4000-center|clear|dark`; all 140 inherited
+references are pixel-exact.
+
+The three oversized geometries are not one stationary filter. Their contrast
+responses collapse when position is expressed as normalized signed distance
+from the glass boundary, with `0.02753`-code cross-scene RMS versus
+`0.12355` or worse for radius, ellipse, and box-coordinate alternatives.
+Training data identifies 13 discrete reconstruction states. Across two
+different shapes, pixels assigned to the same state have identical joint
+four-seed RGB outputs with probability `0.98763` to `0.99728`; different
+states almost never share that joint output. This identifies a shape-local
+state selector, not a coordinate warp.
+
+The remaining source-to-state filter is still below exact parity. The two
+v2.13 kernel holdouts were opened while confirming the selector and are now
+explicitly development-exposed, so they cannot be represented as a fresh
+final gate. V2.14 therefore adds evidence rather than changing Walle:
+
+- the same four training bit fields at source amplitudes 17, 31, and 47,
+  completing amplitude ladders whose amplitude-64 endpoints are already in
+  v2.13;
+- two new seeds fixed before capture, each sampled at amplitudes 17, 31, 47,
+  and 64 and reserved as protected final holdouts;
+- dark clear output under the centered circle, translated circle, wide
+  rectangle, and a new transposed 4000x6000-point rectangle; and
+- the six v2.13 amplitude-64 fields plus uniform gray under that transposed
+  rectangle.
+
+The coprime amplitude ladders expose output-code transition boundaries and
+therefore constrain sub-code continuous filter coefficients that a single
+amplitude cannot identify. The transposed rectangle supplies orthogonal
+signed-distance bands without changing the selector. The measurement report
+records only the protected holdout inventory; it does not decode those output
+images during fitting. V2.14 adds 20 references and 107 captures while
+preserving the complete v2.13 capture stream as an unchanged prefix.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
@@ -437,15 +480,15 @@ Both ZIP entries pass CRC. It contains only `manifest.json` and
 `midpoint=0.0` and `endpoint=0.0`, so the matrix was intentionally aborted.
 This archive is useful diagnostic evidence but contains no optical samples.
 
-V2.13 isolates the unknowns:
+V2.14 isolates the unknowns:
 
 | Unknown | Evidence |
 | --- | --- |
 | Tone, tint, and cross-channel transfer | 17 full-field grays; orthogonal 256-code giant-circle ramps; a 729-point RGB cube in ordered, affine-permuted, four independently shuffled training contexts, and one untouched shuffled holdout; all 512 midpoint RGB colors in ordered, four training contexts, and one untouched shuffled holdout |
 | Refraction and blur | Four-phase horizontal and vertical sinusoids at six periods from 32 to 1024 px; complete six-period regular/clear giant-circle MTFs; 64/256/1024 px probes at 256-, 500-, and 4000-point circle scales; and p256 probes at all four quadrant positions |
-| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, independent fit/holdout gray/RGB binary noise at two amplitudes under both materials, six additional independent clear-kernel fields, and calibrated multiscale RGB block fields |
+| Edge, point/line, and radial response | Slanted and axis-aligned edges, three-pixel lines, radial rings, checkerboards, full-range deterministic noise, independent fit/holdout gray/RGB binary noise at two amplitudes under both materials, six additional independent clear-kernel fields, four training and two protected-holdout amplitude ladders, and calibrated multiscale RGB block fields |
 | Adaptive spatial/color response | RGB palette blocks at 4/16/64/256 px with grid-code training and 507 source-safe midpoint-code holdouts; paired 16 px binary fields at means 64/128/192; and a known periodic translation check |
-| Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, three visible rectangle corner radii, and an oversized boundary-free rectangle |
+| Size and shape dependence | Six centered circle sizes through a 4000-point off-screen circle, fractional/subpixel positioning, a 6000-point off-center circle, a five-position 500-point grid, three visible rectangle corner radii, and orthogonal 6000x4000- and 4000x6000-point boundary-free rectangles |
 | Container interaction | Equal circle pairs captured with container spacing below and above their 100-point gap |
 | Appearance and material | Light/dark appearances and real `.regular`/`.clear` materials; targeted regular/clear tint probes |
 | Time response | Real `materialize` and `dematerialize`, resize, translation, continuous circle-to-rounded-rectangle morph, single-source expansion, and a two-wallpaper reference transition; presented-state clocks; three traversals of 17 exact settled states per geometry mode |
@@ -488,9 +531,9 @@ marginal probability error. The training seed `0x7308c145` scores 0.05981; the
 disjoint-palette holdout seed `0x49f7b8c3` scores 0.05043. This prevents an
 accidental coarse-field correlation from being mistaken for Apple behavior.
 
-The v2.13 static suite contains:
+The v2.14 static suite contains:
 
-- 146 deterministic backgrounds and 146 saved static references.
+- 166 deterministic backgrounds and 166 saved static references.
 - 876 base control/regular/clear samples: every background, both appearances.
 - 42 targeted tint samples.
 - 288 isolated geometry, screen-position, off-screen-scale, and
@@ -499,12 +542,13 @@ The v2.13 static suite contains:
 - 288 scale-dependent, four-phase local-MTF/refraction samples.
 - 128 four-phase p256 refraction/MTF samples across the four quadrant
   positions.
-- 200 giant-circle edge, line, checker, stochastic, adaptive-spatial, and
-  clear-kernel geometry samples. Every adaptive field covers both real
-  materials; the focused v2.13 fields use real clear material.
+- 307 giant-circle edge, line, checker, stochastic, adaptive-spatial,
+  clear-kernel geometry, and amplitude-tomography samples. Every adaptive
+  field covers both real materials; the focused v2.13/v2.14 fields use real
+  clear material.
 - 2 qualitative HIG-style controls-over-content samples.
 
-That is 1,884 static captures. The numerical fit should use the isolated scenes;
+That is 1,991 static captures. The numerical fit should use the isolated scenes;
 the HIG-style scene is a qualitative continuity check only.
 
 The dynamic suite contains 32 sequences:
@@ -560,7 +604,7 @@ within its traversal and must pass the delayed stability check.
 Cross-traversal differences are retained and reported as
 repeatability/hysteresis evidence rather than discarded.
 
-With the default `all` suite, a v2.13 artifact contains 148 references, 1,884
+With the default `all` suite, a v2.14 artifact contains 168 references, 1,991
 static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 24 exact sweep matrices containing 1,224 frames.
 
@@ -596,9 +640,11 @@ complete dynamic sequences, acquisition and presentation coverage, exact
 sweep matrices, unique states, two-source endpoints, and material topology
 controls. For v2.11 onward it also regenerates all 21 adaptive references from
 the declared seeds, palettes, block sizes, means, amplitudes, and translation.
-For v2.13 it independently regenerates all six clear-kernel fields and requires
-the three-geometry capture matrix. Every regenerated source must be pixel-exact
-with the archive. A validation
+For v2.13 onward it independently regenerates all six clear-kernel fields and
+requires the three-geometry capture matrix. For v2.14 it also independently
+regenerates all 20 amplitude-tomography sources and requires their focused
+four-geometry matrix plus the transposed-rectangle controls. Every regenerated
+source must be pixel-exact with the archive. A validation
 failure still uploads the artifact so the cause can be inspected, but the
 workflow ends red.
 
@@ -622,14 +668,14 @@ The workflow requires the `macos-26` runner label and uploads:
 liquid-glass-captures-<run-id>-<suite>
 ```
 
-Return the automatic v2.13 `static` artifact first. It contains the six new
-independent RGB fields and their centered-circle, translated-circle, and
-oversized-rectangle clear outputs. Rerunning the unchanged dynamic and
+Return the automatic v2.14 `static` artifact first. It contains the amplitude
+ladders, protected fresh seeds, and transposed-rectangle controls needed to
+freeze and test the exact clear filter. Rerunning the unchanged dynamic and
 exact-sweep matrices is unnecessary.
 
 Runs `30326591212` and `30365533488` complete the two-run static, exact-state,
 and endpoint repeatability corpus. The latter has four rejected live
-traversals. After the v2.13 static fit, the remaining focused temporal work is:
+traversals. After the v2.14 static fit, the remaining focused temporal work is:
 
 1. A focused `dynamic`, 1.0-second, 61-frame recovery run with
    `dynamic_modes=wallpaper-transition,wallpaper-transition-reverse` and exact
@@ -697,7 +743,7 @@ Matplotlib, Pillow, ImageMagick, and `gh`.
 
 ## What happens after capture
 
-The v2.11 through v2.13 artifacts are measurement inputs, not proof that Walle
+The v2.11 through v2.14 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
 

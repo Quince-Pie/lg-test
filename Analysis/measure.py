@@ -21,7 +21,11 @@ from scipy.ndimage import map_coordinates
 from scipy.optimize import least_squares
 from scipy.special import ndtr
 
-from probe_catalog import ADAPTIVE_SPATIAL_PROBES, CLEAR_KERNEL_PROBES
+from probe_catalog import (
+    ADAPTIVE_SPATIAL_PROBES,
+    CLEAR_KERNEL_PROBES,
+    CLEAR_TOMOGRAPHY_PROBES,
+)
 
 
 type JsonObject = dict[str, Any]
@@ -83,6 +87,10 @@ CLEAR_KERNEL_SCENES = [
     "circle-4000-center",
     "circle-6000-upper-left",
     "rect-6000x4000-r000-center",
+]
+CLEAR_TOMOGRAPHY_SCENES = [
+    *CLEAR_KERNEL_SCENES,
+    "rect-4000x6000-r000-center",
 ]
 
 
@@ -1008,6 +1016,97 @@ class Measurements:
             "records": records,
         }
 
+    def clear_amplitude_tomography_inventory(self) -> JsonObject:
+        groups: dict[str, list[str]] = {}
+        roles: dict[str, str] = {}
+        for background, metadata in CLEAR_TOMOGRAPHY_PROBES.items():
+            group = str(metadata["amplitudeGroup"])
+            groups.setdefault(group, []).append(background)
+            roles[group] = str(metadata["role"])
+        for index in range(4):
+            group = f"train-{index:02d}"
+            groups[group].append(
+                f"noise-rgb-a064-kernel-train-{index:02d}"
+            )
+
+        records: JsonObject = {}
+        for group in sorted(groups):
+            backgrounds = sorted(
+                groups[group],
+                key=lambda background: (
+                    int(
+                        CLEAR_TOMOGRAPHY_PROBES.get(
+                            background,
+                            {"amplitudeCodes": 64},
+                        )["amplitudeCodes"]
+                    ),
+                    background,
+                ),
+            )
+            cases = [
+                {
+                    "background": background,
+                    "scene": scene,
+                    "overlay": "clear",
+                    "appearance": "dark",
+                    "available": self.has_image(
+                        background,
+                        scene,
+                        "clear",
+                        "dark",
+                    ),
+                }
+                for background in backgrounds
+                for scene in CLEAR_TOMOGRAPHY_SCENES
+            ]
+            records[group] = {
+                "role": roles[group],
+                "backgrounds": backgrounds,
+                "amplitudesCodes": [
+                    int(
+                        CLEAR_TOMOGRAPHY_PROBES.get(
+                            background,
+                            {"amplitudeCodes": 64},
+                        )["amplitudeCodes"]
+                    )
+                    for background in backgrounds
+                ],
+                "requiredOutputCount": len(cases),
+                "availableOutputCount": sum(
+                    bool(case["available"]) for case in cases
+                ),
+                "cases": cases,
+            }
+
+        required_references = set(CLEAR_TOMOGRAPHY_PROBES)
+        return {
+            "available": (
+                required_references <= self.references.keys()
+                and all(
+                    record["availableOutputCount"]
+                    == record["requiredOutputCount"]
+                    for record in records.values()
+                )
+            ),
+            "purpose": (
+                "constrain the hidden continuous clear filter through "
+                "integer output-code transitions at coprime source amplitudes"
+            ),
+            "scenes": {
+                scene: self.scenes.get(scene)
+                for scene in CLEAR_TOMOGRAPHY_SCENES
+            },
+            "newReferenceCount": len(CLEAR_TOMOGRAPHY_PROBES),
+            "trainingGroupCount": sum(
+                role == "training" for role in roles.values()
+            ),
+            "protectedHoldoutGroupCount": sum(
+                role == "holdout" for role in roles.values()
+            ),
+            "protectedHoldoutOutputsDecodedByThisAnalysis": False,
+            "records": records,
+        }
+
     def base_color_charts(self) -> JsonObject:
         return {
             "fitting": self.color_transfer_chart(
@@ -1839,6 +1938,7 @@ class Measurements:
             "2.11.0": 8,
             "2.12.0": 9,
             "2.13.0": 10,
+            "2.14.0": 11,
         }.get(str(rig_version), 7)
         result = {
             "analysisSchemaVersion": analysis_schema_version,
@@ -1923,17 +2023,21 @@ class Measurements:
             "dynamicSourceControls": self.dynamic_source_controls(),
             "sweepStates": self.sweep_states(),
         }
-        if rig_version in {"2.11.0", "2.12.0", "2.13.0"}:
+        if rig_version in {"2.11.0", "2.12.0", "2.13.0", "2.14.0"}:
             result["adaptiveSpatialProbeStatistics"] = (
                 self.adaptive_spatial_probe_statistics()
             )
-        if rig_version in {"2.12.0", "2.13.0"}:
+        if rig_version in {"2.12.0", "2.13.0", "2.14.0"}:
             result["pixelScaleGiantProbeStatistics"] = (
                 self.pixel_scale_giant_probe_statistics()
             )
-        if rig_version == "2.13.0":
+        if rig_version in {"2.13.0", "2.14.0"}:
             result["clearKernelGeometryStatistics"] = (
                 self.clear_kernel_geometry_statistics()
+            )
+        if rig_version == "2.14.0":
+            result["clearAmplitudeTomographyInventory"] = (
+                self.clear_amplitude_tomography_inventory()
             )
         return result
 
