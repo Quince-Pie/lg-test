@@ -21,6 +21,9 @@ from probe_catalog import (
     CLEAR_AMPLITUDE_SWEEP_HOLDOUT_AMPLITUDES,
     CLEAR_AMPLITUDE_SWEEP_PROBES,
     CLEAR_AMPLITUDE_SWEEP_TRAINING_AMPLITUDES,
+    CLEAR_FILTER_STAGE_IMPULSE_AMPLITUDES,
+    CLEAR_FILTER_STAGE_IMPULSE_CHARTS,
+    CLEAR_FILTER_STAGE_PROBES,
     CLEAR_GRID_BASIS_BOUNDARY_AMPLITUDES,
     CLEAR_GRID_BASIS_CELL_AMPLITUDES,
     CLEAR_GRID_BASIS_PROBES,
@@ -29,6 +32,7 @@ from probe_catalog import (
     CLEAR_TOMOGRAPHY_PROBES,
     expected_adaptive_reference,
     expected_clear_amplitude_sweep_reference,
+    expected_clear_filter_stage_reference,
     expected_clear_grid_basis_reference,
     expected_clear_kernel_reference,
     expected_clear_tomography_reference,
@@ -39,7 +43,7 @@ from probe_catalog import (
 
 
 class MeasurementTests(unittest.TestCase):
-    def test_v216_probe_catalog_matches_capture_source(self) -> None:
+    def test_v217_probe_catalog_matches_capture_source(self) -> None:
         source = (
             Path(__file__).resolve().parents[1]
             / "Sources"
@@ -64,7 +68,7 @@ class MeasurementTests(unittest.TestCase):
             ("holdout-01", "0x9FB2_1C65"),
         ):
             self.assertIn(f'("{role}", {seed}', source)
-        self.assertIn('rigVersion: "2.16.0"', source)
+        self.assertIn('rigVersion: "2.17.0"', source)
         self.assertIn('name: "rect-6000x4000-r000-center"', source)
         self.assertIn('name: "rect-4000x6000-r000-center"', source)
         self.assertIn(
@@ -99,6 +103,16 @@ class MeasurementTests(unittest.TestCase):
             "includeControlReference:",
             source,
         )
+        self.assertIn(
+            "let clearStageImpulseAmplitudes = [",
+            source,
+        )
+        for chart, seed in (
+            ("00", "0xBB67_AE85"),
+            ("01", "0x3C6E_F372"),
+            ("02", "0xA54F_F53A"),
+        ):
+            self.assertIn(f'("{chart}", {seed}', source)
 
     def test_v213_clear_kernel_generators_are_independent_and_split(self) -> None:
         roles = [str(record["role"]) for record in CLEAR_KERNEL_PROBES.values()]
@@ -334,6 +348,103 @@ class MeasurementTests(unittest.TestCase):
                     {96, 160},
                 )
 
+    def test_v217_filter_stage_probes_are_exact_and_complementary(self) -> None:
+        self.assertEqual(len(CLEAR_FILTER_STAGE_PROBES), 6)
+        self.assertEqual(
+            CLEAR_FILTER_STAGE_IMPULSE_AMPLITUDES,
+            (
+                1,
+                2,
+                3,
+                7,
+                8,
+                15,
+                16,
+                17,
+                31,
+                32,
+                33,
+                47,
+                48,
+                49,
+                63,
+                64,
+                95,
+                127,
+            ),
+        )
+        self.assertEqual(
+            CLEAR_FILTER_STAGE_IMPULSE_CHARTS,
+            (
+                ("00", 0xBB67AE85, 64, 64),
+                ("01", 0x3C6EF372, 128, 96),
+                ("02", 0xA54FF53A, 192, 160),
+            ),
+        )
+        self.assertTrue(
+            all(
+                metadata["sourceControl"]
+                for metadata in CLEAR_FILTER_STAGE_PROBES.values()
+            )
+        )
+
+        forward = expected_clear_filter_stage_reference(
+            "clear-stage-grid2-ramp-forward",
+            width=518,
+            height=390,
+        )
+        reverse = expected_clear_filter_stage_reference(
+            "clear-stage-grid2-ramp-reverse",
+            width=518,
+            height=390,
+        )
+        self.assertTrue(
+            np.array_equal(
+                forward.astype(np.uint16) + reverse.astype(np.uint16),
+                np.full(forward.shape, 256, dtype=np.uint16),
+            )
+        )
+        self.assertTrue(np.array_equal(forward[0::2, 0::2], forward[1::2, 0::2]))
+        self.assertTrue(np.array_equal(forward[0::2, 0::2], forward[0::2, 1::2]))
+
+        observed_amplitudes: set[int] = set()
+        for chart, _, offset_x, offset_y in CLEAR_FILTER_STAGE_IMPULSE_CHARTS:
+            image = expected_clear_filter_stage_reference(
+                f"clear-stage-grid2-impulse-lattice-{chart}",
+                width=2176,
+                height=976,
+            )
+            changed = np.any(image != 128, axis=2)
+            expected_changed = np.zeros((976, 2176), dtype=np.bool_)
+            expected_changed[offset_y::256, offset_x::256] = True
+            expected_changed[offset_y + 1 :: 256, offset_x::256] = True
+            expected_changed[offset_y::256, offset_x + 1 :: 256] = True
+            expected_changed[offset_y + 1 :: 256, offset_x + 1 :: 256] = True
+            np.testing.assert_array_equal(changed, expected_changed)
+            observed_amplitudes.update(
+                int(value)
+                for value in np.unique(
+                    np.abs(image.astype(np.int16) - 128)
+                )
+                if value
+            )
+        self.assertEqual(
+            observed_amplitudes,
+            set(CLEAR_FILTER_STAGE_IMPULSE_AMPLITUDES),
+        )
+
+        tie = expected_clear_filter_stage_reference(
+            "clear-stage-cell2-tie-00",
+            width=18,
+            height=16,
+        )
+        cell_means = tie.astype(np.float64).reshape(8, 2, 9, 2, 3).mean(
+            axis=(1, 3)
+        )
+        self.assertTrue(
+            np.all(np.isin(cell_means, np.array([127.5, 128.5])))
+        )
+
     def test_v215_inventory_tracks_dense_cases_without_decoding_holdout(
         self,
     ) -> None:
@@ -448,6 +559,65 @@ class MeasurementTests(unittest.TestCase):
         self.assertEqual(
             report["records"]["cell2-basis-11"]["requiredOutputCount"],
             5,
+        )
+
+    def test_v217_inventory_requires_every_control_and_clear_output(
+        self,
+    ) -> None:
+        references = [
+            {"background": background, "file": f"{background}.png"}
+            for background in CLEAR_FILTER_STAGE_PROBES
+        ]
+        captures = [
+            {
+                "background": background,
+                "scene": scene,
+                "overlay": "clear",
+                "appearance": "dark",
+                "file": f"{background}-clear.png",
+            }
+            for background, metadata in CLEAR_FILTER_STAGE_PROBES.items()
+            for scene in metadata["scenes"]
+        ]
+        captures.extend(
+            {
+                "background": background,
+                "scene": "circle-0500-center",
+                "overlay": "none",
+                "appearance": "dark",
+                "file": f"{background}-control.png",
+            }
+            for background in CLEAR_FILTER_STAGE_PROBES
+        )
+        measurements = Measurements(
+            Artifact(
+                path=Path("."),
+                manifest={
+                    "rigVersion": "2.17.0",
+                    "references": references,
+                    "captures": captures,
+                    "scenes": [],
+                },
+            )
+        )
+
+        report = measurements.clear_filter_stage_inventory()
+
+        self.assertTrue(report["available"])
+        self.assertEqual(report["catalogReferenceCount"], 6)
+        self.assertEqual(report["requiredSourceControlCount"], 6)
+        self.assertEqual(report["requiredOutputCount"], 6)
+        self.assertFalse(report["protectedHoldoutOutputsDecodedByThisAnalysis"])
+        measurements.records.pop(
+            (
+                "clear-stage-cell2-tie-00",
+                "circle-0500-center",
+                "none",
+                "dark",
+            )
+        )
+        self.assertFalse(
+            measurements.clear_filter_stage_inventory()["available"]
         )
 
     def test_v213_clear_kernel_statistics_compare_exact_geometry_pixels(

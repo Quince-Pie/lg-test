@@ -19,11 +19,13 @@ from PIL import Image, ImageCms
 from probe_catalog import (
     ADAPTIVE_SPATIAL_PROBES,
     CLEAR_AMPLITUDE_SWEEP_PROBES,
+    CLEAR_FILTER_STAGE_PROBES,
     CLEAR_GRID_BASIS_PROBES,
     CLEAR_KERNEL_PROBES,
     CLEAR_TOMOGRAPHY_PROBES,
     expected_adaptive_reference,
     expected_clear_amplitude_sweep_reference,
+    expected_clear_filter_stage_reference,
     expected_clear_grid_basis_reference,
     expected_clear_kernel_reference,
     expected_clear_tomography_reference,
@@ -331,6 +333,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         },
     }.get(schema, set())
     if manifest.get("rigVersion") not in expected_rigs:
@@ -408,6 +411,7 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }
         and manifest.get("requestedSuite") != "static"
     ):
@@ -454,7 +458,12 @@ def full_geometry_matrix_scenes(
     scene_names: set[str],
 ) -> set[str]:
     scenes = scene_names - {"circle-0500-center"}
-    if manifest.get("rigVersion") in {"2.14.0", "2.15.0", "2.16.0"}:
+    if manifest.get("rigVersion") in {
+        "2.14.0",
+        "2.15.0",
+        "2.16.0",
+        "2.17.0",
+    }:
         scenes -= {"rect-4000x6000-r000-center"}
     return scenes
 
@@ -463,8 +472,8 @@ def static_capture_requires_control(
     manifest: JsonObject,
     record: JsonObject,
 ) -> bool:
-    """Return false only for the declared v2.16 reference-only fit cases."""
-    if manifest.get("rigVersion") != "2.16.0":
+    """Return false only for inherited v2.16 reference-only fit cases."""
+    if manifest.get("rigVersion") not in {"2.16.0", "2.17.0"}:
         return True
     background = record.get("background")
     metadata = (
@@ -650,6 +659,7 @@ def validate_static(
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             required_v28_backgrounds = {
                 "color-cube-9-permuted",
@@ -670,6 +680,7 @@ def validate_static(
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             required_v29_backgrounds = {
                 "color-cube-9-shuffled",
@@ -689,6 +700,7 @@ def validate_static(
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             required_v210_backgrounds = {
                 *{f"color-cube-9-context-train-{index:02d}" for index in range(4)},
@@ -716,6 +728,7 @@ def validate_static(
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             required_v211_backgrounds = set(ADAPTIVE_SPATIAL_PROBES)
             missing_v211_backgrounds = required_v211_backgrounds - static_backgrounds
@@ -759,6 +772,7 @@ def validate_static(
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             required_v213_backgrounds = set(CLEAR_KERNEL_PROBES)
             missing_v213_backgrounds = required_v213_backgrounds - static_backgrounds
@@ -797,7 +811,12 @@ def validate_static(
                         f"({np.count_nonzero(changed)} changed pixels, "
                         f"maximum channel delta {delta.max(initial=0)})"
                     )
-        if manifest.get("rigVersion") in {"2.14.0", "2.15.0", "2.16.0"}:
+        if manifest.get("rigVersion") in {
+            "2.14.0",
+            "2.15.0",
+            "2.16.0",
+            "2.17.0",
+        }:
             required_v214_backgrounds = set(CLEAR_TOMOGRAPHY_PROBES)
             missing_v214_backgrounds = required_v214_backgrounds - static_backgrounds
             if missing_v214_backgrounds:
@@ -837,7 +856,11 @@ def validate_static(
                         f"({np.count_nonzero(changed)} changed pixels, "
                         f"maximum channel delta {delta.max(initial=0)})"
                     )
-        if manifest.get("rigVersion") in {"2.15.0", "2.16.0"}:
+        if manifest.get("rigVersion") in {
+            "2.15.0",
+            "2.16.0",
+            "2.17.0",
+        }:
             required_v215_backgrounds = set(CLEAR_AMPLITUDE_SWEEP_PROBES)
             missing_v215_backgrounds = (
                 required_v215_backgrounds - static_backgrounds
@@ -882,7 +905,7 @@ def validate_static(
                         f"({np.count_nonzero(changed)} changed pixels, "
                         f"maximum channel delta {delta.max(initial=0)})"
                     )
-        if manifest.get("rigVersion") == "2.16.0":
+        if manifest.get("rigVersion") in {"2.16.0", "2.17.0"}:
             required_v216_backgrounds = set(CLEAR_GRID_BASIS_PROBES)
             missing_v216_backgrounds = (
                 required_v216_backgrounds - static_backgrounds
@@ -927,18 +950,65 @@ def validate_static(
                         f"({np.count_nonzero(changed)} changed pixels, "
                         f"maximum channel delta {delta.max(initial=0)})"
                     )
+        if manifest.get("rigVersion") == "2.17.0":
+            required_v217_backgrounds = set(CLEAR_FILTER_STAGE_PROBES)
+            missing_v217_backgrounds = (
+                required_v217_backgrounds - static_backgrounds
+            )
+            if missing_v217_backgrounds:
+                findings.error(
+                    "v2.17 clear-filter-stage references are missing "
+                    f"{sorted(missing_v217_backgrounds)}"
+                )
+            for background in sorted(
+                required_v217_backgrounds & static_backgrounds
+            ):
+                reference = references[background]
+                path = artifact_path(root, reference.get("file"), findings)
+                if path is None:
+                    continue
+                try:
+                    decoded = decode_image(path)
+                    expected = expected_clear_filter_stage_reference(
+                        background,
+                        width=decoded.width,
+                        height=decoded.height,
+                    )
+                    actual = np.frombuffer(
+                        decoded.rgba,
+                        dtype=np.uint8,
+                    ).reshape(decoded.height, decoded.width, 4)[:, :, :3]
+                except Exception as error:
+                    findings.error(
+                        f"{background}: cannot verify v2.17 probe generator: "
+                        f"{error}"
+                    )
+                    continue
+                if not np.array_equal(expected, actual):
+                    delta = np.abs(
+                        expected.astype(np.int16) - actual.astype(np.int16)
+                    )
+                    changed = np.any(delta != 0, axis=2)
+                    findings.error(
+                        f"{background}: archived reference does not match "
+                        "the v2.17 deterministic generator "
+                        f"({np.count_nonzero(changed)} changed pixels, "
+                        f"maximum channel delta {delta.max(initial=0)})"
+                    )
         appearances = {"light", "dark"}
         base_matrix_backgrounds = static_backgrounds
         if manifest.get("rigVersion") in {
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             base_matrix_backgrounds = (
                 static_backgrounds
                 - set(CLEAR_TOMOGRAPHY_PROBES)
                 - set(CLEAR_AMPLITUDE_SWEEP_PROBES)
                 - set(CLEAR_GRID_BASIS_PROBES)
+                - set(CLEAR_FILTER_STAGE_PROBES)
             )
         expected_cases = {
             (background, "circle-0500-center", overlay, appearance)
@@ -991,6 +1061,7 @@ def validate_static(
                 "2.14.0",
                 "2.15.0",
                 "2.16.0",
+                "2.17.0",
             }:
                 dense_transfer_backgrounds |= {
                     "color-cube-9-permuted",
@@ -1005,6 +1076,7 @@ def validate_static(
                 "2.14.0",
                 "2.15.0",
                 "2.16.0",
+                "2.17.0",
             }:
                 dense_transfer_backgrounds |= {
                     "color-cube-9-shuffled",
@@ -1018,6 +1090,7 @@ def validate_static(
                 "2.14.0",
                 "2.15.0",
                 "2.16.0",
+                "2.17.0",
             }:
                 dense_transfer_backgrounds |= {
                     *{f"color-cube-9-context-train-{index:02d}" for index in range(4)},
@@ -1054,6 +1127,7 @@ def validate_static(
                 "2.14.0",
                 "2.15.0",
                 "2.16.0",
+                "2.17.0",
             }:
                 expected_cases |= {
                     (
@@ -1079,6 +1153,7 @@ def validate_static(
                     "2.14.0",
                     "2.15.0",
                     "2.16.0",
+                    "2.17.0",
                 }:
                     expected_cases |= {
                         (
@@ -1103,6 +1178,7 @@ def validate_static(
                     "2.14.0",
                     "2.15.0",
                     "2.16.0",
+                    "2.17.0",
                 }:
                     expected_cases |= {
                         (
@@ -1144,6 +1220,7 @@ def validate_static(
                     "2.14.0",
                     "2.15.0",
                     "2.16.0",
+                    "2.17.0",
                 }:
                     clear_giant_identification_backgrounds = {
                         *{
@@ -1185,6 +1262,7 @@ def validate_static(
                 "2.14.0",
                 "2.15.0",
                 "2.16.0",
+                "2.17.0",
             }:
                 clear_kernel_scenes = {
                     "circle-4000-center",
@@ -1220,6 +1298,7 @@ def validate_static(
                 "2.14.0",
                 "2.15.0",
                 "2.16.0",
+                "2.17.0",
             }:
                 tomography_scenes = {
                     "circle-4000-center",
@@ -1268,7 +1347,11 @@ def validate_static(
                             "dark",
                         )
                     )
-            if manifest.get("rigVersion") in {"2.15.0", "2.16.0"}:
+            if manifest.get("rigVersion") in {
+                "2.15.0",
+                "2.16.0",
+                "2.17.0",
+            }:
                 sweep_backgrounds = (
                     set(CLEAR_AMPLITUDE_SWEEP_PROBES) & static_backgrounds
                 )
@@ -1288,7 +1371,7 @@ def validate_static(
                         "scenes"
                     ]
                 }
-            if manifest.get("rigVersion") == "2.16.0":
+            if manifest.get("rigVersion") in {"2.16.0", "2.17.0"}:
                 grid_basis_backgrounds = (
                     set(CLEAR_GRID_BASIS_PROBES) & static_backgrounds
                 )
@@ -1311,6 +1394,28 @@ def validate_static(
                     )
                     for background in grid_basis_backgrounds
                 }
+            if manifest.get("rigVersion") == "2.17.0":
+                filter_stage_backgrounds = (
+                    set(CLEAR_FILTER_STAGE_PROBES) & static_backgrounds
+                )
+                expected_cases |= {
+                    (
+                        background,
+                        "circle-0500-center",
+                        "none",
+                        "dark",
+                    )
+                    for background in filter_stage_backgrounds
+                }
+                expected_cases |= {
+                    (
+                        background,
+                        "circle-4000-center",
+                        "clear",
+                        "dark",
+                    )
+                    for background in filter_stage_backgrounds
+                }
         if manifest.get("rigVersion") in {
             "2.7.0",
             "2.8.0",
@@ -1322,6 +1427,7 @@ def validate_static(
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             expected_cases |= {
                 (background, scene, overlay, appearance)
@@ -1470,6 +1576,7 @@ def validate_dynamic(
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             if (
                 sequence.get("samplingMethod")
@@ -1501,6 +1608,7 @@ def validate_dynamic(
             "2.14.0",
             "2.15.0",
             "2.16.0",
+            "2.17.0",
         }:
             expected_clock = "swiftui-animatable-frame"
             if sequence.get("mode") in {
@@ -1623,6 +1731,7 @@ def validate_dynamic(
                 "2.14.0",
                 "2.15.0",
                 "2.16.0",
+                "2.17.0",
             }
             and isinstance(sequence.get("decodedSamples"), int)
             and sequence["decodedSamples"] < len(frames) - 1

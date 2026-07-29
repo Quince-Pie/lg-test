@@ -215,6 +215,47 @@ func cell2BasisNoise(
         seed: seed)
 }
 
+func clearStageRampPixel(
+    _ x: Int,
+    _ y: Int,
+    reverse: Bool
+) -> (UInt8, UInt8, UInt8) {
+    let cellX = x / 2
+    let cellY = y / 2
+    let residues = [
+        (cellX + 17) % 129,
+        (cellY + 43) % 129,
+        (cellX + cellY + 71) % 129,
+    ]
+    let codes = residues.map { reverse ? 192 - $0 : 64 + $0 }
+    return (UInt8(codes[0]), UInt8(codes[1]), UInt8(codes[2]))
+}
+
+func clearStageImpulse(
+    _ x: Int,
+    _ y: Int,
+    spacing: Int,
+    offsetX: Int,
+    offsetY: Int,
+    amplitudes: [Int],
+    seed: UInt32
+) -> UInt8 {
+    precondition(spacing > 2 && !amplitudes.isEmpty)
+    let relativeX = x - offsetX
+    let relativeY = y - offsetY
+    guard relativeX >= 0, relativeY >= 0,
+          relativeX % spacing < 2, relativeY % spacing < 2 else {
+        return 128
+    }
+    let h = hash32(
+        relativeX / spacing,
+        relativeY / spacing,
+        seed: seed)
+    let amplitude = amplitudes[Int(h % UInt32(amplitudes.count))]
+    let sign = (h >> 8) & 1 == 0 ? -1 : 1
+    return UInt8(128 + sign * amplitude)
+}
+
 func paletteNoise(
     _ x: Int,
     _ y: Int,
@@ -687,6 +728,74 @@ func staticBackgrounds() -> [Background] {
             }
         }
     }
+
+    // V2.17 distinguishes intermediate storage/filter quantization from a
+    // final output quantizer. Complementary aligned ramps preserve affine
+    // convolution exactly away from their known wrap lines. Three sparse
+    // amplitude-coded lattices expose isolated and interacting impulse
+    // responses. The missing a002 cell basis lands exactly on half-code
+    // first-stage ties and identifies the renderer's rounding convention.
+    list.append(Background(
+        name: "clear-stage-grid2-ramp-forward",
+        family: .noise
+    ) { x, y, _, _ in
+        clearStageRampPixel(x, y, reverse: false)
+    })
+    list.append(Background(
+        name: "clear-stage-grid2-ramp-reverse",
+        family: .noise
+    ) { x, y, _, _ in
+        clearStageRampPixel(x, y, reverse: true)
+    })
+    let clearStageImpulseAmplitudes = [
+        1, 2, 3, 7, 8, 15, 16, 17, 31,
+        32, 33, 47, 48, 49, 63, 64, 95, 127,
+    ]
+    let clearStageImpulseCharts: [(String, UInt32, Int, Int)] = [
+        ("00", 0xBB67_AE85, 64, 64),
+        ("01", 0x3C6E_F372, 128, 96),
+        ("02", 0xA54F_F53A, 192, 160),
+    ]
+    for (chart, seed, offsetX, offsetY) in clearStageImpulseCharts {
+        list.append(Background(
+            name: "clear-stage-grid2-impulse-lattice-\(chart)",
+            family: .noise
+        ) { x, y, _, _ in
+            (
+                clearStageImpulse(
+                    x, y, spacing: 256,
+                    offsetX: offsetX, offsetY: offsetY,
+                    amplitudes: clearStageImpulseAmplitudes,
+                    seed: seed ^ 0x243F_6A88),
+                clearStageImpulse(
+                    x, y, spacing: 256,
+                    offsetX: offsetX, offsetY: offsetY,
+                    amplitudes: clearStageImpulseAmplitudes,
+                    seed: seed ^ 0x85A3_08D3),
+                clearStageImpulse(
+                    x, y, spacing: 256,
+                    offsetX: offsetX, offsetY: offsetY,
+                    amplitudes: clearStageImpulseAmplitudes,
+                    seed: seed ^ 0x1319_8A2E)
+            )
+        })
+    }
+    list.append(Background(
+        name: "clear-stage-cell2-tie-00",
+        family: .noise
+    ) { x, y, _, _ in
+        (
+            cell2BasisNoise(
+                x, y, amplitude: 2, phaseX: 0, phaseY: 0,
+                seed: clearGridBasisSeed ^ 0x243F_6A88),
+            cell2BasisNoise(
+                x, y, amplitude: 2, phaseX: 0, phaseY: 0,
+                seed: clearGridBasisSeed ^ 0x85A3_08D3),
+            cell2BasisNoise(
+                x, y, amplitude: 2, phaseX: 0, phaseY: 0,
+                seed: clearGridBasisSeed ^ 0x1319_8A2E)
+        )
+    })
 
     // V2.10's pixel-scale, neutral-centered binary probes do not identify the
     // measured nonlinear response across color range and spatial scale. These
@@ -2262,7 +2371,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.16.0",
+            rigVersion: "2.17.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2506,6 +2615,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     }
                 }
             )
+            let clearFilterStageNames: Set<String> = Set(
+                backgrounds.lazy.map(\.name).filter {
+                    $0.hasPrefix("clear-stage-")
+                })
             let oversizedRectSceneName = "rect-6000x4000-r000-center"
             let transposedRectSceneName = "rect-4000x6000-r000-center"
             let focusedOversizedSceneNames: Set<String> = [
@@ -2520,6 +2633,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     && !clearTomographyNames.contains(bg.name)
                     && !clearAmplitudeSweepNames.contains(bg.name)
                     && !clearGridBasisNames.contains(bg.name)
+                    && !clearFilterStageNames.contains(bg.name)
             {
                 log("static base: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
@@ -3074,6 +3188,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     appearance: .dark,
                     includeControlReference:
                         clearGridBasisControlNames.contains(bg.name))
+            }
+
+            // Preserve all 2,338 v2.16 captures as an unchanged prefix. These
+            // six compact interventions all carry real source controls.
+            for bg in backgrounds where clearFilterStageNames.contains(bg.name) {
+                log("static v2.17 clear filter stage: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                let referencePixels = try recordReference(bg, image)
+                await captureStatic(
+                    background: bg,
+                    image: image,
+                    referencePixels: referencePixels,
+                    scene: baseScene,
+                    overlay: .none,
+                    appearance: .dark)
+                await captureStatic(
+                    background: bg,
+                    image: image,
+                    referencePixels: nil,
+                    scene: denseSweepScene,
+                    overlay: .clear,
+                    appearance: .dark)
             }
         }
 

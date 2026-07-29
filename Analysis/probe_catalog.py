@@ -220,6 +220,77 @@ CLEAR_GRID_BASIS_PROBES: dict[str, dict[str, Any]] = {
     },
 }
 
+CLEAR_FILTER_STAGE_IMPULSE_AMPLITUDES = (
+    1,
+    2,
+    3,
+    7,
+    8,
+    15,
+    16,
+    17,
+    31,
+    32,
+    33,
+    47,
+    48,
+    49,
+    63,
+    64,
+    95,
+    127,
+)
+CLEAR_FILTER_STAGE_IMPULSE_CHARTS = (
+    ("00", 0xBB67AE85, 64, 64),
+    ("01", 0x3C6EF372, 128, 96),
+    ("02", 0xA54FF53A, 192, 160),
+)
+CLEAR_FILTER_STAGE_PROBES: dict[str, dict[str, Any]] = {
+    "clear-stage-grid2-ramp-forward": {
+        "probeKind": "aligned-rgb-2x2-complementary-ramp",
+        "role": "training",
+        "direction": "forward",
+        "blockSizePixels": 2,
+        "scenes": ("circle-4000-center",),
+        "sourceControl": True,
+    },
+    "clear-stage-grid2-ramp-reverse": {
+        "probeKind": "aligned-rgb-2x2-complementary-ramp",
+        "role": "training",
+        "direction": "reverse",
+        "blockSizePixels": 2,
+        "scenes": ("circle-4000-center",),
+        "sourceControl": True,
+    },
+    **{
+        f"clear-stage-grid2-impulse-lattice-{chart}": {
+            "probeKind": "aligned-rgb-2x2-amplitude-coded-impulse-lattice",
+            "role": "training",
+            "blockSizePixels": 2,
+            "centerCode": 128,
+            "amplitudeCodes": CLEAR_FILTER_STAGE_IMPULSE_AMPLITUDES,
+            "latticeSpacingPixels": 256,
+            "latticeOffsetPixels": [offset_x, offset_y],
+            "seed": f"0x{seed:08x}",
+            "scenes": ("circle-4000-center",),
+            "sourceControl": True,
+        }
+        for chart, seed, offset_x, offset_y in CLEAR_FILTER_STAGE_IMPULSE_CHARTS
+    },
+    "clear-stage-cell2-tie-00": {
+        "probeKind": "rgb-binary-2x2-cell-half-tie",
+        "role": "training",
+        "blockSizePixels": 2,
+        "phasePixels": [0, 0],
+        "centerCode": 128,
+        "amplitudeCodes": 2,
+        "levels": [126, 128, 130],
+        "seed": f"0x{CLEAR_GRID_BASIS_SEED:08x}",
+        "scenes": ("circle-4000-center",),
+        "sourceControl": True,
+    },
+}
+
 
 def hash32(
     x: UInt32Image,
@@ -535,3 +606,127 @@ def expected_clear_grid_basis_reference(
         seed=int(str(metadata["seed"]), 0),
         cell_basis=metadata["probeKind"] == "rgb-binary-2x2-cell-basis",
     )
+
+
+def clear_filter_stage_ramp(
+    *,
+    width: int,
+    height: int,
+    reverse: bool,
+) -> CodeImage:
+    if width <= 0 or height <= 0:
+        raise ValueError("reference dimensions must be positive")
+    cell_x = np.arange(width, dtype=np.int64) // 2
+    cell_y = np.arange(height, dtype=np.int64) // 2
+    red = (cell_x[np.newaxis, :] + 17) % 129
+    green = (cell_y[:, np.newaxis] + 43) % 129
+    blue = (
+        cell_y[:, np.newaxis] + cell_x[np.newaxis, :] + 71
+    ) % 129
+    red = np.broadcast_to(red, (height, width))
+    green = np.broadcast_to(green, (height, width))
+    residues = np.stack((red, green, blue), axis=2)
+    codes = 192 - residues if reverse else 64 + residues
+    return np.ascontiguousarray(codes.astype(np.uint8))
+
+
+def clear_filter_stage_impulse_lattice(
+    *,
+    width: int,
+    height: int,
+    spacing: int,
+    offset_x: int,
+    offset_y: int,
+    center: int,
+    amplitudes: tuple[int, ...],
+    seed: int,
+) -> CodeImage:
+    if (
+        width <= 0
+        or height <= 0
+        or spacing <= 2
+        or offset_x < 0
+        or offset_y < 0
+        or not amplitudes
+    ):
+        raise ValueError("invalid clear filter-stage impulse geometry")
+    origin_x = np.arange(offset_x, width, spacing, dtype=np.int64)
+    origin_y = np.arange(offset_y, height, spacing, dtype=np.int64)
+    lattice_x = np.arange(origin_x.size, dtype=np.uint32)
+    lattice_y = np.arange(origin_y.size, dtype=np.uint32)
+    lattice_grid_x, lattice_grid_y = np.meshgrid(lattice_x, lattice_y)
+    amplitude_array = np.asarray(amplitudes, dtype=np.int16)
+    output = np.full((height, width, 3), center, dtype=np.uint8)
+    for channel, channel_seed in enumerate(
+        (0x243F6A88, 0x85A308D3, 0x13198A2E)
+    ):
+        hashed = hash32(
+            lattice_grid_x,
+            lattice_grid_y,
+            seed=seed ^ channel_seed,
+        )
+        amplitude = amplitude_array[
+            hashed % np.uint32(len(amplitudes))
+        ]
+        sign = np.where(
+            (hashed >> np.uint32(8)) & np.uint32(1),
+            1,
+            -1,
+        )
+        value = center + amplitude * sign
+        for delta_y in range(2):
+            valid_y = origin_y + delta_y < height
+            y = origin_y[valid_y] + delta_y
+            for delta_x in range(2):
+                valid_x = origin_x + delta_x < width
+                x = origin_x[valid_x] + delta_x
+                output[
+                    y[:, np.newaxis],
+                    x[np.newaxis, :],
+                    channel,
+                ] = value[np.ix_(valid_y, valid_x)]
+    return np.ascontiguousarray(output)
+
+
+def expected_clear_filter_stage_reference(
+    background: str,
+    *,
+    width: int,
+    height: int,
+) -> CodeImage:
+    """Regenerate one v2.17 filter-stage source independently."""
+    metadata = CLEAR_FILTER_STAGE_PROBES[background]
+    probe_kind = metadata["probeKind"]
+    if probe_kind == "aligned-rgb-2x2-complementary-ramp":
+        return clear_filter_stage_ramp(
+            width=width,
+            height=height,
+            reverse=metadata["direction"] == "reverse",
+        )
+    if probe_kind == "aligned-rgb-2x2-amplitude-coded-impulse-lattice":
+        offset_x, offset_y = (
+            int(value) for value in metadata["latticeOffsetPixels"]
+        )
+        return clear_filter_stage_impulse_lattice(
+            width=width,
+            height=height,
+            spacing=int(metadata["latticeSpacingPixels"]),
+            offset_x=offset_x,
+            offset_y=offset_y,
+            center=int(metadata["centerCode"]),
+            amplitudes=tuple(int(value) for value in metadata["amplitudeCodes"]),
+            seed=int(str(metadata["seed"]), 0),
+        )
+    if probe_kind == "rgb-binary-2x2-cell-half-tie":
+        phase_x, phase_y = (int(value) for value in metadata["phasePixels"])
+        return clear_grid_basis_blocks(
+            width=width,
+            height=height,
+            phase_x=phase_x,
+            phase_y=phase_y,
+            center=int(metadata["centerCode"]),
+            amplitude=int(metadata["amplitudeCodes"]),
+            seed=int(str(metadata["seed"]), 0),
+            cell_basis=True,
+        )
+    raise ValueError(f"unknown clear filter-stage probe kind: {probe_kind!r}")
