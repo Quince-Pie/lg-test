@@ -525,7 +525,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -624,6 +624,24 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     "highlightColor",
                                     "highlightOpacity",
                                     "colorMatrix",
+                                    "global",
+                                    "keyHeightScale",
+                                    "keyHeightOffset",
+                                    "keySpreadScale",
+                                    "keySpreadOffset",
+                                    "keyHeight",
+                                    "keyAngle",
+                                    "keySpread",
+                                    "keyAmount",
+                                    "fillHeightScale",
+                                    "fillHeightOffset",
+                                    "fillSpreadScale",
+                                    "fillSpreadOffset",
+                                    "fillHeight",
+                                    "fillAngle",
+                                    "fillSpread",
+                                    "fillAmount",
+                                    "curvature",
                                 ]))
                     })
             }
