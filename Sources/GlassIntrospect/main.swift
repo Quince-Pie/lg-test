@@ -1,6 +1,8 @@
 import AppKit
+import Darwin
 import Foundation
 import Metal
+import ObjectiveC.runtime
 import QuartzCore
 import SwiftUI
 
@@ -56,8 +58,35 @@ private func scalarDescription(_ value: Any?) -> String? {
     return String(reflecting: value)
 }
 
+private func knownRuntimeValues(
+    _ object: NSObject,
+    keys: [String]
+) -> [String: String] {
+    var values: [String: String] = [:]
+    for key in keys {
+        let selector = NSSelectorFromString(key)
+        guard object.responds(to: selector) else { continue }
+        values[key] = String(reflecting: object.value(forKey: key))
+    }
+    return values
+}
+
+private func filterInputValues(_ object: NSObject) -> [String: String] {
+    let selector = NSSelectorFromString("inputKeys")
+    guard object.responds(to: selector),
+          let keys = object.value(forKey: "inputKeys") as? [String]
+    else {
+        return [:]
+    }
+
+    return Dictionary(
+        uniqueKeysWithValues: keys.sorted().map { key in
+            (key, String(reflecting: object.value(forKey: key)))
+        })
+}
+
 private func filterDescription(_ value: Any) -> [String: Any] {
-    return [
+    var record: [String: Any] = [
         "class": String(reflecting: type(of: value)),
         "description": String(describing: value),
         "debugDescription": String(reflecting: value),
@@ -68,6 +97,125 @@ private func filterDescription(_ value: Any) -> [String: Any] {
             ]
         },
     ]
+    if let object = value as? NSObject {
+        record["knownValues"] = knownRuntimeValues(
+            object,
+            keys: [
+                "name",
+                "type",
+                "inputKeys",
+                "outputKeys",
+                "attributes",
+                "enabled",
+                "inputs",
+                "outputs",
+            ])
+        record["inputValues"] = filterInputValues(object)
+    }
+    return record
+}
+
+private func runtimeClassDescription(_ cls: AnyClass) -> [String: Any] {
+    var methodCount: UInt32 = 0
+    let methodList = class_copyMethodList(cls, &methodCount)
+    defer {
+        if let methodList { free(methodList) }
+    }
+    var methods: [[String: String]] = []
+    if let methodList {
+        for index in 0..<Int(methodCount) {
+            let method = methodList[index]
+            methods.append([
+                "name": NSStringFromSelector(method_getName(method)),
+                "types": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+    }
+
+    var propertyCount: UInt32 = 0
+    let propertyList = class_copyPropertyList(cls, &propertyCount)
+    defer {
+        if let propertyList { free(propertyList) }
+    }
+    var properties: [[String: String]] = []
+    if let propertyList {
+        for index in 0..<Int(propertyCount) {
+            let property = propertyList[index]
+            properties.append([
+                "name": String(cString: property_getName(property)),
+                "attributes": property_getAttributes(property).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+    }
+
+    var ivarCount: UInt32 = 0
+    let ivarList = class_copyIvarList(cls, &ivarCount)
+    defer {
+        if let ivarList { free(ivarList) }
+    }
+    var ivars: [[String: Any]] = []
+    if let ivarList {
+        for index in 0..<Int(ivarCount) {
+            let ivar = ivarList[index]
+            ivars.append([
+                "name": ivar_getName(ivar).map {
+                    String(cString: $0)
+                } ?? "",
+                "type": ivar_getTypeEncoding(ivar).map {
+                    String(cString: $0)
+                } ?? "",
+                "offsetBytes": ivar_getOffset(ivar),
+            ])
+        }
+    }
+
+    var record: [String: Any] = [
+        "name": NSStringFromClass(cls),
+        "instanceSizeBytes": class_getInstanceSize(cls),
+        "methods": methods.sorted {
+            ($0["name"] ?? "") < ($1["name"] ?? "")
+        },
+        "properties": properties.sorted {
+            ($0["name"] ?? "") < ($1["name"] ?? "")
+        },
+        "ivars": ivars.sorted {
+            String(describing: $0["name"])
+                < String(describing: $1["name"])
+        },
+    ]
+    if let superclass = class_getSuperclass(cls) {
+        record["superclass"] = NSStringFromClass(superclass)
+    } else {
+        record["superclass"] = NSNull()
+    }
+    return record
+}
+
+private func collectRuntimeObjects(
+    _ layer: CALayer,
+    into objects: inout [String: NSObject]
+) {
+    objects[NSStringFromClass(type(of: layer))] = layer
+    for filter in layer.filters ?? [] {
+        if let object = filter as? NSObject {
+            objects[NSStringFromClass(type(of: object))] = object
+        }
+    }
+    for filter in layer.backgroundFilters ?? [] {
+        if let object = filter as? NSObject {
+            objects[NSStringFromClass(type(of: object))] = object
+        }
+    }
+    if let object = layer.compositingFilter as? NSObject {
+        objects[NSStringFromClass(type(of: object))] = object
+    }
+    for child in layer.sublayers ?? [] {
+        collectRuntimeObjects(child, into: &objects)
+    }
 }
 
 private func layerDescription(_ layer: CALayer) -> [String: Any] {
@@ -111,6 +259,28 @@ private func layerDescription(_ layer: CALayer) -> [String: Any] {
                 (String(reflecting: $0.key), String(reflecting: $0.value))
             })
     }
+    record["knownRuntimeValues"] = knownRuntimeValues(
+        layer,
+        keys: [
+            "groupName",
+            "scale",
+            "backdropRect",
+            "marginWidth",
+            "marginHeight",
+            "allowsInPlaceFiltering",
+            "disablesOccludedBackdropBlurs",
+            "ignoresOffscreenGroups",
+            "windowServerAware",
+            "bleedAmount",
+            "captureOnly",
+            "usesGlobalGroupNamespace",
+            "statistics",
+            "sourceLayer",
+            "portal",
+            "shape",
+            "effect",
+            "mode",
+        ])
     record["contents"] = scalarDescription(layer.contents)
     record["delegate"] = scalarDescription(layer.delegate)
     return record
@@ -249,6 +419,52 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             if let presentation = contentView.layer?.presentation() {
                 report["presentationLayerTree"] =
                     layerDescription(presentation)
+            }
+            if let rootLayer = contentView.layer {
+                var runtimeObjects: [String: NSObject] = [:]
+                collectRuntimeObjects(
+                    rootLayer,
+                    into: &runtimeObjects)
+                let names = runtimeObjects.keys.sorted()
+                report["runtimeClasses"] = names.map { name in
+                    runtimeClassDescription(
+                        type(of: runtimeObjects[name]!))
+                }
+                report["runtimeObjectValues"] = Dictionary(
+                    uniqueKeysWithValues: names.map { name in
+                        (
+                            name,
+                            knownRuntimeValues(
+                                runtimeObjects[name]!,
+                                keys: [
+                                    "name",
+                                    "type",
+                                    "inputKeys",
+                                    "outputKeys",
+                                    "attributes",
+                                    "enabled",
+                                    "inputs",
+                                    "outputs",
+                                    "groupName",
+                                    "scale",
+                                    "backdropRect",
+                                    "marginWidth",
+                                    "marginHeight",
+                                    "allowsInPlaceFiltering",
+                                    "disablesOccludedBackdropBlurs",
+                                    "ignoresOffscreenGroups",
+                                    "windowServerAware",
+                                    "bleedAmount",
+                                    "captureOnly",
+                                    "usesGlobalGroupNamespace",
+                                    "statistics",
+                                    "sourceLayer",
+                                    "portal",
+                                    "shape",
+                                    "effect",
+                                    "mode",
+                                ]))
+                    }))
             }
         }
         do {

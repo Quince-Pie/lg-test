@@ -181,19 +181,40 @@ jobs:
               /System/Library/Frameworks/CoreImage.framework/Versions/A/CoreImage
             do
               echo "BINARY $binary"
+              string_evidence="$RUNNER_TEMP/$(basename "$binary").strings"
               strings -a "$binary" 2>/dev/null |
-                grep -Ei 'liquid.?glass|glass.?effect|backdrop|gaussian|blur|color.?matrix|downsample|upsample' |
-                sort -u |
-                head -n 400 || true
+                grep -Ei 'liquid.?glass|glass.?effect|glassBackground|backdrop|gaussian|blur|color.?matrix|vibrant|downsample|upsample|sdf|portal' |
+                sort -u > "$string_evidence" || true
+              if xcrun --find swift-demangle >/dev/null 2>&1; then
+                xcrun swift-demangle < "$string_evidence" |
+                  head -n 400 || true
+              else
+                head -n 400 "$string_evidence" || true
+              fi
+
+              symbol_evidence="$RUNNER_TEMP/$(basename "$binary").symbols"
               nm -gjU "$binary" 2>/dev/null |
-                grep -Ei 'glass|backdrop|gaussian|blur' |
-                swift-demangle |
-                sort -u |
-                head -n 400 || true
+                grep -Ei 'glass|backdrop|gaussian|blur|vibrant|matrix|sdf|portal' |
+                sort -u > "$symbol_evidence" || true
+              if xcrun --find swift-demangle >/dev/null 2>&1; then
+                xcrun swift-demangle < "$symbol_evidence" |
+                  head -n 400 || true
+              else
+                head -n 400 "$symbol_evidence" || true
+              fi
             done
           } > "$framework_output"
 
           find captures/introspection -maxdepth 3 -type f -print -exec du -h {} \;
+
+      - name: Upload Liquid Glass introspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-introspection-${{ github.run_id }}
+          path: captures/introspection
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Set up analysis Python
         if: always()

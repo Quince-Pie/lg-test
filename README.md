@@ -618,6 +618,15 @@ not a pixel-parity oracle: a trace may be unsupported on the hosted runner,
 and any exposed render stages still have to predict the independently
 captured pixels exactly before they can be accepted.
 
+Run 30477841671 established that the hosted Apple-paravirtual runner does not
+offer the `gpuTraceDocument` destination. The public runtime tree is still
+decisive: clear glass materializes as a `CABackdropLayer` carrying the
+`glassBackground` `CAFilter`, a separate `CASDFLayer`/`SDFPortalLayer` shape
+stack, and a downstream `vibrantColorMatrix` filter. The companion now records
+the Objective-C methods, properties, ivars, and safely readable values of
+those real runtime classes. It also uploads this small forensic directory as
+its own artifact before the multi-gigabyte pixel corpus finishes validation.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact
