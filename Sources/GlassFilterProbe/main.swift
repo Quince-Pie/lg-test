@@ -94,6 +94,44 @@ private let interventions = [
             ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
         ]),
     Intervention(
+        name: "holding-only",
+        values: [
+            ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+            ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1))),
+        ]),
+    Intervention(
+        name: "affine-only",
+        values: [
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "saturation-only",
+        values: [
+            ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+            ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "grayscale-only",
+        values: [
+            ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+            ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
+            ("inputFaceColorMatrixSaturation", NSNumber(value: Float(0))),
+            ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+        ]),
+    Intervention(
+        name: "sdr-shadow-0",
+        values: [
+            ("inputSDRShadowOpacity", NSNumber(value: Float(0))),
+        ]),
+    Intervention(
+        name: "clamp-1",
+        values: [
+            ("inputClamp", NSNumber(value: Float(1))),
+        ]),
+    Intervention(
         name: "face-opacity-0",
         values: [
             ("inputFaceOpacity", NSNumber(value: Float(0))),
@@ -636,8 +674,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             }
 
             let report: [String: Any] = [
-                "schemaVersion": 2,
-                "rigVersion": "filter-intervention-1.1.0",
+                "schemaVersion": 3,
+                "rigVersion": "filter-intervention-1.2.0",
                 "ciCommit":
                     ProcessInfo.processInfo.environment["GITHUB_SHA"]
                     ?? "local",
