@@ -62,7 +62,8 @@ jobs:
             for binary in \
               /System/Library/Frameworks/SwiftUI.framework/Versions/A/SwiftUI \
               /System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore \
-              /System/Library/Frameworks/CoreImage.framework/Versions/A/CoreImage
+              /System/Library/Frameworks/CoreImage.framework/Versions/A/CoreImage \
+              /System/Library/PrivateFrameworks/CoreMaterial.framework/Versions/A/CoreMaterial
             do
               echo "BINARY $binary"
               string_evidence="$RUNNER_TEMP/$(basename "$binary").strings"
@@ -86,6 +87,11 @@ jobs:
               else
                 head -n 400 "$symbol_evidence" || true
               fi
+
+              echo "DYLD EXPORTS $binary"
+              xcrun dyld_info -exports "$binary" 2>/dev/null |
+                grep -Ei 'glass|material|backdrop|gaussian|blur|vibrant|matrix|sdf|holding|tone' |
+                head -n 800 || true
             done
           } > "$framework_output"
 

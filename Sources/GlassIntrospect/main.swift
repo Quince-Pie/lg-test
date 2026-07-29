@@ -280,6 +280,51 @@ private let linkedRuntimeObjectKeys = [
     "sourceLayer",
 ]
 
+private let runtimeClassTokens = [
+    "backdrop",
+    "colormatrix",
+    "glass",
+    "holdingtone",
+    "material",
+    "sdf",
+    "vibrant",
+]
+
+private func matchingRuntimeClasses(
+    in imagePaths: [String]
+) -> [[String: Any]] {
+    var records: [[String: Any]] = []
+    for path in imagePaths.sorted() {
+        var classCount: UInt32 = 0
+        let classNames = path.withCString {
+            objc_copyClassNamesForImage($0, &classCount)
+        }
+        guard let classNames else { continue }
+        defer { free(classNames) }
+        for index in 0..<Int(classCount) {
+            let name = String(cString: classNames[index])
+            let lowercased = name.lowercased()
+            guard runtimeClassTokens.contains(where: {
+                lowercased.contains($0)
+            }),
+            let cls = NSClassFromString(name)
+            else {
+                continue
+            }
+            records.append([
+                "image": path,
+                "class": runtimeClassDescription(cls),
+            ])
+        }
+    }
+    return records.sorted {
+        let left = $0["class"] as? [String: Any]
+        let right = $1["class"] as? [String: Any]
+        return String(describing: left?["name"])
+            < String(describing: right?["name"])
+    }
+}
+
 private func collectRuntimeObject(
     _ object: NSObject,
     into objects: inout [String: NSObject],
@@ -525,7 +570,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 4,
+            "schemaVersion": 5,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -557,6 +602,14 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     device.recommendedMaxWorkingSetSize,
             ]
         }
+        let inspectedFrameworks = Bundle.allFrameworks.filter {
+            let name = $0.bundleURL.lastPathComponent.lowercased()
+            return name == "corematerial.framework"
+                || name == "quartzcore.framework"
+                || name == "swiftui.framework"
+        }.compactMap(\.executablePath)
+        report["matchingFrameworkRuntimeClasses"] =
+            matchingRuntimeClasses(in: inspectedFrameworks)
         if let contentView = window.contentView {
             report["viewTree"] = viewDescription(contentView)
             if let presentation = contentView.layer?.presentation() {
