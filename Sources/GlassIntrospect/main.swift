@@ -136,6 +136,115 @@ private func serializedRuntimeValue(_ optionalValue: Any?) -> Any {
     ]
 }
 
+private struct ExportedCodeProbe {
+    let symbol: String
+    let byteCount: Int
+}
+
+private let exportedCodeProbes = [
+    ExportedCodeProbe(
+        symbol: "CAColorMatrixMakeSaturation",
+        byteCount: 0xA0),
+    ExportedCodeProbe(
+        symbol: "CAColorMatrixMakeBrightness",
+        byteCount: 0x4C),
+    ExportedCodeProbe(
+        symbol: "CAColorMatrixMakeContrast",
+        byteCount: 0x50),
+    ExportedCodeProbe(
+        symbol: "CAColorMatrixMakeMultiplyColor",
+        byteCount: 0x3C),
+    ExportedCodeProbe(
+        symbol: "CAColorMatrixMakeColorSourceOver",
+        byteCount: 0x54),
+    ExportedCodeProbe(
+        symbol: "CAColorMatrixMakePlusL",
+        byteCount: 0x5C),
+    ExportedCodeProbe(
+        symbol: "CAColorMatrixMakePlusD",
+        byteCount: 0x5C),
+    ExportedCodeProbe(
+        symbol: "CAColorMatrixConcat",
+        byteCount: 0x400),
+    ExportedCodeProbe(
+        symbol: "_MTCAColorMatrixFloydRound",
+        byteCount: 0x60),
+    ExportedCodeProbe(
+        symbol: "MTCAColorMatrixMakeWithVibrantShadowAttributes",
+        byteCount: 0x400),
+    ExportedCodeProbe(
+        symbol: "MTCAColorMatrixInterpolate",
+        byteCount: 0xEC),
+    ExportedCodeProbe(
+        symbol: "MTCAColorMatrixMakeWithDictionaryRepresentation",
+        byteCount: 0x400),
+    ExportedCodeProbe(
+        symbol: "MTCAColorMatrixCreateDictionaryRepresentation",
+        byteCount: 0x400),
+]
+
+private func exportedCodeEvidence() -> [[String: Any]] {
+    guard let handle = dlopen(nil, RTLD_LAZY) else {
+        return [[
+            "error": dlerror().map { String(cString: $0) }
+                ?? "dlopen(nil) failed",
+        ]]
+    }
+    defer { dlclose(handle) }
+
+    return exportedCodeProbes.map { probe in
+        dlerror()
+        guard let address = dlsym(handle, probe.symbol) else {
+            return [
+                "symbol": probe.symbol,
+                "byteCount": probe.byteCount,
+                "error": dlerror().map { String(cString: $0) }
+                    ?? "dlsym failed",
+            ]
+        }
+
+        let bytes = Array(UnsafeRawBufferPointer(
+            start: UnsafeRawPointer(address),
+            count: probe.byteCount))
+        var record = serializedRuntimeBytes(
+            bytes,
+            className: "mapped arm64e instructions")
+        record["symbol"] = probe.symbol
+        record["requestedByteCount"] = probe.byteCount
+        record["runtimeAddress"] = String(
+            format: "0x%016llx",
+            UInt64(UInt(bitPattern: address)))
+
+        var info = Dl_info()
+        if dladdr(address, &info) != 0 {
+            if let imagePath = info.dli_fname {
+                record["imagePath"] = String(cString: imagePath)
+            }
+            if let imageBase = info.dli_fbase {
+                let base = UInt(bitPattern: imageBase)
+                let symbolAddress = UInt(bitPattern: address)
+                record["imageBase"] = String(
+                    format: "0x%016llx",
+                    UInt64(base))
+                record["imageOffset"] = String(
+                    format: "0x%llx",
+                    UInt64(symbolAddress - base))
+            }
+            if let resolvedName = info.dli_sname {
+                record["resolvedName"] = String(cString: resolvedName)
+            }
+            if let resolvedAddress = info.dli_saddr {
+                record["resolvedAddress"] = String(
+                    format: "0x%016llx",
+                    UInt64(UInt(bitPattern: resolvedAddress)))
+            }
+        } else {
+            record["dladdrError"] = true
+        }
+        return record
+    }
+}
+
 private func knownRuntimeValues(
     _ object: NSObject,
     keys: [String]
@@ -570,7 +679,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 5,
+            "schemaVersion": 6,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -587,6 +696,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             "loadedFrameworks": Bundle.allFrameworks.map {
                 $0.bundleURL.path
             },
+            "exportedCode": exportedCodeEvidence(),
         ]
         if let captureError {
             report["captureError"] = captureError
