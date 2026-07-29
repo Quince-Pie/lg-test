@@ -659,6 +659,72 @@ private func allocationArrayRecord(
     return record
 }
 
+private func allocationGraph(
+    _ root: UnsafeRawPointer,
+    maximumDepth: Int = 4,
+    maximumNodes: Int = 128
+) -> [String: Any] {
+    var pointers = [root]
+    var depths = [0]
+    var identifiers = [UInt(bitPattern: root): 0]
+    var nodes: [[String: Any]] = []
+    var index = 0
+    while index < pointers.count {
+        let pointer = pointers[index]
+        let depth = depths[index]
+        guard let allocation = allocationRecord(pointer) else {
+            index += 1
+            continue
+        }
+        let capturedSize = allocation["capturedSizeBytes"] as! Int
+        var edges: [[String: Int]] = []
+        if depth < maximumDepth {
+            let slotCount =
+                capturedSize / MemoryLayout<UnsafeRawPointer?>.stride
+            for slot in 0..<slotCount {
+                guard let child = pointer
+                    .advanced(
+                        by: slot
+                            * MemoryLayout<UnsafeRawPointer?>.stride)
+                    .load(as: UnsafeRawPointer?.self),
+                    allocationRecord(child) != nil
+                else {
+                    continue
+                }
+                let address = UInt(bitPattern: child)
+                let childIdentifier: Int
+                if let existing = identifiers[address] {
+                    childIdentifier = existing
+                } else if pointers.count < maximumNodes {
+                    childIdentifier = pointers.count
+                    identifiers[address] = childIdentifier
+                    pointers.append(child)
+                    depths.append(depth + 1)
+                } else {
+                    continue
+                }
+                edges.append([
+                    "slot": slot,
+                    "target": childIdentifier,
+                ])
+            }
+        }
+        nodes.append([
+            "id": index,
+            "depth": depth,
+            "allocation": allocation,
+            "pointerEdges": edges,
+        ])
+        index += 1
+    }
+    return [
+        "maximumDepth": maximumDepth,
+        "maximumNodes": maximumNodes,
+        "nodes": nodes,
+        "truncatedByNodeLimit": pointers.count == maximumNodes,
+    ]
+}
+
 private typealias CopyRenderValueFunction =
     @convention(c) (
         UnsafeRawPointer,
@@ -694,6 +760,9 @@ private func renderValueEvidence(
             } ?? "",
         "root": root,
         "attributes": attributeRecord,
+        "rootAllocationGraph": allocationGraph(
+            UnsafeRawPointer(renderValue)),
+        "attributeAllocationGraph": allocationGraph(attributes),
     ]
     if let cache = pointerIvar("_cache", in: filter),
        let cacheRecord = allocationRecord(cache)
