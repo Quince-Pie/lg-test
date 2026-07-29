@@ -24,6 +24,13 @@ from probe_catalog import (
     CLEAR_FILTER_STAGE_IMPULSE_AMPLITUDES,
     CLEAR_FILTER_STAGE_IMPULSE_CHARTS,
     CLEAR_FILTER_STAGE_PROBES,
+    CLEAR_FIXED_BLOCK_AMPLITUDES,
+    CLEAR_FIXED_BLOCK_CONTROL_AMPLITUDES,
+    CLEAR_FIXED_BLOCK_OFFSET,
+    CLEAR_FIXED_BLOCK_SEED,
+    CLEAR_FIXED_BLOCK_SIZES,
+    CLEAR_FIXED_BLOCK_SPACING,
+    CLEAR_FIXED_BLOCK_SWEEP_PROBES,
     CLEAR_FIXED_IMPULSE_AMPLITUDES,
     CLEAR_FIXED_IMPULSE_CONTROL_AMPLITUDES,
     CLEAR_FIXED_IMPULSE_OFFSET,
@@ -39,6 +46,7 @@ from probe_catalog import (
     expected_adaptive_reference,
     expected_clear_amplitude_sweep_reference,
     expected_clear_filter_stage_reference,
+    expected_clear_fixed_block_reference,
     expected_clear_fixed_impulse_reference,
     expected_clear_grid_basis_reference,
     expected_clear_kernel_reference,
@@ -50,7 +58,7 @@ from probe_catalog import (
 
 
 class MeasurementTests(unittest.TestCase):
-    def test_v218_probe_catalog_matches_capture_source(self) -> None:
+    def test_v219_probe_catalog_matches_capture_source(self) -> None:
         source = (
             Path(__file__).resolve().parents[1]
             / "Sources"
@@ -75,7 +83,7 @@ class MeasurementTests(unittest.TestCase):
             ("holdout-01", "0x9FB2_1C65"),
         ):
             self.assertIn(f'("{role}", {seed}', source)
-        self.assertIn('rigVersion: "2.18.0"', source)
+        self.assertIn('rigVersion: "2.19.0"', source)
         self.assertIn('name: "rect-6000x4000-r000-center"', source)
         self.assertIn('name: "rect-4000x6000-r000-center"', source)
         self.assertIn(
@@ -123,6 +131,28 @@ class MeasurementTests(unittest.TestCase):
             source,
         )
         self.assertIn("spacing: 66", source)
+        self.assertIn(
+            "let clearFixedBlockSizes = [2, 4, 8, 16, 32, 64]",
+            source,
+        )
+        self.assertIn(
+            "1, 2, 3, 4, 7, 8, 15, 16, 17, 31,\n"
+            "        32, 33, 47, 48, 49, 63, 64, 95, 127,",
+            source,
+        )
+        self.assertIn(
+            "let clearFixedBlockSeed: UInt32 = 0x1F83_D9AB",
+            source,
+        )
+        self.assertIn(
+            "let clearFixedBlockSpacing = 162",
+            source,
+        )
+        self.assertIn("[1, 32, 64, 127].map", source)
+        self.assertIn(
+            'format: "clear-fixed-block-b%04d-a%03d-train"',
+            source,
+        )
         for chart, seed in (
             ("00", "0xBB67_AE85"),
             ("01", "0x3C6E_F372"),
@@ -511,6 +541,63 @@ class MeasurementTests(unittest.TestCase):
         )
         self.assertEqual(set((reduced_x[:8] % 8).tolist()), set(range(8)))
 
+    def test_v219_fixed_block_sweep_is_isolated_aligned_and_fixed_site(
+        self,
+    ) -> None:
+        self.assertEqual(CLEAR_FIXED_BLOCK_SIZES, (2, 4, 8, 16, 32, 64))
+        self.assertEqual(len(CLEAR_FIXED_BLOCK_AMPLITUDES), 19)
+        self.assertEqual(len(CLEAR_FIXED_BLOCK_SWEEP_PROBES), 114)
+        self.assertEqual(
+            sum(
+                bool(metadata["sourceControl"])
+                for metadata in CLEAR_FIXED_BLOCK_SWEEP_PROBES.values()
+            ),
+            len(CLEAR_FIXED_BLOCK_SIZES)
+            * len(CLEAR_FIXED_BLOCK_CONTROL_AMPLITUDES),
+        )
+        self.assertEqual(CLEAR_FIXED_BLOCK_OFFSET, (32, 32))
+        self.assertEqual(CLEAR_FIXED_BLOCK_SEED, 0x1F83D9AB)
+        self.assertEqual(CLEAR_FIXED_BLOCK_SPACING, 162)
+        self.assertTrue(
+            all(
+                CLEAR_FIXED_BLOCK_SPACING - block_size >= 98
+                for block_size in CLEAR_FIXED_BLOCK_SIZES
+            )
+        )
+        self.assertEqual(CLEAR_FIXED_BLOCK_SPACING // 2, 81)
+
+        origin_values = []
+        for block_size in CLEAR_FIXED_BLOCK_SIZES:
+            low = expected_clear_fixed_block_reference(
+                (
+                    f"clear-fixed-block-b{block_size:04d}"
+                    "-a001-train"
+                ),
+                width=431,
+                height=307,
+            )
+            high = expected_clear_fixed_block_reference(
+                (
+                    f"clear-fixed-block-b{block_size:04d}"
+                    "-a127-train"
+                ),
+                width=431,
+                height=307,
+            )
+            np.testing.assert_array_equal(
+                np.any(low != 128, axis=2),
+                np.any(high != 128, axis=2),
+            )
+            self.assertTrue(
+                np.all(np.isin(low, np.array([127, 128, 129])))
+            )
+            self.assertTrue(
+                np.all(np.isin(high, np.array([1, 128, 255])))
+            )
+            origin_values.append(low[32, 32])
+        for value in origin_values[1:]:
+            np.testing.assert_array_equal(value, origin_values[0])
+
     def test_v215_inventory_tracks_dense_cases_without_decoding_holdout(
         self,
     ) -> None:
@@ -743,6 +830,73 @@ class MeasurementTests(unittest.TestCase):
         )
         self.assertFalse(
             measurements.clear_fixed_impulse_inventory()["available"]
+        )
+
+    def test_v219_inventory_requires_all_outputs_and_declared_controls(
+        self,
+    ) -> None:
+        references = [
+            {"background": background, "file": f"{background}.png"}
+            for background in CLEAR_FIXED_BLOCK_SWEEP_PROBES
+        ]
+        captures = [
+            {
+                "background": background,
+                "scene": "circle-4000-center",
+                "overlay": "clear",
+                "appearance": "dark",
+                "file": f"{background}-clear.png",
+            }
+            for background in CLEAR_FIXED_BLOCK_SWEEP_PROBES
+        ]
+        captures.extend(
+            {
+                "background": background,
+                "scene": "circle-0500-center",
+                "overlay": "none",
+                "appearance": "dark",
+                "file": f"{background}-control.png",
+            }
+            for background, metadata in CLEAR_FIXED_BLOCK_SWEEP_PROBES.items()
+            if metadata["sourceControl"]
+        )
+        measurements = Measurements(
+            Artifact(
+                path=Path("."),
+                manifest={
+                    "rigVersion": "2.19.0",
+                    "references": references,
+                    "captures": captures,
+                    "scenes": [],
+                },
+            )
+        )
+
+        report = measurements.clear_fixed_block_inventory()
+
+        self.assertTrue(report["available"])
+        self.assertEqual(report["catalogReferenceCount"], 114)
+        self.assertEqual(report["requiredSourceControlCount"], 24)
+        self.assertEqual(report["requiredOutputCount"], 114)
+        self.assertFalse(report["protectedHoldoutOutputsDecodedByThisAnalysis"])
+        sample = report["records"][
+            "clear-fixed-block-b0064-a064-train"
+        ]
+        self.assertEqual(sample["blockSizePixels"], 64)
+        self.assertEqual(sample["latticeSpacingPixels"], 162)
+        self.assertEqual(sample["latticeGapPixels"], 98)
+        self.assertEqual(sample["reducedBlockSizeCells"], 32)
+        self.assertEqual(sample["reducedGridSpacingCells"], 81)
+        measurements.records.pop(
+            (
+                "clear-fixed-block-b0064-a064-train",
+                "circle-4000-center",
+                "clear",
+                "dark",
+            )
+        )
+        self.assertFalse(
+            measurements.clear_fixed_block_inventory()["available"]
         )
 
     def test_v213_clear_kernel_statistics_compare_exact_geometry_pixels(

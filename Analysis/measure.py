@@ -25,6 +25,7 @@ from probe_catalog import (
     ADAPTIVE_SPATIAL_PROBES,
     CLEAR_AMPLITUDE_SWEEP_PROBES,
     CLEAR_FILTER_STAGE_PROBES,
+    CLEAR_FIXED_BLOCK_SWEEP_PROBES,
     CLEAR_FIXED_IMPULSE_SWEEP_PROBES,
     CLEAR_GRID_BASIS_PROBES,
     CLEAR_KERNEL_PROBES,
@@ -1023,7 +1024,13 @@ class Measurements:
     def clear_amplitude_tomography_inventory(self) -> JsonObject:
         rig_version = self.artifact.manifest.get("rigVersion")
         tomography_probes = dict(CLEAR_TOMOGRAPHY_PROBES)
-        if rig_version in {"2.15.0", "2.16.0", "2.17.0", "2.18.0"}:
+        if rig_version in {
+            "2.15.0",
+            "2.16.0",
+            "2.17.0",
+            "2.18.0",
+            "2.19.0",
+        }:
             tomography_probes.update(CLEAR_AMPLITUDE_SWEEP_PROBES)
 
         groups: dict[str, list[str]] = {}
@@ -1113,7 +1120,14 @@ class Measurements:
             "catalogReferenceCount": len(tomography_probes),
             "versionReferenceDelta": (
                 len(CLEAR_AMPLITUDE_SWEEP_PROBES)
-                if rig_version in {"2.15.0", "2.16.0", "2.17.0", "2.18.0"}
+                if rig_version
+                in {
+                    "2.15.0",
+                    "2.16.0",
+                    "2.17.0",
+                    "2.18.0",
+                    "2.19.0",
+                }
                 else len(CLEAR_TOMOGRAPHY_PROBES)
             ),
             "trainingGroupCount": sum(
@@ -1348,6 +1362,78 @@ class Measurements:
             "requiredOutputCount": sum(
                 len(metadata["scenes"])
                 for metadata in CLEAR_FIXED_IMPULSE_SWEEP_PROBES.values()
+            ),
+            "protectedHoldoutOutputsDecodedByThisAnalysis": False,
+            "records": records,
+        }
+
+    def clear_fixed_block_inventory(self) -> JsonObject:
+        records: JsonObject = {}
+        for background, metadata in CLEAR_FIXED_BLOCK_SWEEP_PROBES.items():
+            clear_cases = [
+                {
+                    "scene": str(scene),
+                    "overlay": "clear",
+                    "appearance": "dark",
+                    "available": self.has_image(
+                        background,
+                        str(scene),
+                        "clear",
+                        "dark",
+                    ),
+                }
+                for scene in metadata["scenes"]
+            ]
+            control_available = self.has_image(
+                background,
+                "circle-0500-center",
+                "none",
+                "dark",
+            )
+            records[background] = {
+                "probeKind": metadata["probeKind"],
+                "role": metadata["role"],
+                "blockSizePixels": metadata["blockSizePixels"],
+                "amplitudeCodes": metadata["amplitudeCodes"],
+                "latticeSpacingPixels": metadata["latticeSpacingPixels"],
+                "latticeGapPixels": metadata["latticeGapPixels"],
+                "reducedBlockSizeCells": metadata["reducedBlockSizeCells"],
+                "reducedGridSpacingCells": metadata[
+                    "reducedGridSpacingCells"
+                ],
+                "referenceAvailable": background in self.references,
+                "sourceControlRequired": bool(metadata["sourceControl"]),
+                "sourceControlAvailable": control_available,
+                "requiredOutputCount": len(clear_cases),
+                "availableOutputCount": sum(
+                    bool(case["available"]) for case in clear_cases
+                ),
+                "cases": clear_cases,
+            }
+
+        return {
+            "available": all(
+                record["referenceAvailable"]
+                and (
+                    not record["sourceControlRequired"]
+                    or record["sourceControlAvailable"]
+                )
+                and record["availableOutputCount"]
+                == record["requiredOutputCount"]
+                for record in records.values()
+            ),
+            "purpose": (
+                "identify cumulative and sub-threshold clear-filter mass "
+                "across fixed-site square size and amplitude"
+            ),
+            "catalogReferenceCount": len(CLEAR_FIXED_BLOCK_SWEEP_PROBES),
+            "requiredSourceControlCount": sum(
+                bool(metadata["sourceControl"])
+                for metadata in CLEAR_FIXED_BLOCK_SWEEP_PROBES.values()
+            ),
+            "requiredOutputCount": sum(
+                len(metadata["scenes"])
+                for metadata in CLEAR_FIXED_BLOCK_SWEEP_PROBES.values()
             ),
             "protectedHoldoutOutputsDecodedByThisAnalysis": False,
             "records": records,
@@ -2189,6 +2275,7 @@ class Measurements:
             "2.16.0": 13,
             "2.17.0": 14,
             "2.18.0": 15,
+            "2.19.0": 16,
         }.get(str(rig_version), 7)
         result = {
             "analysisSchemaVersion": analysis_schema_version,
@@ -2282,6 +2369,7 @@ class Measurements:
             "2.16.0",
             "2.17.0",
             "2.18.0",
+            "2.19.0",
         }:
             result["adaptiveSpatialProbeStatistics"] = (
                 self.adaptive_spatial_probe_statistics()
@@ -2294,6 +2382,7 @@ class Measurements:
             "2.16.0",
             "2.17.0",
             "2.18.0",
+            "2.19.0",
         }:
             result["pixelScaleGiantProbeStatistics"] = (
                 self.pixel_scale_giant_probe_statistics()
@@ -2305,6 +2394,7 @@ class Measurements:
             "2.16.0",
             "2.17.0",
             "2.18.0",
+            "2.19.0",
         }:
             result["clearKernelGeometryStatistics"] = (
                 self.clear_kernel_geometry_statistics()
@@ -2315,19 +2405,29 @@ class Measurements:
             "2.16.0",
             "2.17.0",
             "2.18.0",
+            "2.19.0",
         }:
             result["clearAmplitudeTomographyInventory"] = (
                 self.clear_amplitude_tomography_inventory()
             )
-        if rig_version in {"2.16.0", "2.17.0", "2.18.0"}:
+        if rig_version in {
+            "2.16.0",
+            "2.17.0",
+            "2.18.0",
+            "2.19.0",
+        }:
             result["clearGridBasisInventory"] = self.clear_grid_basis_inventory()
-        if rig_version in {"2.17.0", "2.18.0"}:
+        if rig_version in {"2.17.0", "2.18.0", "2.19.0"}:
             result["clearFilterStageInventory"] = (
                 self.clear_filter_stage_inventory()
             )
-        if rig_version == "2.18.0":
+        if rig_version in {"2.18.0", "2.19.0"}:
             result["clearFixedImpulseInventory"] = (
                 self.clear_fixed_impulse_inventory()
+            )
+        if rig_version == "2.19.0":
+            result["clearFixedBlockInventory"] = (
+                self.clear_fixed_block_inventory()
             )
         return result
 

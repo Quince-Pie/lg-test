@@ -256,23 +256,26 @@ func clearStageImpulse(
     return UInt8(128 + sign * amplitude)
 }
 
-func clearFixedImpulseSweepPixel(
+func clearFixedBlockSweepPixel(
     _ x: Int,
     _ y: Int,
+    blockSize: Int,
     amplitude: Int,
     spacing: Int,
     offsetX: Int,
     offsetY: Int,
     seed: UInt32
 ) -> (UInt8, UInt8, UInt8) {
+    precondition(blockSize >= 2 && blockSize % 2 == 0)
     precondition((1...127).contains(amplitude))
-    precondition(spacing > 2 && spacing % 2 == 0)
+    precondition(spacing > blockSize && spacing % 2 == 0)
     precondition(offsetX >= 0 && offsetX % 2 == 0)
     precondition(offsetY >= 0 && offsetY % 2 == 0)
     let relativeX = x - offsetX
     let relativeY = y - offsetY
     guard relativeX >= 0, relativeY >= 0,
-          relativeX % spacing < 2, relativeY % spacing < 2 else {
+          relativeX % spacing < blockSize,
+          relativeY % spacing < blockSize else {
         return (128, 128, 128)
     }
     let h = hash32(
@@ -292,6 +295,26 @@ func clearFixedImpulseSweepPixel(
         channel(2, signBit: 9),
         channel(4, signBit: 10)
     )
+}
+
+func clearFixedImpulseSweepPixel(
+    _ x: Int,
+    _ y: Int,
+    amplitude: Int,
+    spacing: Int,
+    offsetX: Int,
+    offsetY: Int,
+    seed: UInt32
+) -> (UInt8, UInt8, UInt8) {
+    clearFixedBlockSweepPixel(
+        x,
+        y,
+        blockSize: 2,
+        amplitude: amplitude,
+        spacing: spacing,
+        offsetX: offsetX,
+        offsetY: offsetY,
+        seed: seed)
 }
 
 func paletteNoise(
@@ -855,6 +878,38 @@ func staticBackgrounds() -> [Background] {
                 offsetY: 32,
                 seed: clearFixedImpulseSeed)
         })
+    }
+
+    // V2.19 integrates the same fixed-mask perturbations over successively
+    // larger aligned squares. The common 162-pixel spacing leaves at least 98
+    // neutral source pixels between neighbors and becomes an odd 81-cell
+    // reduced-grid stride. Block extent is therefore the only spatial variable
+    // while broad support stays separate from its neighboring response.
+    let clearFixedBlockSizes = [2, 4, 8, 16, 32, 64]
+    let clearFixedBlockAmplitudes = [
+        1, 2, 3, 4, 7, 8, 15, 16, 17, 31,
+        32, 33, 47, 48, 49, 63, 64, 95, 127,
+    ]
+    let clearFixedBlockSpacing = 162
+    let clearFixedBlockSeed: UInt32 = 0x1F83_D9AB
+    for blockSize in clearFixedBlockSizes {
+        for amplitude in clearFixedBlockAmplitudes {
+            let name = String(
+                format: "clear-fixed-block-b%04d-a%03d-train",
+                blockSize,
+                amplitude)
+            list.append(Background(name: name, family: .noise) {
+                x, y, _, _ in
+                clearFixedBlockSweepPixel(
+                    x, y,
+                    blockSize: blockSize,
+                    amplitude: amplitude,
+                    spacing: clearFixedBlockSpacing,
+                    offsetX: 32,
+                    offsetY: 32,
+                    seed: clearFixedBlockSeed)
+            })
+        }
     }
 
     // V2.10's pixel-scale, neutral-centered binary probes do not identify the
@@ -2431,7 +2486,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         var manifest = Manifest(
             schemaVersion: 5,
-            rigVersion: "2.18.0",
+            rigVersion: "2.19.0",
             requestedSuite: config.suite.rawValue,
             osVersion: ProcessInfo.processInfo.operatingSystemVersionString,
             osBuild: commandOutput("/usr/bin/sw_vers", ["-buildVersion"]),
@@ -2693,6 +2748,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         $0)
                 }
             )
+            let clearFixedBlockNames: Set<String> = Set(
+                backgrounds.lazy.map(\.name).filter {
+                    $0.hasPrefix("clear-fixed-block-")
+                })
+            let clearFixedBlockControlNames: Set<String> = Set(
+                [2, 4, 8, 16, 32, 64].flatMap { blockSize in
+                    [1, 32, 64, 127].map { amplitude in
+                        String(
+                            format: "clear-fixed-block-b%04d-a%03d-train",
+                            blockSize,
+                            amplitude)
+                    }
+                }
+            )
             let oversizedRectSceneName = "rect-6000x4000-r000-center"
             let transposedRectSceneName = "rect-4000x6000-r000-center"
             let focusedOversizedSceneNames: Set<String> = [
@@ -2709,6 +2778,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     && !clearGridBasisNames.contains(bg.name)
                     && !clearFilterStageNames.contains(bg.name)
                     && !clearFixedImpulseNames.contains(bg.name)
+                    && !clearFixedBlockNames.contains(bg.name)
             {
                 log("static base: \(bg.name)")
                 let image = renderBackground(bg, width: pw, height: ph)
@@ -3313,6 +3383,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     appearance: .dark,
                     includeControlReference:
                         clearFixedImpulseControlNames.contains(bg.name))
+            }
+
+            // Preserve all 2,495 v2.18 captures as an unchanged prefix. Every
+            // square-size/amplitude pair has one clear output; four amplitudes
+            // per size carry real controls, and all other outputs point only
+            // to their independently regenerated reference.
+            for bg in backgrounds where clearFixedBlockNames.contains(bg.name) {
+                log("static v2.19 fixed square block: \(bg.name)")
+                let image = renderBackground(bg, width: pw, height: ph)
+                let referencePixels = try recordReference(bg, image)
+                if clearFixedBlockControlNames.contains(bg.name) {
+                    await captureStatic(
+                        background: bg,
+                        image: image,
+                        referencePixels: referencePixels,
+                        scene: baseScene,
+                        overlay: .none,
+                        appearance: .dark)
+                }
+                await captureStatic(
+                    background: bg,
+                    image: image,
+                    referencePixels: nil,
+                    scene: denseSweepScene,
+                    overlay: .clear,
+                    appearance: .dark,
+                    includeControlReference:
+                        clearFixedBlockControlNames.contains(bg.name))
             }
         }
 
