@@ -1,0 +1,105 @@
+name: Inspect Liquid Glass runtime
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/introspect.yml
+      - Sources/GlassIntrospect/**
+
+concurrency:
+  group: introspect-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  introspect:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Build Liquid Glass introspection probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p introspection
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassIntrospect/main.swift \
+            -o glassintrospect 2>&1 |
+            tee introspection/build.log
+
+      - name: Probe real Liquid Glass render pipeline
+        if: always()
+        continue-on-error: true
+        env:
+          MTL_CAPTURE_ENABLED: "1"
+        run: |
+          if [ "${{ steps.build.outcome }}" = success ]; then
+            ./glassintrospect introspection ||
+              echo "introspection app exited nonzero" \
+                > introspection/runtime-error.txt
+          else
+            echo "introspection app did not build" \
+              > introspection/runtime-error.txt
+          fi
+
+          framework_output="introspection/framework-evidence.txt"
+          {
+            for binary in \
+              /System/Library/Frameworks/SwiftUI.framework/Versions/A/SwiftUI \
+              /System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore \
+              /System/Library/Frameworks/CoreImage.framework/Versions/A/CoreImage
+            do
+              echo "BINARY $binary"
+              string_evidence="$RUNNER_TEMP/$(basename "$binary").strings"
+              strings -a "$binary" 2>/dev/null |
+                grep -Ei 'liquid.?glass|glass.?effect|glassBackground|backdrop|gaussian|blur|color.?matrix|vibrant|downsample|upsample|sdf|portal' |
+                sort -u > "$string_evidence" || true
+              if xcrun --find swift-demangle >/dev/null 2>&1; then
+                xcrun swift-demangle < "$string_evidence" |
+                  head -n 400 || true
+              else
+                head -n 400 "$string_evidence" || true
+              fi
+
+              symbol_evidence="$RUNNER_TEMP/$(basename "$binary").symbols"
+              nm -gjU "$binary" 2>/dev/null |
+                grep -Ei 'glass|backdrop|gaussian|blur|vibrant|matrix|sdf|portal' |
+                sort -u > "$symbol_evidence" || true
+              if xcrun --find swift-demangle >/dev/null 2>&1; then
+                xcrun swift-demangle < "$symbol_evidence" |
+                  head -n 400 || true
+              else
+                head -n 400 "$symbol_evidence" || true
+              fi
+            done
+          } > "$framework_output"
+
+      - name: Upload Liquid Glass introspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-introspection-${{ github.run_id }}
+          path: introspection
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce introspection
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test -s introspection/runtime.json

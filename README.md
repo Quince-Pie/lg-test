@@ -627,6 +627,13 @@ the Objective-C methods, properties, ivars, and safely readable values of
 those real runtime classes. It also uploads this small forensic directory as
 its own artifact before the multi-gigabyte pixel corpus finishes validation.
 
+Runtime-probe changes use the separate **Inspect Liquid Glass runtime**
+workflow. It builds and runs only `Sources/GlassIntrospect`, preserves the
+Swift compiler transcript as `build.log`, collects the runtime and framework
+evidence, uploads that small directory even on failure, and then enforces both
+a successful build and a nonempty `runtime.json`. Changes confined to the
+probe therefore do not launch another multi-gigabyte static capture.
+
 ### Earlier rejected artifact audits
 
 GitHub run `30296899953` produced an intact 2,873,440,468-byte artifact

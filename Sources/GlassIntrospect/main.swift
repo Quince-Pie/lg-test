@@ -464,7 +464,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     "effect",
                                     "mode",
                                 ]))
-                    }))
+                    })
             }
         }
         do {

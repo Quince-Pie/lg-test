@@ -49,9 +49,8 @@ on:
         type: boolean
   push:
     paths:
-      - .github/workflows/capture.yml
       - Analysis/**
-      - Sources/**
+      - Sources/GlassCapture/**
 
 concurrency:
   group: capture-${{ github.ref }}
@@ -133,10 +132,13 @@ jobs:
         id: introspection_build
         continue-on-error: true
         run: |
+          mkdir -p captures/introspection
+          set -o pipefail
           swiftc -O -parse-as-library \
             -target "$(uname -m)-apple-macos26.0" \
             Sources/GlassIntrospect/main.swift \
-            -o glassintrospect
+            -o glassintrospect 2>&1 |
+            tee captures/introspection/build.log
 
       - name: Capture
         id: capture
