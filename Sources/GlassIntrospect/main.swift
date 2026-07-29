@@ -58,30 +58,38 @@ private func scalarDescription(_ value: Any?) -> String? {
     return String(reflecting: value)
 }
 
+private func serializedRuntimeBytes(
+    _ bytes: [UInt8],
+    className: String
+) -> [String: Any] {
+    let words = stride(from: 0, to: bytes.count - bytes.count % 4, by: 4)
+        .map { offset in
+            UInt32(bytes[offset])
+                | UInt32(bytes[offset + 1]) << 8
+                | UInt32(bytes[offset + 2]) << 16
+                | UInt32(bytes[offset + 3]) << 24
+        }
+    return [
+        "class": className,
+        "lengthBytes": bytes.count,
+        "hex": bytes.map {
+            String(format: "%02x", $0)
+        }.joined(),
+        "float32LittleEndian": words.map {
+            Double(Float(bitPattern: $0))
+        },
+        "uint32LittleEndianHex": words.map {
+            String(format: "%08x", $0)
+        },
+    ]
+}
+
 private func serializedRuntimeValue(_ optionalValue: Any?) -> Any {
     guard let value = optionalValue else { return NSNull() }
     if let data = value as? Data {
-        let bytes = [UInt8](data)
-        let words = stride(from: 0, to: bytes.count - bytes.count % 4, by: 4)
-            .map { offset in
-                UInt32(bytes[offset])
-                    | UInt32(bytes[offset + 1]) << 8
-                    | UInt32(bytes[offset + 2]) << 16
-                    | UInt32(bytes[offset + 3]) << 24
-            }
-        return [
-            "class": String(reflecting: type(of: value)),
-            "lengthBytes": bytes.count,
-            "hex": bytes.map {
-                String(format: "%02x", $0)
-            }.joined(),
-            "float32LittleEndian": words.map {
-                Double(Float(bitPattern: $0))
-            },
-            "uint32LittleEndianHex": words.map {
-                String(format: "%08x", $0)
-            },
-        ] as [String: Any]
+        return serializedRuntimeBytes(
+            [UInt8](data),
+            className: String(reflecting: type(of: value)))
     }
     if let values = value as? [Any] {
         return values.map(serializedRuntimeValue)
@@ -97,6 +105,27 @@ private func serializedRuntimeValue(_ optionalValue: Any?) -> Any {
     }
     if let number = value as? NSNumber {
         return number
+    }
+    if let wrapped = value as? NSValue {
+        var size = 0
+        var alignment = 0
+        NSGetSizeAndAlignment(
+            wrapped.objCType,
+            &size,
+            &alignment)
+        var bytes = [UInt8](repeating: 0, count: size)
+        if size > 0 {
+            bytes.withUnsafeMutableBytes {
+                wrapped.getValue($0.baseAddress!)
+            }
+        }
+        var record = serializedRuntimeBytes(
+            bytes,
+            className: String(reflecting: type(of: value)))
+        record["alignmentBytes"] = alignment
+        record["objCType"] = String(cString: wrapped.objCType)
+        record["description"] = String(reflecting: value)
+        return record
     }
     if let string = value as? String {
         return string
@@ -254,12 +283,13 @@ private let linkedRuntimeObjectKeys = [
 private func collectRuntimeObject(
     _ object: NSObject,
     into objects: inout [String: NSObject],
+    visited: inout Set<ObjectIdentifier>,
     depth: Int = 0
 ) {
+    guard visited.insert(ObjectIdentifier(object)).inserted else { return }
     let className = NSStringFromClass(type(of: object))
-    let isNewClass = objects[className] == nil
     objects[className] = object
-    guard isNewClass, depth < 4 else { return }
+    guard depth < 4 else { return }
     for key in linkedRuntimeObjectKeys {
         let selector = NSSelectorFromString(key)
         guard object.responds(to: selector),
@@ -270,7 +300,47 @@ private func collectRuntimeObject(
         collectRuntimeObject(
             child,
             into: &objects,
+            visited: &visited,
             depth: depth + 1)
+    }
+}
+
+private func collectRuntimeLayer(
+    _ layer: CALayer,
+    into objects: inout [String: NSObject],
+    visited: inout Set<ObjectIdentifier>
+) {
+    collectRuntimeObject(
+        layer,
+        into: &objects,
+        visited: &visited)
+    for filter in layer.filters ?? [] {
+        if let object = filter as? NSObject {
+            collectRuntimeObject(
+                object,
+                into: &objects,
+                visited: &visited)
+        }
+    }
+    for filter in layer.backgroundFilters ?? [] {
+        if let object = filter as? NSObject {
+            collectRuntimeObject(
+                object,
+                into: &objects,
+                visited: &visited)
+        }
+    }
+    if let object = layer.compositingFilter as? NSObject {
+        collectRuntimeObject(
+            object,
+            into: &objects,
+            visited: &visited)
+    }
+    for child in layer.sublayers ?? [] {
+        collectRuntimeLayer(
+            child,
+            into: &objects,
+            visited: &visited)
     }
 }
 
@@ -278,23 +348,11 @@ private func collectRuntimeObjects(
     _ layer: CALayer,
     into objects: inout [String: NSObject]
 ) {
-    collectRuntimeObject(layer, into: &objects)
-    for filter in layer.filters ?? [] {
-        if let object = filter as? NSObject {
-            collectRuntimeObject(object, into: &objects)
-        }
-    }
-    for filter in layer.backgroundFilters ?? [] {
-        if let object = filter as? NSObject {
-            collectRuntimeObject(object, into: &objects)
-        }
-    }
-    if let object = layer.compositingFilter as? NSObject {
-        collectRuntimeObject(object, into: &objects)
-    }
-    for child in layer.sublayers ?? [] {
-        collectRuntimeObjects(child, into: &objects)
-    }
+    var visited: Set<ObjectIdentifier> = []
+    collectRuntimeLayer(
+        layer,
+        into: &objects,
+        visited: &visited)
 }
 
 private func layerDescription(_ layer: CALayer) -> [String: Any] {
@@ -467,7 +525,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -555,6 +613,17 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     "effectOffset",
                                     "mergeElements",
                                     "hitTestsAsFill",
+                                    "minimum",
+                                    "maximum",
+                                    "key",
+                                    "keyColor",
+                                    "fill",
+                                    "fillColor",
+                                    "fillOpacity",
+                                    "highlight",
+                                    "highlightColor",
+                                    "highlightOpacity",
+                                    "colorMatrix",
                                 ]))
                     })
             }
