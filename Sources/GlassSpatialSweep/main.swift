@@ -24,6 +24,8 @@ private let auditAmplitudes: Set<Int> = [0, 1, 2, 64, 127]
 private let kernelSquareSide = 96
 private let kernelPatchRadius = 40
 private let kernelPatchSide = 2 * kernelPatchRadius + 1
+private let lodAmplitudes = [0, 1, 8, 32, 127]
+private let lodAuditNumerators: Set<Int> = [0, 37, 64, 128]
 
 private struct Site {
     let index: Int
@@ -48,6 +50,13 @@ private struct SpatialIntervention {
     let values: [(key: String, value: NSNumber)]
 }
 
+private struct LodState {
+    let name: String
+    let targetNumerator: Int
+    let blurRadius: Float
+    let productionRadius: Bool
+}
+
 private let identityValues: [(key: String, value: NSNumber)] = [
     ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
     ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
@@ -62,6 +71,40 @@ private let spatialInterventions = [0, 1, 2, 4].map { radius in
             ("inputBlurRadius", NSNumber(value: Float(radius))),
         ])
 }
+
+private let lodStates: [LodState] = {
+    var result = (0...128).map { numerator in
+        let radius: Float
+        switch numerator {
+        case 0:
+            radius = 0
+        case 64:
+            radius = 2
+        case 128:
+            radius = 4
+        default:
+            let centeredLod =
+                (Double(numerator) + 0.25) / 64
+            if numerator < 64 {
+                radius = Float(
+                    2 * (pow(2, centeredLod) - 1))
+            } else {
+                radius = Float(pow(2, centeredLod))
+            }
+        }
+        return LodState(
+            name: String(format: "lod-bin-%03d", numerator),
+            targetNumerator: numerator,
+            blurRadius: radius,
+            productionRadius: false)
+    }
+    result.append(LodState(
+        name: "production-blur-1",
+        targetNumerator: 37,
+        blurRadius: 1,
+        productionRadius: true))
+    return result
+}()
 
 private let sites: [Site] = {
     var result: [Site] = []
@@ -614,6 +657,23 @@ private func kernelSiteManifest(
     ]
 }
 
+private func lodStateManifest(
+    _ state: LodState,
+    index: Int
+) -> [String: Any] {
+    [
+        "index": index,
+        "name": state.name,
+        "targetLodNumerator": state.targetNumerator,
+        "targetLodDenominator": 64,
+        "requestedBlurRadius": Double(state.blurRadius),
+        "requestedBlurRadiusFloat32Bits": String(
+            format: "%08x",
+            state.blurRadius.bitPattern),
+        "productionRadius": state.productionRadius,
+    ]
+}
+
 private struct GlassFilterTarget {
     let layer: CALayer
     let index: Int
@@ -731,6 +791,373 @@ private final class SpatialSweepDelegate:
         } catch {
             fail(error)
         }
+    }
+
+    private func runLodSweep(
+        workspace: NSWorkspace
+    ) async throws {
+        var controlStream = Data()
+        var lodStream = Data()
+        var records: [[String: Any]] = []
+        var requiredFormatSignature: String?
+        var captureColorSpaceICC: Data?
+        var captureFormat: [String: Any]?
+
+        for amplitude in lodAmplitudes {
+            let source = renderKernelSource(
+                amplitude: amplitude)
+            hostingView.rootView = SpatialSweepView(
+                image: source,
+                glass: false)
+            let (control, controlSamples) =
+                try await stableCapture(
+                    window,
+                    name: "lod-a\(amplitude)-control",
+                    settleNanoseconds: 200_000_000)
+
+            hostingView.rootView = SpatialSweepView(
+                image: source,
+                glass: true)
+            let (materialized, materializedSamples) =
+                try await stableCapture(
+                    window,
+                    name: "lod-a\(amplitude)-materialized",
+                    settleNanoseconds: 450_000_000)
+
+            let (
+                controlSignature,
+                controlICC,
+                controlFormat
+            ) = formatSignature(control)
+            let (materializedSignature, _, _) =
+                formatSignature(materialized)
+            guard controlSignature == materializedSignature else {
+                throw SweepError.environment(
+                    "LOD capture format changed between "
+                        + "control and glass")
+            }
+            if let requiredFormatSignature {
+                guard requiredFormatSignature
+                    == controlSignature
+                else {
+                    throw SweepError.environment(
+                        "LOD capture format changed between "
+                            + "amplitudes")
+                }
+            } else {
+                requiredFormatSignature = controlSignature
+                captureColorSpaceICC = controlICC
+                captureFormat = controlFormat
+            }
+
+            controlStream.append(
+                try kernelPatchRGBData(
+                    control.nativePixels))
+            guard let rootLayer = window.contentView?.layer,
+                  let target =
+                    glassBackgroundFilter(in: rootLayer)
+            else {
+                throw SweepError.glassFilterMissing
+            }
+
+            var stateRecords: [[String: Any]] = []
+            for (stateIndex, state) in
+                lodStates.enumerated()
+            {
+                let stateFilter =
+                    try copiedFilter(target.filter)
+                let values = identityValues + [
+                    (
+                        "inputBlurRadius",
+                        NSNumber(value: state.blurRadius)
+                    ),
+                ]
+                installFilter(
+                    target: target,
+                    filter: stateFilter,
+                    values: values)
+                let captureName =
+                    "lod-a\(amplitude)-\(state.name)"
+                let (capture, stabilitySamples) =
+                    try await stableCapture(
+                        window,
+                        name: captureName,
+                        settleNanoseconds: 450_000_000)
+                let (signature, _, _) =
+                    formatSignature(capture)
+                guard signature == controlSignature else {
+                    throw SweepError.environment(
+                        "LOD capture format changed during "
+                            + state.name)
+                }
+                guard let readback = stateFilter.value(
+                    forKey: "inputBlurRadius"
+                ) as? NSNumber,
+                      readback.floatValue.bitPattern
+                        == state.blurRadius.bitPattern
+                else {
+                    throw SweepError.capture(
+                        "LOD blur-radius readback differs during "
+                            + state.name)
+                }
+                lodStream.append(
+                    try kernelPatchRGBData(
+                        capture.nativePixels))
+
+                var stateRecord = lodStateManifest(
+                    state,
+                    index: stateIndex)
+                stateRecord["readbackBlurRadius"] =
+                    Double(readback.floatValue)
+                stateRecord[
+                    "readbackBlurRadiusFloat32Bits"
+                ] = String(
+                    format: "%08x",
+                    readback.floatValue.bitPattern)
+                stateRecord["nativePixelSha256"] =
+                    sha256(capture.nativePixels)
+                stateRecord["stabilitySamples"] =
+                    stabilitySamples
+                stateRecord["captureBackend"] =
+                    capture.backend
+                if amplitude == 127
+                    && (
+                        lodAuditNumerators.contains(
+                            state.targetNumerator)
+                        || state.productionRadius
+                    )
+                {
+                    let fileName =
+                        "lod-amplitude-127-\(state.name).png"
+                    let captureURL = outputDirectory
+                        .appendingPathComponent(fileName)
+                    try writePNG(
+                        capture.canonicalImage,
+                        to: captureURL)
+                    stateRecord["file"] =
+                        captureURL.lastPathComponent
+                    stateRecord["fileSha256"] =
+                        sha256(captureURL)
+                }
+                stateRecords.append(stateRecord)
+            }
+
+            var record: [String: Any] = [
+                "amplitudeCodes": amplitude,
+                "controlCanonicalPixelSha256":
+                    sha256(control.canonicalPixels),
+                "controlNativePixelSha256":
+                    sha256(control.nativePixels),
+                "controlStabilitySamples": controlSamples,
+                "materializedCanonicalPixelSha256":
+                    sha256(materialized.canonicalPixels),
+                "materializedNativePixelSha256":
+                    sha256(materialized.nativePixels),
+                "materializedStabilitySamples":
+                    materializedSamples,
+                "captureBackend": control.backend,
+                "states": stateRecords,
+            ]
+            if amplitude == 127 {
+                let sourceURL = outputDirectory
+                    .appendingPathComponent(
+                        "lod-amplitude-127-source.png")
+                let controlURL = outputDirectory
+                    .appendingPathComponent(
+                        "lod-amplitude-127-control.png")
+                try writePNG(source, to: sourceURL)
+                try writePNG(
+                    control.canonicalImage,
+                    to: controlURL)
+                record["sourceFile"] =
+                    sourceURL.lastPathComponent
+                record["sourceFileSha256"] =
+                    sha256(sourceURL)
+                record["controlFile"] =
+                    controlURL.lastPathComponent
+                record["controlFileSha256"] =
+                    sha256(controlURL)
+            }
+            records.append(record)
+        }
+
+        guard window.isKeyWindow else {
+            throw SweepError.environment(
+                "LOD capture window lost key status")
+        }
+        let controlRecordCount =
+            lodAmplitudes.count * kernelSites.count
+            * kernelPatchSide * kernelPatchSide
+        let lodRecordCount =
+            lodAmplitudes.count * lodStates.count
+            * kernelSites.count
+            * kernelPatchSide * kernelPatchSide
+        guard controlStream.count == controlRecordCount * 3,
+              lodStream.count == lodRecordCount * 3
+        else {
+            throw SweepError.capture(
+                "native LOD stream length differs")
+        }
+        let controlURL = outputDirectory
+            .appendingPathComponent(
+                "native-lod-control-patches.rgb8")
+        let lodURL = outputDirectory
+            .appendingPathComponent(
+                "native-lod-identity-patches.rgb8")
+        try controlStream.write(
+            to: controlURL,
+            options: .atomic)
+        try lodStream.write(to: lodURL, options: .atomic)
+
+        var nativeEvidence: [String: Any] = [
+            "schemaVersion": 1,
+            "recordOrder":
+                "amplitude order, LOD-state order, "
+                + "reduced-grid phase row-major, "
+                + "patch y-major then x-major",
+            "recordFormat": "RGB8",
+            "recordStrideBytes": 3,
+            "recordCount": lodRecordCount,
+            "file": lodURL.lastPathComponent,
+            "fileSha256": sha256(lodStream),
+            "fileBytes": lodStream.count,
+            "controlRecordOrder":
+                "amplitude order, reduced-grid phase row-major, "
+                + "patch y-major then x-major",
+            "controlRecordCount": controlRecordCount,
+            "controlFile": controlURL.lastPathComponent,
+            "controlFileSha256": sha256(controlStream),
+            "controlFileBytes": controlStream.count,
+            "captureFormat":
+                captureFormat as Any? ?? NSNull(),
+        ]
+        if let captureColorSpaceICC {
+            let iccURL = outputDirectory
+                .appendingPathComponent(
+                    "native-lod-capture-colorspace.icc")
+            try captureColorSpaceICC.write(
+                to: iccURL,
+                options: .atomic)
+            nativeEvidence["iccFile"] =
+                iccURL.lastPathComponent
+            nativeEvidence["iccFileSha256"] =
+                sha256(captureColorSpaceICC)
+            nativeEvidence["iccFileBytes"] =
+                captureColorSpaceICC.count
+        }
+
+        let maximumPatchRadius = kernelSites.reduce(0.0) {
+            current, site in
+            let corners = [
+                (
+                    site.x - kernelPatchRadius,
+                    site.y - kernelPatchRadius
+                ),
+                (
+                    site.x + kernelPatchRadius,
+                    site.y - kernelPatchRadius
+                ),
+                (
+                    site.x - kernelPatchRadius,
+                    site.y + kernelPatchRadius
+                ),
+                (
+                    site.x + kernelPatchRadius,
+                    site.y + kernelPatchRadius
+                ),
+            ]
+            return max(
+                current,
+                corners.map { point in
+                    let (x, y) = point
+                    return hypot(
+                        Double(x - imageWidth / 2),
+                        Double(y - imageHeight / 2))
+                }.max() ?? 0)
+        }
+        let report: [String: Any] = [
+            "schemaVersion": 1,
+            "rigVersion": "native-lod-sweep-1.0.0",
+            "sweepKind":
+                "deep-interior-phase-controlled-lod-curve",
+            "ciCommit":
+                ProcessInfo.processInfo
+                    .environment["GITHUB_SHA"]
+                ?? "local",
+            "osVersion":
+                ProcessInfo.processInfo
+                    .operatingSystemVersionString,
+            "architecture":
+                ProcessInfo.processInfo.machineArchitecture,
+            "windowKey": window.isKeyWindow,
+            "windowColorSpace":
+                window.colorSpace.map {
+                    String(describing: $0)
+                } ?? "unknown",
+            "screenColorSpace":
+                window.screen?.colorSpace.map {
+                    String(describing: $0)
+                } ?? "unknown",
+            "backingScaleFactor":
+                window.backingScaleFactor,
+            "pixelWidth": imageWidth,
+            "pixelHeight": imageHeight,
+            "accessibility": [
+                "reduceTransparency": workspace
+                    .accessibilityDisplayShouldReduceTransparency,
+                "increaseContrast": workspace
+                    .accessibilityDisplayShouldIncreaseContrast,
+                "reduceMotion": workspace
+                    .accessibilityDisplayShouldReduceMotion,
+            ],
+            "glassShape": [
+                "kind": "circle",
+                "diameter": glassDiameter,
+                "centerX": imageWidth / 2,
+                "centerY": imageHeight / 2,
+                "maximumCapturedPatchRadius":
+                    maximumPatchRadius,
+                "maximumNormalizedRadius":
+                    maximumPatchRadius
+                    / (Double(glassDiameter) / 2),
+            ],
+            "sourceDesign": [
+                "baseCode": sourceCode,
+                "squareWidth": kernelSquareSide,
+                "squareHeight": kernelSquareSide,
+                "minimumSquareGapPixels": 130,
+                "channelSigns": [
+                    "red": 1,
+                    "green": -1,
+                    "blue": 1,
+                ],
+                "amplitudesCodes": lodAmplitudes,
+                "reducedGridPixelSizeSourcePixels": 2,
+                "phasePeriodReducedGridPixels": 4,
+                "patchRadiusPixels": kernelPatchRadius,
+                "patchSidePixels": kernelPatchSide,
+                "sites":
+                    kernelSites.map(kernelSiteManifest),
+            ],
+            "lodDesign": [
+                "quantizedFractionDenominator": 64,
+                "states": lodStates.enumerated().map {
+                    lodStateManifest($0.element, index: $0.offset)
+                },
+                "productionState":
+                    "production-blur-1",
+            ],
+            "captures": records,
+            "nativeCaptureEvidence": nativeEvidence,
+        ]
+        let manifest = try JSONSerialization.data(
+            withJSONObject: report,
+            options: [.prettyPrinted, .sortedKeys])
+        try manifest.write(
+            to: outputDirectory.appendingPathComponent(
+                "manifest.json"),
+            options: .atomic)
+        exit(0)
     }
 
     private func runKernelSweep(
@@ -1146,6 +1573,13 @@ private final class SpatialSweepDelegate:
             else {
                 throw SweepError.environment(
                     "Reduce Motion is enabled")
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--lod")
+            {
+                try await runLodSweep(
+                    workspace: workspace)
+                return
             }
             if CommandLine.arguments.dropFirst(2)
                 .contains("--kernel")

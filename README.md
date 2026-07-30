@@ -656,6 +656,12 @@ Its fifth revision crosses the real reduced-mip fractional phases—1/8, 3/8,
 5/8, and 7/8—in both axes. Their denominator-64 spatial weights make staged
 endpoint rounding and a fused three-dimensional weighted sum observably
 different.
+The focused native LOD mode then samples all 129 quantized LOD bins from zero
+through two on five amplitudes, plus an independent duplicate at the real
+production blur radius one. It retains all sixteen reduced-grid phases and
+the 81-pixel cumulative-kernel patches, reads the installed blur value back
+bit-for-bit, and makes every adjacent mip transition directly testable
+without treating separately rounded endpoint captures as exact inputs.
 The focused native kernel mode complements the impulse sweep with sixteen
 96-pixel square steps spanning every phase of the first two reduced mip
 levels. Its red/blue positive and green negative channels capture the

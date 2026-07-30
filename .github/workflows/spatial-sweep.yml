@@ -1,4 +1,4 @@
-name: Capture Liquid Glass native kernel sweep
+name: Capture Liquid Glass native LOD sweep
 
 on:
   workflow_dispatch:
@@ -42,11 +42,11 @@ jobs:
             -o glass-spatial-sweep 2>&1 |
             tee spatial-sweep/build.log
 
-      - name: Capture native kernel sweep
+      - name: Capture native LOD sweep
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
-        run: ./glass-spatial-sweep spatial-sweep --kernel
+        run: ./glass-spatial-sweep spatial-sweep --lod
 
       - name: Inventory native spatial sweep
         if: always()
@@ -57,7 +57,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-kernel-sweep-${{ github.run_id }}
+          name: liquid-glass-lod-sweep-${{ github.run_id }}
           path: spatial-sweep
           if-no-files-found: error
           retention-days: 7
@@ -68,9 +68,5 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test -s spatial-sweep/manifest.json
-          test -s spatial-sweep/native-kernel-control-patches.rgb8
-          test -s spatial-sweep/native-kernel-clear-patches.rgb8
-          test -s spatial-sweep/native-kernel-identity-blur-0-patches.rgb8
-          test -s spatial-sweep/native-kernel-identity-blur-1-patches.rgb8
-          test -s spatial-sweep/native-kernel-identity-blur-2-patches.rgb8
-          test -s spatial-sweep/native-kernel-identity-blur-4-patches.rgb8
+          test -s spatial-sweep/native-lod-control-patches.rgb8
+          test -s spatial-sweep/native-lod-identity-patches.rgb8
