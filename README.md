@@ -1230,6 +1230,14 @@ destination is consumed by the live glass pass. CI requires that producer
 payload, its exact descriptor and pipeline identity, both destination mips,
 and all earlier arithmetic controls. This closes the native-pixel base-stage
 input without weakening or replacing the Schema 67 sibling-mip proof.
+Schema 69 removes the remaining single-profile assumption from runtime
+introspection. One workflow run now executes the complete native capture under
+the Cartesian product of clear and regular materials with light and dark
+appearances. Each artifact records both the requested profile and AppKit's
+effective appearance. CI independently requires the recovered profile fragment
+to match Apple's live render byte for byte in every matrix job; it does not
+pool profiles, tolerate a channel delta, or infer a dark or regular profile
+from the already exact clear-light capture.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

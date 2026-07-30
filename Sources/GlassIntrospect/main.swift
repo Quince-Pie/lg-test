@@ -1405,13 +1405,35 @@ private struct DiagnosticBackground: View {
     }
 }
 
+private enum ProbeMaterial: String {
+    case clear
+    case regular
+}
+
+private enum ProbeAppearance: String {
+    case light
+    case dark
+
+    var nativeName: NSAppearance.Name {
+        self == .dark ? .darkAqua : .aqua
+    }
+}
+
 private struct ProbeView: View {
+    let material: ProbeMaterial
+
     var body: some View {
         ZStack {
             DiagnosticBackground()
-            Color.clear
-                .frame(width: 800, height: 800)
-                .glassEffect(.clear, in: .circle)
+            if material == .regular {
+                Color.clear
+                    .frame(width: 800, height: 800)
+                    .glassEffect(.regular, in: .circle)
+            } else {
+                Color.clear
+                    .frame(width: 800, height: 800)
+                    .glassEffect(.clear, in: .circle)
+            }
         }
         .frame(width: 1024, height: 1024)
     }
@@ -5953,7 +5975,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 68,
+            "schemaVersion": 69,
             "capture": capture,
             "phase": phase,
         ]
@@ -6186,7 +6208,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 68,
+                    "schemaVersion": 69,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -6611,7 +6633,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 68,
+                "schemaVersion": 69,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -10813,6 +10835,8 @@ private func colorSpaceEvidence(
 @MainActor
 private final class ProbeDelegate: NSObject, NSApplicationDelegate {
     private let outputDirectory: URL
+    private let material: ProbeMaterial
+    private let appearance: ProbeAppearance
     private var window: ProbeWindow!
     private var captureStarted = false
     private var captureError: String?
@@ -10820,8 +10844,14 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         outputDirectory.appendingPathComponent("liquid-glass.gputrace")
     }
 
-    init(outputDirectory: URL) {
+    init(
+        outputDirectory: URL,
+        material: ProbeMaterial,
+        appearance: ProbeAppearance
+    ) {
         self.outputDirectory = outputDirectory
+        self.material = material
+        self.appearance = appearance
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -10858,7 +10888,12 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             window.isOpaque = true
             window.backgroundColor = .black
             window.colorSpace = .sRGB
-            window.contentView = NSHostingView(rootView: ProbeView())
+            let nativeAppearance = NSAppearance(
+                named: appearance.nativeName)!
+            NSApplication.shared.appearance = nativeAppearance
+            window.appearance = nativeAppearance
+            window.contentView = NSHostingView(
+                rootView: ProbeView(material: material))
             window.setFrameOrigin(.zero)
             NSApplication.shared.activate(ignoringOtherApps: true)
             window.makeKeyAndOrderFront(nil)
@@ -10884,7 +10919,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 68,
+                    "schemaVersion": 69,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -10900,7 +10935,19 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 68,
+            "schemaVersion": 69,
+            "materialProfileEvidence": [
+                "material": material.rawValue,
+                "requestedAppearance": appearance.rawValue,
+                "nativeAppearanceName":
+                    appearance.nativeName.rawValue,
+                "effectiveAppearanceName":
+                    window.effectiveAppearance.name.rawValue,
+                "effectiveAppearanceMatchesRequest":
+                    window.effectiveAppearance.bestMatch(
+                        from: [.aqua, .darkAqua])
+                    == appearance.nativeName,
+            ],
             "diagnosticBackgroundEvidence": [
                 "pattern": diagnosticBackgroundPattern,
                 "cellWidthPoints":
@@ -11186,9 +11233,29 @@ struct Main {
     static func main() {
         let output = CommandLine.arguments.dropFirst().first
             ?? "captures/introspection"
+        let environment = ProcessInfo.processInfo.environment
+        guard let material = ProbeMaterial(
+                rawValue: environment[
+                    "LG_GLASS_MATERIAL"
+                ] ?? "clear"),
+              let appearance = ProbeAppearance(
+                rawValue: environment[
+                    "LG_GLASS_APPEARANCE"
+                ] ?? "light")
+        else {
+            FileHandle.standardError.write(
+                Data(
+                    (
+                        "invalid LG_GLASS_MATERIAL or "
+                        + "LG_GLASS_APPEARANCE\n"
+                    ).utf8))
+            exit(2)
+        }
         let app = NSApplication.shared
         let delegate = ProbeDelegate(
-            outputDirectory: URL(fileURLWithPath: output))
+            outputDirectory: URL(fileURLWithPath: output),
+            material: material,
+            appearance: appearance)
         app.delegate = delegate
         app.setActivationPolicy(.regular)
         app.run()

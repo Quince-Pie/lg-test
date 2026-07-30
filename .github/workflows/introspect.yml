@@ -13,8 +13,21 @@ concurrency:
 
 jobs:
   introspect:
+    name: ${{ matrix.material }}-${{ matrix.appearance }}
     runs-on: macos-26
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        material:
+          - clear
+          - regular
+        appearance:
+          - light
+          - dark
+    env:
+      LG_GLASS_MATERIAL: ${{ matrix.material }}
+      LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
     steps:
       - uses: actions/checkout@v4
 
@@ -639,7 +652,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-introspection-${{ github.run_id }}
+          name: liquid-glass-introspection-${{ matrix.material }}-${{ matrix.appearance }}-${{ github.run_id }}
           path: introspection
           if-no-files-found: error
           retention-days: 7
@@ -656,8 +669,22 @@ jobs:
           root = pathlib.Path("introspection")
           with (root / "runtime.json").open(encoding="utf-8") as stream:
               runtime = json.load(stream)
-          if runtime.get("schemaVersion") != 68:
-              raise SystemExit("introspection schema is not 68")
+          if runtime.get("schemaVersion") != 69:
+              raise SystemExit("introspection schema is not 69")
+
+          profile = runtime.get("materialProfileEvidence", {})
+          if (
+              profile.get("material") != "${{ matrix.material }}"
+              or profile.get("requestedAppearance")
+                  != "${{ matrix.appearance }}"
+              or profile.get(
+                  "effectiveAppearanceMatchesRequest"
+              ) is not True
+          ):
+              raise SystemExit(
+                  "schema-69 material profile differs: "
+                  f"{profile}"
+              )
 
           background = runtime.get("diagnosticBackgroundEvidence", {})
           if (
@@ -669,7 +696,7 @@ jobs:
               or background.get("rows") != 1024
           ):
               raise SystemExit(
-                  "schema-68 diagnostic background metadata differs"
+                  "schema-69 diagnostic background metadata differs"
               )
 
           install = runtime.get("sdfGeneratorEvidence", {}).get(
@@ -706,7 +733,7 @@ jobs:
               )
           ):
               raise SystemExit(
-                  "schema-68 Metal command-provenance hooks differ: "
+                  "schema-69 Metal command-provenance hooks differ: "
                   f"{install}"
               )
 
@@ -739,7 +766,7 @@ jobs:
               or command_provenance["blitEncoderCount"] < 1
           ):
               raise SystemExit(
-                  "schema-68 Metal command provenance differs: "
+                  "schema-69 Metal command provenance differs: "
                   f"{command_provenance}"
               )
 
@@ -763,7 +790,7 @@ jobs:
               }
           ):
               raise SystemExit(
-                  "schema-68 native downsample replay metadata differs"
+                  "schema-69 native downsample replay metadata differs"
               )
           candidates_by_name = {
               candidate["function"]: candidate
@@ -778,7 +805,7 @@ jobs:
                   or half_trace.get("outputBytes") != 224 * 224 * 8
               ):
                   raise SystemExit(
-                      "schema-68 native downsample candidate failed: "
+                      "schema-69 native downsample candidate failed: "
                       f"{name}: {candidate}"
                   )
               for record in (candidate, half_trace):
@@ -789,7 +816,7 @@ jobs:
                           != record.get("outputBytes")
                   ):
                       raise SystemExit(
-                          "schema-68 native downsample payload differs: "
+                          "schema-69 native downsample payload differs: "
                           f"{path}"
                       )
 
@@ -804,7 +831,7 @@ jobs:
               if isinstance(candidate, dict)
           } != expected_modes:
               raise SystemExit(
-                  "schema-68 in-place downsample modes differ"
+                  "schema-69 in-place downsample modes differ"
               )
           for candidate in in_place:
               if (
@@ -818,7 +845,7 @@ jobs:
                   or candidate.get("outputBytes") != 224 * 224 * 4
               ):
                   raise SystemExit(
-                      "schema-68 in-place downsample failed: "
+                      "schema-69 in-place downsample failed: "
                       f"{candidate}"
                   )
               path = root / str(candidate.get("outputFile", ""))
@@ -828,7 +855,7 @@ jobs:
                       != candidate.get("outputBytes")
               ):
                   raise SystemExit(
-                      "schema-68 in-place payload differs: "
+                      "schema-69 in-place payload differs: "
                       f"{path}"
                   )
 
@@ -866,6 +893,49 @@ jobs:
                       f"{path.stat().st_size} != {expected_size}"
                   )
 
+          exact_replay = runtime.get(
+              "carendererEvidence", {}
+          ).get("exactPassReplay", {})
+          if (
+              exact_replay.get("executed") is not True
+              or exact_replay.get("exactByteMatch") is not True
+              or exact_replay.get("mismatchedByteCount") != 0
+              or exact_replay.get("maximumChannelDelta") != 0
+          ):
+              raise SystemExit(
+                  "schema-69 captured pass replay is not exact: "
+                  f"{exact_replay}"
+              )
+          independent = exact_replay.get(
+              "independentGlassReplay", {}
+          )
+          profiles = {
+              candidate.get("name"): candidate
+              for candidate in independent.get("candidates", [])
+              if isinstance(candidate, dict)
+          }
+          profile_replay = profiles.get(
+              "custom_profile_fragment_replay", {}
+          )
+          profile_comparison = profile_replay.get(
+              "comparison", {}
+          )
+          if (
+              profile_comparison.get("compared") is not True
+              or profile_comparison.get("exactByteMatch") is not True
+              or profile_comparison.get(
+                  "mismatchedByteCount"
+              ) != 0
+              or profile_comparison.get(
+                  "maximumChannelDelta"
+              ) != 0
+          ):
+              raise SystemExit(
+                  "schema-69 independent material replay is not "
+                  "byte-exact: "
+                  f"{profile_replay}"
+              )
+
           texture_evidence = runtime.get("carendererEvidence", {}).get(
               "metalTextureSnapshots", {}
           )
@@ -899,7 +969,7 @@ jobs:
                   source_candidates.append(snapshot)
           if len(copy_base_inputs) != 1:
               raise SystemExit(
-                  "schema-68 copy-base input texture is not unique: "
+                  "schema-69 copy-base input texture is not unique: "
                   f"{len(copy_base_inputs)} candidates"
               )
           copy_base_input = copy_base_inputs[0]
@@ -915,12 +985,12 @@ jobs:
                   != 448 * 448 * 4
           ):
               raise SystemExit(
-                  "schema-68 copy-base input payload differs: "
+                  "schema-69 copy-base input payload differs: "
                   f"{copy_base_input}"
               )
           if len(source_candidates) != 1:
               raise SystemExit(
-                  "schema-68 live backdrop source texture is not unique: "
+                  "schema-69 live backdrop source texture is not unique: "
                   f"{len(source_candidates)} candidates"
               )
 
@@ -943,7 +1013,7 @@ jobs:
                   or record.get("rawBytes") != expected_size
               ):
                   raise SystemExit(
-                      f"schema-68 backdrop mip {level} metadata differs"
+                      f"schema-69 backdrop mip {level} metadata differs"
                   )
               path = root / str(record.get("rawFile", ""))
               if (
@@ -951,7 +1021,7 @@ jobs:
                   or path.stat().st_size != expected_size
               ):
                   raise SystemExit(
-                      f"schema-68 backdrop mip {level} payload differs"
+                      f"schema-69 backdrop mip {level} payload differs"
                   )
 
           mip_zero = (
@@ -963,7 +1033,7 @@ jobs:
           })
           if distinct_rgb < 50_000:
               raise SystemExit(
-                  "schema-68 backdrop mip zero lacks identification rank: "
+                  "schema-69 backdrop mip zero lacks identification rank: "
                   f"{distinct_rgb} distinct RGB texels"
               )
           PY
