@@ -1220,6 +1220,16 @@ and address. CI requires every hook and the complete provenance record but
 does not assume in advance that the producer is compute or blit; a measured
 absence is evidence against those public command paths rather than a reason to
 invent one.
+Schema 68 isolates the still-ambiguous producer of the half-resolution base.
+It changes the introspection-only coordinate hash from 2-by-2 to 1-by-1 source
+cells, so nearest selection, bilinear filtering, and every fixed-point
+subpixel phase produce different full-rank byte fields. It also snapshots the
+single-level 448-by-448 BGRA8Unorm texture bound as source index zero to
+`variable_blur_copy_base_mip_compute`, before the already captured two-level
+destination is consumed by the live glass pass. CI requires that producer
+payload, its exact descriptor and pipeline identity, both destination mips,
+and all earlier arithmetic controls. This closes the native-pixel base-stage
+input without weakening or replacing the Schema 67 sibling-mip proof.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

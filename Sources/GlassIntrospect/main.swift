@@ -1351,8 +1351,8 @@ vertex GlassReplayVertexOutput glass_vertex_row_matrix(
 """
 
 private let diagnosticBackgroundPattern =
-    "coordinate-hash-rgb-2x2-cells-v1"
-private let diagnosticBackgroundCellPoints = 2
+    "coordinate-hash-rgb-1x1-cells-v1"
+private let diagnosticBackgroundCellPoints = 1
 private let diagnosticBackgroundImage: CGImage = {
     let width = 1024
     let height = 1024
@@ -4267,16 +4267,31 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        let pipeline = encoderPipeline(encoder)
         var record: [String: Any] = [
             "capture": captureName,
             "kind": "texture",
             "stage": "compute",
             "index": index,
             "encoder": objectAddress(encoder),
-            "pipeline": encoderPipeline(encoder),
+            "pipeline": pipeline,
         ]
         if let metalTexture = texture as? MTLTexture {
             record["texture"] = textureRecord(metalTexture)
+            if captureName == "carenderer-live-tree",
+               index == 0,
+               let label = pipeline["label"] as? String,
+               label ==
+                   "com.apple.coreanimation.variable_blur_copy_base_mip_compute"
+            {
+                textureBindings.append(TextureBinding(
+                    capture: captureName,
+                    sequence: records.count,
+                    index: index,
+                    pipeline: pipeline,
+                    encoder: ObjectIdentifier(encoder),
+                    texture: metalTexture))
+            }
         } else if texture == nil {
             record["texture"] = "nil"
         } else {
@@ -5938,7 +5953,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 67,
+            "schemaVersion": 68,
             "capture": capture,
             "phase": phase,
         ]
@@ -6171,7 +6186,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 67,
+                    "schemaVersion": 68,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -6596,7 +6611,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 67,
+                "schemaVersion": 68,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -10835,7 +10850,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 67,
+                    "schemaVersion": 68,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -10851,7 +10866,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 67,
+            "schemaVersion": 68,
             "diagnosticBackgroundEvidence": [
                 "pattern": diagnosticBackgroundPattern,
                 "cellWidthPoints":
