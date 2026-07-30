@@ -668,13 +668,16 @@ the 81-pixel cumulative-kernel patches, reads the installed blur value back
 bit-for-bit, and makes every adjacent mip transition directly testable
 without treating separately rounded endpoint captures as exact inputs.
 The same-tile stripe mode removes a confound exposed by that corpus: the older
-simultaneous square sites occupied different compositor-tile locations.
-Four alternating edges with reduced-grid phases zero through three now sit
-inside one candidate 256-pixel tile, at least 34 pixels from its boundary.
-Vertical and horizontal sources cross every amplitude while the filter stays
-at production blur radius one and the face stage stays identity. Radius
-readback, source controls, two-frame stability, native RGB streams, and audit
-PNGs remain mandatory.
+simultaneous square sites occupied different compositor-tile locations. Its
+initial four-edge corpus established a strict 12-pixel support bound. The
+refined rig uses that bound to pack eight noninteracting edges into one
+candidate 256-pixel tile. Every reduced-grid phase now has both a rising and
+falling transition, separated by at least two constant pixels beyond the two
+measured supports. Vertical and horizontal sources cross every amplitude
+while the filter stays at production blur radius one and the face stage stays
+identity. This removes transition direction as the last phase-recovery
+confound; radius readback, source controls, two-frame stability, native RGB
+streams, and audit PNGs remain mandatory.
 The focused native kernel mode complements the impulse sweep with sixteen
 96-pixel square steps spanning every phase of the first two reduced mip
 levels. Its red/blue positive and green negative channels capture the

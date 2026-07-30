@@ -26,8 +26,13 @@ private let kernelPatchRadius = 40
 private let kernelPatchSide = 2 * kernelPatchRadius + 1
 private let lodAmplitudes = [0, 1, 8, 32, 127]
 private let lodAuditNumerators: Set<Int> = [0, 37, 64, 128]
-private let stripePositions = [304, 362, 420, 478]
-private let stripePatchRadius = 24
+private let stripePositions = [
+    280, 312,
+    338, 370,
+    396, 428,
+    454, 486,
+]
+private let stripePatchRadius = 13
 private let stripePatchSide = 2 * stripePatchRadius + 1
 private let stripeCrossAxisCenter = 384
 
@@ -250,10 +255,13 @@ private func renderStripeSource(
     for pixel in 0..<(imageWidth * imageHeight) {
         rgba[pixel * 4 + 3] = 255
     }
-    let intervals = [
-        stripePositions[0]..<stripePositions[1],
-        stripePositions[2]..<stripePositions[3],
-    ]
+    let intervals = stride(
+        from: 0,
+        to: stripePositions.count,
+        by: 2
+    ).map {
+        stripePositions[$0]..<stripePositions[$0 + 1]
+    }
     switch orientation {
     case .vertical:
         for interval in intervals {
@@ -1176,7 +1184,7 @@ private final class SpatialSweepDelegate:
 
         let report: [String: Any] = [
             "schemaVersion": 1,
-            "rigVersion": "native-stripe-sweep-1.0.0",
+            "rigVersion": "native-stripe-sweep-1.1.0",
             "sweepKind":
                 "same-tile-phase-controlled-production-stripes",
             "ciCommit":
@@ -1225,23 +1233,34 @@ private final class SpatialSweepDelegate:
                 ],
                 "orientationOrder":
                     StripeOrientation.allCases.map(\.rawValue),
-                "alternatingInsideIntervals": [
-                    [stripePositions[0], stripePositions[1]],
-                    [stripePositions[2], stripePositions[3]],
-                ],
+                "alternatingInsideIntervals": stride(
+                    from: 0,
+                    to: stripePositions.count,
+                    by: 2
+                ).map {
+                    [
+                        stripePositions[$0],
+                        stripePositions[$0 + 1],
+                    ]
+                },
                 "edges":
                     stripePositions.enumerated().map {
                         stripeEdgeManifest(
                             position: $0.element,
                             index: $0.offset)
                     },
-                "edgeMinimumSpacingPixels": 58,
+                "phaseDirectionPairs": true,
+                "edgeMinimumSpacingPixels": 26,
                 "patchRadiusPixels": stripePatchRadius,
                 "patchSidePixels": stripePatchSide,
                 "crossAxisCenter": stripeCrossAxisCenter,
                 "candidateTileInterval": [256, 512],
                 "minimumEdgeDistanceFromCandidateTileBoundary":
-                    34,
+                    24,
+                "priorMeasuredSupportRadiusUpperBoundPixels":
+                    12,
+                "minimumGapBeyondPairedMeasuredSupportsPixels":
+                    2,
             ],
             "fixedFilterState": [
                 "inputFaceColorMatrixBlack": 0,
