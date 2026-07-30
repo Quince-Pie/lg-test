@@ -1,4 +1,5 @@
 import AppKit
+import CoreFoundation
 import CoreGraphics
 import CryptoKit
 import Darwin
@@ -134,6 +135,25 @@ private let spatialInterventions = [0, 1, 2, 4].map { radius in
 
 private let stripeInterventions =
     Array(spatialInterventions.prefix(3))
+
+private let flatBlurValues: [(key: String, value: NSNumber)] = [
+    ("inputBlurOpacity0", NSNumber(value: Float(1))),
+    ("inputBlurOpacity1", NSNumber(value: Float(1))),
+    ("inputBlurOpacity2", NSNumber(value: Float(1))),
+    ("inputBlurOpacity3", NSNumber(value: Float(1))),
+    ("inputBlurOpacity4", NSNumber(value: Float(1))),
+    ("inputInnerRefractionAmount", NSNumber(value: Float(0))),
+    ("inputOuterRefractionAmount", NSNumber(value: Float(0))),
+    ("inputRefractionOpacity", NSNumber(value: Float(0))),
+]
+
+private let flatStripeInterventions = [0, 1, 2, 4].map { radius in
+    SpatialIntervention(
+        name: "flat-blur-\(radius)",
+        values: identityValues + flatBlurValues + [
+            ("inputBlurRadius", NSNumber(value: Float(radius))),
+        ])
+}
 
 private let lodStates: [LodState] = {
     var result = (0...128).map { numerator in
@@ -970,6 +990,44 @@ private func installFilter(
     CATransaction.flush()
 }
 
+private func checkedFilterReadbacks(
+    _ filter: NSObject,
+    values: [(key: String, value: NSNumber)]
+) throws -> (
+    values: [String: Any],
+    float32Bits: [String: String]
+) {
+    var readbacks: [String: Any] = [:]
+    var bits: [String: String] = [:]
+    for entry in values {
+        guard let actual = filter.value(
+            forKey: entry.key
+        ) as? NSNumber else {
+            throw SweepError.capture(
+                "stripe readback is missing: \(entry.key)")
+        }
+        if CFGetTypeID(entry.value) == CFBooleanGetTypeID() {
+            guard actual.boolValue == entry.value.boolValue else {
+                throw SweepError.capture(
+                    "stripe Boolean readback differs: \(entry.key)")
+            }
+            readbacks[entry.key] = actual.boolValue
+        } else {
+            let requested = entry.value.floatValue
+            let returned = actual.floatValue
+            guard returned.bitPattern == requested.bitPattern else {
+                throw SweepError.capture(
+                    "stripe float32 readback differs: \(entry.key)")
+            }
+            readbacks[entry.key] = Double(returned)
+            bits[entry.key] = String(
+                format: "%08x",
+                returned.bitPattern)
+        }
+    }
+    return (readbacks, bits)
+}
+
 @MainActor
 private final class SpatialSweepDelegate:
     NSObject,
@@ -1031,8 +1089,13 @@ private final class SpatialSweepDelegate:
     }
 
     private func runStripeSweep(
-        workspace: NSWorkspace
+        workspace: NSWorkspace,
+        flatProfile: Bool
     ) async throws {
+        let interventions =
+            flatProfile
+            ? flatStripeInterventions
+            : stripeInterventions
         for site in stripeSampleSites {
             let radius = stripeSampleRadiusRange(site)
             guard radius.minimum
@@ -1061,7 +1124,7 @@ private final class SpatialSweepDelegate:
         }
         var controlStream = Data()
         var interventionStreams = Dictionary(
-            uniqueKeysWithValues: stripeInterventions.map {
+            uniqueKeysWithValues: interventions.map {
                 ($0.name, Data())
             })
         var records: [[String: Any]] = []
@@ -1149,7 +1212,7 @@ private final class SpatialSweepDelegate:
                     "captureBackend": materialized.backend,
                 ]
                 var interventionRecords: [[String: Any]] = []
-                for intervention in stripeInterventions {
+                for intervention in interventions {
                     guard let requested = intervention.values
                         .first(where: {
                             $0.key == "inputBlurRadius"
@@ -1179,6 +1242,10 @@ private final class SpatialSweepDelegate:
                             "stripe capture format changed during "
                                 + intervention.name)
                     }
+                    let readbacks =
+                        try checkedFilterReadbacks(
+                            stateFilter,
+                            values: intervention.values)
                     guard let readback = stateFilter.value(
                         forKey: "inputBlurRadius"
                     ) as? NSNumber,
@@ -1215,6 +1282,9 @@ private final class SpatialSweepDelegate:
                             String(
                                 format: "%08x",
                                 readback.floatValue.bitPattern),
+                        "inputReadbacks": readbacks.values,
+                        "inputReadbackFloat32Bits":
+                            readbacks.float32Bits,
                     ]
                     if auditAmplitudes.contains(amplitude) {
                         let prefix = String(
@@ -1283,7 +1353,7 @@ private final class SpatialSweepDelegate:
             * stripePatchSide * stripePatchSide
         let expectedBytes = recordCount * 3
         guard controlStream.count == expectedBytes,
-              stripeInterventions.allSatisfy({
+              interventions.allSatisfy({
                   interventionStreams[$0.name]?.count
                       == expectedBytes
               })
@@ -1299,7 +1369,7 @@ private final class SpatialSweepDelegate:
             options: .atomic)
 
         var interventionEvidence: [[String: Any]] = []
-        for intervention in stripeInterventions {
+        for intervention in interventions {
             guard let stream =
                     interventionStreams[intervention.name]
             else {
@@ -1408,7 +1478,7 @@ private final class SpatialSweepDelegate:
             "inputSDRHoldingToneEnabled": false,
         ]
         let reportInterventions: [[String: Any]] =
-            stripeInterventions.map { intervention in
+            interventions.map { intervention in
                 let values = Dictionary(
                     uniqueKeysWithValues:
                         intervention.values.map {
@@ -1421,9 +1491,14 @@ private final class SpatialSweepDelegate:
             }
         let report: [String: Any] = [
             "schemaVersion": 1,
-            "rigVersion": "native-stripe-sweep-1.2.0",
+            "rigVersion":
+                flatProfile
+                ? "native-flat-stripe-sweep-1.0.0"
+                : "native-stripe-sweep-1.2.0",
             "sweepKind":
-                "geometry-state-interior-phase-stripes",
+                flatProfile
+                ? "flat-blur-profile-phase-stripes"
+                : "geometry-state-interior-phase-stripes",
             "ciCommit":
                 ProcessInfo.processInfo
                     .environment["GITHUB_SHA"]
@@ -2258,10 +2333,19 @@ private final class SpatialSweepDelegate:
                     "Reduce Motion is enabled")
             }
             if CommandLine.arguments.dropFirst(2)
+                .contains("--flat-stripe")
+            {
+                try await runStripeSweep(
+                    workspace: workspace,
+                    flatProfile: true)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
                 .contains("--stripe")
             {
                 try await runStripeSweep(
-                    workspace: workspace)
+                    workspace: workspace,
+                    flatProfile: false)
                 return
             }
             if CommandLine.arguments.dropFirst(2)

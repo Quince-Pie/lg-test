@@ -687,6 +687,15 @@ minimum and maximum normalized radius strictly between its state's fitted
 boundaries. Identity face captures at blur radii zero, one, and two test the
 two mip endpoints and the production blend without mixing adjacent radial
 states.
+The flat-profile refinement then holds all five live blur opacities at one,
+zeros both refraction amounts and the already-zero refraction opacity, and
+captures identity-face radii zero, one, two, and four at every amplitude.
+Every installed value is read back bit-for-bit. This forces the direct
+stationary source-pyramid path exposed by Apple's AIR while retaining all
+twenty state/phase sites and both stripe directions. It separates the true
+mip kernels and sampler arithmetic from the default SDF-conditioned effective
+blur radius; the preceding default-profile corpus remains the independent
+measurement of that radial scale.
 The focused native kernel mode complements the impulse sweep with sixteen
 96-pixel square steps spanning every phase of the first two reduced mip
 levels. Its red/blue positive and green negative channels capture the
