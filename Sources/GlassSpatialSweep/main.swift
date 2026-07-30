@@ -1217,11 +1217,23 @@ private let sdfCalibrationDefinitions = [
         blurDistances: [-400, -1, 0, 0, 0],
         hypothesis: "radius-four endpoint"),
     SdfCalibrationDefinition(
-        name: "far-negative-threshold",
+        name: "collapsed-sentinel-threshold",
         blurOpacities: [0, 1, 1, 1, 1],
         blurDistances: [-10_000, -9_999, 0, 0, 0],
         hypothesis:
-            "reported SDF range predicts the radius-four endpoint"),
+            "both breakpoints collapse to binary16 negative ten thousand"),
+    SdfCalibrationDefinition(
+        name: "sentinel-lower-bracket",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [-10_008, -10_000, 0, 0, 0],
+        hypothesis:
+            "an exact negative-ten-thousand field selects radius four"),
+    SdfCalibrationDefinition(
+        name: "sentinel-upper-bracket",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [-10_000, -9_992, 0, 0, 0],
+        hypothesis:
+            "an exact negative-ten-thousand field selects radius zero"),
     SdfCalibrationDefinition(
         name: "far-positive-threshold",
         blurOpacities: [0, 1, 1, 1, 1],
@@ -1310,6 +1322,12 @@ private func sdfCalibrationCaptureState(
                 definition.blurOpacities.map { Double($0) },
             "blurDistances":
                 definition.blurDistances.map { Double($0) },
+            "blurDistanceFloat16Bits":
+                definition.blurDistances.map {
+                    String(
+                        format: "%04x",
+                        Float16($0).bitPattern)
+                },
             "hypothesis": definition.hypothesis,
         ])
 }

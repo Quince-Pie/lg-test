@@ -1149,10 +1149,13 @@ identification modes for the private clear-material mip path:
   raw-distance threshold sweep has equal endpoints. It captures pinned
   radius-zero and radius-four controls, then tests far-negative,
   far-positive, live `[-400, -1]`, raw-interior, and normalized distance
-  intervals. All states retain the same radius-four resource maximum and
-  deterministic source. Exact equality with the two controls therefore
-  distinguishes an incorrect coordinate range from blur-distance values
-  that are accepted by KVC but do not invalidate the rendered uniforms.
+  intervals. It also brackets the private `-10000` deep-interior sentinel
+  with the adjacent binary16 values `-10008` and `-9992`; this avoids a
+  false zero-width interval when nearby float32 inputs collapse to one half
+  value. All states retain the same radius-four resource maximum and
+  deterministic source. Exact equality with the two controls distinguishes
+  an incorrect coordinate range from values that are accepted by KVC but
+  do not invalidate the rendered uniforms.
 
 ## What happens after capture
 
