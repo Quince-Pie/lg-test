@@ -804,6 +804,11 @@ it outside its original private pipeline caused an isolated command-buffer
 hang. The safe replay remains active with the exact captured sampler, and the
 probe now inventories the sampler wrapper's Objective-C methods, properties,
 and ivars to expose its underlying state without synthesizing a descriptor.
+Schema 27 records all ten red-channel texture samples from safe fragment
+passes, once from raster position and once from a center-perspective vertex
+varying. It also saves the varying-driven RGBA16F result. Comparing those
+surfaces with the compute trace and Apple's first native blur surface
+separates coordinate interpolation from fragment arithmetic scheduling.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

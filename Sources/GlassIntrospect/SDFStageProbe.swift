@@ -7,6 +7,7 @@ using namespace metal;
 
 constant uint blur_width = 404;
 constant uint blur_trace_stride = 24;
+constant uint blur_fragment_trace_stride = 10;
 constant uint gradient_width = 384;
 constant uint gradient_float_stride = 6;
 
@@ -93,6 +94,143 @@ fragment half4 sdf_blur_fragment(
     const half4 term_4 = as_type<half>(weight_bits[4])
         * (sample_4_plus + sample_4_minus);
     return (((term_3 + term_0) + term_2) + term_1) + term_4;
+}
+
+fragment half4 sdf_blur_varying_fragment(
+    SDFPrivateBlurVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source [[texture(0)]],
+    sampler linear_clamp [[sampler(0)]],
+    device const float2 *offsets [[buffer(0)]],
+    device const ushort *weight_bits [[buffer(1)]])
+{
+    const float2 coordinate = input.texcoord;
+    const half4 sample_0_minus =
+        source.sample(linear_clamp, coordinate - offsets[0]);
+    const half4 sample_0_plus =
+        source.sample(linear_clamp, coordinate + offsets[0]);
+    const half4 sample_1_minus =
+        source.sample(linear_clamp, coordinate - offsets[1]);
+    const half4 sample_1_plus =
+        source.sample(linear_clamp, coordinate + offsets[1]);
+    const half4 sample_2_minus =
+        source.sample(linear_clamp, coordinate - offsets[2]);
+    const half4 sample_2_plus =
+        source.sample(linear_clamp, coordinate + offsets[2]);
+    const half4 sample_3_minus =
+        source.sample(linear_clamp, coordinate - offsets[3]);
+    const half4 sample_3_plus =
+        source.sample(linear_clamp, coordinate + offsets[3]);
+    const half4 sample_4_minus =
+        source.sample(linear_clamp, coordinate - offsets[4]);
+    const half4 sample_4_plus =
+        source.sample(linear_clamp, coordinate + offsets[4]);
+    const half4 term_0 = as_type<half>(weight_bits[0])
+        * (sample_0_plus + sample_0_minus);
+    const half4 term_1 = as_type<half>(weight_bits[1])
+        * (sample_1_plus + sample_1_minus);
+    const half4 term_2 = as_type<half>(weight_bits[2])
+        * (sample_2_plus + sample_2_minus);
+    const half4 term_3 = as_type<half>(weight_bits[3])
+        * (sample_3_plus + sample_3_minus);
+    const half4 term_4 = as_type<half>(weight_bits[4])
+        * (sample_4_plus + sample_4_minus);
+    return (((term_3 + term_0) + term_2) + term_1) + term_4;
+}
+
+inline half4 sdf_blur_fragment_trace_impl(
+    float2 coordinate,
+    uint2 pixel,
+    texture2d<half, access::sample> source,
+    sampler linear_clamp,
+    device const float2 *offsets,
+    device const ushort *weight_bits,
+    device ushort *trace)
+{
+    const half4 sample_0_minus =
+        source.sample(linear_clamp, coordinate - offsets[0]);
+    const half4 sample_0_plus =
+        source.sample(linear_clamp, coordinate + offsets[0]);
+    const half4 sample_1_minus =
+        source.sample(linear_clamp, coordinate - offsets[1]);
+    const half4 sample_1_plus =
+        source.sample(linear_clamp, coordinate + offsets[1]);
+    const half4 sample_2_minus =
+        source.sample(linear_clamp, coordinate - offsets[2]);
+    const half4 sample_2_plus =
+        source.sample(linear_clamp, coordinate + offsets[2]);
+    const half4 sample_3_minus =
+        source.sample(linear_clamp, coordinate - offsets[3]);
+    const half4 sample_3_plus =
+        source.sample(linear_clamp, coordinate + offsets[3]);
+    const half4 sample_4_minus =
+        source.sample(linear_clamp, coordinate - offsets[4]);
+    const half4 sample_4_plus =
+        source.sample(linear_clamp, coordinate + offsets[4]);
+    const uint base =
+        (pixel.y * blur_width + pixel.x)
+        * blur_fragment_trace_stride;
+    trace[base + 0] = as_type<ushort>(sample_0_minus.r);
+    trace[base + 1] = as_type<ushort>(sample_0_plus.r);
+    trace[base + 2] = as_type<ushort>(sample_1_minus.r);
+    trace[base + 3] = as_type<ushort>(sample_1_plus.r);
+    trace[base + 4] = as_type<ushort>(sample_2_minus.r);
+    trace[base + 5] = as_type<ushort>(sample_2_plus.r);
+    trace[base + 6] = as_type<ushort>(sample_3_minus.r);
+    trace[base + 7] = as_type<ushort>(sample_3_plus.r);
+    trace[base + 8] = as_type<ushort>(sample_4_minus.r);
+    trace[base + 9] = as_type<ushort>(sample_4_plus.r);
+    const half4 term_0 = as_type<half>(weight_bits[0])
+        * (sample_0_plus + sample_0_minus);
+    const half4 term_1 = as_type<half>(weight_bits[1])
+        * (sample_1_plus + sample_1_minus);
+    const half4 term_2 = as_type<half>(weight_bits[2])
+        * (sample_2_plus + sample_2_minus);
+    const half4 term_3 = as_type<half>(weight_bits[3])
+        * (sample_3_plus + sample_3_minus);
+    const half4 term_4 = as_type<half>(weight_bits[4])
+        * (sample_4_plus + sample_4_minus);
+    return (((term_3 + term_0) + term_2) + term_1) + term_4;
+}
+
+fragment half4 sdf_blur_position_trace_fragment(
+    SDFStageVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source [[texture(0)]],
+    sampler linear_clamp [[sampler(0)]],
+    device const float2 *offsets [[buffer(0)]],
+    device const ushort *weight_bits [[buffer(1)]],
+    device ushort *trace [[buffer(2)]])
+{
+    const float2 source_size = float2(
+        source.get_width(),
+        source.get_height());
+    const float2 coordinate =
+        (input.position.xy - float2(10.0)) / source_size;
+    return sdf_blur_fragment_trace_impl(
+        coordinate,
+        uint2(input.position.xy),
+        source,
+        linear_clamp,
+        offsets,
+        weight_bits,
+        trace);
+}
+
+fragment half4 sdf_blur_varying_trace_fragment(
+    SDFPrivateBlurVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source [[texture(0)]],
+    sampler linear_clamp [[sampler(0)]],
+    device const float2 *offsets [[buffer(0)]],
+    device const ushort *weight_bits [[buffer(1)]],
+    device ushort *trace [[buffer(2)]])
+{
+    return sdf_blur_fragment_trace_impl(
+        input.texcoord,
+        uint2(input.position.xy),
+        source,
+        linear_clamp,
+        offsets,
+        weight_bits,
+        trace);
 }
 
 kernel void sdf_blur_trace(
@@ -264,7 +402,13 @@ func writeSDFStageEvidence(
           let privateBlurVertexFunction = library.makeFunction(
               name: "sdf_private_blur_vertex"),
           let blurFragmentFunction = library.makeFunction(
-              name: "sdf_blur_fragment")
+              name: "sdf_blur_fragment"),
+          let varyingBlurFragmentFunction = library.makeFunction(
+              name: "sdf_blur_varying_fragment"),
+          let positionTraceFragmentFunction = library.makeFunction(
+              name: "sdf_blur_position_trace_fragment"),
+          let varyingTraceFragmentFunction = library.makeFunction(
+              name: "sdf_blur_varying_trace_fragment")
     else {
         throw sdfProbeError(1, "SDF stage functions are unavailable")
     }
@@ -279,6 +423,39 @@ func writeSDFStageEvidence(
         .rgba16Float
     let blurRenderPipeline = try device.makeRenderPipelineState(
         descriptor: blurRenderDescriptor)
+    let varyingBlurRenderDescriptor =
+        MTLRenderPipelineDescriptor()
+    varyingBlurRenderDescriptor.vertexFunction =
+        privateBlurVertexFunction
+    varyingBlurRenderDescriptor.fragmentFunction =
+        varyingBlurFragmentFunction
+    varyingBlurRenderDescriptor.colorAttachments[0].pixelFormat =
+        .rgba16Float
+    let varyingBlurRenderPipeline =
+        try device.makeRenderPipelineState(
+            descriptor: varyingBlurRenderDescriptor)
+    let positionTraceRenderDescriptor =
+        MTLRenderPipelineDescriptor()
+    positionTraceRenderDescriptor.vertexFunction =
+        blurVertexFunction
+    positionTraceRenderDescriptor.fragmentFunction =
+        positionTraceFragmentFunction
+    positionTraceRenderDescriptor.colorAttachments[0].pixelFormat =
+        .rgba16Float
+    let positionTraceRenderPipeline =
+        try device.makeRenderPipelineState(
+            descriptor: positionTraceRenderDescriptor)
+    let varyingTraceRenderDescriptor =
+        MTLRenderPipelineDescriptor()
+    varyingTraceRenderDescriptor.vertexFunction =
+        privateBlurVertexFunction
+    varyingTraceRenderDescriptor.fragmentFunction =
+        varyingTraceFragmentFunction
+    varyingTraceRenderDescriptor.colorAttachments[0].pixelFormat =
+        .rgba16Float
+    let varyingTraceRenderPipeline =
+        try device.makeRenderPipelineState(
+            descriptor: varyingTraceRenderDescriptor)
     var privateBlurRenderPipeline: MTLRenderPipelineState?
     var privateBlurPipelineError: String?
     let executePrivateBlurReplay = false
@@ -350,6 +527,10 @@ func writeSDFStageEvidence(
         (blurReplayTightBytesPerRow + 255) & ~255
     let blurReplayBufferBytes =
         blurReplayAlignedBytesPerRow * blurSide
+    let blurFragmentTraceStride =
+        10 * MemoryLayout<UInt16>.stride
+    let blurFragmentTraceBytes =
+        blurSide * blurSide * blurFragmentTraceStride
     let blurReplayTextureDescriptor =
         MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: .rgba16Float,
@@ -396,6 +577,19 @@ func writeSDFStageEvidence(
             descriptor: blurReplayTextureDescriptor),
         let blurReplayOutput = device.makeBuffer(
             length: blurReplayBufferBytes,
+            options: .storageModeShared),
+        let varyingBlurReplayTexture = device.makeTexture(
+            descriptor: blurReplayTextureDescriptor),
+        let varyingBlurReplayOutput = device.makeBuffer(
+            length: blurReplayBufferBytes,
+            options: .storageModeShared),
+        let fragmentTraceTarget = device.makeTexture(
+            descriptor: blurReplayTextureDescriptor),
+        let positionFragmentTraceOutput = device.makeBuffer(
+            length: blurFragmentTraceBytes,
+            options: .storageModeShared),
+        let varyingFragmentTraceOutput = device.makeBuffer(
+            length: blurFragmentTraceBytes,
             options: .storageModeShared),
         let fallbackBlurSampler = device.makeSamplerState(
             descriptor: samplerDescriptor),
@@ -479,6 +673,123 @@ func writeSDFStageEvidence(
         vertexCount: 3)
     renderEncoder.endEncoding()
 
+    let varyingRenderPass = MTLRenderPassDescriptor()
+    varyingRenderPass.colorAttachments[0].texture =
+        varyingBlurReplayTexture
+    varyingRenderPass.colorAttachments[0].loadAction = .clear
+    varyingRenderPass.colorAttachments[0].storeAction = .store
+    varyingRenderPass.colorAttachments[0].clearColor =
+        MTLClearColorMake(0, 0, 0, 0)
+    guard let varyingRenderEncoder =
+        commandBuffer.makeRenderCommandEncoder(
+            descriptor: varyingRenderPass)
+    else {
+        throw sdfProbeError(
+            4,
+            "varying SDF blur render encoder unavailable")
+    }
+    varyingRenderEncoder.setRenderPipelineState(
+        varyingBlurRenderPipeline)
+    varyingRenderEncoder.setFragmentTexture(baseField, index: 0)
+    varyingRenderEncoder.setFragmentSamplerState(
+        replaySampler,
+        index: 0)
+    varyingRenderEncoder.setFragmentBuffer(
+        offsetBuffer,
+        offset: 0,
+        index: 0)
+    varyingRenderEncoder.setFragmentBuffer(
+        weightBuffer,
+        offset: 0,
+        index: 1)
+    varyingRenderEncoder.drawPrimitives(
+        type: .triangle,
+        vertexStart: 0,
+        vertexCount: 3)
+    varyingRenderEncoder.endEncoding()
+
+    let positionTraceRenderPass = MTLRenderPassDescriptor()
+    positionTraceRenderPass.colorAttachments[0].texture =
+        fragmentTraceTarget
+    positionTraceRenderPass.colorAttachments[0].loadAction =
+        .dontCare
+    positionTraceRenderPass.colorAttachments[0].storeAction =
+        .dontCare
+    guard let positionTraceRenderEncoder =
+        commandBuffer.makeRenderCommandEncoder(
+            descriptor: positionTraceRenderPass)
+    else {
+        throw sdfProbeError(
+            5,
+            "position-trace SDF blur encoder unavailable")
+    }
+    positionTraceRenderEncoder.setRenderPipelineState(
+        positionTraceRenderPipeline)
+    positionTraceRenderEncoder.setFragmentTexture(
+        baseField,
+        index: 0)
+    positionTraceRenderEncoder.setFragmentSamplerState(
+        replaySampler,
+        index: 0)
+    positionTraceRenderEncoder.setFragmentBuffer(
+        offsetBuffer,
+        offset: 0,
+        index: 0)
+    positionTraceRenderEncoder.setFragmentBuffer(
+        weightBuffer,
+        offset: 0,
+        index: 1)
+    positionTraceRenderEncoder.setFragmentBuffer(
+        positionFragmentTraceOutput,
+        offset: 0,
+        index: 2)
+    positionTraceRenderEncoder.drawPrimitives(
+        type: .triangle,
+        vertexStart: 0,
+        vertexCount: 3)
+    positionTraceRenderEncoder.endEncoding()
+
+    let varyingTraceRenderPass = MTLRenderPassDescriptor()
+    varyingTraceRenderPass.colorAttachments[0].texture =
+        fragmentTraceTarget
+    varyingTraceRenderPass.colorAttachments[0].loadAction =
+        .dontCare
+    varyingTraceRenderPass.colorAttachments[0].storeAction =
+        .dontCare
+    guard let varyingTraceRenderEncoder =
+        commandBuffer.makeRenderCommandEncoder(
+            descriptor: varyingTraceRenderPass)
+    else {
+        throw sdfProbeError(
+            6,
+            "varying-trace SDF blur encoder unavailable")
+    }
+    varyingTraceRenderEncoder.setRenderPipelineState(
+        varyingTraceRenderPipeline)
+    varyingTraceRenderEncoder.setFragmentTexture(
+        baseField,
+        index: 0)
+    varyingTraceRenderEncoder.setFragmentSamplerState(
+        replaySampler,
+        index: 0)
+    varyingTraceRenderEncoder.setFragmentBuffer(
+        offsetBuffer,
+        offset: 0,
+        index: 0)
+    varyingTraceRenderEncoder.setFragmentBuffer(
+        weightBuffer,
+        offset: 0,
+        index: 1)
+    varyingTraceRenderEncoder.setFragmentBuffer(
+        varyingFragmentTraceOutput,
+        offset: 0,
+        index: 2)
+    varyingTraceRenderEncoder.drawPrimitives(
+        type: .triangle,
+        vertexStart: 0,
+        vertexCount: 3)
+    varyingTraceRenderEncoder.endEncoding()
+
     if executePrivateBlurReplay,
        let privateBlurRenderPipeline
     {
@@ -494,7 +805,7 @@ func writeSDFStageEvidence(
                 descriptor: privateRenderPass)
         else {
             throw sdfProbeError(
-                4,
+                7,
                 "private SDF blur render encoder unavailable")
         }
         privateRenderEncoder.setRenderPipelineState(
@@ -519,7 +830,7 @@ func writeSDFStageEvidence(
     }
 
     guard let blit = commandBuffer.makeBlitCommandEncoder() else {
-        throw sdfProbeError(5, "SDF blur replay blit unavailable")
+        throw sdfProbeError(8, "SDF blur replay blit unavailable")
     }
     blit.copy(
         from: blurReplayTexture,
@@ -531,6 +842,19 @@ func writeSDFStageEvidence(
             height: blurSide,
             depth: 1),
         to: blurReplayOutput,
+        destinationOffset: 0,
+        destinationBytesPerRow: blurReplayAlignedBytesPerRow,
+        destinationBytesPerImage: blurReplayBufferBytes)
+    blit.copy(
+        from: varyingBlurReplayTexture,
+        sourceSlice: 0,
+        sourceLevel: 0,
+        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+        sourceSize: MTLSize(
+            width: blurSide,
+            height: blurSide,
+            depth: 1),
+        to: varyingBlurReplayOutput,
         destinationOffset: 0,
         destinationBytesPerRow: blurReplayAlignedBytesPerRow,
         destinationBytesPerImage: blurReplayBufferBytes)
@@ -556,7 +880,7 @@ func writeSDFStageEvidence(
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
         throw commandBuffer.error
-            ?? sdfProbeError(6, "SDF stage command failed")
+            ?? sdfProbeError(9, "SDF stage command failed")
     }
 
     let blurFilename = "sdf-stage-blur-trace.bin"
@@ -565,6 +889,12 @@ func writeSDFStageEvidence(
     let gradientHalfFilename =
         "sdf-stage-gradient-half-trace.bin"
     let blurReplayFilename = "sdf-stage-blur-fragment.raw"
+    let varyingBlurReplayFilename =
+        "sdf-stage-blur-varying-fragment.raw"
+    let positionFragmentTraceFilename =
+        "sdf-stage-blur-position-samples.bin"
+    let varyingFragmentTraceFilename =
+        "sdf-stage-blur-varying-samples.bin"
     let privateBlurReplayFilename =
         "sdf-stage-blur-private-fragment.raw"
     try Data(
@@ -587,6 +917,20 @@ func writeSDFStageEvidence(
         to: outputDirectory.appendingPathComponent(
             gradientHalfFilename),
         options: .atomic)
+    try Data(
+        bytes: positionFragmentTraceOutput.contents(),
+        count: blurFragmentTraceBytes
+    ).write(
+        to: outputDirectory.appendingPathComponent(
+            positionFragmentTraceFilename),
+        options: .atomic)
+    try Data(
+        bytes: varyingFragmentTraceOutput.contents(),
+        count: blurFragmentTraceBytes
+    ).write(
+        to: outputDirectory.appendingPathComponent(
+            varyingFragmentTraceFilename),
+        options: .atomic)
     var blurReplayData = Data(
         capacity: blurReplayTightBytesPerRow * blurSide)
     for row in 0..<blurSide {
@@ -598,6 +942,18 @@ func writeSDFStageEvidence(
     try blurReplayData.write(
         to: outputDirectory.appendingPathComponent(
             blurReplayFilename),
+        options: .atomic)
+    var varyingBlurReplayData = Data(
+        capacity: blurReplayTightBytesPerRow * blurSide)
+    for row in 0..<blurSide {
+        varyingBlurReplayData.append(Data(
+            bytes: varyingBlurReplayOutput.contents().advanced(
+                by: row * blurReplayAlignedBytesPerRow),
+            count: blurReplayTightBytesPerRow))
+    }
+    try varyingBlurReplayData.write(
+        to: outputDirectory.appendingPathComponent(
+            varyingBlurReplayFilename),
         options: .atomic)
     var privateBlurReplayData: Data?
     if executePrivateBlurReplay
@@ -643,7 +999,7 @@ func writeSDFStageEvidence(
     }
 
     return [
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "metalFastMathEnabled": options.fastMathEnabled,
         "baseField": [
             "width": baseField.width,
@@ -689,6 +1045,36 @@ func writeSDFStageEvidence(
                 "tAddressMode":
                     MTLSamplerAddressMode.clampToEdge.rawValue,
             ],
+        ],
+        "varyingBlurFragmentReplay": [
+            "width": blurSide,
+            "height": blurSide,
+            "pixelFormat": MTLPixelFormat.rgba16Float.rawValue,
+            "bytesPerRow": blurReplayTightBytesPerRow,
+            "outputFile": varyingBlurReplayFilename,
+            "outputBytes": varyingBlurReplayData.count,
+            "coordinateSource":
+                "center-perspective vertex varying",
+            "samplerSource":
+                blurSampler == nil
+                    ? "constructed-linear-clamp"
+                    : "captured-native-state",
+        ],
+        "blurFragmentSampleTraces": [
+            "width": blurSide,
+            "height": blurSide,
+            "recordStrideBytes": blurFragmentTraceStride,
+            "componentType":
+                "little-endian IEEE-754 binary16 bit pattern",
+            "sampleOffsets": [
+                0, 2, 4, 6, 8,
+                10, 12, 14, 16, 18,
+            ],
+            "positionCoordinateFile":
+                positionFragmentTraceFilename,
+            "varyingCoordinateFile":
+                varyingFragmentTraceFilename,
+            "outputBytesEach": blurFragmentTraceBytes,
         ],
         "privateBlurFragmentReplay": privateBlurReplayReport,
         "gradientFloatTrace": [
