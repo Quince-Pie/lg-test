@@ -819,6 +819,11 @@ captured 448-by-448 horizontal intermediate, using the recovered vertical
 offset bits. Its 404-by-404 output aligns with `[1:405, 1:405]` of Apple's
 vertical surface, testing the second blur pass independently of the already
 exact horizontal replay.
+Schema 30 removes that native-intermediate dependency. It inserts the exact
+404-by-404 horizontal replay into the proven zero-padded 448-by-448 surface,
+feeds it through the vertical FMA pass, and saves both the resulting active
+region and the final 384-by-384 crop. This is the protected end-to-end blur
+gate from the captured base field onward.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

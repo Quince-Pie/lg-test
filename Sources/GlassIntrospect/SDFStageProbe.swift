@@ -668,6 +668,16 @@ func writeSDFStageEvidence(
         (blurReplayTightBytesPerRow + 255) & ~255
     let blurReplayBufferBytes =
         blurReplayAlignedBytesPerRow * blurSide
+    let nativeFullSide = 448
+    let nativeFullBytesPerRow =
+        nativeFullSide * blurReplayBytesPerPixel
+    let nativeFullBufferBytes =
+        nativeFullBytesPerRow * nativeFullSide
+    let finalCropSide = 384
+    let finalCropBytesPerRow =
+        finalCropSide * blurReplayBytesPerPixel
+    let finalCropBufferBytes =
+        finalCropBytesPerRow * finalCropSide
     let blurFragmentTraceStride =
         10 * MemoryLayout<UInt16>.stride
     let blurFragmentTraceBytes =
@@ -680,6 +690,17 @@ func writeSDFStageEvidence(
             mipmapped: false)
     blurReplayTextureDescriptor.storageMode = .private
     blurReplayTextureDescriptor.usage = [
+        .renderTarget,
+        .shaderRead,
+    ]
+    let nativeFullTextureDescriptor =
+        MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .rgba16Float,
+            width: nativeFullSide,
+            height: nativeFullSide,
+            mipmapped: false)
+    nativeFullTextureDescriptor.storageMode = .private
+    nativeFullTextureDescriptor.usage = [
         .renderTarget,
         .shaderRead,
     ]
@@ -737,6 +758,19 @@ func writeSDFStageEvidence(
             device.makeBuffer(
                 length: blurReplayBufferBytes,
                 options: .storageModeShared),
+        let endToEndHorizontalTexture = device.makeTexture(
+            descriptor: nativeFullTextureDescriptor),
+        let endToEndHorizontalOutput = device.makeBuffer(
+            length: nativeFullBufferBytes,
+            options: .storageModeShared),
+        let endToEndVerticalTexture = device.makeTexture(
+            descriptor: blurReplayTextureDescriptor),
+        let endToEndVerticalOutput = device.makeBuffer(
+            length: blurReplayBufferBytes,
+            options: .storageModeShared),
+        let endToEndFinalCropOutput = device.makeBuffer(
+            length: finalCropBufferBytes,
+            options: .storageModeShared),
         let varyingBlurReplayTexture = device.makeTexture(
             descriptor: blurReplayTextureDescriptor),
         let varyingBlurReplayOutput = device.makeBuffer(
@@ -869,6 +903,48 @@ func writeSDFStageEvidence(
         vertexCount: 3)
     nativeFMARenderEncoder.endEncoding()
 
+    let endToEndHorizontalClearPass =
+        MTLRenderPassDescriptor()
+    endToEndHorizontalClearPass.colorAttachments[0].texture =
+        endToEndHorizontalTexture
+    endToEndHorizontalClearPass.colorAttachments[0].loadAction =
+        .clear
+    endToEndHorizontalClearPass.colorAttachments[0].storeAction =
+        .store
+    endToEndHorizontalClearPass.colorAttachments[0].clearColor =
+        MTLClearColorMake(0, 0, 0, 0)
+    guard let endToEndHorizontalClearEncoder =
+        commandBuffer.makeRenderCommandEncoder(
+            descriptor: endToEndHorizontalClearPass)
+    else {
+        throw sdfProbeError(
+            5,
+            "end-to-end horizontal clear encoder unavailable")
+    }
+    endToEndHorizontalClearEncoder.endEncoding()
+
+    guard let endToEndAssemblyBlit =
+        commandBuffer.makeBlitCommandEncoder()
+    else {
+        throw sdfProbeError(
+            6,
+            "end-to-end horizontal assembly blit unavailable")
+    }
+    endToEndAssemblyBlit.copy(
+        from: nativeFMABlurReplayTexture,
+        sourceSlice: 0,
+        sourceLevel: 0,
+        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+        sourceSize: MTLSize(
+            width: blurSide,
+            height: blurSide,
+            depth: 1),
+        to: endToEndHorizontalTexture,
+        destinationSlice: 0,
+        destinationLevel: 0,
+        destinationOrigin: MTLOrigin(x: 1, y: 1, z: 0))
+    endToEndAssemblyBlit.endEncoding()
+
     let nativeVerticalFMARenderPass =
         MTLRenderPassDescriptor()
     nativeVerticalFMARenderPass.colorAttachments[0].texture =
@@ -884,7 +960,7 @@ func writeSDFStageEvidence(
             descriptor: nativeVerticalFMARenderPass)
     else {
         throw sdfProbeError(
-            5,
+            7,
             "native vertical-FMA SDF blur encoder unavailable")
     }
     nativeVerticalFMARenderEncoder.setRenderPipelineState(
@@ -909,6 +985,46 @@ func writeSDFStageEvidence(
         vertexCount: 3)
     nativeVerticalFMARenderEncoder.endEncoding()
 
+    let endToEndVerticalRenderPass =
+        MTLRenderPassDescriptor()
+    endToEndVerticalRenderPass.colorAttachments[0].texture =
+        endToEndVerticalTexture
+    endToEndVerticalRenderPass.colorAttachments[0].loadAction =
+        .clear
+    endToEndVerticalRenderPass.colorAttachments[0].storeAction =
+        .store
+    endToEndVerticalRenderPass.colorAttachments[0].clearColor =
+        MTLClearColorMake(0, 0, 0, 0)
+    guard let endToEndVerticalRenderEncoder =
+        commandBuffer.makeRenderCommandEncoder(
+            descriptor: endToEndVerticalRenderPass)
+    else {
+        throw sdfProbeError(
+            8,
+            "end-to-end vertical SDF blur encoder unavailable")
+    }
+    endToEndVerticalRenderEncoder.setRenderPipelineState(
+        nativeVerticalFMABlurRenderPipeline)
+    endToEndVerticalRenderEncoder.setFragmentTexture(
+        endToEndHorizontalTexture,
+        index: 0)
+    endToEndVerticalRenderEncoder.setFragmentSamplerState(
+        replaySampler,
+        index: 0)
+    endToEndVerticalRenderEncoder.setFragmentBuffer(
+        verticalOffsetBuffer,
+        offset: 0,
+        index: 0)
+    endToEndVerticalRenderEncoder.setFragmentBuffer(
+        weightBuffer,
+        offset: 0,
+        index: 1)
+    endToEndVerticalRenderEncoder.drawPrimitives(
+        type: .triangle,
+        vertexStart: 0,
+        vertexCount: 3)
+    endToEndVerticalRenderEncoder.endEncoding()
+
     let varyingRenderPass = MTLRenderPassDescriptor()
     varyingRenderPass.colorAttachments[0].texture =
         varyingBlurReplayTexture
@@ -921,7 +1037,7 @@ func writeSDFStageEvidence(
             descriptor: varyingRenderPass)
     else {
         throw sdfProbeError(
-            6,
+            9,
             "varying SDF blur render encoder unavailable")
     }
     varyingRenderEncoder.setRenderPipelineState(
@@ -956,7 +1072,7 @@ func writeSDFStageEvidence(
             descriptor: positionTraceRenderPass)
     else {
         throw sdfProbeError(
-            7,
+            10,
             "position-trace SDF blur encoder unavailable")
     }
     positionTraceRenderEncoder.setRenderPipelineState(
@@ -997,7 +1113,7 @@ func writeSDFStageEvidence(
             descriptor: varyingTraceRenderPass)
     else {
         throw sdfProbeError(
-            8,
+            11,
             "varying-trace SDF blur encoder unavailable")
     }
     varyingTraceRenderEncoder.setRenderPipelineState(
@@ -1041,7 +1157,7 @@ func writeSDFStageEvidence(
                 descriptor: privateRenderPass)
         else {
             throw sdfProbeError(
-                9,
+                12,
                 "private SDF blur render encoder unavailable")
         }
         privateRenderEncoder.setRenderPipelineState(
@@ -1066,7 +1182,7 @@ func writeSDFStageEvidence(
     }
 
     guard let blit = commandBuffer.makeBlitCommandEncoder() else {
-        throw sdfProbeError(10, "SDF blur replay blit unavailable")
+        throw sdfProbeError(13, "SDF blur replay blit unavailable")
     }
     blit.copy(
         from: blurReplayTexture,
@@ -1108,6 +1224,45 @@ func writeSDFStageEvidence(
         destinationBytesPerRow: blurReplayAlignedBytesPerRow,
         destinationBytesPerImage: blurReplayBufferBytes)
     blit.copy(
+        from: endToEndHorizontalTexture,
+        sourceSlice: 0,
+        sourceLevel: 0,
+        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+        sourceSize: MTLSize(
+            width: nativeFullSide,
+            height: nativeFullSide,
+            depth: 1),
+        to: endToEndHorizontalOutput,
+        destinationOffset: 0,
+        destinationBytesPerRow: nativeFullBytesPerRow,
+        destinationBytesPerImage: nativeFullBufferBytes)
+    blit.copy(
+        from: endToEndVerticalTexture,
+        sourceSlice: 0,
+        sourceLevel: 0,
+        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+        sourceSize: MTLSize(
+            width: blurSide,
+            height: blurSide,
+            depth: 1),
+        to: endToEndVerticalOutput,
+        destinationOffset: 0,
+        destinationBytesPerRow: blurReplayAlignedBytesPerRow,
+        destinationBytesPerImage: blurReplayBufferBytes)
+    blit.copy(
+        from: endToEndVerticalTexture,
+        sourceSlice: 0,
+        sourceLevel: 0,
+        sourceOrigin: MTLOrigin(x: 10, y: 10, z: 0),
+        sourceSize: MTLSize(
+            width: finalCropSide,
+            height: finalCropSide,
+            depth: 1),
+        to: endToEndFinalCropOutput,
+        destinationOffset: 0,
+        destinationBytesPerRow: finalCropBytesPerRow,
+        destinationBytesPerImage: finalCropBufferBytes)
+    blit.copy(
         from: varyingBlurReplayTexture,
         sourceSlice: 0,
         sourceLevel: 0,
@@ -1142,7 +1297,7 @@ func writeSDFStageEvidence(
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
         throw commandBuffer.error
-            ?? sdfProbeError(11, "SDF stage command failed")
+            ?? sdfProbeError(14, "SDF stage command failed")
     }
 
     let blurFilename = "sdf-stage-blur-trace.bin"
@@ -1155,6 +1310,12 @@ func writeSDFStageEvidence(
         "sdf-stage-blur-native-fma-fragment.raw"
     let nativeVerticalFMABlurReplayFilename =
         "sdf-stage-blur-native-vertical-fma-fragment.raw"
+    let endToEndHorizontalFilename =
+        "sdf-stage-blur-end-to-end-horizontal.raw"
+    let endToEndVerticalFilename =
+        "sdf-stage-blur-end-to-end-vertical.raw"
+    let endToEndFinalCropFilename =
+        "sdf-stage-blur-end-to-end-final-crop.raw"
     let varyingBlurReplayFilename =
         "sdf-stage-blur-varying-fragment.raw"
     let positionFragmentTraceFilename =
@@ -1237,6 +1398,32 @@ func writeSDFStageEvidence(
         to: outputDirectory.appendingPathComponent(
             nativeVerticalFMABlurReplayFilename),
         options: .atomic)
+    let endToEndHorizontalData = Data(
+        bytes: endToEndHorizontalOutput.contents(),
+        count: nativeFullBufferBytes)
+    try endToEndHorizontalData.write(
+        to: outputDirectory.appendingPathComponent(
+            endToEndHorizontalFilename),
+        options: .atomic)
+    var endToEndVerticalData = Data(
+        capacity: blurReplayTightBytesPerRow * blurSide)
+    for row in 0..<blurSide {
+        endToEndVerticalData.append(Data(
+            bytes: endToEndVerticalOutput.contents().advanced(
+                by: row * blurReplayAlignedBytesPerRow),
+            count: blurReplayTightBytesPerRow))
+    }
+    try endToEndVerticalData.write(
+        to: outputDirectory.appendingPathComponent(
+            endToEndVerticalFilename),
+        options: .atomic)
+    let endToEndFinalCropData = Data(
+        bytes: endToEndFinalCropOutput.contents(),
+        count: finalCropBufferBytes)
+    try endToEndFinalCropData.write(
+        to: outputDirectory.appendingPathComponent(
+            endToEndFinalCropFilename),
+        options: .atomic)
     var varyingBlurReplayData = Data(
         capacity: blurReplayTightBytesPerRow * blurSide)
     for row in 0..<blurSide {
@@ -1293,7 +1480,7 @@ func writeSDFStageEvidence(
     }
 
     return [
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "metalFastMathEnabled": options.fastMathEnabled,
         "baseField": [
             "width": baseField.width,
@@ -1387,6 +1574,44 @@ func writeSDFStageEvidence(
                 blurSampler == nil
                     ? "constructed-linear-clamp"
                     : "captured-native-state",
+        ],
+        "endToEndBlurReplay": [
+            "nativeIntermediateInputUsed": false,
+            "horizontal": [
+                "width": nativeFullSide,
+                "height": nativeFullSide,
+                "pixelFormat":
+                    MTLPixelFormat.rgba16Float.rawValue,
+                "bytesPerRow": nativeFullBytesPerRow,
+                "activeRegion": [1, 1, blurSide, blurSide],
+                "outputFile": endToEndHorizontalFilename,
+                "outputBytes":
+                    endToEndHorizontalData.count,
+            ],
+            "vertical": [
+                "width": blurSide,
+                "height": blurSide,
+                "pixelFormat":
+                    MTLPixelFormat.rgba16Float.rawValue,
+                "bytesPerRow": blurReplayTightBytesPerRow,
+                "nativeTargetRegion":
+                    [1, 1, blurSide, blurSide],
+                "outputFile": endToEndVerticalFilename,
+                "outputBytes": endToEndVerticalData.count,
+            ],
+            "finalCrop": [
+                "width": finalCropSide,
+                "height": finalCropSide,
+                "pixelFormat":
+                    MTLPixelFormat.rgba16Float.rawValue,
+                "bytesPerRow": finalCropBytesPerRow,
+                "sourceOriginInLocalVertical": [10, 10],
+                "nativeSourceRegion":
+                    [11, 11, finalCropSide, finalCropSide],
+                "outputFile": endToEndFinalCropFilename,
+                "outputBytes":
+                    endToEndFinalCropData.count,
+            ],
         ],
         "varyingBlurFragmentReplay": [
             "width": blurSide,
