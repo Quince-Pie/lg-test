@@ -894,6 +894,17 @@ surface is compared byte-for-byte with the original BGRA8 output and both the
 pre-pass and replay surfaces are preserved. This first proves the captured
 invocation is complete; it is not yet evidence that an independently compiled
 replacement fragment function is exact.
+Schema 41 stops a second replay immediately after the two `_Tghz` glass draws
+and preserves that intermediate as the reference for a stage-local bit gate.
+It then loads QuartzCore's exported `glass_background_sdf_lph` fragment
+function into fresh pipeline states paired with independently compiled vertex
+functions. Six preregistered coordinate interpretations cover raw,
+texture-matrix-transformed, swapped, and row/column matrix conventions in one
+run. Every candidate reuses the exact captured uniform slices, source texture,
+EDR scale, viewport, scissor, mesh, and premultiplied source-over attachment
+state, and is compared with the Apple intermediate over every BGRA8 byte. This
+isolates the vertex/fragment interface without conflating errors from later
+Core Animation draws.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

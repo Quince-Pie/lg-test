@@ -6,6 +6,116 @@ import ObjectiveC.runtime
 import QuartzCore
 import SwiftUI
 
+private let independentGlassVertexSource = """
+#include <metal_stdlib>
+using namespace metal;
+
+struct GlassReplayVertex {
+    float4 position;
+    float2 texcoord0;
+    float2 texcoord1;
+    half4 color;
+};
+
+struct GlassReplayVertexOutput {
+    float4 position [[position]];
+    float2 sdfUV [[user(sdf_uv)]];
+    float2 srcUV [[user(src_uv)]];
+};
+
+inline float2 transform_texcoord(
+    float2 value,
+    float4 transform)
+{
+    return transform.xy * value + transform.zw;
+}
+
+vertex GlassReplayVertexOutput glass_vertex_raw(
+    const device GlassReplayVertex *vertices [[buffer(1)]],
+    constant float4x4 &mvp [[buffer(2)]],
+    uint vertexID [[vertex_id]])
+{
+    const GlassReplayVertex vertex = vertices[vertexID];
+    GlassReplayVertexOutput output;
+    output.position = mvp * vertex.position;
+    output.sdfUV = vertex.texcoord0;
+    output.srcUV = vertex.texcoord1;
+    return output;
+}
+
+vertex GlassReplayVertexOutput glass_vertex_transformed(
+    const device GlassReplayVertex *vertices [[buffer(1)]],
+    constant float4x4 &mvp [[buffer(2)]],
+    constant float4 *textureMatrix [[buffer(3)]],
+    uint vertexID [[vertex_id]])
+{
+    const GlassReplayVertex vertex = vertices[vertexID];
+    GlassReplayVertexOutput output;
+    output.position = mvp * vertex.position;
+    output.sdfUV =
+        transform_texcoord(vertex.texcoord0, textureMatrix[0]);
+    output.srcUV =
+        transform_texcoord(vertex.texcoord1, textureMatrix[1]);
+    return output;
+}
+
+vertex GlassReplayVertexOutput glass_vertex_sdf_transformed(
+    const device GlassReplayVertex *vertices [[buffer(1)]],
+    constant float4x4 &mvp [[buffer(2)]],
+    constant float4 *textureMatrix [[buffer(3)]],
+    uint vertexID [[vertex_id]])
+{
+    const GlassReplayVertex vertex = vertices[vertexID];
+    GlassReplayVertexOutput output;
+    output.position = mvp * vertex.position;
+    output.sdfUV =
+        transform_texcoord(vertex.texcoord0, textureMatrix[0]);
+    output.srcUV = vertex.texcoord1;
+    return output;
+}
+
+vertex GlassReplayVertexOutput glass_vertex_src_transformed(
+    const device GlassReplayVertex *vertices [[buffer(1)]],
+    constant float4x4 &mvp [[buffer(2)]],
+    constant float4 *textureMatrix [[buffer(3)]],
+    uint vertexID [[vertex_id]])
+{
+    const GlassReplayVertex vertex = vertices[vertexID];
+    GlassReplayVertexOutput output;
+    output.position = mvp * vertex.position;
+    output.sdfUV = vertex.texcoord0;
+    output.srcUV =
+        transform_texcoord(vertex.texcoord1, textureMatrix[1]);
+    return output;
+}
+
+vertex GlassReplayVertexOutput glass_vertex_swapped(
+    const device GlassReplayVertex *vertices [[buffer(1)]],
+    constant float4x4 &mvp [[buffer(2)]],
+    uint vertexID [[vertex_id]])
+{
+    const GlassReplayVertex vertex = vertices[vertexID];
+    GlassReplayVertexOutput output;
+    output.position = mvp * vertex.position;
+    output.sdfUV = vertex.texcoord1;
+    output.srcUV = vertex.texcoord0;
+    return output;
+}
+
+vertex GlassReplayVertexOutput glass_vertex_row_matrix(
+    const device GlassReplayVertex *vertices [[buffer(1)]],
+    constant float4x4 &mvp [[buffer(2)]],
+    uint vertexID [[vertex_id]])
+{
+    const GlassReplayVertex vertex = vertices[vertexID];
+    GlassReplayVertexOutput output;
+    output.position = vertex.position * mvp;
+    output.sdfUV = vertex.texcoord0;
+    output.srcUV = vertex.texcoord1;
+    return output;
+}
+"""
+
 private struct DiagnosticBackground: View {
     var body: some View {
         Canvas { context, size in
@@ -3172,6 +3282,582 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return result
     }
 
+    private struct ReplayEncodingSummary {
+        let encodedCommandCount: Int
+        let glassDrawCount: Int
+        let stoppedAfterGlass: Bool
+    }
+
+    private func encodeReplayCommands(
+        _ commands: [ReplayCommand],
+        with encoder: MTLRenderCommandEncoder,
+        replacingGlassPipeline replacement:
+            MTLRenderPipelineState? = nil,
+        stopAfterGlass: Bool = false
+    ) -> ReplayEncodingSummary {
+        var encodedCommandCount = 0
+        var glassDrawCount = 0
+        var enteredGlass = false
+        var currentPipelineIsGlass = false
+        var stoppedAfterGlass = false
+
+        commandLoop: for command in commands {
+            if case .pipeline(let state) = command {
+                let isGlass =
+                    state.label?.contains("_Tghz") == true
+                if stopAfterGlass,
+                   enteredGlass,
+                   !isGlass
+                {
+                    stoppedAfterGlass = true
+                    break commandLoop
+                }
+                currentPipelineIsGlass = isGlass
+                enteredGlass = enteredGlass || isGlass
+                encoder.setRenderPipelineState(
+                    isGlass ? replacement ?? state : state)
+                encodedCommandCount += 1
+                continue
+            }
+
+            switch command {
+            case .pipeline:
+                break
+            case .fragmentBytes(let data, let index):
+                data.withUnsafeBytes { bytes in
+                    if let base = bytes.baseAddress {
+                        encoder.setFragmentBytes(
+                            base,
+                            length: bytes.count,
+                            index: index)
+                    }
+                }
+            case .fragmentBuffer(
+                let buffer,
+                let offset,
+                let index
+            ):
+                encoder.setFragmentBuffer(
+                    buffer,
+                    offset: offset,
+                    index: index)
+            case .fragmentBufferOffset(let offset, let index):
+                encoder.setFragmentBufferOffset(
+                    offset,
+                    index: index)
+            case .fragmentTexture(let texture, let index):
+                encoder.setFragmentTexture(texture, index: index)
+            case .fragmentSampler(let sampler, let index):
+                encoder.setFragmentSamplerState(
+                    sampler,
+                    index: index)
+            case .vertexBytes(let data, let index):
+                data.withUnsafeBytes { bytes in
+                    if let base = bytes.baseAddress {
+                        encoder.setVertexBytes(
+                            base,
+                            length: bytes.count,
+                            index: index)
+                    }
+                }
+            case .vertexBuffer(
+                let buffer,
+                let offset,
+                let index
+            ):
+                encoder.setVertexBuffer(
+                    buffer,
+                    offset: offset,
+                    index: index)
+            case .vertexBufferOffset(let offset, let index):
+                encoder.setVertexBufferOffset(
+                    offset,
+                    index: index)
+            case .viewport(let viewport):
+                encoder.setViewport(viewport)
+            case .scissorRect(let rect):
+                encoder.setScissorRect(rect)
+            case .drawPrimitives(
+                let primitiveType,
+                let vertexStart,
+                let vertexCount
+            ):
+                encoder.drawPrimitives(
+                    type: primitiveType,
+                    vertexStart: vertexStart,
+                    vertexCount: vertexCount)
+                if currentPipelineIsGlass {
+                    glassDrawCount += 1
+                }
+            case .drawPrimitivesInstanced(
+                let primitiveType,
+                let vertexStart,
+                let vertexCount,
+                let instanceCount
+            ):
+                encoder.drawPrimitives(
+                    type: primitiveType,
+                    vertexStart: vertexStart,
+                    vertexCount: vertexCount,
+                    instanceCount: instanceCount)
+                if currentPipelineIsGlass {
+                    glassDrawCount += 1
+                }
+            case .drawPrimitivesBaseInstance(
+                let primitiveType,
+                let vertexStart,
+                let vertexCount,
+                let instanceCount,
+                let baseInstance
+            ):
+                encoder.drawPrimitives(
+                    type: primitiveType,
+                    vertexStart: vertexStart,
+                    vertexCount: vertexCount,
+                    instanceCount: instanceCount,
+                    baseInstance: baseInstance)
+                if currentPipelineIsGlass {
+                    glassDrawCount += 1
+                }
+            case .drawIndexedPrimitives(
+                let primitiveType,
+                let indexCount,
+                let indexType,
+                let indexBuffer,
+                let indexBufferOffset
+            ):
+                encoder.drawIndexedPrimitives(
+                    type: primitiveType,
+                    indexCount: indexCount,
+                    indexType: indexType,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: indexBufferOffset)
+                if currentPipelineIsGlass {
+                    glassDrawCount += 1
+                }
+            case .drawIndexedPrimitivesInstanced(
+                let primitiveType,
+                let indexCount,
+                let indexType,
+                let indexBuffer,
+                let indexBufferOffset,
+                let instanceCount
+            ):
+                encoder.drawIndexedPrimitives(
+                    type: primitiveType,
+                    indexCount: indexCount,
+                    indexType: indexType,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: indexBufferOffset,
+                    instanceCount: instanceCount)
+                if currentPipelineIsGlass {
+                    glassDrawCount += 1
+                }
+            case .drawIndexedPrimitivesBaseVertex(
+                let primitiveType,
+                let indexCount,
+                let indexType,
+                let indexBuffer,
+                let indexBufferOffset,
+                let instanceCount,
+                let baseVertex,
+                let baseInstance
+            ):
+                encoder.drawIndexedPrimitives(
+                    type: primitiveType,
+                    indexCount: indexCount,
+                    indexType: indexType,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: indexBufferOffset,
+                    instanceCount: instanceCount,
+                    baseVertex: baseVertex,
+                    baseInstance: baseInstance)
+                if currentPipelineIsGlass {
+                    glassDrawCount += 1
+                }
+            }
+            encodedCommandCount += 1
+        }
+        return ReplayEncodingSummary(
+            encodedCommandCount: encodedCommandCount,
+            glassDrawCount: glassDrawCount,
+            stoppedAfterGlass: stoppedAfterGlass)
+    }
+
+    private struct IndependentGlassPipelineSet {
+        let candidates: [(
+            name: String,
+            pipeline: MTLRenderPipelineState
+        )]
+        let report: [String: Any]
+    }
+
+    private func makeIndependentGlassPipelines(
+        for pass: ReplayPass
+    ) throws -> IndependentGlassPipelineSet {
+        guard let target =
+                pass.descriptor.colorAttachments[0]?.texture
+        else {
+            throw NSError(
+                domain: "GlassIntrospect.IndependentGlass",
+                code: 1,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "captured color target is unavailable",
+                ])
+        }
+        let device = target.device
+        let options = MTLCompileOptions()
+        options.fastMathEnabled = true
+        let vertexLibrary = try device.makeLibrary(
+            source: independentGlassVertexSource,
+            options: options)
+        let quartzCoreLibraryURL = URL(
+            fileURLWithPath:
+                "/System/Library/Frameworks/QuartzCore.framework"
+                + "/Versions/A/Resources/default.metallib")
+        let quartzCoreLibrary = try device.makeLibrary(
+            URL: quartzCoreLibraryURL)
+        guard let fragmentFunction =
+                quartzCoreLibrary.makeFunction(
+                    name: "glass_background_sdf_lph")
+        else {
+            throw NSError(
+                domain: "GlassIntrospect.IndependentGlass",
+                code: 2,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "glass_background_sdf_lph is unavailable",
+                ])
+        }
+
+        let vertexFunctionNames = [
+            "glass_vertex_raw",
+            "glass_vertex_transformed",
+            "glass_vertex_sdf_transformed",
+            "glass_vertex_src_transformed",
+            "glass_vertex_swapped",
+            "glass_vertex_row_matrix",
+        ]
+        var candidates: [(
+            name: String,
+            pipeline: MTLRenderPipelineState
+        )] = []
+        var buildRecords: [[String: Any]] = []
+        let attachmentFormats = (0..<8).compactMap { index in
+            pass.descriptor.colorAttachments[index]?.texture.map {
+                source in
+                [
+                    "index": index,
+                    "pixelFormat": source.pixelFormat.rawValue,
+                    "sampleCount": source.sampleCount,
+                ]
+            }
+        }
+        for functionName in vertexFunctionNames {
+            guard let vertexFunction =
+                    vertexLibrary.makeFunction(name: functionName)
+            else {
+                buildRecords.append([
+                    "name": functionName,
+                    "built": false,
+                    "error": "compiled vertex function unavailable",
+                ])
+                continue
+            }
+            let descriptor = MTLRenderPipelineDescriptor()
+            descriptor.label =
+                "glass-independent-\(functionName)"
+            descriptor.vertexFunction = vertexFunction
+            descriptor.fragmentFunction = fragmentFunction
+            descriptor.rasterSampleCount = target.sampleCount
+            for index in 0..<8 {
+                guard let source =
+                        pass.descriptor.colorAttachments[index]?
+                            .texture
+                else {
+                    continue
+                }
+                descriptor.colorAttachments[index].pixelFormat =
+                    source.pixelFormat
+            }
+            if let color = descriptor.colorAttachments[0] {
+                color.isBlendingEnabled = true
+                color.rgbBlendOperation = .add
+                color.alphaBlendOperation = .add
+                color.sourceRGBBlendFactor = .one
+                color.sourceAlphaBlendFactor = .one
+                color.destinationRGBBlendFactor =
+                    .oneMinusSourceAlpha
+                color.destinationAlphaBlendFactor =
+                    .oneMinusSourceAlpha
+            }
+            do {
+                let pipeline =
+                    try device.makeRenderPipelineState(
+                        descriptor: descriptor)
+                candidates.append((
+                    name: functionName,
+                    pipeline: pipeline))
+                buildRecords.append([
+                    "name": functionName,
+                    "built": true,
+                    "pipelineLabel": pipeline.label ?? "",
+                ])
+            } catch {
+                buildRecords.append([
+                    "name": functionName,
+                    "built": false,
+                    "error": error.localizedDescription,
+                ])
+            }
+        }
+        return IndependentGlassPipelineSet(
+            candidates: candidates,
+            report: [
+                "fragmentFunction": fragmentFunction.name,
+                "vertexSourceUTF8Bytes":
+                    independentGlassVertexSource.utf8.count,
+                "attachmentFormats": attachmentFormats,
+                "candidates": buildRecords,
+            ])
+    }
+
+    private func replayGlassPrefix(
+        pass: ReplayPass,
+        preColor0: MTLTexture,
+        queue: MTLCommandQueue,
+        replacingGlassPipeline replacement:
+            MTLRenderPipelineState?,
+        capture: String,
+        suffix: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let commandBuffer = queue.makeCommandBuffer(),
+              let blit = commandBuffer.makeBlitCommandEncoder()
+        else {
+            return [
+                "executed": false,
+                "reason": "glass-prefix command buffer unavailable",
+            ]
+        }
+        let descriptor = MTLRenderPassDescriptor()
+        var targets: [Int: MTLTexture] = [:]
+        for index in 0..<8 {
+            guard let original =
+                    pass.descriptor.colorAttachments[index],
+                  let source = original.texture
+            else {
+                continue
+            }
+            guard source.textureType == .type2D,
+                  source.sampleCount == 1
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "glass-prefix attachment layout is unsupported",
+                    "attachmentIndex": index,
+                ]
+            }
+            let textureDescriptor = MTLTextureDescriptor
+                .texture2DDescriptor(
+                    pixelFormat: source.pixelFormat,
+                    width: source.width,
+                    height: source.height,
+                    mipmapped: false)
+            textureDescriptor.storageMode = .private
+            textureDescriptor.usage = [
+                .renderTarget,
+                .shaderRead,
+            ]
+            guard let target = source.device.makeTexture(
+                descriptor: textureDescriptor)
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "glass-prefix attachment allocation failed",
+                    "attachmentIndex": index,
+                ]
+            }
+            targets[index] = target
+            let replay = descriptor.colorAttachments[index]
+            replay?.texture = target
+            replay?.loadAction = original.loadAction
+            replay?.storeAction =
+                index == 0 ? .store : original.storeAction
+            replay?.storeActionOptions =
+                original.storeActionOptions
+            replay?.clearColor = original.clearColor
+        }
+        guard let target = targets[0] else {
+            return [
+                "executed": false,
+                "reason": "glass-prefix color target unavailable",
+            ]
+        }
+        descriptor.renderTargetArrayLength =
+            pass.descriptor.renderTargetArrayLength
+        descriptor.defaultRasterSampleCount =
+            pass.descriptor.defaultRasterSampleCount
+        blit.copy(
+            from: preColor0,
+            sourceSlice: 0,
+            sourceLevel: 0,
+            sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+            sourceSize: MTLSize(
+                width: preColor0.width,
+                height: preColor0.height,
+                depth: 1),
+            to: target,
+            destinationSlice: 0,
+            destinationLevel: 0,
+            destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+        blit.endEncoding()
+        guard let encoder = commandBuffer.makeRenderCommandEncoder(
+            descriptor: descriptor)
+        else {
+            return [
+                "executed": false,
+                "reason": "glass-prefix render encoder unavailable",
+            ]
+        }
+        let summary = encodeReplayCommands(
+            pass.commands,
+            with: encoder,
+            replacingGlassPipeline: replacement,
+            stopAfterGlass: true)
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        guard commandBuffer.status == .completed else {
+            return [
+                "executed": false,
+                "reason":
+                    commandBuffer.error?.localizedDescription
+                        ?? "glass-prefix replay failed",
+                "commandBufferStatus": commandBuffer.status.rawValue,
+            ]
+        }
+        let snapshot = carendererOutputSnapshot(
+            target,
+            commandQueue: queue,
+            capture: "\(capture)-\(suffix)",
+            outputDirectory: outputDirectory)
+        return [
+            "executed": true,
+            "encodedCommandCount": summary.encodedCommandCount,
+            "glassDrawCount": summary.glassDrawCount,
+            "stoppedAfterGlass": summary.stoppedAfterGlass,
+            "output": snapshot,
+        ]
+    }
+
+    private func compareReplaySnapshots(
+        reference: [String: Any],
+        candidate: [String: Any],
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let referenceOutput =
+                reference["output"] as? [String: Any],
+              let candidateOutput =
+                candidate["output"] as? [String: Any],
+              let referenceFile =
+                referenceOutput["rawFile"] as? String,
+              let candidateFile =
+                candidateOutput["rawFile"] as? String
+        else {
+            return [
+                "compared": false,
+                "reason": "glass-prefix raw files unavailable",
+            ]
+        }
+        do {
+            let lhs = try Data(contentsOf:
+                outputDirectory.appendingPathComponent(
+                    referenceFile))
+            let rhs = try Data(contentsOf:
+                outputDirectory.appendingPathComponent(
+                    candidateFile))
+            guard lhs.count == rhs.count else {
+                return [
+                    "compared": true,
+                    "exactByteMatch": false,
+                    "referenceBytes": lhs.count,
+                    "candidateBytes": rhs.count,
+                ]
+            }
+            var mismatchedBytes = 0
+            var mismatchedPixels = 0
+            var maximumChannelDelta = 0
+            var firstMismatchedByte = -1
+            var absoluteChannelDelta: Int64 = 0
+            var squaredChannelDelta: Int64 = 0
+            lhs.withUnsafeBytes { lhsBytes in
+                rhs.withUnsafeBytes { rhsBytes in
+                    let a = lhsBytes.bindMemory(to: UInt8.self)
+                    let b = rhsBytes.bindMemory(to: UInt8.self)
+                    for pixel in stride(
+                        from: 0,
+                        to: lhs.count,
+                        by: 4)
+                    {
+                        var pixelMismatch = false
+                        for channel in 0..<4 {
+                            let offset = pixel + channel
+                            let delta = abs(
+                                Int(a[offset]) - Int(b[offset]))
+                            absoluteChannelDelta += Int64(delta)
+                            squaredChannelDelta +=
+                                Int64(delta * delta)
+                            if delta != 0 {
+                                mismatchedBytes += 1
+                                pixelMismatch = true
+                                if firstMismatchedByte < 0 {
+                                    firstMismatchedByte = offset
+                                }
+                                maximumChannelDelta = max(
+                                    maximumChannelDelta,
+                                    delta)
+                            }
+                        }
+                        if pixelMismatch {
+                            mismatchedPixels += 1
+                        }
+                    }
+                }
+            }
+            let channelCount = max(lhs.count, 1)
+            let pixelCount = max(lhs.count / 4, 1)
+            return [
+                "compared": true,
+                "exactByteMatch": mismatchedBytes == 0,
+                "byteCount": lhs.count,
+                "mismatchedByteCount": mismatchedBytes,
+                "mismatchedPixelCount": mismatchedPixels,
+                "matchingPixelFraction":
+                    1.0
+                    - Double(mismatchedPixels)
+                    / Double(pixelCount),
+                "meanAbsoluteChannelDelta":
+                    Double(absoluteChannelDelta)
+                    / Double(channelCount),
+                "rootMeanSquareChannelDelta":
+                    sqrt(
+                        Double(squaredChannelDelta)
+                        / Double(channelCount)),
+                "maximumChannelDelta": maximumChannelDelta,
+                "firstMismatchedByte": firstMismatchedByte,
+            ]
+        } catch {
+            return [
+                "compared": false,
+                "reason": error.localizedDescription,
+            ]
+        }
+    }
+
     func replayFinalPass(
         capture: String,
         referenceSnapshot: [String: Any],
@@ -3304,146 +3990,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "reason": "replay render encoder unavailable",
             ]
         }
-        for command in pass.commands {
-            switch command {
-            case .pipeline(let state):
-                encoder.setRenderPipelineState(state)
-            case .fragmentBytes(let data, let index):
-                data.withUnsafeBytes { bytes in
-                    if let base = bytes.baseAddress {
-                        encoder.setFragmentBytes(
-                            base,
-                            length: bytes.count,
-                            index: index)
-                    }
-                }
-            case .fragmentBuffer(
-                let buffer,
-                let offset,
-                let index
-            ):
-                encoder.setFragmentBuffer(
-                    buffer,
-                    offset: offset,
-                    index: index)
-            case .fragmentBufferOffset(let offset, let index):
-                encoder.setFragmentBufferOffset(
-                    offset,
-                    index: index)
-            case .fragmentTexture(let texture, let index):
-                encoder.setFragmentTexture(texture, index: index)
-            case .fragmentSampler(let sampler, let index):
-                encoder.setFragmentSamplerState(
-                    sampler,
-                    index: index)
-            case .vertexBytes(let data, let index):
-                data.withUnsafeBytes { bytes in
-                    if let base = bytes.baseAddress {
-                        encoder.setVertexBytes(
-                            base,
-                            length: bytes.count,
-                            index: index)
-                    }
-                }
-            case .vertexBuffer(
-                let buffer,
-                let offset,
-                let index
-            ):
-                encoder.setVertexBuffer(
-                    buffer,
-                    offset: offset,
-                    index: index)
-            case .vertexBufferOffset(let offset, let index):
-                encoder.setVertexBufferOffset(
-                    offset,
-                    index: index)
-            case .viewport(let viewport):
-                encoder.setViewport(viewport)
-            case .scissorRect(let rect):
-                encoder.setScissorRect(rect)
-            case .drawPrimitives(
-                let primitiveType,
-                let vertexStart,
-                let vertexCount
-            ):
-                encoder.drawPrimitives(
-                    type: primitiveType,
-                    vertexStart: vertexStart,
-                    vertexCount: vertexCount)
-            case .drawPrimitivesInstanced(
-                let primitiveType,
-                let vertexStart,
-                let vertexCount,
-                let instanceCount
-            ):
-                encoder.drawPrimitives(
-                    type: primitiveType,
-                    vertexStart: vertexStart,
-                    vertexCount: vertexCount,
-                    instanceCount: instanceCount)
-            case .drawPrimitivesBaseInstance(
-                let primitiveType,
-                let vertexStart,
-                let vertexCount,
-                let instanceCount,
-                let baseInstance
-            ):
-                encoder.drawPrimitives(
-                    type: primitiveType,
-                    vertexStart: vertexStart,
-                    vertexCount: vertexCount,
-                    instanceCount: instanceCount,
-                    baseInstance: baseInstance)
-            case .drawIndexedPrimitives(
-                let primitiveType,
-                let indexCount,
-                let indexType,
-                let indexBuffer,
-                let indexBufferOffset
-            ):
-                encoder.drawIndexedPrimitives(
-                    type: primitiveType,
-                    indexCount: indexCount,
-                    indexType: indexType,
-                    indexBuffer: indexBuffer,
-                    indexBufferOffset: indexBufferOffset)
-            case .drawIndexedPrimitivesInstanced(
-                let primitiveType,
-                let indexCount,
-                let indexType,
-                let indexBuffer,
-                let indexBufferOffset,
-                let instanceCount
-            ):
-                encoder.drawIndexedPrimitives(
-                    type: primitiveType,
-                    indexCount: indexCount,
-                    indexType: indexType,
-                    indexBuffer: indexBuffer,
-                    indexBufferOffset: indexBufferOffset,
-                    instanceCount: instanceCount)
-            case .drawIndexedPrimitivesBaseVertex(
-                let primitiveType,
-                let indexCount,
-                let indexType,
-                let indexBuffer,
-                let indexBufferOffset,
-                let instanceCount,
-                let baseVertex,
-                let baseInstance
-            ):
-                encoder.drawIndexedPrimitives(
-                    type: primitiveType,
-                    indexCount: indexCount,
-                    indexType: indexType,
-                    indexBuffer: indexBuffer,
-                    indexBufferOffset: indexBufferOffset,
-                    instanceCount: instanceCount,
-                    baseVertex: baseVertex,
-                    baseInstance: baseInstance)
-            }
-        }
+        let fullReplaySummary = encodeReplayCommands(
+            pass.commands,
+            with: encoder)
         encoder.endEncoding()
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
@@ -3471,9 +4020,58 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "executed": true,
             "capturedPassCount": passes.count,
             "commandCount": pass.commands.count,
+            "encodedCommandCount":
+                fullReplaySummary.encodedCommandCount,
+            "glassDrawCount":
+                fullReplaySummary.glassDrawCount,
             "preFinalPass": preSnapshot,
             "replayOutput": replaySnapshot,
         ]
+        let glassPrefixReference = replayGlassPrefix(
+            pass: pass,
+            preColor0: preColor0,
+            queue: queue,
+            replacingGlassPipeline: nil,
+            capture: capture,
+            suffix: "glass-prefix-reference",
+            outputDirectory: outputDirectory)
+        var independentGlassReplay: [String: Any] = [
+            "reference": glassPrefixReference,
+        ]
+        do {
+            let pipelineSet =
+                try makeIndependentGlassPipelines(for: pass)
+            independentGlassReplay["pipelineBuild"] =
+                pipelineSet.report
+            var candidateRecords: [[String: Any]] = []
+            for candidate in pipelineSet.candidates {
+                let replay = replayGlassPrefix(
+                    pass: pass,
+                    preColor0: preColor0,
+                    queue: queue,
+                    replacingGlassPipeline:
+                        candidate.pipeline,
+                    capture: capture,
+                    suffix:
+                        "glass-prefix-\(candidate.name)",
+                    outputDirectory: outputDirectory)
+                candidateRecords.append([
+                    "name": candidate.name,
+                    "replay": replay,
+                    "comparison": compareReplaySnapshots(
+                        reference: glassPrefixReference,
+                        candidate: replay,
+                        outputDirectory: outputDirectory),
+                ])
+            }
+            independentGlassReplay["candidates"] =
+                candidateRecords
+        } catch {
+            independentGlassReplay["pipelineBuildError"] =
+                error.localizedDescription
+        }
+        result["independentGlassReplay"] =
+            independentGlassReplay
         guard let referenceFile =
                 referenceSnapshot["rawFile"] as? String,
               let replayFile = replaySnapshot["rawFile"] as? String
@@ -5257,7 +5855,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 40,
+                    "schemaVersion": 41,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -5273,7 +5871,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 40,
+            "schemaVersion": 41,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
