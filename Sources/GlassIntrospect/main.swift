@@ -1018,6 +1018,14 @@ private func sdfGeneratorEvidence(
         ("bounded-depth0-gradient-smoothing2p5", true, 0, 2.5),
         ("bounded-depth0-gradient-smoothing4", true, 0, 4),
         ("bounded-depth0-gradient-smoothing6", true, 0, 6),
+        ("bounded-depth2-gradient-smoothing0", true, 2, 0),
+        ("bounded-depth2-gradient-smoothing0p5", true, 2, 0.5),
+        ("bounded-depth2-gradient-smoothing1", true, 2, 1),
+        ("bounded-depth2-gradient-smoothing1p5", true, 2, 1.5),
+        ("bounded-depth2-gradient-smoothing2", true, 2, 2),
+        ("bounded-depth2-gradient-smoothing2p5", true, 2, 2.5),
+        ("bounded-depth2-gradient-smoothing4", true, 2, 4),
+        ("bounded-depth2-gradient-smoothing6", true, 2, 6),
     ]
     for definition in definitions {
         guard let boundedRequest = invokeClassFactory(
@@ -1705,7 +1713,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 18,
+                    "schemaVersion": 19,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -1721,7 +1729,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 18,
+            "schemaVersion": 19,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

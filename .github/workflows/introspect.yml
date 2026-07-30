@@ -72,7 +72,7 @@ jobs:
               result = subprocess.run(
                   ["./glassintrospect", "introspection"],
                   check=False,
-                  timeout=45,
+                  timeout=60,
               )
               if result.returncode != 0:
                   error_path.write_text(
@@ -92,7 +92,7 @@ jobs:
                   json.dumps(
                       {
                           "error": "introspection app exceeded deadline",
-                          "timeoutSeconds": 45,
+                          "timeoutSeconds": 60,
                       },
                       indent=2,
                       sort_keys=True,

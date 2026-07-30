@@ -758,6 +758,10 @@ RGBA8 input mask, enumerates output-depth values zero through two with and
 without gradients, and sweeps gradient smoothing through fixed integer and
 half-integer values. Names state every controlled value before output exists;
 the matrix separates field precision, format conversion, and gradient blur.
+Schema 19 repeats the complete smoothing sweep in Float16 output mode. It
+therefore retains Apple's normalized gradient vectors before UNorm8
+quantization; the bounded probe deadline rises from 45 to 60 seconds to cover
+the fixed additional matrix without allowing an unbounded private call.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
