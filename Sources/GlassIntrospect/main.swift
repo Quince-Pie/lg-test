@@ -272,6 +272,151 @@ inline half4 replay_compute_mode4_sdf(
         half(1.0));
 }
 
+inline half4 replay_compute_simple_sdf(
+    float2 point,
+    constant ReplaySdfFragmentUniforms &uniforms)
+{
+    const float2 delta =
+        fabs(point) - uniforms.arg.xy;
+    const half2 delta_half = half2(delta);
+    const half2 signs = half2(
+        point.x >= 0.0 ? 1.0 : -1.0,
+        point.y >= 0.0 ? 1.0 : -1.0);
+    const half2 axis_normal =
+        (delta_half.x > delta_half.y
+            ? half2(1.0, 0.0)
+            : half2(0.0, 1.0))
+        * signs;
+
+    const float2 radial_input = float2(
+        point.x,
+        uniforms.arg.x * point.y / uniforms.arg.y);
+    const float radial_inverse_length =
+        fast::rsqrt(dot(radial_input, radial_input));
+    const half2 radial_normal =
+        half2(radial_input * radial_inverse_length);
+    half2 normal = mix(
+        axis_normal,
+        radial_normal,
+        half(uniforms.arg.w));
+    normal *= rsqrt(dot(normal, normal));
+
+    const half transformed_x = half(
+        uniforms.tr.x * float(normal.x)
+        + uniforms.tr.y * float(normal.y));
+    const half transformed_y = half(
+        uniforms.tr.z * float(normal.x)
+        + uniforms.tr.w * float(normal.y));
+    return half4(
+        max(delta_half.x, delta_half.y),
+        transformed_x,
+        transformed_y,
+        half(1.0));
+}
+
+inline half4 replay_compute_asymmetric_sdf(
+    float2 point,
+    constant ReplaySdfFragmentUniforms &uniforms)
+{
+    const float4 radii = uniforms.arg2;
+    const float4 first_pair =
+        float4(radii.x, radii.x, radii.w, radii.y);
+    const float4 second_pair =
+        float4(radii.y, radii.w, radii.z, radii.z);
+    const float4 average_radius =
+        (first_pair + second_pair) * 0.5;
+    const float4 half_size =
+        float4(
+            uniforms.arg.x,
+            uniforms.arg.y,
+            uniforms.arg.x,
+            uniforms.arg.y);
+    const float4 ovalization = saturate(
+        (float4(replay_float_constant(0xbfc3ab4b))
+            - half_size / average_radius)
+        * float4(replay_float_constant(0xbff21e8c)));
+
+    half3 shape = replay_supercircle_sdf(
+        point,
+        uniforms.arg.xy,
+        radii.y,
+        ovalization.xw);
+    half3 candidate = replay_supercircle_sdf(
+        float2(-point.x, point.y),
+        uniforms.arg.xy,
+        radii.x,
+        ovalization.xy);
+    candidate.y = -candidate.y;
+    if (candidate.x > shape.x) {
+        shape = candidate;
+    }
+
+    candidate = replay_supercircle_sdf(
+        float2(point.x, -point.y),
+        uniforms.arg.xy,
+        radii.z,
+        ovalization.zw);
+    candidate.z = -candidate.z;
+    if (candidate.x > shape.x) {
+        shape = candidate;
+    }
+
+    candidate = replay_supercircle_sdf(
+        -point,
+        uniforms.arg.xy,
+        radii.w,
+        float2(ovalization.z, ovalization.y));
+    candidate.yz = -candidate.yz;
+    if (candidate.x > shape.x) {
+        shape = candidate;
+    }
+
+    const float2 radial_input = float2(
+        point.x,
+        uniforms.arg.x * point.y / uniforms.arg.y);
+    const float radial_inverse_length =
+        fast::rsqrt(dot(radial_input, radial_input));
+    const half2 radial_normal =
+        half2(radial_input * radial_inverse_length);
+    half2 normal = mix(
+        shape.yz,
+        radial_normal,
+        half(uniforms.arg.w));
+    normal *= rsqrt(dot(normal, normal));
+
+    const half transformed_x = half(
+        uniforms.tr.x * float(normal.x)
+        + uniforms.tr.y * float(normal.y));
+    const half transformed_y = half(
+        uniforms.tr.z * float(normal.x)
+        + uniforms.tr.w * float(normal.y));
+    return half4(
+        shape.x,
+        transformed_x,
+        transformed_y,
+        half(1.0));
+}
+
+inline half4 replay_compute_sdf(
+    float2 point,
+    int mode,
+    constant ReplaySdfFragmentUniforms &uniforms)
+{
+    if (mode < 4) {
+        return replay_compute_simple_sdf(
+            point,
+            uniforms);
+    }
+    if (mode == 4) {
+        return replay_compute_mode4_sdf(
+            point,
+            uniforms);
+    }
+    return replay_compute_asymmetric_sdf(
+        point,
+        uniforms);
+}
+
 inline half replay_refraction_shift(
     half distance,
     float amount,
@@ -534,16 +679,14 @@ fragment half4 glass_fragment_profile_replay(
     constant half &edr_scale [[buffer(6)]])
 {
     const int mode = int(uniforms.sdf.arg.z);
-    if (mode >= 0 && mode != 4) {
-        return half4(1.0, 0.0, 1.0, 1.0);
-    }
 
     half distance = half(0.0);
     float2 normal = float2(0.0);
     half coverage = half(0.0);
     if (mode >= 0) {
-        const half4 sdf = replay_compute_mode4_sdf(
+        const half4 sdf = replay_compute_sdf(
             input.sdf_uv,
+            mode,
             uniforms.sdf);
         distance = sdf.x;
         normal = float2(sdf.yz);
@@ -557,11 +700,9 @@ fragment half4 glass_fragment_profile_replay(
     half2 shadow_sdf = half2(0.0);
     if (coverage < half(1.0)) {
         const int shadow_mode = abs(mode) | 4;
-        if (shadow_mode != 4) {
-            return half4(0.0, 1.0, 1.0, 1.0);
-        }
-        const half4 shadow = replay_compute_mode4_sdf(
+        const half4 shadow = replay_compute_sdf(
             input.sdf_uv + uniforms.glass.shadow_offset,
+            shadow_mode,
             uniforms.sdf);
         shadow_sdf = shadow.xw;
     }
@@ -4370,7 +4511,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 52,
+            "schemaVersion": 53,
             "capture": capture,
             "phase": phase,
         ]
@@ -4563,7 +4704,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 52,
+                    "schemaVersion": 53,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4767,7 +4908,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 52,
+                "schemaVersion": 53,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -5036,6 +5177,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
         case premultipliedAlphaField =
             "premultiplied-alpha-field"
         case discordantMips = "discordant-mips"
+    }
+
+    private struct GlassSDFModeIntervention {
+        let name: String
+        let mode: Int
+        let radii: [Float]
+        let enablesShadow: Bool
     }
 
     private func glassSourceTexture(
@@ -5343,6 +5491,245 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "textureType": source.textureType.rawValue,
                 "storageMode": source.storageMode.rawValue,
             ],
+            "records": records,
+        ]
+    }
+
+    private func runGlassSDFModeDifferential(
+        pass: ReplayPass,
+        preColor0: MTLTexture,
+        queue: MTLCommandQueue,
+        customPipeline: MTLRenderPipelineState,
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let binding = glassUniformBinding(
+                in: pass.commands)
+        else {
+            return [
+                "executed": false,
+                "reason":
+                    "glass SDF uniform binding is unavailable",
+            ]
+        }
+        guard binding.buffer.storageMode != .private else {
+            return [
+                "executed": false,
+                "reason":
+                    "glass SDF uniform buffer is not CPU-readable",
+            ]
+        }
+
+        let interventions = [
+            GlassSDFModeIntervention(
+                name: "simple-mode1",
+                mode: 1,
+                radii: [48, 96, 144, 192],
+                enablesShadow: false),
+            GlassSDFModeIntervention(
+                name: "simple-mode1-shadow",
+                mode: 1,
+                radii: [48, 96, 144, 192],
+                enablesShadow: true),
+            GlassSDFModeIntervention(
+                name: "asymmetric-mode5",
+                mode: 5,
+                radii: [48, 96, 144, 192],
+                enablesShadow: false),
+            GlassSDFModeIntervention(
+                name: "asymmetric-mode5-signed-shadow",
+                mode: 5,
+                radii: [-320, -480, -640, -240],
+                enablesShadow: true),
+        ]
+
+        func writeFloat(
+            _ value: Float,
+            to buffer: MTLBuffer,
+            offset: Int
+        ) -> Bool {
+            guard offset >= 0,
+                  offset + MemoryLayout<UInt32>.size
+                    <= buffer.length
+            else {
+                return false
+            }
+            var bits = value.bitPattern.littleEndian
+            Swift.withUnsafeBytes(of: &bits) { bytes in
+                if let source = bytes.baseAddress {
+                    memcpy(
+                        buffer.contents().advanced(by: offset),
+                        source,
+                        bytes.count)
+                }
+            }
+            return true
+        }
+
+        func writeHalfOne(
+            to buffer: MTLBuffer,
+            offset: Int
+        ) -> Bool {
+            guard offset >= 0,
+                  offset + MemoryLayout<UInt16>.size
+                    <= buffer.length
+            else {
+                return false
+            }
+            var bits = UInt16(0x3c00).littleEndian
+            Swift.withUnsafeBytes(of: &bits) { bytes in
+                if let source = bytes.baseAddress {
+                    memcpy(
+                        buffer.contents().advanced(by: offset),
+                        source,
+                        bytes.count)
+                }
+            }
+            return true
+        }
+
+        func capturedMode(
+            in buffer: MTLBuffer,
+            recordOffset: Int
+        ) -> Float? {
+            let offset = recordOffset + 8
+            guard offset >= 0,
+                  offset + MemoryLayout<UInt32>.size
+                    <= buffer.length
+            else {
+                return nil
+            }
+            var bits: UInt32 = 0
+            memcpy(
+                &bits,
+                buffer.contents().advanced(by: offset),
+                MemoryLayout<UInt32>.size)
+            return Float(
+                bitPattern: UInt32(littleEndian: bits))
+        }
+
+        var records: [[String: Any]] = []
+        for intervention in interventions {
+            guard intervention.radii.count == 4,
+                  let clone =
+                    binding.buffer.device.makeBuffer(
+                        length: binding.buffer.length,
+                        options: .storageModeShared)
+            else {
+                records.append([
+                    "name": intervention.name,
+                    "executed": false,
+                    "reason":
+                        "SDF uniform clone allocation failed",
+                ])
+                continue
+            }
+            memcpy(
+                clone.contents(),
+                binding.buffer.contents(),
+                binding.buffer.length)
+
+            var mutationSucceeded = true
+            var signedModes: [Float] = []
+            for recordOffset in binding.recordOffsets {
+                guard let originalMode = capturedMode(
+                        in: binding.buffer,
+                        recordOffset: recordOffset)
+                else {
+                    mutationSucceeded = false
+                    break
+                }
+                let mode =
+                    originalMode < 0
+                    ? -Float(intervention.mode)
+                    : Float(intervention.mode)
+                signedModes.append(mode)
+                mutationSucceeded =
+                    writeFloat(
+                        mode,
+                        to: clone,
+                        offset: recordOffset + 8)
+                    && mutationSucceeded
+                for (index, radius) in
+                    intervention.radii.enumerated()
+                {
+                    mutationSucceeded =
+                        writeFloat(
+                            radius,
+                            to: clone,
+                            offset:
+                                recordOffset
+                                + 32
+                                + index * 4)
+                        && mutationSucceeded
+                }
+                if intervention.enablesShadow {
+                    mutationSucceeded =
+                        writeHalfOne(
+                            to: clone,
+                            offset: recordOffset + 238)
+                        && mutationSucceeded
+                }
+            }
+            guard mutationSucceeded else {
+                records.append([
+                    "name": intervention.name,
+                    "executed": false,
+                    "reason":
+                        "SDF uniform edit exceeds cloned buffer",
+                ])
+                continue
+            }
+
+            let commands = replacingFragmentBuffer(
+                in: pass.commands,
+                original: binding.buffer,
+                replacement: clone)
+            let reference = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                commands: commands,
+                replacingGlassPipeline: nil,
+                capture: capture,
+                suffix:
+                    "sdf-\(intervention.name)-apple",
+                outputDirectory: outputDirectory)
+            let candidate = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                commands: commands,
+                replacingGlassPipeline: customPipeline,
+                capture: capture,
+                suffix:
+                    "sdf-\(intervention.name)-custom",
+                outputDirectory: outputDirectory)
+            records.append([
+                "name": intervention.name,
+                "executed":
+                    reference["executed"] as? Bool == true
+                    && candidate["executed"] as? Bool == true,
+                "mode": intervention.mode,
+                "signedRecordModes": signedModes,
+                "radii": intervention.radii,
+                "shadowOpacityEnabled":
+                    intervention.enablesShadow,
+                "reference": reference,
+                "candidate": candidate,
+                "comparison": compareReplaySnapshots(
+                    reference: reference,
+                    candidate: candidate,
+                    outputDirectory: outputDirectory),
+            ])
+            if candidate["executed"] as? Bool != true {
+                break
+            }
+        }
+        return [
+            "executed": true,
+            "uniformBufferLength": binding.buffer.length,
+            "recordOffsets": binding.recordOffsets,
             "records": records,
         ]
     }
@@ -5828,6 +6215,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     independentGlassReplay[
                         "sourceTextureDifferential"
                     ] = runGlassSourceTextureDifferential(
+                        pass: pass,
+                        preColor0: preColor0,
+                        queue: queue,
+                        customPipeline:
+                            customProfile.pipeline,
+                        capture: capture,
+                        outputDirectory: outputDirectory)
+                    independentGlassReplay[
+                        "sdfModeDifferential"
+                    ] = runGlassSDFModeDifferential(
                         pass: pass,
                         preColor0: preColor0,
                         queue: queue,
@@ -7672,7 +8069,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 52,
+                    "schemaVersion": 53,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -7688,7 +8085,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 52,
+            "schemaVersion": 53,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

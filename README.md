@@ -1023,6 +1023,13 @@ adds a held-out source-texture oracle at the captured fragment texture index
 coordinate-hashed RGB, premultiplied-alpha, and deliberately discordant mip
 inputs, preserving every generated mip as raw evidence. These probes test the
 general sampling and color algorithm rather than only the captured wallpaper.
+Run `30542811377` matched every held-out texture across all 4,194,304 output
+bytes apiece, for another 16,777,216 exact bytes while the complete uniform
+matrix remained exact. Schema 53 translates the two remaining AIR SDF
+branches: the `mode < 4` rectangle and the `mode > 4` independently rounded
+four-corner shape. Its differential rewrites both signed draw records and
+corner-radius vectors, including a signed-radius case that exercises
+nontrivial ovalization, with and without an observable shadow.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
