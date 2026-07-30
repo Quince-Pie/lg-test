@@ -1043,6 +1043,23 @@ shadow-only draw, and disable blending. These traces expose every binary16
 value needed to distinguish Apple GPU fast square-root and reciprocal-root
 semantics from arithmetic, interpolation, and sampler differences in a
 Linux/AMD replay.
+Run `30545003134` retained all six independent pipeline controls, all ten
+uniform interventions, all four held-out source textures, and all four SDF
+branches as byte-exact gates. It also returned both complete 1024x1024
+RGBA16Float traces. Those traces isolated two backend effects that cannot be
+settled from the final BGRA8 image: Apple raster interpolation lies on
+binary16 boundaries at many source coordinates, and Apple's native half
+square root changes the refraction result for a deterministic subset of SDF
+half words.
+Schema 55 measures both effects directly. A third glass trace writes the full
+float32 bit patterns of interpolated SDF and source coordinates to an
+RGBA32Uint target before any binary16 conversion. A separate compute probe
+enumerates all 65,536 binary16 input words and records the exact native
+height, refraction product, square root, amount product, final inner shift,
+square root of magnitude, and reciprocal square root of magnitude. The probe
+adds less than one MiB of evidence, uses the same fast-math compilation mode
+as the independent glass shader, and leaves every prior exact image gate
+unchanged.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

@@ -913,6 +913,16 @@ fragment half4 glass_fragment_refraction_trace(
         inner_blur);
 }
 
+fragment uint4 glass_fragment_interpolant_trace(
+    GlassReplayVertexOutput input [[stage_in]])
+{
+    return uint4(
+        as_type<uint>(input.sdf_uv.x),
+        as_type<uint>(input.sdf_uv.y),
+        as_type<uint>(input.src_uv.x),
+        as_type<uint>(input.src_uv.y));
+}
+
 vertex GlassReplayVertexOutput glass_vertex_raw(
     const device GlassReplayVertex *vertices [[buffer(1)]],
     constant float4x4 &mvp [[buffer(2)]],
@@ -4565,7 +4575,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         )]
         let numericTraces: [(
             name: String,
-            pipeline: MTLRenderPipelineState
+            pipeline: MTLRenderPipelineState,
+            pixelFormat: MTLPixelFormat
         )]
         let report: [String: Any]
     }
@@ -4577,7 +4588,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 54,
+            "schemaVersion": 55,
             "capture": capture,
             "phase": phase,
         ]
@@ -4689,7 +4700,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     name: "glass_fragment_sdf_trace"),
               let customRefractionTraceFragment =
                 shaderLibrary.makeFunction(
-                    name: "glass_fragment_refraction_trace")
+                    name: "glass_fragment_refraction_trace"),
+              let customInterpolantTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_interpolant_trace")
         else {
             throw NSError(
                 domain: "GlassIntrospect.IndependentGlass",
@@ -4776,7 +4790,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 54,
+                    "schemaVersion": 55,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4831,17 +4845,25 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
         var tracePipelines: [(
             name: String,
-            pipeline: MTLRenderPipelineState
+            pipeline: MTLRenderPipelineState,
+            pixelFormat: MTLPixelFormat
         )] = []
         var traceBuildRecords: [[String: Any]] = []
         for trace in [
             (
                 name: "sdf",
-                fragment: customSDFTraceFragment
+                fragment: customSDFTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
             ),
             (
                 name: "refraction",
-                fragment: customRefractionTraceFragment
+                fragment: customRefractionTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "interpolant",
+                fragment: customInterpolantTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
             ),
         ] {
             let descriptor = try copyCapturedDescriptor()
@@ -4850,7 +4872,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             for index in 0..<8 {
                 let attachment = descriptor.colorAttachments[index]
                 attachment?.pixelFormat =
-                    index == 0 ? .rgba16Float : .invalid
+                    index == 0 ? trace.pixelFormat : .invalid
                 attachment?.isBlendingEnabled = false
                 attachment?.writeMask =
                     index == 0 ? .all : []
@@ -4861,10 +4883,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         descriptor: descriptor)
                 tracePipelines.append((
                     name: trace.name,
-                    pipeline: pipeline))
+                    pipeline: pipeline,
+                    pixelFormat: trace.pixelFormat))
                 traceBuildRecords.append([
                     "name": trace.name,
                     "built": true,
+                    "pixelFormat": trace.pixelFormat.rawValue,
                     "descriptor":
                         pipelineDescriptorRecord(descriptor),
                 ])
@@ -4925,6 +4949,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         pass: ReplayPass,
         queue: MTLCommandQueue,
         replacement: MTLRenderPipelineState,
+        pixelFormat: MTLPixelFormat,
         capture: String,
         name: String,
         outputDirectory: URL
@@ -4940,7 +4965,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
         let textureDescriptor = MTLTextureDescriptor
             .texture2DDescriptor(
-                pixelFormat: .rgba16Float,
+                pixelFormat: pixelFormat,
                 width: source.width,
                 height: source.height,
                 mipmapped: false)
@@ -5136,7 +5161,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 54,
+                "schemaVersion": 55,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -6466,10 +6491,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         trace in
                         [
                             "name": trace.name,
+                            "pixelFormat":
+                                trace.pixelFormat.rawValue,
                             "replay": replayGlassNumericTrace(
                                 pass: pass,
                                 queue: queue,
                                 replacement: trace.pipeline,
+                                pixelFormat: trace.pixelFormat,
                                 capture: capture,
                                 name: trace.name,
                                 outputDirectory:
@@ -7862,6 +7890,9 @@ private func carendererOutputSnapshot(
     let pixelBytes: Int
     let filenameSuffix: String
     switch texture.pixelFormat {
+    case .rgba32Uint:
+        pixelBytes = 16
+        filenameSuffix = "rgba32ui"
     case .rgba16Float:
         pixelBytes = 8
         filenameSuffix = "rgba16f"
@@ -8328,7 +8359,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 54,
+                    "schemaVersion": 55,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8344,7 +8375,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 54,
+            "schemaVersion": 55,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -8390,6 +8421,16 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     outputDirectory: outputDirectory)
             } catch {
                 report["halfDotEvidence"] = [
+                    "error": error.localizedDescription,
+                ]
+            }
+            do {
+                report["halfIntrinsicEvidence"] =
+                    try writeHalfIntrinsicEvidence(
+                        device: device,
+                        outputDirectory: outputDirectory)
+            } catch {
+                report["halfIntrinsicEvidence"] = [
                     "error": error.localizedDescription,
                 ]
             }
