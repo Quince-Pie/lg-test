@@ -1255,6 +1255,12 @@ captured 1024-to-256 `downsample_4_frag_lph` coefficients, the centered
 256-to-384 copy-base dispatch, and every raw level of the six-mip
 384/192/96/48/24/12 chain with all four AGX2 uniform and dispatch records.
 Neither branch is treated as a fallback for the other.
+Schema 71 fixes the final regular-material ordering from the AIR control-flow
+graph: edge bleed transforms the opaque face first, and SDF coverage then
+composites that face over the independently computed shadow layer. The
+post-bleed trace is therefore captured before coverage composition. The
+edge-opacity-zero intervention remains an exact control for every stage outside
+that boundary.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

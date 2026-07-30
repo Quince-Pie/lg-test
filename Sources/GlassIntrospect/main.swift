@@ -859,7 +859,20 @@ inline ReplayProfileStages replay_profile_stages(
     }
     stages.face = face;
 
-    half4 composite =
+    if (coverage > half(0.0)
+        && uniforms.glass.edge_bleed_opacity > half(0.0))
+    {
+        face = replay_edge_bleed_layer(
+            input.src_uv,
+            distance,
+            displacement,
+            face,
+            source_texture,
+            uniforms.glass);
+    }
+    stages.bleed = face;
+
+    const half4 composite =
         uniforms.glass.x86_workaround != half(0.0)
         ? half4(mix(
             float4(shadow_layer),
@@ -870,17 +883,6 @@ inline ReplayProfileStages replay_profile_stages(
             face,
             half4(coverage));
     stages.composite = composite;
-
-    if (uniforms.glass.edge_bleed_opacity > half(0.0)) {
-        composite = replay_edge_bleed_layer(
-            input.src_uv,
-            distance,
-            displacement,
-            composite,
-            source_texture,
-            uniforms.glass);
-    }
-    stages.bleed = composite;
 
     if (uniforms.glass.holding_tone_opacity > half(0.0)) {
         half holding_distance;
@@ -6083,7 +6085,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 70,
+            "schemaVersion": 71,
             "capture": capture,
             "phase": phase,
         ]
@@ -6333,7 +6335,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 70,
+                    "schemaVersion": 71,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -6763,7 +6765,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 70,
+                "schemaVersion": 71,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -11102,7 +11104,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 70,
+                    "schemaVersion": 71,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -11118,7 +11120,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 70,
+            "schemaVersion": 71,
             "materialProfileEvidence": [
                 "material": material.rawValue,
                 "requestedAppearance": appearance.rawValue,
