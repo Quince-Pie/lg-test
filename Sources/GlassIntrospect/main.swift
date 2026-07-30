@@ -923,6 +923,78 @@ fragment uint4 glass_fragment_interpolant_trace(
         as_type<uint>(input.src_uv.y));
 }
 
+fragment uint4 glass_fragment_sdf_float_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode != 4) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const float circle_constant =
+        replay_float_constant(0x3fc3ab4b);
+    const float circle_scale =
+        uniforms.sdf.arg2.z * circle_constant;
+    const float2 point = fabs(input.sdf_uv);
+    const float2 normalized = max(
+        float2(0.0),
+        (point - uniforms.sdf.arg.xy + circle_scale)
+            / circle_scale);
+    const float2 oval_delta = max(
+        float2(0.0),
+        normalized * circle_constant
+            + replay_float_constant(0xbf075697));
+    const float oval_squared = dot(oval_delta, oval_delta);
+    const float oval_length = fast::sqrt(oval_squared);
+    const float oval_distance =
+        oval_length * replay_float_constant(0x3f277765)
+        + replay_float_constant(0x3eb11136);
+    const half curved_distance = half(oval_distance - 1.0);
+    const half distance =
+        half(circle_scale * float(curved_distance));
+    const uint packed_half = uint(
+        as_type<ushort>(curved_distance))
+        | (uint(as_type<ushort>(distance)) << 16);
+    return uint4(
+        as_type<uint>(oval_squared),
+        as_type<uint>(oval_length),
+        as_type<uint>(oval_distance),
+        packed_half);
+}
+
+fragment half4 glass_fragment_sample_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode < 0) {
+        discard_fragment();
+        return half4(0.0);
+    }
+
+    const half4 sdf = replay_compute_sdf(
+        input.sdf_uv,
+        mode,
+        uniforms.sdf);
+    const float2 normal = float2(sdf.yz);
+    const half2 displacement = half2(
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.xy)),
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.zw)));
+    return replay_sample_refracted(
+        input.src_uv,
+        sdf.x,
+        displacement,
+        source_texture,
+        uniforms.glass);
+}
+
 vertex GlassReplayVertexOutput glass_vertex_raw(
     const device GlassReplayVertex *vertices [[buffer(1)]],
     constant float4x4 &mvp [[buffer(2)]],
@@ -4588,7 +4660,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 55,
+            "schemaVersion": 56,
             "capture": capture,
             "phase": phase,
         ]
@@ -4703,7 +4775,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     name: "glass_fragment_refraction_trace"),
               let customInterpolantTraceFragment =
                 shaderLibrary.makeFunction(
-                    name: "glass_fragment_interpolant_trace")
+                    name: "glass_fragment_interpolant_trace"),
+              let customSDFFloatTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_sdf_float_trace"),
+              let customSampleTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_sample_trace")
         else {
             throw NSError(
                 domain: "GlassIntrospect.IndependentGlass",
@@ -4790,7 +4868,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 55,
+                    "schemaVersion": 56,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4864,6 +4942,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 name: "interpolant",
                 fragment: customInterpolantTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "sdf-float",
+                fragment: customSDFFloatTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "sample",
+                fragment: customSampleTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
             ),
         ] {
             let descriptor = try copyCapturedDescriptor()
@@ -4950,6 +5038,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         queue: MTLCommandQueue,
         replacement: MTLRenderPipelineState,
         pixelFormat: MTLPixelFormat,
+        glassFragmentTextureOverrides:
+            [Int: MTLTexture] = [:],
         capture: String,
         name: String,
         outputDirectory: URL
@@ -4998,6 +5088,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             commands,
             with: encoder,
             replacingGlassPipeline: replacement,
+            glassFragmentTextureOverrides:
+                glassFragmentTextureOverrides,
             stopAfterGlass: true)
         encoder.endEncoding()
         commandBuffer.commit()
@@ -5161,7 +5253,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 55,
+                "schemaVersion": 56,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -5666,6 +5758,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         preColor0: MTLTexture,
         queue: MTLCommandQueue,
         customPipeline: MTLRenderPipelineState,
+        sampleTracePipeline: MTLRenderPipelineState?,
         capture: String,
         outputDirectory: URL
     ) -> [String: Any] {
@@ -5715,7 +5808,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 suffix:
                     "source-\(pattern.rawValue)-custom",
                 outputDirectory: outputDirectory)
-            records.append([
+            var record: [String: Any] = [
                 "name": pattern.rawValue,
                 "executed":
                     reference["executed"] as? Bool == true
@@ -5727,7 +5820,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     reference: reference,
                     candidate: candidate,
                     outputDirectory: outputDirectory),
-            ])
+            ]
+            if let sampleTracePipeline {
+                record["sampleTrace"] =
+                    replayGlassNumericTrace(
+                        pass: pass,
+                        queue: queue,
+                        replacement: sampleTracePipeline,
+                        pixelFormat: .rgba16Float,
+                        glassFragmentTextureOverrides:
+                            overrides,
+                        capture: capture,
+                        name:
+                            "source-\(pattern.rawValue)-sample",
+                        outputDirectory: outputDirectory)
+            }
+            records.append(record)
             if candidate["executed"] as? Bool != true {
                 break
             }
@@ -6473,6 +6581,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         queue: queue,
                         customPipeline:
                             customProfile.pipeline,
+                        sampleTracePipeline:
+                            pipelineSet.numericTraces
+                                .first(where: {
+                                    $0.name == "sample"
+                                })?.pipeline,
                         capture: capture,
                         outputDirectory: outputDirectory)
                     independentGlassReplay[
@@ -8359,7 +8472,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 55,
+                    "schemaVersion": 56,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8375,7 +8488,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 55,
+            "schemaVersion": 56,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

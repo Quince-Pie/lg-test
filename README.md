@@ -1060,6 +1060,24 @@ square root of magnitude, and reciprocal square root of magnitude. The probe
 adds less than one MiB of evidence, uses the same fast-math compilation mode
 as the independent glass shader, and leaves every prior exact image gate
 unchanged.
+Run `30546775308` returned every schema-55 payload at its declared size and
+retained 28/28 applicable exact image comparisons; the two nonmatching ABI
+controls remain intentionally outside that count. The interpolant trace
+proved binary16 truncation of source coordinates exactly, while the intrinsic
+table proved correctly rounded native half square root and reciprocal square
+root for every finite half input. Comparing the refraction trace exposed two
+compiler contractions: both `amount - curve * amount` and
+`source + shift * displacement` are half FMAs. Applying those measured rules
+reduces the independent AMD refraction trace from 666,227 unequal half values
+to 392.
+Schema 56 localizes the final portable residual without changing the accepted
+pipeline. An RGBA32Uint SDF trace records the float32 oval squared length,
+fast square root, oval distance, and packed curved/final binary16 distances.
+An RGBA16Float sample trace records the sanitized refracted texel before color
+and opacity composition. The latter is rerun against each of the four
+preregistered held-out source textures, so arbitrary spatial phases and mip
+fractions test the recovered sampler independently of raster interpolation
+and downstream color math.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
