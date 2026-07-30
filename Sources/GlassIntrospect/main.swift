@@ -839,6 +839,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         "bounded-depth0-gradient-smoothing3",
         "bounded-depth2-gradient-smoothing3",
         "carenderer-live-tree",
+        "carenderer-local-backdrop",
     ])
 
     private init() {}
@@ -2731,6 +2732,7 @@ private func sdfLayerRenderEvidence(
 private func carendererOutputSnapshot(
     _ texture: MTLTexture,
     commandQueue: MTLCommandQueue,
+    capture: String,
     outputDirectory: URL
 ) -> [String: Any] {
     let width = texture.width
@@ -2799,7 +2801,7 @@ private func carendererOutputSnapshot(
                 by: row * alignedBytesPerRow),
             count: tightBytesPerRow))
     }
-    let filename = "carenderer-live-tree-bgra8.raw"
+    let filename = "\(capture)-bgra8.raw"
     do {
         try raw.write(
             to: outputDirectory.appendingPathComponent(filename),
@@ -2819,6 +2821,7 @@ private func carendererOutputSnapshot(
 private func carendererEvidence(
     rootLayer: CALayer,
     device: MTLDevice,
+    capture: String,
     outputDirectory: URL
 ) -> [String: Any] {
     let bounds = rootLayer.bounds.standardized
@@ -2871,7 +2874,6 @@ private func carendererEvidence(
     renderer.bounds = bounds
 
     CATransaction.flush()
-    let capture = "carenderer-live-tree"
     MetalUniformProbe.shared.beginCapture(capture)
     renderer.beginFrame(
         atTime: CACurrentMediaTime(),
@@ -2905,6 +2907,7 @@ private func carendererEvidence(
         "output": carendererOutputSnapshot(
             output,
             commandQueue: commandQueue,
+            capture: capture,
             outputDirectory: outputDirectory),
         "metalTextureSnapshots":
             MetalUniformProbe.shared.snapshotTextures(
@@ -2914,6 +2917,140 @@ private func carendererEvidence(
             MetalUniformProbe.shared.snapshotBuffers(capture: capture),
         "metalUniformProbe":
             MetalUniformProbe.shared.report(capture: capture),
+    ]
+}
+
+private typealias ObjCBoolGetterFunction =
+    @convention(c) (AnyObject, Selector) -> Bool
+private typealias ObjCBoolSetterFunction =
+    @convention(c) (AnyObject, Selector, Bool) -> Void
+
+private struct LayerBoolMutation {
+    let layer: CALayer
+    let getter: Selector
+    let setter: Selector
+    let originalValue: Bool
+}
+
+private func mutateLayerBool(
+    _ layer: CALayer,
+    getterName: String,
+    setterName: String,
+    value: Bool
+) -> LayerBoolMutation? {
+    let getter = NSSelectorFromString(getterName)
+    let setter = NSSelectorFromString(setterName)
+    guard layer.responds(to: getter),
+          layer.responds(to: setter),
+          let getterMethod = class_getInstanceMethod(
+            type(of: layer),
+            getter),
+          let setterMethod = class_getInstanceMethod(
+            type(of: layer),
+            setter)
+    else {
+        return nil
+    }
+    let getValue = unsafeBitCast(
+        method_getImplementation(getterMethod),
+        to: ObjCBoolGetterFunction.self)
+    let setValue = unsafeBitCast(
+        method_getImplementation(setterMethod),
+        to: ObjCBoolSetterFunction.self)
+    let originalValue = getValue(layer, getter)
+    setValue(layer, setter, value)
+    return LayerBoolMutation(
+        layer: layer,
+        getter: getter,
+        setter: setter,
+        originalValue: originalValue)
+}
+
+private func allLayers(root: CALayer) -> [CALayer] {
+    [root] + (root.sublayers ?? []).flatMap {
+        allLayers(root: $0)
+    }
+}
+
+private func restoreLayerBool(_ mutation: LayerBoolMutation) {
+    guard let method = class_getInstanceMethod(
+        type(of: mutation.layer),
+        mutation.setter)
+    else {
+        return
+    }
+    let setValue = unsafeBitCast(
+        method_getImplementation(method),
+        to: ObjCBoolSetterFunction.self)
+    setValue(
+        mutation.layer,
+        mutation.setter,
+        mutation.originalValue)
+}
+
+private func localBackdropCARendererEvidence(
+    rootLayer: CALayer,
+    device: MTLDevice,
+    outputDirectory: URL
+) -> [String: Any] {
+    var mutations: [LayerBoolMutation] = []
+    if let mutation = mutateLayerBool(
+        rootLayer,
+        getterName:
+            "rasterizationPrefersWindowServerAwareBackdrops",
+        setterName:
+            "setRasterizationPrefersWindowServerAwareBackdrops:",
+        value: false)
+    {
+        mutations.append(mutation)
+    }
+    for layer in allLayers(root: rootLayer) where
+        NSStringFromClass(type(of: layer)) == "CABackdropLayer"
+    {
+        if let mutation = mutateLayerBool(
+            layer,
+            getterName: "windowServerAware",
+            setterName: "setWindowServerAware:",
+            value: false)
+        {
+            mutations.append(mutation)
+        }
+    }
+
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    for layer in allLayers(root: rootLayer) {
+        layer.setNeedsDisplay()
+        layer.setNeedsLayout()
+    }
+    CATransaction.commit()
+    CATransaction.flush()
+
+    let render = carendererEvidence(
+        rootLayer: rootLayer,
+        device: device,
+        capture: "carenderer-local-backdrop",
+        outputDirectory: outputDirectory)
+
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    for mutation in mutations.reversed() {
+        restoreLayerBool(mutation)
+    }
+    CATransaction.commit()
+    CATransaction.flush()
+
+    return [
+        "mutations": mutations.map {
+            [
+                "class": NSStringFromClass(type(of: $0.layer)),
+                "getter": NSStringFromSelector($0.getter),
+                "setter": NSStringFromSelector($0.setter),
+                "originalValue": $0.originalValue,
+                "forcedValue": false,
+            ]
+        },
+        "render": render,
     ]
 }
 
@@ -3041,7 +3178,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 34,
+                    "schemaVersion": 35,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -3057,7 +3194,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 34,
+            "schemaVersion": 35,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -3111,8 +3248,16 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 report["carendererEvidence"] = carendererEvidence(
                     rootLayer: rootLayer,
                     device: device,
+                    capture: "carenderer-live-tree",
                     outputDirectory: outputDirectory)
                 writeProgress("after-carenderer-evidence")
+                report["carendererLocalBackdropEvidence"] =
+                    localBackdropCARendererEvidence(
+                        rootLayer: rootLayer,
+                        device: device,
+                        outputDirectory: outputDirectory)
+                writeProgress(
+                    "after-carenderer-local-backdrop-evidence")
             }
         }
         let inspectedFrameworks = Bundle.allFrameworks.filter {

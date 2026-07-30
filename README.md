@@ -847,6 +847,12 @@ its bytes after the CARenderer completion fence. This captures Core
 Animation's late-filled, 256-byte-aligned uniform slices at the time the GPU
 actually consumes them. It also saves every mip level of each bounded texture
 so an exact compositor replay cannot silently substitute a reconstructed LOD.
+Schema 35 renders a second frame after disabling both the root layer's
+preference for WindowServer-aware backdrop rasterization and the real
+`CABackdropLayer.windowServerAware` flag. The probe preserves and restores
+both values, records every mutation, and captures that forced-local frame
+under a separate name. This distinguishes a cached glass backing image from
+the local producer pipeline without altering the reference frame.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
