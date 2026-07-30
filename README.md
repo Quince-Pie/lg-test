@@ -920,6 +920,16 @@ later used. Independent-fragment execution is disabled for this descriptor
 capture run unless `LG_EXECUTE_INDEPENDENT_GLASS=1`; a prior reconstructed
 descriptor linked successfully but hung the virtual GPU, so exact Apple state
 must be captured before another submission.
+Schema 43 uses that captured descriptor rather than a reconstructed one. The
+live and forced-local records agree that `_Tghz` uses
+`sdf_filter_vert_lph` with a 48-byte float4/float2/float2/half4 layout and
+`glass_background_sdf_no_bleed_lph`—not the bleed-enabled fragment tested by
+schema 41. Color zero uses premultiplied source-over blending; the auxiliary
+pixel-format-115 attachment has a zero write mask. The independent gate now
+tests, in order: an untouched descriptor rebuild, a freshly loaded no-bleed
+fragment, a freshly loaded SDF vertex, both freshly loaded Apple functions,
+and finally the custom raw vertex. Each successful prefix is compared with
+the captured Apple prefix before the next candidate is submitted.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

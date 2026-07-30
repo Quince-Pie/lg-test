@@ -61,6 +61,7 @@ jobs:
         continue-on-error: true
         env:
           MTL_CAPTURE_ENABLED: "1"
+          LG_EXECUTE_INDEPENDENT_GLASS: "1"
         run: |
           if [ "${{ steps.build.outcome }}" = success ]; then
             python3 - <<'PY'

@@ -2368,7 +2368,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 guard let layout =
                         vertexDescriptor.layouts[index],
                       layout.stride != 0
-                        || layout.stepFunction != .constant
                 else {
                     continue
                 }
@@ -3675,7 +3674,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 42,
+            "schemaVersion": 43,
             "capture": capture,
             "phase": phase,
         ]
@@ -3711,7 +3710,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     ) throws -> IndependentGlassPipelineSet {
         writeIndependentGlassProgress(
             capture: capture,
-            phase: "before-vertex-library",
+            phase: "before-independent-libraries",
             outputDirectory: outputDirectory)
         guard let target =
                 pass.descriptor.colorAttachments[0]?.texture
@@ -3725,15 +3724,37 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ])
         }
         let device = target.device
+        let capturedGlassState = pass.commands.compactMap {
+            command -> MTLRenderPipelineState? in
+            guard case .pipeline(let state) = command,
+                  state.label?.contains("_Tghz") == true
+            else {
+                return nil
+            }
+            return state
+        }.first
+        lock.lock()
+        let capturedDescriptor = capturedGlassState.flatMap {
+            pipelineDescriptors[ObjectIdentifier($0)]?
+                .copy() as? MTLRenderPipelineDescriptor
+        }
+        lock.unlock()
+        guard let capturedDescriptor else {
+            throw NSError(
+                domain: "GlassIntrospect.IndependentGlass",
+                code: 2,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "captured Apple glass pipeline descriptor "
+                        + "is unavailable",
+                ])
+        }
+
         let options = MTLCompileOptions()
         options.fastMathEnabled = true
         let vertexLibrary = try device.makeLibrary(
             source: independentGlassVertexSource,
             options: options)
-        writeIndependentGlassProgress(
-            capture: capture,
-            phase: "after-vertex-library",
-            outputDirectory: outputDirectory)
         let quartzCoreLibraryURL = URL(
             fileURLWithPath:
                 "/System/Library/Frameworks/QuartzCore.framework"
@@ -3742,29 +3763,80 @@ private final class MetalUniformProbe: @unchecked Sendable {
             URL: quartzCoreLibraryURL)
         writeIndependentGlassProgress(
             capture: capture,
-            phase: "after-quartzcore-library",
+            phase: "after-independent-libraries",
             outputDirectory: outputDirectory)
-        guard let fragmentFunction =
+        guard let noBleedFragment =
                 quartzCoreLibrary.makeFunction(
-                    name: "glass_background_sdf_lph")
+                    name:
+                        "glass_background_sdf_no_bleed_lph"),
+              let sdfVertex =
+                quartzCoreLibrary.makeFunction(
+                    name: "sdf_filter_vert_lph"),
+              let customRawVertex =
+                vertexLibrary.makeFunction(
+                    name: "glass_vertex_raw")
         else {
             throw NSError(
                 domain: "GlassIntrospect.IndependentGlass",
-                code: 2,
+                code: 3,
                 userInfo: [
                     NSLocalizedDescriptionKey:
-                        "glass_background_sdf_lph is unavailable",
+                        "independent Apple or custom glass "
+                        + "function is unavailable",
                 ])
         }
 
-        let vertexFunctionNames = [
-            "glass_vertex_raw",
-            "glass_vertex_transformed",
-            "glass_vertex_sdf_transformed",
-            "glass_vertex_src_transformed",
-            "glass_vertex_swapped",
-            "glass_vertex_row_matrix",
-        ]
+        func copyCapturedDescriptor()
+            throws -> MTLRenderPipelineDescriptor
+        {
+            guard let copy = capturedDescriptor.copy()
+                    as? MTLRenderPipelineDescriptor
+            else {
+                throw NSError(
+                    domain: "GlassIntrospect.IndependentGlass",
+                    code: 4,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "captured descriptor copy failed",
+                    ])
+            }
+            return copy
+        }
+        var descriptorCandidates: [(
+            name: String,
+            descriptor: MTLRenderPipelineDescriptor
+        )] = []
+        descriptorCandidates.append((
+            name: "captured_descriptor_rebuild",
+            descriptor: try copyCapturedDescriptor()))
+
+        let reloadedFragment = try copyCapturedDescriptor()
+        reloadedFragment.fragmentFunction = noBleedFragment
+        descriptorCandidates.append((
+            name: "reloaded_no_bleed_fragment",
+            descriptor: reloadedFragment))
+
+        let reloadedVertex = try copyCapturedDescriptor()
+        reloadedVertex.vertexFunction = sdfVertex
+        descriptorCandidates.append((
+            name: "reloaded_sdf_vertex",
+            descriptor: reloadedVertex))
+
+        let reloadedBoth = try copyCapturedDescriptor()
+        reloadedBoth.vertexFunction = sdfVertex
+        reloadedBoth.fragmentFunction = noBleedFragment
+        descriptorCandidates.append((
+            name: "reloaded_sdf_vertex_no_bleed_fragment",
+            descriptor: reloadedBoth))
+
+        let customRaw = try copyCapturedDescriptor()
+        customRaw.vertexFunction = customRawVertex
+        customRaw.fragmentFunction = noBleedFragment
+        customRaw.vertexDescriptor = nil
+        descriptorCandidates.append((
+            name: "custom_raw_vertex_no_bleed_fragment",
+            descriptor: customRaw))
+
         var candidates: [(
             name: String,
             pipeline: MTLRenderPipelineState
@@ -3783,10 +3855,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 42,
+                    "schemaVersion": 43,
                     "capture": capture,
-                    "fragmentFunction":
-                        fragmentFunction.name,
+                    "capturedDescriptor":
+                        pipelineDescriptorRecord(
+                            capturedDescriptor),
+                    "reloadedVertexFunction":
+                        sdfVertex.name,
+                    "reloadedFragmentFunction":
+                        noBleedFragment.name,
                     "attachmentFormats":
                         attachmentFormats,
                     "candidates": buildRecords,
@@ -3794,64 +3871,38 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 to: outputDirectory.appendingPathComponent(
                     "independent-glass-pipeline-builds.json"))
         }
-        for functionName in vertexFunctionNames {
+        for candidate in descriptorCandidates {
             writeIndependentGlassProgress(
                 capture: capture,
                 phase: "before-pipeline-build",
-                candidate: functionName,
+                candidate: candidate.name,
                 outputDirectory: outputDirectory)
-            guard let vertexFunction =
-                    vertexLibrary.makeFunction(name: functionName)
-            else {
-                buildRecords.append([
-                    "name": functionName,
-                    "built": false,
-                    "error": "compiled vertex function unavailable",
-                ])
-                checkpointBuildRecords()
-                continue
-            }
-            let descriptor = MTLRenderPipelineDescriptor()
-            descriptor.label =
-                "glass-independent-\(functionName)"
-            descriptor.vertexFunction = vertexFunction
-            descriptor.fragmentFunction = fragmentFunction
-            descriptor.rasterSampleCount = target.sampleCount
-            descriptor.colorAttachments[0].pixelFormat =
-                target.pixelFormat
-            if let color = descriptor.colorAttachments[0] {
-                color.isBlendingEnabled = true
-                color.rgbBlendOperation = .add
-                color.alphaBlendOperation = .add
-                color.sourceRGBBlendFactor = .one
-                color.sourceAlphaBlendFactor = .one
-                color.destinationRGBBlendFactor =
-                    .oneMinusSourceAlpha
-                color.destinationAlphaBlendFactor =
-                    .oneMinusSourceAlpha
-            }
             do {
                 let pipeline =
                     try device.makeRenderPipelineState(
-                        descriptor: descriptor)
+                        descriptor: candidate.descriptor)
                 candidates.append((
-                    name: functionName,
+                    name: candidate.name,
                     pipeline: pipeline))
                 writeIndependentGlassProgress(
                     capture: capture,
                     phase: "after-pipeline-build",
-                    candidate: functionName,
+                    candidate: candidate.name,
                     outputDirectory: outputDirectory)
                 buildRecords.append([
-                    "name": functionName,
+                    "name": candidate.name,
                     "built": true,
                     "pipelineLabel": pipeline.label ?? "",
+                    "descriptor": pipelineDescriptorRecord(
+                        candidate.descriptor),
                 ])
             } catch {
                 buildRecords.append([
-                    "name": functionName,
+                    "name": candidate.name,
                     "built": false,
                     "error": error.localizedDescription,
+                    "descriptor": pipelineDescriptorRecord(
+                        candidate.descriptor),
                 ])
             }
             checkpointBuildRecords()
@@ -3859,7 +3910,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return IndependentGlassPipelineSet(
             candidates: candidates,
             report: [
-                "fragmentFunction": fragmentFunction.name,
+                "capturedDescriptor":
+                    pipelineDescriptorRecord(
+                        capturedDescriptor),
+                "reloadedVertexFunction": sdfVertex.name,
+                "reloadedFragmentFunction":
+                    noBleedFragment.name,
                 "vertexSourceUTF8Bytes":
                     independentGlassVertexSource.utf8.count,
                 "attachmentFormats": attachmentFormats,
@@ -3893,11 +3949,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let descriptor = MTLRenderPassDescriptor()
         var targets: [Int: MTLTexture] = [:]
         for index in 0..<8 {
-            if replacement != nil,
-               index != 0
-            {
-                continue
-            }
             guard let original =
                     pass.descriptor.colorAttachments[index],
                   let source = original.texture
@@ -4003,7 +4054,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 42,
+                "schemaVersion": 43,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -6211,7 +6262,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 42,
+                    "schemaVersion": 43,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -6227,7 +6278,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 42,
+            "schemaVersion": 43,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
