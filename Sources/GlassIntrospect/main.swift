@@ -655,7 +655,7 @@ private typealias ObjCGeneratorFunction =
         Selector,
         AnyObject,
         CGImage
-    ) -> Unmanaged<AnyObject>?
+    ) -> Unmanaged<CGImage>?
 
 private func invokeClassFactory(
     _ cls: AnyClass,
@@ -762,12 +762,12 @@ private func generatedSDFRecord(
         generator,
         selector,
         request,
-        input),
-          let output = unmanaged.takeUnretainedValue() as? CGImage
+        input)
     else {
         record["error"] = "generator returned no image"
         return record
     }
+    let output = unmanaged.takeUnretainedValue()
     record["width"] = output.width
     record["height"] = output.height
     record["bitsPerComponent"] = output.bitsPerComponent
@@ -782,7 +782,7 @@ private func generatedSDFRecord(
         record["error"] = "output data provider has no data"
         return record
     }
-    let bytes = [UInt8](Data(data))
+    let bytes = [UInt8](data as Data)
     let filename = "sdf-generator-\(name).raw"
     do {
         try Data(bytes).write(
