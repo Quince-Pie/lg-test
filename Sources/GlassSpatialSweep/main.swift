@@ -76,6 +76,7 @@ private enum LodSweepMode: Equatable {
     case defaultProfile
     case flatProfile
     case fixedResource
+    case sdfScale
 }
 
 private struct LodCaptureState {
@@ -960,9 +961,76 @@ private func fixedResourceCaptureState(
         ])
 }
 
+private let sdfScaleNumeratorRange = 1638...2048
+private let sdfScaleDenominator = 2048
+private let sdfScaleResourceRadius: Float = 4
+
+private func sdfScaleCaptureState(
+    numerator: Int,
+    index: Int
+) -> LodCaptureState {
+    let scale =
+        Float(numerator) / Float(sdfScaleDenominator)
+    let effectiveRadius =
+        sdfScaleResourceRadius * scale
+    let halfBits = UInt16(0x3400 + numerator)
+    let name = String(
+        format: "sdf-scale-half-%04x",
+        halfBits)
+    let values =
+        identityValues
+        + constantBlurProfileValues(scale: scale)
+        + [
+            (
+                "inputBlurRadius",
+                NSNumber(value: sdfScaleResourceRadius)
+            ),
+        ]
+    return LodCaptureState(
+        name: name,
+        targetNumerator: -1,
+        productionRadius: numerator == sdfScaleDenominator,
+        values: values,
+        manifest: [
+            "index": index,
+            "name": name,
+            "resourceBlurRadius":
+                Double(sdfScaleResourceRadius),
+            "resourceBlurRadiusFloat32Bits": String(
+                format: "%08x",
+                sdfScaleResourceRadius.bitPattern),
+            "constantBlurOpacityScale": Double(scale),
+            "constantBlurOpacityScaleFloat32Bits": String(
+                format: "%08x",
+                scale.bitPattern),
+            "constantBlurOpacityScaleFloat16Bits": String(
+                format: "%04x",
+                halfBits),
+            "constantBlurOpacityScaleNumerator":
+                numerator,
+            "constantBlurOpacityScaleDenominator":
+                sdfScaleDenominator,
+            "targetEffectiveBlurRadius":
+                Double(effectiveRadius),
+            "targetEffectiveBlurRadiusFloat32Bits": String(
+                format: "%08x",
+                effectiveRadius.bitPattern),
+            "productionScale":
+                numerator == sdfScaleDenominator,
+        ])
+}
+
 private func lodCaptureStates(
     mode: LodSweepMode
 ) -> [LodCaptureState] {
+    if mode == .sdfScale {
+        return sdfScaleNumeratorRange.enumerated().map {
+            index, numerator in
+            sdfScaleCaptureState(
+                numerator: numerator,
+                index: index)
+        }
+    }
     if mode != .fixedResource {
         return lodStates.enumerated().map { index, state in
             let values =
@@ -1896,6 +1964,8 @@ private final class SpatialSweepDelegate:
             streamPrefix = "native-flat-lod"
         case .fixedResource:
             streamPrefix = "native-fixed-resource-lod"
+        case .sdfScale:
+            streamPrefix = "native-sdf-scale"
         }
         let controlURL = outputDirectory
             .appendingPathComponent(
@@ -1932,7 +2002,10 @@ private final class SpatialSweepDelegate:
         ]
         if let captureColorSpaceICC {
             let iccPrefix =
-                mode == .fixedResource
+                (
+                    mode == .fixedResource
+                    || mode == .sdfScale
+                )
                 ? streamPrefix
                 : "native-lod"
             let iccURL = outputDirectory
@@ -2027,6 +2100,25 @@ private final class SpatialSweepDelegate:
                     ],
                 ],
             ]
+        case .sdfScale:
+            rigVersion =
+                "native-sdf-scale-sweep-1.0.0"
+            sweepKind =
+                "exhaustive-binary16-opacity-scale-curve"
+            lodDesign = [
+                "states": captureStates.map(\.manifest),
+                "resourceBlurRadius":
+                    sdfScaleResourceRadius,
+                "constantBlurOpacityScaleNumeratorRangeInclusive":
+                    [
+                        sdfScaleNumeratorRange.lowerBound,
+                        sdfScaleNumeratorRange.upperBound,
+                    ],
+                "constantBlurOpacityScaleDenominator":
+                    sdfScaleDenominator,
+                "constantBlurOpacityScaleFloat16BitsRangeInclusive":
+                    ["3a66", "3c00"],
+            ]
         }
         let report: [String: Any] = [
             "schemaVersion": 1,
@@ -2107,6 +2199,19 @@ private final class SpatialSweepDelegate:
                         "held at the resource-group radius",
                     "inputBlurOpacity0Through4":
                         "all held at constantBlurOpacityScale",
+                    "inputInnerRefractionAmount": -60,
+                    "inputOuterRefractionAmount": 160,
+                    "inputRefractionOpacity": 0,
+                ]
+                : NSNull(),
+            "sdfScaleInputs":
+                mode == .sdfScale
+                ? [
+                    "inputBlurRadius":
+                        sdfScaleResourceRadius,
+                    "inputBlurOpacity0Through4":
+                        "all enumerate every binary16 value "
+                        + "from 0x3a66 through 0x3c00",
                     "inputInnerRefractionAmount": -60,
                     "inputOuterRefractionAmount": 160,
                     "inputRefractionOpacity": 0,
@@ -2561,6 +2666,14 @@ private final class SpatialSweepDelegate:
                 try await runLodSweep(
                     workspace: workspace,
                     mode: .flatProfile)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--sdf-scale")
+            {
+                try await runLodSweep(
+                    workspace: workspace,
+                    mode: .sdfScale)
                 return
             }
             if CommandLine.arguments.dropFirst(2)

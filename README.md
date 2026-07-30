@@ -1110,6 +1110,12 @@ identification modes for the private clear-material mip path:
   live values so this mode shares the complex Apple path with the default
   profile. This distinguishes the shader's effective LOD from any upstream
   resource generation keyed by requested radius.
+- `--sdf-scale` holds requested blur radius at four and enumerates every
+  binary16 opacity scale from `0x3a66` (`1638/2048`) through `0x3c00`
+  (`1`). All five blur opacities receive the same exact value, with the live
+  refraction inputs otherwise preserved. This exhaustive catalog inverts the
+  default profile at half-float precision and can therefore test the analytic
+  SDF-to-scale arithmetic without fitting a smooth approximation.
 
 ## What happens after capture
 
