@@ -6,9 +6,33 @@ private let codeCount = 256
 private let pairCount = codeCount * codeCount
 private let fractionCount = 257
 private let fractionRecordCount = pairCount * fractionCount
+private let lodRadiusCount = 130
 private let channelCount = 4
 private let bytesPerHalfPixel = channelCount * 2
 private let bytesPerUnormPixel = channelCount
+
+private let lodRadii: [Float] = {
+    var result = (0...128).map { numerator in
+        switch numerator {
+        case 0:
+            return Float(0)
+        case 64:
+            return Float(2)
+        case 128:
+            return Float(4)
+        default:
+            let centeredLod =
+                (Double(numerator) + 0.25) / 64
+            if numerator < 64 {
+                return Float(
+                    2 * (pow(2, centeredLod) - 1))
+            }
+            return Float(pow(2, centeredLod))
+        }
+    }
+    result.append(1)
+    return result
+}()
 
 private let metalSource = """
 #include <metal_stdlib>
@@ -34,6 +58,12 @@ struct BilinearRecord {
     ushort weight_1_16;
     ushort weight_3_16;
     ushort weight_9_16;
+};
+
+struct LodExpressionRecord {
+    uint radius_bits;
+    ushort argument_bits;
+    ushort lod_bits;
 };
 
 kernel void sampler_probe(
@@ -340,6 +370,28 @@ kernel void sampler_unorm_phase_trilinear_probe(
         }
     }
 }
+
+kernel void sampler_lod_expression_probe(
+    device const float *radii [[buffer(0)]],
+    device LodExpressionRecord *records [[buffer(1)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= 130) {
+        return;
+    }
+
+    float radius_float = radii[index];
+    half radius = half(radius_float);
+    half argument = radius < half(2.0h)
+        ? half(float(radius) * 0.5f + 1.0f)
+        : radius;
+    half lod = max(half(0.0h), log2(argument));
+    LodExpressionRecord record;
+    record.radius_bits = as_type<uint>(radius_float);
+    record.argument_bits = as_type<ushort>(argument);
+    record.lod_bits = as_type<ushort>(lod);
+    records[index] = record;
+}
 """
 
 private enum ProbeError: LocalizedError {
@@ -382,6 +434,12 @@ private struct BilinearRecord {
     let weight1of16: UInt16
     let weight3of16: UInt16
     let weight9of16: UInt16
+}
+
+private struct LodExpressionRecord {
+    let radiusBits: UInt32
+    let argumentBits: UInt16
+    let lodBits: UInt16
 }
 
 private func halfBits(_ code: Int) -> UInt16 {
@@ -827,6 +885,8 @@ private func run(outputDirectory: URL) throws {
           let unormPhaseTrilinearFunction =
             library.makeFunction(
                 name: "sampler_unorm_phase_trilinear_probe"),
+          let lodExpressionFunction = library.makeFunction(
+            name: "sampler_lod_expression_probe"),
           let queue = device.makeCommandQueue()
     else {
         throw ProbeError.resource("library functions or queue")
@@ -848,6 +908,9 @@ private func run(outputDirectory: URL) throws {
     let unormPhaseTrilinearPipeline =
         try device.makeComputePipelineState(
             function: unormPhaseTrilinearFunction)
+    let lodExpressionPipeline =
+        try device.makeComputePipelineState(
+            function: lodExpressionFunction)
     let linearTexture = try makeLinearTexture(device: device)
     let linearUnormTexture = try makeLinearUnormTexture(
         device: device)
@@ -858,6 +921,16 @@ private func run(outputDirectory: URL) throws {
     let mipTexture = try makeMipTexture(device: device)
     let unormMipTexture = try makeUnormMipTexture(
         device: device)
+    guard let lodRadiusBuffer = lodRadii.withUnsafeBufferPointer({
+        buffer in
+        device.makeBuffer(
+            bytes: buffer.baseAddress!,
+            length:
+                buffer.count * MemoryLayout<Float>.stride,
+            options: .storageModeShared)
+    }) else {
+        throw ProbeError.resource("LOD radius buffer")
+    }
 
     let samplerDescriptor = MTLSamplerDescriptor()
     samplerDescriptor.normalizedCoordinates = true
@@ -879,10 +952,13 @@ private func run(outputDirectory: URL) throws {
     let unormMipStride = MemoryLayout<UInt16>.stride
     let unormTrilinearWords = 21
     let unormPhaseTrilinearWords = 48
+    let lodExpressionStride =
+        MemoryLayout<LodExpressionRecord>.stride
     guard stride == 16,
           fractionStride == 4,
           bilinearStride == 6,
           unormMipStride == 2,
+          lodExpressionStride == 8,
           let output = device.makeBuffer(
             length: pairCount * stride,
             options: .storageModeShared),
@@ -909,6 +985,9 @@ private func run(outputDirectory: URL) throws {
                 pairCount
                 * unormPhaseTrilinearWords
                 * unormMipStride,
+            options: .storageModeShared),
+          let lodExpressionOutput = device.makeBuffer(
+            length: lodRadiusCount * lodExpressionStride,
             options: .storageModeShared),
           let commandBuffer = queue.makeCommandBuffer(),
           let encoder = commandBuffer.makeComputeCommandEncoder()
@@ -1090,6 +1169,33 @@ private func run(outputDirectory: URL) throws {
                 depth: 1))
     unormPhaseTrilinearEncoder.endEncoding()
 
+    guard let lodExpressionEncoder =
+        commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource(
+            "LOD expression command encoder")
+    }
+    lodExpressionEncoder.setComputePipelineState(
+        lodExpressionPipeline)
+    lodExpressionEncoder.setBuffer(
+        lodRadiusBuffer,
+        offset: 0,
+        index: 0)
+    lodExpressionEncoder.setBuffer(
+        lodExpressionOutput,
+        offset: 0,
+        index: 1)
+    let lodExpressionWidth =
+        lodExpressionPipeline.threadExecutionWidth
+    lodExpressionEncoder.dispatchThreads(
+        MTLSize(width: lodRadiusCount, height: 1, depth: 1),
+        threadsPerThreadgroup:
+            MTLSize(
+                width: lodExpressionWidth,
+                height: 1,
+                depth: 1))
+    lodExpressionEncoder.endEncoding()
+
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
@@ -1158,9 +1264,18 @@ private func run(outputDirectory: URL) throws {
     try unormPhaseTrilinearBinary.write(
         to: unormPhaseTrilinearBinaryURL,
         options: .atomic)
+    let lodExpressionBinary = Data(
+        bytes: lodExpressionOutput.contents(),
+        count: lodExpressionOutput.length)
+    let lodExpressionBinaryURL =
+        outputDirectory.appendingPathComponent(
+            "sampler-lod-expression.bin")
+    try lodExpressionBinary.write(
+        to: lodExpressionBinaryURL,
+        options: .atomic)
     let manifest: [String: Any] = [
-        "schemaVersion": 6,
-        "rigVersion": "metal-sampler-probe-1.5.0",
+        "schemaVersion": 7,
+        "rigVersion": "metal-sampler-probe-1.6.0",
         "ciCommit":
             ProcessInfo.processInfo.environment["GITHUB_SHA"]
             ?? "local",
@@ -1337,6 +1452,44 @@ private func run(outputDirectory: URL) throws {
             ],
             "lodFraction": "37/64",
             "texturePixelFormat": "rgba8Unorm",
+        ],
+        "lodExpression": [
+            "file": lodExpressionBinaryURL.lastPathComponent,
+            "fileBytes": lodExpressionBinary.count,
+            "fileSha256": sha256(lodExpressionBinary),
+            "recordCount": lodRadiusCount,
+            "recordStrideBytes": lodExpressionStride,
+            "recordFields": [
+                "input_radius_float32_bits",
+                "shader_argument_binary16_bits",
+                "shader_lod_binary16_bits",
+            ],
+            "recordOrder":
+                "LOD bins 0 through 128, then production blur 1",
+            "states": lodRadii.enumerated().map {
+                index, radius in
+                [
+                    "index": index,
+                    "name": index == 129
+                        ? "production-blur-1"
+                        : String(
+                            format: "lod-bin-%03d",
+                            index),
+                    "targetLodNumerator":
+                        index == 129 ? 37 : index,
+                    "targetLodDenominator": 64,
+                    "requestedBlurRadius": Double(radius),
+                    "requestedBlurRadiusFloat32Bits":
+                        String(
+                            format: "%08x",
+                            radius.bitPattern),
+                ] as [String: Any]
+            },
+            "shaderExpression": (
+                "half r = half(radius); "
+                + "half a = r < 2 ? half(float(r) * 0.5 + 1) : r; "
+                + "half lod = max(half(0), log2(a))"
+            ),
         ],
     ]
     let encoded = try JSONSerialization.data(

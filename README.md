@@ -656,6 +656,11 @@ Its fifth revision crosses the real reduced-mip fractional phases—1/8, 3/8,
 5/8, and 7/8—in both axes. Their denominator-64 spatial weights make staged
 endpoint rounding and a fused three-dimensional weighted sum observably
 different.
+Its sixth revision executes the glass shader's exact half-precision blur-to-
+LOD expression on every radius used by the native LOD sweep and on production
+radius one. Raw input, branch-argument, and output bit patterns calibrate the
+capture labels against Metal arithmetic instead of relying on an inverse
+floating-point formula.
 The focused native LOD mode then samples all 129 quantized LOD bins from zero
 through two on five amplitudes, plus an independent duplicate at the real
 production blur radius one. It retains all sixteen reduced-grid phases and
