@@ -872,7 +872,7 @@ inline ReplayProfileStages replay_profile_stages(
     }
     stages.bleed = face;
 
-    const half4 composite =
+    half4 composite =
         uniforms.glass.x86_workaround != half(0.0)
         ? half4(mix(
             float4(shadow_layer),
