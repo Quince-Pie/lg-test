@@ -784,6 +784,10 @@ Float32 deltas, squared length, `fast::rsqrt`, normalized components, and
 Float16 conversion for every final gradient pixel. Their outputs remain
 diagnostic until their last-stage bits match the independently captured Apple
 surfaces.
+Schema 23 makes every blur-trace sample and arithmetic stage a packed `half4`,
+matching the recovered private AIR's vector execution shape before selecting
+the red component for the trace. This distinguishes genuine sampler behavior
+from backend differences introduced by a scalar diagnostic expression.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

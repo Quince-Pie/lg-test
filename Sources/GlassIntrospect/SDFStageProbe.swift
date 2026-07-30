@@ -31,73 +31,73 @@ kernel void sdf_blur_trace(
         (float2(gid) - float2(10.0) + float2(0.5))
         / source_size;
 
-    const half sample_0_minus =
-        source.sample(linear_clamp, coordinate - offsets[0]).r;
-    const half sample_0_plus =
-        source.sample(linear_clamp, coordinate + offsets[0]).r;
-    const half sample_1_minus =
-        source.sample(linear_clamp, coordinate - offsets[1]).r;
-    const half sample_1_plus =
-        source.sample(linear_clamp, coordinate + offsets[1]).r;
-    const half sample_2_minus =
-        source.sample(linear_clamp, coordinate - offsets[2]).r;
-    const half sample_2_plus =
-        source.sample(linear_clamp, coordinate + offsets[2]).r;
-    const half sample_3_minus =
-        source.sample(linear_clamp, coordinate - offsets[3]).r;
-    const half sample_3_plus =
-        source.sample(linear_clamp, coordinate + offsets[3]).r;
-    const half sample_4_minus =
-        source.sample(linear_clamp, coordinate - offsets[4]).r;
-    const half sample_4_plus =
-        source.sample(linear_clamp, coordinate + offsets[4]).r;
+    const half4 sample_0_minus =
+        source.sample(linear_clamp, coordinate - offsets[0]);
+    const half4 sample_0_plus =
+        source.sample(linear_clamp, coordinate + offsets[0]);
+    const half4 sample_1_minus =
+        source.sample(linear_clamp, coordinate - offsets[1]);
+    const half4 sample_1_plus =
+        source.sample(linear_clamp, coordinate + offsets[1]);
+    const half4 sample_2_minus =
+        source.sample(linear_clamp, coordinate - offsets[2]);
+    const half4 sample_2_plus =
+        source.sample(linear_clamp, coordinate + offsets[2]);
+    const half4 sample_3_minus =
+        source.sample(linear_clamp, coordinate - offsets[3]);
+    const half4 sample_3_plus =
+        source.sample(linear_clamp, coordinate + offsets[3]);
+    const half4 sample_4_minus =
+        source.sample(linear_clamp, coordinate - offsets[4]);
+    const half4 sample_4_plus =
+        source.sample(linear_clamp, coordinate + offsets[4]);
 
-    const half pair_0 = sample_0_plus + sample_0_minus;
-    const half pair_1 = sample_1_plus + sample_1_minus;
-    const half pair_2 = sample_2_plus + sample_2_minus;
-    const half pair_3 = sample_3_plus + sample_3_minus;
-    const half pair_4 = sample_4_plus + sample_4_minus;
-    const half term_0 =
+    const half4 pair_0 = sample_0_plus + sample_0_minus;
+    const half4 pair_1 = sample_1_plus + sample_1_minus;
+    const half4 pair_2 = sample_2_plus + sample_2_minus;
+    const half4 pair_3 = sample_3_plus + sample_3_minus;
+    const half4 pair_4 = sample_4_plus + sample_4_minus;
+    const half4 term_0 =
         as_type<half>(weight_bits[0]) * pair_0;
-    const half term_1 =
+    const half4 term_1 =
         as_type<half>(weight_bits[1]) * pair_1;
-    const half term_2 =
+    const half4 term_2 =
         as_type<half>(weight_bits[2]) * pair_2;
-    const half term_3 =
+    const half4 term_3 =
         as_type<half>(weight_bits[3]) * pair_3;
-    const half term_4 =
+    const half4 term_4 =
         as_type<half>(weight_bits[4]) * pair_4;
-    const half stage_0 = term_3 + term_0;
-    const half stage_1 = stage_0 + term_2;
-    const half stage_2 = stage_1 + term_1;
-    const half stage_3 = stage_2 + term_4;
+    const half4 stage_0 = term_3 + term_0;
+    const half4 stage_1 = stage_0 + term_2;
+    const half4 stage_2 = stage_1 + term_1;
+    const half4 stage_3 = stage_2 + term_4;
 
     const uint base =
         (gid.y * blur_width + gid.x) * blur_trace_stride;
-    trace[base + 0] = as_type<ushort>(sample_0_minus);
-    trace[base + 1] = as_type<ushort>(sample_0_plus);
-    trace[base + 2] = as_type<ushort>(sample_1_minus);
-    trace[base + 3] = as_type<ushort>(sample_1_plus);
-    trace[base + 4] = as_type<ushort>(sample_2_minus);
-    trace[base + 5] = as_type<ushort>(sample_2_plus);
-    trace[base + 6] = as_type<ushort>(sample_3_minus);
-    trace[base + 7] = as_type<ushort>(sample_3_plus);
-    trace[base + 8] = as_type<ushort>(sample_4_minus);
-    trace[base + 9] = as_type<ushort>(sample_4_plus);
-    trace[base + 10] = as_type<ushort>(pair_0);
-    trace[base + 11] = as_type<ushort>(pair_1);
-    trace[base + 12] = as_type<ushort>(pair_2);
-    trace[base + 13] = as_type<ushort>(pair_3);
-    trace[base + 14] = as_type<ushort>(pair_4);
-    trace[base + 15] = as_type<ushort>(term_0);
-    trace[base + 16] = as_type<ushort>(term_1);
-    trace[base + 17] = as_type<ushort>(term_2);
-    trace[base + 18] = as_type<ushort>(term_3);
-    trace[base + 19] = as_type<ushort>(term_4);
-    trace[base + 20] = as_type<ushort>(stage_0);
-    trace[base + 21] = as_type<ushort>(stage_1);
-    trace[base + 22] = as_type<ushort>(stage_2);
-    trace[base + 23] = as_type<ushort>(stage_3);
+    trace[base + 0] = as_type<ushort>(sample_0_minus.r);
+    trace[base + 1] = as_type<ushort>(sample_0_plus.r);
+    trace[base + 2] = as_type<ushort>(sample_1_minus.r);
+    trace[base + 3] = as_type<ushort>(sample_1_plus.r);
+    trace[base + 4] = as_type<ushort>(sample_2_minus.r);
+    trace[base + 5] = as_type<ushort>(sample_2_plus.r);
+    trace[base + 6] = as_type<ushort>(sample_3_minus.r);
+    trace[base + 7] = as_type<ushort>(sample_3_plus.r);
+    trace[base + 8] = as_type<ushort>(sample_4_minus.r);
+    trace[base + 9] = as_type<ushort>(sample_4_plus.r);
+    trace[base + 10] = as_type<ushort>(pair_0.r);
+    trace[base + 11] = as_type<ushort>(pair_1.r);
+    trace[base + 12] = as_type<ushort>(pair_2.r);
+    trace[base + 13] = as_type<ushort>(pair_3.r);
+    trace[base + 14] = as_type<ushort>(pair_4.r);
+    trace[base + 15] = as_type<ushort>(term_0.r);
+    trace[base + 16] = as_type<ushort>(term_1.r);
+    trace[base + 17] = as_type<ushort>(term_2.r);
+    trace[base + 18] = as_type<ushort>(term_3.r);
+    trace[base + 19] = as_type<ushort>(term_4.r);
+    trace[base + 20] = as_type<ushort>(stage_0.r);
+    trace[base + 21] = as_type<ushort>(stage_1.r);
+    trace[base + 22] = as_type<ushort>(stage_2.r);
+    trace[base + 23] = as_type<ushort>(stage_3.r);
 }
 
 kernel void sdf_gradient_trace(
