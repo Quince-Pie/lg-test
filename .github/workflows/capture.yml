@@ -132,13 +132,30 @@ jobs:
         id: introspection_build
         continue-on-error: true
         run: |
-          mkdir -p captures/introspection
+          build_root="$RUNNER_TEMP/glass-introspect-build"
+          mkdir -p "$build_root"
           set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o "$build_root/MatrixBridge.o" 2>&1 |
+            tee "$build_root/build.log"
           swiftc -O -parse-as-library \
             -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
             Sources/GlassIntrospect/main.swift \
+            "$build_root/MatrixBridge.o" \
             -o glassintrospect 2>&1 |
-            tee captures/introspection/build.log
+            tee -a "$build_root/build.log"
 
       - name: Capture
         id: capture
@@ -167,6 +184,10 @@ jobs:
           MTL_CAPTURE_ENABLED: "1"
         run: |
           mkdir -p captures/introspection
+          build_log="$RUNNER_TEMP/glass-introspect-build/build.log"
+          if [ -f "$build_log" ]; then
+            cp "$build_log" captures/introspection/build.log
+          fi
           if [ "${{ steps.introspection_build.outcome }}" = success ]; then
             ./glassintrospect captures/introspection ||
               echo "introspection app exited nonzero; retaining diagnostics"
