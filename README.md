@@ -1156,6 +1156,26 @@ identification modes for the private clear-material mip path:
   deterministic source. Exact equality with the two controls distinguishes
   an incorrect coordinate range from values that are accepted by KVC but
   do not invalidate the rendered uniforms.
+- Run `30516866870` falsified the exact `-10000` sentinel while proving that
+  the distance inputs are renderer-live. With the opacity profile fixed at
+  `[0, 1, 1, 1, 1]`, the calibration produces two lossless response classes
+  that differ at every one of 104,976 sampled pixels. Both adjacent sentinel
+  brackets select one class; the live, raw, normalized, and far-positive
+  ranges select the other and match the pinned zero-radius response exactly.
+  The protected 4000-pixel grid is therefore deeper than the 800-pixel
+  introspection layer's `-400` lower distance. Transferring the latter layer's
+  numeric range across sizes was invalid.
+- `--production-kernel` holds requested radius at the real production value
+  one, keeps inactive blur opacities `[0.5, 0.5, 1, 1]` and all five live
+  distances unchanged, and varies only the deep-interior active opacity zero.
+  It scans all 38 sampler LOD bins from zero through the production 37/64
+  fraction, bracketed by two exact opacity-one duplicates. A separate grid-37
+  state must also equal the exact production state; otherwise the resource is
+  not invariant and the capture rejects the fixed-pyramid premise. One
+  constant calibration source, three seeded periodic independent-RGB training
+  sources, and two preregistered holdouts excite all sixteen reduced-grid
+  phases. The holdouts are forbidden during coefficient recovery and require
+  zero unequal native RGB values for acceptance.
 
 ## What happens after capture
 

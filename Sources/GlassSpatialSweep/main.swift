@@ -29,6 +29,7 @@ private let lodAmplitudes = [0, 1, 8, 32, 127]
 private let lodAuditNumerators: Set<Int> = [0, 37, 64, 128]
 private let sdfThresholdSourceLabel = 0
 private let sdfThresholdTileSide = 64
+private let productionKernelTileSide = 64
 private let stripePositions = [
     24, 50, 76, 102,
     400, 426, 452, 478,
@@ -74,6 +75,13 @@ private struct LodState {
     let productionRadius: Bool
 }
 
+private struct ProductionKernelSource {
+    let index: Int
+    let name: String
+    let role: String
+    let seed: UInt32?
+}
+
 private enum LodSweepMode: Equatable {
     case defaultProfile
     case flatProfile
@@ -82,6 +90,7 @@ private enum LodSweepMode: Equatable {
     case pinnedSdfScale
     case sdfThreshold
     case sdfCalibration
+    case productionKernel
 }
 
 private struct LodCaptureState {
@@ -254,6 +263,39 @@ private let kernelSites: [KernelSite] = {
     return result
 }()
 
+private let productionKernelSources: [ProductionKernelSource] = [
+    ProductionKernelSource(
+        index: 0,
+        name: "constant-128-calibration",
+        role: "calibration",
+        seed: nil),
+    ProductionKernelSource(
+        index: 1,
+        name: "broadband-train-243f6a88",
+        role: "train",
+        seed: 0x243f_6a88),
+    ProductionKernelSource(
+        index: 2,
+        name: "broadband-train-85a308d3",
+        role: "train",
+        seed: 0x85a3_08d3),
+    ProductionKernelSource(
+        index: 3,
+        name: "broadband-train-13198a2e",
+        role: "train",
+        seed: 0x1319_8a2e),
+    ProductionKernelSource(
+        index: 4,
+        name: "broadband-holdout-03707344",
+        role: "holdout",
+        seed: 0x0370_7344),
+    ProductionKernelSource(
+        index: 5,
+        name: "broadband-holdout-a4093822",
+        role: "holdout",
+        seed: 0xa409_3822),
+]
+
 private func renderSource(amplitude: Int) -> CGImage {
     precondition((0...127).contains(amplitude))
     var rgba = [UInt8](
@@ -365,6 +407,64 @@ private func renderSdfThresholdSource() -> CGImage {
                         x: x,
                         y: y,
                         channel: channel)
+            }
+            rgba[offset + 3] = 255
+        }
+    }
+    let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+    let provider = CGDataProvider(data: Data(rgba) as CFData)!
+    return CGImage(
+        width: imageWidth,
+        height: imageHeight,
+        bitsPerComponent: 8,
+        bitsPerPixel: 32,
+        bytesPerRow: imageWidth * 4,
+        space: colorSpace,
+        bitmapInfo: CGBitmapInfo(
+            rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),
+        provider: provider,
+        decode: nil,
+        shouldInterpolate: false,
+        intent: .defaultIntent)!
+}
+
+private func productionKernelSourceCode(
+    seed: UInt32,
+    x: Int,
+    y: Int,
+    channel: Int
+) -> UInt8 {
+    var value =
+        UInt32(x & (productionKernelTileSide - 1))
+        | (
+            UInt32(y & (productionKernelTileSide - 1))
+            << 6
+        )
+        | (UInt32(channel) << 12)
+    value ^= seed
+    value = (value ^ (value >> 16)) &* 0x7feb_352d
+    value = (value ^ (value >> 15)) &* 0x846c_a68b
+    value ^= value >> 16
+    return UInt8(16 + Int(value % 224))
+}
+
+private func renderProductionKernelSource(
+    _ definition: ProductionKernelSource
+) -> CGImage {
+    var rgba = [UInt8](
+        repeating: 0,
+        count: imageWidth * imageHeight * 4)
+    for y in 0..<imageHeight {
+        for x in 0..<imageWidth {
+            let offset = (y * imageWidth + x) * 4
+            for channel in 0..<3 {
+                rgba[offset + channel] = definition.seed.map {
+                    productionKernelSourceCode(
+                        seed: $0,
+                        x: x,
+                        y: y,
+                        channel: channel)
+                } ?? UInt8(sourceCode)
             }
             rgba[offset + 3] = 255
         }
@@ -935,6 +1035,24 @@ private func kernelSiteManifest(
     ]
 }
 
+private func productionKernelSourceManifest(
+    _ source: ProductionKernelSource
+) -> [String: Any] {
+    var result: [String: Any] = [
+        "index": source.index,
+        "name": source.name,
+        "role": source.role,
+    ]
+    if let seed = source.seed {
+        result["seedHex"] = String(
+            format: "%08x",
+            seed)
+    } else {
+        result["seedHex"] = NSNull()
+    }
+    return result
+}
+
 private func lodStateManifest(
     _ state: LodState,
     index: Int
@@ -1017,6 +1135,127 @@ private func fixedResourceCaptureState(
             "productionEffectiveRadius":
                 productionEffectiveRadius,
         ])
+}
+
+private func productionKernelCaptureState(
+    activeOpacity: Float,
+    targetNumerator: Int,
+    name: String,
+    index: Int,
+    productionOpacity: Bool
+) -> LodCaptureState {
+    let values =
+        identityValues
+        + [
+            (
+                "inputBlurOpacity0",
+                NSNumber(value: activeOpacity)
+            ),
+            (
+                "inputBlurOpacity1",
+                NSNumber(value: Float(0.5))
+            ),
+            (
+                "inputBlurOpacity2",
+                NSNumber(value: Float(0.5))
+            ),
+            (
+                "inputBlurOpacity3",
+                NSNumber(value: Float(1))
+            ),
+            (
+                "inputBlurOpacity4",
+                NSNumber(value: Float(1))
+            ),
+            (
+                "inputBlurDistance0",
+                NSNumber(value: Float(-400))
+            ),
+            (
+                "inputBlurDistance1",
+                NSNumber(value: Float(-1))
+            ),
+            (
+                "inputBlurDistance2",
+                NSNumber(value: Float(0))
+            ),
+            (
+                "inputBlurDistance3",
+                NSNumber(value: Float(0))
+            ),
+            (
+                "inputBlurDistance4",
+                NSNumber(value: Float(0))
+            ),
+            (
+                "inputInnerRefractionAmount",
+                NSNumber(value: Float(-60))
+            ),
+            (
+                "inputOuterRefractionAmount",
+                NSNumber(value: Float(160))
+            ),
+            (
+                "inputRefractionOpacity",
+                NSNumber(value: Float(0))
+            ),
+            (
+                "inputBlurRadius",
+                NSNumber(value: Float(1))
+            ),
+        ]
+    return LodCaptureState(
+        name: name,
+        targetNumerator: targetNumerator,
+        productionRadius: productionOpacity,
+        values: values,
+        manifest: [
+            "index": index,
+            "name": name,
+            "resourceBlurRadius": 1,
+            "resourceBlurRadiusFloat32Bits": "3f800000",
+            "activeBlurOpacity0": Double(activeOpacity),
+            "activeBlurOpacity0Float32Bits": String(
+                format: "%08x",
+                activeOpacity.bitPattern),
+            "inactiveBlurOpacities1Through4":
+                [0.5, 0.5, 1, 1],
+            "blurDistances": [-400, -1, 0, 0, 0],
+            "targetEffectiveBlurRadius":
+                Double(activeOpacity),
+            "targetEffectiveBlurRadiusFloat32Bits": String(
+                format: "%08x",
+                activeOpacity.bitPattern),
+            "targetLodNumerator": targetNumerator,
+            "targetLodDenominator": 64,
+            "productionOpacity": productionOpacity,
+        ])
+}
+
+private func productionKernelCaptureStates() -> [LodCaptureState] {
+    var result = [
+        productionKernelCaptureState(
+            activeOpacity: 1,
+            targetNumerator: 37,
+            name: "production-opacity-one-leading",
+            index: 0,
+            productionOpacity: true),
+    ]
+    for state in lodStates.prefix(38) {
+        result.append(productionKernelCaptureState(
+            activeOpacity: state.blurRadius,
+            targetNumerator: state.targetNumerator,
+            name: "production-resource-\(state.name)",
+            index: result.count,
+            productionOpacity: false))
+    }
+    result.append(productionKernelCaptureState(
+        activeOpacity: 1,
+        targetNumerator: 37,
+        name: "production-opacity-one-trailing",
+        index: result.count,
+        productionOpacity: true))
+    return result
 }
 
 private let sdfScaleNumeratorRange = 1638...2048
@@ -1335,6 +1574,9 @@ private func sdfCalibrationCaptureState(
 private func lodCaptureStates(
     mode: LodSweepMode
 ) -> [LodCaptureState] {
+    if mode == .productionKernel {
+        return productionKernelCaptureStates()
+    }
     if mode == .sdfCalibration {
         return sdfCalibrationDefinitions.enumerated().map {
             index, definition in
@@ -2086,11 +2328,17 @@ private final class SpatialSweepDelegate:
         mode: LodSweepMode
     ) async throws {
         let captureStates = lodCaptureStates(mode: mode)
-        let captureAmplitudes =
-            mode == .sdfThreshold
-                || mode == .sdfCalibration
-            ? [sdfThresholdSourceLabel]
-            : lodAmplitudes
+        let captureAmplitudes: [Int]
+        if mode == .productionKernel {
+            captureAmplitudes =
+                productionKernelSources.map(\.index)
+        } else if mode == .sdfThreshold
+            || mode == .sdfCalibration
+        {
+            captureAmplitudes = [sdfThresholdSourceLabel]
+        } else {
+            captureAmplitudes = lodAmplitudes
+        }
         let fullReadbacks = mode != .defaultProfile
         var controlStream = Data()
         var lodStream = Data()
@@ -2100,11 +2348,25 @@ private final class SpatialSweepDelegate:
         var captureFormat: [String: Any]?
 
         for amplitude in captureAmplitudes {
-            let source =
-                mode == .sdfThreshold
-                    || mode == .sdfCalibration
-                ? renderSdfThresholdSource()
-                : renderKernelSource(amplitude: amplitude)
+            let source: CGImage
+            if mode == .productionKernel {
+                guard let definition =
+                    productionKernelSources.first(
+                        where: { $0.index == amplitude })
+                else {
+                    throw SweepError.capture(
+                        "production kernel source is missing")
+                }
+                source = renderProductionKernelSource(
+                    definition)
+            } else if mode == .sdfThreshold
+                || mode == .sdfCalibration
+            {
+                source = renderSdfThresholdSource()
+            } else {
+                source = renderKernelSource(
+                    amplitude: amplitude)
+            }
             hostingView.rootView = SpatialSweepView(
                 image: source,
                 glass: false)
@@ -2217,28 +2479,45 @@ private final class SpatialSweepDelegate:
                     capture.backend
                 let stateIndex =
                     state.manifest["index"] as? Int
-                let auditState =
-                    mode == .sdfThreshold
-                        || mode == .sdfCalibration
-                    ? (
+                let auditState: Bool
+                if mode == .sdfThreshold
+                    || mode == .sdfCalibration
+                {
+                    auditState =
                         mode == .sdfCalibration
                         || stateIndex == 0
                         || stateIndex == captureStates.count - 1
-                    )
-                    : (
+                } else if mode == .productionKernel {
+                    auditState =
+                        stateIndex == 0
+                        || stateIndex == 1
+                        || stateIndex == 38
+                        || stateIndex == 39
+                } else {
+                    auditState =
                         amplitude == 127
                         && (
                             lodAuditNumerators.contains(
                                 state.targetNumerator)
                             || state.productionRadius
                         )
-                    )
+                }
                 if auditState {
-                    let fileName =
-                        mode == .sdfThreshold
-                            || mode == .sdfCalibration
-                        ? "\(state.name).png"
-                        : "lod-amplitude-127-\(state.name).png"
+                    let fileName: String
+                    if mode == .sdfThreshold
+                        || mode == .sdfCalibration
+                    {
+                        fileName = "\(state.name).png"
+                    } else if mode == .productionKernel {
+                        fileName = String(
+                            format:
+                                "production-kernel-source-%02d-%@.png",
+                            amplitude,
+                            state.name)
+                    } else {
+                        fileName =
+                            "lod-amplitude-127-\(state.name).png"
+                    }
                     let captureURL = outputDirectory
                         .appendingPathComponent(fileName)
                     try writePNG(
@@ -2267,7 +2546,49 @@ private final class SpatialSweepDelegate:
                 "captureBackend": control.backend,
                 "states": stateRecords,
             ]
-            if mode == .sdfThreshold
+            if mode == .productionKernel {
+                guard let definition =
+                    productionKernelSources.first(
+                        where: { $0.index == amplitude })
+                else {
+                    throw SweepError.capture(
+                        "production kernel source is missing")
+                }
+                record["sourcePatternIndex"] =
+                    definition.index
+                record["sourcePatternName"] =
+                    definition.name
+                record["sourcePatternRole"] =
+                    definition.role
+                if let seed = definition.seed {
+                    record["sourcePatternSeed"] =
+                        String(format: "%08x", seed)
+                } else {
+                    record["sourcePatternSeed"] = NSNull()
+                }
+                let prefix = String(
+                    format:
+                        "production-kernel-source-%02d",
+                    amplitude)
+                let sourceURL = outputDirectory
+                    .appendingPathComponent(
+                        "\(prefix)-source.png")
+                let controlURL = outputDirectory
+                    .appendingPathComponent(
+                        "\(prefix)-control.png")
+                try writePNG(source, to: sourceURL)
+                try writePNG(
+                    control.canonicalImage,
+                    to: controlURL)
+                record["sourceFile"] =
+                    sourceURL.lastPathComponent
+                record["sourceFileSha256"] =
+                    sha256(sourceURL)
+                record["controlFile"] =
+                    controlURL.lastPathComponent
+                record["controlFileSha256"] =
+                    sha256(controlURL)
+            } else if mode == .sdfThreshold
                 || mode == .sdfCalibration
             {
                 record["sourcePatternIndex"] =
@@ -2356,6 +2677,8 @@ private final class SpatialSweepDelegate:
             streamPrefix = "native-sdf-threshold"
         case .sdfCalibration:
             streamPrefix = "native-sdf-calibration"
+        case .productionKernel:
+            streamPrefix = "native-production-kernel"
         }
         let controlURL = outputDirectory
             .appendingPathComponent(
@@ -2373,8 +2696,9 @@ private final class SpatialSweepDelegate:
             "recordOrder":
                 mode == .sdfThreshold
                     || mode == .sdfCalibration
+                    || mode == .productionKernel
                 ? (
-                    "source-pattern order, threshold-state order, "
+                    "source-pattern order, state order, "
                     + "reduced-grid phase row-major, "
                     + "patch y-major then x-major"
                 )
@@ -2392,6 +2716,7 @@ private final class SpatialSweepDelegate:
             "controlRecordOrder":
                 mode == .sdfThreshold
                     || mode == .sdfCalibration
+                    || mode == .productionKernel
                 ? (
                     "source-pattern order, reduced-grid phase "
                     + "row-major, patch y-major then x-major"
@@ -2415,6 +2740,7 @@ private final class SpatialSweepDelegate:
                     || mode == .pinnedSdfScale
                     || mode == .sdfThreshold
                     || mode == .sdfCalibration
+                    || mode == .productionKernel
                 )
                 ? streamPrefix
                 : "native-lod"
@@ -2598,9 +2924,74 @@ private final class SpatialSweepDelegate:
                     "inputRefractionOpacity": 0,
                 ],
             ]
+        case .productionKernel:
+            rigVersion =
+                "native-production-kernel-lod-sweep-1.0.0"
+            sweepKind =
+                "production-profile-fixed-resource-randomized-lod-curve"
+            lodDesign = [
+                "quantizedFractionDenominator": 64,
+                "states": captureStates.map(\.manifest),
+                "stateCount": captureStates.count,
+                "resourceBlurRadius": 1,
+                "leadingProductionStateIndex": 0,
+                "lodGridStateIndexRangeInclusive": [1, 38],
+                "lodGridNumeratorRangeInclusive": [0, 37],
+                "gridThirtySevenStateIndex": 38,
+                "trailingProductionStateIndex": 39,
+                "controlledVariable": "inputBlurOpacity0",
+                "fixedInactiveBlurOpacities1Through4":
+                    [0.5, 0.5, 1, 1],
+                "fixedBlurDistances": [-400, -1, 0, 0, 0],
+                "invarianceChecks": [
+                    "leading and trailing production states must "
+                        + "be byte-identical",
+                    "grid state 37 and exact production opacity "
+                        + "must be byte-identical",
+                    "all 38 grid states must admit one fixed "
+                        + "mip-endpoint pair per sampled value",
+                ],
+            ]
         }
         let sourceDesign: [String: Any]
-        if mode == .sdfThreshold
+        if mode == .productionKernel {
+            sourceDesign = [
+                "kind":
+                    "periodic-independent-rgb-system-identification",
+                "sources":
+                    productionKernelSources.map(
+                        productionKernelSourceManifest),
+                "tileWidthPixels":
+                    productionKernelTileSide,
+                "tileHeightPixels":
+                    productionKernelTileSide,
+                "constantCalibrationCode": sourceCode,
+                "randomChannelCodeRangeInclusive": [16, 239],
+                "alphaCode": 255,
+                "hashOperations": [
+                    "v = tileX | (tileY << 6) "
+                        + "| (channel << 12)",
+                    "v ^= sourceSeed",
+                    "v = (v ^ (v >> 16)) * "
+                        + "0x7feb352d modulo 2^32",
+                    "v = (v ^ (v >> 15)) * "
+                        + "0x846ca68b modulo 2^32",
+                    "v ^= v >> 16",
+                    "code = 16 + (v % 224)",
+                ],
+                "fitPolicy":
+                    "calibration and train roles only",
+                "acceptancePolicy":
+                    "zero unequal native RGB values on both "
+                        + "holdout seeds",
+                "reducedGridPixelSizeSourcePixels": 2,
+                "phasePeriodReducedGridPixels": 4,
+                "patchRadiusPixels": kernelPatchRadius,
+                "patchSidePixels": kernelPatchSide,
+                "sites":
+                    kernelSites.map(kernelSiteManifest),
+            ]
+        } else if mode == .sdfThreshold
             || mode == .sdfCalibration
         {
             sourceDesign = [
@@ -2776,6 +3167,26 @@ private final class SpatialSweepDelegate:
                     "inputInnerRefractionAmount": -60,
                     "inputOuterRefractionAmount": 160,
                     "inputRefractionOpacity": 0,
+                ]
+                : NSNull(),
+            "productionKernelInputs":
+                mode == .productionKernel
+                ? [
+                    "inputBlurRadius": 1,
+                    "inputBlurOpacity0":
+                        "enumerates LOD bins 0 through 37 "
+                        + "with exact production duplicates",
+                    "inputBlurOpacity1Through4":
+                        [0.5, 0.5, 1, 1],
+                    "inputBlurDistance0Through4":
+                        [-400, -1, 0, 0, 0],
+                    "inputInnerRefractionAmount": -60,
+                    "inputOuterRefractionAmount": 160,
+                    "inputRefractionOpacity": 0,
+                    "inputFaceColorMatrixBlack": 0,
+                    "inputFaceColorMatrixWhite": 1,
+                    "inputFaceColorMatrixSaturation": 1,
+                    "inputSDRHoldingToneEnabled": false,
                 ]
                 : NSNull(),
             "captures": records,
@@ -3243,6 +3654,14 @@ private final class SpatialSweepDelegate:
                 try await runLodSweep(
                     workspace: workspace,
                     mode: .sdfCalibration)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--production-kernel")
+            {
+                try await runLodSweep(
+                    workspace: workspace,
+                    mode: .productionKernel)
                 return
             }
             if CommandLine.arguments.dropFirst(2)
