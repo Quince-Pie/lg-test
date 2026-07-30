@@ -657,6 +657,431 @@ private typealias ObjCGeneratorFunction =
         CGImage
     ) -> Unmanaged<CGImage>?
 
+private typealias MetalSetRenderPipelineStateFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        AnyObject
+    ) -> Void
+private typealias MetalSetFragmentBytesFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        UnsafeRawPointer,
+        Int,
+        Int
+    ) -> Void
+private typealias MetalSetFragmentBufferFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        AnyObject?,
+        Int,
+        Int
+    ) -> Void
+
+private func probeSetRenderPipelineState(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ pipelineState: AnyObject
+) {
+    MetalUniformProbe.shared.recordPipelineState(
+        encoder: encoder,
+        pipelineState: pipelineState)
+    MetalUniformProbe.shared.forwardPipelineState(
+        encoder: encoder,
+        selector: selector,
+        pipelineState: pipelineState)
+}
+
+private func probeSetFragmentBytes(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ bytes: UnsafeRawPointer,
+    _ length: Int,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordFragmentBytes(
+        encoder: encoder,
+        bytes: bytes,
+        length: length,
+        index: index)
+    MetalUniformProbe.shared.forwardFragmentBytes(
+        encoder: encoder,
+        selector: selector,
+        bytes: bytes,
+        length: length,
+        index: index)
+}
+
+private func probeSetFragmentBuffer(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ buffer: AnyObject?,
+    _ offset: Int,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordFragmentBuffer(
+        encoder: encoder,
+        buffer: buffer,
+        offset: offset,
+        index: index)
+    MetalUniformProbe.shared.forwardFragmentBuffer(
+        encoder: encoder,
+        selector: selector,
+        buffer: buffer,
+        offset: offset,
+        index: index)
+}
+
+private final class MetalUniformProbe: @unchecked Sendable {
+    static let shared = MetalUniformProbe()
+
+    private let lock = NSLock()
+    private var captureName: String?
+    private var records: [[String: Any]] = []
+    private var droppedRecordCount = 0
+    private var pipelineRecords: [ObjectIdentifier: [String: Any]] = [:]
+    private var originalPipelineState:
+        MetalSetRenderPipelineStateFunction?
+    private var originalFragmentBytes:
+        MetalSetFragmentBytesFunction?
+    private var originalFragmentBuffer:
+        MetalSetFragmentBufferFunction?
+    private let maximumRecordCount = 16_384
+    private let maximumCapturedBytes = 512
+
+    private init() {}
+
+    func install() -> [String: Any] {
+        guard let device = MTLCreateSystemDefaultDevice(),
+              let queue = device.makeCommandQueue(),
+              let commandBuffer = queue.makeCommandBuffer()
+        else {
+            return ["installed": false, "error": "Metal queue unavailable"]
+        }
+        let textureDescriptor = MTLTextureDescriptor
+            .texture2DDescriptor(
+                pixelFormat: .rgba8Unorm,
+                width: 1,
+                height: 1,
+                mipmapped: false)
+        textureDescriptor.usage = [.renderTarget]
+        guard let texture = device.makeTexture(
+            descriptor: textureDescriptor)
+        else {
+            return [
+                "installed": false,
+                "error": "probe render target unavailable",
+            ]
+        }
+        let pass = MTLRenderPassDescriptor()
+        pass.colorAttachments[0].texture = texture
+        pass.colorAttachments[0].loadAction = .dontCare
+        pass.colorAttachments[0].storeAction = .dontCare
+        guard let encoder = commandBuffer.makeRenderCommandEncoder(
+            descriptor: pass),
+              let encoderClass = object_getClass(encoder as AnyObject)
+        else {
+            return [
+                "installed": false,
+                "error": "probe render encoder unavailable",
+            ]
+        }
+
+        var methods: [[String: Any]] = []
+        let pipelineSelector = NSSelectorFromString(
+            "setRenderPipelineState:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            pipelineSelector)
+        {
+            let original = method_getImplementation(method)
+            originalPipelineState = unsafeBitCast(
+                original,
+                to: MetalSetRenderPipelineStateFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetRenderPipelineState
+                    as MetalSetRenderPipelineStateFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                pipelineSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(pipelineSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
+        let bytesSelector = NSSelectorFromString(
+            "setFragmentBytes:length:atIndex:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            bytesSelector)
+        {
+            let original = method_getImplementation(method)
+            originalFragmentBytes = unsafeBitCast(
+                original,
+                to: MetalSetFragmentBytesFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetFragmentBytes as MetalSetFragmentBytesFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                bytesSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(bytesSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
+        let bufferSelector = NSSelectorFromString(
+            "setFragmentBuffer:offset:atIndex:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            bufferSelector)
+        {
+            let original = method_getImplementation(method)
+            originalFragmentBuffer = unsafeBitCast(
+                original,
+                to: MetalSetFragmentBufferFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetFragmentBuffer as MetalSetFragmentBufferFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                bufferSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(bufferSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        return [
+            "installed": methods.count == 3,
+            "encoderClass": NSStringFromClass(encoderClass),
+            "methods": methods,
+        ]
+    }
+
+    func beginCapture(_ name: String) {
+        lock.lock()
+        captureName = name
+        lock.unlock()
+    }
+
+    func endCapture() {
+        lock.lock()
+        captureName = nil
+        lock.unlock()
+    }
+
+    private func appendRecord(_ record: [String: Any]) {
+        if records.count < maximumRecordCount {
+            records.append(record)
+        } else {
+            droppedRecordCount += 1
+        }
+    }
+
+    private func encoderPipeline(
+        _ encoder: AnyObject
+    ) -> [String: Any] {
+        pipelineRecords[ObjectIdentifier(encoder)] ?? [:]
+    }
+
+    private func serializedPayload(
+        _ bytes: [UInt8],
+        className: String
+    ) -> [String: Any] {
+        [
+            "class": className,
+            "lengthBytes": bytes.count,
+            "hex": bytes.map {
+                String(format: "%02x", $0)
+            }.joined(),
+        ]
+    }
+
+    func recordPipelineState(
+        encoder: AnyObject,
+        pipelineState: AnyObject
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard captureName != nil else { return }
+        var record: [String: Any] = [
+            "class": String(reflecting: type(of: pipelineState)),
+            "description": String(describing: pipelineState),
+            "address": String(
+                format: "0x%016llx",
+                UInt64(UInt(bitPattern: Unmanaged
+                    .passUnretained(pipelineState)
+                    .toOpaque()))),
+        ]
+        if let state = pipelineState as? MTLRenderPipelineState,
+           let label = state.label
+        {
+            record["label"] = label
+        }
+        pipelineRecords[ObjectIdentifier(encoder)] = record
+    }
+
+    func recordFragmentBytes(
+        encoder: AnyObject,
+        bytes: UnsafeRawPointer,
+        length: Int,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName,
+              length >= 0,
+              length <= maximumCapturedBytes
+        else {
+            return
+        }
+        let payload = Array(UnsafeRawBufferPointer(
+            start: bytes,
+            count: length))
+        var record = serializedPayload(
+            payload,
+            className: "setFragmentBytes")
+        record["capture"] = captureName
+        record["kind"] = "bytes"
+        record["index"] = index
+        record["pipeline"] = encoderPipeline(encoder)
+        appendRecord(record)
+    }
+
+    func recordFragmentBuffer(
+        encoder: AnyObject,
+        buffer: AnyObject?,
+        offset: Int,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "buffer",
+            "index": index,
+            "offset": offset,
+            "pipeline": encoderPipeline(encoder),
+        ]
+        if let metalBuffer = buffer as? MTLBuffer {
+            record["bufferClass"] =
+                String(reflecting: type(of: metalBuffer))
+            record["bufferLength"] = metalBuffer.length
+            record["storageMode"] = metalBuffer.storageMode.rawValue
+            if metalBuffer.storageMode != .private,
+               offset >= 0,
+               offset <= metalBuffer.length
+            {
+                let available = metalBuffer.length - offset
+                let length = min(available, maximumCapturedBytes)
+                let payload = Array(UnsafeRawBufferPointer(
+                    start: metalBuffer.contents().advanced(by: offset),
+                    count: length))
+                record["payload"] = serializedPayload(
+                    payload,
+                    className: "MTLBuffer prefix")
+            } else if offset < 0
+                || offset > metalBuffer.length
+            {
+                record["payloadError"] = "buffer offset out of bounds"
+            } else if metalBuffer.storageMode == .private {
+                record["payloadUnavailable"] = "private storage"
+            }
+        } else if buffer == nil {
+            record["buffer"] = "nil"
+        } else {
+            record["bufferClass"] =
+                String(reflecting: type(of: buffer!))
+        }
+        appendRecord(record)
+    }
+
+    func forwardPipelineState(
+        encoder: AnyObject,
+        selector: Selector,
+        pipelineState: AnyObject
+    ) {
+        guard let originalPipelineState else { return }
+        originalPipelineState(encoder, selector, pipelineState)
+    }
+
+    func forwardFragmentBytes(
+        encoder: AnyObject,
+        selector: Selector,
+        bytes: UnsafeRawPointer,
+        length: Int,
+        index: Int
+    ) {
+        guard let originalFragmentBytes else { return }
+        originalFragmentBytes(
+            encoder,
+            selector,
+            bytes,
+            length,
+            index)
+    }
+
+    func forwardFragmentBuffer(
+        encoder: AnyObject,
+        selector: Selector,
+        buffer: AnyObject?,
+        offset: Int,
+        index: Int
+    ) {
+        guard let originalFragmentBuffer else { return }
+        originalFragmentBuffer(
+            encoder,
+            selector,
+            buffer,
+            offset,
+            index)
+    }
+
+    func report() -> [String: Any] {
+        lock.lock()
+        defer { lock.unlock() }
+        return [
+            "records": records,
+            "recordCount": records.count,
+            "droppedRecordCount": droppedRecordCount,
+        ]
+    }
+}
+
 private func invokeClassFactory(
     _ cls: AnyClass,
     selector: Selector
@@ -801,6 +1226,8 @@ private func generatedSDFRecord(
             request,
             keys: sdfGeneratorRequestKeys),
     ]
+    MetalUniformProbe.shared.beginCapture(name)
+    defer { MetalUniformProbe.shared.endCapture() }
     writeProgress("before-generator-call")
     let selector = NSSelectorFromString(
         "generateSDFWithRequest:forImage:")
@@ -945,6 +1372,8 @@ private func sdfGeneratorEvidence(
     var record: [String: Any] = [
         "mode": "direct-generation",
         "input": inputRecord,
+        "metalUniformProbeInstall":
+            MetalUniformProbe.shared.install(),
     ]
     guard let defaultRequest = invokeClassFactory(
         requestClass,
@@ -1068,6 +1497,7 @@ private func sdfGeneratorEvidence(
         writePhase("after-\(name)-generation")
     }
     record["captures"] = captures
+    record["metalUniformProbe"] = MetalUniformProbe.shared.report()
     do {
         let checkpoint = try JSONSerialization.data(
             withJSONObject: record,
@@ -1713,7 +2143,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 19,
+                    "schemaVersion": 20,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -1729,7 +2159,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 19,
+            "schemaVersion": 20,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

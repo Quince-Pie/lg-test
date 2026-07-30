@@ -762,6 +762,13 @@ Schema 19 repeats the complete smoothing sweep in Float16 output mode. It
 therefore retains Apple's normalized gradient vectors before UNorm8
 quantization; the bounded probe deadline rises from 45 to 60 seconds to cover
 the fixed additional matrix without allowing an unbounded private call.
+Schema 20 installs a bounded observer on the concrete Metal render-command
+encoder before direct SDF generation. For each named request it retains
+fragment byte payloads up to 512 bytes, shared-buffer prefixes, and the active
+render-pipeline identity. This exposes the exact `NarrowBlurUniforms` offsets
+and weights selected by Apple's host code instead of inferring them from
+quantized output images; the observer forwards every call to the original
+implementation and does not substitute a renderer or shader.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
