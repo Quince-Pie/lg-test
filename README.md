@@ -1030,6 +1030,19 @@ branches: the `mode < 4` rectangle and the `mode > 4` independently rounded
 four-corner shape. Its differential rewrites both signed draw records and
 corner-radius vectors, including a signed-radius case that exercises
 nontrivial ovalization, with and without an observable shadow.
+Run `30543318990` made all four SDF interventions byte-exact across all
+4,194,304 output bytes apiece while retaining the ten exact uniform and four
+exact held-out texture gates. The independently compiled implementation now
+covers every captured SDF dispatch branch. Schema 54 adds two RGBA16Float
+numeric traces to make the exact result portable rather than merely
+Metal-local. The first records distance, normal, and coverage after real
+raster interpolation and derivatives. The second records refracted source
+coordinates, inner shift, and blur. Both use the exact captured vertex
+descriptor, mesh, uniforms, viewport, and scissor, discard the signed
+shadow-only draw, and disable blending. These traces expose every binary16
+value needed to distinguish Apple GPU fast square-root and reciprocal-root
+semantics from arithmetic, interpolation, and sampler differences in a
+Linux/AMD replay.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
