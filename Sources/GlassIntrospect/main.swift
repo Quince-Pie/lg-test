@@ -9629,12 +9629,46 @@ private func variableBlurDownsampleEvidence(
     device: MTLDevice,
     outputDirectory: URL
 ) -> [String: Any] {
+    let filenamePrefix =
+        "sdf-generator-carenderer-live-tree-texture-"
+    let referenceSuffix = "-pf80-448x448-mip-01.raw"
+    let referenceCandidates: [String]
+    do {
+        referenceCandidates = try FileManager.default
+            .contentsOfDirectory(atPath: outputDirectory.path)
+            .filter {
+                $0.hasPrefix(filenamePrefix)
+                    && $0.hasSuffix(referenceSuffix)
+            }
+            .sorted()
+    } catch {
+        return [
+            "schemaVersion": 2,
+            "executed": false,
+            "reason":
+                "raw pyramid discovery failed: "
+                + error.localizedDescription,
+            "referencePrefix": filenamePrefix,
+            "referenceSuffix": referenceSuffix,
+        ]
+    }
+    guard referenceCandidates.count == 1,
+          let referenceFilename = referenceCandidates.first
+    else {
+        return [
+            "schemaVersion": 2,
+            "executed": false,
+            "reason":
+                "expected exactly one captured 448x448 two-level pyramid",
+            "referencePrefix": filenamePrefix,
+            "referenceSuffix": referenceSuffix,
+            "referenceCandidates": referenceCandidates,
+        ]
+    }
+    let mipFilenameSuffix = "-mip-01.raw"
     let sourceFilename =
-        "sdf-generator-carenderer-live-tree-texture-005"
-        + "-pf80-448x448.raw"
-    let referenceFilename =
-        "sdf-generator-carenderer-live-tree-texture-005"
-        + "-pf80-448x448-mip-01.raw"
+        String(referenceFilename.dropLast(mipFilenameSuffix.count))
+        + ".raw"
     let sourceURL = outputDirectory.appendingPathComponent(
         sourceFilename)
     let referenceURL = outputDirectory.appendingPathComponent(
