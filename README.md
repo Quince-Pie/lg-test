@@ -904,7 +904,10 @@ run. Every candidate reuses the exact captured uniform slices, source texture,
 EDR scale, viewport, scissor, mesh, and premultiplied source-over attachment
 state, and is compared with the Apple intermediate over every BGRA8 byte. This
 isolates the vertex/fragment interface without conflating errors from later
-Core Animation draws.
+Core Animation draws. The stage-local reference and every candidate use the
+same shared scratch-target layout on the unified-memory runner and are read
+only after their command-buffer completion fence; this avoids introducing a
+second private-texture blit into the comparison path.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

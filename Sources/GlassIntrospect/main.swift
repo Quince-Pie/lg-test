@@ -3588,6 +3588,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
         }
+        func checkpointBuildRecords() {
+            try? writeJSON(
+                [
+                    "schemaVersion": 41,
+                    "capture": capture,
+                    "fragmentFunction":
+                        fragmentFunction.name,
+                    "attachmentFormats":
+                        attachmentFormats,
+                    "candidates": buildRecords,
+                ],
+                to: outputDirectory.appendingPathComponent(
+                    "independent-glass-pipeline-builds.json"))
+        }
         for functionName in vertexFunctionNames {
             writeIndependentGlassProgress(
                 capture: capture,
@@ -3602,6 +3616,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "built": false,
                     "error": "compiled vertex function unavailable",
                 ])
+                checkpointBuildRecords()
                 continue
             }
             let descriptor = MTLRenderPipelineDescriptor()
@@ -3655,6 +3670,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "error": error.localizedDescription,
                 ])
             }
+            checkpointBuildRecords()
         }
         return IndependentGlassPipelineSet(
             candidates: candidates,
@@ -3715,7 +3731,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     width: source.width,
                     height: source.height,
                     mipmapped: false)
-            textureDescriptor.storageMode = .private
+            textureDescriptor.storageMode =
+                index == 0 ? .shared : .private
             textureDescriptor.usage = [
                 .renderTarget,
                 .shaderRead,
@@ -3795,6 +3812,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
             phase: "after-prefix-wait",
             candidate: suffix,
             outputDirectory: outputDirectory)
+        try? writeJSON(
+            [
+                "schemaVersion": 41,
+                "capture": capture,
+                "candidate": suffix,
+                "commandBufferStatus":
+                    commandBuffer.status.rawValue,
+                "commandBufferError":
+                    commandBuffer.error?
+                        .localizedDescription
+                        ?? "",
+            ],
+            to: outputDirectory.appendingPathComponent(
+                "\(capture)-\(suffix)-status.json"))
         guard commandBuffer.status == .completed else {
             return [
                 "executed": false,
@@ -5501,48 +5532,74 @@ private func carendererOutputSnapshot(
     }
 
     let tightBytesPerRow = width * 4
-    let alignedBytesPerRow = (tightBytesPerRow + 255) & ~255
-    let bufferBytes = alignedBytesPerRow * height
-    guard let buffer = texture.device.makeBuffer(
-            length: bufferBytes,
-            options: .storageModeShared),
-          let commandBuffer = commandQueue.makeCommandBuffer(),
-          let blit = commandBuffer.makeBlitCommandEncoder()
-    else {
-        record["rawCapture"] = false
-        record["reason"] = "CARenderer output blit unavailable"
-        return record
-    }
-    blit.copy(
-        from: texture,
-        sourceSlice: 0,
-        sourceLevel: 0,
-        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-        sourceSize: MTLSize(
-            width: width,
-            height: height,
-            depth: 1),
-        to: buffer,
-        destinationOffset: 0,
-        destinationBytesPerRow: alignedBytesPerRow,
-        destinationBytesPerImage: bufferBytes)
-    blit.endEncoding()
-    commandBuffer.commit()
-    commandBuffer.waitUntilCompleted()
-    guard commandBuffer.status == .completed else {
-        record["rawCapture"] = false
-        record["reason"] =
-            commandBuffer.error?.localizedDescription
-                ?? "CARenderer output blit failed"
-        return record
-    }
+    let raw: Data
+    if texture.storageMode == .shared {
+        var sharedRaw = Data(
+            count: tightBytesPerRow * height)
+        sharedRaw.withUnsafeMutableBytes {
+            (bytes: UnsafeMutableRawBufferPointer) in
+            if let base = bytes.baseAddress {
+                texture.getBytes(
+                    base,
+                    bytesPerRow: tightBytesPerRow,
+                    from: MTLRegionMake2D(
+                        0,
+                        0,
+                        width,
+                        height),
+                    mipmapLevel: 0)
+            }
+        }
+        raw = sharedRaw
+        record["readback"] = "shared-texture-direct"
+    } else {
+        let alignedBytesPerRow =
+            (tightBytesPerRow + 255) & ~255
+        let bufferBytes = alignedBytesPerRow * height
+        guard let buffer = texture.device.makeBuffer(
+                length: bufferBytes,
+                options: .storageModeShared),
+              let commandBuffer = commandQueue.makeCommandBuffer(),
+              let blit = commandBuffer.makeBlitCommandEncoder()
+        else {
+            record["rawCapture"] = false
+            record["reason"] = "CARenderer output blit unavailable"
+            return record
+        }
+        blit.copy(
+            from: texture,
+            sourceSlice: 0,
+            sourceLevel: 0,
+            sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+            sourceSize: MTLSize(
+                width: width,
+                height: height,
+                depth: 1),
+            to: buffer,
+            destinationOffset: 0,
+            destinationBytesPerRow: alignedBytesPerRow,
+            destinationBytesPerImage: bufferBytes)
+        blit.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        guard commandBuffer.status == .completed else {
+            record["rawCapture"] = false
+            record["reason"] =
+                commandBuffer.error?.localizedDescription
+                    ?? "CARenderer output blit failed"
+            return record
+        }
 
-    var raw = Data(capacity: tightBytesPerRow * height)
-    for row in 0..<height {
-        raw.append(Data(
-            bytes: buffer.contents().advanced(
-                by: row * alignedBytesPerRow),
-            count: tightBytesPerRow))
+        var copiedRaw = Data(
+            capacity: tightBytesPerRow * height)
+        for row in 0..<height {
+            copiedRaw.append(Data(
+                bytes: buffer.contents().advanced(
+                    by: row * alignedBytesPerRow),
+                count: tightBytesPerRow))
+        }
+        raw = copiedRaw
+        record["readback"] = "private-texture-blit"
     }
     let filename = "\(capture)-bgra8.raw"
     do {
