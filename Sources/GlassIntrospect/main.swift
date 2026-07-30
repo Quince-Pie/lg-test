@@ -1365,6 +1365,299 @@ fragment uint4 glass_fragment_sample_coordinate_trace(
         packed_ba);
 }
 
+struct ReplayOuterRefractionDiagnostic {
+    half2 coordinates;
+    half shift;
+    half blur;
+    half amount;
+    half4 sample;
+};
+
+inline ReplayOuterRefractionDiagnostic
+replay_outer_refraction_diagnostic(
+    float2 source_uv,
+    half distance,
+    half2 displacement,
+    texture2d<half, access::sample> source_texture,
+    constant ReplayGlassBackgroundUniforms &uniforms)
+{
+    constexpr sampler source_sampler(
+        coord::normalized,
+        address::clamp_to_edge,
+        filter::linear,
+        mip_filter::linear);
+    ReplayOuterRefractionDiagnostic diagnostic;
+    diagnostic.shift = replay_refraction_shift(
+        distance,
+        uniforms.outer_refraction_amount,
+        uniforms.outer_refraction_inv_height);
+    diagnostic.blur = half(
+        uniforms.blur_radius
+        * float(replay_blur_scale(
+            diagnostic.shift + distance,
+            uniforms)));
+    diagnostic.coordinates =
+        half2(source_uv)
+        + half2(diagnostic.shift) * displacement;
+    diagnostic.sample = replay_sanitize_sample(
+        source_texture.sample(
+            source_sampler,
+            float2(diagnostic.coordinates),
+            level(replay_lod(diagnostic.blur))));
+    const float threshold_span =
+        uniforms.refraction_threshold1
+        - uniforms.refraction_threshold0;
+    const float threshold = fma(
+        float(distance),
+        1.0 / threshold_span,
+        -uniforms.refraction_threshold0
+            / threshold_span);
+    diagnostic.amount =
+        uniforms.refraction_opacity
+        * half(saturate(threshold));
+    return diagnostic;
+}
+
+inline half3 replay_primary_refraction_diagnostic(
+    GlassReplayVertexOutput input,
+    constant ReplayGlassBackgroundUniformsSdf &uniforms)
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    const half4 sdf = replay_compute_sdf(
+        input.sdf_uv,
+        mode,
+        uniforms.sdf);
+    const float2 normal = float2(sdf.yz);
+    const half2 displacement = half2(
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.xy)),
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.zw)));
+    return half3(sdf.x, displacement);
+}
+
+fragment half4 glass_fragment_outer_refraction_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return half4(0.0);
+    }
+    const half3 primary =
+        replay_primary_refraction_diagnostic(input, uniforms);
+    const ReplayOuterRefractionDiagnostic diagnostic =
+        replay_outer_refraction_diagnostic(
+            input.src_uv,
+            primary.x,
+            primary.yz,
+            source_texture,
+            uniforms.glass);
+    return half4(
+        diagnostic.coordinates,
+        diagnostic.shift,
+        diagnostic.blur);
+}
+
+fragment half4 glass_fragment_outer_sample_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return half4(0.0);
+    }
+    const half3 primary =
+        replay_primary_refraction_diagnostic(input, uniforms);
+    return replay_outer_refraction_diagnostic(
+        input.src_uv,
+        primary.x,
+        primary.yz,
+        source_texture,
+        uniforms.glass).sample;
+}
+
+fragment half4 glass_fragment_refraction_mix_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return half4(0.0);
+    }
+    const half3 primary =
+        replay_primary_refraction_diagnostic(input, uniforms);
+    const ReplayOuterRefractionDiagnostic diagnostic =
+        replay_outer_refraction_diagnostic(
+            input.src_uv,
+            primary.x,
+            primary.yz,
+            source_texture,
+            uniforms.glass);
+    return half4(
+        primary.x,
+        diagnostic.amount,
+        diagnostic.shift,
+        diagnostic.blur);
+}
+
+struct ReplayEdgeBleedDiagnostic {
+    half2 coordinates;
+    half shift;
+    half lod;
+    half4 sample;
+    half distance_amount;
+    half luminance;
+    half darken;
+    half amount;
+};
+
+inline ReplayEdgeBleedDiagnostic replay_edge_bleed_diagnostic(
+    float2 source_uv,
+    half distance,
+    half2 displacement,
+    half4 current,
+    texture2d<half, access::sample> source_texture,
+    constant ReplayGlassBackgroundUniforms &uniforms)
+{
+    constexpr sampler source_sampler(
+        coord::normalized,
+        address::clamp_to_edge,
+        filter::linear,
+        mip_filter::linear);
+    ReplayEdgeBleedDiagnostic diagnostic;
+    diagnostic.shift = replay_refraction_shift(
+        distance,
+        uniforms.edge_bleed_amount,
+        uniforms.edge_bleed_inv_height);
+    diagnostic.coordinates =
+        half2(source_uv)
+        + half2(diagnostic.shift) * displacement;
+    diagnostic.lod = half(replay_lod(
+        half(uniforms.edge_bleed_blur_radius)));
+    diagnostic.sample = source_texture.sample(
+        source_sampler,
+        float2(diagnostic.coordinates),
+        level(float(diagnostic.lod)));
+    const float lower = float(uniforms.edge_bleed_dist0);
+    const float upper = float(uniforms.edge_bleed_dist1);
+    const float span = upper - lower;
+    diagnostic.distance_amount = half(saturate(fma(
+        float(distance),
+        1.0 / span,
+        -lower / span)));
+    diagnostic.luminance = saturate(dot(
+        current.rgb,
+        half3(
+            replay_half_constant(0x32cd),
+            replay_half_constant(0x39b9),
+            replay_half_constant(0x2c9d))));
+    diagnostic.darken =
+        uniforms.bleed_darken.x * diagnostic.luminance
+        + uniforms.bleed_darken.y;
+    diagnostic.darken *= diagnostic.darken;
+    diagnostic.amount =
+        diagnostic.darken * diagnostic.distance_amount;
+    diagnostic.amount *= diagnostic.amount;
+    diagnostic.amount *= uniforms.edge_bleed_opacity;
+    return diagnostic;
+}
+
+inline ReplayEdgeBleedDiagnostic replay_edge_bleed_diagnostic(
+    GlassReplayVertexOutput input,
+    texture2d<half, access::sample> source_texture,
+    constant ReplayGlassBackgroundUniformsSdf &uniforms,
+    constant half &edr_scale)
+{
+    const ReplayProfileStages stages = replay_profile_stages(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale);
+    const half3 primary =
+        replay_primary_refraction_diagnostic(input, uniforms);
+    return replay_edge_bleed_diagnostic(
+        input.src_uv,
+        primary.x,
+        primary.yz,
+        stages.face,
+        source_texture,
+        uniforms.glass);
+}
+
+fragment half4 glass_fragment_edge_refraction_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0
+        || uniforms.glass.edge_bleed_opacity <= half(0.0))
+    {
+        discard_fragment();
+        return half4(0.0);
+    }
+    const ReplayEdgeBleedDiagnostic diagnostic =
+        replay_edge_bleed_diagnostic(
+            input,
+            source_texture,
+            uniforms,
+            edr_scale);
+    return half4(
+        diagnostic.coordinates,
+        diagnostic.shift,
+        diagnostic.lod);
+}
+
+fragment half4 glass_fragment_edge_sample_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0
+        || uniforms.glass.edge_bleed_opacity <= half(0.0))
+    {
+        discard_fragment();
+        return half4(0.0);
+    }
+    return replay_edge_bleed_diagnostic(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale).sample;
+}
+
+fragment half4 glass_fragment_edge_amount_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0
+        || uniforms.glass.edge_bleed_opacity <= half(0.0))
+    {
+        discard_fragment();
+        return half4(0.0);
+    }
+    const ReplayEdgeBleedDiagnostic diagnostic =
+        replay_edge_bleed_diagnostic(
+            input,
+            source_texture,
+            uniforms,
+            edr_scale);
+    return half4(
+        diagnostic.distance_amount,
+        diagnostic.luminance,
+        diagnostic.darken,
+        diagnostic.amount);
+}
+
 vertex GlassReplayVertexOutput glass_vertex_raw(
     const device GlassReplayVertex *vertices [[buffer(1)]],
     constant float4x4 &mvp [[buffer(2)]],
@@ -6085,7 +6378,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 71,
+            "schemaVersion": 72,
             "capture": capture,
             "phase": phase,
         ]
@@ -6248,7 +6541,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customSampleCoordinateTraceFragment =
                 shaderLibrary.makeFunction(
                     name:
-                        "glass_fragment_sample_coordinate_trace")
+                        "glass_fragment_sample_coordinate_trace"),
+              let customOuterRefractionTraceFragment =
+                shaderLibrary.makeFunction(
+                    name:
+                        "glass_fragment_outer_refraction_trace"),
+              let customOuterSampleTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_outer_sample_trace"),
+              let customRefractionMixTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_refraction_mix_trace"),
+              let customEdgeRefractionTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_edge_refraction_trace"),
+              let customEdgeSampleTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_edge_sample_trace"),
+              let customEdgeAmountTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_edge_amount_trace")
         else {
             throw NSError(
                 domain: "GlassIntrospect.IndependentGlass",
@@ -6335,7 +6647,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 71,
+                    "schemaVersion": 72,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -6464,6 +6776,36 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 name: "sample-coordinate",
                 fragment: customSampleCoordinateTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "outer-refraction",
+                fragment: customOuterRefractionTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "outer-sample",
+                fragment: customOuterSampleTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "refraction-mix",
+                fragment: customRefractionMixTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "edge-refraction",
+                fragment: customEdgeRefractionTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "edge-sample",
+                fragment: customEdgeSampleTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "edge-amount",
+                fragment: customEdgeAmountTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
             ),
         ] {
             let descriptor = try copyCapturedDescriptor()
@@ -6765,7 +7107,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 71,
+                "schemaVersion": 72,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -11104,7 +11446,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 71,
+                    "schemaVersion": 72,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -11120,7 +11462,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 71,
+            "schemaVersion": 72,
             "materialProfileEvidence": [
                 "material": material.rawValue,
                 "requestedAppearance": appearance.rawValue,

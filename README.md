@@ -1261,6 +1261,14 @@ composites that face over the independently computed shadow layer. The
 post-bleed trace is therefore captured before coverage composition. The
 edge-opacity-zero intervention remains an exact control for every stage outside
 that boundary.
+Schema 72 adds independent numeric traces for the two remaining cross-GPU
+translation boundaries without changing the reference or replay shaders. The
+outer-refraction probes record its half-rounded coordinate, shift, blur, raw
+sample, and mix amount. The edge-bleed probes separately record its coordinate,
+shift, LOD, raw sample, distance window, face luminance, darkening term, and
+final opacity. These traces make coordinate arithmetic, fixed-function
+sampling, and half-precision color arithmetic independently falsifiable rather
+than diagnosing them from final pixels.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

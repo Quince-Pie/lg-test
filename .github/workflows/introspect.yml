@@ -669,8 +669,8 @@ jobs:
           root = pathlib.Path("introspection")
           with (root / "runtime.json").open(encoding="utf-8") as stream:
               runtime = json.load(stream)
-          if runtime.get("schemaVersion") != 71:
-              raise SystemExit("introspection schema is not 71")
+          if runtime.get("schemaVersion") != 72:
+              raise SystemExit("introspection schema is not 72")
 
           profile = runtime.get("materialProfileEvidence", {})
           if (
@@ -682,7 +682,7 @@ jobs:
               ) is not True
           ):
               raise SystemExit(
-                  "schema-71 material profile differs: "
+                  "schema-72 material profile differs: "
                   f"{profile}"
               )
 
@@ -696,7 +696,7 @@ jobs:
               or background.get("rows") != 1024
           ):
               raise SystemExit(
-                  "schema-71 diagnostic background metadata differs"
+                  "schema-72 diagnostic background metadata differs"
               )
 
           install = runtime.get("sdfGeneratorEvidence", {}).get(
@@ -733,7 +733,7 @@ jobs:
               )
           ):
               raise SystemExit(
-                  "schema-71 Metal command-provenance hooks differ: "
+                  "schema-72 Metal command-provenance hooks differ: "
                   f"{install}"
               )
 
@@ -766,7 +766,7 @@ jobs:
               or command_provenance["blitEncoderCount"] < 1
           ):
               raise SystemExit(
-                  "schema-71 Metal command provenance differs: "
+                  "schema-72 Metal command provenance differs: "
                   f"{command_provenance}"
               )
 
@@ -791,7 +791,7 @@ jobs:
                   }
               ):
                   raise SystemExit(
-                      "schema-71 clear downsample replay metadata differs"
+                      "schema-72 clear downsample replay metadata differs"
                   )
               candidates_by_name = {
                   candidate["function"]: candidate
@@ -808,7 +808,7 @@ jobs:
                           != 224 * 224 * 8
                   ):
                       raise SystemExit(
-                          "schema-71 clear downsample candidate failed: "
+                          "schema-72 clear downsample candidate failed: "
                           f"{name}: {candidate}"
                       )
                   for record in (candidate, half_trace):
@@ -821,7 +821,7 @@ jobs:
                               != record.get("outputBytes")
                       ):
                           raise SystemExit(
-                              "schema-71 clear downsample payload "
+                              "schema-72 clear downsample payload "
                               f"differs: {path}"
                           )
 
@@ -836,7 +836,7 @@ jobs:
                   if isinstance(candidate, dict)
               } != expected_modes:
                   raise SystemExit(
-                      "schema-71 clear in-place modes differ"
+                      "schema-72 clear in-place modes differ"
                   )
               for candidate in in_place:
                   if (
@@ -851,7 +851,7 @@ jobs:
                           != 224 * 224 * 4
                   ):
                       raise SystemExit(
-                          "schema-71 clear in-place replay failed: "
+                          "schema-72 clear in-place replay failed: "
                           f"{candidate}"
                       )
                   path = root / str(
@@ -863,7 +863,7 @@ jobs:
                           != candidate.get("outputBytes")
                   ):
                       raise SystemExit(
-                          "schema-71 clear in-place payload differs: "
+                          "schema-72 clear in-place payload differs: "
                           f"{path}"
                       )
           else:
@@ -872,7 +872,7 @@ jobs:
                   or downsample.get("executed") is not False
               ):
                   raise SystemExit(
-                      "schema-71 regular downsample classification "
+                      "schema-72 regular downsample classification "
                       f"differs: {downsample}"
                   )
 
@@ -921,7 +921,7 @@ jobs:
                   ) != [20, 20, 1]
               ):
                   raise SystemExit(
-                      "schema-71 regular copy-base topology differs"
+                      "schema-72 regular copy-base topology differs"
                   )
 
               agx2_uniforms = [
@@ -973,7 +973,7 @@ jobs:
                   )
               ):
                   raise SystemExit(
-                      "schema-71 regular AGX2 topology differs"
+                      "schema-72 regular AGX2 topology differs"
                   )
 
           expected_sizes = {
@@ -995,6 +995,18 @@ jobs:
                   1024 * 1024 * 16,
               "carenderer-live-tree-glass-sdf-coverage-numeric-trace-rgba32ui.raw":
                   1024 * 1024 * 16,
+              "carenderer-live-tree-glass-outer-refraction-numeric-trace-rgba16f.raw":
+                  1024 * 1024 * 8,
+              "carenderer-live-tree-glass-outer-sample-numeric-trace-rgba16f.raw":
+                  1024 * 1024 * 8,
+              "carenderer-live-tree-glass-refraction-mix-numeric-trace-rgba16f.raw":
+                  1024 * 1024 * 8,
+              "carenderer-live-tree-glass-edge-refraction-numeric-trace-rgba16f.raw":
+                  1024 * 1024 * 8,
+              "carenderer-live-tree-glass-edge-sample-numeric-trace-rgba16f.raw":
+                  1024 * 1024 * 8,
+              "carenderer-live-tree-glass-edge-amount-numeric-trace-rgba16f.raw":
+                  1024 * 1024 * 8,
               "half-blend-source-conversion-bgra8.raw":
                   256 * 124 * 4,
               "half-blend-alpha-destination-bgra8.raw":
@@ -1022,7 +1034,7 @@ jobs:
               or exact_replay.get("maximumChannelDelta") != 0
           ):
               raise SystemExit(
-                  "schema-71 captured pass replay is not exact: "
+                  "schema-72 captured pass replay is not exact: "
                   f"{exact_replay}"
               )
           independent = exact_replay.get(
@@ -1055,7 +1067,7 @@ jobs:
                   ) != 0
               ):
                   raise SystemExit(
-                      "schema-71 reloaded Apple material is not "
+                      "schema-72 reloaded Apple material is not "
                       f"byte-exact: {candidate_name}: {candidate}"
                   )
           profile_replay = profiles.get(
@@ -1075,7 +1087,7 @@ jobs:
               ) != 0
           ):
               raise SystemExit(
-                  "schema-71 independent material replay is not "
+                  "schema-72 independent material replay is not "
                   "byte-exact: "
                   f"{profile_replay}"
               )
@@ -1151,7 +1163,7 @@ jobs:
                   diagnostic_sources.append(snapshot)
           if len(copy_base_inputs) != 1:
               raise SystemExit(
-                  "schema-71 copy-base input texture is not unique: "
+                  "schema-72 copy-base input texture is not unique: "
                   f"{len(copy_base_inputs)} candidates"
               )
           copy_base_input = copy_base_inputs[0]
@@ -1167,17 +1179,17 @@ jobs:
                   != copy_side * copy_side * 4
           ):
               raise SystemExit(
-                  "schema-71 copy-base input payload differs: "
+                  "schema-72 copy-base input payload differs: "
                   f"{copy_base_input}"
               )
           if len(source_candidates) != 1:
               raise SystemExit(
-                  "schema-71 live backdrop source texture is not unique: "
+                  "schema-72 live backdrop source texture is not unique: "
                   f"{len(source_candidates)} candidates"
               )
           if len(diagnostic_sources) != 1:
               raise SystemExit(
-                  "schema-71 diagnostic source texture is not unique: "
+                  "schema-72 diagnostic source texture is not unique: "
                   f"{len(diagnostic_sources)} candidates"
               )
           diagnostic_path = root / str(
@@ -1192,7 +1204,7 @@ jobs:
                   != 1024 * 1024 * 4
           ):
               raise SystemExit(
-                  "schema-71 diagnostic source payload differs"
+                  "schema-72 diagnostic source payload differs"
               )
 
           levels = {
@@ -1210,7 +1222,7 @@ jobs:
                   or record.get("rawBytes") != expected_size
               ):
                   raise SystemExit(
-                      f"schema-71 backdrop mip {level} metadata differs"
+                      f"schema-72 backdrop mip {level} metadata differs"
                   )
               path = root / str(record.get("rawFile", ""))
               if (
@@ -1218,7 +1230,7 @@ jobs:
                   or path.stat().st_size != expected_size
               ):
                   raise SystemExit(
-                      f"schema-71 backdrop mip {level} payload differs"
+                      f"schema-72 backdrop mip {level} payload differs"
                   )
 
           mip_zero = (
@@ -1230,7 +1242,7 @@ jobs:
           })
           if distinct_rgb < minimum_distinct_rgb:
               raise SystemExit(
-                  "schema-71 backdrop mip zero lacks identification rank: "
+                  "schema-72 backdrop mip zero lacks identification rank: "
                   f"{distinct_rgb} distinct RGB texels"
               )
 
@@ -1265,6 +1277,6 @@ jobs:
                   )
               ):
                   raise SystemExit(
-                      "schema-71 regular downsample-four uniforms differ"
+                      "schema-72 regular downsample-four uniforms differ"
                   )
           PY
