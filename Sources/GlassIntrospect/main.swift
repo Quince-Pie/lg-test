@@ -1493,8 +1493,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
         var colorAttachments: [[String: Any]] = []
         for index in 0..<8 {
-            let attachment = descriptor.colorAttachments[index]
-            guard attachment.texture != nil
+            guard let attachment = descriptor.colorAttachments[index],
+                  attachment.texture != nil
                     || attachment.resolveTexture != nil
             else {
                 continue
