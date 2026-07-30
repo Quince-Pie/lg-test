@@ -1481,6 +1481,38 @@ fragment half4 glass_fragment_outer_sample_trace(
         uniforms.glass).sample;
 }
 
+fragment uint4 glass_fragment_outer_sample_coordinate_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return uint4(0);
+    }
+    const half3 primary =
+        replay_primary_refraction_diagnostic(input, uniforms);
+    const ReplayOuterRefractionDiagnostic diagnostic =
+        replay_outer_refraction_diagnostic(
+            input.src_uv,
+            primary.x,
+            primary.yz,
+            source_texture,
+            uniforms.glass);
+    const float2 coordinates = float2(diagnostic.coordinates);
+    const uint packed_rg =
+        uint(as_type<ushort>(diagnostic.sample.r))
+        | (uint(as_type<ushort>(diagnostic.sample.g)) << 16);
+    const uint packed_ba =
+        uint(as_type<ushort>(diagnostic.sample.b))
+        | (uint(as_type<ushort>(diagnostic.sample.a)) << 16);
+    return uint4(
+        as_type<uint>(coordinates.x),
+        as_type<uint>(coordinates.y),
+        packed_rg,
+        packed_ba);
+}
+
 fragment half4 glass_fragment_refraction_mix_trace(
     GlassReplayVertexOutput input [[stage_in]],
     texture2d<half, access::sample> source_texture [[texture(3)]],
@@ -1631,6 +1663,38 @@ fragment half4 glass_fragment_edge_sample_trace(
         source_texture,
         uniforms,
         edr_scale).sample;
+}
+
+fragment uint4 glass_fragment_edge_sample_coordinate_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0
+        || uniforms.glass.edge_bleed_opacity <= half(0.0))
+    {
+        discard_fragment();
+        return uint4(0);
+    }
+    const ReplayEdgeBleedDiagnostic diagnostic =
+        replay_edge_bleed_diagnostic(
+            input,
+            source_texture,
+            uniforms,
+            edr_scale);
+    const float2 coordinates = float2(diagnostic.coordinates);
+    const uint packed_rg =
+        uint(as_type<ushort>(diagnostic.sample.r))
+        | (uint(as_type<ushort>(diagnostic.sample.g)) << 16);
+    const uint packed_ba =
+        uint(as_type<ushort>(diagnostic.sample.b))
+        | (uint(as_type<ushort>(diagnostic.sample.a)) << 16);
+    return uint4(
+        as_type<uint>(coordinates.x),
+        as_type<uint>(coordinates.y),
+        packed_rg,
+        packed_ba);
 }
 
 fragment half4 glass_fragment_edge_amount_trace(
@@ -6378,7 +6442,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 72,
+            "schemaVersion": 73,
             "capture": capture,
             "phase": phase,
         ]
@@ -6549,6 +6613,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customOuterSampleTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_outer_sample_trace"),
+              let customOuterSampleCoordinateTraceFragment =
+                shaderLibrary.makeFunction(
+                    name:
+                        "glass_fragment_outer_sample_coordinate_trace"),
               let customRefractionMixTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_refraction_mix_trace"),
@@ -6558,6 +6626,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customEdgeSampleTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_edge_sample_trace"),
+              let customEdgeSampleCoordinateTraceFragment =
+                shaderLibrary.makeFunction(
+                    name:
+                        "glass_fragment_edge_sample_coordinate_trace"),
               let customEdgeAmountTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_edge_amount_trace")
@@ -6647,7 +6719,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 72,
+                    "schemaVersion": 73,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -6788,6 +6860,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pixelFormat: MTLPixelFormat.rgba16Float
             ),
             (
+                name: "outer-sample-coordinate",
+                fragment: customOuterSampleCoordinateTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
                 name: "refraction-mix",
                 fragment: customRefractionMixTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba16Float
@@ -6801,6 +6878,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 name: "edge-sample",
                 fragment: customEdgeSampleTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "edge-sample-coordinate",
+                fragment: customEdgeSampleCoordinateTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
             ),
             (
                 name: "edge-amount",
@@ -7107,7 +7189,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 72,
+                "schemaVersion": 73,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -11446,7 +11528,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 72,
+                    "schemaVersion": 73,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -11462,7 +11544,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 72,
+            "schemaVersion": 73,
             "materialProfileEvidence": [
                 "material": material.rawValue,
                 "requestedAppearance": appearance.rawValue,

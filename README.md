@@ -1269,6 +1269,12 @@ shift, LOD, raw sample, distance window, face luminance, darkening term, and
 final opacity. These traces make coordinate arithmetic, fixed-function
 sampling, and half-precision color arithmetic independently falsifiable rather
 than diagnosing them from final pixels.
+Schema 73 adds combined coordinate-and-sample records for both the outer
+refraction and edge-bleed samplers. Each RGBA32UI record stores the exact
+float coordinate bits passed by that compiled fragment together with all four
+binary16 sample-result bits. This prevents optimizer differences between
+separately compiled coordinate and sample diagnostics from being mistaken for
+fixed-function sampler behavior.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
