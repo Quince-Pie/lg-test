@@ -1816,6 +1816,13 @@ are rebased at 32-by-32 tile corners; these paired outputs distinguish
 coefficient setup and tile rebasing from the `iterproj` perspective step
 without inferring either from a final BGRA8 image.
 
+Raster schema 5 adds pull-model perspective and no-perspective interpolants.
+For each fragment it samples basis and arbitrary-endpoint source attributes at
+preregistered 1/16-pixel offsets. The four samples expose tile-local
+coefficient evaluation directly and separate the perspective iterator from
+the affine coefficient register without relying on finite-difference
+derivatives.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

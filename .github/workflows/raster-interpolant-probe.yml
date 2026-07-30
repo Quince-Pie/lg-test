@@ -65,10 +65,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 4:
+          if manifest.get("schemaVersion") != 5:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-4.0.0"
+              "metal-raster-interpolant-probe-5.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -82,9 +82,10 @@ jobs:
               basis_path = root / record["basisVaryingFile"]
               extra_fields = (
                   "basisNoPerspective",
-                  "rasterPosition",
-                  "perspectiveDerivative",
-                  "noPerspectiveDerivative",
+                  "basisPullPerspective",
+                  "basisPullNoPerspectiveX",
+                  "basisPullNoPerspectiveY",
+                  "sourcePullNoPerspective",
               )
               if record["varyingFileBytes"] != expected:
                   raise SystemExit(

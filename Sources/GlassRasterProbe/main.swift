@@ -45,6 +45,31 @@ struct ProbeVertexOutput {
     float3 basisNoPerspective
         [[user(interpolation_basis_noperspective),
           center_no_perspective]];
+    float3 basisPullPerspective
+        [[user(interpolation_basis_pull_perspective)]];
+    float3 basisPullNoPerspective
+        [[user(interpolation_basis_pull_noperspective)]];
+    float2 sourcePullNoPerspective
+        [[user(source_pull_noperspective)]];
+};
+
+struct ProbeFragmentInput {
+    float4 position [[position]];
+    float2 sdf [[user(sdf_uv)]];
+    float2 source [[user(src_uv)]];
+    float3 basis [[user(interpolation_basis)]];
+    float3 basisNoPerspective
+        [[user(interpolation_basis_noperspective),
+          center_no_perspective]];
+    interpolant<float3, interpolation::perspective>
+        basisPullPerspective
+        [[user(interpolation_basis_pull_perspective)]];
+    interpolant<float3, interpolation::no_perspective>
+        basisPullNoPerspective
+        [[user(interpolation_basis_pull_noperspective)]];
+    interpolant<float2, interpolation::no_perspective>
+        sourcePullNoPerspective
+        [[user(source_pull_noperspective)]];
 };
 
 struct ProbeFragmentOutput {
@@ -52,9 +77,10 @@ struct ProbeFragmentOutput {
     uint4 barycentrics [[color(1)]];
     uint4 basis [[color(2)]];
     uint4 basisNoPerspective [[color(3)]];
-    uint4 rasterPosition [[color(4)]];
-    uint4 perspectiveDerivatives [[color(5)]];
-    uint4 noPerspectiveDerivatives [[color(6)]];
+    uint4 basisPullPerspective [[color(4)]];
+    uint4 basisPullNoPerspectiveX [[color(5)]];
+    uint4 basisPullNoPerspectiveY [[color(6)]];
+    uint4 sourcePullNoPerspective [[color(7)]];
 };
 
 vertex ProbeVertexOutput raster_probe_vertex(
@@ -73,11 +99,14 @@ vertex ProbeVertexOutput raster_probe_vertex(
         corner == 1 ? 1.0 : 0.0,
         corner == 2 ? 1.0 : 0.0);
     output.basisNoPerspective = output.basis;
+    output.basisPullPerspective = output.basis;
+    output.basisPullNoPerspective = output.basis;
+    output.sourcePullNoPerspective = output.source;
     return output;
 }
 
 fragment ProbeFragmentOutput raster_probe_fragment(
-    ProbeVertexOutput input [[stage_in]],
+    ProbeFragmentInput input [[stage_in]],
     float3 barycentric [[barycentric_coord]],
     uint primitive_id [[primitive_id]])
 {
@@ -106,21 +135,42 @@ fragment ProbeFragmentOutput raster_probe_fragment(
             input.basisNoPerspective.x
             + input.basisNoPerspective.y
             + input.basisNoPerspective.z));
-    output.rasterPosition = uint4(
-        as_type<uint>(input.position.x),
-        as_type<uint>(input.position.y),
-        as_type<uint>(input.position.z),
-        as_type<uint>(input.position.w));
-    output.perspectiveDerivatives = uint4(
-        as_type<uint>(dfdx(input.basis.x)),
-        as_type<uint>(dfdy(input.basis.z)),
-        as_type<uint>(dfdx(input.source.x)),
-        as_type<uint>(dfdy(input.source.y)));
-    output.noPerspectiveDerivatives = uint4(
-        as_type<uint>(dfdx(input.basisNoPerspective.x)),
-        as_type<uint>(dfdy(input.basisNoPerspective.z)),
-        as_type<uint>(dfdx(input.basisNoPerspective.y)),
-        as_type<uint>(dfdy(input.basisNoPerspective.y)));
+    output.basisPullPerspective = uint4(
+        as_type<uint>(input.basisPullPerspective
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.basisPullPerspective
+            .interpolate_at_offset(float2(0.0625, 0.5)).x),
+        as_type<uint>(input.basisPullPerspective
+            .interpolate_at_offset(float2(0.5, 0.5)).x),
+        as_type<uint>(input.basisPullPerspective
+            .interpolate_at_offset(float2(0.9375, 0.5)).x));
+    output.basisPullNoPerspectiveX = uint4(
+        as_type<uint>(input.basisPullNoPerspective
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.basisPullNoPerspective
+            .interpolate_at_offset(float2(0.0625, 0.5)).x),
+        as_type<uint>(input.basisPullNoPerspective
+            .interpolate_at_offset(float2(0.5, 0.5)).x),
+        as_type<uint>(input.basisPullNoPerspective
+            .interpolate_at_offset(float2(0.9375, 0.5)).x));
+    output.basisPullNoPerspectiveY = uint4(
+        as_type<uint>(input.basisPullNoPerspective
+            .interpolate_at_offset(float2(0.5, 0.0)).z),
+        as_type<uint>(input.basisPullNoPerspective
+            .interpolate_at_offset(float2(0.5, 0.0625)).z),
+        as_type<uint>(input.basisPullNoPerspective
+            .interpolate_at_offset(float2(0.5, 0.5)).z),
+        as_type<uint>(input.basisPullNoPerspective
+            .interpolate_at_offset(float2(0.5, 0.9375)).z));
+    output.sourcePullNoPerspective = uint4(
+        as_type<uint>(input.sourcePullNoPerspective
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.sourcePullNoPerspective
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.sourcePullNoPerspective
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.sourcePullNoPerspective
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
     return output;
 }
 """
@@ -321,9 +371,10 @@ private func render(
     barycentrics: Data,
     basis: Data,
     basisNoPerspective: Data,
-    rasterPosition: Data,
-    perspectiveDerivatives: Data,
-    noPerspectiveDerivatives: Data
+    basisPullPerspective: Data,
+    basisPullNoPerspectiveX: Data,
+    basisPullNoPerspectiveY: Data,
+    sourcePullNoPerspective: Data
 ) {
     let descriptor = MTLTextureDescriptor.texture2DDescriptor(
         pixelFormat: .rgba32Uint,
@@ -340,11 +391,13 @@ private func render(
             descriptor: descriptor),
           let basisNoPerspectiveTexture = device.makeTexture(
             descriptor: descriptor),
-          let rasterPositionTexture = device.makeTexture(
+          let basisPullPerspectiveTexture = device.makeTexture(
             descriptor: descriptor),
-          let perspectiveDerivativeTexture = device.makeTexture(
+          let basisPullNoPerspectiveXTexture = device.makeTexture(
             descriptor: descriptor),
-          let noPerspectiveDerivativeTexture = device.makeTexture(
+          let basisPullNoPerspectiveYTexture = device.makeTexture(
+            descriptor: descriptor),
+          let sourcePullNoPerspectiveTexture = device.makeTexture(
             descriptor: descriptor),
           let commandBuffer = queue.makeCommandBuffer(),
           let encoder = commandBuffer.makeRenderCommandEncoder(
@@ -374,22 +427,28 @@ private func render(
                 pass.colorAttachments[3].clearColor =
                     MTLClearColorMake(0, 0, 0, 0)
                 pass.colorAttachments[4].texture =
-                    rasterPositionTexture
+                    basisPullPerspectiveTexture
                 pass.colorAttachments[4].loadAction = .clear
                 pass.colorAttachments[4].storeAction = .store
                 pass.colorAttachments[4].clearColor =
                     MTLClearColorMake(0, 0, 0, 0)
                 pass.colorAttachments[5].texture =
-                    perspectiveDerivativeTexture
+                    basisPullNoPerspectiveXTexture
                 pass.colorAttachments[5].loadAction = .clear
                 pass.colorAttachments[5].storeAction = .store
                 pass.colorAttachments[5].clearColor =
                     MTLClearColorMake(0, 0, 0, 0)
                 pass.colorAttachments[6].texture =
-                    noPerspectiveDerivativeTexture
+                    basisPullNoPerspectiveYTexture
                 pass.colorAttachments[6].loadAction = .clear
                 pass.colorAttachments[6].storeAction = .store
                 pass.colorAttachments[6].clearColor =
+                    MTLClearColorMake(0, 0, 0, 0)
+                pass.colorAttachments[7].texture =
+                    sourcePullNoPerspectiveTexture
+                pass.colorAttachments[7].loadAction = .clear
+                pass.colorAttachments[7].storeAction = .store
+                pass.colorAttachments[7].clearColor =
                     MTLClearColorMake(0, 0, 0, 0)
                 return pass
             }())
@@ -452,9 +511,10 @@ private func render(
         read(barycentricTexture),
         read(basisTexture),
         read(basisNoPerspectiveTexture),
-        read(rasterPositionTexture),
-        read(perspectiveDerivativeTexture),
-        read(noPerspectiveDerivativeTexture)
+        read(basisPullPerspectiveTexture),
+        read(basisPullNoPerspectiveXTexture),
+        read(basisPullNoPerspectiveYTexture),
+        read(sourcePullNoPerspectiveTexture)
     )
 }
 
@@ -496,6 +556,7 @@ private func run(outputDirectory: URL) throws {
     descriptor.colorAttachments[4].pixelFormat = .rgba32Uint
     descriptor.colorAttachments[5].pixelFormat = .rgba32Uint
     descriptor.colorAttachments[6].pixelFormat = .rgba32Uint
+    descriptor.colorAttachments[7].pixelFormat = .rgba32Uint
     let pipeline = try device.makeRenderPipelineState(
         descriptor: descriptor)
 
@@ -514,12 +575,14 @@ private func run(outputDirectory: URL) throws {
             "\(probe.name)-basis-varyings-rgba32ui.raw"
         let basisNoPerspectiveFilename =
             "\(probe.name)-basis-noperspective-rgba32ui.raw"
-        let rasterPositionFilename =
-            "\(probe.name)-raster-position-rgba32ui.raw"
-        let perspectiveDerivativeFilename =
-            "\(probe.name)-perspective-derivatives-rgba32ui.raw"
-        let noPerspectiveDerivativeFilename =
-            "\(probe.name)-noperspective-derivatives-rgba32ui.raw"
+        let basisPullPerspectiveFilename =
+            "\(probe.name)-basis-pull-perspective-rgba32ui.raw"
+        let basisPullNoPerspectiveXFilename =
+            "\(probe.name)-basis-pull-noperspective-x-rgba32ui.raw"
+        let basisPullNoPerspectiveYFilename =
+            "\(probe.name)-basis-pull-noperspective-y-rgba32ui.raw"
+        let sourcePullNoPerspectiveFilename =
+            "\(probe.name)-source-pull-noperspective-rgba32ui.raw"
         try result.varyings.write(
             to: outputDirectory.appendingPathComponent(
                 varyingFilename),
@@ -536,17 +599,21 @@ private func run(outputDirectory: URL) throws {
             to: outputDirectory.appendingPathComponent(
                 basisNoPerspectiveFilename),
             options: .atomic)
-        try result.rasterPosition.write(
+        try result.basisPullPerspective.write(
             to: outputDirectory.appendingPathComponent(
-                rasterPositionFilename),
+                basisPullPerspectiveFilename),
             options: .atomic)
-        try result.perspectiveDerivatives.write(
+        try result.basisPullNoPerspectiveX.write(
             to: outputDirectory.appendingPathComponent(
-                perspectiveDerivativeFilename),
+                basisPullNoPerspectiveXFilename),
             options: .atomic)
-        try result.noPerspectiveDerivatives.write(
+        try result.basisPullNoPerspectiveY.write(
             to: outputDirectory.appendingPathComponent(
-                noPerspectiveDerivativeFilename),
+                basisPullNoPerspectiveYFilename),
+            options: .atomic)
+        try result.sourcePullNoPerspective.write(
+            to: outputDirectory.appendingPathComponent(
+                sourcePullNoPerspectiveFilename),
             options: .atomic)
         let mvp = matrix(for: probe)
         records.append([
@@ -568,23 +635,30 @@ private func run(outputDirectory: URL) throws {
                 result.basisNoPerspective.count,
             "basisNoPerspectiveFileSha256":
                 sha256(result.basisNoPerspective),
-            "rasterPositionFile": rasterPositionFilename,
-            "rasterPositionFileBytes":
-                result.rasterPosition.count,
-            "rasterPositionFileSha256":
-                sha256(result.rasterPosition),
-            "perspectiveDerivativeFile":
-                perspectiveDerivativeFilename,
-            "perspectiveDerivativeFileBytes":
-                result.perspectiveDerivatives.count,
-            "perspectiveDerivativeFileSha256":
-                sha256(result.perspectiveDerivatives),
-            "noPerspectiveDerivativeFile":
-                noPerspectiveDerivativeFilename,
-            "noPerspectiveDerivativeFileBytes":
-                result.noPerspectiveDerivatives.count,
-            "noPerspectiveDerivativeFileSha256":
-                sha256(result.noPerspectiveDerivatives),
+            "basisPullPerspectiveFile":
+                basisPullPerspectiveFilename,
+            "basisPullPerspectiveFileBytes":
+                result.basisPullPerspective.count,
+            "basisPullPerspectiveFileSha256":
+                sha256(result.basisPullPerspective),
+            "basisPullNoPerspectiveXFile":
+                basisPullNoPerspectiveXFilename,
+            "basisPullNoPerspectiveXFileBytes":
+                result.basisPullNoPerspectiveX.count,
+            "basisPullNoPerspectiveXFileSha256":
+                sha256(result.basisPullNoPerspectiveX),
+            "basisPullNoPerspectiveYFile":
+                basisPullNoPerspectiveYFilename,
+            "basisPullNoPerspectiveYFileBytes":
+                result.basisPullNoPerspectiveY.count,
+            "basisPullNoPerspectiveYFileSha256":
+                sha256(result.basisPullNoPerspectiveY),
+            "sourcePullNoPerspectiveFile":
+                sourcePullNoPerspectiveFilename,
+            "sourcePullNoPerspectiveFileBytes":
+                result.sourcePullNoPerspective.count,
+            "sourcePullNoPerspectiveFileSha256":
+                sha256(result.sourcePullNoPerspective),
             "pixelFormat": MTLPixelFormat.rgba32Uint.rawValue,
             "target": [
                 "width": probe.targetWidth,
@@ -618,8 +692,8 @@ private func run(outputDirectory: URL) throws {
     }
 
     let manifest: [String: Any] = [
-        "schemaVersion": 4,
-        "rigVersion": "metal-raster-interpolant-probe-4.0.0",
+        "schemaVersion": 5,
+        "rigVersion": "metal-raster-interpolant-probe-5.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -639,12 +713,12 @@ private func run(outputDirectory: URL) throws {
                 "three one-hot vertex basis varyings and their sum",
             "basisNoPerspectiveOutput":
                 "center-no-perspective one-hot basis bits and sum",
-            "rasterPositionOutput":
-                "fragment position x/y/z/w float32 bits",
-            "perspectiveDerivativeOutput":
-                "basis x/y and source x/y derivative bits",
-            "noPerspectiveDerivativeOutput":
-                "basis x/y derivative bits",
+            "basisPullPerspectiveOutput":
+                "basis x at four subpixel offsets",
+            "basisPullNoPerspectiveOutput":
+                "basis x/y at four subpixel offsets",
+            "sourcePullNoPerspectiveOutput":
+                "source x/y at two subpixel offsets",
         ],
         "cases": records,
     ]
