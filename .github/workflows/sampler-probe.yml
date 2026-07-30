@@ -57,3 +57,4 @@ jobs:
           test "${{ steps.capture.outcome }}" = success
           test -s sampler-probe/manifest.json
           test -s sampler-probe/sampler-probe.bin
+          test -s sampler-probe/sampler-fraction-grid.bin

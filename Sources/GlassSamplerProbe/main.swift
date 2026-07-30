@@ -4,8 +4,11 @@ import Metal
 
 private let codeCount = 256
 private let pairCount = codeCount * codeCount
+private let fractionCount = 257
+private let fractionRecordCount = pairCount * fractionCount
 private let channelCount = 4
 private let bytesPerHalfPixel = channelCount * 2
+private let bytesPerUnormPixel = channelCount
 
 private let metalSource = """
 #include <metal_stdlib>
@@ -20,6 +23,11 @@ struct ProbeRecord {
     ushort mip_radius_1;
     ushort mip_level_0;
     ushort mip_level_1;
+};
+
+struct FractionRecord {
+    ushort half_float;
+    ushort unorm;
 };
 
 kernel void sampler_probe(
@@ -88,6 +96,42 @@ kernel void sampler_probe(
             level(1.0f)).x);
     records[index] = record;
 }
+
+kernel void sampler_fraction_probe(
+    texture2d<half, access::sample> half_texture [[texture(0)]],
+    texture2d<half, access::sample> unorm_texture [[texture(1)]],
+    sampler linear_sampler [[sampler(0)]],
+    device FractionRecord *records [[buffer(0)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= 16842752) {
+        return;
+    }
+
+    uint fraction = index / 65536;
+    uint pair = index - fraction * 65536;
+    uint input_a = pair >> 8;
+    uint input_b = pair & 255;
+    uint tile_x = input_b * 4;
+    uint tile_y = input_a * 4;
+    float t = float(fraction) / 256.0f;
+    float2 uv = float2(
+        (float(tile_x) + 1.5f + t) / 1024.0f,
+        (float(tile_y) + 1.5f) / 1024.0f);
+
+    FractionRecord record;
+    record.half_float = as_type<ushort>(
+        half_texture.sample(
+            linear_sampler,
+            uv,
+            level(0.0f)).x);
+    record.unorm = as_type<ushort>(
+        unorm_texture.sample(
+            linear_sampler,
+            uv,
+            level(0.0f)).x);
+    records[index] = record;
+}
 """
 
 private enum ProbeError: LocalizedError {
@@ -119,6 +163,11 @@ private struct ProbeRecord {
     let mipRadius1: UInt16
     let mipLevel0: UInt16
     let mipLevel1: UInt16
+}
+
+private struct FractionRecord {
+    let halfFloat: UInt16
+    let unorm: UInt16
 }
 
 private func halfBits(_ code: Int) -> UInt16 {
@@ -200,6 +249,61 @@ private func makeLinearTexture(
         width: width,
         height: height,
         pixels: pixels)
+    return texture
+}
+
+private func makeLinearUnormTexture(
+    device: MTLDevice
+) throws -> MTLTexture {
+    let width = 1024
+    let height = 1024
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .rgba8Unorm,
+        width: width,
+        height: height,
+        mipmapped: false)
+    descriptor.storageMode = .shared
+    descriptor.usage = [.shaderRead]
+    guard let texture = device.makeTexture(
+        descriptor: descriptor)
+    else {
+        throw ProbeError.resource("unorm linear texture")
+    }
+    var pixels = [UInt8](
+        repeating: 0,
+        count: width * height * channelCount)
+    for inputA in 0..<codeCount {
+        for inputB in 0..<codeCount {
+            let tileX = inputB * 4
+            let tileY = inputA * 4
+            for y in 0..<4 {
+                for x in 0..<4 {
+                    let offset =
+                        (
+                            (tileY + y) * width
+                            + tileX + x
+                        ) * channelCount
+                    let value = UInt8(
+                        x < 2 ? inputA : inputB)
+                    pixels[offset] = value
+                    pixels[offset + 1] = value
+                    pixels[offset + 2] = value
+                    pixels[offset + 3] = 255
+                }
+            }
+        }
+    }
+    pixels.withUnsafeBytes { bytes in
+        texture.replace(
+            region: MTLRegionMake2D(
+                0,
+                0,
+                width,
+                height),
+            mipmapLevel: 0,
+            withBytes: bytes.baseAddress!,
+            bytesPerRow: width * bytesPerUnormPixel)
+    }
     return texture
 }
 
@@ -299,13 +403,19 @@ private func run(outputDirectory: URL) throws {
         options: nil)
     guard let function = library.makeFunction(
         name: "sampler_probe"),
+          let fractionFunction = library.makeFunction(
+            name: "sampler_fraction_probe"),
           let queue = device.makeCommandQueue()
     else {
-        throw ProbeError.resource("library function or queue")
+        throw ProbeError.resource("library functions or queue")
     }
     let pipeline = try device.makeComputePipelineState(
         function: function)
+    let fractionPipeline = try device.makeComputePipelineState(
+        function: fractionFunction)
     let linearTexture = try makeLinearTexture(device: device)
+    let linearUnormTexture = try makeLinearUnormTexture(
+        device: device)
     let mipTexture = try makeMipTexture(device: device)
 
     let samplerDescriptor = MTLSamplerDescriptor()
@@ -322,9 +432,14 @@ private func run(outputDirectory: URL) throws {
     }
 
     let stride = MemoryLayout<ProbeRecord>.stride
+    let fractionStride = MemoryLayout<FractionRecord>.stride
     guard stride == 16,
+          fractionStride == 4,
           let output = device.makeBuffer(
             length: pairCount * stride,
+            options: .storageModeShared),
+          let fractionOutput = device.makeBuffer(
+            length: fractionRecordCount * fractionStride,
             options: .storageModeShared),
           let commandBuffer = queue.makeCommandBuffer(),
           let encoder = commandBuffer.makeComputeCommandEncoder()
@@ -342,6 +457,34 @@ private func run(outputDirectory: URL) throws {
         threadsPerThreadgroup:
             MTLSize(width: width, height: 1, depth: 1))
     encoder.endEncoding()
+
+    guard let fractionEncoder =
+        commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource("fraction command encoder")
+    }
+    fractionEncoder.setComputePipelineState(fractionPipeline)
+    fractionEncoder.setTexture(linearTexture, index: 0)
+    fractionEncoder.setTexture(linearUnormTexture, index: 1)
+    fractionEncoder.setSamplerState(sampler, index: 0)
+    fractionEncoder.setBuffer(
+        fractionOutput,
+        offset: 0,
+        index: 0)
+    let fractionWidth =
+        fractionPipeline.threadExecutionWidth
+    fractionEncoder.dispatchThreads(
+        MTLSize(
+            width: fractionRecordCount,
+            height: 1,
+            depth: 1),
+        threadsPerThreadgroup:
+            MTLSize(
+                width: fractionWidth,
+                height: 1,
+                depth: 1))
+    fractionEncoder.endEncoding()
+
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
@@ -356,9 +499,18 @@ private func run(outputDirectory: URL) throws {
     let binaryURL = outputDirectory.appendingPathComponent(
         "sampler-probe.bin")
     try binary.write(to: binaryURL, options: .atomic)
+    let fractionBinary = Data(
+        bytes: fractionOutput.contents(),
+        count: fractionOutput.length)
+    let fractionBinaryURL =
+        outputDirectory.appendingPathComponent(
+            "sampler-fraction-grid.bin")
+    try fractionBinary.write(
+        to: fractionBinaryURL,
+        options: .atomic)
     let manifest: [String: Any] = [
-        "schemaVersion": 1,
-        "rigVersion": "metal-sampler-probe-1.0.0",
+        "schemaVersion": 2,
+        "rigVersion": "metal-sampler-probe-1.1.0",
         "ciCommit":
             ProcessInfo.processInfo.environment["GITHUB_SHA"]
             ?? "local",
@@ -396,6 +548,21 @@ private func run(outputDirectory: URL) throws {
         "binaryFile": binaryURL.lastPathComponent,
         "binaryFileBytes": binary.count,
         "binaryFileSha256": sha256(binary),
+        "fractionGrid": [
+            "file": fractionBinaryURL.lastPathComponent,
+            "fileBytes": fractionBinary.count,
+            "fileSha256": sha256(fractionBinary),
+            "fractionCount": fractionCount,
+            "fractions": "0\/256 through 256\/256 inclusive",
+            "recordCount": fractionRecordCount,
+            "recordOrder":
+                "fraction major, input_a major, input_b minor",
+            "recordStrideBytes": fractionStride,
+            "recordFields": [
+                "rgba16_float_result",
+                "rgba8_unorm_result",
+            ],
+        ],
     ]
     let encoded = try JSONSerialization.data(
         withJSONObject: manifest,

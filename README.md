@@ -636,6 +636,11 @@ as well as the glass shader's binary16 `log2(1.5)` mip blend. It records raw
 `rgba16Float` result bits from the same Apple paravirtual GPU used by the
 reference capture, removing sampler interpolation precision as an assumed
 implementation detail.
+Its second revision also crosses every input pair with all 257 interpolation
+positions from 0/256 through 256/256, recording both `rgba16Float` and
+`rgba8Unorm` texture results. This identifies the GPU's interpolation and LOD
+fraction quantization directly instead of inferring either from rounded
+WindowServer pixels.
 This companion does not alter the capture app, manifest, reference catalog,
 case order, validator, or measurement report. Its output is forensic evidence,
 not a pixel-parity oracle: a trace may be unsupported on the hosted runner,
