@@ -21,6 +21,9 @@ private let patchRadius = 16
 private let patchSide = 2 * patchRadius + 1
 private let amplitudes = Array(0...127)
 private let auditAmplitudes: Set<Int> = [0, 1, 2, 64, 127]
+private let kernelSquareSide = 96
+private let kernelPatchRadius = 40
+private let kernelPatchSide = 2 * kernelPatchRadius + 1
 
 private struct Site {
     let index: Int
@@ -30,6 +33,14 @@ private struct Site {
     let y: Int
     let channel: Int
     let sign: Int
+}
+
+private struct KernelSite {
+    let index: Int
+    let phaseX: Int
+    let phaseY: Int
+    let x: Int
+    let y: Int
 }
 
 private struct SpatialIntervention {
@@ -82,6 +93,21 @@ private let sites: [Site] = {
     return result
 }()
 
+private let kernelSites: [KernelSite] = {
+    var result: [KernelSite] = []
+    for phaseY in 0..<4 {
+        for phaseX in 0..<4 {
+            result.append(KernelSite(
+                index: phaseY * 4 + phaseX,
+                phaseX: phaseX,
+                phaseY: phaseY,
+                x: 112 + phaseX * 226,
+                y: 112 + phaseY * 226))
+        }
+    }
+    return result
+}()
+
 private func renderSource(amplitude: Int) -> CGImage {
     precondition((0...127).contains(amplitude))
     var rgba = [UInt8](
@@ -100,6 +126,47 @@ private func renderSource(amplitude: Int) -> CGImage {
                         + site.x + deltaX
                     ) * 4
                 rgba[offset + site.channel] = UInt8(code)
+            }
+        }
+    }
+    let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+    let provider = CGDataProvider(data: Data(rgba) as CFData)!
+    return CGImage(
+        width: imageWidth,
+        height: imageHeight,
+        bitsPerComponent: 8,
+        bitsPerPixel: 32,
+        bytesPerRow: imageWidth * 4,
+        space: colorSpace,
+        bitmapInfo: CGBitmapInfo(
+            rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),
+        provider: provider,
+        decode: nil,
+        shouldInterpolate: false,
+        intent: .defaultIntent)!
+}
+
+private func renderKernelSource(amplitude: Int) -> CGImage {
+    precondition((0...127).contains(amplitude))
+    var rgba = [UInt8](
+        repeating: UInt8(sourceCode),
+        count: imageWidth * imageHeight * 4)
+    for pixel in 0..<(imageWidth * imageHeight) {
+        rgba[pixel * 4 + 3] = 255
+    }
+    for site in kernelSites {
+        for deltaY in 0..<kernelSquareSide {
+            for deltaX in 0..<kernelSquareSide {
+                let offset =
+                    (
+                        (site.y + deltaY) * imageWidth
+                        + site.x + deltaX
+                    ) * 4
+                rgba[offset] = UInt8(sourceCode + amplitude)
+                rgba[offset + 1] =
+                    UInt8(sourceCode - amplitude)
+                rgba[offset + 2] =
+                    UInt8(sourceCode + amplitude)
             }
         }
     }
@@ -406,6 +473,54 @@ private func patchRGBData(_ pixels: Data) throws -> Data {
     }
 }
 
+private func kernelPatchRGBData(
+    _ pixels: Data
+) throws -> Data {
+    guard pixels.count == imageWidth * imageHeight * 4 else {
+        throw SweepError.conversion
+    }
+    return try pixels.withUnsafeBytes { rawBytes -> Data in
+        guard let source = rawBytes.bindMemory(
+            to: UInt8.self
+        ).baseAddress else {
+            throw SweepError.conversion
+        }
+        var result = Data(
+            count:
+                kernelSites.count
+                * kernelPatchSide * kernelPatchSide * 3)
+        result.withUnsafeMutableBytes { resultBytes in
+            let destination = resultBytes.bindMemory(
+                to: UInt8.self
+            ).baseAddress!
+            var destinationOffset = 0
+            for site in kernelSites {
+                for deltaY in
+                    -kernelPatchRadius...kernelPatchRadius
+                {
+                    for deltaX in
+                        -kernelPatchRadius...kernelPatchRadius
+                    {
+                        let sourceOffset =
+                            (
+                                (site.y + deltaY) * imageWidth
+                                + site.x + deltaX
+                            ) * 4
+                        destination[destinationOffset] =
+                            source[sourceOffset]
+                        destination[destinationOffset + 1] =
+                            source[sourceOffset + 1]
+                        destination[destinationOffset + 2] =
+                            source[sourceOffset + 2]
+                        destinationOffset += 3
+                    }
+                }
+            }
+        }
+        return result
+    }
+}
+
 private func writePNG(_ image: CGImage, to url: URL) throws {
     guard let destination = CGImageDestinationCreateWithURL(
         url as CFURL,
@@ -482,6 +597,20 @@ private func siteManifest(_ site: Site) -> [String: Any] {
         "sourceSign": site.sign,
         "halfGridPhaseY": (site.y / 2) & 1,
         "halfGridPhaseX": (site.x / 2) & 1,
+    ]
+}
+
+private func kernelSiteManifest(
+    _ site: KernelSite
+) -> [String: Any] {
+    [
+        "index": site.index,
+        "x": site.x,
+        "y": site.y,
+        "reducedGridPhaseX": site.phaseX,
+        "reducedGridPhaseY": site.phaseY,
+        "observedReducedGridPhaseX": (site.x / 2) & 3,
+        "observedReducedGridPhaseY": (site.y / 2) & 3,
     ]
 }
 
@@ -604,6 +733,390 @@ private final class SpatialSweepDelegate:
         }
     }
 
+    private func runKernelSweep(
+        workspace: NSWorkspace
+    ) async throws {
+        var controlStream = Data()
+        var clearStream = Data()
+        var interventionStreams = Dictionary(
+            uniqueKeysWithValues: spatialInterventions.map {
+                ($0.name, Data())
+            })
+        var records: [[String: Any]] = []
+        var requiredFormatSignature: String?
+        var captureColorSpaceICC: Data?
+        var captureFormat: [String: Any]?
+
+        for amplitude in amplitudes {
+            let source = renderKernelSource(
+                amplitude: amplitude)
+            hostingView.rootView = SpatialSweepView(
+                image: source,
+                glass: false)
+            let (control, controlSamples) =
+                try await stableCapture(
+                    window,
+                    name: "kernel-a\(amplitude)-control",
+                    settleNanoseconds: 200_000_000)
+
+            hostingView.rootView = SpatialSweepView(
+                image: source,
+                glass: true)
+            let (clear, clearSamples) =
+                try await stableCapture(
+                    window,
+                    name: "kernel-a\(amplitude)-clear",
+                    settleNanoseconds: 450_000_000)
+
+            let (
+                controlSignature,
+                controlICC,
+                controlFormat
+            ) = formatSignature(control)
+            let (clearSignature, _, _) =
+                formatSignature(clear)
+            guard controlSignature == clearSignature else {
+                throw SweepError.environment(
+                    "kernel capture format changed between "
+                        + "control and glass")
+            }
+            if let requiredFormatSignature {
+                guard requiredFormatSignature
+                    == controlSignature
+                else {
+                    throw SweepError.environment(
+                        "kernel capture format changed between "
+                            + "amplitudes")
+                }
+            } else {
+                requiredFormatSignature = controlSignature
+                captureColorSpaceICC = controlICC
+                captureFormat = controlFormat
+            }
+
+            controlStream.append(
+                try kernelPatchRGBData(
+                    control.nativePixels))
+            clearStream.append(
+                try kernelPatchRGBData(
+                    clear.nativePixels))
+
+            guard let rootLayer = window.contentView?.layer,
+                  let target =
+                    glassBackgroundFilter(in: rootLayer)
+            else {
+                throw SweepError.glassFilterMissing
+            }
+            var interventionRecords: [[String: Any]] = []
+            for intervention in spatialInterventions {
+                let stateFilter =
+                    try copiedFilter(target.filter)
+                installFilter(
+                    target: target,
+                    filter: stateFilter,
+                    values: intervention.values)
+                let captureName =
+                    "kernel-a\(amplitude)-"
+                    + intervention.name
+                let (capture, stabilitySamples) =
+                    try await stableCapture(
+                        window,
+                        name: captureName,
+                        settleNanoseconds: 450_000_000)
+                let (signature, _, _) =
+                    formatSignature(capture)
+                guard signature == controlSignature else {
+                    throw SweepError.environment(
+                        "kernel capture format changed during "
+                            + intervention.name)
+                }
+                interventionStreams[
+                    intervention.name,
+                    default: Data()
+                ].append(
+                    try kernelPatchRGBData(
+                        capture.nativePixels))
+
+                var interventionRecord: [String: Any] = [
+                    "name": intervention.name,
+                    "nativePixelSha256":
+                        sha256(capture.nativePixels),
+                    "stabilitySamples": stabilitySamples,
+                    "captureBackend": capture.backend,
+                    "values": Dictionary(
+                        uniqueKeysWithValues:
+                            intervention.values.map {
+                                ($0.key, $0.value)
+                            }),
+                ]
+                if auditAmplitudes.contains(amplitude) {
+                    let prefix = String(
+                        format:
+                            "kernel-amplitude-%03d",
+                        amplitude)
+                    let captureURL = outputDirectory
+                        .appendingPathComponent(
+                            "\(prefix)-"
+                                + "\(intervention.name).png")
+                    try writePNG(
+                        capture.canonicalImage,
+                        to: captureURL)
+                    interventionRecord["file"] =
+                        captureURL.lastPathComponent
+                    interventionRecord["fileSha256"] =
+                        sha256(captureURL)
+                }
+                interventionRecords.append(
+                    interventionRecord)
+            }
+
+            var record: [String: Any] = [
+                "amplitudeCodes": amplitude,
+                "controlCanonicalPixelSha256":
+                    sha256(control.canonicalPixels),
+                "controlNativePixelSha256":
+                    sha256(control.nativePixels),
+                "controlStabilitySamples": controlSamples,
+                "clearCanonicalPixelSha256":
+                    sha256(clear.canonicalPixels),
+                "clearNativePixelSha256":
+                    sha256(clear.nativePixels),
+                "clearStabilitySamples": clearSamples,
+                "captureBackend": clear.backend,
+                "interventions": interventionRecords,
+            ]
+            if auditAmplitudes.contains(amplitude) {
+                let prefix = String(
+                    format: "kernel-amplitude-%03d",
+                    amplitude)
+                let sourceURL = outputDirectory
+                    .appendingPathComponent(
+                        "\(prefix)-source.png")
+                let controlURL = outputDirectory
+                    .appendingPathComponent(
+                        "\(prefix)-control.png")
+                let clearURL = outputDirectory
+                    .appendingPathComponent(
+                        "\(prefix)-clear.png")
+                try writePNG(source, to: sourceURL)
+                try writePNG(
+                    control.canonicalImage,
+                    to: controlURL)
+                try writePNG(
+                    clear.canonicalImage,
+                    to: clearURL)
+                record["sourceFile"] =
+                    sourceURL.lastPathComponent
+                record["sourceFileSha256"] =
+                    sha256(sourceURL)
+                record["controlFile"] =
+                    controlURL.lastPathComponent
+                record["controlFileSha256"] =
+                    sha256(controlURL)
+                record["clearFile"] =
+                    clearURL.lastPathComponent
+                record["clearFileSha256"] =
+                    sha256(clearURL)
+            }
+            records.append(record)
+        }
+
+        guard window.isKeyWindow else {
+            throw SweepError.environment(
+                "kernel capture window lost key status")
+        }
+        let recordCount =
+            amplitudes.count * kernelSites.count
+            * kernelPatchSide * kernelPatchSide
+        let expectedStreamBytes = recordCount * 3
+        guard controlStream.count == expectedStreamBytes,
+              clearStream.count == expectedStreamBytes,
+              spatialInterventions.allSatisfy({
+                  interventionStreams[$0.name]?.count
+                      == expectedStreamBytes
+              })
+        else {
+            throw SweepError.capture(
+                "native kernel stream length differs")
+        }
+        let controlURL = outputDirectory
+            .appendingPathComponent(
+                "native-kernel-control-patches.rgb8")
+        let clearURL = outputDirectory
+            .appendingPathComponent(
+                "native-kernel-clear-patches.rgb8")
+        try controlStream.write(
+            to: controlURL,
+            options: .atomic)
+        try clearStream.write(
+            to: clearURL,
+            options: .atomic)
+
+        var interventionEvidence: [[String: Any]] = []
+        for intervention in spatialInterventions {
+            guard let stream =
+                    interventionStreams[intervention.name]
+            else {
+                throw SweepError.capture(
+                    "missing kernel "
+                        + intervention.name + " stream")
+            }
+            let url = outputDirectory.appendingPathComponent(
+                "native-kernel-\(intervention.name)"
+                    + "-patches.rgb8")
+            try stream.write(to: url, options: .atomic)
+            interventionEvidence.append([
+                "name": intervention.name,
+                "file": url.lastPathComponent,
+                "fileSha256": sha256(stream),
+                "fileBytes": stream.count,
+                "values": Dictionary(
+                    uniqueKeysWithValues:
+                        intervention.values.map {
+                            ($0.key, $0.value)
+                        }),
+            ])
+        }
+
+        var nativeEvidence: [String: Any] = [
+            "schemaVersion": 1,
+            "recordOrder":
+                "amplitude ascending, reduced-grid phase "
+                + "row-major, patch y-major then x-major",
+            "recordFormat": "RGB8",
+            "recordStrideBytes": 3,
+            "recordCount": recordCount,
+            "controlFile": controlURL.lastPathComponent,
+            "controlFileSha256": sha256(controlStream),
+            "controlFileBytes": controlStream.count,
+            "clearFile": clearURL.lastPathComponent,
+            "clearFileSha256": sha256(clearStream),
+            "clearFileBytes": clearStream.count,
+            "interventions": interventionEvidence,
+            "captureFormat":
+                captureFormat as Any? ?? NSNull(),
+        ]
+        if let captureColorSpaceICC {
+            let iccURL = outputDirectory
+                .appendingPathComponent(
+                    "native-kernel-capture-colorspace.icc")
+            try captureColorSpaceICC.write(
+                to: iccURL,
+                options: .atomic)
+            nativeEvidence["iccFile"] =
+                iccURL.lastPathComponent
+            nativeEvidence["iccFileSha256"] =
+                sha256(captureColorSpaceICC)
+            nativeEvidence["iccFileBytes"] =
+                captureColorSpaceICC.count
+        }
+
+        let maximumPatchRadius = kernelSites.reduce(0.0) {
+            current, site in
+            let corners = [
+                (
+                    site.x - kernelPatchRadius,
+                    site.y - kernelPatchRadius
+                ),
+                (
+                    site.x + kernelPatchRadius,
+                    site.y - kernelPatchRadius
+                ),
+                (
+                    site.x - kernelPatchRadius,
+                    site.y + kernelPatchRadius
+                ),
+                (
+                    site.x + kernelPatchRadius,
+                    site.y + kernelPatchRadius
+                ),
+            ]
+            return max(
+                current,
+                corners.map { point in
+                    let (x, y) = point
+                    return hypot(
+                        Double(x - imageWidth / 2),
+                        Double(y - imageHeight / 2))
+                }.max() ?? 0)
+        }
+        let report: [String: Any] = [
+            "schemaVersion": 1,
+            "rigVersion": "native-kernel-sweep-1.0.0",
+            "sweepKind":
+                "deep-interior-phase-controlled-square-steps",
+            "ciCommit":
+                ProcessInfo.processInfo
+                    .environment["GITHUB_SHA"]
+                ?? "local",
+            "osVersion":
+                ProcessInfo.processInfo
+                    .operatingSystemVersionString,
+            "architecture":
+                ProcessInfo.processInfo.machineArchitecture,
+            "windowKey": window.isKeyWindow,
+            "windowColorSpace":
+                window.colorSpace.map {
+                    String(describing: $0)
+                } ?? "unknown",
+            "screenColorSpace":
+                window.screen?.colorSpace.map {
+                    String(describing: $0)
+                } ?? "unknown",
+            "backingScaleFactor":
+                window.backingScaleFactor,
+            "pixelWidth": imageWidth,
+            "pixelHeight": imageHeight,
+            "accessibility": [
+                "reduceTransparency": workspace
+                    .accessibilityDisplayShouldReduceTransparency,
+                "increaseContrast": workspace
+                    .accessibilityDisplayShouldIncreaseContrast,
+                "reduceMotion": workspace
+                    .accessibilityDisplayShouldReduceMotion,
+            ],
+            "glassShape": [
+                "kind": "circle",
+                "diameter": glassDiameter,
+                "centerX": imageWidth / 2,
+                "centerY": imageHeight / 2,
+                "maximumCapturedPatchRadius":
+                    maximumPatchRadius,
+                "maximumNormalizedRadius":
+                    maximumPatchRadius
+                    / (Double(glassDiameter) / 2),
+            ],
+            "sourceDesign": [
+                "baseCode": sourceCode,
+                "squareWidth": kernelSquareSide,
+                "squareHeight": kernelSquareSide,
+                "minimumSquareGapPixels": 130,
+                "channelSigns": [
+                    "red": 1,
+                    "green": -1,
+                    "blue": 1,
+                ],
+                "amplitudesCodes": amplitudes,
+                "reducedGridPixelSizeSourcePixels": 2,
+                "phasePeriodReducedGridPixels": 4,
+                "patchRadiusPixels": kernelPatchRadius,
+                "patchSidePixels": kernelPatchSide,
+                "sites":
+                    kernelSites.map(kernelSiteManifest),
+            ],
+            "captures": records,
+            "nativeCaptureEvidence": nativeEvidence,
+        ]
+        let manifest = try JSONSerialization.data(
+            withJSONObject: report,
+            options: [.prettyPrinted, .sortedKeys])
+        try manifest.write(
+            to: outputDirectory.appendingPathComponent(
+                "manifest.json"),
+            options: .atomic)
+        exit(0)
+    }
+
     private func run() async {
         do {
             try await Task.sleep(nanoseconds: 100_000_000)
@@ -633,6 +1146,13 @@ private final class SpatialSweepDelegate:
             else {
                 throw SweepError.environment(
                     "Reduce Motion is enabled")
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--kernel")
+            {
+                try await runKernelSweep(
+                    workspace: workspace)
+                return
             }
 
             var controlStream = Data()

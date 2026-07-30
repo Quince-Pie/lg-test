@@ -643,6 +643,11 @@ fraction quantization directly instead of inferring either from rounded
 WindowServer pixels.
 The same probe exhausts the 1/16, 3/16, and 9/16 two-dimensional bilinear
 corner weights needed by the half-resolution backdrop reconstruction.
+The focused native kernel mode complements the impulse sweep with sixteen
+96-pixel square steps spanning every phase of the first two reduced mip
+levels. Its red/blue positive and green negative channels capture the
+cumulative kernel tails that isolated 8-bit impulses cannot expose, while
+40-pixel corner patches remain 55 pixels from each square's opposite edges.
 This companion does not alter the capture app, manifest, reference catalog,
 case order, validator, or measurement report. Its output is forensic evidence,
 not a pixel-parity oracle: a trace may be unsupported on the hosted runner,
