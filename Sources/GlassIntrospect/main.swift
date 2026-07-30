@@ -1411,6 +1411,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var replayPasses: [ReplayPass] = []
     private var replayPassByEncoder:
         [ObjectIdentifier: ReplayPass] = [:]
+    private var independentReplayGPUFailure: String?
     private var textureBindings: [TextureBinding] = []
     private var samplerBindings: [SamplerBinding] = []
     private var samplerRuntimeClasses:
@@ -3512,6 +3513,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "independent-glass-progress.json"))
     }
 
+    private func recordIndependentReplayGPUFailure(
+        _ description: String
+    ) {
+        lock.lock()
+        if independentReplayGPUFailure == nil {
+            independentReplayGPUFailure = description
+        }
+        lock.unlock()
+    }
+
+    func independentReplayGPUFailureDescription() -> String? {
+        lock.lock()
+        defer { lock.unlock() }
+        return independentReplayGPUFailure
+    }
+
     private func makeIndependentGlassPipelines(
         for pass: ReplayPass,
         capture: String,
@@ -3625,16 +3642,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             descriptor.vertexFunction = vertexFunction
             descriptor.fragmentFunction = fragmentFunction
             descriptor.rasterSampleCount = target.sampleCount
-            for index in 0..<8 {
-                guard let source =
-                        pass.descriptor.colorAttachments[index]?
-                            .texture
-                else {
-                    continue
-                }
-                descriptor.colorAttachments[index].pixelFormat =
-                    source.pixelFormat
-            }
+            descriptor.colorAttachments[0].pixelFormat =
+                target.pixelFormat
             if let color = descriptor.colorAttachments[0] {
                 color.isBlendingEnabled = true
                 color.rgbBlendOperation = .add
@@ -3709,6 +3718,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let descriptor = MTLRenderPassDescriptor()
         var targets: [Int: MTLTexture] = [:]
         for index in 0..<8 {
+            if replacement != nil,
+               index != 0
+            {
+                continue
+            }
             guard let original =
                     pass.descriptor.colorAttachments[index],
                   let source = original.texture
@@ -3826,6 +3840,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ],
             to: outputDirectory.appendingPathComponent(
                 "\(capture)-\(suffix)-status.json"))
+        if commandBuffer.status != .completed,
+           replacement != nil
+        {
+            recordIndependentReplayGPUFailure(
+                commandBuffer.error?.localizedDescription
+                    ?? "independent glass replay failed")
+        }
         guard commandBuffer.status == .completed else {
             return [
                 "executed": false,
@@ -4166,6 +4187,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         candidate: replay,
                         outputDirectory: outputDirectory),
                 ])
+                if replay["executed"] as? Bool != true {
+                    break
+                }
             }
             independentGlassReplay["candidates"] =
                 candidateRecords
@@ -6057,6 +6081,39 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     capture: "carenderer-live-tree",
                     outputDirectory: outputDirectory)
                 writeProgress("after-carenderer-evidence")
+                if let failure = MetalUniformProbe.shared
+                    .independentReplayGPUFailureDescription()
+                {
+                    report[
+                        "carendererLocalBackdropEvidence"
+                    ] = [
+                        "executed": false,
+                        "reason":
+                            "skipped after independent replay GPU failure",
+                    ]
+                    report[
+                        "independentReplayGPUFailure"
+                    ] = failure
+                    report[
+                        "probeTerminatedAfterIndependentReplayGPUFailure"
+                    ] = true
+                    do {
+                        try writeJSON(
+                            report,
+                            to: outputDirectory
+                                .appendingPathComponent(
+                                    "runtime.json"))
+                        writeProgress(
+                            "terminated-after-independent-replay-gpu-failure")
+                        exit(0)
+                    } catch {
+                        FileHandle.standardError.write(
+                            Data(
+                                "introspection write failed: \(error)\n"
+                                    .utf8))
+                        exit(1)
+                    }
+                }
                 report["carendererLocalBackdropEvidence"] =
                     localBackdropCARendererEvidence(
                         rootLayer: rootLayer,
