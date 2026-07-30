@@ -1809,6 +1809,13 @@ precision; the existing arbitrary-endpoint cases then test the recovered
 attribute accumulation rule rather than assuming a textbook barycentric dot
 product.
 
+Raster schema 4 duplicates those basis vectors with
+`center_no_perspective`, records fragment-position bits, and records hardware
+derivatives for the perspective and affine paths. AGX coefficient registers
+are rebased at 32-by-32 tile corners; these paired outputs distinguish
+coefficient setup and tile rebasing from the `iterproj` perspective step
+without inferring either from a final BGRA8 image.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
