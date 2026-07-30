@@ -1078,6 +1078,21 @@ and opacity composition. The latter is rerun against each of the four
 preregistered held-out source textures, so arbitrary spatial phases and mip
 fractions test the recovered sampler independently of raster interpolation
 and downstream color math.
+Run `30547588345` retained all 28 applicable exact image comparisons and
+returned every schema-56 trace. The sample traces prove that the texture path
+keeps the source varying at float precision and adds the binary16 shift and
+displacement in float before sampling; a standalone half output had hidden
+that optimization. Replaying this rule with the independently recovered
+1/256 spatial and 1/64 mip weights makes 1,917,161/1,920,000 held-out
+coordinate-hash RGB half values exact. Each of the remaining 2,839 values is
+only one 1/16-code quantization step from the measured result.
+Schema 57 pairs those last observations in one fragment invocation. It writes
+the two float32 coordinate bit patterns and packs the four sampled binary16
+channels into one RGBA32Uint target. The same diagnostic runs against the
+default source and all four held-out textures. Its packed sample must equal
+the independent schema-56 sample trace before the coordinate bits are
+accepted; this detects any instrumentation-induced optimizer change instead
+of assuming that a named intermediate is faithful.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

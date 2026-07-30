@@ -995,6 +995,64 @@ fragment half4 glass_fragment_sample_trace(
         uniforms.glass);
 }
 
+fragment uint4 glass_fragment_sample_coordinate_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode < 0) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const half4 sdf = replay_compute_sdf(
+        input.sdf_uv,
+        mode,
+        uniforms.sdf);
+    const float2 normal = float2(sdf.yz);
+    const half2 displacement = half2(
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.xy)),
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.zw)));
+    const half inner_shift = replay_refraction_shift(
+        sdf.x,
+        uniforms.glass.inner_refraction_amount,
+        uniforms.glass.inner_refraction_inv_height);
+    const half inner_blur = half(
+        uniforms.glass.blur_radius
+        * float(replay_blur_scale(
+            inner_shift + sdf.x,
+            uniforms.glass)));
+    const float2 coordinates = float2(
+        half2(input.src_uv)
+        + half2(inner_shift) * displacement);
+    constexpr sampler source_sampler(
+        coord::normalized,
+        address::clamp_to_edge,
+        filter::linear,
+        mip_filter::linear);
+    const half4 sampled = replay_sanitize_sample(
+        source_texture.sample(
+            source_sampler,
+            coordinates,
+            level(replay_lod(inner_blur))));
+    const uint packed_rg =
+        uint(as_type<ushort>(sampled.r))
+        | (uint(as_type<ushort>(sampled.g)) << 16);
+    const uint packed_ba =
+        uint(as_type<ushort>(sampled.b))
+        | (uint(as_type<ushort>(sampled.a)) << 16);
+    return uint4(
+        as_type<uint>(coordinates.x),
+        as_type<uint>(coordinates.y),
+        packed_rg,
+        packed_ba);
+}
+
 vertex GlassReplayVertexOutput glass_vertex_raw(
     const device GlassReplayVertex *vertices [[buffer(1)]],
     constant float4x4 &mvp [[buffer(2)]],
@@ -4660,7 +4718,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 56,
+            "schemaVersion": 57,
             "capture": capture,
             "phase": phase,
         ]
@@ -4781,7 +4839,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     name: "glass_fragment_sdf_float_trace"),
               let customSampleTraceFragment =
                 shaderLibrary.makeFunction(
-                    name: "glass_fragment_sample_trace")
+                    name: "glass_fragment_sample_trace"),
+              let customSampleCoordinateTraceFragment =
+                shaderLibrary.makeFunction(
+                    name:
+                        "glass_fragment_sample_coordinate_trace")
         else {
             throw NSError(
                 domain: "GlassIntrospect.IndependentGlass",
@@ -4868,7 +4930,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 56,
+                    "schemaVersion": 57,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4952,6 +5014,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 name: "sample",
                 fragment: customSampleTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "sample-coordinate",
+                fragment: customSampleCoordinateTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
             ),
         ] {
             let descriptor = try copyCapturedDescriptor()
@@ -5253,7 +5320,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 56,
+                "schemaVersion": 57,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -5759,6 +5826,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         queue: MTLCommandQueue,
         customPipeline: MTLRenderPipelineState,
         sampleTracePipeline: MTLRenderPipelineState?,
+        sampleCoordinateTracePipeline:
+            MTLRenderPipelineState?,
         capture: String,
         outputDirectory: URL
     ) -> [String: Any] {
@@ -5833,6 +5902,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         capture: capture,
                         name:
                             "source-\(pattern.rawValue)-sample",
+                        outputDirectory: outputDirectory)
+            }
+            if let sampleCoordinateTracePipeline {
+                record["sampleCoordinateTrace"] =
+                    replayGlassNumericTrace(
+                        pass: pass,
+                        queue: queue,
+                        replacement:
+                            sampleCoordinateTracePipeline,
+                        pixelFormat: .rgba32Uint,
+                        glassFragmentTextureOverrides:
+                            overrides,
+                        capture: capture,
+                        name:
+                            "source-\(pattern.rawValue)-"
+                            + "sample-coordinate",
                         outputDirectory: outputDirectory)
             }
             records.append(record)
@@ -6585,6 +6670,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             pipelineSet.numericTraces
                                 .first(where: {
                                     $0.name == "sample"
+                                })?.pipeline,
+                        sampleCoordinateTracePipeline:
+                            pipelineSet.numericTraces
+                                .first(where: {
+                                    $0.name
+                                        == "sample-coordinate"
                                 })?.pipeline,
                         capture: capture,
                         outputDirectory: outputDirectory)
@@ -8472,7 +8563,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 56,
+                    "schemaVersion": 57,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8488,7 +8579,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 56,
+            "schemaVersion": 57,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
