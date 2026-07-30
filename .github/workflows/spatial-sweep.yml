@@ -70,3 +70,7 @@ jobs:
           test -s spatial-sweep/manifest.json
           test -s spatial-sweep/native-control-patches.rgb8
           test -s spatial-sweep/native-clear-patches.rgb8
+          test -s spatial-sweep/native-identity-blur-0-patches.rgb8
+          test -s spatial-sweep/native-identity-blur-1-patches.rgb8
+          test -s spatial-sweep/native-identity-blur-2-patches.rgb8
+          test -s spatial-sweep/native-identity-blur-4-patches.rgb8

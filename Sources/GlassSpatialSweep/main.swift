@@ -4,6 +4,8 @@ import CryptoKit
 import Darwin
 import Foundation
 import ImageIO
+import ObjectiveC.runtime
+import QuartzCore
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -28,6 +30,26 @@ private struct Site {
     let y: Int
     let channel: Int
     let sign: Int
+}
+
+private struct SpatialIntervention {
+    let name: String
+    let values: [(key: String, value: NSNumber)]
+}
+
+private let identityValues: [(key: String, value: NSNumber)] = [
+    ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
+    ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
+    ("inputFaceColorMatrixSaturation", NSNumber(value: Float(1))),
+    ("inputSDRHoldingToneEnabled", NSNumber(value: false)),
+]
+
+private let spatialInterventions = [0, 1, 2, 4].map { radius in
+    SpatialIntervention(
+        name: "identity-blur-\(radius)",
+        values: identityValues + [
+            ("inputBlurRadius", NSNumber(value: Float(radius))),
+        ])
 }
 
 private let sites: [Site] = {
@@ -156,6 +178,8 @@ private enum SweepError: LocalizedError {
     case conversion
     case dimensions(Int, Int)
     case environment(String)
+    case filterCopyFailed
+    case glassFilterMissing
     case unstable(String)
 
     var errorDescription: String? {
@@ -168,6 +192,10 @@ private enum SweepError: LocalizedError {
             return "capture is \(width)x\(height), expected 1024x1024"
         case .environment(let detail):
             return "invalid capture environment: \(detail)"
+        case .filterCopyFailed:
+            return "could not copy the glassBackground filter"
+        case .glassFilterMissing:
+            return "could not find the live glassBackground filter"
         case .unstable(let name):
             return "capture did not stabilize: \(name)"
         }
@@ -457,6 +485,65 @@ private func siteManifest(_ site: Site) -> [String: Any] {
     ]
 }
 
+private struct GlassFilterTarget {
+    let layer: CALayer
+    let index: Int
+    let filter: NSObject
+}
+
+private func glassBackgroundFilter(
+    in layer: CALayer
+) -> GlassFilterTarget? {
+    for (index, candidate) in (layer.filters ?? []).enumerated() {
+        guard let object = candidate as? NSObject,
+              object.responds(to: NSSelectorFromString("type")),
+              let type = object.value(forKey: "type") as? String,
+              type == "glassBackground"
+        else {
+            continue
+        }
+        return GlassFilterTarget(
+            layer: layer,
+            index: index,
+            filter: object)
+    }
+    for child in layer.sublayers ?? [] {
+        if let result = glassBackgroundFilter(in: child) {
+            return result
+        }
+    }
+    return nil
+}
+
+private func copiedFilter(
+    _ source: NSObject
+) throws -> NSObject {
+    guard let copying = source as? NSCopying,
+          let copied = copying.copy(with: nil) as? NSObject
+    else {
+        throw SweepError.filterCopyFailed
+    }
+    return copied
+}
+
+private func installFilter(
+    target: GlassFilterTarget,
+    filter: NSObject,
+    values: [(key: String, value: NSNumber)]
+) {
+    for entry in values {
+        filter.setValue(entry.value, forKey: entry.key)
+    }
+    var filters = target.layer.filters ?? []
+    filters[target.index] = filter
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    target.layer.filters = filters
+    target.layer.setNeedsDisplay()
+    CATransaction.commit()
+    CATransaction.flush()
+}
+
 @MainActor
 private final class SpatialSweepDelegate:
     NSObject,
@@ -550,6 +637,10 @@ private final class SpatialSweepDelegate:
 
             var controlStream = Data()
             var clearStream = Data()
+            var interventionStreams = Dictionary(
+                uniqueKeysWithValues: spatialInterventions.map {
+                    ($0.name, Data())
+                })
             var records: [[String: Any]] = []
             var requiredFormatSignature: String?
             var captureColorSpaceICC: Data?
@@ -606,6 +697,70 @@ private final class SpatialSweepDelegate:
                 clearStream.append(
                     try patchRGBData(clear.nativePixels))
 
+                guard let rootLayer = window.contentView?.layer,
+                      let target = glassBackgroundFilter(in: rootLayer)
+                else {
+                    throw SweepError.glassFilterMissing
+                }
+                var interventionRecords: [[String: Any]] = []
+                for intervention in spatialInterventions {
+                    let stateFilter = try copiedFilter(target.filter)
+                    installFilter(
+                        target: target,
+                        filter: stateFilter,
+                        values: intervention.values)
+                    let captureName =
+                        "a\(amplitude)-\(intervention.name)"
+                    let (capture, stabilitySamples) =
+                        try await stableCapture(
+                            window,
+                            name: captureName,
+                            settleNanoseconds: 450_000_000)
+                    let (signature, _, _) =
+                        formatSignature(capture)
+                    guard signature == controlSignature else {
+                        throw SweepError.environment(
+                            "capture format changed during "
+                                + intervention.name)
+                    }
+                    interventionStreams[
+                        intervention.name,
+                        default: Data()
+                    ].append(
+                        try patchRGBData(capture.nativePixels))
+
+                    var interventionRecord: [String: Any] = [
+                        "name": intervention.name,
+                        "nativePixelSha256":
+                            sha256(capture.nativePixels),
+                        "stabilitySamples": stabilitySamples,
+                        "captureBackend": capture.backend,
+                        "values": Dictionary(
+                            uniqueKeysWithValues:
+                                intervention.values.map {
+                                    ($0.key, $0.value)
+                                }),
+                    ]
+                    if auditAmplitudes.contains(amplitude) {
+                        let prefix = String(
+                            format: "amplitude-%03d",
+                            amplitude)
+                        let captureURL = outputDirectory
+                            .appendingPathComponent(
+                                "\(prefix)-"
+                                    + "\(intervention.name).png")
+                        try writePNG(
+                            capture.canonicalImage,
+                            to: captureURL)
+                        interventionRecord["file"] =
+                            captureURL.lastPathComponent
+                        interventionRecord["fileSha256"] =
+                            sha256(captureURL)
+                    }
+                    interventionRecords.append(
+                        interventionRecord)
+                }
+
                 var record: [String: Any] = [
                     "amplitudeCodes": amplitude,
                     "controlCanonicalPixelSha256":
@@ -619,6 +774,7 @@ private final class SpatialSweepDelegate:
                         sha256(clear.nativePixels),
                     "clearStabilitySamples": clearSamples,
                     "captureBackend": clear.backend,
+                    "interventions": interventionRecords,
                 ]
                 if auditAmplitudes.contains(amplitude) {
                     let prefix = String(
@@ -660,6 +816,20 @@ private final class SpatialSweepDelegate:
                 throw SweepError.environment(
                     "capture window lost key status")
             }
+            let recordCount =
+                amplitudes.count * sites.count
+                * patchSide * patchSide
+            let expectedStreamBytes = recordCount * 3
+            guard controlStream.count == expectedStreamBytes,
+                  clearStream.count == expectedStreamBytes,
+                  spatialInterventions.allSatisfy({
+                      interventionStreams[$0.name]?.count
+                          == expectedStreamBytes
+                  })
+            else {
+                throw SweepError.capture(
+                    "native patch stream length differs")
+            }
             let controlURL = outputDirectory
                 .appendingPathComponent(
                     "native-control-patches.rgb8")
@@ -673,11 +843,32 @@ private final class SpatialSweepDelegate:
                 to: clearURL,
                 options: .atomic)
 
-            let recordCount =
-                amplitudes.count * sites.count
-                * patchSide * patchSide
+            var interventionEvidence: [[String: Any]] = []
+            for intervention in spatialInterventions {
+                guard let stream =
+                        interventionStreams[intervention.name]
+                else {
+                    throw SweepError.capture(
+                        "missing \(intervention.name) stream")
+                }
+                let url = outputDirectory.appendingPathComponent(
+                    "native-\(intervention.name)-patches.rgb8")
+                try stream.write(to: url, options: .atomic)
+                interventionEvidence.append([
+                    "name": intervention.name,
+                    "file": url.lastPathComponent,
+                    "fileSha256": sha256(stream),
+                    "fileBytes": stream.count,
+                    "values": Dictionary(
+                        uniqueKeysWithValues:
+                            intervention.values.map {
+                                ($0.key, $0.value)
+                            }),
+                ])
+            }
+
             var nativeEvidence: [String: Any] = [
-                "schemaVersion": 1,
+                "schemaVersion": 2,
                 "recordOrder":
                     "amplitude ascending, site row-major, "
                     + "patch y-major then x-major",
@@ -690,6 +881,7 @@ private final class SpatialSweepDelegate:
                 "clearFile": clearURL.lastPathComponent,
                 "clearFileSha256": sha256(clearStream),
                 "clearFileBytes": clearStream.count,
+                "interventions": interventionEvidence,
                 "captureFormat":
                     captureFormat as Any? ?? NSNull(),
             ]
@@ -726,8 +918,8 @@ private final class SpatialSweepDelegate:
                     }.max() ?? 0)
             }
             let report: [String: Any] = [
-                "schemaVersion": 1,
-                "rigVersion": "native-spatial-sweep-1.0.0",
+                "schemaVersion": 2,
+                "rigVersion": "native-spatial-sweep-1.1.0",
                 "sweepKind":
                     "deep-interior-fixed-impulse-amplitudes",
                 "ciCommit":

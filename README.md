@@ -624,7 +624,12 @@ amplitude from 0 through 127. It stores radius-16 control/glass patches in the
 WindowServer capture color space before canonical sRGB conversion, plus the
 capture ICC profile and a small audited PNG subset. This focused evidence
 removes display-conversion and geometry-state mixing without changing or
-rerunning the multi-gigabyte static matrix.
+rerunning the multi-gigabyte static matrix. A second sweep revision also
+copies the live `glassBackground` filter, makes its face stage an identity,
+and captures blur radii 0, 1, 2, and 4. The disassembled Apple shader maps
+those settings to explicit mip LODs 0, `log2(1.5)`, 1, and 2, respectively,
+so the native streams isolate the real source pyramid from the already
+recovered half-precision color stage.
 This companion does not alter the capture app, manifest, reference catalog,
 case order, validator, or measurement report. Its output is forensic evidence,
 not a pixel-parity oracle: a trace may be unsupported on the hosted runner,
