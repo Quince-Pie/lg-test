@@ -1014,6 +1014,15 @@ observable for the captured positive-infinite inverse radius: exterior
 distances become `+2h` and the polynomial returns exact zero, whereas the
 prematurely saturated path used `+1h` and left a broad residual. Schema 51
 removes that saturation while retaining the complete composition path.
+Run `30542271485` made every one of the ten uniform interventions exact:
+simple and complex refraction, outer refraction, two face-opacity states,
+holding tone, clamp, hue preservation, the float-mix path, shadow alpha, and
+source-sampled shadow composition each matched all 4,194,304 bytes. Schema 52
+adds a held-out source-texture oracle at the captured fragment texture index
+3. It renders Apple and the independent stages against identical constant,
+coordinate-hashed RGB, premultiplied-alpha, and deliberately discordant mip
+inputs, preserving every generated mip as raw evidence. These probes test the
+general sampling and color algorithm rather than only the captured wallpaper.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

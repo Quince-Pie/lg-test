@@ -4148,6 +4148,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         with encoder: MTLRenderCommandEncoder,
         replacingGlassPipeline replacement:
             MTLRenderPipelineState? = nil,
+        glassFragmentTextureOverrides:
+            [Int: MTLTexture] = [:],
         stopAfterGlass: Bool = false
     ) -> ReplayEncodingSummary {
         var encodedCommandCount = 0
@@ -4171,6 +4173,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 enteredGlass = enteredGlass || isGlass
                 encoder.setRenderPipelineState(
                     isGlass ? replacement ?? state : state)
+                if isGlass {
+                    for index in
+                        glassFragmentTextureOverrides.keys.sorted()
+                    {
+                        encoder.setFragmentTexture(
+                            glassFragmentTextureOverrides[index],
+                            index: index)
+                    }
+                }
                 encodedCommandCount += 1
                 continue
             }
@@ -4201,7 +4212,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     offset,
                     index: index)
             case .fragmentTexture(let texture, let index):
-                encoder.setFragmentTexture(texture, index: index)
+                encoder.setFragmentTexture(
+                    currentPipelineIsGlass
+                        ? glassFragmentTextureOverrides[index]
+                            ?? texture
+                        : texture,
+                    index: index)
             case .fragmentSampler(let sampler, let index):
                 encoder.setFragmentSamplerState(
                     sampler,
@@ -4354,7 +4370,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 51,
+            "schemaVersion": 52,
             "capture": capture,
             "phase": phase,
         ]
@@ -4547,7 +4563,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 51,
+                    "schemaVersion": 52,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4622,6 +4638,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         commands commandOverride: [ReplayCommand]? = nil,
         replacingGlassPipeline replacement:
             MTLRenderPipelineState?,
+        glassFragmentTextureOverrides:
+            [Int: MTLTexture] = [:],
         capture: String,
         suffix: String,
         outputDirectory: URL
@@ -4726,6 +4744,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             commandOverride ?? pass.commands,
             with: encoder,
             replacingGlassPipeline: replacement,
+            glassFragmentTextureOverrides:
+                glassFragmentTextureOverrides,
             stopAfterGlass: true)
         writeIndependentGlassProgress(
             capture: capture,
@@ -4747,7 +4767,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 51,
+                "schemaVersion": 52,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -5005,6 +5025,326 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 offset,
                 index)
         }
+    }
+
+    private enum HeldOutGlassSourcePattern:
+        String,
+        CaseIterable
+    {
+        case constantOpaque = "constant-opaque"
+        case opaqueCoordinateHash = "opaque-coordinate-hash"
+        case premultipliedAlphaField =
+            "premultiplied-alpha-field"
+        case discordantMips = "discordant-mips"
+    }
+
+    private func glassSourceTexture(
+        in commands: [ReplayCommand]
+    ) -> MTLTexture? {
+        var currentPipelineIsGlass = false
+        var activeSource: MTLTexture?
+
+        for command in commands {
+            switch command {
+            case .pipeline(let pipeline):
+                currentPipelineIsGlass =
+                    pipeline.label?.contains("_Tghz") == true
+            case .fragmentTexture(let texture, let index):
+                if index == 3 {
+                    activeSource = texture
+                }
+            default:
+                break
+            }
+            if currentPipelineIsGlass,
+               replayCommandIsDraw(command),
+               let activeSource
+            {
+                return activeSource
+            }
+        }
+        return nil
+    }
+
+    private func heldOutGlassTexel(
+        pattern: HeldOutGlassSourcePattern,
+        x: Int,
+        y: Int,
+        level: Int
+    ) -> (UInt8, UInt8, UInt8, UInt8) {
+        switch pattern {
+        case .constantOpaque:
+            return (17, 91, 203, 255)
+        case .opaqueCoordinateHash:
+            let blue =
+                (x * 37 + y * 17 + level * 101 + 13)
+                & 255
+            let green =
+                (x * 11
+                    ^ y * 29
+                    ^ level * 73
+                    ^ 0x5a)
+                & 255
+            let red =
+                (x * 3
+                    + y * 5
+                    + (x * y) % 251
+                    + level * 47)
+                & 255
+            return (
+                UInt8(blue),
+                UInt8(green),
+                UInt8(red),
+                255)
+        case .premultipliedAlphaField:
+            let alpha =
+                (x * 19
+                    + y * 23
+                    + (x ^ y) * 7
+                    + level * 53)
+                & 255
+            let straightBlue =
+                (x * 31 + y * 7 + 29) & 255
+            let straightGreen =
+                (x * 5 + y * 41 + 71) & 255
+            let straightRed =
+                (x * 17 + y * 13 + 149) & 255
+            func premultiply(_ channel: Int) -> UInt8 {
+                UInt8(
+                    (channel * alpha + 127) / 255)
+            }
+            return (
+                premultiply(straightBlue),
+                premultiply(straightGreen),
+                premultiply(straightRed),
+                UInt8(alpha))
+        case .discordantMips:
+            if level == 0 {
+                let checker =
+                    ((x >> 3) ^ (y >> 3)) & 1
+                return checker == 0
+                    ? (UInt8(7), UInt8(239), UInt8(31), 255)
+                    : (UInt8(241), UInt8(19), UInt8(223), 255)
+            }
+            let stripe = ((x >> 1) + (y >> 2)) & 3
+            switch stripe {
+            case 0:
+                return (255, 0, 0, 255)
+            case 1:
+                return (0, 255, 0, 255)
+            case 2:
+                return (0, 0, 255, 255)
+            default:
+                return (211, 197, 43, 255)
+            }
+        }
+    }
+
+    private func makeHeldOutGlassSourceTexture(
+        pattern: HeldOutGlassSourcePattern,
+        matching source: MTLTexture,
+        outputDirectory: URL
+    ) -> (
+        texture: MTLTexture?,
+        report: [String: Any]
+    ) {
+        var report: [String: Any] = [
+            "name": pattern.rawValue,
+            "sourcePixelFormat": source.pixelFormat.rawValue,
+            "sourceWidth": source.width,
+            "sourceHeight": source.height,
+            "sourceMipmapLevelCount":
+                source.mipmapLevelCount,
+            "sourceTextureType": source.textureType.rawValue,
+            "sourceStorageMode": source.storageMode.rawValue,
+        ]
+        guard source.textureType == .type2D,
+              source.pixelFormat == .bgra8Unorm,
+              source.depth == 1,
+              source.arrayLength == 1,
+              source.sampleCount == 1,
+              source.mipmapLevelCount > 0
+        else {
+            report["created"] = false
+            report["reason"] =
+                "captured glass source layout is unsupported"
+            return (nil, report)
+        }
+
+        let descriptor = MTLTextureDescriptor
+            .texture2DDescriptor(
+                pixelFormat: source.pixelFormat,
+                width: source.width,
+                height: source.height,
+                mipmapped: source.mipmapLevelCount > 1)
+        descriptor.mipmapLevelCount =
+            source.mipmapLevelCount
+        descriptor.storageMode = .shared
+        descriptor.usage = [.shaderRead]
+        guard let texture = source.device.makeTexture(
+                descriptor: descriptor)
+        else {
+            report["created"] = false
+            report["reason"] =
+                "held-out glass source allocation failed"
+            return (nil, report)
+        }
+        texture.label =
+            "GlassIntrospect held-out \(pattern.rawValue)"
+
+        var levels: [[String: Any]] = []
+        for level in 0..<source.mipmapLevelCount {
+            let width = max(1, source.width >> level)
+            let height = max(1, source.height >> level)
+            let bytesPerRow = width * 4
+            var data = Data(
+                count: bytesPerRow * height)
+            data.withUnsafeMutableBytes { bytes in
+                let pixels =
+                    bytes.bindMemory(to: UInt8.self)
+                for y in 0..<height {
+                    for x in 0..<width {
+                        let offset =
+                            y * bytesPerRow + x * 4
+                        let texel = heldOutGlassTexel(
+                            pattern: pattern,
+                            x: x,
+                            y: y,
+                            level: level)
+                        pixels[offset] = texel.0
+                        pixels[offset + 1] = texel.1
+                        pixels[offset + 2] = texel.2
+                        pixels[offset + 3] = texel.3
+                    }
+                }
+            }
+            data.withUnsafeBytes { bytes in
+                if let baseAddress = bytes.baseAddress {
+                    texture.replace(
+                        region: MTLRegionMake2D(
+                            0,
+                            0,
+                            width,
+                            height),
+                        mipmapLevel: level,
+                        withBytes: baseAddress,
+                        bytesPerRow: bytesPerRow)
+                }
+            }
+            let filename =
+                "glass-heldout-\(pattern.rawValue)-mip\(level)-bgra8.raw"
+            var levelReport: [String: Any] = [
+                "level": level,
+                "width": width,
+                "height": height,
+                "bytesPerRow": bytesPerRow,
+                "rawBytes": data.count,
+                "rawFile": filename,
+                "fnv1a64": fnv1a64([UInt8](data)),
+            ]
+            do {
+                try data.write(
+                    to: outputDirectory
+                        .appendingPathComponent(filename),
+                    options: .atomic)
+                levelReport["rawWritten"] = true
+            } catch {
+                levelReport["rawWritten"] = false
+                levelReport["rawWriteError"] =
+                    error.localizedDescription
+            }
+            levels.append(levelReport)
+        }
+        report["created"] = true
+        report["levels"] = levels
+        return (texture, report)
+    }
+
+    private func runGlassSourceTextureDifferential(
+        pass: ReplayPass,
+        preColor0: MTLTexture,
+        queue: MTLCommandQueue,
+        customPipeline: MTLRenderPipelineState,
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let source = glassSourceTexture(
+                in: pass.commands)
+        else {
+            return [
+                "executed": false,
+                "reason":
+                    "glass source texture binding is unavailable",
+            ]
+        }
+
+        var records: [[String: Any]] = []
+        for pattern in HeldOutGlassSourcePattern.allCases {
+            let construction =
+                makeHeldOutGlassSourceTexture(
+                    pattern: pattern,
+                    matching: source,
+                    outputDirectory: outputDirectory)
+            guard let texture = construction.texture else {
+                records.append([
+                    "name": pattern.rawValue,
+                    "executed": false,
+                    "construction": construction.report,
+                ])
+                continue
+            }
+            let overrides = [3: texture]
+            let reference = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                replacingGlassPipeline: nil,
+                glassFragmentTextureOverrides: overrides,
+                capture: capture,
+                suffix:
+                    "source-\(pattern.rawValue)-apple",
+                outputDirectory: outputDirectory)
+            let candidate = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                replacingGlassPipeline: customPipeline,
+                glassFragmentTextureOverrides: overrides,
+                capture: capture,
+                suffix:
+                    "source-\(pattern.rawValue)-custom",
+                outputDirectory: outputDirectory)
+            records.append([
+                "name": pattern.rawValue,
+                "executed":
+                    reference["executed"] as? Bool == true
+                    && candidate["executed"] as? Bool == true,
+                "construction": construction.report,
+                "reference": reference,
+                "candidate": candidate,
+                "comparison": compareReplaySnapshots(
+                    reference: reference,
+                    candidate: candidate,
+                    outputDirectory: outputDirectory),
+            ])
+            if candidate["executed"] as? Bool != true {
+                break
+            }
+        }
+        return [
+            "executed": true,
+            "fragmentTextureIndex": 3,
+            "source": [
+                "pixelFormat": source.pixelFormat.rawValue,
+                "width": source.width,
+                "height": source.height,
+                "mipmapLevelCount":
+                    source.mipmapLevelCount,
+                "textureType": source.textureType.rawValue,
+                "storageMode": source.storageMode.rawValue,
+            ],
+            "records": records,
+        ]
     }
 
     private func runGlassUniformDifferential(
@@ -5478,6 +5818,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     independentGlassReplay[
                         "uniformDifferential"
                     ] = runGlassUniformDifferential(
+                        pass: pass,
+                        preColor0: preColor0,
+                        queue: queue,
+                        customPipeline:
+                            customProfile.pipeline,
+                        capture: capture,
+                        outputDirectory: outputDirectory)
+                    independentGlassReplay[
+                        "sourceTextureDifferential"
+                    ] = runGlassSourceTextureDifferential(
                         pass: pass,
                         preColor0: preColor0,
                         queue: queue,
@@ -7322,7 +7672,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 51,
+                    "schemaVersion": 52,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -7338,7 +7688,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 51,
+            "schemaVersion": 52,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
