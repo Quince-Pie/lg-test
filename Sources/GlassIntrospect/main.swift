@@ -719,6 +719,59 @@ private typealias MetalDrawPrimitivesFunction =
         Int,
         Int
     ) -> Void
+private typealias MetalDrawPrimitivesInstancedFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLPrimitiveType,
+        Int,
+        Int,
+        Int
+    ) -> Void
+private typealias MetalDrawPrimitivesBaseInstanceFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLPrimitiveType,
+        Int,
+        Int,
+        Int,
+        Int
+    ) -> Void
+private typealias MetalDrawIndexedPrimitivesFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLPrimitiveType,
+        Int,
+        MTLIndexType,
+        AnyObject,
+        Int
+    ) -> Void
+private typealias MetalDrawIndexedPrimitivesInstancedFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLPrimitiveType,
+        Int,
+        MTLIndexType,
+        AnyObject,
+        Int,
+        Int
+    ) -> Void
+private typealias MetalDrawIndexedPrimitivesBaseVertexFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLPrimitiveType,
+        Int,
+        MTLIndexType,
+        AnyObject,
+        Int,
+        Int,
+        Int,
+        Int
+    ) -> Void
 
 private func probeMakeRenderCommandEncoder(
     _ commandBuffer: AnyObject,
@@ -916,6 +969,175 @@ private func probeDrawPrimitives(
         vertexCount: vertexCount)
 }
 
+private func probeDrawPrimitivesInstanced(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ primitiveType: MTLPrimitiveType,
+    _ vertexStart: Int,
+    _ vertexCount: Int,
+    _ instanceCount: Int
+) {
+    MetalUniformProbe.shared.recordDraw(
+        encoder: encoder,
+        kind: "drawPrimitivesInstanced",
+        primitiveType: primitiveType,
+        fields: [
+            "vertexStart": vertexStart,
+            "vertexCount": vertexCount,
+            "instanceCount": instanceCount,
+        ])
+    MetalUniformProbe.shared.forwardDrawPrimitivesInstanced(
+        encoder: encoder,
+        selector: selector,
+        primitiveType: primitiveType,
+        vertexStart: vertexStart,
+        vertexCount: vertexCount,
+        instanceCount: instanceCount)
+}
+
+private func probeDrawPrimitivesBaseInstance(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ primitiveType: MTLPrimitiveType,
+    _ vertexStart: Int,
+    _ vertexCount: Int,
+    _ instanceCount: Int,
+    _ baseInstance: Int
+) {
+    MetalUniformProbe.shared.recordDraw(
+        encoder: encoder,
+        kind: "drawPrimitivesBaseInstance",
+        primitiveType: primitiveType,
+        fields: [
+            "vertexStart": vertexStart,
+            "vertexCount": vertexCount,
+            "instanceCount": instanceCount,
+            "baseInstance": baseInstance,
+        ])
+    MetalUniformProbe.shared.forwardDrawPrimitivesBaseInstance(
+        encoder: encoder,
+        selector: selector,
+        primitiveType: primitiveType,
+        vertexStart: vertexStart,
+        vertexCount: vertexCount,
+        instanceCount: instanceCount,
+        baseInstance: baseInstance)
+}
+
+private func probeDrawIndexedPrimitives(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ primitiveType: MTLPrimitiveType,
+    _ indexCount: Int,
+    _ indexType: MTLIndexType,
+    _ indexBuffer: AnyObject,
+    _ indexBufferOffset: Int
+) {
+    MetalUniformProbe.shared.recordDraw(
+        encoder: encoder,
+        kind: "drawIndexedPrimitives",
+        primitiveType: primitiveType,
+        fields: [
+            "indexCount": indexCount,
+            "indexType": indexType.rawValue,
+            "indexBufferOffset": indexBufferOffset,
+        ],
+        resources: [(
+            key: "indexBuffer",
+            stage: "index",
+            buffer: indexBuffer,
+            offset: indexBufferOffset
+        )])
+    MetalUniformProbe.shared.forwardDrawIndexedPrimitives(
+        encoder: encoder,
+        selector: selector,
+        primitiveType: primitiveType,
+        indexCount: indexCount,
+        indexType: indexType,
+        indexBuffer: indexBuffer,
+        indexBufferOffset: indexBufferOffset)
+}
+
+private func probeDrawIndexedPrimitivesInstanced(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ primitiveType: MTLPrimitiveType,
+    _ indexCount: Int,
+    _ indexType: MTLIndexType,
+    _ indexBuffer: AnyObject,
+    _ indexBufferOffset: Int,
+    _ instanceCount: Int
+) {
+    MetalUniformProbe.shared.recordDraw(
+        encoder: encoder,
+        kind: "drawIndexedPrimitivesInstanced",
+        primitiveType: primitiveType,
+        fields: [
+            "indexCount": indexCount,
+            "indexType": indexType.rawValue,
+            "indexBufferOffset": indexBufferOffset,
+            "instanceCount": instanceCount,
+        ],
+        resources: [(
+            key: "indexBuffer",
+            stage: "index",
+            buffer: indexBuffer,
+            offset: indexBufferOffset
+        )])
+    MetalUniformProbe.shared.forwardDrawIndexedPrimitivesInstanced(
+        encoder: encoder,
+        selector: selector,
+        primitiveType: primitiveType,
+        indexCount: indexCount,
+        indexType: indexType,
+        indexBuffer: indexBuffer,
+        indexBufferOffset: indexBufferOffset,
+        instanceCount: instanceCount)
+}
+
+private func probeDrawIndexedPrimitivesBaseVertex(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ primitiveType: MTLPrimitiveType,
+    _ indexCount: Int,
+    _ indexType: MTLIndexType,
+    _ indexBuffer: AnyObject,
+    _ indexBufferOffset: Int,
+    _ instanceCount: Int,
+    _ baseVertex: Int,
+    _ baseInstance: Int
+) {
+    MetalUniformProbe.shared.recordDraw(
+        encoder: encoder,
+        kind: "drawIndexedPrimitivesBaseVertex",
+        primitiveType: primitiveType,
+        fields: [
+            "indexCount": indexCount,
+            "indexType": indexType.rawValue,
+            "indexBufferOffset": indexBufferOffset,
+            "instanceCount": instanceCount,
+            "baseVertex": baseVertex,
+            "baseInstance": baseInstance,
+        ],
+        resources: [(
+            key: "indexBuffer",
+            stage: "index",
+            buffer: indexBuffer,
+            offset: indexBufferOffset
+        )])
+    MetalUniformProbe.shared.forwardDrawIndexedPrimitivesBaseVertex(
+        encoder: encoder,
+        selector: selector,
+        primitiveType: primitiveType,
+        indexCount: indexCount,
+        indexType: indexType,
+        indexBuffer: indexBuffer,
+        indexBufferOffset: indexBufferOffset,
+        instanceCount: instanceCount,
+        baseVertex: baseVertex,
+        baseInstance: baseInstance)
+}
+
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
         let capture: String
@@ -979,6 +1201,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
         MetalSetScissorRectFunction?
     private var originalDrawPrimitives:
         MetalDrawPrimitivesFunction?
+    private var originalDrawPrimitivesInstanced:
+        MetalDrawPrimitivesInstancedFunction?
+    private var originalDrawPrimitivesBaseInstance:
+        MetalDrawPrimitivesBaseInstanceFunction?
+    private var originalDrawIndexedPrimitives:
+        MetalDrawIndexedPrimitivesFunction?
+    private var originalDrawIndexedPrimitivesInstanced:
+        MetalDrawIndexedPrimitivesInstancedFunction?
+    private var originalDrawIndexedPrimitivesBaseVertex:
+        MetalDrawIndexedPrimitivesBaseVertexFunction?
     private let maximumRecordCount = 16_384
     private let maximumCapturedBytes = 512
     private let textureCaptureNames = Set([
@@ -1030,6 +1262,34 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
 
         var methods: [[String: Any]] = []
+        func installMethod(
+            on cls: AnyClass,
+            selectorName: String,
+            replacement: IMP
+        ) -> IMP? {
+            let selector = NSSelectorFromString(selectorName)
+            guard let method = class_getInstanceMethod(cls, selector) else {
+                return nil
+            }
+            let original = method_getImplementation(method)
+            let added = class_addMethod(
+                cls,
+                selector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(selector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+            return original
+        }
+
         let makeRenderEncoderSelector = NSSelectorFromString(
             "renderCommandEncoderWithDescriptor:")
         if let method = class_getInstanceMethod(
@@ -1362,6 +1622,86 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ])
         }
 
+        let drawPrimitivesInstancedSelector =
+            "drawPrimitives:vertexStart:vertexCount:instanceCount:"
+        if let original = installMethod(
+            on: encoderClass,
+            selectorName: drawPrimitivesInstancedSelector,
+            replacement: unsafeBitCast(
+                probeDrawPrimitivesInstanced
+                    as MetalDrawPrimitivesInstancedFunction,
+                to: IMP.self))
+        {
+            originalDrawPrimitivesInstanced = unsafeBitCast(
+                original,
+                to: MetalDrawPrimitivesInstancedFunction.self)
+        }
+
+        let drawPrimitivesBaseInstanceSelector =
+            "drawPrimitives:vertexStart:vertexCount:"
+            + "instanceCount:baseInstance:"
+        if let original = installMethod(
+            on: encoderClass,
+            selectorName: drawPrimitivesBaseInstanceSelector,
+            replacement: unsafeBitCast(
+                probeDrawPrimitivesBaseInstance
+                    as MetalDrawPrimitivesBaseInstanceFunction,
+                to: IMP.self))
+        {
+            originalDrawPrimitivesBaseInstance = unsafeBitCast(
+                original,
+                to: MetalDrawPrimitivesBaseInstanceFunction.self)
+        }
+
+        let drawIndexedSelector =
+            "drawIndexedPrimitives:indexCount:indexType:"
+            + "indexBuffer:indexBufferOffset:"
+        if let original = installMethod(
+            on: encoderClass,
+            selectorName: drawIndexedSelector,
+            replacement: unsafeBitCast(
+                probeDrawIndexedPrimitives
+                    as MetalDrawIndexedPrimitivesFunction,
+                to: IMP.self))
+        {
+            originalDrawIndexedPrimitives = unsafeBitCast(
+                original,
+                to: MetalDrawIndexedPrimitivesFunction.self)
+        }
+
+        let drawIndexedInstancedSelector =
+            "drawIndexedPrimitives:indexCount:indexType:"
+            + "indexBuffer:indexBufferOffset:instanceCount:"
+        if let original = installMethod(
+            on: encoderClass,
+            selectorName: drawIndexedInstancedSelector,
+            replacement: unsafeBitCast(
+                probeDrawIndexedPrimitivesInstanced
+                    as MetalDrawIndexedPrimitivesInstancedFunction,
+                to: IMP.self))
+        {
+            originalDrawIndexedPrimitivesInstanced = unsafeBitCast(
+                original,
+                to: MetalDrawIndexedPrimitivesInstancedFunction.self)
+        }
+
+        let drawIndexedBaseVertexSelector =
+            "drawIndexedPrimitives:indexCount:indexType:"
+            + "indexBuffer:indexBufferOffset:instanceCount:"
+            + "baseVertex:baseInstance:"
+        if let original = installMethod(
+            on: encoderClass,
+            selectorName: drawIndexedBaseVertexSelector,
+            replacement: unsafeBitCast(
+                probeDrawIndexedPrimitivesBaseVertex
+                    as MetalDrawIndexedPrimitivesBaseVertexFunction,
+                to: IMP.self))
+        {
+            originalDrawIndexedPrimitivesBaseVertex = unsafeBitCast(
+                original,
+                to: MetalDrawIndexedPrimitivesBaseVertexFunction.self)
+        }
+
         encoder.endEncoding()
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
@@ -1377,6 +1717,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "setViewport:",
             "setScissorRect:",
             "drawPrimitives:vertexStart:vertexCount:",
+            drawPrimitivesInstancedSelector,
+            drawPrimitivesBaseInstanceSelector,
+            drawIndexedSelector,
+            drawIndexedInstancedSelector,
+            drawIndexedBaseVertexSelector,
         ])
         let installedSelectors = Set(methods.compactMap {
             $0["selector"] as? String
@@ -1629,6 +1974,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         if let metalBuffer = buffer as? MTLBuffer {
             record["bufferClass"] =
                 String(reflecting: type(of: metalBuffer))
+            record["bufferAddress"] =
+                objectAddress(metalBuffer as AnyObject)
             record["bufferLength"] = metalBuffer.length
             record["storageMode"] = metalBuffer.storageMode.rawValue
             bufferBindings.append(BufferBinding(
@@ -1817,6 +2164,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         if let metalBuffer = buffer as? MTLBuffer {
             record["bufferClass"] =
                 String(reflecting: type(of: metalBuffer))
+            record["bufferAddress"] =
+                objectAddress(metalBuffer as AnyObject)
             record["bufferLength"] = metalBuffer.length
             record["storageMode"] = metalBuffer.storageMode.rawValue
             bufferBindings.append(BufferBinding(
@@ -1901,18 +2250,67 @@ private final class MetalUniformProbe: @unchecked Sendable {
         vertexStart: Int,
         vertexCount: Int
     ) {
+        recordDraw(
+            encoder: encoder,
+            kind: "drawPrimitives",
+            primitiveType: primitiveType,
+            fields: [
+                "vertexStart": vertexStart,
+                "vertexCount": vertexCount,
+            ])
+    }
+
+    func recordDraw(
+        encoder: AnyObject,
+        kind: String,
+        primitiveType: MTLPrimitiveType,
+        fields: [String: Any],
+        resources: [(
+            key: String,
+            stage: String,
+            buffer: AnyObject,
+            offset: Int
+        )] = []
+    ) {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
-        appendRecord([
+        var record: [String: Any] = [
             "capture": captureName,
-            "kind": "drawPrimitives",
+            "kind": kind,
             "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
             "primitiveType": primitiveType.rawValue,
-            "vertexStart": vertexStart,
-            "vertexCount": vertexCount,
-        ])
+        ]
+        for (key, value) in fields {
+            record[key] = value
+        }
+        for resource in resources {
+            if let buffer = resource.buffer as? MTLBuffer {
+                record[resource.key] = [
+                    "address": objectAddress(buffer as AnyObject),
+                    "class": String(reflecting: type(of: buffer)),
+                    "length": buffer.length,
+                    "storageMode": buffer.storageMode.rawValue,
+                    "offset": resource.offset,
+                ]
+                bufferBindings.append(BufferBinding(
+                    capture: captureName,
+                    sequence: records.count,
+                    stage: resource.stage,
+                    index: -1,
+                    pipeline: encoderPipeline(encoder),
+                    buffer: buffer,
+                    offset: resource.offset))
+            } else {
+                record[resource.key] = [
+                    "class": String(
+                        reflecting: type(of: resource.buffer)),
+                    "offset": resource.offset,
+                ]
+            }
+        }
+        appendRecord(record)
     }
 
     private func bytesPerPixel(
@@ -1950,6 +2348,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "stage": binding.stage,
                 "index": binding.index,
                 "pipeline": binding.pipeline,
+                "bufferAddress":
+                    objectAddress(buffer as AnyObject),
                 "bufferLength": buffer.length,
                 "storageMode": buffer.storageMode.rawValue,
                 "offset": binding.offset,
@@ -2459,6 +2859,112 @@ private final class MetalUniformProbe: @unchecked Sendable {
             primitiveType,
             vertexStart,
             vertexCount)
+    }
+
+    func forwardDrawPrimitivesInstanced(
+        encoder: AnyObject,
+        selector: Selector,
+        primitiveType: MTLPrimitiveType,
+        vertexStart: Int,
+        vertexCount: Int,
+        instanceCount: Int
+    ) {
+        guard let originalDrawPrimitivesInstanced else { return }
+        originalDrawPrimitivesInstanced(
+            encoder,
+            selector,
+            primitiveType,
+            vertexStart,
+            vertexCount,
+            instanceCount)
+    }
+
+    func forwardDrawPrimitivesBaseInstance(
+        encoder: AnyObject,
+        selector: Selector,
+        primitiveType: MTLPrimitiveType,
+        vertexStart: Int,
+        vertexCount: Int,
+        instanceCount: Int,
+        baseInstance: Int
+    ) {
+        guard let originalDrawPrimitivesBaseInstance else { return }
+        originalDrawPrimitivesBaseInstance(
+            encoder,
+            selector,
+            primitiveType,
+            vertexStart,
+            vertexCount,
+            instanceCount,
+            baseInstance)
+    }
+
+    func forwardDrawIndexedPrimitives(
+        encoder: AnyObject,
+        selector: Selector,
+        primitiveType: MTLPrimitiveType,
+        indexCount: Int,
+        indexType: MTLIndexType,
+        indexBuffer: AnyObject,
+        indexBufferOffset: Int
+    ) {
+        guard let originalDrawIndexedPrimitives else { return }
+        originalDrawIndexedPrimitives(
+            encoder,
+            selector,
+            primitiveType,
+            indexCount,
+            indexType,
+            indexBuffer,
+            indexBufferOffset)
+    }
+
+    func forwardDrawIndexedPrimitivesInstanced(
+        encoder: AnyObject,
+        selector: Selector,
+        primitiveType: MTLPrimitiveType,
+        indexCount: Int,
+        indexType: MTLIndexType,
+        indexBuffer: AnyObject,
+        indexBufferOffset: Int,
+        instanceCount: Int
+    ) {
+        guard let originalDrawIndexedPrimitivesInstanced else { return }
+        originalDrawIndexedPrimitivesInstanced(
+            encoder,
+            selector,
+            primitiveType,
+            indexCount,
+            indexType,
+            indexBuffer,
+            indexBufferOffset,
+            instanceCount)
+    }
+
+    func forwardDrawIndexedPrimitivesBaseVertex(
+        encoder: AnyObject,
+        selector: Selector,
+        primitiveType: MTLPrimitiveType,
+        indexCount: Int,
+        indexType: MTLIndexType,
+        indexBuffer: AnyObject,
+        indexBufferOffset: Int,
+        instanceCount: Int,
+        baseVertex: Int,
+        baseInstance: Int
+    ) {
+        guard let originalDrawIndexedPrimitivesBaseVertex else { return }
+        originalDrawIndexedPrimitivesBaseVertex(
+            encoder,
+            selector,
+            primitiveType,
+            indexCount,
+            indexType,
+            indexBuffer,
+            indexBufferOffset,
+            instanceCount,
+            baseVertex,
+            baseInstance)
     }
 
     func report() -> [String: Any] {
@@ -3884,7 +4390,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 37,
+                    "schemaVersion": 38,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -3900,7 +4406,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 37,
+            "schemaVersion": 38,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

@@ -871,6 +871,13 @@ draw. Texture object addresses are shared between attachment and fragment
 records, making the producer/consumer pass graph explicit. This is evidence
 for an independent compositor invocation and does not change the rendered
 layer tree or replace any Apple resource.
+Schema 38 covers every direct indexed and instanced draw entry point used by
+the Metal render-command protocol after schema 37 proved that Core Animation
+does not call the three-argument primitive variant. Indexed-buffer identity,
+offset, storage mode, and post-completion bytes are retained alongside each
+draw. Buffer object addresses are also emitted for vertex and fragment
+bindings, preserving the aliasing relationships between Core Animation's
+256-byte-aligned slices.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
