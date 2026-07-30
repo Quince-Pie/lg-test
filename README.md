@@ -727,6 +727,13 @@ zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
 and shape-bound values when Swift reflection permits it, without substituting
 a recreated layer or guessed geometry.
+The probe also asks both the model and presentation SDF layer trees to render
+directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
+PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
+checksum in `runtime.json`. A nonempty result is direct raster evidence; an
+empty result only proves that `CALayer.render(in:)` does not expose that
+server-side/private layer and is not evidence that the live SDF itself is
+empty.
 
 Run `30487878788` completed that probe in 39 seconds. It recovered all 55
 live `glassBackground` inputs, the full 80-byte `vibrantColorMatrix` without

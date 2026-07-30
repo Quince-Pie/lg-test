@@ -897,6 +897,163 @@ private func viewDescription(_ view: NSView) -> [String: Any] {
     return record
 }
 
+private func collectSDFLayers(
+    _ layer: CALayer,
+    path: [Int] = [],
+    into layers: inout [([Int], CALayer)]
+) {
+    let className = String(reflecting: type(of: layer)).lowercased()
+    if className.contains("sdf") {
+        layers.append((path, layer))
+    }
+    for (index, child) in (layer.sublayers ?? []).enumerated() {
+        collectSDFLayers(
+            child,
+            path: path + [index],
+            into: &layers)
+    }
+}
+
+private func fnv1a64(_ bytes: [UInt8]) -> String {
+    var value: UInt64 = 0xcbf29ce484222325
+    for byte in bytes {
+        value ^= UInt64(byte)
+        value &*= 0x100000001b3
+    }
+    return String(format: "%016llx", value)
+}
+
+private func sdfLayerRenderEvidence(
+    rootLayer: CALayer,
+    tree: String,
+    outputDirectory: URL
+) -> [[String: Any]] {
+    var layers: [([Int], CALayer)] = []
+    collectSDFLayers(rootLayer, into: &layers)
+
+    return layers.enumerated().map { ordinal, target in
+        let (path, layer) = target
+        let bounds = layer.bounds.standardized
+        var record: [String: Any] = [
+            "tree": tree,
+            "ordinal": ordinal,
+            "path": path,
+            "class": String(reflecting: type(of: layer)),
+            "bounds": NSStringFromRect(bounds),
+        ]
+        guard bounds.width.isFinite,
+              bounds.height.isFinite,
+              bounds.width > 0,
+              bounds.height > 0
+        else {
+            record["rendered"] = false
+            record["reason"] = "empty-or-nonfinite-bounds"
+            return record
+        }
+
+        let width = Int(ceil(bounds.width))
+        let height = Int(ceil(bounds.height))
+        guard width <= 2048,
+              height <= 2048,
+              width.multipliedReportingOverflow(by: height).overflow == false,
+              width * height <= 4_194_304
+        else {
+            record["rendered"] = false
+            record["reason"] = "bounds-exceed-probe-limit"
+            return record
+        }
+
+        let bytesPerRow = width * 4
+        var pixels = [UInt8](
+            repeating: 0,
+            count: bytesPerRow * height)
+        let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+        let bitmapInfo =
+            CGBitmapInfo.byteOrder32Big.rawValue
+            | CGImageAlphaInfo.premultipliedLast.rawValue
+        var pngData: Data?
+        let contextCreated = pixels.withUnsafeMutableBytes { storage in
+            guard let baseAddress = storage.baseAddress,
+                  let context = CGContext(
+                    data: baseAddress,
+                    width: width,
+                    height: height,
+                    bitsPerComponent: 8,
+                    bytesPerRow: bytesPerRow,
+                    space: colorSpace,
+                    bitmapInfo: bitmapInfo)
+            else {
+                return false
+            }
+            context.translateBy(
+                x: -bounds.minX,
+                y: -bounds.minY)
+            layer.render(in: context)
+            context.flush()
+            if let image = context.makeImage() {
+                pngData = NSBitmapImageRep(cgImage: image)
+                    .representation(using: .png, properties: [:])
+            }
+            return true
+        }
+        guard contextCreated else {
+            record["rendered"] = false
+            record["reason"] = "bitmap-context-creation-failed"
+            return record
+        }
+
+        let prefix = "sdf-\(tree)-\(ordinal)"
+        let rawFilename = "\(prefix)-rgba8.raw"
+        do {
+            try Data(pixels).write(
+                to: outputDirectory.appendingPathComponent(rawFilename),
+                options: .atomic)
+            record["rawFile"] = rawFilename
+        } catch {
+            record["rawWriteError"] = error.localizedDescription
+        }
+        if let pngData {
+            let pngFilename = "\(prefix).png"
+            do {
+                try pngData.write(
+                    to: outputDirectory.appendingPathComponent(pngFilename),
+                    options: .atomic)
+                record["pngFile"] = pngFilename
+                record["pngBytes"] = pngData.count
+            } catch {
+                record["pngWriteError"] = error.localizedDescription
+            }
+        } else {
+            record["pngAvailable"] = false
+        }
+
+        var minima = [UInt8](repeating: .max, count: 4)
+        var maxima = [UInt8](repeating: .min, count: 4)
+        var nonzero = [Int](repeating: 0, count: 4)
+        for offset in stride(from: 0, to: pixels.count, by: 4) {
+            for channel in 0..<4 {
+                let value = pixels[offset + channel]
+                minima[channel] = min(minima[channel], value)
+                maxima[channel] = max(maxima[channel], value)
+                if value != 0 {
+                    nonzero[channel] += 1
+                }
+            }
+        }
+        record["rendered"] = true
+        record["width"] = width
+        record["height"] = height
+        record["bytesPerRow"] = bytesPerRow
+        record["pixelFormat"] = "RGBA8 premultiplied-last sRGB"
+        record["rawBytes"] = pixels.count
+        record["fnv1a64"] = fnv1a64(pixels)
+        record["channelMinima"] = minima
+        record["channelMaxima"] = maxima
+        record["channelNonzeroCounts"] = nonzero
+        return record
+    }
+}
+
 private func writeJSON(_ object: Any, to url: URL) throws {
     let data = try JSONSerialization.data(
         withJSONObject: object,
@@ -1020,7 +1177,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 10,
+            "schemaVersion": 11,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -1080,8 +1237,18 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             if let presentation = contentView.layer?.presentation() {
                 report["presentationLayerTree"] =
                     layerDescription(presentation)
+                report["presentationSDFLayerRenders"] =
+                    sdfLayerRenderEvidence(
+                        rootLayer: presentation,
+                        tree: "presentation",
+                        outputDirectory: outputDirectory)
             }
             if let rootLayer = contentView.layer {
+                report["modelSDFLayerRenders"] =
+                    sdfLayerRenderEvidence(
+                        rootLayer: rootLayer,
+                        tree: "model",
+                        outputDirectory: outputDirectory)
                 var runtimeObjects: [String: NSObject] = [:]
                 collectRuntimeObjects(
                     rootLayer,
