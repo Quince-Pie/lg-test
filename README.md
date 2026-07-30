@@ -1199,6 +1199,14 @@ BGRA8 conversion, making the AGX2 backend's fast-half reassociation and
 contraction directly testable instead of inferring it through one-code output
 intervals. CI requires both generic and AGX2 replays and both raw formats to
 execute with their exact declared sizes.
+Schema 66 keeps those controls and repeats the AGX2 replay with level zero and
+level one of the same two-level BGRA8Unorm texture, once in shared storage and
+once in private storage. The uniforms now select source level zero and
+destination level one exactly as the live texture topology requires. This
+separates kernel arithmetic, already preserved in the Schema 65 RGBA16Float
+trace, from any mip-level, imageblock-write, storage-mode, or UNORM conversion
+effect. Both in-place payloads, descriptor facts, hashes, and bytewise
+comparisons against the untouched live first mip are mandatory CI evidence.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

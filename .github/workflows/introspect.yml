@@ -656,8 +656,8 @@ jobs:
           root = pathlib.Path("introspection")
           with (root / "runtime.json").open(encoding="utf-8") as stream:
               runtime = json.load(stream)
-          if runtime.get("schemaVersion") != 65:
-              raise SystemExit("introspection schema is not 65")
+          if runtime.get("schemaVersion") != 66:
+              raise SystemExit("introspection schema is not 66")
 
           background = runtime.get("diagnosticBackgroundEvidence", {})
           if (
@@ -669,7 +669,7 @@ jobs:
               or background.get("rows") != 512
           ):
               raise SystemExit(
-                  "schema-65 diagnostic background metadata differs"
+                  "schema-66 diagnostic background metadata differs"
               )
 
           downsample = runtime.get(
@@ -682,7 +682,7 @@ jobs:
               if isinstance(candidate, dict)
           }
           if (
-              downsample.get("schemaVersion") != 1
+              downsample.get("schemaVersion") != 2
               or downsample.get("executed") is not True
               or downsample.get("uniformLayoutBytes") != 16
               or candidate_names
@@ -692,7 +692,7 @@ jobs:
               }
           ):
               raise SystemExit(
-                  "schema-65 native downsample replay metadata differs"
+                  "schema-66 native downsample replay metadata differs"
               )
           candidates_by_name = {
               candidate["function"]: candidate
@@ -707,7 +707,7 @@ jobs:
                   or half_trace.get("outputBytes") != 224 * 224 * 8
               ):
                   raise SystemExit(
-                      "schema-65 native downsample candidate failed: "
+                      "schema-66 native downsample candidate failed: "
                       f"{name}: {candidate}"
                   )
               for record in (candidate, half_trace):
@@ -718,9 +718,48 @@ jobs:
                           != record.get("outputBytes")
                   ):
                       raise SystemExit(
-                          "schema-65 native downsample payload differs: "
+                          "schema-66 native downsample payload differs: "
                           f"{path}"
                       )
+
+          in_place = downsample.get("inPlaceCandidates", [])
+          expected_modes = {
+              "in-place-shared-mip1",
+              "in-place-private-mip1",
+          }
+          if {
+              candidate.get("mode")
+              for candidate in in_place
+              if isinstance(candidate, dict)
+          } != expected_modes:
+              raise SystemExit(
+                  "schema-66 in-place downsample modes differ"
+              )
+          for candidate in in_place:
+              if (
+                  candidate.get("executed") is not True
+                  or candidate.get(
+                      "sourceAndDestinationAreSameTexture"
+                  ) is not True
+                  or candidate.get("sourceLevel") != 0
+                  or candidate.get("destinationLevel") != 1
+                  or candidate.get("mipmapLevelCount") != 2
+                  or candidate.get("outputBytes") != 224 * 224 * 4
+              ):
+                  raise SystemExit(
+                      "schema-66 in-place downsample failed: "
+                      f"{candidate}"
+                  )
+              path = root / str(candidate.get("outputFile", ""))
+              if (
+                  not path.is_file()
+                  or path.stat().st_size
+                      != candidate.get("outputBytes")
+              ):
+                  raise SystemExit(
+                      "schema-66 in-place payload differs: "
+                      f"{path}"
+                  )
 
           expected_sizes = {
               "carenderer-live-tree-glass-final-color-numeric-trace-rgba16f.raw":
@@ -776,7 +815,7 @@ jobs:
                   source_candidates.append(snapshot)
           if len(source_candidates) != 1:
               raise SystemExit(
-                  "schema-65 live backdrop source texture is not unique: "
+                  "schema-66 live backdrop source texture is not unique: "
                   f"{len(source_candidates)} candidates"
               )
 
@@ -799,7 +838,7 @@ jobs:
                   or record.get("rawBytes") != expected_size
               ):
                   raise SystemExit(
-                      f"schema-65 backdrop mip {level} metadata differs"
+                      f"schema-66 backdrop mip {level} metadata differs"
                   )
               path = root / str(record.get("rawFile", ""))
               if (
@@ -807,7 +846,7 @@ jobs:
                   or path.stat().st_size != expected_size
               ):
                   raise SystemExit(
-                      f"schema-65 backdrop mip {level} payload differs"
+                      f"schema-66 backdrop mip {level} payload differs"
                   )
 
           mip_zero = (
@@ -819,7 +858,7 @@ jobs:
           })
           if distinct_rgb < 50_000:
               raise SystemExit(
-                  "schema-65 backdrop mip zero lacks identification rank: "
+                  "schema-66 backdrop mip zero lacks identification rank: "
                   f"{distinct_rgb} distinct RGB texels"
               )
           PY

@@ -4954,7 +4954,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 65,
+            "schemaVersion": 66,
             "capture": capture,
             "phase": phase,
         ]
@@ -5187,7 +5187,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 65,
+                    "schemaVersion": 66,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5612,7 +5612,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 65,
+                "schemaVersion": 66,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8378,7 +8378,7 @@ private func variableBlurDownsampleEvidence(
     let referenceURL = outputDirectory.appendingPathComponent(
         referenceFilename)
     var evidence: [String: Any] = [
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "sourceFile": sourceFilename,
         "referenceFile": referenceFilename,
         "sourceWidth": 448,
@@ -8764,12 +8764,324 @@ private func variableBlurDownsampleEvidence(
         return record
     }
 
+    func runInPlace(
+        _ candidate: Candidate,
+        storageMode: MTLStorageMode,
+        mode: String
+    ) -> [String: Any] {
+        var record: [String: Any] = [
+            "function": candidate.functionName,
+            "mode": mode,
+            "sourceAndDestinationAreSameTexture": true,
+            "sourceLevel": 0,
+            "destinationLevel": 1,
+            "storageMode": storageMode.rawValue,
+            "mipmapLevelCount": 2,
+            "threadsPerThreadgroup": [
+                candidate.threadsWidth,
+                candidate.threadsHeight,
+                1,
+            ],
+            "imageblockDimensions": [
+                candidate.imageblockWidth,
+                candidate.imageblockHeight,
+                1,
+            ],
+        ]
+        guard let function = library.makeFunction(
+                name: candidate.functionName)
+        else {
+            record["executed"] = false
+            record["reason"] = "QuartzCore function is unavailable"
+            return record
+        }
+        let pipeline: MTLComputePipelineState
+        do {
+            pipeline = try device.makeComputePipelineState(
+                function: function)
+        } catch {
+            record["executed"] = false
+            record["reason"] =
+                "compute pipeline creation failed: "
+                + error.localizedDescription
+            return record
+        }
+
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .bgra8Unorm,
+            width: 448,
+            height: 448,
+            mipmapped: true)
+        descriptor.mipmapLevelCount = 2
+        descriptor.storageMode = storageMode
+        descriptor.usage = [.shaderRead, .shaderWrite]
+        guard let texture = device.makeTexture(
+                descriptor: descriptor),
+              let queue = device.makeCommandQueue()
+        else {
+            record["executed"] = false
+            record["reason"] =
+                "in-place texture or command queue is unavailable"
+            return record
+        }
+        record["textureUsage"] = texture.usage.rawValue
+
+        if storageMode == .shared {
+            sourceData.withUnsafeBytes { bytes in
+                if let baseAddress = bytes.baseAddress {
+                    texture.replace(
+                        region: MTLRegionMake2D(0, 0, 448, 448),
+                        mipmapLevel: 0,
+                        withBytes: baseAddress,
+                        bytesPerRow: 448 * 4)
+                }
+            }
+        } else {
+            guard let upload = queue.makeCommandBuffer(),
+                  let blit = upload.makeBlitCommandEncoder()
+            else {
+                record["executed"] = false
+                record["reason"] =
+                    "private-texture upload resources are unavailable"
+                return record
+            }
+            blit.copy(
+                from: sourceTexture,
+                sourceSlice: 0,
+                sourceLevel: 0,
+                sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                sourceSize: MTLSize(
+                    width: 448,
+                    height: 448,
+                    depth: 1),
+                to: texture,
+                destinationSlice: 0,
+                destinationLevel: 0,
+                destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+            blit.endEncoding()
+            upload.commit()
+            upload.waitUntilCompleted()
+            guard upload.status == .completed else {
+                record["executed"] = false
+                record["reason"] =
+                    upload.error?.localizedDescription
+                    ?? "private-texture upload failed"
+                record["commandBufferStatus"] =
+                    upload.status.rawValue
+                return record
+            }
+        }
+
+        guard let commandBuffer = queue.makeCommandBuffer(),
+              let encoder =
+                commandBuffer.makeComputeCommandEncoder()
+        else {
+            record["executed"] = false
+            record["reason"] =
+                "in-place compute resources are unavailable"
+            return record
+        }
+        var uniforms = VariableBlurDownsampleUniforms(
+            sourceLevel: 0,
+            destinationLevel: 1,
+            destinationWidth: 224,
+            destinationHeight: 224,
+            destinationDX: Float(1.0 / 224.0),
+            destinationDY: Float(1.0 / 224.0))
+        let threads = MTLSize(
+            width: candidate.threadsWidth,
+            height: candidate.threadsHeight,
+            depth: 1)
+        let imageblock = MTLSize(
+            width: candidate.imageblockWidth,
+            height: candidate.imageblockHeight,
+            depth: 1)
+        let threadgroups = MTLSize(
+            width:
+                (224 + candidate.imageblockWidth - 1)
+                / candidate.imageblockWidth,
+            height:
+                (224 + candidate.imageblockHeight - 1)
+                / candidate.imageblockHeight,
+            depth: 1)
+        record["threadgroups"] = [
+            threadgroups.width,
+            threadgroups.height,
+            threadgroups.depth,
+        ]
+        record["imageblockMemoryBytes"] =
+            pipeline.imageblockMemoryLength(
+                forDimensions: imageblock)
+
+        encoder.label =
+            "Liquid Glass in-place variable-blur replay"
+        encoder.setComputePipelineState(pipeline)
+        encoder.setTexture(texture, index: 0)
+        encoder.setTexture(texture, index: 1)
+        encoder.setBytes(
+            &uniforms,
+            length:
+                MemoryLayout<VariableBlurDownsampleUniforms>.size,
+            index: 0)
+        encoder.setImageblockWidth(
+            candidate.imageblockWidth,
+            height: candidate.imageblockHeight)
+        encoder.dispatchThreadgroups(
+            threadgroups,
+            threadsPerThreadgroup: threads)
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        guard commandBuffer.status == .completed else {
+            record["executed"] = false
+            record["reason"] =
+                commandBuffer.error?.localizedDescription
+                ?? "in-place compute command failed"
+            record["commandBufferStatus"] =
+                commandBuffer.status.rawValue
+            return record
+        }
+
+        var readbackTexture = texture
+        var readbackLevel = 1
+        if storageMode != .shared {
+            let readbackDescriptor =
+                MTLTextureDescriptor.texture2DDescriptor(
+                    pixelFormat: .bgra8Unorm,
+                    width: 224,
+                    height: 224,
+                    mipmapped: false)
+            readbackDescriptor.storageMode = .shared
+            readbackDescriptor.usage = [.shaderRead]
+            guard let sharedTexture = device.makeTexture(
+                    descriptor: readbackDescriptor),
+                  let readbackCommand = queue.makeCommandBuffer(),
+                  let blit =
+                    readbackCommand.makeBlitCommandEncoder()
+            else {
+                record["executed"] = false
+                record["reason"] =
+                    "private-texture readback resources are unavailable"
+                return record
+            }
+            blit.copy(
+                from: texture,
+                sourceSlice: 0,
+                sourceLevel: 1,
+                sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                sourceSize: MTLSize(
+                    width: 224,
+                    height: 224,
+                    depth: 1),
+                to: sharedTexture,
+                destinationSlice: 0,
+                destinationLevel: 0,
+                destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+            blit.endEncoding()
+            readbackCommand.commit()
+            readbackCommand.waitUntilCompleted()
+            guard readbackCommand.status == .completed else {
+                record["executed"] = false
+                record["reason"] =
+                    readbackCommand.error?.localizedDescription
+                    ?? "private-texture readback failed"
+                record["commandBufferStatus"] =
+                    readbackCommand.status.rawValue
+                return record
+            }
+            readbackTexture = sharedTexture
+            readbackLevel = 0
+        }
+
+        var output = Data(count: 224 * 224 * 4)
+        output.withUnsafeMutableBytes { bytes in
+            if let baseAddress = bytes.baseAddress {
+                readbackTexture.getBytes(
+                    baseAddress,
+                    bytesPerRow: 224 * 4,
+                    from: MTLRegionMake2D(0, 0, 224, 224),
+                    mipmapLevel: readbackLevel)
+            }
+        }
+        let filename =
+            "variable-blur-downsample-"
+            + candidate.functionName
+            + "-"
+            + mode
+            + "-bgra8.raw"
+        do {
+            try output.write(
+                to: outputDirectory.appendingPathComponent(filename),
+                options: .atomic)
+        } catch {
+            record["outputWriteError"] =
+                error.localizedDescription
+        }
+
+        let outputBytes = [UInt8](output)
+        let referenceBytes = [UInt8](referenceData)
+        var mismatchedBytes = 0
+        var mismatchedPixels = 0
+        var maximumCodeDelta = 0
+        var firstMismatches: [[String: Any]] = []
+        for pixel in 0..<(224 * 224) {
+            var pixelMismatch = false
+            for channel in 0..<4 {
+                let offset = pixel * 4 + channel
+                let predicted = Int(outputBytes[offset])
+                let measured = Int(referenceBytes[offset])
+                let delta = abs(predicted - measured)
+                if delta != 0 {
+                    mismatchedBytes += 1
+                    pixelMismatch = true
+                    maximumCodeDelta =
+                        max(maximumCodeDelta, delta)
+                    if firstMismatches.count < 16 {
+                        firstMismatches.append([
+                            "x": pixel % 224,
+                            "y": pixel / 224,
+                            "channel": channel,
+                            "nativeReplayCode": predicted,
+                            "capturedMipCode": measured,
+                        ])
+                    }
+                }
+            }
+            if pixelMismatch {
+                mismatchedPixels += 1
+            }
+        }
+        record["executed"] = true
+        record["outputFile"] = filename
+        record["outputBytes"] = output.count
+        record["outputFNV1a64"] = fnv1a64(outputBytes)
+        record["referenceFNV1a64"] =
+            fnv1a64(referenceBytes)
+        record["observedBytes"] = output.count
+        record["mismatchedBytes"] = mismatchedBytes
+        record["mismatchedPixels"] = mismatchedPixels
+        record["maximumCodeDelta"] = maximumCodeDelta
+        record["exact"] = mismatchedBytes == 0
+        record["firstMismatches"] = firstMismatches
+        return record
+    }
+
     evidence["executed"] = true
     evidence["sourceFNV1a64"] =
         fnv1a64([UInt8](sourceData))
     evidence["referenceFNV1a64"] =
         fnv1a64([UInt8](referenceData))
     evidence["candidates"] = candidates.map(run)
+    evidence["inPlaceCandidates"] = [
+        runInPlace(
+            candidates[0],
+            storageMode: .shared,
+            mode: "in-place-shared-mip1"),
+        runInPlace(
+            candidates[0],
+            storageMode: .private,
+            mode: "in-place-private-mip1"),
+    ]
     return evidence
 }
 
@@ -9273,7 +9585,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 65,
+                    "schemaVersion": 66,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -9289,7 +9601,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 65,
+            "schemaVersion": 66,
             "diagnosticBackgroundEvidence": [
                 "pattern": diagnosticBackgroundPattern,
                 "cellWidthPoints":
