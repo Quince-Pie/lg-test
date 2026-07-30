@@ -905,18 +905,46 @@ private func sdfGeneratorEvidence(
     else {
         return ["error": "private SDF generator classes unavailable"]
     }
-    let generator = generatorType.init()
     writePhase("before-default-request-factory")
+    var inputRecord: [String: Any] = [
+        "kind": "binary-centered-128x160-rectangle",
+        "width": input.width,
+        "height": input.height,
+        "bitsPerComponent": input.bitsPerComponent,
+        "bitsPerPixel": input.bitsPerPixel,
+        "bytesPerRow": input.bytesPerRow,
+    ]
+    if let inputData = input.dataProvider?.data {
+        let bytes = [UInt8](inputData as Data)
+        let filename = "sdf-generator-input.raw"
+        do {
+            try Data(bytes).write(
+                to: outputDirectory.appendingPathComponent(filename),
+                options: .atomic)
+            inputRecord["rawFile"] = filename
+            inputRecord["rawBytes"] = bytes.count
+            inputRecord["fnv1a64"] = fnv1a64(bytes)
+        } catch {
+            inputRecord["rawWriteError"] = error.localizedDescription
+        }
+    }
+    if let png = NSBitmapImageRep(cgImage: input)
+        .representation(using: .png, properties: [:])
+    {
+        let filename = "sdf-generator-input.png"
+        do {
+            try png.write(
+                to: outputDirectory.appendingPathComponent(filename),
+                options: .atomic)
+            inputRecord["pngFile"] = filename
+            inputRecord["pngBytes"] = png.count
+        } catch {
+            inputRecord["pngWriteError"] = error.localizedDescription
+        }
+    }
     var record: [String: Any] = [
         "mode": "direct-generation",
-        "input": [
-            "kind": "binary-centered-128x160-rectangle",
-            "width": input.width,
-            "height": input.height,
-            "bitsPerComponent": input.bitsPerComponent,
-            "bitsPerPixel": input.bitsPerPixel,
-            "bytesPerRow": input.bytesPerRow,
-        ],
+        "input": inputRecord,
     ]
     guard let defaultRequest = invokeClassFactory(
         requestClass,
@@ -933,7 +961,7 @@ private func sdfGeneratorEvidence(
     writePhase("before-default-generation")
     var captures = [
         generatedSDFRecord(
-            generator: generator,
+            generator: generatorType.init(),
             request: defaultRequest,
             input: input,
             name: "default",
@@ -970,7 +998,28 @@ private func sdfGeneratorEvidence(
             "CASDFOutputEffect unavailable"
     }
 
-    for includeGradient in [false, true] {
+    let definitions: [(
+        name: String,
+        includeGradient: Bool,
+        outputBitDepth: Int64,
+        gradientSmoothing: Double
+    )] = [
+        ("bounded-depth0-field-smoothing3", false, 0, 3),
+        ("bounded-depth0-gradient-smoothing3", true, 0, 3),
+        ("bounded-depth1-field-smoothing3", false, 1, 3),
+        ("bounded-depth1-gradient-smoothing3", true, 1, 3),
+        ("bounded-depth2-field-smoothing3", false, 2, 3),
+        ("bounded-depth2-gradient-smoothing3", true, 2, 3),
+        ("bounded-depth0-gradient-smoothing0", true, 0, 0),
+        ("bounded-depth0-gradient-smoothing0p5", true, 0, 0.5),
+        ("bounded-depth0-gradient-smoothing1", true, 0, 1),
+        ("bounded-depth0-gradient-smoothing1p5", true, 0, 1.5),
+        ("bounded-depth0-gradient-smoothing2", true, 0, 2),
+        ("bounded-depth0-gradient-smoothing2p5", true, 0, 2.5),
+        ("bounded-depth0-gradient-smoothing4", true, 0, 4),
+        ("bounded-depth0-gradient-smoothing6", true, 0, 6),
+    ]
+    for definition in definitions {
         guard let boundedRequest = invokeClassFactory(
             requestClass,
             selector: NSSelectorFromString("request"))
@@ -980,10 +1029,10 @@ private func sdfGeneratorEvidence(
             break
         }
         boundedRequest.setValue(
-            NSNumber(value: includeGradient),
+            NSNumber(value: definition.includeGradient),
             forKey: "includeGradient")
         boundedRequest.setValue(
-            NSNumber(value: 0),
+            NSNumber(value: definition.outputBitDepth),
             forKey: "outputBitDepth")
         boundedRequest.setValue(
             NSNumber(value: 64.0),
@@ -998,14 +1047,12 @@ private func sdfGeneratorEvidence(
             NSNumber(value: 16.0),
             forKey: "oneValueDistance")
         boundedRequest.setValue(
-            NSNumber(value: 3.0),
+            NSNumber(value: definition.gradientSmoothing),
             forKey: "gradientSmoothing")
-        let name = includeGradient
-            ? "bounded-minus64-plus16-gradient"
-            : "bounded-minus64-plus16-field"
+        let name = definition.name
         writePhase("before-\(name)-generation")
         captures.append(generatedSDFRecord(
-            generator: generator,
+            generator: generatorType.init(),
             request: boundedRequest,
             input: input,
             name: name,
@@ -1658,7 +1705,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 17,
+                    "schemaVersion": 18,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -1674,7 +1721,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 17,
+            "schemaVersion": 18,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

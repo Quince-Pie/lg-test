@@ -753,6 +753,11 @@ explicitly bounded `[-64, 16]` requests, one scalar-only and one including
 Apple's gradients. Each call has an independent atomic phase record and
 retains the native image format, raw provider bytes, checksum, and PNG audit
 view when AppKit can encode the result.
+Schema 18 gives every capture a fresh generator instance, retains the exact
+RGBA8 input mask, enumerates output-depth values zero through two with and
+without gradients, and sweeps gradient smoothing through fixed integer and
+half-integer values. Names state every controlled value before output exists;
+the matrix separates field precision, format conversion, and gradient blur.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
