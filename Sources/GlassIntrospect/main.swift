@@ -814,12 +814,24 @@ private func generatedSDFRecord(
 private func sdfGeneratorEvidence(
     outputDirectory: URL
 ) -> [String: Any] {
+    var phaseRecord: [String: Any] = [
+        "phase": "entered-sdf-generator-evidence",
+    ]
+    func writePhase(_ phase: String) {
+        phaseRecord["phase"] = phase
+        try? writeJSON(
+            phaseRecord,
+            to: outputDirectory.appendingPathComponent(
+                "sdf-generator-progress.json"))
+    }
+    writePhase("before-private-class-lookup")
     guard let requestClass = NSClassFromString(
         "CASDFGeneratorRequest"),
           let input = makeSDFGeneratorMask()
     else {
         return ["error": "private SDF request class unavailable"]
     }
+    writePhase("before-default-request-factory")
     var record: [String: Any] = [
         "mode": "request-inspection-only",
         "input": [
@@ -838,9 +850,11 @@ private func sdfGeneratorEvidence(
         record["error"] = "default request factory failed"
         return record
     }
+    writePhase("after-default-request-factory")
     record["defaultRequestValues"] = knownRuntimeValues(
         defaultRequest,
         keys: sdfGeneratorRequestKeys)
+    writePhase("after-default-request-values")
 
     if let outputEffectClass = NSClassFromString(
         "CASDFOutputEffect") as? NSObject.Type
@@ -848,17 +862,20 @@ private func sdfGeneratorEvidence(
         let effect = outputEffectClass.init()
         effect.setValue(NSNumber(value: -64.0), forKey: "minimum")
         effect.setValue(NSNumber(value: 16.0), forKey: "maximum")
+        writePhase("before-effect-request-factory")
         if let effectRequest = invokeClassFactory(
             requestClass,
             selector: NSSelectorFromString("requestForEffect:"),
             object: effect)
         {
+            writePhase("after-effect-request-factory")
             record["effectValues"] = knownRuntimeValues(
                 effect,
                 keys: ["minimum", "maximum"])
             record["effectRequestValues"] = knownRuntimeValues(
                 effectRequest,
                 keys: sdfGeneratorRequestKeys)
+            writePhase("after-effect-request-values")
         } else {
             record["effectRequestError"] =
                 "requestForEffect factory failed"
@@ -881,6 +898,7 @@ private func sdfGeneratorEvidence(
     } catch {
         record["checkpointWriteError"] = error.localizedDescription
     }
+    writePhase("complete")
     return record
 }
 
@@ -1510,9 +1528,26 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         if captureStarted {
             MTLCaptureManager.shared().stopCapture()
         }
+        func writeProgress(_ phase: String) {
+            try? writeJSON(
+                [
+                    "schemaVersion": 15,
+                    "phase": phase,
+                ],
+                to: outputDirectory.appendingPathComponent(
+                    "runtime-progress.json"))
+        }
+        writeProgress("before-runtime-method-code")
+        let runtimeMethodCode = runtimeMethodCodeEvidence()
+        writeProgress("after-runtime-method-code")
+        let forensicRuntimeClasses = allForensicRuntimeClasses()
+        writeProgress("after-forensic-runtime-classes")
+        let generatorEvidence = sdfGeneratorEvidence(
+            outputDirectory: outputDirectory)
+        writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 14,
+            "schemaVersion": 15,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -1534,11 +1569,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             },
             "exportedCode": exportedCodeEvidence(),
             "constructedMatrices": constructedMatrixEvidence(),
-            "runtimeMethodCode": runtimeMethodCodeEvidence(),
+            "runtimeMethodCode": runtimeMethodCode,
             "allForensicRuntimeClasses":
-                allForensicRuntimeClasses(),
-            "sdfGeneratorEvidence": sdfGeneratorEvidence(
-                outputDirectory: outputDirectory),
+                forensicRuntimeClasses,
+            "sdfGeneratorEvidence": generatorEvidence,
         ]
         if let captureError {
             report["captureError"] = captureError

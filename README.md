@@ -738,6 +738,11 @@ request derived from a controlled `CASDFOutputEffect`, then atomically writes
 those values to `sdf-generator-requests.json` without invoking the generator.
 The following probe can use the observed native bounds and isolate generation
 behind a timeout before retaining the image's native format and raw bytes.
+Schema 15 places atomic progress records around the method-byte probe, class
+inventory, request factories, and every request-value read. The workflow
+enforces a 45-second subprocess deadline, so a private call that stops making
+progress is terminated without losing the last completed phase or preventing
+the forensic directory from being uploaded.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

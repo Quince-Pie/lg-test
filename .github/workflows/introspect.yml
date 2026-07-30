@@ -62,9 +62,45 @@ jobs:
           MTL_CAPTURE_ENABLED: "1"
         run: |
           if [ "${{ steps.build.outcome }}" = success ]; then
-            ./glassintrospect introspection ||
-              echo "introspection app exited nonzero" \
-                > introspection/runtime-error.txt
+            python3 - <<'PY'
+          import json
+          import pathlib
+          import subprocess
+
+          error_path = pathlib.Path("introspection/runtime-error.json")
+          try:
+              result = subprocess.run(
+                  ["./glassintrospect", "introspection"],
+                  check=False,
+                  timeout=45,
+              )
+              if result.returncode != 0:
+                  error_path.write_text(
+                      json.dumps(
+                          {
+                              "error": "introspection app exited nonzero",
+                              "returnCode": result.returncode,
+                          },
+                          indent=2,
+                          sort_keys=True,
+                      )
+                      + "\n",
+                      encoding="utf-8",
+                  )
+          except subprocess.TimeoutExpired:
+              error_path.write_text(
+                  json.dumps(
+                      {
+                          "error": "introspection app exceeded deadline",
+                          "timeoutSeconds": 45,
+                      },
+                      indent=2,
+                      sort_keys=True,
+                  )
+                  + "\n",
+                  encoding="utf-8",
+              )
+          PY
           else
             echo "introspection app did not build" \
               > introspection/runtime-error.txt
