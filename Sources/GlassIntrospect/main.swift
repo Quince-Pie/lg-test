@@ -2151,105 +2151,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
-        switch kind {
-        case "drawPrimitives":
-            if let vertexStart = fields["vertexStart"] as? Int,
-               let vertexCount = fields["vertexCount"] as? Int
-            {
-                appendReplayCommand(
-                    encoder: encoder,
-                    .drawPrimitives(
-                        primitiveType,
-                        vertexStart,
-                        vertexCount))
-            }
-        case "drawPrimitivesInstanced":
-            if let vertexStart = fields["vertexStart"] as? Int,
-               let vertexCount = fields["vertexCount"] as? Int,
-               let instanceCount = fields["instanceCount"] as? Int
-            {
-                appendReplayCommand(
-                    encoder: encoder,
-                    .drawPrimitivesInstanced(
-                        primitiveType,
-                        vertexStart,
-                        vertexCount,
-                        instanceCount))
-            }
-        case "drawPrimitivesBaseInstance":
-            if let vertexStart = fields["vertexStart"] as? Int,
-               let vertexCount = fields["vertexCount"] as? Int,
-               let instanceCount = fields["instanceCount"] as? Int,
-               let baseInstance = fields["baseInstance"] as? Int
-            {
-                appendReplayCommand(
-                    encoder: encoder,
-                    .drawPrimitivesBaseInstance(
-                        primitiveType,
-                        vertexStart,
-                        vertexCount,
-                        instanceCount,
-                        baseInstance))
-            }
-        case "drawIndexedPrimitives":
-            if let indexCount = fields["indexCount"] as? Int,
-               let indexTypeRaw = fields["indexType"] as? UInt,
-               let indexType = MTLIndexType(rawValue: indexTypeRaw),
-               let resource = resources.first,
-               let indexBuffer = resource.buffer as? MTLBuffer
-            {
-                appendReplayCommand(
-                    encoder: encoder,
-                    .drawIndexedPrimitives(
-                        primitiveType,
-                        indexCount,
-                        indexType,
-                        indexBuffer,
-                        resource.offset))
-            }
-        case "drawIndexedPrimitivesInstanced":
-            if let indexCount = fields["indexCount"] as? Int,
-               let indexTypeRaw = fields["indexType"] as? UInt,
-               let indexType = MTLIndexType(rawValue: indexTypeRaw),
-               let instanceCount = fields["instanceCount"] as? Int,
-               let resource = resources.first,
-               let indexBuffer = resource.buffer as? MTLBuffer
-            {
-                appendReplayCommand(
-                    encoder: encoder,
-                    .drawIndexedPrimitivesInstanced(
-                        primitiveType,
-                        indexCount,
-                        indexType,
-                        indexBuffer,
-                        resource.offset,
-                        instanceCount))
-            }
-        case "drawIndexedPrimitivesBaseVertex":
-            if let indexCount = fields["indexCount"] as? Int,
-               let indexTypeRaw = fields["indexType"] as? UInt,
-               let indexType = MTLIndexType(rawValue: indexTypeRaw),
-               let instanceCount = fields["instanceCount"] as? Int,
-               let baseVertex = fields["baseVertex"] as? Int,
-               let baseInstance = fields["baseInstance"] as? Int,
-               let resource = resources.first,
-               let indexBuffer = resource.buffer as? MTLBuffer
-            {
-                appendReplayCommand(
-                    encoder: encoder,
-                    .drawIndexedPrimitivesBaseVertex(
-                        primitiveType,
-                        indexCount,
-                        indexType,
-                        indexBuffer,
-                        resource.offset,
-                        instanceCount,
-                        baseVertex,
-                        baseInstance))
-            }
-        default:
-            break
-        }
         var record: [String: Any] = [
             "class": String(reflecting: type(of: pipelineState)),
             "description": String(describing: pipelineState),
@@ -2741,6 +2642,105 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        switch kind {
+        case "drawPrimitives":
+            if let vertexStart = fields["vertexStart"] as? Int,
+               let vertexCount = fields["vertexCount"] as? Int
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawPrimitives(
+                        primitiveType,
+                        vertexStart,
+                        vertexCount))
+            }
+        case "drawPrimitivesInstanced":
+            if let vertexStart = fields["vertexStart"] as? Int,
+               let vertexCount = fields["vertexCount"] as? Int,
+               let instanceCount = fields["instanceCount"] as? Int
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawPrimitivesInstanced(
+                        primitiveType,
+                        vertexStart,
+                        vertexCount,
+                        instanceCount))
+            }
+        case "drawPrimitivesBaseInstance":
+            if let vertexStart = fields["vertexStart"] as? Int,
+               let vertexCount = fields["vertexCount"] as? Int,
+               let instanceCount = fields["instanceCount"] as? Int,
+               let baseInstance = fields["baseInstance"] as? Int
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawPrimitivesBaseInstance(
+                        primitiveType,
+                        vertexStart,
+                        vertexCount,
+                        instanceCount,
+                        baseInstance))
+            }
+        case "drawIndexedPrimitives":
+            if let indexCount = fields["indexCount"] as? Int,
+               let indexTypeRaw = fields["indexType"] as? UInt,
+               let indexType = MTLIndexType(rawValue: indexTypeRaw),
+               let resource = resources.first,
+               let indexBuffer = resource.buffer as? MTLBuffer
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawIndexedPrimitives(
+                        primitiveType,
+                        indexCount,
+                        indexType,
+                        indexBuffer,
+                        resource.offset))
+            }
+        case "drawIndexedPrimitivesInstanced":
+            if let indexCount = fields["indexCount"] as? Int,
+               let indexTypeRaw = fields["indexType"] as? UInt,
+               let indexType = MTLIndexType(rawValue: indexTypeRaw),
+               let instanceCount = fields["instanceCount"] as? Int,
+               let resource = resources.first,
+               let indexBuffer = resource.buffer as? MTLBuffer
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawIndexedPrimitivesInstanced(
+                        primitiveType,
+                        indexCount,
+                        indexType,
+                        indexBuffer,
+                        resource.offset,
+                        instanceCount))
+            }
+        case "drawIndexedPrimitivesBaseVertex":
+            if let indexCount = fields["indexCount"] as? Int,
+               let indexTypeRaw = fields["indexType"] as? UInt,
+               let indexType = MTLIndexType(rawValue: indexTypeRaw),
+               let instanceCount = fields["instanceCount"] as? Int,
+               let baseVertex = fields["baseVertex"] as? Int,
+               let baseInstance = fields["baseInstance"] as? Int,
+               let resource = resources.first,
+               let indexBuffer = resource.buffer as? MTLBuffer
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawIndexedPrimitivesBaseVertex(
+                        primitiveType,
+                        indexCount,
+                        indexType,
+                        indexBuffer,
+                        resource.offset,
+                        instanceCount,
+                        baseVertex,
+                        baseInstance))
+            }
+        default:
+            break
+        }
         var record: [String: Any] = [
             "capture": captureName,
             "kind": kind,
