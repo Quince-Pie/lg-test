@@ -182,7 +182,8 @@ private func runtimeMirrorDescription(
     let mirror = Mirror(reflecting: object)
     return [[
         "subjectType": String(reflecting: mirror.subjectType),
-        "children": mirror.children.compactMap { child in
+        "children": mirror.children.compactMap {
+            child -> [String: Any]? in
             guard let label = child.label,
                   selectedLabels.contains(label)
             else {
