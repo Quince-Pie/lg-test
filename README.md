@@ -743,6 +743,11 @@ inventory, request factories, and every request-value read. The workflow
 enforces a 45-second subprocess deadline, so a private call that stops making
 progress is terminated without losing the last completed phase or preventing
 the forensic directory from being uploaded.
+Schema 16 converts each native request scalar into an inert record containing
+its Objective-C encoding, finite/non-finite decimal spelling, and exact
+Float64 bit pattern before JSON serialization. This avoids retaining a private
+`NSNumber` subclass in the report and preserves infinities and NaNs without
+coercion.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

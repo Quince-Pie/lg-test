@@ -697,6 +697,51 @@ private let sdfGeneratorRequestKeys = [
     "gradientSmoothing",
 ]
 
+private func sdfScalarValues(
+    _ object: NSObject,
+    keys: [String]
+) -> [String: Any] {
+    var values: [String: Any] = [:]
+    for key in keys {
+        let selector = NSSelectorFromString(key)
+        guard object.responds(to: selector) else { continue }
+        guard let value = object.value(forKey: key) else {
+            values[key] = ["kind": "nil"]
+            continue
+        }
+        guard let number = value as? NSNumber else {
+            values[key] = [
+                "kind": "non-number",
+                "class": String(reflecting: type(of: value)),
+                "description": String(describing: value),
+            ]
+            continue
+        }
+        let doubleValue = number.doubleValue
+        let floatingDescription: String
+        if doubleValue.isNaN {
+            floatingDescription = "nan"
+        } else if doubleValue == .infinity {
+            floatingDescription = "+infinity"
+        } else if doubleValue == -.infinity {
+            floatingDescription = "-infinity"
+        } else {
+            floatingDescription = String(
+                format: "%.17g",
+                doubleValue)
+        }
+        values[key] = [
+            "kind": "number",
+            "objCType": String(cString: number.objCType),
+            "float64": floatingDescription,
+            "float64Bits": String(
+                format: "%016llx",
+                doubleValue.bitPattern),
+        ]
+    }
+    return values
+}
+
 private func makeSDFGeneratorMask() -> CGImage? {
     let width = 256
     let height = 256
@@ -851,7 +896,7 @@ private func sdfGeneratorEvidence(
         return record
     }
     writePhase("after-default-request-factory")
-    record["defaultRequestValues"] = knownRuntimeValues(
+    record["defaultRequestValues"] = sdfScalarValues(
         defaultRequest,
         keys: sdfGeneratorRequestKeys)
     writePhase("after-default-request-values")
@@ -869,10 +914,10 @@ private func sdfGeneratorEvidence(
             object: effect)
         {
             writePhase("after-effect-request-factory")
-            record["effectValues"] = knownRuntimeValues(
+            record["effectValues"] = sdfScalarValues(
                 effect,
                 keys: ["minimum", "maximum"])
-            record["effectRequestValues"] = knownRuntimeValues(
+            record["effectRequestValues"] = sdfScalarValues(
                 effectRequest,
                 keys: sdfGeneratorRequestKeys)
             writePhase("after-effect-request-values")
@@ -1531,7 +1576,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 15,
+                    "schemaVersion": 16,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -1547,7 +1592,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 15,
+            "schemaVersion": 16,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
