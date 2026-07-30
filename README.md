@@ -1140,6 +1140,14 @@ and coverage. The existing SDF half trace must remain byte-identical before
 these materialized intermediates are accepted. This separates Apple GPU
 fast divide/square-root behavior from half conversion and quad derivatives
 instead of fitting one aggregate correction to the final pixels.
+The standalone `float-intrinsic-probe.yml` workflow then exhaustively
+enumerates all 8,388,608 binary32 mantissas at both square-root exponent
+parities. It records signed-ULP deltas from an IEEE binary64 baseline for
+Metal `fast::sqrt`, `fast::rsqrt`, and reciprocal division, rather than
+shipping hundreds of megabytes of redundant raw float words. A separate
+1,040,384-state grid samples every normal exponent and must reproduce those
+mantissa/parity tables exactly. This turns the final backend-specific SDF
+dependency into a bounded bit table with an explicit generalization gate.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

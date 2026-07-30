@@ -1,0 +1,81 @@
+name: Measure Apple Metal float intrinsics
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/float-intrinsic-probe.yml
+      - Sources/GlassFloatIntrinsicProbe/**
+
+concurrency:
+  group: float-intrinsic-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  float-intrinsic-probe:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Build Metal float-intrinsic probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p float-intrinsic-probe
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassFloatIntrinsicProbe/main.swift \
+            -o glass-float-intrinsic-probe 2>&1 |
+            tee float-intrinsic-probe/build.log
+
+      - name: Measure Metal float intrinsics
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: ./glass-float-intrinsic-probe float-intrinsic-probe
+
+      - name: Upload Metal float-intrinsic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-float-intrinsic-probe-${{ github.run_id }}
+          path: float-intrinsic-probe
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce Metal float-intrinsic evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test -s float-intrinsic-probe/manifest.json
+          test \
+            "$(stat -f %z float-intrinsic-probe/float-fast-sqrt-rsqrt-deltas-i8.bin)" \
+            -eq 33554432
+          test \
+            "$(stat -f %z float-intrinsic-probe/float-fast-reciprocal-deltas-i8.bin)" \
+            -eq 8388608
+          python3 - <<'PY'
+          import json
+
+          with open(
+              "float-intrinsic-probe/manifest.json",
+              encoding="utf-8",
+          ) as stream:
+              manifest = json.load(stream)
+          if manifest.get("schemaVersion") != 1:
+              raise SystemExit("float-intrinsic schema differs")
+          validation = manifest.get("exponentInvarianceValidation", {})
+          if validation.get("exact") is not True:
+              raise SystemExit(
+                  "float-intrinsic exponent invariance was falsified: "
+                  f"{validation}"
+              )
+          PY
