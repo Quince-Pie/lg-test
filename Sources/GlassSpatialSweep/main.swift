@@ -33,6 +33,8 @@ private let productionKernelTileSide = 64
 private let productionDistanceCoarseStateCount = 65
 private let productionDistanceFirstLowerHalfBits: UInt16 = 0xf0e3
 private let productionDistanceLastLowerHalfBits: UInt16 = 0xde41
+private let productionExactFirstLowerHalfBits: UInt16 = 0xe7dd
+private let productionExactLastLowerHalfBits: UInt16 = 0xe53e
 private let stripePositions = [
     24, 50, 76, 102,
     400, 426, 452, 478,
@@ -95,6 +97,7 @@ private enum LodSweepMode: Equatable {
     case sdfCalibration
     case productionKernel
     case productionDistance
+    case productionSdfExact
 }
 
 private struct LodCaptureState {
@@ -320,6 +323,14 @@ private let productionDistanceCoarseLowerHalfBits: [UInt16] = {
     precondition(result.last == productionDistanceLastLowerHalfBits)
     return result
 }()
+
+private let productionExactLowerHalfBits = stride(
+    from: Int(productionExactFirstLowerHalfBits),
+    through: Int(productionExactLastLowerHalfBits),
+    by: -1
+).map { UInt16($0) }
+
+private let productionExactSourceIndices = [1, 2]
 
 private func renderSource(amplitude: Int) -> CGImage {
     precondition((0...127).contains(amplitude))
@@ -1427,6 +1438,60 @@ private func productionDistanceCaptureStates() -> [LodCaptureState] {
     return result
 }
 
+private func productionExactCaptureStates() -> [LodCaptureState] {
+    var result: [LodCaptureState] = []
+
+    func append(
+        name: String,
+        distances: [Float],
+        hypothesis: String
+    ) {
+        result.append(productionDistanceCaptureState(
+            distances: distances,
+            name: name,
+            index: result.count,
+            hypothesis: hypothesis))
+    }
+
+    append(
+        name: "production-exact-live-leading",
+        distances: [-400, -1, 0, 0, 0],
+        hypothesis: "exact production opacity-one endpoint")
+    append(
+        name: "production-exact-positive-one-control",
+        distances: [1, 2, 2, 2, 2],
+        hypothesis:
+            "same opacity-one endpoint with different distances")
+    append(
+        name: "production-exact-far-negative-half-control",
+        distances: [-20_000, -15_000, 0, 0, 0],
+        hypothesis: "saturated opacity-one-half endpoint")
+    append(
+        name: "production-exact-sentinel-half-control",
+        distances: [-10_008, -9_992, 0, 0, 0],
+        hypothesis:
+            "same opacity-one-half endpoint with adjacent sentinels")
+    for lowerBits in productionExactLowerHalfBits {
+        let upperBits = lowerBits - 1
+        let lower = Float(Float16(bitPattern: lowerBits))
+        let upper = Float(Float16(bitPattern: upperBits))
+        precondition(lower < upper)
+        append(
+            name: String(
+                format:
+                    "production-exact-threshold-lower-%04x",
+                lowerBits),
+            distances: [lower, upper, 0, 0, 0],
+            hypothesis:
+                "exact same-resource adjacent-half SDF threshold")
+    }
+    append(
+        name: "production-exact-live-trailing",
+        distances: [-400, -1, 0, 0, 0],
+        hypothesis: "exact production repeatability control")
+    return result
+}
+
 private let sdfScaleNumeratorRange = 1638...2048
 private let sdfScaleDenominator = 2048
 private let sdfScaleResourceRadius: Float = 4
@@ -1743,6 +1808,9 @@ private func sdfCalibrationCaptureState(
 private func lodCaptureStates(
     mode: LodSweepMode
 ) -> [LodCaptureState] {
+    if mode == .productionSdfExact {
+        return productionExactCaptureStates()
+    }
     if mode == .productionDistance {
         return productionDistanceCaptureStates()
     }
@@ -2501,7 +2569,9 @@ private final class SpatialSweepDelegate:
     ) async throws {
         let captureStates = lodCaptureStates(mode: mode)
         let captureAmplitudes: [Int]
-        if mode == .productionKernel
+        if mode == .productionSdfExact {
+            captureAmplitudes = productionExactSourceIndices
+        } else if mode == .productionKernel
             || mode == .productionDistance
         {
             captureAmplitudes =
@@ -2525,6 +2595,7 @@ private final class SpatialSweepDelegate:
             let source: CGImage
             if mode == .productionKernel
                 || mode == .productionDistance
+                || mode == .productionSdfExact
             {
                 guard let definition =
                     productionKernelSources.first(
@@ -2679,6 +2750,15 @@ private final class SpatialSweepDelegate:
                         || stateIndex == 5
                         || stateIndex == 69
                         || stateIndex == 70
+                } else if mode == .productionSdfExact {
+                    auditState =
+                        stateIndex == 0
+                        || stateIndex == 1
+                        || stateIndex == 2
+                        || stateIndex == 3
+                        || stateIndex == 4
+                        || stateIndex == 675
+                        || stateIndex == 676
                 } else {
                     auditState =
                         amplitude == 127
@@ -2696,11 +2776,20 @@ private final class SpatialSweepDelegate:
                         fileName = "\(state.name).png"
                     } else if mode == .productionKernel
                         || mode == .productionDistance
+                        || mode == .productionSdfExact
                     {
-                        let prefix =
-                            mode == .productionKernel
-                            ? "production-kernel"
-                            : "production-distance"
+                        let prefix: String
+                        switch mode {
+                        case .productionKernel:
+                            prefix = "production-kernel"
+                        case .productionDistance:
+                            prefix = "production-distance"
+                        case .productionSdfExact:
+                            prefix = "production-sdf-exact"
+                        default:
+                            preconditionFailure(
+                                "unexpected production source mode")
+                        }
                         fileName = String(
                             format:
                                 "%@-source-%02d-%@.png",
@@ -2741,6 +2830,7 @@ private final class SpatialSweepDelegate:
             ]
             if mode == .productionKernel
                 || mode == .productionDistance
+                || mode == .productionSdfExact
             {
                 guard let definition =
                     productionKernelSources.first(
@@ -2761,10 +2851,18 @@ private final class SpatialSweepDelegate:
                 } else {
                     record["sourcePatternSeed"] = NSNull()
                 }
-                let sourceKind =
-                    mode == .productionKernel
-                    ? "production-kernel"
-                    : "production-distance"
+                let sourceKind: String
+                switch mode {
+                case .productionKernel:
+                    sourceKind = "production-kernel"
+                case .productionDistance:
+                    sourceKind = "production-distance"
+                case .productionSdfExact:
+                    sourceKind = "production-sdf-exact"
+                default:
+                    preconditionFailure(
+                        "unexpected production source mode")
+                }
                 let prefix = String(
                     format: "%@-source-%02d",
                     sourceKind,
@@ -2880,6 +2978,8 @@ private final class SpatialSweepDelegate:
             streamPrefix = "native-production-kernel"
         case .productionDistance:
             streamPrefix = "native-production-distance"
+        case .productionSdfExact:
+            streamPrefix = "native-production-sdf-exact"
         }
         let controlURL = outputDirectory
             .appendingPathComponent(
@@ -2899,6 +2999,7 @@ private final class SpatialSweepDelegate:
                     || mode == .sdfCalibration
                     || mode == .productionKernel
                     || mode == .productionDistance
+                    || mode == .productionSdfExact
                 ? (
                     "source-pattern order, state order, "
                     + "reduced-grid phase row-major, "
@@ -2920,6 +3021,7 @@ private final class SpatialSweepDelegate:
                     || mode == .sdfCalibration
                     || mode == .productionKernel
                     || mode == .productionDistance
+                    || mode == .productionSdfExact
                 ? (
                     "source-pattern order, reduced-grid phase "
                     + "row-major, patch y-major then x-major"
@@ -2945,6 +3047,7 @@ private final class SpatialSweepDelegate:
                     || mode == .sdfCalibration
                     || mode == .productionKernel
                     || mode == .productionDistance
+                    || mode == .productionSdfExact
                 )
                 ? streamPrefix
                 : "native-lod"
@@ -3190,16 +3293,64 @@ private final class SpatialSweepDelegate:
                         + "at most once across ordered thresholds",
                 ],
             ]
+        case .productionSdfExact:
+            rigVersion =
+                "native-production-sdf-exact-sweep-1.0.0"
+            sweepKind =
+                "production-profile-exact-adjacent-half-sdf-recovery"
+            lodDesign = [
+                "states": captureStates.map(\.manifest),
+                "stateCount": captureStates.count,
+                "resourceBlurRadius": 1,
+                "leadingProductionStateIndex": 0,
+                "opacityOneControlStateIndex": 1,
+                "opacityHalfControlStateIndices": [2, 3],
+                "thresholdStateIndexRangeInclusive": [4, 675],
+                "thresholdCount":
+                    productionExactLowerHalfBits.count,
+                "lowerHalfBitsTraversalInclusive":
+                    ["e7dd", "e53e"],
+                "lowerDistanceTraversal":
+                    "strictly increasing numeric value",
+                "upperDistance":
+                    "next greater finite binary16 value",
+                "trailingProductionStateIndex": 676,
+                "controlledVariables":
+                    ["inputBlurDistance0Through4"],
+                "fixedBlurOpacities":
+                    [1, 0.5, 0.5, 1, 1],
+                "fixedInputBlurRadius": 1,
+                "sourcePatternIndices":
+                    productionExactSourceIndices,
+                "sourceCoverageEvidenceRun": 30518053052,
+                "sourceCoverageSpatialSamples": 104_976,
+                "sourceCoverageMissingSamples": 0,
+                "acceptanceChecks": [
+                    "every discriminating threshold value must "
+                        + "equal one fixed endpoint",
+                    "both sources must assign one consistent "
+                        + "class at every spatial sample",
+                    "every spatial sample must transition exactly "
+                        + "once and recover one binary16 half word",
+                ],
+            ]
         }
+        let selectedProductionSources =
+            mode == .productionSdfExact
+            ? productionKernelSources.filter {
+                productionExactSourceIndices.contains($0.index)
+            }
+            : productionKernelSources
         let sourceDesign: [String: Any]
         if mode == .productionKernel
             || mode == .productionDistance
+            || mode == .productionSdfExact
         {
             sourceDesign = [
                 "kind":
                     "periodic-independent-rgb-system-identification",
                 "sources":
-                    productionKernelSources.map(
+                    selectedProductionSources.map(
                         productionKernelSourceManifest),
                 "tileWidthPixels":
                     productionKernelTileSide,
@@ -3437,6 +3588,27 @@ private final class SpatialSweepDelegate:
                         [1, 0.5, 0.5, 1, 1],
                     "inputBlurDistance0Through4":
                         "only controlled variables",
+                    "inputInnerRefractionAmount": -60,
+                    "inputOuterRefractionAmount": 160,
+                    "inputRefractionOpacity": 0,
+                    "inputFaceColorMatrixBlack": 0,
+                    "inputFaceColorMatrixWhite": 1,
+                    "inputFaceColorMatrixSaturation": 1,
+                    "inputSDRHoldingToneEnabled": false,
+                ]
+                : NSNull(),
+            "productionSdfExactInputs":
+                mode == .productionSdfExact
+                ? [
+                    "inputBlurRadius": 1,
+                    "inputBlurOpacity0Through4":
+                        [1, 0.5, 0.5, 1, 1],
+                    "inputBlurDistance0":
+                        "enumerates every binary16 lower "
+                        + "breakpoint from 0xe7dd through 0xe53e",
+                    "inputBlurDistance1":
+                        "next greater finite binary16 value",
+                    "inputBlurDistance2Through4": [0, 0, 0],
                     "inputInnerRefractionAmount": -60,
                     "inputOuterRefractionAmount": 160,
                     "inputRefractionOpacity": 0,
@@ -3927,6 +4099,14 @@ private final class SpatialSweepDelegate:
                 try await runLodSweep(
                     workspace: workspace,
                     mode: .productionDistance)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--production-sdf-exact")
+            {
+                try await runLodSweep(
+                    workspace: workspace,
+                    mode: .productionSdfExact)
                 return
             }
             if CommandLine.arguments.dropFirst(2)

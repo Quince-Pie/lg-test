@@ -1193,6 +1193,24 @@ identification modes for the private clear-material mip path:
   discriminating value may transition at most once. This simultaneously
   tests whether distances preserve the production source resource and narrows
   the exact SDF range without changing the production opacity profile.
+- Run `30518053052` accepts that distance-only control axis. Both
+  opacity-one controls and both opacity-one-half controls are byte-exact
+  across 1,889,568 native values. Across 65 thresholds and 1,442,840
+  endpoint-discriminating values there are zero intermediate responses, zero
+  reverse transitions, and zero cross-source/channel class conflicts. Every
+  one of 104,976 spatial samples transitions exactly once, occupying nine
+  coarse brackets from approximately `-2013` through `-1342`. Any pair of the
+  five broadband patterns covers all spatial samples; patterns one and two
+  are the preregistered minimal exact-scan pair.
+- `--production-sdf-exact` keeps the accepted production opacity/radius
+  profile and scans every adjacent binary16 threshold from `0xe7dd` through
+  `0xe53e`. Those 672 states cover the complete occupied coarse range. It
+  captures only training patterns one and two, whose combined endpoint
+  discrimination covered 104,976/104,976 samples in run `30518053052`, plus
+  exact opacity-one, opacity-one-half, and repeatability controls. The first
+  opacity-one state at each sample is its recovered SDF half word; any
+  intermediate, conflicting, missing, or multiple transition is a hard
+  failure.
 
 ## What happens after capture
 

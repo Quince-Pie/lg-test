@@ -1,4 +1,4 @@
-name: Isolate the production Liquid Glass source resource
+name: Recover the exact production Liquid Glass SDF
 
 on:
   workflow_dispatch:
@@ -42,11 +42,11 @@ jobs:
             -o glass-spatial-sweep 2>&1 |
             tee spatial-sweep/build.log
 
-      - name: Capture distance-only production-resource controls
+      - name: Capture exact adjacent-half SDF thresholds
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
-        run: ./glass-spatial-sweep spatial-sweep --production-distance
+        run: ./glass-spatial-sweep spatial-sweep --production-sdf-exact
 
       - name: Inventory native spatial sweep
         if: always()
@@ -57,7 +57,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-production-distance-${{ github.run_id }}
+          name: liquid-glass-production-sdf-exact-${{ github.run_id }}
           path: spatial-sweep
           if-no-files-found: error
           retention-days: 7
@@ -68,5 +68,5 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test -s spatial-sweep/manifest.json
-          test -s spatial-sweep/native-production-distance-control-patches.rgb8
-          test -s spatial-sweep/native-production-distance-identity-patches.rgb8
+          test -s spatial-sweep/native-production-sdf-exact-control-patches.rgb8
+          test -s spatial-sweep/native-production-sdf-exact-identity-patches.rgb8
