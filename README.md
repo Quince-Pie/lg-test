@@ -769,6 +769,13 @@ render-pipeline identity. This exposes the exact `NarrowBlurUniforms` offsets
 and weights selected by Apple's host code instead of inferring them from
 quantized output images; the observer forwards every call to the original
 implementation and does not substitute a renderer or shader.
+Schema 21 also observes fragment-texture bindings and retains bounded,
+tightly packed snapshots for the default and smoothing-three gradient
+requests. The snapshots are copied only after the native output provider has
+materialized, include their exact Metal format and binding provenance, and
+target the base-field and post-blur surfaces read by Apple's final gradient
+shader. Other smoothing cases retain metadata without multiplying artifact
+size.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

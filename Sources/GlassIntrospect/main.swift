@@ -679,6 +679,13 @@ private typealias MetalSetFragmentBufferFunction =
         Int,
         Int
     ) -> Void
+private typealias MetalSetFragmentTextureFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        AnyObject?,
+        Int
+    ) -> Void
 
 private func probeSetRenderPipelineState(
     _ encoder: AnyObject,
@@ -734,12 +741,38 @@ private func probeSetFragmentBuffer(
         index: index)
 }
 
+private func probeSetFragmentTexture(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ texture: AnyObject?,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordFragmentTexture(
+        encoder: encoder,
+        texture: texture,
+        index: index)
+    MetalUniformProbe.shared.forwardFragmentTexture(
+        encoder: encoder,
+        selector: selector,
+        texture: texture,
+        index: index)
+}
+
 private final class MetalUniformProbe: @unchecked Sendable {
+    private struct TextureBinding {
+        let capture: String
+        let sequence: Int
+        let index: Int
+        let pipeline: [String: Any]
+        let texture: MTLTexture
+    }
+
     static let shared = MetalUniformProbe()
 
     private let lock = NSLock()
     private var captureName: String?
     private var records: [[String: Any]] = []
+    private var textureBindings: [TextureBinding] = []
     private var droppedRecordCount = 0
     private var pipelineRecords: [ObjectIdentifier: [String: Any]] = [:]
     private var originalPipelineState:
@@ -748,8 +781,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
         MetalSetFragmentBytesFunction?
     private var originalFragmentBuffer:
         MetalSetFragmentBufferFunction?
+    private var originalFragmentTexture:
+        MetalSetFragmentTextureFunction?
     private let maximumRecordCount = 16_384
     private let maximumCapturedBytes = 512
+    private let textureCaptureNames = Set([
+        "default",
+        "bounded-depth0-gradient-smoothing3",
+        "bounded-depth2-gradient-smoothing3",
+    ])
 
     private init() {}
 
@@ -881,11 +921,41 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ])
         }
 
+        let textureSelector = NSSelectorFromString(
+            "setFragmentTexture:atIndex:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            textureSelector)
+        {
+            let original = method_getImplementation(method)
+            originalFragmentTexture = unsafeBitCast(
+                original,
+                to: MetalSetFragmentTextureFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetFragmentTexture as MetalSetFragmentTextureFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                textureSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(textureSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
         encoder.endEncoding()
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         return [
-            "installed": methods.count == 3,
+            "installed": methods.count == 4,
             "encoderClass": NSStringFromClass(encoderClass),
             "methods": methods,
         ]
@@ -1030,6 +1100,200 @@ private final class MetalUniformProbe: @unchecked Sendable {
         appendRecord(record)
     }
 
+    func recordFragmentTexture(
+        encoder: AnyObject,
+        texture: AnyObject?,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "texture",
+            "index": index,
+            "pipeline": encoderPipeline(encoder),
+        ]
+        if let metalTexture = texture as? MTLTexture {
+            record["textureClass"] =
+                String(reflecting: type(of: metalTexture))
+            record["address"] = String(
+                format: "0x%016llx",
+                UInt64(UInt(bitPattern: Unmanaged
+                    .passUnretained(metalTexture as AnyObject)
+                    .toOpaque())))
+            record["width"] = metalTexture.width
+            record["height"] = metalTexture.height
+            record["depth"] = metalTexture.depth
+            record["arrayLength"] = metalTexture.arrayLength
+            record["mipmapLevelCount"] = metalTexture.mipmapLevelCount
+            record["sampleCount"] = metalTexture.sampleCount
+            record["pixelFormat"] = metalTexture.pixelFormat.rawValue
+            record["textureType"] = metalTexture.textureType.rawValue
+            record["usage"] = metalTexture.usage.rawValue
+            record["storageMode"] = metalTexture.storageMode.rawValue
+            if textureCaptureNames.contains(captureName) {
+                textureBindings.append(TextureBinding(
+                    capture: captureName,
+                    sequence: records.count,
+                    index: index,
+                    pipeline: encoderPipeline(encoder),
+                    texture: metalTexture))
+            }
+        } else if texture == nil {
+            record["texture"] = "nil"
+        } else {
+            record["textureClass"] =
+                String(reflecting: type(of: texture!))
+        }
+        appendRecord(record)
+    }
+
+    private func bytesPerPixel(
+        _ format: MTLPixelFormat
+    ) -> Int? {
+        switch format {
+        case .r8Unorm:
+            return 1
+        case .rg8Unorm, .r16Unorm, .r16Float:
+            return 2
+        case .rgba8Unorm, .rgba8Unorm_srgb,
+             .bgra8Unorm, .bgra8Unorm_srgb,
+             .rg16Unorm, .rg16Float, .r32Float:
+            return 4
+        case .rgba16Unorm, .rgba16Float, .rg32Float:
+            return 8
+        case .rgba32Float:
+            return 16
+        default:
+            return nil
+        }
+    }
+
+    func snapshotTextures(
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        lock.lock()
+        let bindings = textureBindings.filter {
+            $0.capture == capture
+        }
+        lock.unlock()
+
+        var seen: Set<ObjectIdentifier> = []
+        var snapshots: [[String: Any]] = []
+        for binding in bindings {
+            let texture = binding.texture
+            let identifier = ObjectIdentifier(texture as AnyObject)
+            guard seen.insert(identifier).inserted else { continue }
+            var record: [String: Any] = [
+                "sequence": binding.sequence,
+                "index": binding.index,
+                "pipeline": binding.pipeline,
+                "width": texture.width,
+                "height": texture.height,
+                "depth": texture.depth,
+                "arrayLength": texture.arrayLength,
+                "mipmapLevelCount": texture.mipmapLevelCount,
+                "sampleCount": texture.sampleCount,
+                "pixelFormat": texture.pixelFormat.rawValue,
+                "textureType": texture.textureType.rawValue,
+                "usage": texture.usage.rawValue,
+                "storageMode": texture.storageMode.rawValue,
+            ]
+            guard texture.textureType == .type2D,
+                  texture.depth == 1,
+                  texture.arrayLength == 1,
+                  texture.sampleCount == 1,
+                  texture.width > 0,
+                  texture.height > 0,
+                  texture.width <= 1_024,
+                  texture.height <= 1_024,
+                  let pixelBytes = bytesPerPixel(texture.pixelFormat)
+            else {
+                record["rawCapture"] = false
+                record["reason"] = "texture layout outside probe bounds"
+                snapshots.append(record)
+                continue
+            }
+            let tightBytesPerRow = texture.width * pixelBytes
+            let alignedBytesPerRow =
+                (tightBytesPerRow + 255) & ~255
+            let bufferBytes = alignedBytesPerRow * texture.height
+            let device = texture.device
+            guard let buffer = device.makeBuffer(
+                    length: bufferBytes,
+                    options: .storageModeShared),
+                  let queue = device.makeCommandQueue(),
+                  let commandBuffer = queue.makeCommandBuffer(),
+                  let blit = commandBuffer.makeBlitCommandEncoder()
+            else {
+                record["rawCapture"] = false
+                record["reason"] = "snapshot command unavailable"
+                snapshots.append(record)
+                continue
+            }
+            blit.copy(
+                from: texture,
+                sourceSlice: 0,
+                sourceLevel: 0,
+                sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                sourceSize: MTLSize(
+                    width: texture.width,
+                    height: texture.height,
+                    depth: 1),
+                to: buffer,
+                destinationOffset: 0,
+                destinationBytesPerRow: alignedBytesPerRow,
+                destinationBytesPerImage: bufferBytes)
+            blit.endEncoding()
+            commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
+            guard commandBuffer.status == .completed else {
+                record["rawCapture"] = false
+                record["reason"] =
+                    commandBuffer.error?.localizedDescription
+                        ?? "snapshot command failed"
+                snapshots.append(record)
+                continue
+            }
+            var raw = Data(capacity: tightBytesPerRow * texture.height)
+            for row in 0..<texture.height {
+                raw.append(Data(
+                    bytes: buffer.contents().advanced(
+                        by: row * alignedBytesPerRow),
+                    count: tightBytesPerRow))
+            }
+            let filename = String(
+                format:
+                    "sdf-generator-%@-texture-%03d-pf%lu-%dx%d.raw",
+                capture,
+                snapshots.count,
+                texture.pixelFormat.rawValue,
+                texture.width,
+                texture.height)
+            do {
+                try raw.write(
+                    to: outputDirectory.appendingPathComponent(filename),
+                    options: .atomic)
+                record["rawCapture"] = true
+                record["rawFile"] = filename
+                record["rawBytes"] = raw.count
+                record["bytesPerRow"] = tightBytesPerRow
+                record["fnv1a64"] = fnv1a64([UInt8](raw))
+            } catch {
+                record["rawCapture"] = false
+                record["reason"] = error.localizedDescription
+            }
+            snapshots.append(record)
+        }
+        return [
+            "bindingCount": bindings.count,
+            "uniqueTextureCount": seen.count,
+            "snapshots": snapshots,
+        ]
+    }
+
     func forwardPipelineState(
         encoder: AnyObject,
         selector: Selector,
@@ -1068,6 +1332,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
             selector,
             buffer,
             offset,
+            index)
+    }
+
+    func forwardFragmentTexture(
+        encoder: AnyObject,
+        selector: Selector,
+        texture: AnyObject?,
+        index: Int
+    ) {
+        guard let originalFragmentTexture else { return }
+        originalFragmentTexture(
+            encoder,
+            selector,
+            texture,
             index)
     }
 
@@ -1304,6 +1582,13 @@ private func generatedSDFRecord(
         } catch {
             record["pngWriteError"] = error.localizedDescription
         }
+    }
+    let textureSnapshots = MetalUniformProbe.shared.snapshotTextures(
+        capture: name,
+        outputDirectory: outputDirectory)
+    if (textureSnapshots["bindingCount"] as? Int ?? 0) > 0 {
+        record["metalTextureSnapshots"] = textureSnapshots
+        writeProgress("after-texture-snapshots")
     }
     writeProgress("complete")
     return record
@@ -2143,7 +2428,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 20,
+                    "schemaVersion": 21,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2159,7 +2444,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 20,
+            "schemaVersion": 21,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
