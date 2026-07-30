@@ -663,6 +663,12 @@ private typealias MetalSetRenderPipelineStateFunction =
         Selector,
         AnyObject
     ) -> Void
+private typealias MetalMakeRenderCommandEncoderFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLRenderPassDescriptor
+    ) -> Unmanaged<AnyObject>?
 private typealias MetalSetFragmentBytesFunction =
     @convention(c) (
         AnyObject,
@@ -693,6 +699,46 @@ private typealias MetalSetFragmentSamplerStateFunction =
         AnyObject?,
         Int
     ) -> Void
+private typealias MetalSetViewportFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLViewport
+    ) -> Void
+private typealias MetalSetScissorRectFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLScissorRect
+    ) -> Void
+private typealias MetalDrawPrimitivesFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLPrimitiveType,
+        Int,
+        Int
+    ) -> Void
+
+private func probeMakeRenderCommandEncoder(
+    _ commandBuffer: AnyObject,
+    _ selector: Selector,
+    _ descriptor: MTLRenderPassDescriptor
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardMakeRenderCommandEncoder(
+            commandBuffer: commandBuffer,
+            selector: selector,
+            descriptor: descriptor)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordRenderPass(
+        commandBuffer: commandBuffer,
+        encoder: result.takeUnretainedValue(),
+        descriptor: descriptor)
+    return result
+}
 
 private func probeSetRenderPipelineState(
     _ encoder: AnyObject,
@@ -782,6 +828,94 @@ private func probeSetFragmentSamplerState(
         index: index)
 }
 
+private func probeSetVertexBytes(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ bytes: UnsafeRawPointer,
+    _ length: Int,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordVertexBytes(
+        encoder: encoder,
+        bytes: bytes,
+        length: length,
+        index: index)
+    MetalUniformProbe.shared.forwardVertexBytes(
+        encoder: encoder,
+        selector: selector,
+        bytes: bytes,
+        length: length,
+        index: index)
+}
+
+private func probeSetVertexBuffer(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ buffer: AnyObject?,
+    _ offset: Int,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordVertexBuffer(
+        encoder: encoder,
+        buffer: buffer,
+        offset: offset,
+        index: index)
+    MetalUniformProbe.shared.forwardVertexBuffer(
+        encoder: encoder,
+        selector: selector,
+        buffer: buffer,
+        offset: offset,
+        index: index)
+}
+
+private func probeSetViewport(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ viewport: MTLViewport
+) {
+    MetalUniformProbe.shared.recordViewport(
+        encoder: encoder,
+        viewport: viewport)
+    MetalUniformProbe.shared.forwardViewport(
+        encoder: encoder,
+        selector: selector,
+        viewport: viewport)
+}
+
+private func probeSetScissorRect(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ rect: MTLScissorRect
+) {
+    MetalUniformProbe.shared.recordScissorRect(
+        encoder: encoder,
+        rect: rect)
+    MetalUniformProbe.shared.forwardScissorRect(
+        encoder: encoder,
+        selector: selector,
+        rect: rect)
+}
+
+private func probeDrawPrimitives(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ primitiveType: MTLPrimitiveType,
+    _ vertexStart: Int,
+    _ vertexCount: Int
+) {
+    MetalUniformProbe.shared.recordDrawPrimitives(
+        encoder: encoder,
+        primitiveType: primitiveType,
+        vertexStart: vertexStart,
+        vertexCount: vertexCount)
+    MetalUniformProbe.shared.forwardDrawPrimitives(
+        encoder: encoder,
+        selector: selector,
+        primitiveType: primitiveType,
+        vertexStart: vertexStart,
+        vertexCount: vertexCount)
+}
+
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
         let capture: String
@@ -804,6 +938,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private struct BufferBinding {
         let capture: String
         let sequence: Int
+        let stage: String
         let index: Int
         let pipeline: [String: Any]
         let buffer: MTLBuffer
@@ -822,6 +957,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         [String: [String: Any]] = [:]
     private var droppedRecordCount = 0
     private var pipelineRecords: [ObjectIdentifier: [String: Any]] = [:]
+    private var originalMakeRenderCommandEncoder:
+        MetalMakeRenderCommandEncoderFunction?
     private var originalPipelineState:
         MetalSetRenderPipelineStateFunction?
     private var originalFragmentBytes:
@@ -832,6 +969,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
         MetalSetFragmentTextureFunction?
     private var originalFragmentSamplerState:
         MetalSetFragmentSamplerStateFunction?
+    private var originalVertexBytes:
+        MetalSetFragmentBytesFunction?
+    private var originalVertexBuffer:
+        MetalSetFragmentBufferFunction?
+    private var originalViewport:
+        MetalSetViewportFunction?
+    private var originalScissorRect:
+        MetalSetScissorRectFunction?
+    private var originalDrawPrimitives:
+        MetalDrawPrimitivesFunction?
     private let maximumRecordCount = 16_384
     private let maximumCapturedBytes = 512
     private let textureCaptureNames = Set([
@@ -872,15 +1019,49 @@ private final class MetalUniformProbe: @unchecked Sendable {
         pass.colorAttachments[0].storeAction = .dontCare
         guard let encoder = commandBuffer.makeRenderCommandEncoder(
             descriptor: pass),
+              let commandBufferClass = object_getClass(
+                commandBuffer as AnyObject),
               let encoderClass = object_getClass(encoder as AnyObject)
         else {
             return [
                 "installed": false,
-                "error": "probe render encoder unavailable",
+                "error": "probe Metal runtime classes unavailable",
             ]
         }
 
         var methods: [[String: Any]] = []
+        let makeRenderEncoderSelector = NSSelectorFromString(
+            "renderCommandEncoderWithDescriptor:")
+        if let method = class_getInstanceMethod(
+            commandBufferClass,
+            makeRenderEncoderSelector)
+        {
+            let original = method_getImplementation(method)
+            originalMakeRenderCommandEncoder = unsafeBitCast(
+                original,
+                to: MetalMakeRenderCommandEncoderFunction.self)
+            let replacement = unsafeBitCast(
+                probeMakeRenderCommandEncoder
+                    as MetalMakeRenderCommandEncoderFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                commandBufferClass,
+                makeRenderEncoderSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector":
+                    NSStringFromSelector(makeRenderEncoderSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
         let pipelineSelector = NSSelectorFromString(
             "setRenderPipelineState:")
         if let method = class_getInstanceMethod(
@@ -1033,13 +1214,181 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ])
         }
 
+        let vertexBytesSelector = NSSelectorFromString(
+            "setVertexBytes:length:atIndex:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            vertexBytesSelector)
+        {
+            let original = method_getImplementation(method)
+            originalVertexBytes = unsafeBitCast(
+                original,
+                to: MetalSetFragmentBytesFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetVertexBytes as MetalSetFragmentBytesFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                vertexBytesSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(vertexBytesSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
+        let vertexBufferSelector = NSSelectorFromString(
+            "setVertexBuffer:offset:atIndex:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            vertexBufferSelector)
+        {
+            let original = method_getImplementation(method)
+            originalVertexBuffer = unsafeBitCast(
+                original,
+                to: MetalSetFragmentBufferFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetVertexBuffer as MetalSetFragmentBufferFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                vertexBufferSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(vertexBufferSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
+        let viewportSelector = NSSelectorFromString("setViewport:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            viewportSelector)
+        {
+            let original = method_getImplementation(method)
+            originalViewport = unsafeBitCast(
+                original,
+                to: MetalSetViewportFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetViewport as MetalSetViewportFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                viewportSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(viewportSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
+        let scissorSelector = NSSelectorFromString("setScissorRect:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            scissorSelector)
+        {
+            let original = method_getImplementation(method)
+            originalScissorRect = unsafeBitCast(
+                original,
+                to: MetalSetScissorRectFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetScissorRect as MetalSetScissorRectFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                scissorSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(scissorSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
+        let drawSelector = NSSelectorFromString(
+            "drawPrimitives:vertexStart:vertexCount:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            drawSelector)
+        {
+            let original = method_getImplementation(method)
+            originalDrawPrimitives = unsafeBitCast(
+                original,
+                to: MetalDrawPrimitivesFunction.self)
+            let replacement = unsafeBitCast(
+                probeDrawPrimitives as MetalDrawPrimitivesFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                drawSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(drawSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
         encoder.endEncoding()
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
+        let requiredSelectors = Set([
+            "renderCommandEncoderWithDescriptor:",
+            "setRenderPipelineState:",
+            "setFragmentBytes:length:atIndex:",
+            "setFragmentBuffer:offset:atIndex:",
+            "setFragmentTexture:atIndex:",
+            "setFragmentSamplerState:atIndex:",
+            "setVertexBytes:length:atIndex:",
+            "setVertexBuffer:offset:atIndex:",
+            "setViewport:",
+            "setScissorRect:",
+            "drawPrimitives:vertexStart:vertexCount:",
+        ])
+        let installedSelectors = Set(methods.compactMap {
+            $0["selector"] as? String
+        })
         return [
-            "installed": methods.count == 5,
+            "installed":
+                requiredSelectors.isSubset(of: installedSelectors),
+            "commandBufferClass": NSStringFromClass(commandBufferClass),
             "encoderClass": NSStringFromClass(encoderClass),
             "methods": methods,
+            "missingRequiredSelectors":
+                requiredSelectors.subtracting(installedSelectors).sorted(),
         ]
     }
 
@@ -1057,10 +1406,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
     private func appendRecord(_ record: [String: Any]) {
         if records.count < maximumRecordCount {
-            records.append(record)
+            var sequenced = record
+            sequenced["sequence"] = records.count
+            records.append(sequenced)
         } else {
             droppedRecordCount += 1
         }
+    }
+
+    private func objectAddress(_ object: AnyObject) -> String {
+        String(
+            format: "0x%016llx",
+            UInt64(UInt(bitPattern: Unmanaged
+                .passUnretained(object)
+                .toOpaque())))
     }
 
     private func encoderPipeline(
@@ -1082,6 +1441,118 @@ private final class MetalUniformProbe: @unchecked Sendable {
         ]
     }
 
+    private func textureRecord(_ texture: MTLTexture) -> [String: Any] {
+        [
+            "address": objectAddress(texture as AnyObject),
+            "class": String(reflecting: type(of: texture)),
+            "width": texture.width,
+            "height": texture.height,
+            "depth": texture.depth,
+            "arrayLength": texture.arrayLength,
+            "mipmapLevelCount": texture.mipmapLevelCount,
+            "sampleCount": texture.sampleCount,
+            "pixelFormat": texture.pixelFormat.rawValue,
+            "textureType": texture.textureType.rawValue,
+            "usage": texture.usage.rawValue,
+            "storageMode": texture.storageMode.rawValue,
+        ]
+    }
+
+    private func renderPassAttachmentRecord(
+        _ attachment: MTLRenderPassAttachmentDescriptor
+    ) -> [String: Any] {
+        var record: [String: Any] = [
+            "level": attachment.level,
+            "slice": attachment.slice,
+            "depthPlane": attachment.depthPlane,
+            "resolveLevel": attachment.resolveLevel,
+            "resolveSlice": attachment.resolveSlice,
+            "resolveDepthPlane": attachment.resolveDepthPlane,
+            "loadAction": attachment.loadAction.rawValue,
+            "storeAction": attachment.storeAction.rawValue,
+            "storeActionOptions":
+                attachment.storeActionOptions.rawValue,
+        ]
+        if let texture = attachment.texture {
+            record["texture"] = textureRecord(texture)
+        }
+        if let resolveTexture = attachment.resolveTexture {
+            record["resolveTexture"] = textureRecord(resolveTexture)
+        }
+        return record
+    }
+
+    func recordRenderPass(
+        commandBuffer: AnyObject,
+        encoder: AnyObject,
+        descriptor: MTLRenderPassDescriptor
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+
+        var colorAttachments: [[String: Any]] = []
+        for index in 0..<8 {
+            let attachment = descriptor.colorAttachments[index]
+            guard attachment.texture != nil
+                    || attachment.resolveTexture != nil
+            else {
+                continue
+            }
+            var record = renderPassAttachmentRecord(attachment)
+            record["index"] = index
+            record["clearColor"] = [
+                Double(attachment.clearColor.red),
+                Double(attachment.clearColor.green),
+                Double(attachment.clearColor.blue),
+                Double(attachment.clearColor.alpha),
+            ]
+            colorAttachments.append(record)
+        }
+
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "renderPass",
+            "commandBuffer": objectAddress(commandBuffer),
+            "encoder": objectAddress(encoder),
+            "renderTargetArrayLength":
+                descriptor.renderTargetArrayLength,
+            "defaultRasterSampleCount":
+                descriptor.defaultRasterSampleCount,
+            "colorAttachments": colorAttachments,
+        ]
+        if descriptor.depthAttachment.texture != nil
+            || descriptor.depthAttachment.resolveTexture != nil
+        {
+            var depth = renderPassAttachmentRecord(
+                descriptor.depthAttachment)
+            depth["clearDepth"] = descriptor.depthAttachment.clearDepth
+            depth["resolveFilter"] =
+                descriptor.depthAttachment.depthResolveFilter.rawValue
+            record["depthAttachment"] = depth
+        }
+        if descriptor.stencilAttachment.texture != nil
+            || descriptor.stencilAttachment.resolveTexture != nil
+        {
+            var stencil = renderPassAttachmentRecord(
+                descriptor.stencilAttachment)
+            stencil["clearStencil"] =
+                descriptor.stencilAttachment.clearStencil
+            stencil["resolveFilter"] =
+                descriptor.stencilAttachment
+                    .stencilResolveFilter.rawValue
+            record["stencilAttachment"] = stencil
+        }
+        if let visibility = descriptor.visibilityResultBuffer {
+            record["visibilityResultBuffer"] = [
+                "address": objectAddress(visibility as AnyObject),
+                "length": visibility.length,
+                "storageMode": visibility.storageMode.rawValue,
+            ]
+        }
+        appendRecord(record)
+    }
+
     func recordPipelineState(
         encoder: AnyObject,
         pipelineState: AnyObject
@@ -1092,11 +1563,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var record: [String: Any] = [
             "class": String(reflecting: type(of: pipelineState)),
             "description": String(describing: pipelineState),
-            "address": String(
-                format: "0x%016llx",
-                UInt64(UInt(bitPattern: Unmanaged
-                    .passUnretained(pipelineState)
-                    .toOpaque()))),
+            "address": objectAddress(pipelineState),
         ]
         if let state = pipelineState as? MTLRenderPipelineState,
            let label = state.label
@@ -1107,6 +1574,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         appendRecord([
             "capture": captureName,
             "kind": "pipeline",
+            "encoder": objectAddress(encoder),
             "pipeline": record,
         ])
     }
@@ -1133,7 +1601,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
             className: "setFragmentBytes")
         record["capture"] = captureName
         record["kind"] = "bytes"
+        record["stage"] = "fragment"
         record["index"] = index
+        record["encoder"] = objectAddress(encoder)
         record["pipeline"] = encoderPipeline(encoder)
         appendRecord(record)
     }
@@ -1150,8 +1620,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var record: [String: Any] = [
             "capture": captureName,
             "kind": "buffer",
+            "stage": "fragment",
             "index": index,
             "offset": offset,
+            "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
         ]
         if let metalBuffer = buffer as? MTLBuffer {
@@ -1162,6 +1634,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             bufferBindings.append(BufferBinding(
                 capture: captureName,
                 sequence: records.count,
+                stage: "fragment",
                 index: index,
                 pipeline: encoderPipeline(encoder),
                 buffer: metalBuffer,
@@ -1205,17 +1678,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var record: [String: Any] = [
             "capture": captureName,
             "kind": "texture",
+            "stage": "fragment",
             "index": index,
+            "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
         ]
         if let metalTexture = texture as? MTLTexture {
             record["textureClass"] =
                 String(reflecting: type(of: metalTexture))
-            record["address"] = String(
-                format: "0x%016llx",
-                UInt64(UInt(bitPattern: Unmanaged
-                    .passUnretained(metalTexture as AnyObject)
-                    .toOpaque())))
+            record["address"] =
+                objectAddress(metalTexture as AnyObject)
             record["width"] = metalTexture.width
             record["height"] = metalTexture.height
             record["depth"] = metalTexture.depth
@@ -1255,7 +1727,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var record: [String: Any] = [
             "capture": captureName,
             "kind": "sampler",
+            "stage": "fragment",
             "index": index,
+            "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
         ]
         if let metalSampler = sampler as? MTLSamplerState {
@@ -1266,11 +1740,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 String(describing: metalSampler)
             record["debugDescription"] =
                 String(reflecting: metalSampler)
-            record["address"] = String(
-                format: "0x%016llx",
-                UInt64(UInt(bitPattern: Unmanaged
-                    .passUnretained(metalSampler as AnyObject)
-                    .toOpaque())))
+            record["address"] =
+                objectAddress(metalSampler as AnyObject)
             if let label = metalSampler.label {
                 record["label"] = label
             }
@@ -1294,6 +1765,154 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 String(reflecting: type(of: sampler!))
         }
         appendRecord(record)
+    }
+
+    func recordVertexBytes(
+        encoder: AnyObject,
+        bytes: UnsafeRawPointer,
+        length: Int,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName,
+              length >= 0,
+              length <= maximumCapturedBytes
+        else {
+            return
+        }
+        let payload = Array(UnsafeRawBufferPointer(
+            start: bytes,
+            count: length))
+        var record = serializedPayload(
+            payload,
+            className: "setVertexBytes")
+        record["capture"] = captureName
+        record["kind"] = "bytes"
+        record["stage"] = "vertex"
+        record["index"] = index
+        record["encoder"] = objectAddress(encoder)
+        record["pipeline"] = encoderPipeline(encoder)
+        appendRecord(record)
+    }
+
+    func recordVertexBuffer(
+        encoder: AnyObject,
+        buffer: AnyObject?,
+        offset: Int,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "buffer",
+            "stage": "vertex",
+            "index": index,
+            "offset": offset,
+            "encoder": objectAddress(encoder),
+            "pipeline": encoderPipeline(encoder),
+        ]
+        if let metalBuffer = buffer as? MTLBuffer {
+            record["bufferClass"] =
+                String(reflecting: type(of: metalBuffer))
+            record["bufferLength"] = metalBuffer.length
+            record["storageMode"] = metalBuffer.storageMode.rawValue
+            bufferBindings.append(BufferBinding(
+                capture: captureName,
+                sequence: records.count,
+                stage: "vertex",
+                index: index,
+                pipeline: encoderPipeline(encoder),
+                buffer: metalBuffer,
+                offset: offset))
+            if metalBuffer.storageMode != .private,
+               offset >= 0,
+               offset <= metalBuffer.length
+            {
+                let available = metalBuffer.length - offset
+                let length = min(available, maximumCapturedBytes)
+                let payload = Array(UnsafeRawBufferPointer(
+                    start: metalBuffer.contents().advanced(by: offset),
+                    count: length))
+                record["payload"] = serializedPayload(
+                    payload,
+                    className: "MTLBuffer prefix")
+            } else if offset < 0
+                || offset > metalBuffer.length
+            {
+                record["payloadError"] = "buffer offset out of bounds"
+            } else if metalBuffer.storageMode == .private {
+                record["payloadUnavailable"] = "private storage"
+            }
+        } else if buffer == nil {
+            record["buffer"] = "nil"
+        } else {
+            record["bufferClass"] =
+                String(reflecting: type(of: buffer!))
+        }
+        appendRecord(record)
+    }
+
+    func recordViewport(
+        encoder: AnyObject,
+        viewport: MTLViewport
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        appendRecord([
+            "capture": captureName,
+            "kind": "viewport",
+            "encoder": objectAddress(encoder),
+            "pipeline": encoderPipeline(encoder),
+            "originX": viewport.originX,
+            "originY": viewport.originY,
+            "width": viewport.width,
+            "height": viewport.height,
+            "znear": viewport.znear,
+            "zfar": viewport.zfar,
+        ])
+    }
+
+    func recordScissorRect(
+        encoder: AnyObject,
+        rect: MTLScissorRect
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        appendRecord([
+            "capture": captureName,
+            "kind": "scissorRect",
+            "encoder": objectAddress(encoder),
+            "pipeline": encoderPipeline(encoder),
+            "x": rect.x,
+            "y": rect.y,
+            "width": rect.width,
+            "height": rect.height,
+        ])
+    }
+
+    func recordDrawPrimitives(
+        encoder: AnyObject,
+        primitiveType: MTLPrimitiveType,
+        vertexStart: Int,
+        vertexCount: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        appendRecord([
+            "capture": captureName,
+            "kind": "drawPrimitives",
+            "encoder": objectAddress(encoder),
+            "pipeline": encoderPipeline(encoder),
+            "primitiveType": primitiveType.rawValue,
+            "vertexStart": vertexStart,
+            "vertexCount": vertexCount,
+        ])
     }
 
     private func bytesPerPixel(
@@ -1328,6 +1947,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             let buffer = binding.buffer
             var record: [String: Any] = [
                 "sequence": binding.sequence,
+                "stage": binding.stage,
                 "index": binding.index,
                 "pipeline": binding.pipeline,
                 "bufferLength": buffer.length,
@@ -1686,6 +2306,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return result
     }
 
+    func forwardMakeRenderCommandEncoder(
+        commandBuffer: AnyObject,
+        selector: Selector,
+        descriptor: MTLRenderPassDescriptor
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalMakeRenderCommandEncoder else {
+            return nil
+        }
+        return originalMakeRenderCommandEncoder(
+            commandBuffer,
+            selector,
+            descriptor)
+    }
+
     func forwardPipelineState(
         encoder: AnyObject,
         selector: Selector,
@@ -1753,6 +2387,78 @@ private final class MetalUniformProbe: @unchecked Sendable {
             selector,
             sampler,
             index)
+    }
+
+    func forwardVertexBytes(
+        encoder: AnyObject,
+        selector: Selector,
+        bytes: UnsafeRawPointer,
+        length: Int,
+        index: Int
+    ) {
+        guard let originalVertexBytes else { return }
+        originalVertexBytes(
+            encoder,
+            selector,
+            bytes,
+            length,
+            index)
+    }
+
+    func forwardVertexBuffer(
+        encoder: AnyObject,
+        selector: Selector,
+        buffer: AnyObject?,
+        offset: Int,
+        index: Int
+    ) {
+        guard let originalVertexBuffer else { return }
+        originalVertexBuffer(
+            encoder,
+            selector,
+            buffer,
+            offset,
+            index)
+    }
+
+    func forwardViewport(
+        encoder: AnyObject,
+        selector: Selector,
+        viewport: MTLViewport
+    ) {
+        guard let originalViewport else { return }
+        originalViewport(
+            encoder,
+            selector,
+            viewport)
+    }
+
+    func forwardScissorRect(
+        encoder: AnyObject,
+        selector: Selector,
+        rect: MTLScissorRect
+    ) {
+        guard let originalScissorRect else { return }
+        originalScissorRect(
+            encoder,
+            selector,
+            rect)
+    }
+
+    func forwardDrawPrimitives(
+        encoder: AnyObject,
+        selector: Selector,
+        primitiveType: MTLPrimitiveType,
+        vertexStart: Int,
+        vertexCount: Int
+    ) {
+        guard let originalDrawPrimitives else { return }
+        originalDrawPrimitives(
+            encoder,
+            selector,
+            primitiveType,
+            vertexStart,
+            vertexCount)
     }
 
     func report() -> [String: Any] {
@@ -3178,7 +3884,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 36,
+                    "schemaVersion": 37,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -3194,7 +3900,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 36,
+            "schemaVersion": 37,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

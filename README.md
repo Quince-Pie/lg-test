@@ -862,6 +862,15 @@ zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
 and shape-bound values when Swift reflection permits it, without substituting
 a recreated layer or guessed geometry.
+Schema 37 observes the remaining Metal replay state at the encoder boundary.
+It associates each render encoder with the complete render-pass attachment
+layout, records inline and buffer-backed vertex payloads after the same
+completion fence used for fragment uniforms, and serializes the viewport,
+scissor rectangle, primitive type, vertex range, and pipeline active at every
+draw. Texture object addresses are shared between attachment and fragment
+records, making the producer/consumer pass graph explicit. This is evidence
+for an independent compositor invocation and does not change the rendered
+layer tree or replace any Apple resource.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
