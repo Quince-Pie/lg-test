@@ -878,6 +878,13 @@ offset, storage mode, and post-completion bytes are retained alongside each
 draw. Buffer object addresses are also emitted for vertex and fragment
 bindings, preserving the aliasing relationships between Core Animation's
 256-byte-aligned slices.
+Schema 39 tracks Metal's offset-only vertex and fragment buffer updates
+against the active buffer in every encoder slot. Schema 38 showed two draws
+without an intervening full buffer bind and found a second packed glass record
+inside the retained range; the offset calls determine which record and vertex
+slice the later draw actually consumes. The bounded post-fence prefix grows
+from 512 to 4,096 bytes so all 16 vertices referenced by the captured
+48-index mesh remain available without retaining the full 256 KiB arena.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
