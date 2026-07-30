@@ -645,6 +645,240 @@ private func allForensicRuntimeClasses() -> [[String: Any]] {
     }
 }
 
+private typealias ObjCClassFactory =
+    @convention(c) (AnyClass, Selector) -> Unmanaged<AnyObject>
+private typealias ObjCClassObjectFactory =
+    @convention(c) (AnyClass, Selector, AnyObject) -> Unmanaged<AnyObject>
+private typealias ObjCGeneratorFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        AnyObject,
+        CGImage
+    ) -> Unmanaged<AnyObject>?
+
+private func invokeClassFactory(
+    _ cls: AnyClass,
+    selector: Selector
+) -> NSObject? {
+    guard let method = class_getClassMethod(cls, selector) else {
+        return nil
+    }
+    let function = unsafeBitCast(
+        method_getImplementation(method),
+        to: ObjCClassFactory.self)
+    return function(cls, selector).takeUnretainedValue() as? NSObject
+}
+
+private func invokeClassFactory(
+    _ cls: AnyClass,
+    selector: Selector,
+    object: NSObject
+) -> NSObject? {
+    guard let method = class_getClassMethod(cls, selector) else {
+        return nil
+    }
+    let function = unsafeBitCast(
+        method_getImplementation(method),
+        to: ObjCClassObjectFactory.self)
+    return function(
+        cls,
+        selector,
+        object).takeUnretainedValue() as? NSObject
+}
+
+private let sdfGeneratorRequestKeys = [
+    "includeGradient",
+    "outputBitDepth",
+    "padding",
+    "maximumDistance",
+    "zeroValueDistance",
+    "oneValueDistance",
+    "gradientSmoothing",
+]
+
+private func makeSDFGeneratorMask() -> CGImage? {
+    let width = 256
+    let height = 256
+    var pixels = [UInt8](
+        repeating: 0,
+        count: width * height * 4)
+    for y in 48..<208 {
+        for x in 64..<192 {
+            let offset = (y * width + x) * 4
+            pixels[offset] = 255
+            pixels[offset + 1] = 255
+            pixels[offset + 2] = 255
+            pixels[offset + 3] = 255
+        }
+    }
+    let provider = CGDataProvider(data: Data(pixels) as CFData)
+    let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
+    guard let provider, let colorSpace else { return nil }
+    let bitmapInfo = CGBitmapInfo(
+        rawValue:
+            CGBitmapInfo.byteOrder32Big.rawValue
+            | CGImageAlphaInfo.premultipliedLast.rawValue)
+    return CGImage(
+        width: width,
+        height: height,
+        bitsPerComponent: 8,
+        bitsPerPixel: 32,
+        bytesPerRow: width * 4,
+        space: colorSpace,
+        bitmapInfo: bitmapInfo,
+        provider: provider,
+        decode: nil,
+        shouldInterpolate: false,
+        intent: .defaultIntent)
+}
+
+private func generatedSDFRecord(
+    generator: NSObject,
+    request: NSObject,
+    input: CGImage,
+    name: String,
+    outputDirectory: URL
+) -> [String: Any] {
+    var record: [String: Any] = [
+        "name": name,
+        "requestValues": knownRuntimeValues(
+            request,
+            keys: sdfGeneratorRequestKeys),
+    ]
+    let selector = NSSelectorFromString(
+        "generateSDFWithRequest:forImage:")
+    guard let method = class_getInstanceMethod(
+        type(of: generator),
+        selector)
+    else {
+        record["error"] = "generator method not found"
+        return record
+    }
+    let function = unsafeBitCast(
+        method_getImplementation(method),
+        to: ObjCGeneratorFunction.self)
+    guard let unmanaged = function(
+        generator,
+        selector,
+        request,
+        input),
+          let output = unmanaged.takeUnretainedValue() as? CGImage
+    else {
+        record["error"] = "generator returned no image"
+        return record
+    }
+    record["width"] = output.width
+    record["height"] = output.height
+    record["bitsPerComponent"] = output.bitsPerComponent
+    record["bitsPerPixel"] = output.bitsPerPixel
+    record["bytesPerRow"] = output.bytesPerRow
+    record["bitmapInfoRawValue"] = output.bitmapInfo.rawValue
+    record["alphaInfoRawValue"] = output.alphaInfo.rawValue
+    record["colorSpace"] =
+        output.colorSpace.map { String(describing: $0) }
+            ?? "none"
+    guard let data = output.dataProvider?.data else {
+        record["error"] = "output data provider has no data"
+        return record
+    }
+    let bytes = [UInt8](Data(data))
+    let filename = "sdf-generator-\(name).raw"
+    do {
+        try Data(bytes).write(
+            to: outputDirectory.appendingPathComponent(filename),
+            options: .atomic)
+        record["rawFile"] = filename
+        record["rawBytes"] = bytes.count
+        record["fnv1a64"] = fnv1a64(bytes)
+    } catch {
+        record["rawWriteError"] = error.localizedDescription
+    }
+    if let png = NSBitmapImageRep(cgImage: output)
+        .representation(using: .png, properties: [:])
+    {
+        let pngFilename = "sdf-generator-\(name).png"
+        do {
+            try png.write(
+                to: outputDirectory.appendingPathComponent(pngFilename),
+                options: .atomic)
+            record["pngFile"] = pngFilename
+            record["pngBytes"] = png.count
+        } catch {
+            record["pngWriteError"] = error.localizedDescription
+        }
+    }
+    return record
+}
+
+private func sdfGeneratorEvidence(
+    outputDirectory: URL
+) -> [String: Any] {
+    guard let requestClass = NSClassFromString(
+        "CASDFGeneratorRequest"),
+          let generatorClass = NSClassFromString(
+            "CASDFGenerator"),
+          let generatorType = generatorClass as? NSObject.Type,
+          let input = makeSDFGeneratorMask()
+    else {
+        return ["error": "private SDF generator classes unavailable"]
+    }
+    let generator = generatorType.init()
+    var record: [String: Any] = [
+        "input": [
+            "kind": "binary-centered-128x160-rectangle",
+            "width": input.width,
+            "height": input.height,
+            "bitsPerComponent": input.bitsPerComponent,
+            "bitsPerPixel": input.bitsPerPixel,
+            "bytesPerRow": input.bytesPerRow,
+        ],
+    ]
+    guard let defaultRequest = invokeClassFactory(
+        requestClass,
+        selector: NSSelectorFromString("request"))
+    else {
+        record["error"] = "default request factory failed"
+        return record
+    }
+    var captures = [
+        generatedSDFRecord(
+            generator: generator,
+            request: defaultRequest,
+            input: input,
+            name: "default",
+            outputDirectory: outputDirectory),
+    ]
+
+    if let outputEffectClass = NSClassFromString(
+        "CASDFOutputEffect") as? NSObject.Type
+    {
+        let effect = outputEffectClass.init()
+        effect.setValue(NSNumber(value: -64.0), forKey: "minimum")
+        effect.setValue(NSNumber(value: 16.0), forKey: "maximum")
+        if let effectRequest = invokeClassFactory(
+            requestClass,
+            selector: NSSelectorFromString("requestForEffect:"),
+            object: effect)
+        {
+            captures.append(generatedSDFRecord(
+                generator: generator,
+                request: effectRequest,
+                input: input,
+                name: "output-range-minus64-plus16",
+                outputDirectory: outputDirectory))
+        } else {
+            record["effectRequestError"] =
+                "requestForEffect factory failed"
+        }
+    } else {
+        record["effectRequestError"] =
+            "CASDFOutputEffect unavailable"
+    }
+    record["captures"] = captures
+    return record
+}
+
 private struct RuntimeMethodCodeProbe {
     let className: String
     let selectorName: String
@@ -711,6 +945,18 @@ private let runtimeMethodCodeProbes = [
         className: "SwiftUI.SDFLayer",
         selectorName: "layoutSublayers",
         byteCount: 0x4000),
+    RuntimeMethodCodeProbe(
+        className: "CASDFGenerator",
+        selectorName: "generateSDFWithRequest:forImage:",
+        byteCount: 0x6000),
+    RuntimeMethodCodeProbe(
+        className: "CASDFGeneratorRequest",
+        selectorName: "_resetConfiguration",
+        byteCount: 0x2000),
+    RuntimeMethodCodeProbe(
+        className: "CASDFGeneratorRequest",
+        selectorName: "_unionConfigurationForEffect:",
+        byteCount: 0x3000),
 ]
 
 private func runtimeMethodCodeEvidence() -> [[String: Any]] {
@@ -1261,7 +1507,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 12,
+            "schemaVersion": 13,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -1286,6 +1532,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             "runtimeMethodCode": runtimeMethodCodeEvidence(),
             "allForensicRuntimeClasses":
                 allForensicRuntimeClasses(),
+            "sdfGeneratorEvidence": sdfGeneratorEvidence(
+                outputDirectory: outputDirectory),
         ]
         if let captureError {
             report["captureError"] = captureError

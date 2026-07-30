@@ -730,6 +730,12 @@ effect configuration methods, and `SwiftUI.SDFLayer.layoutSublayers`. This
 targets the host-side generator request, jump schedule, field scale/bias, and
 source-pyramid uniform construction that are not present in the already
 recovered Metal AIR.
+Schema 13 invokes the discovered `CASDFGenerator` with both its default
+request and a request derived from a controlled `CASDFOutputEffect`. It
+retains every request field plus the generated image's native format, raw
+provider bytes, checksum, and PNG audit view for a deterministic binary mask.
+This is a direct Apple field-generation oracle, not a field inferred through
+the glass color output.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
@@ -1219,6 +1225,17 @@ identification modes for the private clear-material mip path:
   opacity-one state at each sample is its recovered SDF half word; any
   intermediate, conflicting, missing, or multiple transition is a hard
   failure.
+- Run `30518467617` accepts the exact recovery. All 104,976 spatial samples
+  transition exactly once, with zero intermediate responses, reverse
+  transitions, uncovered samples, or source/channel conflicts. The recovered
+  field contains exact binary16 values from `0xe7be` (`-1982`) through
+  `0xe563` (`-1379`). Source, production-repeat, opacity-one, and
+  opacity-one-half controls are all byte-exact. A continuous circle at the
+  best pixel-center convention reproduces 69,026/104,976 words; every miss is
+  one half step. The recovered `brim_init_lph`, `brim_jump_lph`, and
+  `sdf_gen_field_lph` AIR establishes that these are coverage-raster and
+  jump-flood effects, so an empirical circle correction is not an acceptable
+  implementation.
 
 ## What happens after capture
 
