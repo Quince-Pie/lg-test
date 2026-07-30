@@ -730,12 +730,14 @@ effect configuration methods, and `SwiftUI.SDFLayer.layoutSublayers`. This
 targets the host-side generator request, jump schedule, field scale/bias, and
 source-pyramid uniform construction that are not present in the already
 recovered Metal AIR.
-Schema 13 invokes the discovered `CASDFGenerator` with both its default
-request and a request derived from a controlled `CASDFOutputEffect`. It
-retains every request field plus the generated image's native format, raw
-provider bytes, checksum, and PNG audit view for a deterministic binary mask.
-This is a direct Apple field-generation oracle, not a field inferred through
-the glass color output.
+Schema 13 introduced a direct call to the discovered `CASDFGenerator`. The
+unbounded default request did not return on the CI host, which is itself a
+reason not to guess at its configuration. Schema 14 therefore separates
+request discovery from execution: it records the default request and a
+request derived from a controlled `CASDFOutputEffect`, then atomically writes
+those values to `sdf-generator-requests.json` without invoking the generator.
+The following probe can use the observed native bounds and isolate generation
+behind a timeout before retaining the image's native format and raw bytes.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

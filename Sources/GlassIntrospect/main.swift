@@ -816,15 +816,12 @@ private func sdfGeneratorEvidence(
 ) -> [String: Any] {
     guard let requestClass = NSClassFromString(
         "CASDFGeneratorRequest"),
-          let generatorClass = NSClassFromString(
-            "CASDFGenerator"),
-          let generatorType = generatorClass as? NSObject.Type,
           let input = makeSDFGeneratorMask()
     else {
-        return ["error": "private SDF generator classes unavailable"]
+        return ["error": "private SDF request class unavailable"]
     }
-    let generator = generatorType.init()
     var record: [String: Any] = [
+        "mode": "request-inspection-only",
         "input": [
             "kind": "binary-centered-128x160-rectangle",
             "width": input.width,
@@ -841,14 +838,9 @@ private func sdfGeneratorEvidence(
         record["error"] = "default request factory failed"
         return record
     }
-    var captures = [
-        generatedSDFRecord(
-            generator: generator,
-            request: defaultRequest,
-            input: input,
-            name: "default",
-            outputDirectory: outputDirectory),
-    ]
+    record["defaultRequestValues"] = knownRuntimeValues(
+        defaultRequest,
+        keys: sdfGeneratorRequestKeys)
 
     if let outputEffectClass = NSClassFromString(
         "CASDFOutputEffect") as? NSObject.Type
@@ -861,12 +853,12 @@ private func sdfGeneratorEvidence(
             selector: NSSelectorFromString("requestForEffect:"),
             object: effect)
         {
-            captures.append(generatedSDFRecord(
-                generator: generator,
-                request: effectRequest,
-                input: input,
-                name: "output-range-minus64-plus16",
-                outputDirectory: outputDirectory))
+            record["effectValues"] = knownRuntimeValues(
+                effect,
+                keys: ["minimum", "maximum"])
+            record["effectRequestValues"] = knownRuntimeValues(
+                effectRequest,
+                keys: sdfGeneratorRequestKeys)
         } else {
             record["effectRequestError"] =
                 "requestForEffect factory failed"
@@ -875,7 +867,20 @@ private func sdfGeneratorEvidence(
         record["effectRequestError"] =
             "CASDFOutputEffect unavailable"
     }
-    record["captures"] = captures
+    record["generationDeferred"] =
+        "Inspect and bound the native request before invoking the generator"
+    do {
+        let checkpoint = try JSONSerialization.data(
+            withJSONObject: record,
+            options: [.prettyPrinted, .sortedKeys])
+        try checkpoint.write(
+            to: outputDirectory.appendingPathComponent(
+                "sdf-generator-requests.json"),
+            options: .atomic)
+        record["checkpointFile"] = "sdf-generator-requests.json"
+    } catch {
+        record["checkpointWriteError"] = error.localizedDescription
+    }
     return record
 }
 
@@ -1507,7 +1512,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 13,
+            "schemaVersion": 14,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
