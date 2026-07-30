@@ -799,6 +799,11 @@ state in the replay. It also links Apple's exported
 to a diagnostic vertex stage and supplies the captured uniform layout. The
 paired public-source and private-function surfaces isolate sampler,
 interpolation, and compiler arithmetic without approximating Apple pixels.
+Schema 26 keeps the private function as a link-only diagnostic after executing
+it outside its original private pipeline caused an isolated command-buffer
+hang. The safe replay remains active with the exact captured sampler, and the
+probe now inventories the sampler wrapper's Objective-C methods, properties,
+and ivars to expose its underlying state without synthesizing a descriptor.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

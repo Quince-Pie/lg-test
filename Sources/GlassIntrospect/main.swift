@@ -808,6 +808,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var records: [[String: Any]] = []
     private var textureBindings: [TextureBinding] = []
     private var samplerBindings: [SamplerBinding] = []
+    private var samplerRuntimeClasses:
+        [String: [String: Any]] = [:]
     private var droppedRecordCount = 0
     private var pipelineRecords: [ObjectIdentifier: [String: Any]] = [:]
     private var originalPipelineState:
@@ -1233,8 +1235,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "pipeline": encoderPipeline(encoder),
         ]
         if let metalSampler = sampler as? MTLSamplerState {
-            record["samplerClass"] =
+            let samplerClass =
                 String(reflecting: type(of: metalSampler))
+            record["samplerClass"] = samplerClass
+            record["description"] =
+                String(describing: metalSampler)
+            record["debugDescription"] =
+                String(reflecting: metalSampler)
             record["address"] = String(
                 format: "0x%016llx",
                 UInt64(UInt(bitPattern: Unmanaged
@@ -1242,6 +1249,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     .toOpaque())))
             if let label = metalSampler.label {
                 record["label"] = label
+            }
+            if samplerRuntimeClasses[samplerClass] == nil,
+               let cls = object_getClass(metalSampler as AnyObject)
+            {
+                samplerRuntimeClasses[samplerClass] =
+                    runtimeClassDescription(cls)
             }
             samplerBindings.append(SamplerBinding(
                 capture: captureName,
@@ -1537,6 +1550,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "records": records,
             "recordCount": records.count,
             "droppedRecordCount": droppedRecordCount,
+            "samplerRuntimeClasses":
+                samplerRuntimeClasses.values.sorted {
+                    String(describing: $0["name"])
+                        < String(describing: $1["name"])
+                },
         ]
     }
 }
@@ -2609,7 +2627,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 25,
+                    "schemaVersion": 26,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2625,7 +2643,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 25,
+            "schemaVersion": 26,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

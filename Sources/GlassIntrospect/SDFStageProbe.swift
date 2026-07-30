@@ -281,6 +281,7 @@ func writeSDFStageEvidence(
         descriptor: blurRenderDescriptor)
     var privateBlurRenderPipeline: MTLRenderPipelineState?
     var privateBlurPipelineError: String?
+    let executePrivateBlurReplay = false
     do {
         let quartzCoreLibraryURL = URL(
             fileURLWithPath:
@@ -478,7 +479,9 @@ func writeSDFStageEvidence(
         vertexCount: 3)
     renderEncoder.endEncoding()
 
-    if let privateBlurRenderPipeline {
+    if executePrivateBlurReplay,
+       let privateBlurRenderPipeline
+    {
         let privateRenderPass = MTLRenderPassDescriptor()
         privateRenderPass.colorAttachments[0].texture =
             privateBlurReplayTexture
@@ -531,7 +534,9 @@ func writeSDFStageEvidence(
         destinationOffset: 0,
         destinationBytesPerRow: blurReplayAlignedBytesPerRow,
         destinationBytesPerImage: blurReplayBufferBytes)
-    if privateBlurRenderPipeline != nil {
+    if executePrivateBlurReplay
+        && privateBlurRenderPipeline != nil
+    {
         blit.copy(
             from: privateBlurReplayTexture,
             sourceSlice: 0,
@@ -595,7 +600,9 @@ func writeSDFStageEvidence(
             blurReplayFilename),
         options: .atomic)
     var privateBlurReplayData: Data?
-    if privateBlurRenderPipeline != nil {
+    if executePrivateBlurReplay
+        && privateBlurRenderPipeline != nil
+    {
         var data = Data(
             capacity: blurReplayTightBytesPerRow * blurSide)
         for row in 0..<blurSide {
@@ -613,6 +620,9 @@ func writeSDFStageEvidence(
 
     var privateBlurReplayReport: [String: Any] = [
         "available": privateBlurRenderPipeline != nil,
+        "executed": executePrivateBlurReplay,
+        "executionReason":
+            "link-only after isolated private-function GPU hang",
     ]
     if let privateBlurReplayData {
         privateBlurReplayReport.merge([
