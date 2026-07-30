@@ -1824,10 +1824,11 @@ def validate_dynamic(
             "2.18.0",
             "2.19.0",
         }:
-            if (
-                sequence.get("samplingMethod")
-                != "continuous-off-main-presentation-binned"
-            ):
+            sampling_method = sequence.get("samplingMethod")
+            if sampling_method not in {
+                "continuous-off-main-presentation-binned",
+                "continuous-bounded-clock-full-frame-verified",
+            }:
                 findings.error(f"{label}: unexpected dynamic sampling method")
             attempts = sequence.get("captureAttempts")
             decoded_samples = sequence.get("decodedSamples")
@@ -1840,6 +1841,43 @@ def validate_dynamic(
                 or attempts != decoded_samples + transient_failures
             ):
                 findings.error(f"{label}: inconsistent dynamic sampler counters")
+            if (
+                sampling_method
+                == "continuous-bounded-clock-full-frame-verified"
+            ):
+                clock_surface = sequence.get("clockProbeSurface")
+                bounded_probes = sequence.get("boundedClockProbes")
+                full_captures = sequence.get("fullFrameCaptures")
+                full_decodes = sequence.get("fullFrameClockDecodes")
+                retained_live_frames = max(
+                    0,
+                    len(sequence.get("frames", [])) - 1,
+                )
+                if clock_surface not in {
+                    "window-top-marker-bounds",
+                    "full-window-fallback",
+                }:
+                    findings.error(
+                        f"{label}: invalid bounded clock-probe surface"
+                    )
+                if (
+                    not isinstance(bounded_probes, int)
+                    or not isinstance(full_captures, int)
+                    or not isinstance(full_decodes, int)
+                    or min(
+                        bounded_probes,
+                        full_captures,
+                        full_decodes,
+                    ) < 0
+                    or not isinstance(attempts, int)
+                    or bounded_probes > attempts
+                    or full_decodes > full_captures
+                    or full_decodes < retained_live_frames
+                ):
+                    findings.error(
+                        f"{label}: inconsistent bounded clock/full-frame "
+                        "verification counters"
+                    )
         if manifest.get("rigVersion") in {
             "2.4.0",
             "2.5.0",

@@ -2101,6 +2101,11 @@ class Measurements:
                 "captureAttempts": sequence.get("captureAttempts"),
                 "decodedSamples": sequence.get("decodedSamples"),
                 "transientFailures": sequence.get("transientFailures"),
+                "clockProbeSurface": sequence.get("clockProbeSurface"),
+                "boundedClockProbes": sequence.get("boundedClockProbes"),
+                "fullFrameCaptures": sequence.get("fullFrameCaptures"),
+                "fullFrameClockDecodes":
+                    sequence.get("fullFrameClockDecodes"),
                 "acceptedForTemporalFit": (
                     unique_frames >= min(10, len(frames))
                     and maximum_gap <= 0.200

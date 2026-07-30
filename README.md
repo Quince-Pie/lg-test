@@ -1496,6 +1496,17 @@ rejected attempts are retained under `capture-attempts/` in the selected
 artifact. If all three attempts fail, the final full attempt is still uploaded
 for diagnosis and the workflow remains red.
 
+The live sampler probes only the four clock rows while the animation is
+running. A newly useful clock bin immediately retains a full-window screenshot,
+but the bounded probe is never trusted as that screenshot's label: after the
+animation, the clock embedded in each retained full frame is decoded again and
+the frame is timestamped and binned from that value alone. The bounded capture
+must have exactly the full window width and four-row backing height; otherwise
+the sequence falls back to the historical full-window clock probe. The manifest
+records the selected surface, bounded-probe count, full-frame captures, and
+full-frame clock decodes, and validation requires a verified full-frame decode
+for every retained live frame.
+
 Dynamic sequences use smooth, deterministic RGB code fields whose independent
 frequencies supply local gradients in both axes. This supports quantitative
 optical-flow fitting of transient refraction and blur while remaining much

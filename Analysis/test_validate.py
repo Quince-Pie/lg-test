@@ -1035,6 +1035,26 @@ class ValidatorTests(unittest.TestCase):
             self.assertTrue(timing[0]["initialControlWithinTolerance"])
             self.assertTrue(timing[0]["postSettleControlWithinTolerance"])
 
+            sequence.update({
+                "samplingMethod":
+                    "continuous-bounded-clock-full-frame-verified",
+                "clockProbeSurface": "window-top-marker-bounds",
+                "boundedClockProbes": 19,
+                "fullFrameCaptures": 9,
+                "fullFrameClockDecodes": 9,
+            })
+            bounded = Findings()
+            validate_dynamic(root, manifest, references, bounded)
+            self.assertEqual(bounded.errors, [])
+
+            sequence["fullFrameClockDecodes"] = 8
+            incomplete = Findings()
+            validate_dynamic(root, manifest, references, incomplete)
+            self.assertTrue(any(
+                "bounded clock/full-frame verification counters" in error
+                for error in incomplete.errors
+            ))
+
     def test_schema5_sweeps_measure_repeatability_and_hysteresis(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -1758,6 +1758,10 @@ struct DynamicSequenceRecord: Codable {
     let captureAttempts: Int
     let decodedSamples: Int
     let transientFailures: Int
+    let clockProbeSurface: String
+    let boundedClockProbes: Int
+    let fullFrameCaptures: Int
+    let fullFrameClockDecodes: Int
     let cropPixels: CropRecord
     let analysisExclusionPixels: [CropRecord]
     var frames: [DynamicFrameRecord]
@@ -1933,15 +1937,22 @@ struct DynamicCaptureResult: @unchecked Sendable {
     let captureAttempts: Int
     let decodedSamples: Int
     let transientFailures: Int
+    let clockProbeSurface: String
+    let boundedClockProbes: Int
+    let fullFrameCaptures: Int
+    let fullFrameClockDecodes: Int
 }
 
-func captureRawWindow(_ wid: CGWindowID) throws -> RawCapturedFrame {
+func captureRawWindow(
+    _ wid: CGWindowID,
+    screenBounds: CGRect = .null
+) throws -> RawCapturedFrame {
     let started = ProcessInfo.processInfo.systemUptime
 
     // listOption: kCGWindowListOptionIncludingWindow (1<<3)
     // imageOption: kCGWindowImageBoundsIgnoreFraming (1<<0) | kCGWindowImageBestResolution (1<<3)
     if let img = legacyWindowImage.function?(
-        .null, 1 << 3, wid, (1 << 0) | (1 << 3))?
+        screenBounds, 1 << 3, wid, (1 << 0) | (1 << 3))?
         .takeRetainedValue() {
         let finished = ProcessInfo.processInfo.systemUptime
         return RawCapturedFrame(
@@ -1973,6 +1984,35 @@ func captureRawWindow(_ wid: CGWindowID) throws -> RawCapturedFrame {
         backend: "screencapture",
         midpointUptime: (started + finished) / 2,
         captureDurationSeconds: finished - started)
+}
+
+func clockScreenBounds(
+    windowID: CGWindowID,
+    markerPointHeight: CGFloat
+) -> CGRect? {
+    guard markerPointHeight > 0,
+          let records = CGWindowListCopyWindowInfo(
+              .optionIncludingWindow, windowID
+          ) as? [[String: Any]],
+          let record = records.first(where: {
+              ($0[kCGWindowNumber as String] as? NSNumber)?.uint32Value
+                  == windowID
+          }),
+          let value = record[kCGWindowBounds as String] as? [String: Any]
+    else {
+        return nil
+    }
+
+    let dictionary = value as CFDictionary
+    var bounds = CGRect.zero
+    guard CGRectMakeWithDictionaryRepresentation(dictionary, &bounds),
+          bounds.width > 0,
+          bounds.height >= markerPointHeight
+    else {
+        return nil
+    }
+    bounds.size.height = markerPointHeight
+    return bounds
 }
 
 @MainActor
@@ -2109,53 +2149,84 @@ func capturePresentedAnimation(
     duration: Double,
     frameCount: Int,
     backingScale: CGFloat,
-    refreshRate: Double
+    refreshRate: Double,
+    expectedPixelWidth: Int
 ) throws -> DynamicCaptureResult {
     let finalIndex = frameCount - 1
     let endpointDeadline = animationStart + duration + 0.250
-    var bestByIndex: [Int: DynamicTimedFrame] = [:]
+    let markerHeight = max(1, Int((4 * backingScale).rounded()))
+    let boundedScreen = clockScreenBounds(
+        windowID: windowID,
+        markerPointHeight: CGFloat(markerHeight) / backingScale)
+    var useBoundedClock = boundedScreen != nil
+    var clockProbeSurface = useBoundedClock
+        ? "window-top-marker-bounds"
+        : "full-window-fallback"
+    var candidates: [
+        Int: (
+            probeDistance: Double,
+            frame: RawCapturedFrame
+        )
+    ] = [:]
     var lastError: Error?
     var captureAttempts = 0
     var decodedSamples = 0
     var transientFailures = 0
+    var boundedClockProbes = 0
+    var fullFrameCaptures = 0
 
     while ProcessInfo.processInfo.systemUptime < endpointDeadline {
         captureAttempts += 1
         do {
-            let frame = try captureRawWindow(windowID)
+            var probe: RawCapturedFrame
+            if useBoundedClock, let boundedScreen {
+                let bounded = try captureRawWindow(
+                    windowID, screenBounds: boundedScreen)
+                if bounded.image.width == expectedPixelWidth,
+                   bounded.image.height == markerHeight {
+                    probe = bounded
+                    boundedClockProbes += 1
+                } else {
+                    // A clipped off-screen region would encode progress
+                    // against the wrong width. Fall back to the historical
+                    // full-window probe rather than accepting that ambiguity.
+                    useBoundedClock = false
+                    clockProbeSurface = "full-window-fallback"
+                    probe = try captureRawWindow(windowID)
+                }
+            } else {
+                probe = try captureRawWindow(windowID)
+            }
             let presented = min(
                 1,
                 max(0, try presentationProgress(
-                    in: frame, backingScale: backingScale)))
-            decodedSamples += 1
+                    in: probe, backingScale: backingScale)))
             let index = min(
                 finalIndex,
                 max(0, Int((presented * Double(finalIndex)).rounded())))
 
             if index > 0 {
-                let target = duration * Double(index) / Double(finalIndex)
-                let sample = DynamicTimedFrame(
-                    index: index,
-                    target: target,
-                    actual: frame.midpointUptime - animationStart,
-                    presentationProgress: presented,
-                    frame: frame)
                 let targetProgress = Double(index) / Double(finalIndex)
                 let distance = abs(presented - targetProgress)
-                let previousDistance = bestByIndex[index].map {
-                    abs($0.presentationProgress - targetProgress)
-                }
-                if let previousDistance {
-                    if distance < previousDistance {
-                        bestByIndex[index] = sample
+                let previousDistance = candidates[index]?.probeDistance
+                let shouldReplace = previousDistance.map {
+                    distance < $0
+                } ?? true
+                if shouldReplace {
+                    let fullFrame: RawCapturedFrame
+                    if useBoundedClock {
+                        fullFrame = try captureRawWindow(windowID)
+                    } else {
+                        fullFrame = probe
                     }
-                } else {
-                    bestByIndex[index] = sample
+                    fullFrameCaptures += 1
+                    candidates[index] = (distance, fullFrame)
                 }
             }
+            decodedSamples += 1
 
             if presented >= 0.995,
-               frame.midpointUptime
+               probe.midpointUptime
                    >= animationStart + duration + 1 / max(refreshRate, 1) {
                 break
             }
@@ -2173,6 +2244,43 @@ func capturePresentedAnimation(
         Thread.sleep(forTimeInterval: 0.001)
     }
 
+    // The bounded probe controls only acquisition cadence. Decode the clock
+    // embedded in every retained full screenshot after the animation, then
+    // bin and timestamp from that full screenshot alone. A probe/full race
+    // therefore cannot mislabel optical evidence.
+    var bestByIndex: [Int: DynamicTimedFrame] = [:]
+    for candidate in candidates.values.sorted(by: {
+        $0.frame.midpointUptime < $1.frame.midpointUptime
+    }) {
+        let frame = candidate.frame
+        let presented = min(
+            1,
+            max(0, try presentationProgress(
+                in: frame, backingScale: backingScale)))
+        let index = min(
+            finalIndex,
+            max(0, Int((presented * Double(finalIndex)).rounded())))
+        guard index > 0 else { continue }
+        let target = duration * Double(index) / Double(finalIndex)
+        let sample = DynamicTimedFrame(
+            index: index,
+            target: target,
+            actual: frame.midpointUptime - animationStart,
+            presentationProgress: presented,
+            frame: frame)
+        let targetProgress = Double(index) / Double(finalIndex)
+        let distance = abs(presented - targetProgress)
+        let previousDistance = bestByIndex[index].map {
+            abs($0.presentationProgress - targetProgress)
+        }
+        let shouldReplace = previousDistance.map {
+            distance < $0
+        } ?? true
+        if shouldReplace {
+            bestByIndex[index] = sample
+        }
+    }
+
     guard let endpoint = bestByIndex[finalIndex],
           endpoint.presentationProgress >= 0.995
     else {
@@ -2183,7 +2291,11 @@ func capturePresentedAnimation(
         frames: bestByIndex.keys.sorted().compactMap { bestByIndex[$0] },
         captureAttempts: captureAttempts,
         decodedSamples: decodedSamples,
-        transientFailures: transientFailures)
+        transientFailures: transientFailures,
+        clockProbeSurface: clockProbeSurface,
+        boundedClockProbes: boundedClockProbes,
+        fullFrameCaptures: fullFrameCaptures,
+        fullFrameClockDecodes: candidates.count)
 }
 
 func centeredCrop(
@@ -3552,7 +3664,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     duration: duration,
                                     frameCount: frameCount,
                                     backingScale: scale,
-                                    refreshRate: refresh)
+                                    refreshRate: refresh,
+                                    expectedPixelWidth:
+                                        initial.frame.source.width)
                             }.value
                             timed.append(contentsOf: captured.frames)
                             phaseTask?.cancel()
@@ -3609,10 +3723,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     ? "appkit-raster-monotonic"
                                     : "swiftui-animatable-frame",
                                 samplingMethod:
-                                    "continuous-off-main-presentation-binned",
+                                    "continuous-bounded-clock-full-frame-verified",
                                 captureAttempts: captured.captureAttempts,
                                 decodedSamples: captured.decodedSamples,
                                 transientFailures: captured.transientFailures,
+                                clockProbeSurface:
+                                    captured.clockProbeSurface,
+                                boundedClockProbes:
+                                    captured.boundedClockProbes,
+                                fullFrameCaptures:
+                                    captured.fullFrameCaptures,
+                                fullFrameClockDecodes:
+                                    captured.fullFrameClockDecodes,
                                 cropPixels: crop,
                                 analysisExclusionPixels: exclusions,
                                 frames: [],
