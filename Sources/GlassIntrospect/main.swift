@@ -136,6 +136,58 @@ private func serializedRuntimeValue(_ optionalValue: Any?) -> Any {
     ]
 }
 
+private func serializedMirrorValue(
+    _ value: Any,
+    depth: Int
+) -> Any {
+    let mirror = Mirror(reflecting: value)
+    guard depth < 3,
+          mirror.displayStyle != .class,
+          !mirror.children.isEmpty
+    else {
+        return serializedRuntimeValue(value)
+    }
+    return [
+        "class": String(reflecting: type(of: value)),
+        "description": String(reflecting: value),
+        "displayStyle":
+            mirror.displayStyle.map {
+                String(describing: $0)
+            }
+                ?? "none",
+        "children": mirror.children.prefix(64).map { child in
+            [
+                "label": child.label ?? "",
+                "value": serializedMirrorValue(
+                    child.value,
+                    depth: depth + 1),
+            ]
+        },
+    ]
+}
+
+private func runtimeMirrorDescription(
+    _ object: NSObject
+) -> [[String: Any]] {
+    var levels: [[String: Any]] = []
+    var current: Mirror? = Mirror(reflecting: object)
+    while let mirror = current {
+        levels.append([
+            "subjectType": String(reflecting: mirror.subjectType),
+            "children": mirror.children.prefix(64).map { child in
+                [
+                    "label": child.label ?? "",
+                    "value": serializedMirrorValue(
+                        child.value,
+                        depth: 0),
+                ]
+            },
+        ])
+        current = mirror.superclassMirror
+    }
+    return levels
+}
+
 private struct ExportedCodeProbe {
     let symbol: String
     let byteCount: Int
@@ -804,6 +856,13 @@ private func layerDescription(_ layer: CALayer) -> [String: Any] {
             "effectOffset",
             "mergeElements",
             "hitTestsAsFill",
+            "contentsOneValueDistance",
+            "contentsZeroValueDistance",
+            "gradientOvalization",
+            "operation",
+            "distanceRange",
+            "shapeBounds",
+            "ovalization",
         ])
     record["contents"] = scalarDescription(layer.contents)
     record["delegate"] = scalarDescription(layer.delegate)
@@ -950,7 +1009,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 9,
+            "schemaVersion": 10,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -1061,6 +1120,13 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     "effectOffset",
                                     "mergeElements",
                                     "hitTestsAsFill",
+                                    "contentsOneValueDistance",
+                                    "contentsZeroValueDistance",
+                                    "gradientOvalization",
+                                    "operation",
+                                    "distanceRange",
+                                    "shapeBounds",
+                                    "ovalization",
                                     "minimum",
                                     "maximum",
                                     "key",
@@ -1091,6 +1157,18 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     "fillAmount",
                                     "curvature",
                                 ]))
+                    })
+                report["sdfRuntimeMirrors"] = Dictionary(
+                    uniqueKeysWithValues: names.compactMap {
+                        name -> (String, Any)? in
+                        guard name.lowercased().contains("sdf") else {
+                            return nil
+                        }
+                        return (
+                            name,
+                            runtimeMirrorDescription(
+                                runtimeObjects[name]!)
+                        )
                     })
             }
         }

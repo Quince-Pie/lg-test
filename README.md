@@ -722,6 +722,11 @@ Swift compiler transcript as `build.log`, collects the runtime and framework
 evidence, uploads that small directory even on failure, and then enforces both
 a successful build and a nonempty `runtime.json`. Changes confined to the
 probe therefore do not launch another multi-gigabyte static capture.
+The probe records the scalar state of `CASDFElementLayer`, including its
+zero/one distance mapping and gradient ovalization, and bounded Swift mirror
+descriptions of the real SDF objects. The latter exposes stored distance-range
+and shape-bound values when Swift reflection permits it, without substituting
+a recreated layer or guessed geometry.
 
 Run `30487878788` completed that probe in 39 seconds. It recovered all 55
 live `glassBackground` inputs, the full 80-byte `vibrantColorMatrix` without
