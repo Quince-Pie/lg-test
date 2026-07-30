@@ -1005,6 +1005,15 @@ multiplication. Schema 50 follows the AIR precision boundaries literally.
 Blur interpolation now forms a float3 reciprocal and bias and evaluates the
 three factors with `fma`; shadow normalization multiplies the binary16 SDF
 distance by the float inverse radius and truncates only the product.
+Run `30541725364` made the outer-refraction branch exact across all
+4,194,304 output bytes, proving those float3 operation boundaries. The
+shadow mismatch stayed unchanged because schema 50 still saturated the
+distance-radius product before the affine polynomial input. Apple instead
+evaluates `saturate(product * 0.25h + 0.5h) * 4h - 2h`. This distinction is
+observable for the captured positive-infinite inverse radius: exterior
+distances become `+2h` and the polynomial returns exact zero, whereas the
+prematurely saturated path used `+1h` and left a broad residual. Schema 51
+removes that saturation while retaining the complete composition path.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

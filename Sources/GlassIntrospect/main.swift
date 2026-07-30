@@ -422,9 +422,9 @@ inline half replay_shadow_alpha(
     half2 shadow_sdf,
     constant ReplayGlassBackgroundUniforms &uniforms)
 {
-    const half normalized = saturate(half(
+    const half normalized = half(
         uniforms.shadow_inv_radius
-        * float(shadow_sdf.x)));
+        * float(shadow_sdf.x));
     const half centered =
         saturate(normalized * half(0.25) + half(0.5))
             * half(4.0)
@@ -4354,7 +4354,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 50,
+            "schemaVersion": 51,
             "capture": capture,
             "phase": phase,
         ]
@@ -4547,7 +4547,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 50,
+                    "schemaVersion": 51,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4747,7 +4747,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 50,
+                "schemaVersion": 51,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -7322,7 +7322,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 50,
+                    "schemaVersion": 51,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -7338,7 +7338,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 50,
+            "schemaVersion": 51,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
