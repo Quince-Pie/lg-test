@@ -961,6 +961,17 @@ and tests two intentionally nonmatching ABI controls. The first compiles the
 vertex and fragment together; the second feeds the custom fragment from the
 freshly loaded Apple vertex. Their command-buffer completion, rather than
 their deliberately false image comparison, is the acceptance criterion.
+Run `30539851778` accepted the same-library ABI control: it completed both
+glass draws and produced the preregistered nonmatching image. Feeding that
+same custom fragment from Apple's separately compiled vertex hung the virtual
+GPU, proving that cross-metallib varying linkage—not the recovered vertex
+arithmetic—caused the earlier failures. Schema 47 removes the poisonous
+cross-library candidate and compiles both replacement stages together. Its
+first fragment slice is a direct translation of the active exported AIR path:
+mode-four supercircle SDF, binary16 coverage, complex refraction and mip LOD,
+face color matrix, holding tone, premultiplied composition, clamp, and EDR
+scale. It deliberately rejects unobserved modes and relies on the captured
+zero-shadow state; only measured byte differences guide subsequent expansion.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

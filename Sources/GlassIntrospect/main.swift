@@ -59,6 +59,498 @@ fragment half4 glass_fragment_abi_probe(
         half(0.25));
 }
 
+struct ReplaySdfFragmentUniforms {
+    float4 arg;
+    float4 tr;
+    float4 arg2;
+};
+
+struct ReplayGlassBackgroundUniforms {
+    float4 displacement_mat;
+    float inner_refraction_amount;
+    float inner_refraction_inv_height;
+    float outer_refraction_amount;
+    float outer_refraction_inv_height;
+    float refraction_threshold0;
+    float refraction_threshold1;
+    float blur_radius;
+    float edge_bleed_blur_radius;
+    float edge_bleed_amount;
+    float edge_bleed_inv_height;
+    float shadow_amount;
+    float shadow_inv_height;
+    float2 shadow_offset;
+    float shadow_blur_radius;
+    float shadow_inv_radius;
+    half4 face_cm0;
+    half4 face_cm1;
+    half4 face_cm2;
+    half4 bleed_cm0;
+    half4 bleed_cm1;
+    half4 bleed_cm2;
+    half4 shadow_cm0;
+    half4 shadow_cm1;
+    half4 shadow_cm2;
+    float shadow_contribution;
+    float shadow_face_opacity;
+    half blur_alpha0;
+    half blur_alpha1;
+    half blur_alpha2;
+    half blur_alpha3;
+    half blur_dist0;
+    half blur_dist1;
+    half blur_dist2;
+    half blur_dist3;
+    half edge_bleed_dist0;
+    half edge_bleed_dist1;
+    half edge_bleed_opacity;
+    half face_opacity;
+    half2 bleed_darken;
+    half shadow_dist_offset;
+    half shadow_opacity;
+    half refraction_opacity;
+    half holding_tone_opacity;
+    half sdr_shadow_dist0;
+    half sdr_shadow_dist1;
+    half clamp_limit;
+    half preserve_hue;
+    half sdr_white_value;
+    half x86_workaround;
+    half complex_refraction;
+};
+
+struct ReplayGlassBackgroundUniformsSdf {
+    ReplaySdfFragmentUniforms sdf;
+    ReplayGlassBackgroundUniforms glass;
+};
+
+inline half replay_epsilon()
+{
+    return as_type<half>(ushort(0x068e));
+}
+
+inline float replay_float_constant(uint bits)
+{
+    return as_type<float>(bits);
+}
+
+inline half3 replay_supercircle_sdf(
+    float2 point,
+    float2 half_size,
+    float radius,
+    float2 ovalization)
+{
+    const float radius_abs = fabs(radius);
+    const float circle_scale =
+        radius_abs * replay_float_constant(0x3fc3ab4b);
+    const float adjusted_radius = mix(
+        circle_scale,
+        radius_abs,
+        max(ovalization.x, ovalization.y));
+    const float2 adjusted_delta =
+        point - half_size + adjusted_radius;
+    const float2 normalized = max(
+        float2(0.0),
+        (point - half_size + circle_scale) / circle_scale);
+    const float normalized_length =
+        fast::sqrt(dot(fabs(normalized), fabs(normalized)));
+    const float maximum = max(normalized.x, normalized.y);
+    const float minimum = min(normalized.x, normalized.y);
+    float ratio = saturate(minimum / maximum);
+    ratio = maximum == 0.0 ? 0.0 : ratio;
+
+    float polynomial =
+        replay_float_constant(0x3f6d11e0) * ratio;
+    polynomial =
+        replay_float_constant(0x4049fc11) - polynomial;
+    polynomial =
+        polynomial * ratio
+        + replay_float_constant(0xc06909c0);
+    polynomial =
+        polynomial * ratio
+        + replay_float_constant(0x3fa24ecf);
+    polynomial =
+        polynomial * ratio
+        + replay_float_constant(0x3e897ce5);
+    const float circle_distance =
+        normalized_length + 1.0
+        - 1.0
+            / (1.0
+                - ratio * ratio
+                    * saturate(normalized_length)
+                    * polynomial);
+
+    const float2 oval_delta = max(
+        float2(0.0),
+        normalized
+            * replay_float_constant(0x3fc3ab4b)
+            + replay_float_constant(0xbf075697));
+    const float oval_distance =
+        fast::sqrt(dot(oval_delta, oval_delta))
+            * replay_float_constant(0x3f277765)
+        + replay_float_constant(0x3eb11136);
+    const float distance_x = mix(
+        circle_distance,
+        oval_distance,
+        ovalization.x);
+    const float distance_y = mix(
+        circle_distance,
+        oval_distance,
+        ovalization.y);
+    const float direction =
+        normalized.y > normalized.x ? 1.0 : -1.0;
+    const float distance_select = saturate(
+        0.5 - direction + direction * ratio);
+    const half curved_distance = half(
+        mix(distance_x, distance_y, distance_select) - 1.0);
+    const half interior_distance = min(
+        max(half(adjusted_delta.x), half(adjusted_delta.y)),
+        half(0.0));
+    const half distance =
+        interior_distance + half(circle_scale * float(curved_distance));
+
+    const float2 positive_delta = max(
+        float2(0.0),
+        adjusted_delta);
+    const float inverse_length =
+        fast::rsqrt(dot(positive_delta, positive_delta));
+    const half2 curved_normal =
+        half2(positive_delta * inverse_length);
+    const half2 axis_normal =
+        adjusted_delta.x > adjusted_delta.y
+            ? half2(1.0, 0.0)
+            : half2(0.0, 1.0);
+    const half2 normal =
+        curved_normal.x + curved_normal.y > half(0.0)
+            ? curved_normal
+            : axis_normal;
+    return half3(distance, normal);
+}
+
+inline half4 replay_compute_mode4_sdf(
+    float2 point,
+    constant ReplaySdfFragmentUniforms &uniforms)
+{
+    const half3 shape = replay_supercircle_sdf(
+        fabs(point),
+        uniforms.arg.xy,
+        uniforms.arg2.z,
+        uniforms.arg2.xy);
+    const half2 signs = half2(
+        point.x >= 0.0 ? 1.0 : -1.0,
+        point.y >= 0.0 ? 1.0 : -1.0);
+    const half2 shape_normal = shape.yz * signs;
+
+    const float2 radial_input = float2(
+        point.x,
+        uniforms.arg.x * point.y / uniforms.arg.y);
+    const float radial_inverse_length =
+        fast::rsqrt(dot(radial_input, radial_input));
+    const half2 radial_normal =
+        half2(radial_input * radial_inverse_length);
+    half2 normal = mix(
+        shape_normal,
+        radial_normal,
+        half(uniforms.arg.w));
+    normal *= rsqrt(dot(normal, normal));
+
+    const half transformed_x = half(
+        uniforms.tr.x * float(normal.x)
+        + uniforms.tr.y * float(normal.y));
+    const half transformed_y = half(
+        uniforms.tr.z * float(normal.x)
+        + uniforms.tr.w * float(normal.y));
+    return half4(
+        shape.x,
+        transformed_x,
+        transformed_y,
+        half(1.0));
+}
+
+inline half replay_refraction_shift(
+    half distance,
+    float amount,
+    float inverse_height)
+{
+    const half amount_half = half(amount);
+    const half height = saturate(
+        half(inverse_height) * -distance);
+    const half curve = saturate(
+        sqrt((half(2.0) - height) * height));
+    return amount_half - curve * amount_half;
+}
+
+inline half replay_blur_scale(
+    half shifted_distance,
+    constant ReplayGlassBackgroundUniforms &uniforms)
+{
+    const float3 lower = float3(
+        float(uniforms.blur_dist0),
+        float(uniforms.blur_dist1),
+        float(uniforms.blur_dist2));
+    const float3 upper = float3(
+        float(uniforms.blur_dist1),
+        float(uniforms.blur_dist2),
+        float(uniforms.blur_dist3));
+    const float3 factors = saturate(
+        (float3(float(shifted_distance)) - lower)
+            / (upper - lower));
+    const half3 weighted =
+        half3(
+            uniforms.blur_alpha1,
+            uniforms.blur_alpha2,
+            uniforms.blur_alpha3)
+        * half3(factors);
+    return uniforms.blur_alpha0
+        - (weighted.x + weighted.y + weighted.z);
+}
+
+inline float replay_lod(half radius)
+{
+    const half argument = radius < half(2.0)
+        ? half(float(radius) * 0.5 + 1.0)
+        : radius;
+    return float(max(half(0.0), log2(argument)));
+}
+
+inline half4 replay_sanitize_sample(half4 value)
+{
+    value.rgb = select(
+        value.rgb,
+        half3(0.0),
+        fabs(value.rgb) < half3(replay_epsilon()));
+    return value;
+}
+
+inline half4 replay_sample_refracted(
+    float2 source_uv,
+    half distance,
+    half2 displacement,
+    texture2d<half, access::sample> source_texture,
+    constant ReplayGlassBackgroundUniforms &uniforms)
+{
+    constexpr sampler source_sampler(
+        coord::normalized,
+        address::clamp_to_edge,
+        filter::linear,
+        mip_filter::linear);
+
+    if (uniforms.complex_refraction <= half(0.0)) {
+        return replay_sanitize_sample(source_texture.sample(
+            source_sampler,
+            source_uv,
+            level(replay_lod(half(uniforms.blur_radius)))));
+    }
+
+    const half inner_shift = replay_refraction_shift(
+        distance,
+        uniforms.inner_refraction_amount,
+        uniforms.inner_refraction_inv_height);
+    const half inner_blur = half(
+        uniforms.blur_radius
+        * float(replay_blur_scale(
+            inner_shift + distance,
+            uniforms)));
+    half4 inner_sample = replay_sanitize_sample(
+        source_texture.sample(
+            source_sampler,
+            float2(
+                half2(source_uv)
+                + half2(inner_shift) * displacement),
+            level(replay_lod(inner_blur))));
+
+    if (uniforms.refraction_opacity <= half(0.0)) {
+        return inner_sample;
+    }
+
+    const half outer_shift = replay_refraction_shift(
+        distance,
+        uniforms.outer_refraction_amount,
+        uniforms.outer_refraction_inv_height);
+    const half outer_blur = half(
+        uniforms.blur_radius
+        * float(replay_blur_scale(
+            outer_shift + distance,
+            uniforms)));
+    const half4 outer_sample = replay_sanitize_sample(
+        source_texture.sample(
+            source_sampler,
+            float2(
+                half2(source_uv)
+                + half2(outer_shift) * displacement),
+            level(replay_lod(outer_blur))));
+    const half threshold = half(saturate(
+        (float(distance) - uniforms.refraction_threshold0)
+        / (uniforms.refraction_threshold1
+            - uniforms.refraction_threshold0)));
+    const half amount =
+        uniforms.refraction_opacity * threshold;
+    return uniforms.x86_workaround != half(0.0)
+        ? half4(mix(
+            float4(inner_sample),
+            float4(outer_sample),
+            float4(float(amount))))
+        : mix(inner_sample, outer_sample, half4(amount));
+}
+
+inline half3 replay_color_matrix(
+    half3 color,
+    half4 row0,
+    half4 row1,
+    half4 row2)
+{
+    return half3(
+        dot(color, row0.xyz),
+        dot(color, row1.xyz),
+        dot(color, row2.xyz))
+        + half3(row0.w, row1.w, row2.w);
+}
+
+fragment half4 glass_fragment_profile_replay(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode < 0) {
+        discard_fragment();
+        return half4(0.0);
+    }
+    if (mode != 4) {
+        return half4(1.0, 0.0, 1.0, 1.0);
+    }
+
+    const half4 sdf = replay_compute_mode4_sdf(
+        input.sdf_uv,
+        uniforms.sdf);
+    const half distance = sdf.x;
+    const half feather = max(
+        fwidth(distance),
+        replay_epsilon());
+    const half coverage = sdf.w * half(saturate(
+        float(-distance / feather) + 0.5));
+    if (coverage == half(0.0)) {
+        discard_fragment();
+        return half4(0.0);
+    }
+
+    const float2 normal = float2(sdf.yz);
+    const half2 displacement = half2(
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.xy)),
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.zw)));
+    const half4 sampled = replay_sample_refracted(
+        input.src_uv,
+        distance,
+        displacement,
+        source_texture,
+        uniforms.glass);
+    const half sample_alpha = max(
+        sampled.a,
+        replay_epsilon());
+    const half3 source_color = sampled.rgb / sample_alpha;
+    half4 face = half4(source_color, half(1.0));
+
+    if (uniforms.glass.face_opacity > half(0.0)) {
+        const half3 mapped = replay_color_matrix(
+            source_color,
+            uniforms.glass.face_cm0,
+            uniforms.glass.face_cm1,
+            uniforms.glass.face_cm2);
+        face.rgb =
+            uniforms.glass.x86_workaround != half(0.0)
+            ? half3(mix(
+                float3(source_color),
+                float3(mapped),
+                float3(float(uniforms.glass.face_opacity))))
+            : mix(
+                source_color,
+                mapped,
+                half3(uniforms.glass.face_opacity));
+    }
+
+    half4 composite =
+        uniforms.glass.x86_workaround != half(0.0)
+        ? half4(mix(
+            float4(0.0),
+            float4(face),
+            float4(float(coverage))))
+        : mix(
+            half4(0.0),
+            face,
+            half4(coverage));
+
+    if (uniforms.glass.holding_tone_opacity > half(0.0)) {
+        half holding_distance;
+        if (uniforms.glass.sdr_shadow_dist0 > distance) {
+            holding_distance = half(1.0);
+        } else if (uniforms.glass.sdr_shadow_dist1 > distance) {
+            const half factor =
+                (distance - uniforms.glass.sdr_shadow_dist0)
+                / (uniforms.glass.sdr_shadow_dist1
+                    - uniforms.glass.sdr_shadow_dist0);
+            holding_distance =
+                uniforms.glass.x86_workaround != half(0.0)
+                ? half(mix(1.0, 0.0, float(factor)))
+                : mix(half(1.0), half(0.0), factor);
+        } else {
+            holding_distance = half(0.0);
+        }
+
+        const half clamped_alpha = saturate(composite.a);
+        const half3 holding_rgb =
+            half3(uniforms.glass.sdr_white_value)
+            * composite.rgb
+            * half3(clamped_alpha)
+            / half3(max(composite.a, replay_epsilon()));
+        const half4 holding = half4(
+            holding_rgb,
+            clamped_alpha);
+        const half amount =
+            holding_distance
+            * uniforms.glass.holding_tone_opacity;
+        composite =
+            uniforms.glass.x86_workaround != half(0.0)
+            ? half4(mix(
+                float4(composite),
+                float4(holding),
+                float4(float(amount))))
+            : mix(
+                composite,
+                holding,
+                half4(amount));
+    }
+
+    if (uniforms.glass.clamp_limit > half(0.0)) {
+        const half alpha = max(
+            composite.a,
+            replay_epsilon());
+        half3 straight = composite.rgb / half3(alpha);
+        if (uniforms.glass.preserve_hue > half(0.0)) {
+            const half maximum = max(
+                straight.x,
+                max(straight.y, straight.z));
+            if (maximum > uniforms.glass.clamp_limit) {
+                straight *= half3(
+                    uniforms.glass.clamp_limit / maximum);
+            }
+        } else {
+            straight = clamp(
+                straight,
+                half3(-0.75),
+                half3(uniforms.glass.clamp_limit));
+        }
+        composite.rgb = straight * half3(composite.a);
+    }
+
+    composite.rgb *= half3(edr_scale);
+    return composite;
+}
+
 vertex GlassReplayVertexOutput glass_vertex_raw(
     const device GlassReplayVertex *vertices [[buffer(1)]],
     constant float4x4 &mvp [[buffer(2)]],
@@ -3703,7 +4195,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 46,
+            "schemaVersion": 47,
             "capture": capture,
             "phase": phase,
         ]
@@ -3806,7 +4298,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     name: "glass_vertex_stage_in"),
               let customABIFragment =
                 shaderLibrary.makeFunction(
-                    name: "glass_fragment_abi_probe")
+                    name: "glass_fragment_abi_probe"),
+              let customProfileFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_profile_replay")
         else {
             throw NSError(
                 domain: "GlassIntrospect.IndependentGlass",
@@ -3868,12 +4363,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             name: "custom_vertex_fragment_abi_probe",
             descriptor: customPair))
 
-        let customFragment = try copyCapturedDescriptor()
-        customFragment.vertexFunction = sdfVertex
-        customFragment.fragmentFunction = customABIFragment
+        let customProfile = try copyCapturedDescriptor()
+        customProfile.vertexFunction = customStageInVertex
+        customProfile.fragmentFunction = customProfileFragment
         descriptorCandidates.append((
-            name: "apple_vertex_custom_fragment_abi_probe",
-            descriptor: customFragment))
+            name: "custom_profile_fragment_replay",
+            descriptor: customProfile))
 
         var candidates: [(
             name: String,
@@ -3893,7 +4388,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 46,
+                    "schemaVersion": 47,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4092,7 +4587,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 46,
+                "schemaVersion": 47,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -6300,7 +6795,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 46,
+                    "schemaVersion": 47,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -6316,7 +6811,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 46,
+            "schemaVersion": 47,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
