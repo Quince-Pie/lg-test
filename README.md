@@ -885,6 +885,15 @@ inside the retained range; the offset calls determine which record and vertex
 slice the later draw actually consumes. The bounded post-fence prefix grows
 from 512 to 4,096 bytes so all 16 vertices referenced by the captured
 48-index mesh remain available without retaining the full 256 KiB arena.
+Schema 40 inserts a side-effect-free blit immediately before each load-action
+render pass, retaining the color-zero input that Apple actually consumed. Once
+the original frame completes, it replays the final glass-bearing encoder into
+fresh attachments using the exact retained Apple pipeline states, resources,
+offset updates, viewport, scissor rectangles, and draw sequence. The replay
+surface is compared byte-for-byte with the original BGRA8 output and both the
+pre-pass and replay surfaces are preserved. This first proves the captured
+invocation is complete; it is not yet evidence that an independently compiled
+replacement fragment function is exact.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

@@ -785,6 +785,9 @@ private func probeMakeRenderCommandEncoder(
     _ selector: Selector,
     _ descriptor: MTLRenderPassDescriptor
 ) -> Unmanaged<AnyObject>? {
+    let preColor0 = MetalUniformProbe.shared.prepareRenderPassCopy(
+        commandBuffer: commandBuffer,
+        descriptor: descriptor)
     guard let result = MetalUniformProbe.shared
         .forwardMakeRenderCommandEncoder(
             commandBuffer: commandBuffer,
@@ -796,7 +799,8 @@ private func probeMakeRenderCommandEncoder(
     MetalUniformProbe.shared.recordRenderPass(
         commandBuffer: commandBuffer,
         encoder: result.takeUnretainedValue(),
-        descriptor: descriptor)
+        descriptor: descriptor,
+        preColor0: preColor0)
     return result
 }
 
@@ -1216,6 +1220,77 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let index: Int
     }
 
+    private enum ReplayCommand {
+        case pipeline(MTLRenderPipelineState)
+        case fragmentBytes(Data, Int)
+        case fragmentBuffer(MTLBuffer?, Int, Int)
+        case fragmentBufferOffset(Int, Int)
+        case fragmentTexture(MTLTexture?, Int)
+        case fragmentSampler(MTLSamplerState?, Int)
+        case vertexBytes(Data, Int)
+        case vertexBuffer(MTLBuffer?, Int, Int)
+        case vertexBufferOffset(Int, Int)
+        case viewport(MTLViewport)
+        case scissorRect(MTLScissorRect)
+        case drawPrimitives(
+            MTLPrimitiveType,
+            Int,
+            Int)
+        case drawPrimitivesInstanced(
+            MTLPrimitiveType,
+            Int,
+            Int,
+            Int)
+        case drawPrimitivesBaseInstance(
+            MTLPrimitiveType,
+            Int,
+            Int,
+            Int,
+            Int)
+        case drawIndexedPrimitives(
+            MTLPrimitiveType,
+            Int,
+            MTLIndexType,
+            MTLBuffer,
+            Int)
+        case drawIndexedPrimitivesInstanced(
+            MTLPrimitiveType,
+            Int,
+            MTLIndexType,
+            MTLBuffer,
+            Int,
+            Int)
+        case drawIndexedPrimitivesBaseVertex(
+            MTLPrimitiveType,
+            Int,
+            MTLIndexType,
+            MTLBuffer,
+            Int,
+            Int,
+            Int,
+            Int)
+    }
+
+    private final class ReplayPass {
+        let capture: String
+        let encoder: ObjectIdentifier
+        let descriptor: MTLRenderPassDescriptor
+        let preColor0: MTLTexture?
+        var commands: [ReplayCommand] = []
+
+        init(
+            capture: String,
+            encoder: ObjectIdentifier,
+            descriptor: MTLRenderPassDescriptor,
+            preColor0: MTLTexture?
+        ) {
+            self.capture = capture
+            self.encoder = encoder
+            self.descriptor = descriptor
+            self.preColor0 = preColor0
+        }
+    }
+
     static let shared = MetalUniformProbe()
 
     private let lock = NSLock()
@@ -1223,6 +1298,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var records: [[String: Any]] = []
     private var bufferBindings: [BufferBinding] = []
     private var activeBuffers: [BufferSlot: MTLBuffer] = [:]
+    private var replayPasses: [ReplayPass] = []
+    private var replayPassByEncoder:
+        [ObjectIdentifier: ReplayPass] = [:]
     private var textureBindings: [TextureBinding] = []
     private var samplerBindings: [SamplerBinding] = []
     private var samplerRuntimeClasses:
@@ -1271,6 +1349,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
         "default",
         "bounded-depth0-gradient-smoothing3",
         "bounded-depth2-gradient-smoothing3",
+        "carenderer-live-tree",
+        "carenderer-local-backdrop",
+    ])
+    private let replayCaptureNames = Set([
         "carenderer-live-tree",
         "carenderer-local-backdrop",
     ])
@@ -1913,14 +1995,91 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return record
     }
 
+    func prepareRenderPassCopy(
+        commandBuffer: AnyObject,
+        descriptor: MTLRenderPassDescriptor
+    ) -> MTLTexture? {
+        lock.lock()
+        let shouldCapture = captureName.map {
+            replayCaptureNames.contains($0)
+        } ?? false
+        lock.unlock()
+        guard shouldCapture,
+              let attachment = descriptor.colorAttachments[0],
+              attachment.loadAction == .load,
+              let source = attachment.texture,
+              source.textureType == .type2D,
+              source.depth == 1,
+              source.arrayLength == 1,
+              source.sampleCount == 1,
+              let metalCommandBuffer =
+                commandBuffer as? MTLCommandBuffer
+        else {
+            return nil
+        }
+        let copyDescriptor = MTLTextureDescriptor
+            .texture2DDescriptor(
+                pixelFormat: source.pixelFormat,
+                width: source.width,
+                height: source.height,
+                mipmapped: false)
+        copyDescriptor.storageMode = .private
+        copyDescriptor.usage = [.shaderRead]
+        guard let copy = source.device.makeTexture(
+                descriptor: copyDescriptor),
+              let blit = metalCommandBuffer.makeBlitCommandEncoder()
+        else {
+            return nil
+        }
+        blit.copy(
+            from: source,
+            sourceSlice: attachment.slice,
+            sourceLevel: attachment.level,
+            sourceOrigin: MTLOrigin(
+                x: 0,
+                y: 0,
+                z: attachment.depthPlane),
+            sourceSize: MTLSize(
+                width: source.width,
+                height: source.height,
+                depth: 1),
+            to: copy,
+            destinationSlice: 0,
+            destinationLevel: 0,
+            destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+        blit.endEncoding()
+        return copy
+    }
+
+    private func appendReplayCommand(
+        encoder: AnyObject,
+        _ command: ReplayCommand
+    ) {
+        replayPassByEncoder[ObjectIdentifier(encoder)]?
+            .commands.append(command)
+    }
+
     func recordRenderPass(
         commandBuffer: AnyObject,
         encoder: AnyObject,
-        descriptor: MTLRenderPassDescriptor
+        descriptor: MTLRenderPassDescriptor,
+        preColor0: MTLTexture?
     ) {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        if replayCaptureNames.contains(captureName),
+           let descriptorCopy =
+            descriptor.copy() as? MTLRenderPassDescriptor
+        {
+            let pass = ReplayPass(
+                capture: captureName,
+                encoder: ObjectIdentifier(encoder),
+                descriptor: descriptorCopy,
+                preColor0: preColor0)
+            replayPasses.append(pass)
+            replayPassByEncoder[pass.encoder] = pass
+        }
 
         var colorAttachments: [[String: Any]] = []
         for index in 0..<8 {
@@ -1950,6 +2109,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 descriptor.renderTargetArrayLength,
             "defaultRasterSampleCount":
                 descriptor.defaultRasterSampleCount,
+            "preColor0Captured": preColor0 != nil,
             "colorAttachments": colorAttachments,
         ]
         if descriptor.depthAttachment.texture != nil
@@ -1991,6 +2151,105 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        switch kind {
+        case "drawPrimitives":
+            if let vertexStart = fields["vertexStart"] as? Int,
+               let vertexCount = fields["vertexCount"] as? Int
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawPrimitives(
+                        primitiveType,
+                        vertexStart,
+                        vertexCount))
+            }
+        case "drawPrimitivesInstanced":
+            if let vertexStart = fields["vertexStart"] as? Int,
+               let vertexCount = fields["vertexCount"] as? Int,
+               let instanceCount = fields["instanceCount"] as? Int
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawPrimitivesInstanced(
+                        primitiveType,
+                        vertexStart,
+                        vertexCount,
+                        instanceCount))
+            }
+        case "drawPrimitivesBaseInstance":
+            if let vertexStart = fields["vertexStart"] as? Int,
+               let vertexCount = fields["vertexCount"] as? Int,
+               let instanceCount = fields["instanceCount"] as? Int,
+               let baseInstance = fields["baseInstance"] as? Int
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawPrimitivesBaseInstance(
+                        primitiveType,
+                        vertexStart,
+                        vertexCount,
+                        instanceCount,
+                        baseInstance))
+            }
+        case "drawIndexedPrimitives":
+            if let indexCount = fields["indexCount"] as? Int,
+               let indexTypeRaw = fields["indexType"] as? UInt,
+               let indexType = MTLIndexType(rawValue: indexTypeRaw),
+               let resource = resources.first,
+               let indexBuffer = resource.buffer as? MTLBuffer
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawIndexedPrimitives(
+                        primitiveType,
+                        indexCount,
+                        indexType,
+                        indexBuffer,
+                        resource.offset))
+            }
+        case "drawIndexedPrimitivesInstanced":
+            if let indexCount = fields["indexCount"] as? Int,
+               let indexTypeRaw = fields["indexType"] as? UInt,
+               let indexType = MTLIndexType(rawValue: indexTypeRaw),
+               let instanceCount = fields["instanceCount"] as? Int,
+               let resource = resources.first,
+               let indexBuffer = resource.buffer as? MTLBuffer
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawIndexedPrimitivesInstanced(
+                        primitiveType,
+                        indexCount,
+                        indexType,
+                        indexBuffer,
+                        resource.offset,
+                        instanceCount))
+            }
+        case "drawIndexedPrimitivesBaseVertex":
+            if let indexCount = fields["indexCount"] as? Int,
+               let indexTypeRaw = fields["indexType"] as? UInt,
+               let indexType = MTLIndexType(rawValue: indexTypeRaw),
+               let instanceCount = fields["instanceCount"] as? Int,
+               let baseVertex = fields["baseVertex"] as? Int,
+               let baseInstance = fields["baseInstance"] as? Int,
+               let resource = resources.first,
+               let indexBuffer = resource.buffer as? MTLBuffer
+            {
+                appendReplayCommand(
+                    encoder: encoder,
+                    .drawIndexedPrimitivesBaseVertex(
+                        primitiveType,
+                        indexCount,
+                        indexType,
+                        indexBuffer,
+                        resource.offset,
+                        instanceCount,
+                        baseVertex,
+                        baseInstance))
+            }
+        default:
+            break
+        }
         var record: [String: Any] = [
             "class": String(reflecting: type(of: pipelineState)),
             "description": String(describing: pipelineState),
@@ -2000,6 +2259,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
            let label = state.label
         {
             record["label"] = label
+        }
+        if let state = pipelineState as? MTLRenderPipelineState {
+            appendReplayCommand(
+                encoder: encoder,
+                .pipeline(state))
         }
         pipelineRecords[ObjectIdentifier(encoder)] = record
         appendRecord([
@@ -2027,6 +2291,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let payload = Array(UnsafeRawBufferPointer(
             start: bytes,
             count: length))
+        appendReplayCommand(
+            encoder: encoder,
+            .fragmentBytes(Data(payload), index))
         var record = serializedPayload(
             payload,
             className: "setFragmentBytes")
@@ -2057,6 +2324,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
         ]
+        appendReplayCommand(
+            encoder: encoder,
+            .fragmentBuffer(
+                buffer as? MTLBuffer,
+                offset,
+                index))
         let slot = BufferSlot(
             encoder: ObjectIdentifier(encoder),
             stage: "fragment",
@@ -2123,6 +2396,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
         ]
+        appendReplayCommand(
+            encoder: encoder,
+            .fragmentTexture(
+                texture as? MTLTexture,
+                index))
         if let metalTexture = texture as? MTLTexture {
             record["textureClass"] =
                 String(reflecting: type(of: metalTexture))
@@ -2172,6 +2450,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
         ]
+        appendReplayCommand(
+            encoder: encoder,
+            .fragmentSampler(
+                sampler as? MTLSamplerState,
+                index))
         if let metalSampler = sampler as? MTLSamplerState {
             let samplerClass =
                 String(reflecting: type(of: metalSampler))
@@ -2224,6 +2507,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let payload = Array(UnsafeRawBufferPointer(
             start: bytes,
             count: length))
+        appendReplayCommand(
+            encoder: encoder,
+            .vertexBytes(Data(payload), index))
         var record = serializedPayload(
             payload,
             className: "setVertexBytes")
@@ -2254,6 +2540,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
         ]
+        appendReplayCommand(
+            encoder: encoder,
+            .vertexBuffer(
+                buffer as? MTLBuffer,
+                offset,
+                index))
         let slot = BufferSlot(
             encoder: ObjectIdentifier(encoder),
             stage: "vertex",
@@ -2326,6 +2618,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "encoder": objectAddress(encoder),
             "pipeline": encoderPipeline(encoder),
         ]
+        if stage == "fragment" {
+            appendReplayCommand(
+                encoder: encoder,
+                .fragmentBufferOffset(offset, index))
+        } else if stage == "vertex" {
+            appendReplayCommand(
+                encoder: encoder,
+                .vertexBufferOffset(offset, index))
+        }
         guard let buffer = activeBuffers[slot] else {
             record["activeBufferUnavailable"] = true
             appendRecord(record)
@@ -2370,6 +2671,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        appendReplayCommand(
+            encoder: encoder,
+            .viewport(viewport))
         appendRecord([
             "capture": captureName,
             "kind": "viewport",
@@ -2391,6 +2695,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        appendReplayCommand(
+            encoder: encoder,
+            .scissorRect(rect))
         appendRecord([
             "capture": captureName,
             "kind": "scissorRect",
@@ -2861,6 +3168,373 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         "SDF blur-stage texture binding unavailable",
                 ]
             }
+        }
+        return result
+    }
+
+    func replayFinalPass(
+        capture: String,
+        referenceSnapshot: [String: Any],
+        outputDirectory: URL
+    ) -> [String: Any] {
+        lock.lock()
+        let passes = replayPasses.filter {
+            $0.capture == capture
+        }
+        lock.unlock()
+
+        func containsGlassPipeline(_ pass: ReplayPass) -> Bool {
+            for command in pass.commands {
+                if case .pipeline(let state) = command,
+                   state.label?.contains("_Tghz") == true
+                {
+                    return true
+                }
+            }
+            return false
+        }
+
+        guard let pass = passes.last(where: containsGlassPipeline) else {
+            return [
+                "executed": false,
+                "reason": "captured glass render pass unavailable",
+                "capturedPassCount": passes.count,
+            ]
+        }
+        guard let originalAttachment =
+                pass.descriptor.colorAttachments[0],
+              let originalTarget = originalAttachment.texture,
+              let preColor0 = pass.preColor0,
+              originalTarget.textureType == .type2D,
+              originalTarget.sampleCount == 1,
+              let queue = originalTarget.device.makeCommandQueue(),
+              let commandBuffer = queue.makeCommandBuffer(),
+              let blit = commandBuffer.makeBlitCommandEncoder()
+        else {
+            return [
+                "executed": false,
+                "reason": "captured glass target or pre-pass copy unavailable",
+                "capturedPassCount": passes.count,
+            ]
+        }
+
+        let replayDescriptor = MTLRenderPassDescriptor()
+        var replayTargets: [Int: MTLTexture] = [:]
+        for index in 0..<8 {
+            guard let original =
+                    pass.descriptor.colorAttachments[index],
+                  let source = original.texture
+            else {
+                continue
+            }
+            guard source.textureType == .type2D,
+                  source.sampleCount == 1
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "captured color attachment layout is unsupported",
+                    "attachmentIndex": index,
+                ]
+            }
+            let textureDescriptor = MTLTextureDescriptor
+                .texture2DDescriptor(
+                    pixelFormat: source.pixelFormat,
+                    width: source.width,
+                    height: source.height,
+                    mipmapped: false)
+            textureDescriptor.storageMode = .private
+            textureDescriptor.usage = [
+                .renderTarget,
+                .shaderRead,
+            ]
+            guard let target = source.device.makeTexture(
+                descriptor: textureDescriptor)
+            else {
+                return [
+                    "executed": false,
+                    "reason": "replay color attachment allocation failed",
+                    "attachmentIndex": index,
+                ]
+            }
+            replayTargets[index] = target
+            let replay = replayDescriptor.colorAttachments[index]
+            replay?.texture = target
+            replay?.level = 0
+            replay?.slice = 0
+            replay?.depthPlane = 0
+            replay?.loadAction = original.loadAction
+            replay?.storeAction =
+                index == 0 ? .store : original.storeAction
+            replay?.storeActionOptions =
+                original.storeActionOptions
+            replay?.clearColor = original.clearColor
+        }
+        guard let replayTarget = replayTargets[0] else {
+            return [
+                "executed": false,
+                "reason": "replay color attachment zero unavailable",
+            ]
+        }
+        replayDescriptor.renderTargetArrayLength =
+            pass.descriptor.renderTargetArrayLength
+        replayDescriptor.defaultRasterSampleCount =
+            pass.descriptor.defaultRasterSampleCount
+
+        blit.copy(
+            from: preColor0,
+            sourceSlice: 0,
+            sourceLevel: 0,
+            sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+            sourceSize: MTLSize(
+                width: preColor0.width,
+                height: preColor0.height,
+                depth: 1),
+            to: replayTarget,
+            destinationSlice: 0,
+            destinationLevel: 0,
+            destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+        blit.endEncoding()
+
+        guard let encoder = commandBuffer.makeRenderCommandEncoder(
+            descriptor: replayDescriptor)
+        else {
+            return [
+                "executed": false,
+                "reason": "replay render encoder unavailable",
+            ]
+        }
+        for command in pass.commands {
+            switch command {
+            case .pipeline(let state):
+                encoder.setRenderPipelineState(state)
+            case .fragmentBytes(let data, let index):
+                data.withUnsafeBytes { bytes in
+                    if let base = bytes.baseAddress {
+                        encoder.setFragmentBytes(
+                            base,
+                            length: bytes.count,
+                            index: index)
+                    }
+                }
+            case .fragmentBuffer(
+                let buffer,
+                let offset,
+                let index
+            ):
+                encoder.setFragmentBuffer(
+                    buffer,
+                    offset: offset,
+                    index: index)
+            case .fragmentBufferOffset(let offset, let index):
+                encoder.setFragmentBufferOffset(
+                    offset,
+                    index: index)
+            case .fragmentTexture(let texture, let index):
+                encoder.setFragmentTexture(texture, index: index)
+            case .fragmentSampler(let sampler, let index):
+                encoder.setFragmentSamplerState(
+                    sampler,
+                    index: index)
+            case .vertexBytes(let data, let index):
+                data.withUnsafeBytes { bytes in
+                    if let base = bytes.baseAddress {
+                        encoder.setVertexBytes(
+                            base,
+                            length: bytes.count,
+                            index: index)
+                    }
+                }
+            case .vertexBuffer(
+                let buffer,
+                let offset,
+                let index
+            ):
+                encoder.setVertexBuffer(
+                    buffer,
+                    offset: offset,
+                    index: index)
+            case .vertexBufferOffset(let offset, let index):
+                encoder.setVertexBufferOffset(
+                    offset,
+                    index: index)
+            case .viewport(let viewport):
+                encoder.setViewport(viewport)
+            case .scissorRect(let rect):
+                encoder.setScissorRect(rect)
+            case .drawPrimitives(
+                let primitiveType,
+                let vertexStart,
+                let vertexCount
+            ):
+                encoder.drawPrimitives(
+                    type: primitiveType,
+                    vertexStart: vertexStart,
+                    vertexCount: vertexCount)
+            case .drawPrimitivesInstanced(
+                let primitiveType,
+                let vertexStart,
+                let vertexCount,
+                let instanceCount
+            ):
+                encoder.drawPrimitives(
+                    type: primitiveType,
+                    vertexStart: vertexStart,
+                    vertexCount: vertexCount,
+                    instanceCount: instanceCount)
+            case .drawPrimitivesBaseInstance(
+                let primitiveType,
+                let vertexStart,
+                let vertexCount,
+                let instanceCount,
+                let baseInstance
+            ):
+                encoder.drawPrimitives(
+                    type: primitiveType,
+                    vertexStart: vertexStart,
+                    vertexCount: vertexCount,
+                    instanceCount: instanceCount,
+                    baseInstance: baseInstance)
+            case .drawIndexedPrimitives(
+                let primitiveType,
+                let indexCount,
+                let indexType,
+                let indexBuffer,
+                let indexBufferOffset
+            ):
+                encoder.drawIndexedPrimitives(
+                    type: primitiveType,
+                    indexCount: indexCount,
+                    indexType: indexType,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: indexBufferOffset)
+            case .drawIndexedPrimitivesInstanced(
+                let primitiveType,
+                let indexCount,
+                let indexType,
+                let indexBuffer,
+                let indexBufferOffset,
+                let instanceCount
+            ):
+                encoder.drawIndexedPrimitives(
+                    type: primitiveType,
+                    indexCount: indexCount,
+                    indexType: indexType,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: indexBufferOffset,
+                    instanceCount: instanceCount)
+            case .drawIndexedPrimitivesBaseVertex(
+                let primitiveType,
+                let indexCount,
+                let indexType,
+                let indexBuffer,
+                let indexBufferOffset,
+                let instanceCount,
+                let baseVertex,
+                let baseInstance
+            ):
+                encoder.drawIndexedPrimitives(
+                    type: primitiveType,
+                    indexCount: indexCount,
+                    indexType: indexType,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: indexBufferOffset,
+                    instanceCount: instanceCount,
+                    baseVertex: baseVertex,
+                    baseInstance: baseInstance)
+            }
+        }
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        guard commandBuffer.status == .completed else {
+            return [
+                "executed": false,
+                "reason":
+                    commandBuffer.error?.localizedDescription
+                        ?? "captured pass replay failed",
+                "commandBufferStatus": commandBuffer.status.rawValue,
+            ]
+        }
+
+        let preSnapshot = carendererOutputSnapshot(
+            preColor0,
+            commandQueue: queue,
+            capture: "\(capture)-pre-final-pass",
+            outputDirectory: outputDirectory)
+        let replaySnapshot = carendererOutputSnapshot(
+            replayTarget,
+            commandQueue: queue,
+            capture: "\(capture)-exact-pass-replay",
+            outputDirectory: outputDirectory)
+        var result: [String: Any] = [
+            "executed": true,
+            "capturedPassCount": passes.count,
+            "commandCount": pass.commands.count,
+            "preFinalPass": preSnapshot,
+            "replayOutput": replaySnapshot,
+        ]
+        guard let referenceFile =
+                referenceSnapshot["rawFile"] as? String,
+              let replayFile = replaySnapshot["rawFile"] as? String
+        else {
+            result["comparisonError"] =
+                "reference or replay raw file unavailable"
+            return result
+        }
+        do {
+            let reference = try Data(contentsOf:
+                outputDirectory.appendingPathComponent(referenceFile))
+            let replay = try Data(contentsOf:
+                outputDirectory.appendingPathComponent(replayFile))
+            guard reference.count == replay.count else {
+                result["exactByteMatch"] = false
+                result["referenceBytes"] = reference.count
+                result["replayBytes"] = replay.count
+                return result
+            }
+            var mismatchedBytes = 0
+            var mismatchedPixels = 0
+            var maximumChannelDelta = 0
+            var firstMismatchedByte = -1
+            reference.withUnsafeBytes { referenceBytes in
+                replay.withUnsafeBytes { replayBytes in
+                    let lhs = referenceBytes.bindMemory(to: UInt8.self)
+                    let rhs = replayBytes.bindMemory(to: UInt8.self)
+                    for pixel in stride(
+                        from: 0,
+                        to: reference.count,
+                        by: 4)
+                    {
+                        var pixelMismatch = false
+                        for channel in 0..<4 {
+                            let offset = pixel + channel
+                            let delta = abs(
+                                Int(lhs[offset]) - Int(rhs[offset]))
+                            if delta != 0 {
+                                mismatchedBytes += 1
+                                pixelMismatch = true
+                                if firstMismatchedByte < 0 {
+                                    firstMismatchedByte = offset
+                                }
+                                maximumChannelDelta = max(
+                                    maximumChannelDelta,
+                                    delta)
+                            }
+                        }
+                        if pixelMismatch {
+                            mismatchedPixels += 1
+                        }
+                    }
+                }
+            }
+            result["exactByteMatch"] = mismatchedBytes == 0
+            result["mismatchedByteCount"] = mismatchedBytes
+            result["mismatchedPixelCount"] = mismatchedPixels
+            result["maximumChannelDelta"] = maximumChannelDelta
+            result["firstMismatchedByte"] = firstMismatchedByte
+        } catch {
+            result["comparisonError"] = error.localizedDescription
         }
         return result
     }
@@ -4299,15 +4973,21 @@ private func carendererEvidence(
         ]
     }
 
+    let outputSnapshot = carendererOutputSnapshot(
+        output,
+        commandQueue: commandQueue,
+        capture: capture,
+        outputDirectory: outputDirectory)
+    let exactPassReplay = MetalUniformProbe.shared.replayFinalPass(
+        capture: capture,
+        referenceSnapshot: outputSnapshot,
+        outputDirectory: outputDirectory)
     return [
         "executed": true,
         "rootLayerClass": String(reflecting: type(of: rootLayer)),
         "bounds": NSStringFromRect(bounds),
-        "output": carendererOutputSnapshot(
-            output,
-            commandQueue: commandQueue,
-            capture: capture,
-            outputDirectory: outputDirectory),
+        "output": outputSnapshot,
+        "exactPassReplay": exactPassReplay,
         "metalTextureSnapshots":
             MetalUniformProbe.shared.snapshotTextures(
                 capture: capture,
@@ -4577,7 +5257,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 39,
+                    "schemaVersion": 40,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -4593,7 +5273,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 39,
+            "schemaVersion": 40,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
