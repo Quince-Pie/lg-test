@@ -26,6 +26,10 @@ private let kernelPatchRadius = 40
 private let kernelPatchSide = 2 * kernelPatchRadius + 1
 private let lodAmplitudes = [0, 1, 8, 32, 127]
 private let lodAuditNumerators: Set<Int> = [0, 37, 64, 128]
+private let stripePositions = [304, 362, 420, 478]
+private let stripePatchRadius = 24
+private let stripePatchSide = 2 * stripePatchRadius + 1
+private let stripeCrossAxisCenter = 384
 
 private struct Site {
     let index: Int
@@ -55,6 +59,11 @@ private struct LodState {
     let targetNumerator: Int
     let blurRadius: Float
     let productionRadius: Bool
+}
+
+private enum StripeOrientation: String, CaseIterable {
+    case vertical
+    case horizontal
 }
 
 private let identityValues: [(key: String, value: NSNumber)] = [
@@ -210,6 +219,70 @@ private func renderKernelSource(amplitude: Int) -> CGImage {
                     UInt8(sourceCode - amplitude)
                 rgba[offset + 2] =
                     UInt8(sourceCode + amplitude)
+            }
+        }
+    }
+    let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+    let provider = CGDataProvider(data: Data(rgba) as CFData)!
+    return CGImage(
+        width: imageWidth,
+        height: imageHeight,
+        bitsPerComponent: 8,
+        bitsPerPixel: 32,
+        bytesPerRow: imageWidth * 4,
+        space: colorSpace,
+        bitmapInfo: CGBitmapInfo(
+            rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),
+        provider: provider,
+        decode: nil,
+        shouldInterpolate: false,
+        intent: .defaultIntent)!
+}
+
+private func renderStripeSource(
+    amplitude: Int,
+    orientation: StripeOrientation
+) -> CGImage {
+    precondition((0...127).contains(amplitude))
+    var rgba = [UInt8](
+        repeating: UInt8(sourceCode),
+        count: imageWidth * imageHeight * 4)
+    for pixel in 0..<(imageWidth * imageHeight) {
+        rgba[pixel * 4 + 3] = 255
+    }
+    let intervals = [
+        stripePositions[0]..<stripePositions[1],
+        stripePositions[2]..<stripePositions[3],
+    ]
+    switch orientation {
+    case .vertical:
+        for interval in intervals {
+            for y in 0..<imageHeight {
+                for x in interval {
+                    let offset =
+                        (y * imageWidth + x) * 4
+                    rgba[offset] =
+                        UInt8(sourceCode + amplitude)
+                    rgba[offset + 1] =
+                        UInt8(sourceCode - amplitude)
+                    rgba[offset + 2] =
+                        UInt8(sourceCode + amplitude)
+                }
+            }
+        }
+    case .horizontal:
+        for interval in intervals {
+            for y in interval {
+                for x in 0..<imageWidth {
+                    let offset =
+                        (y * imageWidth + x) * 4
+                    rgba[offset] =
+                        UInt8(sourceCode + amplitude)
+                    rgba[offset + 1] =
+                        UInt8(sourceCode - amplitude)
+                    rgba[offset + 2] =
+                        UInt8(sourceCode + amplitude)
+                }
             }
         }
     }
@@ -564,6 +637,59 @@ private func kernelPatchRGBData(
     }
 }
 
+private func stripePatchRGBData(
+    _ pixels: Data,
+    orientation: StripeOrientation
+) throws -> Data {
+    guard pixels.count == imageWidth * imageHeight * 4 else {
+        throw SweepError.conversion
+    }
+    return try pixels.withUnsafeBytes { rawBytes -> Data in
+        guard let source = rawBytes.bindMemory(
+            to: UInt8.self
+        ).baseAddress else {
+            throw SweepError.conversion
+        }
+        var result = Data(
+            count:
+                stripePositions.count
+                * stripePatchSide * stripePatchSide * 3)
+        result.withUnsafeMutableBytes { resultBytes in
+            let destination = resultBytes.bindMemory(
+                to: UInt8.self
+            ).baseAddress!
+            var destinationOffset = 0
+            for position in stripePositions {
+                let centerX = orientation == .vertical
+                    ? position : stripeCrossAxisCenter
+                let centerY = orientation == .horizontal
+                    ? position : stripeCrossAxisCenter
+                for deltaY in
+                    -stripePatchRadius...stripePatchRadius
+                {
+                    for deltaX in
+                        -stripePatchRadius...stripePatchRadius
+                    {
+                        let sourceOffset =
+                            (
+                                (centerY + deltaY) * imageWidth
+                                + centerX + deltaX
+                            ) * 4
+                        destination[destinationOffset] =
+                            source[sourceOffset]
+                        destination[destinationOffset + 1] =
+                            source[sourceOffset + 1]
+                        destination[destinationOffset + 2] =
+                            source[sourceOffset + 2]
+                        destinationOffset += 3
+                    }
+                }
+            }
+        }
+        return result
+    }
+}
+
 private func writePNG(_ image: CGImage, to url: URL) throws {
     guard let destination = CGImageDestinationCreateWithURL(
         url as CFURL,
@@ -671,6 +797,20 @@ private func lodStateManifest(
             format: "%08x",
             state.blurRadius.bitPattern),
         "productionRadius": state.productionRadius,
+    ]
+}
+
+private func stripeEdgeManifest(
+    position: Int,
+    index: Int
+) -> [String: Any] {
+    [
+        "index": index,
+        "position": position,
+        "reducedGridPhase": (position / 2) & 3,
+        "transitionSign": index.isMultiple(of: 2) ? 1 : -1,
+        "distanceFromCandidateTileStart": position - 256,
+        "distanceFromCandidateTileEnd": 512 - position,
     ]
 }
 
@@ -791,6 +931,337 @@ private final class SpatialSweepDelegate:
         } catch {
             fail(error)
         }
+    }
+
+    private func runStripeSweep(
+        workspace: NSWorkspace
+    ) async throws {
+        var controlStream = Data()
+        var identityStream = Data()
+        var records: [[String: Any]] = []
+        var requiredFormatSignature: String?
+        var captureColorSpaceICC: Data?
+        var captureFormat: [String: Any]?
+        let identityBlurOne = identityValues + [
+            (
+                "inputBlurRadius",
+                NSNumber(value: Float(1))
+            ),
+        ]
+
+        for amplitude in amplitudes {
+            var orientationRecords: [[String: Any]] = []
+            for orientation in StripeOrientation.allCases {
+                let source = renderStripeSource(
+                    amplitude: amplitude,
+                    orientation: orientation)
+                hostingView.rootView = SpatialSweepView(
+                    image: source,
+                    glass: false)
+                let (control, controlSamples) =
+                    try await stableCapture(
+                        window,
+                        name:
+                            "stripe-a\(amplitude)-"
+                            + "\(orientation.rawValue)-control",
+                        settleNanoseconds: 200_000_000)
+
+                hostingView.rootView = SpatialSweepView(
+                    image: source,
+                    glass: true)
+                let (materialized, materializedSamples) =
+                    try await stableCapture(
+                        window,
+                        name:
+                            "stripe-a\(amplitude)-"
+                            + "\(orientation.rawValue)-materialized",
+                        settleNanoseconds: 450_000_000)
+                let (
+                    controlSignature,
+                    controlICC,
+                    controlFormat
+                ) = formatSignature(control)
+                let (materializedSignature, _, _) =
+                    formatSignature(materialized)
+                guard controlSignature == materializedSignature
+                else {
+                    throw SweepError.environment(
+                        "stripe capture format changed between "
+                            + "control and glass")
+                }
+                if let requiredFormatSignature {
+                    guard requiredFormatSignature
+                        == controlSignature
+                    else {
+                        throw SweepError.environment(
+                            "stripe capture format changed between "
+                                + "states")
+                    }
+                } else {
+                    requiredFormatSignature = controlSignature
+                    captureColorSpaceICC = controlICC
+                    captureFormat = controlFormat
+                }
+                guard let rootLayer = window.contentView?.layer,
+                      let target =
+                        glassBackgroundFilter(in: rootLayer)
+                else {
+                    throw SweepError.glassFilterMissing
+                }
+                let stateFilter =
+                    try copiedFilter(target.filter)
+                installFilter(
+                    target: target,
+                    filter: stateFilter,
+                    values: identityBlurOne)
+                let (identity, identitySamples) =
+                    try await stableCapture(
+                        window,
+                        name:
+                            "stripe-a\(amplitude)-"
+                            + "\(orientation.rawValue)-identity",
+                        settleNanoseconds: 450_000_000)
+                let (identitySignature, _, _) =
+                    formatSignature(identity)
+                guard identitySignature == controlSignature else {
+                    throw SweepError.environment(
+                        "stripe identity capture format changed")
+                }
+                guard let readback = stateFilter.value(
+                    forKey: "inputBlurRadius"
+                ) as? NSNumber,
+                      readback.floatValue.bitPattern
+                        == Float(1).bitPattern
+                else {
+                    throw SweepError.capture(
+                        "stripe production blur readback differs")
+                }
+                controlStream.append(
+                    try stripePatchRGBData(
+                        control.nativePixels,
+                        orientation: orientation))
+                identityStream.append(
+                    try stripePatchRGBData(
+                        identity.nativePixels,
+                        orientation: orientation))
+
+                var orientationRecord: [String: Any] = [
+                    "orientation": orientation.rawValue,
+                    "controlCanonicalPixelSha256":
+                        sha256(control.canonicalPixels),
+                    "controlNativePixelSha256":
+                        sha256(control.nativePixels),
+                    "controlStabilitySamples": controlSamples,
+                    "materializedCanonicalPixelSha256":
+                        sha256(materialized.canonicalPixels),
+                    "materializedNativePixelSha256":
+                        sha256(materialized.nativePixels),
+                    "materializedStabilitySamples":
+                        materializedSamples,
+                    "identityCanonicalPixelSha256":
+                        sha256(identity.canonicalPixels),
+                    "identityNativePixelSha256":
+                        sha256(identity.nativePixels),
+                    "identityStabilitySamples": identitySamples,
+                    "captureBackend": identity.backend,
+                    "inputBlurRadiusReadback":
+                        Double(readback.floatValue),
+                    "inputBlurRadiusReadbackFloat32Bits":
+                        String(
+                            format: "%08x",
+                            readback.floatValue.bitPattern),
+                ]
+                if amplitude == 127 {
+                    let prefix =
+                        "stripe-amplitude-127-"
+                        + orientation.rawValue
+                    let sourceURL = outputDirectory
+                        .appendingPathComponent(
+                            "\(prefix)-source.png")
+                    let controlURL = outputDirectory
+                        .appendingPathComponent(
+                            "\(prefix)-control.png")
+                    let identityURL = outputDirectory
+                        .appendingPathComponent(
+                            "\(prefix)-identity.png")
+                    try writePNG(source, to: sourceURL)
+                    try writePNG(
+                        control.canonicalImage,
+                        to: controlURL)
+                    try writePNG(
+                        identity.canonicalImage,
+                        to: identityURL)
+                    orientationRecord["sourceFile"] =
+                        sourceURL.lastPathComponent
+                    orientationRecord["sourceFileSha256"] =
+                        sha256(sourceURL)
+                    orientationRecord["controlFile"] =
+                        controlURL.lastPathComponent
+                    orientationRecord["controlFileSha256"] =
+                        sha256(controlURL)
+                    orientationRecord["identityFile"] =
+                        identityURL.lastPathComponent
+                    orientationRecord["identityFileSha256"] =
+                        sha256(identityURL)
+                }
+                orientationRecords.append(orientationRecord)
+            }
+            records.append([
+                "amplitudeCodes": amplitude,
+                "orientations": orientationRecords,
+            ])
+        }
+
+        guard window.isKeyWindow else {
+            throw SweepError.environment(
+                "stripe capture window lost key status")
+        }
+        let recordCount =
+            amplitudes.count
+            * StripeOrientation.allCases.count
+            * stripePositions.count
+            * stripePatchSide * stripePatchSide
+        let expectedBytes = recordCount * 3
+        guard controlStream.count == expectedBytes,
+              identityStream.count == expectedBytes
+        else {
+            throw SweepError.capture(
+                "native stripe stream length differs")
+        }
+        let controlURL = outputDirectory
+            .appendingPathComponent(
+                "native-stripe-control-patches.rgb8")
+        let identityURL = outputDirectory
+            .appendingPathComponent(
+                "native-stripe-identity-blur-1-patches.rgb8")
+        try controlStream.write(
+            to: controlURL,
+            options: .atomic)
+        try identityStream.write(
+            to: identityURL,
+            options: .atomic)
+
+        var nativeEvidence: [String: Any] = [
+            "schemaVersion": 1,
+            "recordOrder":
+                "amplitude ascending, orientation vertical then "
+                + "horizontal, edge order, patch y-major then "
+                + "x-major",
+            "recordFormat": "RGB8",
+            "recordStrideBytes": 3,
+            "recordCount": recordCount,
+            "controlFile": controlURL.lastPathComponent,
+            "controlFileSha256": sha256(controlStream),
+            "controlFileBytes": controlStream.count,
+            "identityFile": identityURL.lastPathComponent,
+            "identityFileSha256": sha256(identityStream),
+            "identityFileBytes": identityStream.count,
+            "captureFormat":
+                captureFormat as Any? ?? NSNull(),
+        ]
+        if let captureColorSpaceICC {
+            let iccURL = outputDirectory
+                .appendingPathComponent(
+                    "native-stripe-capture-colorspace.icc")
+            try captureColorSpaceICC.write(
+                to: iccURL,
+                options: .atomic)
+            nativeEvidence["iccFile"] =
+                iccURL.lastPathComponent
+            nativeEvidence["iccFileSha256"] =
+                sha256(captureColorSpaceICC)
+            nativeEvidence["iccFileBytes"] =
+                captureColorSpaceICC.count
+        }
+
+        let report: [String: Any] = [
+            "schemaVersion": 1,
+            "rigVersion": "native-stripe-sweep-1.0.0",
+            "sweepKind":
+                "same-tile-phase-controlled-production-stripes",
+            "ciCommit":
+                ProcessInfo.processInfo
+                    .environment["GITHUB_SHA"]
+                ?? "local",
+            "osVersion":
+                ProcessInfo.processInfo
+                    .operatingSystemVersionString,
+            "architecture":
+                ProcessInfo.processInfo.machineArchitecture,
+            "windowKey": window.isKeyWindow,
+            "windowColorSpace":
+                window.colorSpace.map {
+                    String(describing: $0)
+                } ?? "unknown",
+            "screenColorSpace":
+                window.screen?.colorSpace.map {
+                    String(describing: $0)
+                } ?? "unknown",
+            "backingScaleFactor":
+                window.backingScaleFactor,
+            "pixelWidth": imageWidth,
+            "pixelHeight": imageHeight,
+            "accessibility": [
+                "reduceTransparency": workspace
+                    .accessibilityDisplayShouldReduceTransparency,
+                "increaseContrast": workspace
+                    .accessibilityDisplayShouldIncreaseContrast,
+                "reduceMotion": workspace
+                    .accessibilityDisplayShouldReduceMotion,
+            ],
+            "glassShape": [
+                "kind": "circle",
+                "diameter": glassDiameter,
+                "centerX": imageWidth / 2,
+                "centerY": imageHeight / 2,
+            ],
+            "sourceDesign": [
+                "baseCode": sourceCode,
+                "amplitudesCodes": amplitudes,
+                "channelSigns": [
+                    "red": 1,
+                    "green": -1,
+                    "blue": 1,
+                ],
+                "orientationOrder":
+                    StripeOrientation.allCases.map(\.rawValue),
+                "alternatingInsideIntervals": [
+                    [stripePositions[0], stripePositions[1]],
+                    [stripePositions[2], stripePositions[3]],
+                ],
+                "edges":
+                    stripePositions.enumerated().map {
+                        stripeEdgeManifest(
+                            position: $0.element,
+                            index: $0.offset)
+                    },
+                "edgeMinimumSpacingPixels": 58,
+                "patchRadiusPixels": stripePatchRadius,
+                "patchSidePixels": stripePatchSide,
+                "crossAxisCenter": stripeCrossAxisCenter,
+                "candidateTileInterval": [256, 512],
+                "minimumEdgeDistanceFromCandidateTileBoundary":
+                    34,
+            ],
+            "fixedFilterState": [
+                "inputFaceColorMatrixBlack": 0,
+                "inputFaceColorMatrixWhite": 1,
+                "inputFaceColorMatrixSaturation": 1,
+                "inputSDRHoldingToneEnabled": false,
+                "inputBlurRadius": 1,
+                "inputBlurRadiusFloat32Bits": "3f800000",
+            ],
+            "captures": records,
+            "nativeCaptureEvidence": nativeEvidence,
+        ]
+        let manifest = try JSONSerialization.data(
+            withJSONObject: report,
+            options: [.prettyPrinted, .sortedKeys])
+        try manifest.write(
+            to: outputDirectory.appendingPathComponent(
+                "manifest.json"),
+            options: .atomic)
+        exit(0)
     }
 
     private func runLodSweep(
@@ -1573,6 +2044,13 @@ private final class SpatialSweepDelegate:
             else {
                 throw SweepError.environment(
                     "Reduce Motion is enabled")
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--stripe")
+            {
+                try await runStripeSweep(
+                    workspace: workspace)
+                return
             }
             if CommandLine.arguments.dropFirst(2)
                 .contains("--lod")
