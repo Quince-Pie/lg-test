@@ -35,11 +35,11 @@ vertex GlassReplayVertexOutput glass_vertex_raw(
     constant float4x4 &mvp [[buffer(2)]],
     uint vertexID [[vertex_id]])
 {
-    const GlassReplayVertex vertex = vertices[vertexID];
+    const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
-    output.position = mvp * vertex.position;
-    output.sdfUV = vertex.texcoord0;
-    output.srcUV = vertex.texcoord1;
+    output.position = mvp * input.position;
+    output.sdfUV = input.texcoord0;
+    output.srcUV = input.texcoord1;
     return output;
 }
 
@@ -49,13 +49,13 @@ vertex GlassReplayVertexOutput glass_vertex_transformed(
     constant float4 *textureMatrix [[buffer(3)]],
     uint vertexID [[vertex_id]])
 {
-    const GlassReplayVertex vertex = vertices[vertexID];
+    const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
-    output.position = mvp * vertex.position;
+    output.position = mvp * input.position;
     output.sdfUV =
-        transform_texcoord(vertex.texcoord0, textureMatrix[0]);
+        transform_texcoord(input.texcoord0, textureMatrix[0]);
     output.srcUV =
-        transform_texcoord(vertex.texcoord1, textureMatrix[1]);
+        transform_texcoord(input.texcoord1, textureMatrix[1]);
     return output;
 }
 
@@ -65,12 +65,12 @@ vertex GlassReplayVertexOutput glass_vertex_sdf_transformed(
     constant float4 *textureMatrix [[buffer(3)]],
     uint vertexID [[vertex_id]])
 {
-    const GlassReplayVertex vertex = vertices[vertexID];
+    const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
-    output.position = mvp * vertex.position;
+    output.position = mvp * input.position;
     output.sdfUV =
-        transform_texcoord(vertex.texcoord0, textureMatrix[0]);
-    output.srcUV = vertex.texcoord1;
+        transform_texcoord(input.texcoord0, textureMatrix[0]);
+    output.srcUV = input.texcoord1;
     return output;
 }
 
@@ -80,12 +80,12 @@ vertex GlassReplayVertexOutput glass_vertex_src_transformed(
     constant float4 *textureMatrix [[buffer(3)]],
     uint vertexID [[vertex_id]])
 {
-    const GlassReplayVertex vertex = vertices[vertexID];
+    const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
-    output.position = mvp * vertex.position;
-    output.sdfUV = vertex.texcoord0;
+    output.position = mvp * input.position;
+    output.sdfUV = input.texcoord0;
     output.srcUV =
-        transform_texcoord(vertex.texcoord1, textureMatrix[1]);
+        transform_texcoord(input.texcoord1, textureMatrix[1]);
     return output;
 }
 
@@ -94,11 +94,11 @@ vertex GlassReplayVertexOutput glass_vertex_swapped(
     constant float4x4 &mvp [[buffer(2)]],
     uint vertexID [[vertex_id]])
 {
-    const GlassReplayVertex vertex = vertices[vertexID];
+    const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
-    output.position = mvp * vertex.position;
-    output.sdfUV = vertex.texcoord1;
-    output.srcUV = vertex.texcoord0;
+    output.position = mvp * input.position;
+    output.sdfUV = input.texcoord1;
+    output.srcUV = input.texcoord0;
     return output;
 }
 
@@ -107,11 +107,11 @@ vertex GlassReplayVertexOutput glass_vertex_row_matrix(
     constant float4x4 &mvp [[buffer(2)]],
     uint vertexID [[vertex_id]])
 {
-    const GlassReplayVertex vertex = vertices[vertexID];
+    const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
-    output.position = vertex.position * mvp;
-    output.sdfUV = vertex.texcoord0;
-    output.srcUV = vertex.texcoord1;
+    output.position = input.position * mvp;
+    output.sdfUV = input.texcoord0;
+    output.srcUV = input.texcoord1;
     return output;
 }
 """
