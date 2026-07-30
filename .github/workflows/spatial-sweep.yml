@@ -1,4 +1,4 @@
-name: Capture Liquid Glass pinned-pyramid SDF scale sweep
+name: Capture Liquid Glass binary16 SDF threshold sweep
 
 on:
   workflow_dispatch:
@@ -42,11 +42,11 @@ jobs:
             -o glass-spatial-sweep 2>&1 |
             tee spatial-sweep/build.log
 
-      - name: Capture pinned-pyramid SDF scale sweep
+      - name: Capture binary16 SDF threshold sweep
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
-        run: ./glass-spatial-sweep spatial-sweep --pinned-sdf-scale
+        run: ./glass-spatial-sweep spatial-sweep --sdf-threshold
 
       - name: Inventory native spatial sweep
         if: always()
@@ -57,7 +57,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-pinned-sdf-scale-sweep-${{ github.run_id }}
+          name: liquid-glass-sdf-threshold-sweep-${{ github.run_id }}
           path: spatial-sweep
           if-no-files-found: error
           retention-days: 7
@@ -68,5 +68,5 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test -s spatial-sweep/manifest.json
-          test -s spatial-sweep/native-pinned-sdf-scale-control-patches.rgb8
-          test -s spatial-sweep/native-pinned-sdf-scale-identity-patches.rgb8
+          test -s spatial-sweep/native-sdf-threshold-control-patches.rgb8
+          test -s spatial-sweep/native-sdf-threshold-identity-patches.rgb8

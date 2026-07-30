@@ -27,6 +27,8 @@ private let kernelPatchRadius = 40
 private let kernelPatchSide = 2 * kernelPatchRadius + 1
 private let lodAmplitudes = [0, 1, 8, 32, 127]
 private let lodAuditNumerators: Set<Int> = [0, 37, 64, 128]
+private let sdfThresholdSourceLabel = 0
+private let sdfThresholdTileSide = 64
 private let stripePositions = [
     24, 50, 76, 102,
     400, 426, 452, 478,
@@ -78,6 +80,7 @@ private enum LodSweepMode: Equatable {
     case fixedResource
     case sdfScale
     case pinnedSdfScale
+    case sdfThreshold
 }
 
 private struct LodCaptureState {
@@ -310,6 +313,59 @@ private func renderKernelSource(amplitude: Int) -> CGImage {
                 rgba[offset + 2] =
                     UInt8(sourceCode + amplitude)
             }
+        }
+    }
+    let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+    let provider = CGDataProvider(data: Data(rgba) as CFData)!
+    return CGImage(
+        width: imageWidth,
+        height: imageHeight,
+        bitsPerComponent: 8,
+        bitsPerPixel: 32,
+        bytesPerRow: imageWidth * 4,
+        space: colorSpace,
+        bitmapInfo: CGBitmapInfo(
+            rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),
+        provider: provider,
+        decode: nil,
+        shouldInterpolate: false,
+        intent: .defaultIntent)!
+}
+
+private func sdfThresholdSourceCode(
+    x: Int,
+    y: Int,
+    channel: Int
+) -> UInt8 {
+    var value =
+        UInt32(x & (sdfThresholdTileSide - 1))
+        | (
+            UInt32(y & (sdfThresholdTileSide - 1))
+            << 6
+        )
+        | (UInt32(channel) << 12)
+    value ^= 0x9e37_79b9
+    value = (value ^ (value >> 16)) &* 0x7feb_352d
+    value = (value ^ (value >> 15)) &* 0x846c_a68b
+    value ^= value >> 16
+    return UInt8(16 + Int(value % 224))
+}
+
+private func renderSdfThresholdSource() -> CGImage {
+    var rgba = [UInt8](
+        repeating: 0,
+        count: imageWidth * imageHeight * 4)
+    for y in 0..<imageHeight {
+        for x in 0..<imageWidth {
+            let offset = (y * imageWidth + x) * 4
+            for channel in 0..<3 {
+                rgba[offset + channel] =
+                    sdfThresholdSourceCode(
+                        x: x,
+                        y: y,
+                        channel: channel)
+            }
+            rgba[offset + 3] = 255
         }
     }
     let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
@@ -965,6 +1021,13 @@ private func fixedResourceCaptureState(
 private let sdfScaleNumeratorRange = 1638...2048
 private let sdfScaleDenominator = 2048
 private let sdfScaleResourceRadius: Float = 4
+private let sdfThresholdFirstLowerHalfBits: UInt16 = 0xde41
+private let sdfThresholdLastLowerHalfBits: UInt16 = 0xdc3f
+private let sdfThresholdLowerHalfBits = stride(
+    from: Int(sdfThresholdFirstLowerHalfBits),
+    through: Int(sdfThresholdLastLowerHalfBits),
+    by: -1
+).map { UInt16($0) }
 
 private func sdfScaleCaptureState(
     numerator: Int,
@@ -1057,9 +1120,93 @@ private func sdfScaleCaptureState(
         manifest: manifest)
 }
 
+private func sdfThresholdCaptureState(
+    lowerHalfBits: UInt16,
+    index: Int
+) -> LodCaptureState {
+    precondition(lowerHalfBits > 0)
+    let upperHalfBits = lowerHalfBits - 1
+    let lower = Float(Float16(bitPattern: lowerHalfBits))
+    let upper = Float(Float16(bitPattern: upperHalfBits))
+    precondition(lower < upper)
+    let name = String(
+        format: "sdf-threshold-lower-%04x",
+        lowerHalfBits)
+    let values =
+        identityValues
+        + [
+            ("inputBlurOpacity0", NSNumber(value: Float(0))),
+            ("inputBlurOpacity1", NSNumber(value: Float(1))),
+            ("inputBlurOpacity2", NSNumber(value: Float(1))),
+            ("inputBlurOpacity3", NSNumber(value: Float(1))),
+            ("inputBlurOpacity4", NSNumber(value: Float(1))),
+            ("inputBlurDistance0", NSNumber(value: lower)),
+            ("inputBlurDistance1", NSNumber(value: upper)),
+            ("inputBlurDistance2", NSNumber(value: Float(0))),
+            ("inputBlurDistance3", NSNumber(value: Float(0))),
+            ("inputBlurDistance4", NSNumber(value: Float(0))),
+            (
+                "inputInnerRefractionAmount",
+                NSNumber(value: Float(-60))
+            ),
+            (
+                "inputOuterRefractionAmount",
+                NSNumber(value: Float(160))
+            ),
+            (
+                "inputRefractionOpacity",
+                NSNumber(value: Float(0))
+            ),
+            (
+                "inputBlurRadius",
+                NSNumber(value: sdfScaleResourceRadius)
+            ),
+        ]
+    return LodCaptureState(
+        name: name,
+        targetNumerator: -1,
+        productionRadius: false,
+        values: values,
+        manifest: [
+            "index": index,
+            "name": name,
+            "resourceBlurRadius":
+                Double(sdfScaleResourceRadius),
+            "resourceBlurRadiusFloat32Bits": String(
+                format: "%08x",
+                sdfScaleResourceRadius.bitPattern),
+            "lowerDistance": Double(lower),
+            "lowerDistanceFloat16Bits": String(
+                format: "%04x",
+                lowerHalfBits),
+            "lowerDistanceFloat32Bits": String(
+                format: "%08x",
+                lower.bitPattern),
+            "upperDistance": Double(upper),
+            "upperDistanceFloat16Bits": String(
+                format: "%04x",
+                upperHalfBits),
+            "upperDistanceFloat32Bits": String(
+                format: "%08x",
+                upper.bitPattern),
+            "adjacentBinary16Breakpoints": true,
+            "expectedAllBlurredEndpoint": index == 0,
+            "expectedAllUnblurredEndpoint":
+                index == sdfThresholdLowerHalfBits.count - 1,
+        ])
+}
+
 private func lodCaptureStates(
     mode: LodSweepMode
 ) -> [LodCaptureState] {
+    if mode == .sdfThreshold {
+        return sdfThresholdLowerHalfBits.enumerated().map {
+            index, lowerHalfBits in
+            sdfThresholdCaptureState(
+                lowerHalfBits: lowerHalfBits,
+                index: index)
+        }
+    }
     if mode == .sdfScale || mode == .pinnedSdfScale {
         return sdfScaleNumeratorRange.enumerated().map {
             index, numerator in
@@ -1795,6 +1942,10 @@ private final class SpatialSweepDelegate:
         mode: LodSweepMode
     ) async throws {
         let captureStates = lodCaptureStates(mode: mode)
+        let captureAmplitudes =
+            mode == .sdfThreshold
+            ? [sdfThresholdSourceLabel]
+            : lodAmplitudes
         let fullReadbacks = mode != .defaultProfile
         var controlStream = Data()
         var lodStream = Data()
@@ -1803,9 +1954,11 @@ private final class SpatialSweepDelegate:
         var captureColorSpaceICC: Data?
         var captureFormat: [String: Any]?
 
-        for amplitude in lodAmplitudes {
-            let source = renderKernelSource(
-                amplitude: amplitude)
+        for amplitude in captureAmplitudes {
+            let source =
+                mode == .sdfThreshold
+                ? renderSdfThresholdSource()
+                : renderKernelSource(amplitude: amplitude)
             hostingView.rootView = SpatialSweepView(
                 image: source,
                 glass: false)
@@ -1916,15 +2069,28 @@ private final class SpatialSweepDelegate:
                     stabilitySamples
                 stateRecord["captureBackend"] =
                     capture.backend
-                if amplitude == 127
-                    && (
-                        lodAuditNumerators.contains(
-                            state.targetNumerator)
-                        || state.productionRadius
+                let stateIndex =
+                    state.manifest["index"] as? Int
+                let auditState =
+                    mode == .sdfThreshold
+                    ? (
+                        stateIndex == 0
+                        || stateIndex
+                            == captureStates.count - 1
                     )
-                {
+                    : (
+                        amplitude == 127
+                        && (
+                            lodAuditNumerators.contains(
+                                state.targetNumerator)
+                            || state.productionRadius
+                        )
+                    )
+                if auditState {
                     let fileName =
-                        "lod-amplitude-127-\(state.name).png"
+                        mode == .sdfThreshold
+                        ? "\(state.name).png"
+                        : "lod-amplitude-127-\(state.name).png"
                     let captureURL = outputDirectory
                         .appendingPathComponent(fileName)
                     try writePNG(
@@ -1939,7 +2105,6 @@ private final class SpatialSweepDelegate:
             }
 
             var record: [String: Any] = [
-                "amplitudeCodes": amplitude,
                 "controlCanonicalPixelSha256":
                     sha256(control.canonicalPixels),
                 "controlNativePixelSha256":
@@ -1954,7 +2119,31 @@ private final class SpatialSweepDelegate:
                 "captureBackend": control.backend,
                 "states": stateRecords,
             ]
-            if amplitude == 127 {
+            if mode == .sdfThreshold {
+                record["sourcePatternIndex"] =
+                    sdfThresholdSourceLabel
+                let sourceURL = outputDirectory
+                    .appendingPathComponent(
+                        "sdf-threshold-source.png")
+                let controlURL = outputDirectory
+                    .appendingPathComponent(
+                        "sdf-threshold-control.png")
+                try writePNG(source, to: sourceURL)
+                try writePNG(
+                    control.canonicalImage,
+                    to: controlURL)
+                record["sourceFile"] =
+                    sourceURL.lastPathComponent
+                record["sourceFileSha256"] =
+                    sha256(sourceURL)
+                record["controlFile"] =
+                    controlURL.lastPathComponent
+                record["controlFileSha256"] =
+                    sha256(controlURL)
+            } else {
+                record["amplitudeCodes"] = amplitude
+            }
+            if mode != .sdfThreshold && amplitude == 127 {
                 let sourceURL = outputDirectory
                     .appendingPathComponent(
                         "lod-amplitude-127-source.png")
@@ -1982,10 +2171,10 @@ private final class SpatialSweepDelegate:
                 "LOD capture window lost key status")
         }
         let controlRecordCount =
-            lodAmplitudes.count * kernelSites.count
+            captureAmplitudes.count * kernelSites.count
             * kernelPatchSide * kernelPatchSide
         let lodRecordCount =
-            lodAmplitudes.count * captureStates.count
+            captureAmplitudes.count * captureStates.count
             * kernelSites.count
             * kernelPatchSide * kernelPatchSide
         guard controlStream.count == controlRecordCount * 3,
@@ -2006,6 +2195,8 @@ private final class SpatialSweepDelegate:
             streamPrefix = "native-sdf-scale"
         case .pinnedSdfScale:
             streamPrefix = "native-pinned-sdf-scale"
+        case .sdfThreshold:
+            streamPrefix = "native-sdf-threshold"
         }
         let controlURL = outputDirectory
             .appendingPathComponent(
@@ -2021,9 +2212,17 @@ private final class SpatialSweepDelegate:
         var nativeEvidence: [String: Any] = [
             "schemaVersion": 1,
             "recordOrder":
-                "amplitude order, LOD-state order, "
-                + "reduced-grid phase row-major, "
-                + "patch y-major then x-major",
+                mode == .sdfThreshold
+                ? (
+                    "source-pattern order, threshold-state order, "
+                    + "reduced-grid phase row-major, "
+                    + "patch y-major then x-major"
+                )
+                : (
+                    "amplitude order, LOD-state order, "
+                    + "reduced-grid phase row-major, "
+                    + "patch y-major then x-major"
+                ),
             "recordFormat": "RGB8",
             "recordStrideBytes": 3,
             "recordCount": lodRecordCount,
@@ -2031,8 +2230,15 @@ private final class SpatialSweepDelegate:
             "fileSha256": sha256(lodStream),
             "fileBytes": lodStream.count,
             "controlRecordOrder":
-                "amplitude order, reduced-grid phase row-major, "
-                + "patch y-major then x-major",
+                mode == .sdfThreshold
+                ? (
+                    "source-pattern order, reduced-grid phase "
+                    + "row-major, patch y-major then x-major"
+                )
+                : (
+                    "amplitude order, reduced-grid phase row-major, "
+                    + "patch y-major then x-major"
+                ),
             "controlRecordCount": controlRecordCount,
             "controlFile": controlURL.lastPathComponent,
             "controlFileSha256": sha256(controlStream),
@@ -2046,6 +2252,7 @@ private final class SpatialSweepDelegate:
                     mode == .fixedResource
                     || mode == .sdfScale
                     || mode == .pinnedSdfScale
+                    || mode == .sdfThreshold
                 )
                 ? streamPrefix
                 : "native-lod"
@@ -2184,6 +2391,79 @@ private final class SpatialSweepDelegate:
                 "pinnedOpacity": 1,
                 "blurDistances": [-400, -1, 0, 0, 0],
             ]
+        case .sdfThreshold:
+            rigVersion =
+                "native-sdf-threshold-sweep-1.0.0"
+            sweepKind =
+                "exhaustive-adjacent-binary16-distance-"
+                + "threshold-curve"
+            lodDesign = [
+                "states": captureStates.map(\.manifest),
+                "resourceBlurRadius":
+                    sdfScaleResourceRadius,
+                "lowerDistanceFloat16BitsTraversalInclusive":
+                    ["de41", "dc3f"],
+                "lowerDistanceTraversal":
+                    "strictly increasing numeric value",
+                "upperDistance":
+                    "next greater finite binary16 value",
+                "expectedSdfFloat16BitsRangeInclusive":
+                    ["de40", "dc40"],
+                "activeInteriorOpacityIndices": [0, 1],
+                "blurOpacities": [0, 1, 1, 1, 1],
+                "fixedTrailingBlurDistances": [0, 0, 0],
+            ]
+        }
+        let sourceDesign: [String: Any]
+        if mode == .sdfThreshold {
+            sourceDesign = [
+                "kind":
+                    "periodic-deterministic-hash-rgb",
+                "sourcePatternIndex":
+                    sdfThresholdSourceLabel,
+                "tileWidthPixels":
+                    sdfThresholdTileSide,
+                "tileHeightPixels":
+                    sdfThresholdTileSide,
+                "channelCodeRangeInclusive": [16, 239],
+                "alphaCode": 255,
+                "hashOperations": [
+                    "v = tileX | (tileY << 6) "
+                        + "| (channel << 12)",
+                    "v ^= 0x9e3779b9",
+                    "v = (v ^ (v >> 16)) * "
+                        + "0x7feb352d modulo 2^32",
+                    "v = (v ^ (v >> 15)) * "
+                        + "0x846ca68b modulo 2^32",
+                    "v ^= v >> 16",
+                    "code = 16 + (v % 224)",
+                ],
+                "reducedGridPixelSizeSourcePixels": 2,
+                "phasePeriodReducedGridPixels": 4,
+                "patchRadiusPixels": kernelPatchRadius,
+                "patchSidePixels": kernelPatchSide,
+                "sites":
+                    kernelSites.map(kernelSiteManifest),
+            ]
+        } else {
+            sourceDesign = [
+                "baseCode": sourceCode,
+                "squareWidth": kernelSquareSide,
+                "squareHeight": kernelSquareSide,
+                "minimumSquareGapPixels": 130,
+                "channelSigns": [
+                    "red": 1,
+                    "green": -1,
+                    "blue": 1,
+                ],
+                "amplitudesCodes": lodAmplitudes,
+                "reducedGridPixelSizeSourcePixels": 2,
+                "phasePeriodReducedGridPixels": 4,
+                "patchRadiusPixels": kernelPatchRadius,
+                "patchSidePixels": kernelPatchSide,
+                "sites":
+                    kernelSites.map(kernelSiteManifest),
+            ]
         }
         let report: [String: Any] = [
             "schemaVersion": 1,
@@ -2230,24 +2510,7 @@ private final class SpatialSweepDelegate:
                     maximumPatchRadius
                     / (Double(glassDiameter) / 2),
             ],
-            "sourceDesign": [
-                "baseCode": sourceCode,
-                "squareWidth": kernelSquareSide,
-                "squareHeight": kernelSquareSide,
-                "minimumSquareGapPixels": 130,
-                "channelSigns": [
-                    "red": 1,
-                    "green": -1,
-                    "blue": 1,
-                ],
-                "amplitudesCodes": lodAmplitudes,
-                "reducedGridPixelSizeSourcePixels": 2,
-                "phasePeriodReducedGridPixels": 4,
-                "patchRadiusPixels": kernelPatchRadius,
-                "patchSidePixels": kernelPatchSide,
-                "sites":
-                    kernelSites.map(kernelSiteManifest),
-            ],
+            "sourceDesign": sourceDesign,
             "lodDesign": lodDesign,
             "flatBlurProfileInputs":
                 mode == .flatProfile
@@ -2293,6 +2556,24 @@ private final class SpatialSweepDelegate:
                     "inputBlurOpacity2Through4": 1,
                     "inputBlurDistance0Through4":
                         [-400, -1, 0, 0, 0],
+                    "inputInnerRefractionAmount": -60,
+                    "inputOuterRefractionAmount": 160,
+                    "inputRefractionOpacity": 0,
+                ]
+                : NSNull(),
+            "sdfThresholdInputs":
+                mode == .sdfThreshold
+                ? [
+                    "inputBlurRadius":
+                        sdfScaleResourceRadius,
+                    "inputBlurOpacity0Through4":
+                        [0, 1, 1, 1, 1],
+                    "inputBlurDistance0":
+                        "enumerates lower binary16 breakpoint "
+                        + "from 0xde41 through 0xdc3f",
+                    "inputBlurDistance1":
+                        "next greater finite binary16 value",
+                    "inputBlurDistance2Through4": [0, 0, 0],
                     "inputInnerRefractionAmount": -60,
                     "inputOuterRefractionAmount": 160,
                     "inputRefractionOpacity": 0,
@@ -2747,6 +3028,14 @@ private final class SpatialSweepDelegate:
                 try await runLodSweep(
                     workspace: workspace,
                     mode: .flatProfile)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--sdf-threshold")
+            {
+                try await runLodSweep(
+                    workspace: workspace,
+                    mode: .sdfThreshold)
                 return
             }
             if CommandLine.arguments.dropFirst(2)

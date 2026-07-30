@@ -1133,6 +1133,18 @@ identification modes for the private clear-material mip path:
   interval spatially constant. Comparing it bit-for-bit with `--sdf-scale`
   separates local SDF/LOD arithmetic from opacity-dependent upstream
   resource generation.
+- `--sdf-threshold` keeps the radius-four resource profile fixed at
+  `[0, 1, 1, 1, 1]` and scans only the first two blur distances across
+  adjacent binary16 values. The lower breakpoint increases from `-400.25`
+  (`0xde41`) through `-271.75` (`0xdc3f`); the upper breakpoint is always
+  the next greater binary16 value. Because the sampled SDF is binary16,
+  no representable value exists inside an interval: each protected pixel
+  must switch once between the exact radius-four and radius-zero endpoint
+  images. A deterministic periodic 64x64 RGB hash texture gives every
+  sampled pixel broadband source energy without changing the SDF geometry.
+  The retained native RGB8 stream therefore identifies the sampled SDF
+  half word by its transition index, while non-monotonic or endpoint-equal
+  pixels remain explicit failures instead of being fitted.
 
 ## What happens after capture
 
