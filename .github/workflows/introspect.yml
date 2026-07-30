@@ -141,6 +141,7 @@ jobs:
                           / f"crash-{diagnostic.name}",
                       )
           PY
+
           else
             echo "introspection app did not build" \
               > introspection/runtime-error.txt
@@ -1104,67 +1105,6 @@ jobs:
                   f"{profile_replay}"
               )
 
-          uniform_differential = independent.get(
-              "uniformDifferential", {}
-          )
-          uniform_records = {
-              record.get("name"): record
-              for record in uniform_differential.get("records", [])
-              if isinstance(record, dict)
-          }
-          required_uniforms = {
-              "simple-refraction",
-              "inner-refraction-isolated",
-              "outer-refraction-full",
-              "outer-refraction-isolated",
-              "face-opacity-zero",
-              "face-opacity-half",
-              "holding-tone-zero",
-              "clamp-disabled",
-              "preserve-hue",
-              "float-mix-workaround",
-              "shadow-alpha",
-              "shadow-sampled",
-          }
-          if profile["material"] == "regular":
-              required_uniforms.update({
-                  "edge-bleed-opacity-zero",
-                  "edge-bleed-opacity-one",
-                  "edge-bleed-amount-zero",
-                  "edge-bleed-blur-zero",
-                  "edge-bleed-darken-neutral",
-              })
-          for uniform_name in sorted(required_uniforms):
-              uniform = uniform_records.get(uniform_name, {})
-              comparison = uniform.get("comparison", {})
-              if (
-                  uniform.get("executed") is not True
-                  or comparison.get("compared") is not True
-                  or comparison.get("exactByteMatch") is not True
-                  or comparison.get("mismatchedByteCount") != 0
-                  or comparison.get("maximumChannelDelta") != 0
-              ):
-                  raise SystemExit(
-                      "schema-75 uniform intervention is not "
-                      f"byte-exact: {uniform_name}: {uniform}"
-                  )
-          for uniform_name in (
-              "inner-refraction-isolated",
-              "outer-refraction-full",
-              "outer-refraction-isolated",
-          ):
-              source_trace = uniform_records.get(
-                  uniform_name, {}
-              ).get("sourceStageTrace", {})
-              if (
-                  source_trace.get("executed") is not True
-                  or source_trace.get("glassDrawCount") != 2
-              ):
-                  raise SystemExit(
-                      "schema-75 isolated refraction source trace "
-                      f"failed: {uniform_name}: {source_trace}"
-                  )
-
           texture_evidence = runtime.get("carendererEvidence", {}).get(
               "metalTextureSnapshots", {}
           )
@@ -1351,5 +1291,84 @@ jobs:
               ):
                   raise SystemExit(
                       "schema-75 regular downsample-four uniforms differ"
+                  )
+          PY
+
+      - name: Enforce uniform intervention evidence
+        if: always()
+        run: |
+          test -s introspection/runtime.json
+          python3 - <<'PY'
+          import json
+          import pathlib
+
+          root = pathlib.Path("introspection")
+          with (root / "runtime.json").open(encoding="utf-8") as stream:
+              runtime = json.load(stream)
+          material = "${{ matrix.material }}"
+          independent = runtime.get(
+              "carendererEvidence", {}
+          ).get("exactPassReplay", {}).get(
+              "independentGlassReplay", {}
+          )
+          uniform_differential = independent.get(
+              "uniformDifferential", {}
+          )
+          uniform_records = {
+              record.get("name"): record
+              for record in uniform_differential.get("records", [])
+              if isinstance(record, dict)
+          }
+          required_uniforms = {
+              "simple-refraction",
+              "inner-refraction-isolated",
+              "outer-refraction-full",
+              "outer-refraction-isolated",
+              "face-opacity-zero",
+              "face-opacity-half",
+              "holding-tone-zero",
+              "clamp-disabled",
+              "preserve-hue",
+              "float-mix-workaround",
+              "shadow-alpha",
+              "shadow-sampled",
+          }
+          if material == "regular":
+              required_uniforms.update({
+                  "edge-bleed-opacity-zero",
+                  "edge-bleed-opacity-one",
+                  "edge-bleed-amount-zero",
+                  "edge-bleed-blur-zero",
+                  "edge-bleed-darken-neutral",
+              })
+          for uniform_name in sorted(required_uniforms):
+              uniform = uniform_records.get(uniform_name, {})
+              comparison = uniform.get("comparison", {})
+              if (
+                  uniform.get("executed") is not True
+                  or comparison.get("compared") is not True
+                  or comparison.get("exactByteMatch") is not True
+                  or comparison.get("mismatchedByteCount") != 0
+                  or comparison.get("maximumChannelDelta") != 0
+              ):
+                  raise SystemExit(
+                      "schema-75 uniform intervention is not "
+                      f"byte-exact: {uniform_name}: {uniform}"
+                  )
+          for uniform_name in (
+              "inner-refraction-isolated",
+              "outer-refraction-full",
+              "outer-refraction-isolated",
+          ):
+              source_trace = uniform_records.get(
+                  uniform_name, {}
+              ).get("sourceStageTrace", {})
+              if (
+                  source_trace.get("executed") is not True
+                  or source_trace.get("glassDrawCount") != 2
+              ):
+                  raise SystemExit(
+                      "schema-75 isolated refraction source trace "
+                      f"failed: {uniform_name}: {source_trace}"
                   )
           PY
