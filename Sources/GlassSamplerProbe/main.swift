@@ -553,7 +553,7 @@ private func run(outputDirectory: URL) throws {
             "fileBytes": fractionBinary.count,
             "fileSha256": sha256(fractionBinary),
             "fractionCount": fractionCount,
-            "fractions": "0\/256 through 256\/256 inclusive",
+            "fractions": "0/256 through 256/256 inclusive",
             "recordCount": fractionRecordCount,
             "recordOrder":
                 "fraction major, input_a major, input_b minor",
