@@ -720,7 +720,7 @@ private final class SpatialSweepDelegate:
                     current,
                     corners.map { point in
                         let (x, y) = point
-                        hypot(
+                        return hypot(
                             Double(x - imageWidth / 2),
                             Double(y - imageHeight / 2))
                     }.max() ?? 0)
