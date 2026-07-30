@@ -1350,33 +1350,58 @@ vertex GlassReplayVertexOutput glass_vertex_row_matrix(
 }
 """
 
-private struct DiagnosticBackground: View {
-    var body: some View {
-        Canvas { context, size in
-            let cell = 16.0
-            let columns = Int(ceil(size.width / cell))
-            let rows = Int(ceil(size.height / cell))
-            for row in 0..<rows {
-                for column in 0..<columns {
-                    let hash = UInt32(
-                        truncatingIfNeeded:
-                            column &* 0x45D9F3B ^ row &* 0x119DE1F3)
-                    let red = Double((hash >> 0) & 0xFF) / 255.0
-                    let green = Double((hash >> 8) & 0xFF) / 255.0
-                    let blue = Double((hash >> 16) & 0xFF) / 255.0
-                    context.fill(
-                        Path(CGRect(
-                            x: Double(column) * cell,
-                            y: Double(row) * cell,
-                            width: cell,
-                            height: cell)),
-                        with: .color(Color(
-                            red: red,
-                            green: green,
-                            blue: blue)))
+private let diagnosticBackgroundPattern =
+    "coordinate-hash-rgb-2x2-cells-v1"
+private let diagnosticBackgroundCellPoints = 2
+private let diagnosticBackgroundImage: CGImage = {
+    let width = 1024
+    let height = 1024
+    let cell = diagnosticBackgroundCellPoints
+    var pixels = [UInt8](
+        repeating: 255,
+        count: width * height * 4)
+    for row in 0..<(height / cell) {
+        for column in 0..<(width / cell) {
+            let hash = UInt32(
+                truncatingIfNeeded:
+                    column &* 0x45D9F3B ^ row &* 0x119DE1F3)
+            let red = UInt8(truncatingIfNeeded: hash)
+            let green = UInt8(truncatingIfNeeded: hash >> 8)
+            let blue = UInt8(truncatingIfNeeded: hash >> 16)
+            for y in (row * cell)..<((row + 1) * cell) {
+                for x in (column * cell)..<((column + 1) * cell) {
+                    let offset = (y * width + x) * 4
+                    pixels[offset] = red
+                    pixels[offset + 1] = green
+                    pixels[offset + 2] = blue
                 }
             }
         }
+    }
+    let data = Data(pixels) as CFData
+    let provider = CGDataProvider(data: data)!
+    let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+    return CGImage(
+        width: width,
+        height: height,
+        bitsPerComponent: 8,
+        bitsPerPixel: 32,
+        bytesPerRow: width * 4,
+        space: colorSpace,
+        bitmapInfo: CGBitmapInfo(
+            rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),
+        provider: provider,
+        decode: nil,
+        shouldInterpolate: false,
+        intent: .defaultIntent)!
+}()
+
+private struct DiagnosticBackground: View {
+    var body: some View {
+        Image(
+            decorative: diagnosticBackgroundImage,
+            scale: 1)
+            .interpolation(.none)
     }
 }
 
@@ -4929,7 +4954,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 62,
+            "schemaVersion": 63,
             "capture": capture,
             "phase": phase,
         ]
@@ -5162,7 +5187,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 62,
+                    "schemaVersion": 63,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5587,7 +5612,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 62,
+                "schemaVersion": 63,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8829,7 +8854,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 62,
+                    "schemaVersion": 63,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8845,7 +8870,20 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 62,
+            "schemaVersion": 63,
+            "diagnosticBackgroundEvidence": [
+                "pattern": diagnosticBackgroundPattern,
+                "cellWidthPoints":
+                    diagnosticBackgroundCellPoints,
+                "cellHeightPoints":
+                    diagnosticBackgroundCellPoints,
+                "columns": 1024 / diagnosticBackgroundCellPoints,
+                "rows": 1024 / diagnosticBackgroundCellPoints,
+                "hashExpression":
+                    "UInt32(column*0x45D9F3B XOR row*0x119DE1F3)",
+                "purpose":
+                    "full-rank raw backdrop mip identification",
+            ],
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

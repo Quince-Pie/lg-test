@@ -656,8 +656,21 @@ jobs:
           root = pathlib.Path("introspection")
           with (root / "runtime.json").open(encoding="utf-8") as stream:
               runtime = json.load(stream)
-          if runtime.get("schemaVersion") != 62:
-              raise SystemExit("introspection schema is not 62")
+          if runtime.get("schemaVersion") != 63:
+              raise SystemExit("introspection schema is not 63")
+
+          background = runtime.get("diagnosticBackgroundEvidence", {})
+          if (
+              background.get("pattern")
+              != "coordinate-hash-rgb-2x2-cells-v1"
+              or background.get("cellWidthPoints") != 2
+              or background.get("cellHeightPoints") != 2
+              or background.get("columns") != 512
+              or background.get("rows") != 512
+          ):
+              raise SystemExit(
+                  "schema-63 diagnostic background metadata differs"
+              )
 
           expected_sizes = {
               "carenderer-live-tree-glass-final-color-numeric-trace-rgba16f.raw":
@@ -692,4 +705,71 @@ jobs:
                       f"wrong numeric trace size for {name}: "
                       f"{path.stat().st_size} != {expected_size}"
                   )
+
+          texture_evidence = runtime.get("carendererEvidence", {}).get(
+              "metalTextureSnapshots", {}
+          )
+          source_candidates = []
+          for snapshot in texture_evidence.get("snapshots", []):
+              descriptor = snapshot.get("pipeline", {}).get(
+                  "creationDescriptor", {}
+              )
+              if (
+                  descriptor.get("fragmentFunction")
+                  == "glass_background_sdf_no_bleed_lph"
+                  and snapshot.get("index") == 3
+                  and snapshot.get("pixelFormat") == 80
+                  and snapshot.get("width") == 448
+                  and snapshot.get("height") == 448
+                  and snapshot.get("mipmapLevelCount") == 2
+              ):
+                  source_candidates.append(snapshot)
+          if len(source_candidates) != 1:
+              raise SystemExit(
+                  "schema-63 live backdrop source texture is not unique: "
+                  f"{len(source_candidates)} candidates"
+              )
+
+          levels = {
+              level.get("level"): level
+              for level in source_candidates[0].get("mipSnapshots", [])
+          }
+          expected_levels = {
+              0: (448, 448, 448 * 448 * 4),
+              1: (224, 224, 224 * 224 * 4),
+          }
+          for level, (width, height, expected_size) in (
+              expected_levels.items()
+          ):
+              record = levels.get(level)
+              if (
+                  not isinstance(record, dict)
+                  or record.get("width") != width
+                  or record.get("height") != height
+                  or record.get("rawBytes") != expected_size
+              ):
+                  raise SystemExit(
+                      f"schema-63 backdrop mip {level} metadata differs"
+                  )
+              path = root / str(record.get("rawFile", ""))
+              if (
+                  not path.is_file()
+                  or path.stat().st_size != expected_size
+              ):
+                  raise SystemExit(
+                      f"schema-63 backdrop mip {level} payload differs"
+                  )
+
+          mip_zero = (
+              root / str(levels[0]["rawFile"])
+          ).read_bytes()
+          distinct_rgb = len({
+              mip_zero[offset : offset + 3]
+              for offset in range(0, len(mip_zero), 4)
+          })
+          if distinct_rgb < 50_000:
+              raise SystemExit(
+                  "schema-63 backdrop mip zero lacks identification rank: "
+                  f"{distinct_rgb} distinct RGB texels"
+              )
           PY

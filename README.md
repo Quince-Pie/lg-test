@@ -1171,6 +1171,18 @@ deterministic combined source/alpha/destination tuples. Inputs are generated
 from recorded formulas and only the native target bytes are retained, so the
 probe measures the final Metal conversion and blend boundary without
 substituting a software blend model.
+Schema 63 changes only the introspection view's deterministic diagnostic
+backdrop, from 16-point tiles to 2-by-2-point coordinate-hashed RGB cells.
+Apple's observed `scale = 0.5` path therefore receives essentially independent
+source values at successive base-level texels instead of a low-rank block
+field. The workflow requires the real `glass_background_sdf_no_bleed_lph`
+source binding to expose exactly one 448-by-448 BGRA8Unorm texture with both
+the 448-by-448 and 224-by-224 raw mip payloads, and rejects mip zero unless it
+contains at least 50,000 distinct RGB texels. The first mip can identify the
+host-supplied offsets and binary16 weights in Apple's disassembled seven-sample
+downsample shader; disjoint spatial regions provide the protected bitwise
+holdout for that fit. Every pre-existing compositor, numeric-trace, held-out
+source, fixed-function blend, and image-comparison gate remains mandatory.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
