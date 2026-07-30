@@ -65,10 +65,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 2:
+          if manifest.get("schemaVersion") != 3:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-2.0.0"
+              "metal-raster-interpolant-probe-3.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -79,6 +79,7 @@ jobs:
               expected = crop["width"] * crop["height"] * 16
               varying_path = root / record["varyingFile"]
               barycentric_path = root / record["barycentricFile"]
+              basis_path = root / record["basisVaryingFile"]
               if record["varyingFileBytes"] != expected:
                   raise SystemExit(
                       f"{record['name']} varying manifest size differs"
@@ -87,6 +88,10 @@ jobs:
                   raise SystemExit(
                       f"{record['name']} barycentric manifest size differs"
                   )
+              if record["basisVaryingFileBytes"] != expected:
+                  raise SystemExit(
+                      f"{record['name']} basis manifest size differs"
+                  )
               if varying_path.stat().st_size != expected:
                   raise SystemExit(
                       f"{record['name']} varying file size differs"
@@ -94,5 +99,9 @@ jobs:
               if barycentric_path.stat().st_size != expected:
                   raise SystemExit(
                       f"{record['name']} barycentric file size differs"
+                  )
+              if basis_path.stat().st_size != expected:
+                  raise SystemExit(
+                      f"{record['name']} basis file size differs"
                   )
           PY

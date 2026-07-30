@@ -41,11 +41,13 @@ struct ProbeVertexOutput {
     float4 position [[position]];
     float2 sdf [[user(sdf_uv)]];
     float2 source [[user(src_uv)]];
+    float3 basis [[user(interpolation_basis)]];
 };
 
 struct ProbeFragmentOutput {
     uint4 varyings [[color(0)]];
     uint4 barycentrics [[color(1)]];
+    uint4 basis [[color(2)]];
 };
 
 vertex ProbeVertexOutput raster_probe_vertex(
@@ -58,6 +60,11 @@ vertex ProbeVertexOutput raster_probe_vertex(
     output.position = mvp * record.position;
     output.sdf = record.sdf;
     output.source = record.source;
+    const uint corner = vertex_id % 3;
+    output.basis = float3(
+        corner == 0 ? 1.0 : 0.0,
+        corner == 1 ? 1.0 : 0.0,
+        corner == 2 ? 1.0 : 0.0);
     return output;
 }
 
@@ -77,6 +84,12 @@ fragment ProbeFragmentOutput raster_probe_fragment(
         as_type<uint>(barycentric.y),
         as_type<uint>(barycentric.z),
         primitive_id);
+    output.basis = uint4(
+        as_type<uint>(input.basis.x),
+        as_type<uint>(input.basis.y),
+        as_type<uint>(input.basis.z),
+        as_type<uint>(
+            input.basis.x + input.basis.y + input.basis.z));
     return output;
 }
 """
@@ -272,7 +285,11 @@ private func render(
     device: MTLDevice,
     queue: MTLCommandQueue,
     pipeline: MTLRenderPipelineState
-) throws -> (varyings: Data, barycentrics: Data) {
+) throws -> (
+    varyings: Data,
+    barycentrics: Data,
+    basis: Data
+) {
     let descriptor = MTLTextureDescriptor.texture2DDescriptor(
         pixelFormat: .rgba32Uint,
         width: probe.targetWidth,
@@ -283,6 +300,8 @@ private func render(
     guard let varyingTexture = device.makeTexture(
             descriptor: descriptor),
           let barycentricTexture = device.makeTexture(
+            descriptor: descriptor),
+          let basisTexture = device.makeTexture(
             descriptor: descriptor),
           let commandBuffer = queue.makeCommandBuffer(),
           let encoder = commandBuffer.makeRenderCommandEncoder(
@@ -298,6 +317,12 @@ private func render(
                 pass.colorAttachments[1].loadAction = .clear
                 pass.colorAttachments[1].storeAction = .store
                 pass.colorAttachments[1].clearColor =
+                    MTLClearColorMake(0, 0, 0, 0)
+                pass.colorAttachments[2].texture =
+                    basisTexture
+                pass.colorAttachments[2].loadAction = .clear
+                pass.colorAttachments[2].storeAction = .store
+                pass.colorAttachments[2].clearColor =
                     MTLClearColorMake(0, 0, 0, 0)
                 return pass
             }())
@@ -357,7 +382,8 @@ private func render(
     }
     return (
         read(varyingTexture),
-        read(barycentricTexture)
+        read(barycentricTexture),
+        read(basisTexture)
     )
 }
 
@@ -394,6 +420,7 @@ private func run(outputDirectory: URL) throws {
     descriptor.fragmentFunction = fragment
     descriptor.colorAttachments[0].pixelFormat = .rgba32Uint
     descriptor.colorAttachments[1].pixelFormat = .rgba32Uint
+    descriptor.colorAttachments[2].pixelFormat = .rgba32Uint
     let pipeline = try device.makeRenderPipelineState(
         descriptor: descriptor)
 
@@ -408,6 +435,8 @@ private func run(outputDirectory: URL) throws {
             "\(probe.name)-varyings-rgba32ui.raw"
         let barycentricFilename =
             "\(probe.name)-barycentrics-rgba32ui.raw"
+        let basisFilename =
+            "\(probe.name)-basis-varyings-rgba32ui.raw"
         try result.varyings.write(
             to: outputDirectory.appendingPathComponent(
                 varyingFilename),
@@ -415,6 +444,10 @@ private func run(outputDirectory: URL) throws {
         try result.barycentrics.write(
             to: outputDirectory.appendingPathComponent(
                 barycentricFilename),
+            options: .atomic)
+        try result.basis.write(
+            to: outputDirectory.appendingPathComponent(
+                basisFilename),
             options: .atomic)
         let mvp = matrix(for: probe)
         records.append([
@@ -426,6 +459,10 @@ private func run(outputDirectory: URL) throws {
             "barycentricFileBytes": result.barycentrics.count,
             "barycentricFileSha256":
                 sha256(result.barycentrics),
+            "basisVaryingFile": basisFilename,
+            "basisVaryingFileBytes": result.basis.count,
+            "basisVaryingFileSha256":
+                sha256(result.basis),
             "pixelFormat": MTLPixelFormat.rgba32Uint.rawValue,
             "target": [
                 "width": probe.targetWidth,
@@ -459,8 +496,8 @@ private func run(outputDirectory: URL) throws {
     }
 
     let manifest: [String: Any] = [
-        "schemaVersion": 2,
-        "rigVersion": "metal-raster-interpolant-probe-2.0.0",
+        "schemaVersion": 3,
+        "rigVersion": "metal-raster-interpolant-probe-3.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -476,6 +513,8 @@ private func run(outputDirectory: URL) throws {
             "fragmentOutput": "raw float32 bits as RGBA32Uint",
             "barycentricOutput":
                 "center-perspective float3 bits and primitive ID",
+            "basisVaryingOutput":
+                "three one-hot vertex basis varyings and their sum",
         ],
         "cases": records,
     ]

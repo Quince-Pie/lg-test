@@ -1801,6 +1801,14 @@ crop geometry, endpoint and MVP bits, vertex order, byte size, and SHA-256.
 This probe exists to distinguish a portable raster rule from a correction
 fitted to the single live-tree mesh.
 
+Raster schema 3 also sends three one-hot per-vertex basis vectors through the
+ordinary varying path and records their float32 bits alongside the builtin
+barycentric coordinates. The paired surfaces determine whether Apple exposes
+the same weights it uses for user varyings or retains hidden interpolation
+precision; the existing arbitrary-endpoint cases then test the recovered
+attribute accumulation rule rather than assuming a textbook barycentric dot
+product.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
