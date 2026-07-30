@@ -4195,7 +4195,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 47,
+            "schemaVersion": 48,
             "capture": capture,
             "phase": phase,
         ]
@@ -4388,7 +4388,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 47,
+                    "schemaVersion": 48,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4460,6 +4460,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         pass: ReplayPass,
         preColor0: MTLTexture,
         queue: MTLCommandQueue,
+        commands commandOverride: [ReplayCommand]? = nil,
         replacingGlassPipeline replacement:
             MTLRenderPipelineState?,
         capture: String,
@@ -4563,7 +4564,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ]
         }
         let summary = encodeReplayCommands(
-            pass.commands,
+            commandOverride ?? pass.commands,
             with: encoder,
             replacingGlassPipeline: replacement,
             stopAfterGlass: true)
@@ -4587,7 +4588,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 47,
+                "schemaVersion": 48,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -4736,6 +4737,341 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "reason": error.localizedDescription,
             ]
         }
+    }
+
+    private struct GlassUniformEdit {
+        let field: String
+        let recordOffset: Int
+        let bytes: Data
+    }
+
+    private struct GlassUniformIntervention {
+        let name: String
+        let edits: [GlassUniformEdit]
+    }
+
+    private func replayCommandIsDraw(
+        _ command: ReplayCommand
+    ) -> Bool {
+        switch command {
+        case .drawPrimitives(_, _, _),
+             .drawPrimitivesInstanced(_, _, _, _),
+             .drawPrimitivesBaseInstance(_, _, _, _, _),
+             .drawIndexedPrimitives(_, _, _, _, _),
+             .drawIndexedPrimitivesInstanced(
+                _, _, _, _, _, _),
+             .drawIndexedPrimitivesBaseVertex(
+                _, _, _, _, _, _, _, _):
+            true
+        default:
+            false
+        }
+    }
+
+    private func glassUniformBinding(
+        in commands: [ReplayCommand]
+    ) -> (buffer: MTLBuffer, recordOffsets: [Int])? {
+        var currentPipelineIsGlass = false
+        var activeBuffer: MTLBuffer?
+        var activeOffset = 0
+        var glassBuffer: MTLBuffer?
+        var recordOffsets: [Int] = []
+
+        for command in commands {
+            switch command {
+            case .pipeline(let pipeline):
+                currentPipelineIsGlass =
+                    pipeline.label?.contains("_Tghz") == true
+            case .fragmentBuffer(
+                let buffer,
+                let offset,
+                let index
+            ):
+                if index == 1 {
+                    activeBuffer = buffer
+                    activeOffset = offset
+                }
+            case .fragmentBufferOffset(let offset, let index):
+                if index == 1 {
+                    activeOffset = offset
+                }
+            default:
+                break
+            }
+
+            guard currentPipelineIsGlass,
+                  replayCommandIsDraw(command),
+                  let activeBuffer
+            else {
+                continue
+            }
+            if let glassBuffer,
+               ObjectIdentifier(glassBuffer)
+                != ObjectIdentifier(activeBuffer)
+            {
+                return nil
+            }
+            glassBuffer = activeBuffer
+            if !recordOffsets.contains(activeOffset) {
+                recordOffsets.append(activeOffset)
+            }
+        }
+        guard let glassBuffer,
+              !recordOffsets.isEmpty
+        else {
+            return nil
+        }
+        return (glassBuffer, recordOffsets)
+    }
+
+    private func replacingFragmentBuffer(
+        in commands: [ReplayCommand],
+        original: MTLBuffer,
+        replacement: MTLBuffer
+    ) -> [ReplayCommand] {
+        commands.map { command in
+            guard case .fragmentBuffer(
+                    let buffer,
+                    let offset,
+                    let index
+                  ) = command,
+                  let buffer,
+                  ObjectIdentifier(buffer)
+                    == ObjectIdentifier(original)
+            else {
+                return command
+            }
+            return .fragmentBuffer(
+                replacement,
+                offset,
+                index)
+        }
+    }
+
+    private func runGlassUniformDifferential(
+        pass: ReplayPass,
+        preColor0: MTLTexture,
+        queue: MTLCommandQueue,
+        customPipeline: MTLRenderPipelineState,
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let binding = glassUniformBinding(
+                in: pass.commands)
+        else {
+            return [
+                "executed": false,
+                "reason":
+                    "glass fragment uniform binding is unavailable",
+            ]
+        }
+        guard binding.buffer.storageMode != .private else {
+            return [
+                "executed": false,
+                "reason":
+                    "glass fragment uniform buffer is not CPU-readable",
+            ]
+        }
+
+        func halfBytes(_ bits: UInt16) -> Data {
+            var littleEndian = bits.littleEndian
+            return Swift.withUnsafeBytes(of: &littleEndian) {
+                Data($0)
+            }
+        }
+        func floatBytes(_ bits: UInt32) -> Data {
+            var littleEndian = bits.littleEndian
+            return Swift.withUnsafeBytes(of: &littleEndian) {
+                Data($0)
+            }
+        }
+        func edit(
+            _ field: String,
+            _ offset: Int,
+            _ bytes: Data
+        ) -> GlassUniformEdit {
+            GlassUniformEdit(
+                field: field,
+                recordOffset: offset,
+                bytes: bytes)
+        }
+
+        let zeroHalf = halfBytes(0x0000)
+        let halfHalf = halfBytes(0x3800)
+        let oneHalf = halfBytes(0x3c00)
+        let oneFloat = floatBytes(0x3f80_0000)
+        let interventions = [
+            GlassUniformIntervention(
+                name: "simple-refraction",
+                edits: [
+                    edit("complex_refraction", 256, zeroHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "outer-refraction-full",
+                edits: [
+                    edit("refraction_opacity", 240, oneHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "face-opacity-zero",
+                edits: [
+                    edit("face_opacity", 230, zeroHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "face-opacity-half",
+                edits: [
+                    edit("face_opacity", 230, halfHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "holding-tone-zero",
+                edits: [
+                    edit(
+                        "holding_tone_opacity",
+                        242,
+                        zeroHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "clamp-disabled",
+                edits: [
+                    edit("clamp_limit", 248, zeroHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "preserve-hue",
+                edits: [
+                    edit("preserve_hue", 250, oneHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "float-mix-workaround",
+                edits: [
+                    edit("x86_workaround", 254, oneHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "shadow-alpha",
+                edits: [
+                    edit("shadow_opacity", 238, oneHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "shadow-sampled",
+                edits: [
+                    edit(
+                        "shadow_contribution",
+                        200,
+                        oneFloat),
+                    edit("shadow_opacity", 238, oneHalf),
+                ]),
+        ]
+
+        var records: [[String: Any]] = []
+        for intervention in interventions {
+            guard let clone =
+                    binding.buffer.device.makeBuffer(
+                        length: binding.buffer.length,
+                        options: .storageModeShared)
+            else {
+                records.append([
+                    "name": intervention.name,
+                    "executed": false,
+                    "reason": "uniform clone allocation failed",
+                ])
+                continue
+            }
+            memcpy(
+                clone.contents(),
+                binding.buffer.contents(),
+                binding.buffer.length)
+            var mutationError: String?
+            for recordOffset in binding.recordOffsets {
+                for uniformEdit in intervention.edits {
+                    let destinationOffset =
+                        recordOffset
+                        + uniformEdit.recordOffset
+                    guard destinationOffset >= 0,
+                          destinationOffset
+                            + uniformEdit.bytes.count
+                            <= clone.length
+                    else {
+                        mutationError =
+                            "uniform edit exceeds cloned buffer"
+                        break
+                    }
+                    uniformEdit.bytes.withUnsafeBytes { bytes in
+                        if let source = bytes.baseAddress {
+                            memcpy(
+                                clone.contents()
+                                    .advanced(
+                                        by: destinationOffset),
+                                source,
+                                bytes.count)
+                        }
+                    }
+                }
+                if mutationError != nil {
+                    break
+                }
+            }
+            if let mutationError {
+                records.append([
+                    "name": intervention.name,
+                    "executed": false,
+                    "reason": mutationError,
+                ])
+                continue
+            }
+
+            let commands = replacingFragmentBuffer(
+                in: pass.commands,
+                original: binding.buffer,
+                replacement: clone)
+            let reference = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                commands: commands,
+                replacingGlassPipeline: nil,
+                capture: capture,
+                suffix:
+                    "uniform-\(intervention.name)-apple",
+                outputDirectory: outputDirectory)
+            let candidate = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                commands: commands,
+                replacingGlassPipeline: customPipeline,
+                capture: capture,
+                suffix:
+                    "uniform-\(intervention.name)-custom",
+                outputDirectory: outputDirectory)
+            records.append([
+                "name": intervention.name,
+                "executed":
+                    reference["executed"] as? Bool == true
+                    && candidate["executed"] as? Bool == true,
+                "edits": intervention.edits.map {
+                    [
+                        "field": $0.field,
+                        "recordOffset": $0.recordOffset,
+                        "hex": $0.bytes.map {
+                            String(format: "%02x", $0)
+                        }.joined(),
+                    ]
+                },
+                "reference": reference,
+                "candidate": candidate,
+                "comparison": compareReplaySnapshots(
+                    reference: reference,
+                    candidate: candidate,
+                    outputDirectory: outputDirectory),
+            ])
+            if candidate["executed"] as? Bool != true {
+                break
+            }
+        }
+        return [
+            "executed": true,
+            "uniformBufferLength": binding.buffer.length,
+            "recordOffsets": binding.recordOffsets,
+            "records": records,
+        ]
     }
 
     func replayFinalPass(
@@ -4959,6 +5295,38 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 }
                 independentGlassReplay["candidates"] =
                     candidateRecords
+                let customProfileCompleted =
+                    candidateRecords.contains { record in
+                        guard record["name"] as? String
+                                == "custom_profile_fragment_replay",
+                              let replay =
+                                record["replay"]
+                                    as? [String: Any]
+                        else {
+                            return false
+                        }
+                        return replay["executed"] as? Bool
+                            == true
+                    }
+                if capture == "carenderer-live-tree",
+                   customProfileCompleted,
+                   let customProfile =
+                    pipelineSet.candidates.first(where: {
+                        $0.name
+                            == "custom_profile_fragment_replay"
+                    })
+                {
+                    independentGlassReplay[
+                        "uniformDifferential"
+                    ] = runGlassUniformDifferential(
+                        pass: pass,
+                        preColor0: preColor0,
+                        queue: queue,
+                        customPipeline:
+                            customProfile.pipeline,
+                        capture: capture,
+                        outputDirectory: outputDirectory)
+                }
             } catch {
                 independentGlassReplay["pipelineBuildError"] =
                     error.localizedDescription
@@ -6795,7 +7163,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 47,
+                    "schemaVersion": 48,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -6811,7 +7179,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 47,
+            "schemaVersion": 48,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

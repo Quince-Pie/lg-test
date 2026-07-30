@@ -972,6 +972,19 @@ mode-four supercircle SDF, binary16 coverage, complex refraction and mip LOD,
 face color matrix, holding tone, premultiplied composition, clamp, and EDR
 scale. It deliberately rejects unobserved modes and relies on the captured
 zero-shadow state; only measured byte differences guide subsequent expansion.
+Run `30540261101` accepted that independent implementation on both compositor
+paths. The same-library replacement vertex and fragment reproduced all
+4,194,304 live bytes and all 4,194,304 forced-local bytes with zero mismatches,
+zero channel delta, and identical hashes to their Apple prefix references.
+Schema 48 turns the captured Apple function into a branch oracle. It clones
+the exact shared uniform arena, preserves both draw offsets, and changes one
+preregistered field group at a time. Apple and the independent pipeline then
+render separate outputs from the same pre-pass and source resources. Simple
+refraction, full outer refraction, zero/half face opacity, disabled holding
+tone, disabled clamp, hue-preserving clamp, float-mix workaround, alpha-only
+shadow, and sampled shadow states each receive a full 4,194,304-byte
+comparison. Raw paired outputs are retained; expected shadow failures remain
+measurements rather than being waived.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
