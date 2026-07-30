@@ -61,3 +61,4 @@ jobs:
           test -s sampler-probe/sampler-bilinear.bin
           test -s sampler-probe/sampler-unorm-bilinear.bin
           test -s sampler-probe/sampler-unorm-mip-grid.bin
+          test -s sampler-probe/sampler-unorm-trilinear.bin

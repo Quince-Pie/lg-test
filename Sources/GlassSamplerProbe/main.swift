@@ -246,6 +246,51 @@ kernel void sampler_unorm_mip_probe(
             uv,
             level(float(fraction) / 256.0f)).x);
 }
+
+kernel void sampler_unorm_trilinear_probe(
+    texture2d<half, access::sample> texture [[texture(0)]],
+    sampler linear_sampler [[sampler(0)]],
+    device ushort *records [[buffer(0)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= 65536) {
+        return;
+    }
+
+    uint mip_x = index & 511;
+    uint mip_y = index >> 9;
+    float2 origin = float2(float(mip_x), float(mip_y));
+    float2 offsets[7] = {
+        float2(0.50f, 0.50f),
+        float2(0.75f, 0.50f),
+        float2(1.00f, 0.50f),
+        float2(1.25f, 0.50f),
+        float2(0.50f, 0.75f),
+        float2(0.50f, 1.00f),
+        float2(0.50f, 1.25f),
+    };
+    uint base = index * 21;
+    for (uint position = 0; position < 7; ++position) {
+        float2 uv = (origin + offsets[position])
+            / float2(512.0f, 256.0f);
+        uint output = base + position * 3;
+        records[output] = as_type<ushort>(
+            texture.sample(
+                linear_sampler,
+                uv,
+                level(0.0f)).x);
+        records[output + 1] = as_type<ushort>(
+            texture.sample(
+                linear_sampler,
+                uv,
+                level(148.0f / 256.0f)).x);
+        records[output + 2] = as_type<ushort>(
+            texture.sample(
+                linear_sampler,
+                uv,
+                level(1.0f)).x);
+    }
+}
 """
 
 private enum ProbeError: LocalizedError {
@@ -728,6 +773,8 @@ private func run(outputDirectory: URL) throws {
             name: "sampler_unorm_bilinear_probe"),
           let unormMipFunction = library.makeFunction(
             name: "sampler_unorm_mip_probe"),
+          let unormTrilinearFunction = library.makeFunction(
+            name: "sampler_unorm_trilinear_probe"),
           let queue = device.makeCommandQueue()
     else {
         throw ProbeError.resource("library functions or queue")
@@ -743,6 +790,9 @@ private func run(outputDirectory: URL) throws {
             function: unormBilinearFunction)
     let unormMipPipeline = try device.makeComputePipelineState(
         function: unormMipFunction)
+    let unormTrilinearPipeline =
+        try device.makeComputePipelineState(
+            function: unormTrilinearFunction)
     let linearTexture = try makeLinearTexture(device: device)
     let linearUnormTexture = try makeLinearUnormTexture(
         device: device)
@@ -772,6 +822,7 @@ private func run(outputDirectory: URL) throws {
     let bilinearStride =
         MemoryLayout<BilinearRecord>.stride
     let unormMipStride = MemoryLayout<UInt16>.stride
+    let unormTrilinearWords = 21
     guard stride == 16,
           fractionStride == 4,
           bilinearStride == 6,
@@ -790,6 +841,12 @@ private func run(outputDirectory: URL) throws {
             options: .storageModeShared),
           let unormMipOutput = device.makeBuffer(
             length: fractionRecordCount * unormMipStride,
+            options: .storageModeShared),
+          let unormTrilinearOutput = device.makeBuffer(
+            length:
+                pairCount
+                * unormTrilinearWords
+                * unormMipStride,
             options: .storageModeShared),
           let commandBuffer = queue.makeCommandBuffer(),
           let encoder = commandBuffer.makeComputeCommandEncoder()
@@ -915,6 +972,33 @@ private func run(outputDirectory: URL) throws {
                 depth: 1))
     unormMipEncoder.endEncoding()
 
+    guard let unormTrilinearEncoder =
+        commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource(
+            "unorm trilinear command encoder")
+    }
+    unormTrilinearEncoder.setComputePipelineState(
+        unormTrilinearPipeline)
+    unormTrilinearEncoder.setTexture(
+        unormMipTexture,
+        index: 0)
+    unormTrilinearEncoder.setSamplerState(sampler, index: 0)
+    unormTrilinearEncoder.setBuffer(
+        unormTrilinearOutput,
+        offset: 0,
+        index: 0)
+    let unormTrilinearWidth =
+        unormTrilinearPipeline.threadExecutionWidth
+    unormTrilinearEncoder.dispatchThreads(
+        MTLSize(width: pairCount, height: 1, depth: 1),
+        threadsPerThreadgroup:
+            MTLSize(
+                width: unormTrilinearWidth,
+                height: 1,
+                depth: 1))
+    unormTrilinearEncoder.endEncoding()
+
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
@@ -965,9 +1049,18 @@ private func run(outputDirectory: URL) throws {
     try unormMipBinary.write(
         to: unormMipBinaryURL,
         options: .atomic)
+    let unormTrilinearBinary = Data(
+        bytes: unormTrilinearOutput.contents(),
+        count: unormTrilinearOutput.length)
+    let unormTrilinearBinaryURL =
+        outputDirectory.appendingPathComponent(
+            "sampler-unorm-trilinear.bin")
+    try unormTrilinearBinary.write(
+        to: unormTrilinearBinaryURL,
+        options: .atomic)
     let manifest: [String: Any] = [
-        "schemaVersion": 4,
-        "rigVersion": "metal-sampler-probe-1.3.0",
+        "schemaVersion": 5,
+        "rigVersion": "metal-sampler-probe-1.4.0",
         "ciCommit":
             ProcessInfo.processInfo.environment["GITHUB_SHA"]
             ?? "local",
@@ -1063,6 +1156,60 @@ private func run(outputDirectory: URL) throws {
             "levelZero":
                 "constant input_a 2x2 texel blocks",
             "levelOne": "constant input_b texels",
+            "texturePixelFormat": "rgba8Unorm",
+        ],
+        "unormTrilinearGrid": [
+            "file":
+                unormTrilinearBinaryURL.lastPathComponent,
+            "fileBytes": unormTrilinearBinary.count,
+            "fileSha256": sha256(unormTrilinearBinary),
+            "recordCount": pairCount,
+            "recordOrder": "input_a major, input_b minor",
+            "recordStrideBytes":
+                unormTrilinearWords * unormMipStride,
+            "recordFieldsPerPosition": [
+                "level_zero",
+                "lod_37_of_64",
+                "level_one",
+            ],
+            "positionsInRecordOrder": [
+                [
+                    "name": "center",
+                    "levelOneTexelOffsetX": 0.0,
+                    "levelOneTexelOffsetY": 0.0,
+                ],
+                [
+                    "name": "x-quarter",
+                    "levelOneTexelOffsetX": 0.25,
+                    "levelOneTexelOffsetY": 0.0,
+                ],
+                [
+                    "name": "x-half",
+                    "levelOneTexelOffsetX": 0.5,
+                    "levelOneTexelOffsetY": 0.0,
+                ],
+                [
+                    "name": "x-three-quarter",
+                    "levelOneTexelOffsetX": 0.75,
+                    "levelOneTexelOffsetY": 0.0,
+                ],
+                [
+                    "name": "y-quarter",
+                    "levelOneTexelOffsetX": 0.0,
+                    "levelOneTexelOffsetY": 0.25,
+                ],
+                [
+                    "name": "y-half",
+                    "levelOneTexelOffsetX": 0.0,
+                    "levelOneTexelOffsetY": 0.5,
+                ],
+                [
+                    "name": "y-three-quarter",
+                    "levelOneTexelOffsetX": 0.0,
+                    "levelOneTexelOffsetY": 0.75,
+                ],
+            ],
+            "lodFraction": "37/64",
             "texturePixelFormat": "rgba8Unorm",
         ],
     ]

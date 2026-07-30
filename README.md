@@ -648,6 +648,10 @@ Its third revision repeats those corner-weight measurements on native
 8-bit mip endpoints. This separates normalized-texture reconstruction from
 binary16 interpolation and tests trilinear mip arithmetic directly, without
 relying on rounded WindowServer captures.
+Its fourth revision samples the same normalized mip texture at seven
+phase-controlled positions and records level zero, level one, and the exact
+37/64 blend together. Those paired records distinguish staged bilinear/mip
+rounding from a single combined sampler operation.
 The focused native kernel mode complements the impulse sweep with sixteen
 96-pixel square steps spanning every phase of the first two reduced mip
 levels. Its red/blue positive and green negative channels capture the
