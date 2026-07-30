@@ -617,14 +617,19 @@ private let forensicRuntimeClassTokens = [
 ]
 
 private func allForensicRuntimeClasses() -> [[String: Any]] {
-    var classCount: UInt32 = 0
-    guard let classes = objc_copyClassList(&classCount) else {
+    let estimatedCount = objc_getClassList(nil, 0)
+    guard estimatedCount > 0 else {
         return []
     }
-    defer { free(classes) }
+    let classes = UnsafeMutablePointer<AnyClass?>.allocate(
+        capacity: Int(estimatedCount))
+    defer { classes.deallocate() }
+    let classCount = objc_getClassList(
+        AutoreleasingUnsafeMutablePointer<AnyClass>(classes),
+        estimatedCount)
     var records: [[String: Any]] = []
-    for index in 0..<Int(classCount) {
-        let cls: AnyClass = classes[index]
+    for index in 0..<Int(min(classCount, estimatedCount)) {
+        guard let cls = classes[index] else { continue }
         let name = NSStringFromClass(cls)
         let lowercased = name.lowercased()
         guard forensicRuntimeClassTokens.contains(where: {
