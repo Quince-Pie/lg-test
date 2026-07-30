@@ -1275,6 +1275,10 @@ float coordinate bits passed by that compiled fragment together with all four
 binary16 sample-result bits. This prevents optimizer differences between
 separately compiled coordinate and sample diagnostics from being mistaken for
 fixed-function sampler behavior.
+Schema 74 adds a direct half-output trace for the inner refraction sample.
+Together with the existing outer and edge half-output traces, it isolates
+relaxed half-coordinate lowering in every production sampler call without
+having to invert the later refraction mix.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
