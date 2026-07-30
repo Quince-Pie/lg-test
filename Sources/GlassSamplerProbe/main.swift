@@ -180,6 +180,72 @@ kernel void sampler_bilinear_probe(
             level(0.0f)).x);
     records[index] = record;
 }
+
+kernel void sampler_unorm_bilinear_probe(
+    texture2d<half, access::sample> texture [[texture(0)]],
+    sampler linear_sampler [[sampler(0)]],
+    device BilinearRecord *records [[buffer(0)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= 65536) {
+        return;
+    }
+
+    uint input_a = index >> 8;
+    uint input_b = index & 255;
+    uint tile_x = input_b * 4;
+    uint tile_y = input_a * 4;
+    float x_025 =
+        (float(tile_x) + 1.75f) / 1024.0f;
+    float x_075 =
+        (float(tile_x) + 2.25f) / 1024.0f;
+    float y_025 =
+        (float(tile_y) + 1.75f) / 1024.0f;
+    float y_075 =
+        (float(tile_y) + 2.25f) / 1024.0f;
+
+    BilinearRecord record;
+    record.weight_1_16 = as_type<ushort>(
+        texture.sample(
+            linear_sampler,
+            float2(x_025, y_025),
+            level(0.0f)).x);
+    record.weight_3_16 = as_type<ushort>(
+        texture.sample(
+            linear_sampler,
+            float2(x_025, y_075),
+            level(0.0f)).x);
+    record.weight_9_16 = as_type<ushort>(
+        texture.sample(
+            linear_sampler,
+            float2(x_075, y_075),
+            level(0.0f)).x);
+    records[index] = record;
+}
+
+kernel void sampler_unorm_mip_probe(
+    texture2d<half, access::sample> texture [[texture(0)]],
+    sampler linear_sampler [[sampler(0)]],
+    device ushort *records [[buffer(0)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= 16842752) {
+        return;
+    }
+
+    uint fraction = index / 65536;
+    uint pair = index - fraction * 65536;
+    uint mip_x = pair & 511;
+    uint mip_y = pair >> 9;
+    float2 uv = float2(
+        (float(mip_x) + 0.5f) / 512.0f,
+        (float(mip_y) + 0.5f) / 256.0f);
+    records[index] = as_type<ushort>(
+        texture.sample(
+            linear_sampler,
+            uv,
+            level(float(fraction) / 256.0f)).x);
+}
 """
 
 private enum ProbeError: LocalizedError {
@@ -243,6 +309,21 @@ private func setPixel(
     pixels[offset + 3] = Float16(1).bitPattern
 }
 
+private func setUnormPixel(
+    _ pixels: inout [UInt8],
+    width: Int,
+    x: Int,
+    y: Int,
+    code: Int
+) {
+    let offset = (y * width + x) * channelCount
+    let value = UInt8(code)
+    pixels[offset] = value
+    pixels[offset + 1] = value
+    pixels[offset + 2] = value
+    pixels[offset + 3] = 255
+}
+
 private func replace(
     texture: MTLTexture,
     level: Int,
@@ -258,6 +339,24 @@ private func replace(
             mipmapLevel: level,
             withBytes: bytes.baseAddress!,
             bytesPerRow: width * bytesPerHalfPixel)
+    }
+}
+
+private func replaceUnorm(
+    texture: MTLTexture,
+    level: Int,
+    width: Int,
+    height: Int,
+    pixels: [UInt8]
+) {
+    precondition(
+        pixels.count == width * height * channelCount)
+    pixels.withUnsafeBytes { bytes in
+        texture.replace(
+            region: MTLRegionMake2D(0, 0, width, height),
+            mipmapLevel: level,
+            withBytes: bytes.baseAddress!,
+            bytesPerRow: width * bytesPerUnormPixel)
     }
 }
 
@@ -408,6 +507,53 @@ private func makeBilinearTexture(
     return texture
 }
 
+private func makeUnormBilinearTexture(
+    device: MTLDevice
+) throws -> MTLTexture {
+    let width = 1024
+    let height = 1024
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .rgba8Unorm,
+        width: width,
+        height: height,
+        mipmapped: false)
+    descriptor.storageMode = .shared
+    descriptor.usage = [.shaderRead]
+    guard let texture = device.makeTexture(
+        descriptor: descriptor)
+    else {
+        throw ProbeError.resource("unorm bilinear texture")
+    }
+    var pixels = [UInt8](
+        repeating: 0,
+        count: width * height * channelCount)
+    for inputA in 0..<codeCount {
+        for inputB in 0..<codeCount {
+            let tileX = inputB * 4
+            let tileY = inputA * 4
+            for y in 0..<4 {
+                for x in 0..<4 {
+                    setUnormPixel(
+                        &pixels,
+                        width: width,
+                        x: tileX + x,
+                        y: tileY + y,
+                        code: x == 2 && y == 2
+                            ? inputA
+                            : inputB)
+                }
+            }
+        }
+    }
+    replaceUnorm(
+        texture: texture,
+        level: 0,
+        width: width,
+        height: height,
+        pixels: pixels)
+    return texture
+}
+
 private func makeMipTexture(
     device: MTLDevice
 ) throws -> MTLTexture {
@@ -481,6 +627,76 @@ private func makeMipTexture(
     return texture
 }
 
+private func makeUnormMipTexture(
+    device: MTLDevice
+) throws -> MTLTexture {
+    let width = 1024
+    let height = 512
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .rgba8Unorm,
+        width: width,
+        height: height,
+        mipmapped: true)
+    descriptor.mipmapLevelCount = 2
+    descriptor.storageMode = .shared
+    descriptor.usage = [.shaderRead]
+    guard let texture = device.makeTexture(
+        descriptor: descriptor)
+    else {
+        throw ProbeError.resource("unorm mip texture")
+    }
+
+    var levelZero = [UInt8](
+        repeating: UInt8(128),
+        count: width * height * channelCount)
+    var levelOne = [UInt8](
+        repeating: UInt8(128),
+        count: (width / 2) * (height / 2) * channelCount)
+    for pixel in 0..<(width * height) {
+        levelZero[pixel * channelCount + 3] = 255
+    }
+    for pixel in 0..<((width / 2) * (height / 2)) {
+        levelOne[pixel * channelCount + 3] = 255
+    }
+
+    for inputA in 0..<codeCount {
+        for inputB in 0..<codeCount {
+            let index = inputA * codeCount + inputB
+            let x = index & 511
+            let y = index >> 9
+            setUnormPixel(
+                &levelOne,
+                width: width / 2,
+                x: x,
+                y: y,
+                code: inputB)
+            for deltaY in 0..<2 {
+                for deltaX in 0..<2 {
+                    setUnormPixel(
+                        &levelZero,
+                        width: width,
+                        x: 2 * x + deltaX,
+                        y: 2 * y + deltaY,
+                        code: inputA)
+                }
+            }
+        }
+    }
+    replaceUnorm(
+        texture: texture,
+        level: 0,
+        width: width,
+        height: height,
+        pixels: levelZero)
+    replaceUnorm(
+        texture: texture,
+        level: 1,
+        width: width / 2,
+        height: height / 2,
+        pixels: levelOne)
+    return texture
+}
+
 private func sha256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
         String(format: "%02x", $0)
@@ -508,6 +724,10 @@ private func run(outputDirectory: URL) throws {
             name: "sampler_fraction_probe"),
           let bilinearFunction = library.makeFunction(
             name: "sampler_bilinear_probe"),
+          let unormBilinearFunction = library.makeFunction(
+            name: "sampler_unorm_bilinear_probe"),
+          let unormMipFunction = library.makeFunction(
+            name: "sampler_unorm_mip_probe"),
           let queue = device.makeCommandQueue()
     else {
         throw ProbeError.resource("library functions or queue")
@@ -518,12 +738,21 @@ private func run(outputDirectory: URL) throws {
         function: fractionFunction)
     let bilinearPipeline = try device.makeComputePipelineState(
         function: bilinearFunction)
+    let unormBilinearPipeline =
+        try device.makeComputePipelineState(
+            function: unormBilinearFunction)
+    let unormMipPipeline = try device.makeComputePipelineState(
+        function: unormMipFunction)
     let linearTexture = try makeLinearTexture(device: device)
     let linearUnormTexture = try makeLinearUnormTexture(
         device: device)
     let bilinearTexture = try makeBilinearTexture(
         device: device)
+    let unormBilinearTexture = try makeUnormBilinearTexture(
+        device: device)
     let mipTexture = try makeMipTexture(device: device)
+    let unormMipTexture = try makeUnormMipTexture(
+        device: device)
 
     let samplerDescriptor = MTLSamplerDescriptor()
     samplerDescriptor.normalizedCoordinates = true
@@ -542,9 +771,11 @@ private func run(outputDirectory: URL) throws {
     let fractionStride = MemoryLayout<FractionRecord>.stride
     let bilinearStride =
         MemoryLayout<BilinearRecord>.stride
+    let unormMipStride = MemoryLayout<UInt16>.stride
     guard stride == 16,
           fractionStride == 4,
           bilinearStride == 6,
+          unormMipStride == 2,
           let output = device.makeBuffer(
             length: pairCount * stride,
             options: .storageModeShared),
@@ -553,6 +784,12 @@ private func run(outputDirectory: URL) throws {
             options: .storageModeShared),
           let bilinearOutput = device.makeBuffer(
             length: pairCount * bilinearStride,
+            options: .storageModeShared),
+          let unormBilinearOutput = device.makeBuffer(
+            length: pairCount * bilinearStride,
+            options: .storageModeShared),
+          let unormMipOutput = device.makeBuffer(
+            length: fractionRecordCount * unormMipStride,
             options: .storageModeShared),
           let commandBuffer = queue.makeCommandBuffer(),
           let encoder = commandBuffer.makeComputeCommandEncoder()
@@ -624,6 +861,60 @@ private func run(outputDirectory: URL) throws {
                 depth: 1))
     bilinearEncoder.endEncoding()
 
+    guard let unormBilinearEncoder =
+        commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource(
+            "unorm bilinear command encoder")
+    }
+    unormBilinearEncoder.setComputePipelineState(
+        unormBilinearPipeline)
+    unormBilinearEncoder.setTexture(
+        unormBilinearTexture,
+        index: 0)
+    unormBilinearEncoder.setSamplerState(sampler, index: 0)
+    unormBilinearEncoder.setBuffer(
+        unormBilinearOutput,
+        offset: 0,
+        index: 0)
+    let unormBilinearWidth =
+        unormBilinearPipeline.threadExecutionWidth
+    unormBilinearEncoder.dispatchThreads(
+        MTLSize(width: pairCount, height: 1, depth: 1),
+        threadsPerThreadgroup:
+            MTLSize(
+                width: unormBilinearWidth,
+                height: 1,
+                depth: 1))
+    unormBilinearEncoder.endEncoding()
+
+    guard let unormMipEncoder =
+        commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource("unorm mip command encoder")
+    }
+    unormMipEncoder.setComputePipelineState(
+        unormMipPipeline)
+    unormMipEncoder.setTexture(unormMipTexture, index: 0)
+    unormMipEncoder.setSamplerState(sampler, index: 0)
+    unormMipEncoder.setBuffer(
+        unormMipOutput,
+        offset: 0,
+        index: 0)
+    let unormMipWidth =
+        unormMipPipeline.threadExecutionWidth
+    unormMipEncoder.dispatchThreads(
+        MTLSize(
+            width: fractionRecordCount,
+            height: 1,
+            depth: 1),
+        threadsPerThreadgroup:
+            MTLSize(
+                width: unormMipWidth,
+                height: 1,
+                depth: 1))
+    unormMipEncoder.endEncoding()
+
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
@@ -656,9 +947,27 @@ private func run(outputDirectory: URL) throws {
     try bilinearBinary.write(
         to: bilinearBinaryURL,
         options: .atomic)
+    let unormBilinearBinary = Data(
+        bytes: unormBilinearOutput.contents(),
+        count: unormBilinearOutput.length)
+    let unormBilinearBinaryURL =
+        outputDirectory.appendingPathComponent(
+            "sampler-unorm-bilinear.bin")
+    try unormBilinearBinary.write(
+        to: unormBilinearBinaryURL,
+        options: .atomic)
+    let unormMipBinary = Data(
+        bytes: unormMipOutput.contents(),
+        count: unormMipOutput.length)
+    let unormMipBinaryURL =
+        outputDirectory.appendingPathComponent(
+            "sampler-unorm-mip-grid.bin")
+    try unormMipBinary.write(
+        to: unormMipBinaryURL,
+        options: .atomic)
     let manifest: [String: Any] = [
-        "schemaVersion": 3,
-        "rigVersion": "metal-sampler-probe-1.2.0",
+        "schemaVersion": 4,
+        "rigVersion": "metal-sampler-probe-1.3.0",
         "ciCommit":
             ProcessInfo.processInfo.environment["GITHUB_SHA"]
             ?? "local",
@@ -723,6 +1032,38 @@ private func run(outputDirectory: URL) throws {
                 "input_a_weight_3_of_16",
                 "input_a_weight_9_of_16",
             ],
+        ],
+        "unormBilinearGrid": [
+            "file": unormBilinearBinaryURL.lastPathComponent,
+            "fileBytes": unormBilinearBinary.count,
+            "fileSha256": sha256(unormBilinearBinary),
+            "recordCount": pairCount,
+            "recordOrder": "input_a major, input_b minor",
+            "recordStrideBytes": bilinearStride,
+            "recordFields": [
+                "input_a_weight_1_of_16",
+                "input_a_weight_3_of_16",
+                "input_a_weight_9_of_16",
+            ],
+            "texturePixelFormat": "rgba8Unorm",
+        ],
+        "unormMipGrid": [
+            "file": unormMipBinaryURL.lastPathComponent,
+            "fileBytes": unormMipBinary.count,
+            "fileSha256": sha256(unormMipBinary),
+            "fractionCount": fractionCount,
+            "fractions": "0/256 through 256/256 inclusive",
+            "recordCount": fractionRecordCount,
+            "recordOrder":
+                "fraction major, input_a major, input_b minor",
+            "recordStrideBytes": unormMipStride,
+            "recordFields": [
+                "rgba8_unorm_result",
+            ],
+            "levelZero":
+                "constant input_a 2x2 texel blocks",
+            "levelOne": "constant input_b texels",
+            "texturePixelFormat": "rgba8Unorm",
         ],
     ]
     let encoded = try JSONSerialization.data(

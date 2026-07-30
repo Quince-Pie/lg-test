@@ -643,6 +643,11 @@ fraction quantization directly instead of inferring either from rounded
 WindowServer pixels.
 The same probe exhausts the 1/16, 3/16, and 9/16 two-dimensional bilinear
 corner weights needed by the half-resolution backdrop reconstruction.
+Its third revision repeats those corner-weight measurements on native
+`rgba8Unorm` storage and exhausts all 257 LOD fractions for every pair of
+8-bit mip endpoints. This separates normalized-texture reconstruction from
+binary16 interpolation and tests trilinear mip arithmetic directly, without
+relying on rounded WindowServer captures.
 The focused native kernel mode complements the impulse sweep with sixteen
 96-pixel square steps spanning every phase of the first two reduced mip
 levels. Its red/blue positive and green negative channels capture the
