@@ -964,6 +964,112 @@ fragment uint4 glass_fragment_sdf_float_trace(
         packed_half);
 }
 
+fragment uint4 glass_fragment_sdf_geometry_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode != 4) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const float circle_constant =
+        replay_float_constant(0x3fc3ab4b);
+    const float circle_scale =
+        uniforms.sdf.arg2.z * circle_constant;
+    const float2 point = fabs(input.sdf_uv);
+    const float2 numerator =
+        point - uniforms.sdf.arg.xy + circle_scale;
+    const float2 normalized = max(
+        float2(0.0),
+        numerator / circle_scale);
+    return uint4(
+        as_type<uint>(numerator.x),
+        as_type<uint>(numerator.y),
+        as_type<uint>(normalized.x),
+        as_type<uint>(normalized.y));
+}
+
+fragment uint4 glass_fragment_sdf_oval_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode != 4) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const float circle_constant =
+        replay_float_constant(0x3fc3ab4b);
+    const float circle_scale =
+        uniforms.sdf.arg2.z * circle_constant;
+    const float2 point = fabs(input.sdf_uv);
+    const float2 normalized = max(
+        float2(0.0),
+        (point - uniforms.sdf.arg.xy + circle_scale)
+            / circle_scale);
+    const float2 oval_delta = max(
+        float2(0.0),
+        normalized * circle_constant
+            + replay_float_constant(0xbf075697));
+    const float oval_squared = dot(oval_delta, oval_delta);
+    return uint4(
+        as_type<uint>(oval_delta.x),
+        as_type<uint>(oval_delta.y),
+        as_type<uint>(oval_squared),
+        as_type<uint>(fast::sqrt(oval_squared)));
+}
+
+fragment uint4 glass_fragment_sdf_normal_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode != 4) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const float2 point = fabs(input.sdf_uv);
+    const float point_squared = dot(point, point);
+    const float inverse_length = fast::rsqrt(point_squared);
+    const float2 normal = point * inverse_length;
+    return uint4(
+        as_type<uint>(point_squared),
+        as_type<uint>(inverse_length),
+        as_type<uint>(normal.x),
+        as_type<uint>(normal.y));
+}
+
+fragment uint4 glass_fragment_sdf_coverage_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    if (mode < 0) {
+        discard_fragment();
+        return uint4(0);
+    }
+
+    const half4 sdf = replay_compute_sdf(
+        input.sdf_uv,
+        mode,
+        uniforms.sdf);
+    const half feather = max(
+        fwidth(sdf.x),
+        replay_epsilon());
+    const half quotient = -sdf.x / feather;
+    const half coverage = sdf.w * half(saturate(
+        float(quotient) + 0.5));
+    return uint4(
+        uint(as_type<ushort>(sdf.x)),
+        uint(as_type<ushort>(feather)),
+        uint(as_type<ushort>(quotient)),
+        uint(as_type<ushort>(coverage)));
+}
+
 fragment half4 glass_fragment_sample_trace(
     GlassReplayVertexOutput input [[stage_in]],
     texture2d<half, access::sample> source_texture [[texture(3)]],
@@ -4718,7 +4824,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 58,
+            "schemaVersion": 59,
             "capture": capture,
             "phase": phase,
         ]
@@ -4837,6 +4943,18 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customSDFFloatTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_sdf_float_trace"),
+              let customSDFGeometryTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_sdf_geometry_trace"),
+              let customSDFOvalTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_sdf_oval_trace"),
+              let customSDFNormalTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_sdf_normal_trace"),
+              let customSDFCoverageTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_sdf_coverage_trace"),
               let customSampleTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_sample_trace"),
@@ -4930,7 +5048,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 58,
+                    "schemaVersion": 59,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5008,6 +5126,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
             (
                 name: "sdf-float",
                 fragment: customSDFFloatTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "sdf-geometry",
+                fragment: customSDFGeometryTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "sdf-oval",
+                fragment: customSDFOvalTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "sdf-normal",
+                fragment: customSDFNormalTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "sdf-coverage",
+                fragment: customSDFCoverageTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba32Uint
             ),
             (
@@ -5320,7 +5458,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 58,
+                "schemaVersion": 59,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8562,7 +8700,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 58,
+                    "schemaVersion": 59,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8578,7 +8716,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 58,
+            "schemaVersion": 59,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

@@ -648,3 +648,35 @@ jobs:
         run: |
           test "${{ steps.build.outcome }}" = success
           test -s introspection/runtime.json
+          python3 - <<'PY'
+          import json
+          import pathlib
+
+          root = pathlib.Path("introspection")
+          with (root / "runtime.json").open(encoding="utf-8") as stream:
+              runtime = json.load(stream)
+          if runtime.get("schemaVersion") != 59:
+              raise SystemExit("introspection schema is not 59")
+
+          expected_sizes = {
+              "carenderer-live-tree-glass-sdf-numeric-trace-rgba16f.raw":
+                  1024 * 1024 * 8,
+              "carenderer-live-tree-glass-sdf-geometry-numeric-trace-rgba32ui.raw":
+                  1024 * 1024 * 16,
+              "carenderer-live-tree-glass-sdf-oval-numeric-trace-rgba32ui.raw":
+                  1024 * 1024 * 16,
+              "carenderer-live-tree-glass-sdf-normal-numeric-trace-rgba32ui.raw":
+                  1024 * 1024 * 16,
+              "carenderer-live-tree-glass-sdf-coverage-numeric-trace-rgba32ui.raw":
+                  1024 * 1024 * 16,
+          }
+          for name, expected_size in expected_sizes.items():
+              path = root / name
+              if not path.is_file():
+                  raise SystemExit(f"missing numeric trace: {name}")
+              if path.stat().st_size != expected_size:
+                  raise SystemExit(
+                      f"wrong numeric trace size for {name}: "
+                      f"{path.stat().st_size} != {expected_size}"
+                  )
+          PY

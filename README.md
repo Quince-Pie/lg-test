@@ -1130,6 +1130,16 @@ resulting weight dot product rounds once to 1/16 code with ties upward before
 the binary16 conversion. That rule is exact for all 17,039,360 standalone
 values and all 15,360,000 active compositor values across the four original
 held-out textures and both independent corner-basis textures.
+Schema 59 localizes the remaining portable SDF arithmetic without replacing
+the accepted image or final numeric gates. Four RGBA32Uint traces retain the
+exact float32 bits around the production mode-four path: pre-division
+numerators and normalized coordinates; oval components, dot product, and
+fast square root; radial dot product, fast reciprocal square root, and
+components; and the packed binary16 distance, derivative feather, quotient,
+and coverage. The existing SDF half trace must remain byte-identical before
+these materialized intermediates are accepted. This separates Apple GPU
+fast divide/square-root behavior from half conversion and quad derivatives
+instead of fitting one aggregate correction to the final pixels.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
