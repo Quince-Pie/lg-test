@@ -686,6 +686,13 @@ private typealias MetalSetFragmentTextureFunction =
         AnyObject?,
         Int
     ) -> Void
+private typealias MetalSetFragmentSamplerStateFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        AnyObject?,
+        Int
+    ) -> Void
 
 private func probeSetRenderPipelineState(
     _ encoder: AnyObject,
@@ -758,13 +765,40 @@ private func probeSetFragmentTexture(
         index: index)
 }
 
+private func probeSetFragmentSamplerState(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ sampler: AnyObject?,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordFragmentSamplerState(
+        encoder: encoder,
+        sampler: sampler,
+        index: index)
+    MetalUniformProbe.shared.forwardFragmentSamplerState(
+        encoder: encoder,
+        selector: selector,
+        sampler: sampler,
+        index: index)
+}
+
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
         let capture: String
         let sequence: Int
         let index: Int
         let pipeline: [String: Any]
+        let encoder: ObjectIdentifier
         let texture: MTLTexture
+    }
+
+    private struct SamplerBinding {
+        let capture: String
+        let sequence: Int
+        let index: Int
+        let pipeline: [String: Any]
+        let encoder: ObjectIdentifier
+        let sampler: MTLSamplerState
     }
 
     static let shared = MetalUniformProbe()
@@ -773,6 +807,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var captureName: String?
     private var records: [[String: Any]] = []
     private var textureBindings: [TextureBinding] = []
+    private var samplerBindings: [SamplerBinding] = []
     private var droppedRecordCount = 0
     private var pipelineRecords: [ObjectIdentifier: [String: Any]] = [:]
     private var originalPipelineState:
@@ -783,6 +818,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         MetalSetFragmentBufferFunction?
     private var originalFragmentTexture:
         MetalSetFragmentTextureFunction?
+    private var originalFragmentSamplerState:
+        MetalSetFragmentSamplerStateFunction?
     private let maximumRecordCount = 16_384
     private let maximumCapturedBytes = 512
     private let textureCaptureNames = Set([
@@ -951,11 +988,42 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ])
         }
 
+        let samplerSelector = NSSelectorFromString(
+            "setFragmentSamplerState:atIndex:")
+        if let method = class_getInstanceMethod(
+            encoderClass,
+            samplerSelector)
+        {
+            let original = method_getImplementation(method)
+            originalFragmentSamplerState = unsafeBitCast(
+                original,
+                to: MetalSetFragmentSamplerStateFunction.self)
+            let replacement = unsafeBitCast(
+                probeSetFragmentSamplerState
+                    as MetalSetFragmentSamplerStateFunction,
+                to: IMP.self)
+            let added = class_addMethod(
+                encoderClass,
+                samplerSelector,
+                replacement,
+                method_getTypeEncoding(method))
+            if !added {
+                method_setImplementation(method, replacement)
+            }
+            methods.append([
+                "selector": NSStringFromSelector(samplerSelector),
+                "installedAsSubclassOverride": added,
+                "typeEncoding": method_getTypeEncoding(method).map {
+                    String(cString: $0)
+                } ?? "",
+            ])
+        }
+
         encoder.endEncoding()
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         return [
-            "installed": methods.count == 4,
+            "installed": methods.count == 5,
             "encoderClass": NSStringFromClass(encoderClass),
             "methods": methods,
         ]
@@ -1138,6 +1206,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     sequence: records.count,
                     index: index,
                     pipeline: encoderPipeline(encoder),
+                    encoder: ObjectIdentifier(encoder),
                     texture: metalTexture))
             }
         } else if texture == nil {
@@ -1145,6 +1214,47 @@ private final class MetalUniformProbe: @unchecked Sendable {
         } else {
             record["textureClass"] =
                 String(reflecting: type(of: texture!))
+        }
+        appendRecord(record)
+    }
+
+    func recordFragmentSamplerState(
+        encoder: AnyObject,
+        sampler: AnyObject?,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "sampler",
+            "index": index,
+            "pipeline": encoderPipeline(encoder),
+        ]
+        if let metalSampler = sampler as? MTLSamplerState {
+            record["samplerClass"] =
+                String(reflecting: type(of: metalSampler))
+            record["address"] = String(
+                format: "0x%016llx",
+                UInt64(UInt(bitPattern: Unmanaged
+                    .passUnretained(metalSampler as AnyObject)
+                    .toOpaque())))
+            if let label = metalSampler.label {
+                record["label"] = label
+            }
+            samplerBindings.append(SamplerBinding(
+                capture: captureName,
+                sequence: records.count,
+                index: index,
+                pipeline: encoderPipeline(encoder),
+                encoder: ObjectIdentifier(encoder),
+                sampler: metalSampler))
+        } else if sampler == nil {
+            record["sampler"] = "nil"
+        } else {
+            record["samplerClass"] =
+                String(reflecting: type(of: sampler!))
         }
         appendRecord(record)
     }
@@ -1176,6 +1286,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
     ) -> [String: Any] {
         lock.lock()
         let bindings = textureBindings.filter {
+            $0.capture == capture
+        }
+        let samplers = samplerBindings.filter {
             $0.capture == capture
         }
         lock.unlock()
@@ -1310,12 +1423,30 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         .contains("_Tdgg") ?? false)
             }
             if let baseBinding, let blurredBinding {
+                let exactSampler = samplers
+                    .filter {
+                        $0.index == 0
+                            && $0.encoder == baseBinding.encoder
+                    }
+                    .min {
+                        abs($0.sequence - baseBinding.sequence)
+                            < abs($1.sequence - baseBinding.sequence)
+                    }
                 do {
                     result["stageTrace"] = try writeSDFStageEvidence(
                         device: baseBinding.texture.device,
                         baseField: baseBinding.texture,
                         blurredField: blurredBinding.texture,
+                        blurSampler: exactSampler?.sampler,
                         outputDirectory: outputDirectory)
+                    result["stageTraceSamplerSelection"] = [
+                        "capturedSamplerCount": samplers.count,
+                        "matchedExactSampler":
+                            exactSampler != nil,
+                        "sequence": exactSampler?.sequence ?? -1,
+                        "pipeline":
+                            exactSampler?.pipeline ?? [:],
+                    ]
                 } catch {
                     result["stageTrace"] = [
                         "error": error.localizedDescription,
@@ -1382,6 +1513,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
             encoder,
             selector,
             texture,
+            index)
+    }
+
+    func forwardFragmentSamplerState(
+        encoder: AnyObject,
+        selector: Selector,
+        sampler: AnyObject?,
+        index: Int
+    ) {
+        guard let originalFragmentSamplerState else { return }
+        originalFragmentSamplerState(
+            encoder,
+            selector,
+            sampler,
             index)
     }
 
@@ -2464,7 +2609,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 24,
+                    "schemaVersion": 25,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2480,7 +2625,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 24,
+            "schemaVersion": 25,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

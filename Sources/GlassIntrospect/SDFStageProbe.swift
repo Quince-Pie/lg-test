@@ -14,6 +14,11 @@ struct SDFStageVertexOutput {
     float4 position [[position]];
 };
 
+struct SDFPrivateBlurVertexOutput {
+    float4 position [[position]];
+    float2 texcoord [[user(texcoord0)]];
+};
+
 vertex SDFStageVertexOutput sdf_blur_vertex(
     uint vertex_id [[vertex_id]])
 {
@@ -24,6 +29,24 @@ vertex SDFStageVertexOutput sdf_blur_vertex(
     };
     SDFStageVertexOutput output;
     output.position = float4(positions[vertex_id], 0.0, 1.0);
+    return output;
+}
+
+vertex SDFPrivateBlurVertexOutput sdf_private_blur_vertex(
+    uint vertex_id [[vertex_id]])
+{
+    const float2 positions[3] = {
+        float2(-1.0, -1.0),
+        float2(3.0, -1.0),
+        float2(-1.0, 3.0),
+    };
+    const float2 position = positions[vertex_id];
+    const float2 raster_position =
+        (position * 0.5 + 0.5) * float2(blur_width);
+    SDFPrivateBlurVertexOutput output;
+    output.position = float4(position, 0.0, 1.0);
+    output.texcoord =
+        (raster_position - float2(10.0)) / float2(384.0);
     return output;
 }
 
@@ -224,6 +247,7 @@ func writeSDFStageEvidence(
     device: MTLDevice,
     baseField: MTLTexture,
     blurredField: MTLTexture,
+    blurSampler: MTLSamplerState?,
     outputDirectory: URL
 ) throws -> [String: Any] {
     let options = MTLCompileOptions()
@@ -237,6 +261,8 @@ func writeSDFStageEvidence(
               name: "sdf_gradient_trace"),
           let blurVertexFunction = library.makeFunction(
               name: "sdf_blur_vertex"),
+          let privateBlurVertexFunction = library.makeFunction(
+              name: "sdf_private_blur_vertex"),
           let blurFragmentFunction = library.makeFunction(
               name: "sdf_blur_fragment")
     else {
@@ -253,6 +279,33 @@ func writeSDFStageEvidence(
         .rgba16Float
     let blurRenderPipeline = try device.makeRenderPipelineState(
         descriptor: blurRenderDescriptor)
+    var privateBlurRenderPipeline: MTLRenderPipelineState?
+    var privateBlurPipelineError: String?
+    do {
+        let quartzCoreLibraryURL = URL(
+            fileURLWithPath:
+                "/System/Library/Frameworks/QuartzCore.framework"
+                + "/Versions/A/Resources/default.metallib")
+        let quartzCoreLibrary = try device.makeLibrary(
+            URL: quartzCoreLibraryURL)
+        guard let privateBlurFragmentFunction =
+            quartzCoreLibrary.makeFunction(
+                name: "narrow_blur_19_frag_lph")
+        else {
+            throw sdfProbeError(
+                2,
+                "private narrow-blur function is unavailable")
+        }
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.vertexFunction = privateBlurVertexFunction
+        descriptor.fragmentFunction = privateBlurFragmentFunction
+        descriptor.colorAttachments[0].pixelFormat = .rgba16Float
+        privateBlurRenderPipeline =
+            try device.makeRenderPipelineState(
+                descriptor: descriptor)
+    } catch {
+        privateBlurPipelineError = error.localizedDescription
+    }
 
     let horizontalOffsets: [SIMD2<Float>] = [
         SIMD2(
@@ -314,6 +367,8 @@ func writeSDFStageEvidence(
     samplerDescriptor.mipFilter = .notMipmapped
     samplerDescriptor.sAddressMode = .clampToEdge
     samplerDescriptor.tAddressMode = .clampToEdge
+    let privateUniformByteCount = 88
+    let edrScaleBits: [UInt16] = [0x3c00]
 
     guard let offsetBuffer = device.makeBuffer(
         bytes: horizontalOffsets,
@@ -341,13 +396,42 @@ func writeSDFStageEvidence(
         let blurReplayOutput = device.makeBuffer(
             length: blurReplayBufferBytes,
             options: .storageModeShared),
-        let blurReplaySampler = device.makeSamplerState(
+        let fallbackBlurSampler = device.makeSamplerState(
             descriptor: samplerDescriptor),
+        let privateUniformBuffer = device.makeBuffer(
+            length: privateUniformByteCount,
+            options: .storageModeShared),
+        let edrScaleBuffer = device.makeBuffer(
+            bytes: edrScaleBits,
+            length: MemoryLayout<UInt16>.stride,
+            options: .storageModeShared),
+        let privateBlurReplayTexture = device.makeTexture(
+            descriptor: blurReplayTextureDescriptor),
+        let privateBlurReplayOutput = device.makeBuffer(
+            length: blurReplayBufferBytes,
+            options: .storageModeShared),
         let queue = device.makeCommandQueue(),
         let commandBuffer = queue.makeCommandBuffer(),
         let encoder = commandBuffer.makeComputeCommandEncoder()
     else {
         throw sdfProbeError(2, "SDF stage command is unavailable")
+    }
+    let replaySampler = blurSampler ?? fallbackBlurSampler
+    memset(
+        privateUniformBuffer.contents(),
+        0,
+        privateUniformByteCount)
+    horizontalOffsets.withUnsafeBytes {
+        privateUniformBuffer.contents().copyMemory(
+            from: $0.baseAddress!,
+            byteCount: $0.count)
+    }
+    weightBits.withUnsafeBytes {
+        privateUniformBuffer.contents().advanced(
+            by: 64
+        ).copyMemory(
+            from: $0.baseAddress!,
+            byteCount: $0.count)
     }
 
     encoder.setComputePipelineState(blurPipeline)
@@ -384,7 +468,7 @@ func writeSDFStageEvidence(
     renderEncoder.setRenderPipelineState(blurRenderPipeline)
     renderEncoder.setFragmentTexture(baseField, index: 0)
     renderEncoder.setFragmentSamplerState(
-        blurReplaySampler,
+        replaySampler,
         index: 0)
     renderEncoder.setFragmentBuffer(offsetBuffer, offset: 0, index: 0)
     renderEncoder.setFragmentBuffer(weightBuffer, offset: 0, index: 1)
@@ -394,8 +478,45 @@ func writeSDFStageEvidence(
         vertexCount: 3)
     renderEncoder.endEncoding()
 
+    if let privateBlurRenderPipeline {
+        let privateRenderPass = MTLRenderPassDescriptor()
+        privateRenderPass.colorAttachments[0].texture =
+            privateBlurReplayTexture
+        privateRenderPass.colorAttachments[0].loadAction = .clear
+        privateRenderPass.colorAttachments[0].storeAction = .store
+        privateRenderPass.colorAttachments[0].clearColor =
+            MTLClearColorMake(0, 0, 0, 0)
+        guard let privateRenderEncoder =
+            commandBuffer.makeRenderCommandEncoder(
+                descriptor: privateRenderPass)
+        else {
+            throw sdfProbeError(
+                4,
+                "private SDF blur render encoder unavailable")
+        }
+        privateRenderEncoder.setRenderPipelineState(
+            privateBlurRenderPipeline)
+        privateRenderEncoder.setFragmentTexture(baseField, index: 3)
+        privateRenderEncoder.setFragmentSamplerState(
+            replaySampler,
+            index: 0)
+        privateRenderEncoder.setFragmentBuffer(
+            privateUniformBuffer,
+            offset: 0,
+            index: 1)
+        privateRenderEncoder.setFragmentBuffer(
+            edrScaleBuffer,
+            offset: 0,
+            index: 6)
+        privateRenderEncoder.drawPrimitives(
+            type: .triangle,
+            vertexStart: 0,
+            vertexCount: 3)
+        privateRenderEncoder.endEncoding()
+    }
+
     guard let blit = commandBuffer.makeBlitCommandEncoder() else {
-        throw sdfProbeError(4, "SDF blur replay blit unavailable")
+        throw sdfProbeError(5, "SDF blur replay blit unavailable")
     }
     blit.copy(
         from: blurReplayTexture,
@@ -410,12 +531,27 @@ func writeSDFStageEvidence(
         destinationOffset: 0,
         destinationBytesPerRow: blurReplayAlignedBytesPerRow,
         destinationBytesPerImage: blurReplayBufferBytes)
+    if privateBlurRenderPipeline != nil {
+        blit.copy(
+            from: privateBlurReplayTexture,
+            sourceSlice: 0,
+            sourceLevel: 0,
+            sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+            sourceSize: MTLSize(
+                width: blurSide,
+                height: blurSide,
+                depth: 1),
+            to: privateBlurReplayOutput,
+            destinationOffset: 0,
+            destinationBytesPerRow: blurReplayAlignedBytesPerRow,
+            destinationBytesPerImage: blurReplayBufferBytes)
+    }
     blit.endEncoding()
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
         throw commandBuffer.error
-            ?? sdfProbeError(5, "SDF stage command failed")
+            ?? sdfProbeError(6, "SDF stage command failed")
     }
 
     let blurFilename = "sdf-stage-blur-trace.bin"
@@ -424,6 +560,8 @@ func writeSDFStageEvidence(
     let gradientHalfFilename =
         "sdf-stage-gradient-half-trace.bin"
     let blurReplayFilename = "sdf-stage-blur-fragment.raw"
+    let privateBlurReplayFilename =
+        "sdf-stage-blur-private-fragment.raw"
     try Data(
         bytes: blurOutput.contents(),
         count: blurOutputBytes
@@ -456,9 +594,46 @@ func writeSDFStageEvidence(
         to: outputDirectory.appendingPathComponent(
             blurReplayFilename),
         options: .atomic)
+    var privateBlurReplayData: Data?
+    if privateBlurRenderPipeline != nil {
+        var data = Data(
+            capacity: blurReplayTightBytesPerRow * blurSide)
+        for row in 0..<blurSide {
+            data.append(Data(
+                bytes: privateBlurReplayOutput.contents().advanced(
+                    by: row * blurReplayAlignedBytesPerRow),
+                count: blurReplayTightBytesPerRow))
+        }
+        try data.write(
+            to: outputDirectory.appendingPathComponent(
+                privateBlurReplayFilename),
+            options: .atomic)
+        privateBlurReplayData = data
+    }
+
+    var privateBlurReplayReport: [String: Any] = [
+        "available": privateBlurRenderPipeline != nil,
+    ]
+    if let privateBlurReplayData {
+        privateBlurReplayReport.merge([
+            "width": blurSide,
+            "height": blurSide,
+            "pixelFormat": MTLPixelFormat.rgba16Float.rawValue,
+            "bytesPerRow": blurReplayTightBytesPerRow,
+            "outputFile": privateBlurReplayFilename,
+            "outputBytes": privateBlurReplayData.count,
+            "function": "narrow_blur_19_frag_lph",
+            "uniformBytes": privateUniformByteCount,
+            "edrScaleHalfBits": "3c00",
+        ]) { _, new in new }
+    }
+    if let privateBlurPipelineError {
+        privateBlurReplayReport["error"] =
+            privateBlurPipelineError
+    }
 
     return [
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "metalFastMathEnabled": options.fastMathEnabled,
         "baseField": [
             "width": baseField.width,
@@ -490,6 +665,10 @@ func writeSDFStageEvidence(
             "bytesPerRow": blurReplayTightBytesPerRow,
             "outputFile": blurReplayFilename,
             "outputBytes": blurReplayData.count,
+            "samplerSource":
+                blurSampler == nil
+                    ? "constructed-linear-clamp"
+                    : "captured-native-state",
             "sampler": [
                 "normalizedCoordinates": true,
                 "minFilter": MTLSamplerMinMagFilter.linear.rawValue,
@@ -501,6 +680,7 @@ func writeSDFStageEvidence(
                     MTLSamplerAddressMode.clampToEdge.rawValue,
             ],
         ],
+        "privateBlurFragmentReplay": privateBlurReplayReport,
         "gradientFloatTrace": [
             "width": gradientSide,
             "height": gradientSide,

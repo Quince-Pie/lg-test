@@ -793,6 +793,12 @@ linear, clamp-to-edge sampling. Its coordinate map, packed arithmetic, and
 render-target conversion mirror the private `narrow_blur_19_frag_lph` stage,
 so its raw 404-by-404 surface distinguishes fragment-backend behavior from the
 compute trace without using the captured Apple output as an input.
+Schema 25 intercepts the native fragment sampler object and reuses that exact
+state in the replay. It also links Apple's exported
+`narrow_blur_19_frag_lph` function from the installed QuartzCore Metal library
+to a diagnostic vertex stage and supplies the captured uniform layout. The
+paired public-source and private-function surfaces isolate sampler,
+interpolation, and compiler arithmetic without approximating Apple pixels.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
