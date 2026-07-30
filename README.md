@@ -1155,6 +1155,14 @@ pipeline and this trace call the same inlined implementation, and every prior
 image comparison remains mandatory. This single boundary observation
 distinguishes shader arithmetic from Metal/OpenGL UNORM blend rounding without
 weakening any existing gate.
+Schema 61 packs the remaining color path into two RGBA32Uint traces without
+materializing any new arithmetic in the accepted output. The first preserves
+the binary16 source-color division and face-matrix result; the second
+preserves the pre-holding composite and post-holding value. The existing final
+trace then isolates clamp/EDR arithmetic. All three trace fragments and the
+accepted profile fragment call one shared inlined stage function, while the
+full Apple comparison still rejects any instrumentation-induced optimizer
+change.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

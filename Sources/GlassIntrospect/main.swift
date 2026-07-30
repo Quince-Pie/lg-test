@@ -672,13 +672,27 @@ inline half4 replay_shadow_layer(
     return shadow_color * half4(shadow_alpha);
 }
 
-inline half4 replay_profile_fragment(
+struct ReplayProfileStages {
+    half4 source;
+    half4 face;
+    half4 composite;
+    half4 holding;
+    half4 final_color;
+};
+
+inline ReplayProfileStages replay_profile_stages(
     GlassReplayVertexOutput input,
     texture2d<half, access::sample> source_texture,
     constant ReplayGlassBackgroundUniformsSdf &uniforms,
     constant half &edr_scale)
 {
     const int mode = int(uniforms.sdf.arg.z);
+    ReplayProfileStages stages;
+    stages.source = half4(0.0);
+    stages.face = half4(0.0);
+    stages.composite = half4(0.0);
+    stages.holding = half4(0.0);
+    stages.final_color = half4(0.0);
 
     half distance = half(0.0);
     float2 normal = float2(0.0);
@@ -724,7 +738,7 @@ inline half4 replay_profile_fragment(
         && coverage == half(0.0))
     {
         discard_fragment();
-        return half4(0.0);
+        return stages;
     }
     const half4 shadow_layer =
         coverage < half(1.0)
@@ -750,6 +764,7 @@ inline half4 replay_profile_fragment(
             replay_epsilon());
         const half3 source_color =
             sampled.rgb / sample_alpha;
+        stages.source = half4(source_color, sampled.a);
         face = half4(source_color, half(1.0));
 
         if (uniforms.glass.face_opacity > half(0.0)) {
@@ -772,6 +787,7 @@ inline half4 replay_profile_fragment(
                     half3(uniforms.glass.face_opacity));
         }
     }
+    stages.face = face;
 
     half4 composite =
         uniforms.glass.x86_workaround != half(0.0)
@@ -783,6 +799,7 @@ inline half4 replay_profile_fragment(
             shadow_layer,
             face,
             half4(coverage));
+    stages.composite = composite;
 
     if (uniforms.glass.holding_tone_opacity > half(0.0)) {
         half holding_distance;
@@ -824,6 +841,7 @@ inline half4 replay_profile_fragment(
                 holding,
                 half4(amount));
     }
+    stages.holding = composite;
 
     if (uniforms.glass.clamp_limit > half(0.0)) {
         const half alpha = max(
@@ -848,7 +866,8 @@ inline half4 replay_profile_fragment(
     }
 
     composite.rgb *= half3(edr_scale);
-    return composite;
+    stages.final_color = composite;
+    return stages;
 }
 
 fragment half4 glass_fragment_profile_replay(
@@ -857,11 +876,12 @@ fragment half4 glass_fragment_profile_replay(
     constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
     constant half &edr_scale [[buffer(6)]])
 {
-    return replay_profile_fragment(
+    const ReplayProfileStages stages = replay_profile_stages(
         input,
         source_texture,
         uniforms,
         edr_scale);
+    return stages.final_color;
 }
 
 fragment half4 glass_fragment_final_color_trace(
@@ -874,11 +894,66 @@ fragment half4 glass_fragment_final_color_trace(
         discard_fragment();
         return half4(0.0);
     }
-    return replay_profile_fragment(
+    const ReplayProfileStages stages = replay_profile_stages(
         input,
         source_texture,
         uniforms,
         edr_scale);
+    return stages.final_color;
+}
+
+inline uint replay_pack_half_pair(half first, half second)
+{
+    return uint(as_type<ushort>(first))
+        | (uint(as_type<ushort>(second)) << 16);
+}
+
+fragment uint4 glass_fragment_color_stages_a_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return uint4(0);
+    }
+    const ReplayProfileStages stages = replay_profile_stages(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale);
+    return uint4(
+        replay_pack_half_pair(stages.source.r, stages.source.g),
+        replay_pack_half_pair(stages.source.b, stages.source.a),
+        replay_pack_half_pair(stages.face.r, stages.face.g),
+        replay_pack_half_pair(stages.face.b, stages.face.a));
+}
+
+fragment uint4 glass_fragment_color_stages_b_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return uint4(0);
+    }
+    const ReplayProfileStages stages = replay_profile_stages(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale);
+    return uint4(
+        replay_pack_half_pair(
+            stages.composite.r,
+            stages.composite.g),
+        replay_pack_half_pair(
+            stages.composite.b,
+            stages.composite.a),
+        replay_pack_half_pair(stages.holding.r, stages.holding.g),
+        replay_pack_half_pair(stages.holding.b, stages.holding.a));
 }
 
 fragment half4 glass_fragment_sdf_trace(
@@ -4854,7 +4929,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 60,
+            "schemaVersion": 61,
             "capture": capture,
             "phase": phase,
         ]
@@ -4964,6 +5039,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customFinalColorTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_final_color_trace"),
+              let customColorStagesATraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_color_stages_a_trace"),
+              let customColorStagesBTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_color_stages_b_trace"),
               let customSDFTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_sdf_trace"),
@@ -5081,7 +5162,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 60,
+                    "schemaVersion": 61,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5145,6 +5226,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 name: "final-color",
                 fragment: customFinalColorTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "color-stages-a",
+                fragment: customColorStagesATraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "color-stages-b",
+                fragment: customColorStagesBTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
             ),
             (
                 name: "sdf",
@@ -5496,7 +5587,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 60,
+                "schemaVersion": 61,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8738,7 +8829,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 60,
+                    "schemaVersion": 61,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8754,7 +8845,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 60,
+            "schemaVersion": 61,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
