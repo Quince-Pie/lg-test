@@ -77,6 +77,7 @@ private enum LodSweepMode: Equatable {
     case flatProfile
     case fixedResource
     case sdfScale
+    case pinnedSdfScale
 }
 
 private struct LodCaptureState {
@@ -967,7 +968,8 @@ private let sdfScaleResourceRadius: Float = 4
 
 private func sdfScaleCaptureState(
     numerator: Int,
-    index: Int
+    index: Int,
+    pinnedPyramid: Bool
 ) -> LodCaptureState {
     let scale =
         Float(numerator) / Float(sdfScaleDenominator)
@@ -975,60 +977,96 @@ private func sdfScaleCaptureState(
         sdfScaleResourceRadius * scale
     let halfBits = UInt16(0x3400 + numerator)
     let name = String(
-        format: "sdf-scale-half-%04x",
+        format: pinnedPyramid
+            ? "pinned-sdf-scale-half-%04x"
+            : "sdf-scale-half-%04x",
         halfBits)
+    let blurValues: [(key: String, value: NSNumber)]
+    if pinnedPyramid {
+        blurValues = [
+            ("inputBlurOpacity0", NSNumber(value: scale)),
+            ("inputBlurOpacity1", NSNumber(value: scale)),
+            ("inputBlurOpacity2", NSNumber(value: Float(1))),
+            ("inputBlurOpacity3", NSNumber(value: Float(1))),
+            ("inputBlurOpacity4", NSNumber(value: Float(1))),
+            ("inputBlurDistance0", NSNumber(value: Float(-400))),
+            ("inputBlurDistance1", NSNumber(value: Float(-1))),
+            ("inputBlurDistance2", NSNumber(value: Float(0))),
+            ("inputBlurDistance3", NSNumber(value: Float(0))),
+            ("inputBlurDistance4", NSNumber(value: Float(0))),
+            (
+                "inputInnerRefractionAmount",
+                NSNumber(value: Float(-60))
+            ),
+            (
+                "inputOuterRefractionAmount",
+                NSNumber(value: Float(160))
+            ),
+            (
+                "inputRefractionOpacity",
+                NSNumber(value: Float(0))
+            ),
+        ]
+    } else {
+        blurValues = constantBlurProfileValues(scale: scale)
+    }
     let values =
         identityValues
-        + constantBlurProfileValues(scale: scale)
+        + blurValues
         + [
             (
                 "inputBlurRadius",
                 NSNumber(value: sdfScaleResourceRadius)
             ),
         ]
+    var manifest: [String: Any] = [
+        "index": index,
+        "name": name,
+        "resourceBlurRadius":
+            Double(sdfScaleResourceRadius),
+        "resourceBlurRadiusFloat32Bits": String(
+            format: "%08x",
+            sdfScaleResourceRadius.bitPattern),
+        "constantBlurOpacityScale": Double(scale),
+        "constantBlurOpacityScaleFloat32Bits": String(
+            format: "%08x",
+            scale.bitPattern),
+        "constantBlurOpacityScaleFloat16Bits": String(
+            format: "%04x",
+            halfBits),
+        "constantBlurOpacityScaleNumerator":
+            numerator,
+        "constantBlurOpacityScaleDenominator":
+            sdfScaleDenominator,
+        "targetEffectiveBlurRadius":
+            Double(effectiveRadius),
+        "targetEffectiveBlurRadiusFloat32Bits": String(
+            format: "%08x",
+            effectiveRadius.bitPattern),
+        "productionScale":
+            numerator == sdfScaleDenominator,
+    ]
+    if pinnedPyramid {
+        manifest["pinnedPyramidProfile"] = true
+    }
     return LodCaptureState(
         name: name,
         targetNumerator: -1,
         productionRadius: numerator == sdfScaleDenominator,
         values: values,
-        manifest: [
-            "index": index,
-            "name": name,
-            "resourceBlurRadius":
-                Double(sdfScaleResourceRadius),
-            "resourceBlurRadiusFloat32Bits": String(
-                format: "%08x",
-                sdfScaleResourceRadius.bitPattern),
-            "constantBlurOpacityScale": Double(scale),
-            "constantBlurOpacityScaleFloat32Bits": String(
-                format: "%08x",
-                scale.bitPattern),
-            "constantBlurOpacityScaleFloat16Bits": String(
-                format: "%04x",
-                halfBits),
-            "constantBlurOpacityScaleNumerator":
-                numerator,
-            "constantBlurOpacityScaleDenominator":
-                sdfScaleDenominator,
-            "targetEffectiveBlurRadius":
-                Double(effectiveRadius),
-            "targetEffectiveBlurRadiusFloat32Bits": String(
-                format: "%08x",
-                effectiveRadius.bitPattern),
-            "productionScale":
-                numerator == sdfScaleDenominator,
-        ])
+        manifest: manifest)
 }
 
 private func lodCaptureStates(
     mode: LodSweepMode
 ) -> [LodCaptureState] {
-    if mode == .sdfScale {
+    if mode == .sdfScale || mode == .pinnedSdfScale {
         return sdfScaleNumeratorRange.enumerated().map {
             index, numerator in
             sdfScaleCaptureState(
                 numerator: numerator,
-                index: index)
+                index: index,
+                pinnedPyramid: mode == .pinnedSdfScale)
         }
     }
     if mode != .fixedResource {
@@ -1966,6 +2004,8 @@ private final class SpatialSweepDelegate:
             streamPrefix = "native-fixed-resource-lod"
         case .sdfScale:
             streamPrefix = "native-sdf-scale"
+        case .pinnedSdfScale:
+            streamPrefix = "native-pinned-sdf-scale"
         }
         let controlURL = outputDirectory
             .appendingPathComponent(
@@ -2005,6 +2045,7 @@ private final class SpatialSweepDelegate:
                 (
                     mode == .fixedResource
                     || mode == .sdfScale
+                    || mode == .pinnedSdfScale
                 )
                 ? streamPrefix
                 : "native-lod"
@@ -2119,6 +2160,30 @@ private final class SpatialSweepDelegate:
                 "constantBlurOpacityScaleFloat16BitsRangeInclusive":
                     ["3a66", "3c00"],
             ]
+        case .pinnedSdfScale:
+            rigVersion =
+                "native-pinned-sdf-scale-sweep-1.0.0"
+            sweepKind =
+                "exhaustive-binary16-interior-scale-"
+                + "pinned-profile-curve"
+            lodDesign = [
+                "states": captureStates.map(\.manifest),
+                "resourceBlurRadius":
+                    sdfScaleResourceRadius,
+                "constantInteriorBlurOpacityScaleNumeratorRangeInclusive":
+                    [
+                        sdfScaleNumeratorRange.lowerBound,
+                        sdfScaleNumeratorRange.upperBound,
+                    ],
+                "constantInteriorBlurOpacityScaleDenominator":
+                    sdfScaleDenominator,
+                "constantInteriorBlurOpacityScaleFloat16BitsRangeInclusive":
+                    ["3a66", "3c00"],
+                "activeInteriorOpacityIndices": [0, 1],
+                "pinnedOpacityIndices": [2, 3, 4],
+                "pinnedOpacity": 1,
+                "blurDistances": [-400, -1, 0, 0, 0],
+            ]
         }
         let report: [String: Any] = [
             "schemaVersion": 1,
@@ -2212,6 +2277,22 @@ private final class SpatialSweepDelegate:
                     "inputBlurOpacity0Through4":
                         "all enumerate every binary16 value "
                         + "from 0x3a66 through 0x3c00",
+                    "inputInnerRefractionAmount": -60,
+                    "inputOuterRefractionAmount": 160,
+                    "inputRefractionOpacity": 0,
+                ]
+                : NSNull(),
+            "pinnedSdfScaleInputs":
+                mode == .pinnedSdfScale
+                ? [
+                    "inputBlurRadius":
+                        sdfScaleResourceRadius,
+                    "inputBlurOpacity0And1":
+                        "both enumerate every binary16 value "
+                        + "from 0x3a66 through 0x3c00",
+                    "inputBlurOpacity2Through4": 1,
+                    "inputBlurDistance0Through4":
+                        [-400, -1, 0, 0, 0],
                     "inputInnerRefractionAmount": -60,
                     "inputOuterRefractionAmount": 160,
                     "inputRefractionOpacity": 0,
@@ -2674,6 +2755,14 @@ private final class SpatialSweepDelegate:
                 try await runLodSweep(
                     workspace: workspace,
                     mode: .sdfScale)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--pinned-sdf-scale")
+            {
+                try await runLodSweep(
+                    workspace: workspace,
+                    mode: .pinnedSdfScale)
                 return
             }
             if CommandLine.arguments.dropFirst(2)

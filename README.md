@@ -1113,9 +1113,19 @@ identification modes for the private clear-material mip path:
 - `--sdf-scale` holds requested blur radius at four and enumerates every
   binary16 opacity scale from `0x3a66` (`1638/2048`) through `0x3c00`
   (`1`). All five blur opacities receive the same exact value, with the live
-  refraction inputs otherwise preserved. This exhaustive catalog inverts the
-  default profile at half-float precision and can therefore test the analytic
-  SDF-to-scale arithmetic without fitting a smooth approximation.
+  refraction inputs otherwise preserved. This is an exhaustive
+  response-equivalence catalog. The radius-one fixed-resource comparison
+  proved that changing all five opacities can rebuild the upstream source
+  path, so this mode alone is not a frozen-pyramid measurement of the
+  internal SDF scale.
+- `--pinned-sdf-scale` repeats the same 411 binary16 values only on blur
+  opacities zero and one, the two endpoints spanning every protected
+  deep-interior SDF sample. Opacities two through four stay at one and all
+  five live blur distances are explicitly pinned to `[-400, -1, 0, 0, 0]`.
+  This preserves a radius-four maximum profile while making the measured
+  interval spatially constant. Comparing it bit-for-bit with `--sdf-scale`
+  separates local SDF/LOD arithmetic from opacity-dependent upstream
+  resource generation.
 
 ## What happens after capture
 
