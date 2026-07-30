@@ -930,6 +930,18 @@ tests, in order: an untouched descriptor rebuild, a freshly loaded no-bleed
 fragment, a freshly loaded SDF vertex, both freshly loaded Apple functions,
 and finally the custom raw vertex. Each successful prefix is compared with
 the captured Apple prefix before the next candidate is submitted.
+Run `30538637620` proved the first four candidates are independently executable:
+each reproduced all 4,194,304 reference bytes with zero mismatches. The raw
+vertex candidate then hung the virtual GPU because it discarded the captured
+hardware vertex-fetch descriptor; that failure is preserved and is not
+treated as visual evidence.
+Schema 44 replaces only that unsafe candidate. It independently compiles the
+AIR-observed `sdf_filter_vert_lph` behavior as a `[[stage_in]]` function while
+retaining Apple's captured vertex descriptor. The function multiplies
+attribute zero by the buffer-two MVP and forwards attributes one and two
+unchanged, exactly matching the exported AIR signature and operations. It
+keeps the freshly loaded no-bleed Apple fragment until the replacement vertex
+passes the same 4,194,304-byte live and forced-local gates.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

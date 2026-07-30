@@ -23,11 +23,30 @@ struct GlassReplayVertexOutput {
     float2 srcUV [[user(src_uv)]];
 };
 
+struct GlassReplayStageInput {
+    float4 position [[attribute(0)]];
+    float2 sdfUV [[attribute(1)]];
+    float2 srcUV [[attribute(2)]];
+};
+
 inline float2 transform_texcoord(
     float2 value,
     float4 transform)
 {
     return transform.xy * value + transform.zw;
+}
+
+vertex GlassReplayVertexOutput glass_vertex_stage_in(
+    GlassReplayStageInput input [[stage_in]],
+    constant float4x4 &mvp [[buffer(2)]],
+    constant float4 &unusedTextureMatrix [[buffer(3)]])
+{
+    (void)unusedTextureMatrix;
+    GlassReplayVertexOutput output;
+    output.position = mvp * input.position;
+    output.sdfUV = input.sdfUV;
+    output.srcUV = input.srcUV;
+    return output;
 }
 
 vertex GlassReplayVertexOutput glass_vertex_raw(
@@ -3674,7 +3693,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 43,
+            "schemaVersion": 44,
             "capture": capture,
             "phase": phase,
         ]
@@ -3772,9 +3791,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let sdfVertex =
                 quartzCoreLibrary.makeFunction(
                     name: "sdf_filter_vert_lph"),
-              let customRawVertex =
+              let customStageInVertex =
                 vertexLibrary.makeFunction(
-                    name: "glass_vertex_raw")
+                    name: "glass_vertex_stage_in")
         else {
             throw NSError(
                 domain: "GlassIntrospect.IndependentGlass",
@@ -3829,13 +3848,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             name: "reloaded_sdf_vertex_no_bleed_fragment",
             descriptor: reloadedBoth))
 
-        let customRaw = try copyCapturedDescriptor()
-        customRaw.vertexFunction = customRawVertex
-        customRaw.fragmentFunction = noBleedFragment
-        customRaw.vertexDescriptor = nil
+        let customStageIn = try copyCapturedDescriptor()
+        customStageIn.vertexFunction = customStageInVertex
+        customStageIn.fragmentFunction = noBleedFragment
         descriptorCandidates.append((
-            name: "custom_raw_vertex_no_bleed_fragment",
-            descriptor: customRaw))
+            name: "custom_stage_in_vertex_no_bleed_fragment",
+            descriptor: customStageIn))
 
         var candidates: [(
             name: String,
@@ -3855,7 +3873,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 43,
+                    "schemaVersion": 44,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4054,7 +4072,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 43,
+                "schemaVersion": 44,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -6262,7 +6280,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 43,
+                    "schemaVersion": 44,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -6278,7 +6296,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 43,
+            "schemaVersion": 44,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
