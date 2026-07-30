@@ -4929,7 +4929,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 61,
+            "schemaVersion": 62,
             "capture": capture,
             "phase": phase,
         ]
@@ -5162,7 +5162,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 61,
+                    "schemaVersion": 62,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5587,7 +5587,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 61,
+                "schemaVersion": 62,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8829,7 +8829,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 61,
+                    "schemaVersion": 62,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8845,7 +8845,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 61,
+            "schemaVersion": 62,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -8891,6 +8891,16 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     outputDirectory: outputDirectory)
             } catch {
                 report["halfDotEvidence"] = [
+                    "error": error.localizedDescription,
+                ]
+            }
+            do {
+                report["halfBlendEvidence"] =
+                    try writeHalfBlendEvidence(
+                        device: device,
+                        outputDirectory: outputDirectory)
+            } catch {
+                report["halfBlendEvidence"] = [
                     "error": error.localizedDescription,
                 ]
             }

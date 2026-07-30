@@ -49,6 +49,7 @@ jobs:
           swiftc -O -parse-as-library \
             -target "$(uname -m)-apple-macos26.0" \
             -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
             Sources/GlassIntrospect/HalfDotProbe.swift \
             Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
             Sources/GlassIntrospect/SDFStageProbe.swift \

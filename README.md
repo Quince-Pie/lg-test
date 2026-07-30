@@ -1163,6 +1163,14 @@ trace then isolates clamp/EDR arithmetic. All three trace fragments and the
 accepted profile fragment call one shared inlined stage function, while the
 full Apple comparison still rejects any instrumentation-induced optimizer
 change.
+Schema 62 adds a native BGRA8Unorm fixed-function blend probe at the exact
+`one`, `oneMinusSourceAlpha` state used by the accepted glass pass. It
+separates an exhaustive nonnegative binary16 source-conversion sweep, the full
+15,361-by-256 binary16-alpha and destination-code grid, and 4,194,304
+deterministic combined source/alpha/destination tuples. Inputs are generated
+from recorded formulas and only the native target bytes are retained, so the
+probe measures the final Metal conversion and blend boundary without
+substituting a software blend model.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
