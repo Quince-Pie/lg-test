@@ -672,11 +672,11 @@ inline half4 replay_shadow_layer(
     return shadow_color * half4(shadow_alpha);
 }
 
-fragment half4 glass_fragment_profile_replay(
-    GlassReplayVertexOutput input [[stage_in]],
-    texture2d<half, access::sample> source_texture [[texture(3)]],
-    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
-    constant half &edr_scale [[buffer(6)]])
+inline half4 replay_profile_fragment(
+    GlassReplayVertexOutput input,
+    texture2d<half, access::sample> source_texture,
+    constant ReplayGlassBackgroundUniformsSdf &uniforms,
+    constant half &edr_scale)
 {
     const int mode = int(uniforms.sdf.arg.z);
 
@@ -849,6 +849,36 @@ fragment half4 glass_fragment_profile_replay(
 
     composite.rgb *= half3(edr_scale);
     return composite;
+}
+
+fragment half4 glass_fragment_profile_replay(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    return replay_profile_fragment(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale);
+}
+
+fragment half4 glass_fragment_final_color_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return half4(0.0);
+    }
+    return replay_profile_fragment(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale);
 }
 
 fragment half4 glass_fragment_sdf_trace(
@@ -4824,7 +4854,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 59,
+            "schemaVersion": 60,
             "capture": capture,
             "phase": phase,
         ]
@@ -4931,6 +4961,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customProfileFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_profile_replay"),
+              let customFinalColorTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_final_color_trace"),
               let customSDFTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_sdf_trace"),
@@ -5048,7 +5081,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 59,
+                    "schemaVersion": 60,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5108,6 +5141,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
         )] = []
         var traceBuildRecords: [[String: Any]] = []
         for trace in [
+            (
+                name: "final-color",
+                fragment: customFinalColorTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
             (
                 name: "sdf",
                 fragment: customSDFTraceFragment,
@@ -5458,7 +5496,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 59,
+                "schemaVersion": 60,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8700,7 +8738,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 59,
+                    "schemaVersion": 60,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8716,7 +8754,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 59,
+            "schemaVersion": 60,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

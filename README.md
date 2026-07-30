@@ -1148,6 +1148,13 @@ shipping hundreds of megabytes of redundant raw float words. A separate
 1,040,384-state grid samples every normal exponent and must reproduce those
 mantissa/parity tables exactly. This turns the final backend-specific SDF
 dependency into a bounded bit table with an explicit generalization gate.
+Schema 60 adds one RGBA16Float final-color trace after refraction, face
+mapping, coverage composition, holding tone, clamp, and EDR scaling but before
+the BGRA8 target conversion and fixed-function blend. The accepted profile
+pipeline and this trace call the same inlined implementation, and every prior
+image comparison remains mandatory. This single boundary observation
+distinguishes shader arithmetic from Metal/OpenGL UNORM blend rounding without
+weakening any existing gate.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
