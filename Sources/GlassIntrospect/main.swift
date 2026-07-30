@@ -1435,7 +1435,27 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && (($0.pipeline["label"] as? String)?
                         .contains("_Tdgg") ?? false)
             }
-            if let baseBinding, let blurredBinding {
+            let nativeHorizontalBinding = bindings.first {
+                $0.index == 3
+                    && $0.texture.width == 448
+                    && $0.texture.height == 448
+                    && $0.texture.pixelFormat == .rgba16Float
+                    && (($0.pipeline["label"] as? String)?
+                        .contains("_Tn19") ?? false)
+            }
+            let nativeVerticalBinding = bindings.first {
+                $0.index == 3
+                    && $0.texture.width == 448
+                    && $0.texture.height == 448
+                    && $0.texture.pixelFormat == .rgba16Float
+                    && (($0.pipeline["label"] as? String)?
+                        .contains("_A2Xghfc") ?? false)
+            }
+            if let baseBinding,
+               let blurredBinding,
+               let nativeHorizontalBinding,
+               let nativeVerticalBinding
+            {
                 let exactSampler = samplers
                     .filter {
                         $0.index == 0
@@ -1450,6 +1470,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         device: baseBinding.texture.device,
                         baseField: baseBinding.texture,
                         blurredField: blurredBinding.texture,
+                        nativeHorizontalField:
+                            nativeHorizontalBinding.texture,
+                        nativeVerticalField:
+                            nativeVerticalBinding.texture,
                         blurSampler: exactSampler?.sampler,
                         outputDirectory: outputDirectory)
                     result["stageTraceSamplerSelection"] = [
@@ -1467,7 +1491,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 }
             } else {
                 result["stageTrace"] = [
-                    "error": "base or blurred texture binding unavailable",
+                    "error":
+                        "SDF blur-stage texture binding unavailable",
                 ]
             }
         }
@@ -2627,7 +2652,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 28,
+                    "schemaVersion": 29,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2643,7 +2668,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 28,
+            "schemaVersion": 29,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
