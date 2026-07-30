@@ -4718,7 +4718,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 57,
+            "schemaVersion": 58,
             "capture": capture,
             "phase": phase,
         ]
@@ -4930,7 +4930,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 57,
+                    "schemaVersion": 58,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5320,7 +5320,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 57,
+                "schemaVersion": 58,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -5589,6 +5589,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
         case premultipliedAlphaField =
             "premultiplied-alpha-field"
         case discordantMips = "discordant-mips"
+        case samplerBasisLevelZero =
+            "sampler-basis-level-zero"
+        case samplerBasisLevelOne =
+            "sampler-basis-level-one"
     }
 
     private struct GlassSDFModeIntervention {
@@ -5696,6 +5700,25 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 return (0, 0, 255, 255)
             default:
                 return (211, 197, 43, 255)
+            }
+        case .samplerBasisLevelZero,
+             .samplerBasisLevelOne:
+            let activeLevel =
+                pattern == .samplerBasisLevelZero
+                ? 0
+                : 1
+            guard level == activeLevel else {
+                return (0, 0, 0, 255)
+            }
+            switch (x & 1) | ((y & 1) << 1) {
+            case 0:
+                return (0, 0, 255, 255)
+            case 1:
+                return (0, 255, 0, 255)
+            case 2:
+                return (255, 0, 0, 255)
+            default:
+                return (0, 0, 0, 255)
             }
         }
     }
@@ -5826,8 +5849,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
         queue: MTLCommandQueue,
         customPipeline: MTLRenderPipelineState,
         sampleTracePipeline: MTLRenderPipelineState?,
-        sampleCoordinateTracePipeline:
-            MTLRenderPipelineState?,
         capture: String,
         outputDirectory: URL
     ) -> [String: Any] {
@@ -5902,22 +5923,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         capture: capture,
                         name:
                             "source-\(pattern.rawValue)-sample",
-                        outputDirectory: outputDirectory)
-            }
-            if let sampleCoordinateTracePipeline {
-                record["sampleCoordinateTrace"] =
-                    replayGlassNumericTrace(
-                        pass: pass,
-                        queue: queue,
-                        replacement:
-                            sampleCoordinateTracePipeline,
-                        pixelFormat: .rgba32Uint,
-                        glassFragmentTextureOverrides:
-                            overrides,
-                        capture: capture,
-                        name:
-                            "source-\(pattern.rawValue)-"
-                            + "sample-coordinate",
                         outputDirectory: outputDirectory)
             }
             records.append(record)
@@ -6670,12 +6675,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             pipelineSet.numericTraces
                                 .first(where: {
                                     $0.name == "sample"
-                                })?.pipeline,
-                        sampleCoordinateTracePipeline:
-                            pipelineSet.numericTraces
-                                .first(where: {
-                                    $0.name
-                                        == "sample-coordinate"
                                 })?.pipeline,
                         capture: capture,
                         outputDirectory: outputDirectory)
@@ -8563,7 +8562,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 57,
+                    "schemaVersion": 58,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8579,7 +8578,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 57,
+            "schemaVersion": 58,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

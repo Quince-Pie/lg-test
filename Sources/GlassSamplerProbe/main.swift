@@ -7,6 +7,12 @@ private let pairCount = codeCount * codeCount
 private let fractionCount = 257
 private let fractionRecordCount = pairCount * fractionCount
 private let lodRadiusCount = 130
+private let productionPhaseCount = 256
+private let productionLodCount = 65
+private let productionGridRecordCount =
+    productionPhaseCount
+    * productionPhaseCount
+    * productionLodCount
 private let channelCount = 4
 private let bytesPerHalfPixel = channelCount * 2
 private let bytesPerUnormPixel = channelCount
@@ -369,6 +375,33 @@ kernel void sampler_unorm_phase_trilinear_probe(
                     level(1.0f)).x);
         }
     }
+}
+
+kernel void sampler_unorm_production_grid_probe(
+    texture2d<half, access::sample> texture [[texture(0)]],
+    sampler linear_sampler [[sampler(0)]],
+    device ushort4 *records [[buffer(0)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= 4259840) {
+        return;
+    }
+
+    const uint spatial_index = index & 65535;
+    const uint lod_numerator = index >> 16;
+    const uint phase_x = spatial_index & 255;
+    const uint phase_y = spatial_index >> 8;
+    const float2 texel_position =
+        float2(137.0f, 193.0f)
+        + float2(float(phase_x), float(phase_y))
+            / 256.0f;
+    const float2 uv =
+        (texel_position + 0.5f) / 448.0f;
+    const half4 sampled = texture.sample(
+        linear_sampler,
+        uv,
+        level(float(lod_numerator) / 64.0f));
+    records[index] = as_type<ushort4>(sampled);
 }
 
 kernel void sampler_lod_expression_probe(
@@ -849,6 +882,78 @@ private func makeUnormMipTexture(
     return texture
 }
 
+private func productionUnormCode(
+    x: Int,
+    y: Int,
+    level: Int,
+    channel: Int
+) -> UInt8 {
+    let cross = (x * y + 17 * channel) % 251
+    let mixed =
+        x * (37 + 14 * channel)
+        + y * (17 + 22 * channel)
+        + cross * (3 + 2 * channel)
+        + level * (101 + 18 * channel)
+        + channel * 53
+        + ((x << (channel + 1)) ^ (y * (11 + channel)))
+    return UInt8(mixed & 255)
+}
+
+private func makeProductionUnormTexture(
+    device: MTLDevice
+) throws -> (
+    texture: MTLTexture,
+    levels: [[UInt8]]
+) {
+    let width = 448
+    let height = 448
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .rgba8Unorm,
+        width: width,
+        height: height,
+        mipmapped: true)
+    descriptor.mipmapLevelCount = 2
+    descriptor.storageMode = .shared
+    descriptor.usage = [.shaderRead]
+    guard let texture = device.makeTexture(
+        descriptor: descriptor)
+    else {
+        throw ProbeError.resource(
+            "production-dimension unorm texture")
+    }
+
+    var levels: [[UInt8]] = []
+    for level in 0..<2 {
+        let levelWidth = width >> level
+        let levelHeight = height >> level
+        var pixels = [UInt8](
+            repeating: 0,
+            count: levelWidth * levelHeight * channelCount)
+        for y in 0..<levelHeight {
+            for x in 0..<levelWidth {
+                let offset =
+                    (y * levelWidth + x) * channelCount
+                for channel in 0..<channelCount {
+                    pixels[offset + channel] =
+                        productionUnormCode(
+                            x: x,
+                            y: y,
+                            level: level,
+                            channel: channel)
+                }
+            }
+        }
+        replaceUnorm(
+            texture: texture,
+            level: level,
+            width: levelWidth,
+            height: levelHeight,
+            pixels: pixels)
+        levels.append(pixels)
+    }
+    return (texture, levels)
+}
+
 private func sha256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
         String(format: "%02x", $0)
@@ -885,6 +990,9 @@ private func run(outputDirectory: URL) throws {
           let unormPhaseTrilinearFunction =
             library.makeFunction(
                 name: "sampler_unorm_phase_trilinear_probe"),
+          let unormProductionGridFunction =
+            library.makeFunction(
+                name: "sampler_unorm_production_grid_probe"),
           let lodExpressionFunction = library.makeFunction(
             name: "sampler_lod_expression_probe"),
           let queue = device.makeCommandQueue()
@@ -908,6 +1016,9 @@ private func run(outputDirectory: URL) throws {
     let unormPhaseTrilinearPipeline =
         try device.makeComputePipelineState(
             function: unormPhaseTrilinearFunction)
+    let unormProductionGridPipeline =
+        try device.makeComputePipelineState(
+            function: unormProductionGridFunction)
     let lodExpressionPipeline =
         try device.makeComputePipelineState(
             function: lodExpressionFunction)
@@ -921,6 +1032,8 @@ private func run(outputDirectory: URL) throws {
     let mipTexture = try makeMipTexture(device: device)
     let unormMipTexture = try makeUnormMipTexture(
         device: device)
+    let productionUnorm =
+        try makeProductionUnormTexture(device: device)
     guard let lodRadiusBuffer = lodRadii.withUnsafeBufferPointer({
         buffer in
         device.makeBuffer(
@@ -952,12 +1065,15 @@ private func run(outputDirectory: URL) throws {
     let unormMipStride = MemoryLayout<UInt16>.stride
     let unormTrilinearWords = 21
     let unormPhaseTrilinearWords = 48
+    let unormProductionGridStride =
+        MemoryLayout<SIMD4<UInt16>>.stride
     let lodExpressionStride =
         MemoryLayout<LodExpressionRecord>.stride
     guard stride == 16,
           fractionStride == 4,
           bilinearStride == 6,
           unormMipStride == 2,
+          unormProductionGridStride == 8,
           lodExpressionStride == 8,
           let output = device.makeBuffer(
             length: pairCount * stride,
@@ -985,6 +1101,11 @@ private func run(outputDirectory: URL) throws {
                 pairCount
                 * unormPhaseTrilinearWords
                 * unormMipStride,
+            options: .storageModeShared),
+          let unormProductionGridOutput = device.makeBuffer(
+            length:
+                productionGridRecordCount
+                * unormProductionGridStride,
             options: .storageModeShared),
           let lodExpressionOutput = device.makeBuffer(
             length: lodRadiusCount * lodExpressionStride,
@@ -1169,6 +1290,38 @@ private func run(outputDirectory: URL) throws {
                 depth: 1))
     unormPhaseTrilinearEncoder.endEncoding()
 
+    guard let unormProductionGridEncoder =
+        commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource(
+            "production-grid unorm command encoder")
+    }
+    unormProductionGridEncoder.setComputePipelineState(
+        unormProductionGridPipeline)
+    unormProductionGridEncoder.setTexture(
+        productionUnorm.texture,
+        index: 0)
+    unormProductionGridEncoder.setSamplerState(
+        sampler,
+        index: 0)
+    unormProductionGridEncoder.setBuffer(
+        unormProductionGridOutput,
+        offset: 0,
+        index: 0)
+    let unormProductionGridWidth =
+        unormProductionGridPipeline.threadExecutionWidth
+    unormProductionGridEncoder.dispatchThreads(
+        MTLSize(
+            width: productionGridRecordCount,
+            height: 1,
+            depth: 1),
+        threadsPerThreadgroup:
+            MTLSize(
+                width: unormProductionGridWidth,
+                height: 1,
+                depth: 1))
+    unormProductionGridEncoder.endEncoding()
+
     guard let lodExpressionEncoder =
         commandBuffer.makeComputeCommandEncoder()
     else {
@@ -1264,6 +1417,26 @@ private func run(outputDirectory: URL) throws {
     try unormPhaseTrilinearBinary.write(
         to: unormPhaseTrilinearBinaryURL,
         options: .atomic)
+    let unormProductionGridBinary = Data(
+        bytes: unormProductionGridOutput.contents(),
+        count: unormProductionGridOutput.length)
+    let unormProductionGridBinaryURL =
+        outputDirectory.appendingPathComponent(
+            "sampler-unorm-production-grid.bin")
+    try unormProductionGridBinary.write(
+        to: unormProductionGridBinaryURL,
+        options: .atomic)
+    let productionMipBinaries =
+        productionUnorm.levels.map { Data($0) }
+    var productionMipURLs: [URL] = []
+    for (level, data) in
+        productionMipBinaries.enumerated()
+    {
+        let url = outputDirectory.appendingPathComponent(
+            "sampler-unorm-production-mip\(level)-rgba8.bin")
+        try data.write(to: url, options: .atomic)
+        productionMipURLs.append(url)
+    }
     let lodExpressionBinary = Data(
         bytes: lodExpressionOutput.contents(),
         count: lodExpressionOutput.length)
@@ -1274,8 +1447,8 @@ private func run(outputDirectory: URL) throws {
         to: lodExpressionBinaryURL,
         options: .atomic)
     let manifest: [String: Any] = [
-        "schemaVersion": 7,
-        "rigVersion": "metal-sampler-probe-1.6.0",
+        "schemaVersion": 8,
+        "rigVersion": "metal-sampler-probe-1.7.0",
         "ciCommit":
             ProcessInfo.processInfo.environment["GITHUB_SHA"]
             ?? "local",
@@ -1452,6 +1625,56 @@ private func run(outputDirectory: URL) throws {
             ],
             "lodFraction": "37/64",
             "texturePixelFormat": "rgba8Unorm",
+        ],
+        "unormProductionGrid": [
+            "file":
+                unormProductionGridBinaryURL
+                    .lastPathComponent,
+            "fileBytes": unormProductionGridBinary.count,
+            "fileSha256":
+                sha256(unormProductionGridBinary),
+            "recordCount": productionGridRecordCount,
+            "recordStrideBytes":
+                unormProductionGridStride,
+            "recordFields": [
+                "sample_r_binary16_bits",
+                "sample_g_binary16_bits",
+                "sample_b_binary16_bits",
+                "sample_a_binary16_bits",
+            ],
+            "recordOrder":
+                "lod numerator major, phase_y major, phase_x minor",
+            "phaseCountPerAxis": productionPhaseCount,
+            "spatialPhases":
+                "0/256 through 255/256 inclusive",
+            "lodFractionCount": productionLodCount,
+            "lodFractions":
+                "0/64 through 64/64 inclusive",
+            "shaderCoordinateExpression": (
+                "texel_position = float2(137, 193) "
+                + "+ float2(phase_x, phase_y) / 256; "
+                + "uv = (texel_position + 0.5) / 448"
+            ),
+            "texturePixelFormat": "rgba8Unorm",
+            "sourceTexture": [
+                "width": 448,
+                "height": 448,
+                "mipmapLevelCount": 2,
+                "levels":
+                    productionMipBinaries.enumerated().map {
+                        level, data in
+                        [
+                            "level": level,
+                            "width": 448 >> level,
+                            "height": 448 >> level,
+                            "file":
+                                productionMipURLs[level]
+                                    .lastPathComponent,
+                            "fileBytes": data.count,
+                            "fileSha256": sha256(data),
+                        ] as [String: Any]
+                    },
+            ],
         ],
         "lodExpression": [
             "file": lodExpressionBinaryURL.lastPathComponent,

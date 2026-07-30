@@ -63,4 +63,7 @@ jobs:
           test -s sampler-probe/sampler-unorm-mip-grid.bin
           test -s sampler-probe/sampler-unorm-trilinear.bin
           test -s sampler-probe/sampler-unorm-phase-trilinear.bin
+          test -s sampler-probe/sampler-unorm-production-grid.bin
+          test -s sampler-probe/sampler-unorm-production-mip0-rgba8.bin
+          test -s sampler-probe/sampler-unorm-production-mip1-rgba8.bin
           test -s sampler-probe/sampler-lod-expression.bin

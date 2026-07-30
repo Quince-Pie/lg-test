@@ -661,6 +661,13 @@ LOD expression on every radius used by the native LOD sweep and on production
 radius one. Raw input, branch-argument, and output bit patterns calibrate the
 capture labels against Metal arithmetic instead of relying on an inverse
 floating-point formula.
+Its seventh revision targets the phases that the earlier quarter/eighth grids
+did not cover. A deterministic two-mip 448x448 RGBA8 texture matches the real
+backdrop dimensions, and one compute dispatch records all four binary16
+sample channels for every 256x256 spatial phase at every LOD numerator from
+0/64 through 64/64. Both raw mip levels are archived and hashed. This tests
+4,259,840 complete fused sampler states rather than extrapolating arbitrary
+phase arithmetic from coarse positions.
 The focused native LOD mode then samples all 129 quantized LOD bins from zero
 through two on five amplitudes, plus an independent duplicate at the real
 production blur radius one. It retains all sixteen reduced-grid phases and
@@ -1093,6 +1100,24 @@ default source and all four held-out textures. Its packed sample must equal
 the independent schema-56 sample trace before the coordinate bits are
 accepted; this detects any instrumentation-induced optimizer change instead
 of assuming that a named intermediate is faithful.
+Run `30549248015` proved that this validity condition matters. The five
+independent sample traces stayed byte-identical to schema 56, but returning
+the coordinate changed 1,634,988 default, 1,889,915 coordinate-hash,
+2,519,520 premultiplied-field, and 1,028,349 discordant-mip sampled channel
+bits. Only the constant texture was insensitive. The paired coordinates are
+therefore a compiler-materialization negative control, not production-path
+evidence. Searching every coordinate within eight adjacent float32 values
+explains only 19 of the 2,823 residual coordinate-hash pixels, which falsifies
+a sub-ULP coordinate-error explanation.
+Schema 58 instead observes only filtered samples. Two opaque 2x2 basis
+textures activate three independent corner basis vectors in exactly one mip
+at a time; the other mip remains black. Their six sampled channels recover
+the level-zero and level-one spatial weights while keeping the shader's
+production optimizer path intact. The separate sampler rig also sweeps every
+256x256 spatial phase at all 65 hardware LOD fractions on a two-level
+448x448 RGBA8 texture, matching the real backdrop dimensions. Together these
+measure arbitrary-phase filtering and fused spatial/mip accumulation without
+forcing a coordinate intermediate into memory.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
