@@ -630,6 +630,12 @@ and captures blur radii 0, 1, 2, and 4. The disassembled Apple shader maps
 those settings to explicit mip LODs 0, `log2(1.5)`, 1, and 2, respectively,
 so the native streams isolate the real source pyramid from the already
 recovered half-precision color stage.
+The independent Metal sampler probe exhaustively measures all 65,536 pairs of
+8-bit normalized inputs at quarter-, half-, and three-quarter-pixel positions,
+as well as the glass shader's binary16 `log2(1.5)` mip blend. It records raw
+`rgba16Float` result bits from the same Apple paravirtual GPU used by the
+reference capture, removing sampler interpolation precision as an assumed
+implementation detail.
 This companion does not alter the capture app, manifest, reference catalog,
 case order, validator, or measurement report. Its output is forensic evidence,
 not a pixel-parity oracle: a trace may be unsupported on the hosted runner,

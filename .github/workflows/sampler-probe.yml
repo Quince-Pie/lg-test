@@ -1,0 +1,59 @@
+name: Measure Apple Metal sampler arithmetic
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/sampler-probe.yml
+      - Sources/GlassSamplerProbe/**
+
+concurrency:
+  group: sampler-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sampler-probe:
+    runs-on: macos-26
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Build Metal sampler probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p sampler-probe
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassSamplerProbe/main.swift \
+            -o glass-sampler-probe 2>&1 |
+            tee sampler-probe/build.log
+
+      - name: Measure Metal sampler
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: ./glass-sampler-probe sampler-probe
+
+      - name: Upload Metal sampler evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-sampler-probe-${{ github.run_id }}
+          path: sampler-probe
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce Metal sampler evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test -s sampler-probe/manifest.json
+          test -s sampler-probe/sampler-probe.bin
