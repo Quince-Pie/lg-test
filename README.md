@@ -853,6 +853,10 @@ preference for WindowServer-aware backdrop rasterization and the real
 both values, records every mutation, and captures that forced-local frame
 under a separate name. This distinguishes a cached glass backing image from
 the local producer pipeline without altering the reference frame.
+Schema 36 limits local-frame invalidation to the mutated backdrop-bearing
+layers. In particular, it preserves SwiftUI's cached diagnostic-background
+drawing layer, so the forced-local backdrop has real source pixels instead of
+the transparent result produced when every delegate-backed layer was dirtied.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

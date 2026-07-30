@@ -3019,9 +3019,9 @@ private func localBackdropCARendererEvidence(
 
     CATransaction.begin()
     CATransaction.setDisableActions(true)
-    for layer in allLayers(root: rootLayer) {
-        layer.setNeedsDisplay()
-        layer.setNeedsLayout()
+    for mutation in mutations {
+        mutation.layer.setNeedsDisplay()
+        mutation.layer.setNeedsLayout()
     }
     CATransaction.commit()
     CATransaction.flush()
@@ -3178,7 +3178,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 35,
+                    "schemaVersion": 36,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -3194,7 +3194,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 35,
+            "schemaVersion": 36,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
