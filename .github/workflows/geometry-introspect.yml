@@ -1,0 +1,130 @@
+name: Inspect Liquid Glass geometry transfer
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/geometry-introspect.yml
+      - Sources/GlassIntrospect/**
+
+concurrency:
+  group: geometry-introspect-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  geometry-introspect:
+    name: ${{ matrix.geometry }}
+    runs-on: macos-26
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        geometry:
+          - circle-256-center
+          - circle-512-offset
+          - circle-640-fractional
+          - circle-896-center
+          - circle-1536-center
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Build geometry introspection probe
+        run: |
+          mkdir -p geometry-introspection
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o geometry-introspection/MatrixBridge.o
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            geometry-introspection/MatrixBridge.o \
+            -o glassintrospect
+
+      - name: Capture geometry-specific Metal pass
+        env:
+          MTL_CAPTURE_ENABLED: "1"
+          LG_EXECUTE_INDEPENDENT_GLASS: "1"
+        run: |
+          ./glassintrospect geometry-introspection
+
+      - name: Enforce geometry evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+
+          root = pathlib.Path("geometry-introspection")
+          runtime = json.loads(
+              (root / "runtime.json").read_text(encoding="utf-8")
+          )
+          if runtime.get("schemaVersion") != 75:
+              raise SystemExit("geometry introspection schema differs")
+          geometry = runtime.get("geometryEvidence", {})
+          if geometry.get("name") != "${{ matrix.geometry }}":
+              raise SystemExit(
+                  f"geometry identity differs: {geometry}"
+              )
+          profile = runtime.get("materialProfileEvidence", {})
+          if (
+              profile.get("material") != "regular"
+              or profile.get("requestedAppearance") != "light"
+              or profile.get("effectiveAppearanceMatchesRequest")
+                  is not True
+          ):
+              raise SystemExit(
+                  f"geometry material profile differs: {profile}"
+              )
+          render = runtime.get("carendererEvidence", {})
+          exact = render.get("exactPassReplay", {})
+          if (
+              render.get("executed") is not True
+              or exact.get("executed") is not True
+              or exact.get("exactByteMatch") is not True
+              or exact.get("glassDrawCount") != 2
+          ):
+              raise SystemExit(
+                  "geometry Metal replay is not exact: "
+                  f"{exact}"
+              )
+          snapshots = render.get("metalBufferSnapshots", {}).get(
+              "snapshots", []
+          )
+          if not snapshots:
+              raise SystemExit("geometry buffer snapshots are empty")
+          PY
+
+      - name: Upload geometry evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-geometry-${{ matrix.geometry }}-${{ github.run_id }}
+          path: geometry-introspection
+          if-no-files-found: error
+          retention-days: 7

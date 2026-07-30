@@ -1922,20 +1922,82 @@ private enum ProbeAppearance: String {
     }
 }
 
+private enum ProbeGeometry: String {
+    case circle256Center = "circle-256-center"
+    case circle512Offset = "circle-512-offset"
+    case circle640Fractional = "circle-640-fractional"
+    case circle800Center = "circle-800-center"
+    case circle896Center = "circle-896-center"
+    case circle1536Center = "circle-1536-center"
+
+    var width: CGFloat {
+        switch self {
+        case .circle256Center:
+            256
+        case .circle512Offset:
+            512
+        case .circle640Fractional:
+            640
+        case .circle800Center:
+            800
+        case .circle896Center:
+            896
+        case .circle1536Center:
+            1536
+        }
+    }
+
+    var center: CGPoint {
+        switch self {
+        case .circle512Offset:
+            CGPoint(x: 337, y: 419)
+        case .circle640Fractional:
+            CGPoint(x: 602.25, y: 377.75)
+        default:
+            CGPoint(x: 512, y: 512)
+        }
+    }
+
+    var evidence: [String: Any] {
+        [
+            "name": rawValue,
+            "shape": "circle",
+            "width": Double(width),
+            "height": Double(width),
+            "centerX": Double(center.x),
+            "centerY": Double(center.y),
+            "windowWidth": 1024,
+            "windowHeight": 1024,
+            "extendsBeyondWindow": width > 1024,
+        ]
+    }
+}
+
 private struct ProbeView: View {
     let material: ProbeMaterial
+    let geometry: ProbeGeometry
 
     var body: some View {
         ZStack {
             DiagnosticBackground()
             if material == .regular {
                 Color.clear
-                    .frame(width: 800, height: 800)
+                    .frame(
+                        width: geometry.width,
+                        height: geometry.width)
                     .glassEffect(.regular, in: .circle)
+                    .offset(
+                        x: geometry.center.x - 512,
+                        y: geometry.center.y - 512)
             } else {
                 Color.clear
-                    .frame(width: 800, height: 800)
+                    .frame(
+                        width: geometry.width,
+                        height: geometry.width)
                     .glassEffect(.clear, in: .circle)
+                    .offset(
+                        x: geometry.center.x - 512,
+                        y: geometry.center.y - 512)
             }
         }
         .frame(width: 1024, height: 1024)
@@ -11557,6 +11619,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
     private let outputDirectory: URL
     private let material: ProbeMaterial
     private let appearance: ProbeAppearance
+    private let geometry: ProbeGeometry
     private var window: ProbeWindow!
     private var captureStarted = false
     private var captureError: String?
@@ -11567,11 +11630,13 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
     init(
         outputDirectory: URL,
         material: ProbeMaterial,
-        appearance: ProbeAppearance
+        appearance: ProbeAppearance,
+        geometry: ProbeGeometry
     ) {
         self.outputDirectory = outputDirectory
         self.material = material
         self.appearance = appearance
+        self.geometry = geometry
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -11613,7 +11678,9 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             NSApplication.shared.appearance = nativeAppearance
             window.appearance = nativeAppearance
             window.contentView = NSHostingView(
-                rootView: ProbeView(material: material))
+                rootView: ProbeView(
+                    material: material,
+                    geometry: geometry))
             window.setFrameOrigin(.zero)
             NSApplication.shared.activate(ignoringOtherApps: true)
             window.makeKeyAndOrderFront(nil)
@@ -11668,6 +11735,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         from: [.aqua, .darkAqua])
                     == appearance.nativeName,
             ],
+            "geometryEvidence": geometry.evidence,
             "diagnosticBackgroundEvidence": [
                 "pattern": diagnosticBackgroundPattern,
                 "cellWidthPoints":
@@ -11961,13 +12029,18 @@ struct Main {
               let appearance = ProbeAppearance(
                 rawValue: environment[
                     "LG_GLASS_APPEARANCE"
-                ] ?? "light")
+                ] ?? "light"),
+              let geometry = ProbeGeometry(
+                rawValue: environment[
+                    "LG_GLASS_GEOMETRY"
+                ] ?? "circle-800-center")
         else {
             FileHandle.standardError.write(
                 Data(
                     (
                         "invalid LG_GLASS_MATERIAL or "
-                        + "LG_GLASS_APPEARANCE\n"
+                        + "LG_GLASS_APPEARANCE or "
+                        + "LG_GLASS_GEOMETRY\n"
                     ).utf8))
             exit(2)
         }
@@ -11975,7 +12048,8 @@ struct Main {
         let delegate = ProbeDelegate(
             outputDirectory: URL(fileURLWithPath: output),
             material: material,
-            appearance: appearance)
+            appearance: appearance,
+            geometry: geometry)
         app.delegate = delegate
         app.setActivationPolicy(.regular)
         app.run()

@@ -1823,6 +1823,23 @@ coefficient evaluation directly and separate the perspective iterator from
 the affine coefficient register without relying on finite-difference
 derivatives.
 
+### Geometry-transfer introspection
+
+`geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
+at five geometries that are not used by the fixed 800-point profile capture:
+256-point centered, 512-point integer-translated, 640-point
+fractional-translated, 896-point centered, and 1536-point centered/clipped
+circles. The original centered 800-point case remains the default and is still
+covered by `introspect.yml`.
+
+Every geometry artifact retains the captured vertex and uniform buffers,
+source mip textures, raster-coordinate traces, internal color-stage traces,
+and the exact glass-prefix output. CI requires the captured-descriptor replay
+to match that output byte for byte before accepting an artifact. Together the
+matrix distinguishes size scaling, integer translation, fractional raster
+placement, and the oversized late-transition regime; those effects must not
+be inferred from the one fixed mesh.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
