@@ -43,6 +43,11 @@ struct ProbeVertexOutput {
     float2 source [[user(src_uv)]];
 };
 
+struct ProbeFragmentOutput {
+    uint4 varyings [[color(0)]];
+    uint4 barycentrics [[color(1)]];
+};
+
 vertex ProbeVertexOutput raster_probe_vertex(
     const device ProbeVertex *vertices [[buffer(0)]],
     constant float4x4 &mvp [[buffer(1)]],
@@ -56,14 +61,23 @@ vertex ProbeVertexOutput raster_probe_vertex(
     return output;
 }
 
-fragment uint4 raster_probe_fragment(
-    ProbeVertexOutput input [[stage_in]])
+fragment ProbeFragmentOutput raster_probe_fragment(
+    ProbeVertexOutput input [[stage_in]],
+    float3 barycentric [[barycentric_coord]],
+    uint primitive_id [[primitive_id]])
 {
-    return uint4(
+    ProbeFragmentOutput output;
+    output.varyings = uint4(
         as_type<uint>(input.sdf.x),
         as_type<uint>(input.sdf.y),
         as_type<uint>(input.source.x),
         as_type<uint>(input.source.y));
+    output.barycentrics = uint4(
+        as_type<uint>(barycentric.x),
+        as_type<uint>(barycentric.y),
+        as_type<uint>(barycentric.z),
+        primitive_id);
+    return output;
 }
 """
 
@@ -258,7 +272,7 @@ private func render(
     device: MTLDevice,
     queue: MTLCommandQueue,
     pipeline: MTLRenderPipelineState
-) throws -> Data {
+) throws -> (varyings: Data, barycentrics: Data) {
     let descriptor = MTLTextureDescriptor.texture2DDescriptor(
         pixelFormat: .rgba32Uint,
         width: probe.targetWidth,
@@ -266,15 +280,24 @@ private func render(
         mipmapped: false)
     descriptor.storageMode = .shared
     descriptor.usage = [.renderTarget]
-    guard let texture = device.makeTexture(descriptor: descriptor),
+    guard let varyingTexture = device.makeTexture(
+            descriptor: descriptor),
+          let barycentricTexture = device.makeTexture(
+            descriptor: descriptor),
           let commandBuffer = queue.makeCommandBuffer(),
           let encoder = commandBuffer.makeRenderCommandEncoder(
             descriptor: {
                 let pass = MTLRenderPassDescriptor()
-                pass.colorAttachments[0].texture = texture
+                pass.colorAttachments[0].texture = varyingTexture
                 pass.colorAttachments[0].loadAction = .clear
                 pass.colorAttachments[0].storeAction = .store
                 pass.colorAttachments[0].clearColor =
+                    MTLClearColorMake(0, 0, 0, 0)
+                pass.colorAttachments[1].texture =
+                    barycentricTexture
+                pass.colorAttachments[1].loadAction = .clear
+                pass.colorAttachments[1].storeAction = .store
+                pass.colorAttachments[1].clearColor =
                     MTLClearColorMake(0, 0, 0, 0)
                 return pass
             }())
@@ -317,19 +340,25 @@ private func render(
                 ?? "unknown render error")
     }
 
-    var data = Data(count: probe.width * probe.height * 16)
-    data.withUnsafeMutableBytes { raw in
-        texture.getBytes(
-            raw.baseAddress!,
-            bytesPerRow: probe.width * 16,
-            from: MTLRegionMake2D(
-                probe.originX,
-                probe.originY,
-                probe.width,
-                probe.height),
-            mipmapLevel: 0)
+    func read(_ texture: MTLTexture) -> Data {
+        var data = Data(count: probe.width * probe.height * 16)
+        data.withUnsafeMutableBytes { raw in
+            texture.getBytes(
+                raw.baseAddress!,
+                bytesPerRow: probe.width * 16,
+                from: MTLRegionMake2D(
+                    probe.originX,
+                    probe.originY,
+                    probe.width,
+                    probe.height),
+                mipmapLevel: 0)
+        }
+        return data
     }
-    return data
+    return (
+        read(varyingTexture),
+        read(barycentricTexture)
+    )
 }
 
 private func run(outputDirectory: URL) throws {
@@ -364,26 +393,39 @@ private func run(outputDirectory: URL) throws {
     descriptor.vertexFunction = vertex
     descriptor.fragmentFunction = fragment
     descriptor.colorAttachments[0].pixelFormat = .rgba32Uint
+    descriptor.colorAttachments[1].pixelFormat = .rgba32Uint
     let pipeline = try device.makeRenderPipelineState(
         descriptor: descriptor)
 
     var records: [[String: Any]] = []
     for probe in cases {
-        let data = try render(
+        let result = try render(
             probe,
             device: device,
             queue: queue,
             pipeline: pipeline)
-        let filename = "\(probe.name)-rgba32ui.raw"
-        try data.write(
-            to: outputDirectory.appendingPathComponent(filename),
+        let varyingFilename =
+            "\(probe.name)-varyings-rgba32ui.raw"
+        let barycentricFilename =
+            "\(probe.name)-barycentrics-rgba32ui.raw"
+        try result.varyings.write(
+            to: outputDirectory.appendingPathComponent(
+                varyingFilename),
+            options: .atomic)
+        try result.barycentrics.write(
+            to: outputDirectory.appendingPathComponent(
+                barycentricFilename),
             options: .atomic)
         let mvp = matrix(for: probe)
         records.append([
             "name": probe.name,
-            "file": filename,
-            "fileBytes": data.count,
-            "fileSha256": sha256(data),
+            "varyingFile": varyingFilename,
+            "varyingFileBytes": result.varyings.count,
+            "varyingFileSha256": sha256(result.varyings),
+            "barycentricFile": barycentricFilename,
+            "barycentricFileBytes": result.barycentrics.count,
+            "barycentricFileSha256":
+                sha256(result.barycentrics),
             "pixelFormat": MTLPixelFormat.rgba32Uint.rawValue,
             "target": [
                 "width": probe.targetWidth,
@@ -417,8 +459,8 @@ private func run(outputDirectory: URL) throws {
     }
 
     let manifest: [String: Any] = [
-        "schemaVersion": 1,
-        "rigVersion": "metal-raster-interpolant-probe-1.0.0",
+        "schemaVersion": 2,
+        "rigVersion": "metal-raster-interpolant-probe-2.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -432,6 +474,8 @@ private func run(outputDirectory: URL) throws {
             "fastMathEnabled": true,
             "vertexStride": MemoryLayout<ProbeVertex>.stride,
             "fragmentOutput": "raw float32 bits as RGBA32Uint",
+            "barycentricOutput":
+                "center-perspective float3 bits and primitive ID",
         ],
         "cases": records,
     ]

@@ -1654,10 +1654,13 @@ the production two-triangle ordering into RGBA32Uint targets and preserves the
 four raw float32 varying bit patterns for six preregistered cases: the exact
 800-by-800 production geometry, the same geometry at a different origin,
 power-of-two and non-power-of-two dimensions, a non-square arbitrary-endpoint
-case, and a near-fullscreen case. Each raw file is cropped to the covered quad;
-the manifest retains target and crop geometry, endpoint and MVP bits, vertex
-order, byte size, and SHA-256. This probe exists to distinguish a portable
-raster rule from a correction fitted to the single live-tree mesh.
+case, and a near-fullscreen case. A paired RGBA32Uint attachment records all
+three center-perspective barycentric float bits and the primitive ID for every
+fragment, separating raster weight generation from attribute accumulation.
+Each raw file is cropped to the covered quad; the manifest retains target and
+crop geometry, endpoint and MVP bits, vertex order, byte size, and SHA-256.
+This probe exists to distinguish a portable raster rule from a correction
+fitted to the single live-tree mesh.
 
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
