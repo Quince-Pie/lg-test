@@ -1118,6 +1118,18 @@ production optimizer path intact. The separate sampler rig also sweeps every
 448x448 RGBA8 texture, matching the real backdrop dimensions. Together these
 measure arbitrary-phase filtering and fused spatial/mip accumulation without
 forcing a coordinate intermediate into memory.
+Runs `30550716824` and `30550716542` close that sampler question. The
+compositor retained 30/30 applicable exact image comparisons, and the old
+coordinate-hash sample remained byte-identical to schemas 56 and 57. The
+coarse unbounded-integer model misses 119,450 of 17,039,360 arbitrary-phase
+half values. Apple instead forms the eight 22-bit trilinear corner weights
+and reduces them to normalized Q0.16 before the color dot product. Values
+round to nearest; exact reduction ties round upward for the upper texel row
+and downward for the lower row, preserving the normalized weight sum. The
+resulting weight dot product rounds once to 1/16 code with ties upward before
+the binary16 conversion. That rule is exact for all 17,039,360 standalone
+values and all 15,360,000 active compositor values across the four original
+held-out textures and both independent corner-basis textures.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
