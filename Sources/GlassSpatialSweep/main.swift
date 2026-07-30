@@ -1552,7 +1552,8 @@ private final class SpatialSweepDelegate:
     }
 
     private func runLodSweep(
-        workspace: NSWorkspace
+        workspace: NSWorkspace,
+        flatProfile: Bool
     ) async throws {
         var controlStream = Data()
         var lodStream = Data()
@@ -1624,7 +1625,10 @@ private final class SpatialSweepDelegate:
             {
                 let stateFilter =
                     try copiedFilter(target.filter)
-                let values = identityValues + [
+                let values =
+                    identityValues
+                    + (flatProfile ? flatBlurValues : [])
+                    + [
                     (
                         "inputBlurRadius",
                         NSNumber(value: state.blurRadius)
@@ -1648,14 +1652,15 @@ private final class SpatialSweepDelegate:
                         "LOD capture format changed during "
                             + state.name)
                 }
-                guard let readback = stateFilter.value(
-                    forKey: "inputBlurRadius"
-                ) as? NSNumber,
-                      readback.floatValue.bitPattern
-                        == state.blurRadius.bitPattern
+                let readbacks = try checkedFilterReadbacks(
+                    stateFilter,
+                    values: values)
+                guard let readback =
+                    readbacks.values["inputBlurRadius"]
+                        as? Double
                 else {
                     throw SweepError.capture(
-                        "LOD blur-radius readback differs during "
+                        "LOD blur-radius readback is missing during "
                             + state.name)
                 }
                 lodStream.append(
@@ -1666,12 +1671,17 @@ private final class SpatialSweepDelegate:
                     state,
                     index: stateIndex)
                 stateRecord["readbackBlurRadius"] =
-                    Double(readback.floatValue)
+                    readback
                 stateRecord[
                     "readbackBlurRadiusFloat32Bits"
-                ] = String(
-                    format: "%08x",
-                    readback.floatValue.bitPattern)
+                ] = readbacks.float32Bits[
+                    "inputBlurRadius"]
+                if flatProfile {
+                    stateRecord["inputReadbacks"] =
+                        readbacks.values
+                    stateRecord["inputReadbackFloat32Bits"] =
+                        readbacks.float32Bits
+                }
                 stateRecord["nativePixelSha256"] =
                     sha256(capture.nativePixels)
                 stateRecord["stabilitySamples"] =
@@ -1756,12 +1766,14 @@ private final class SpatialSweepDelegate:
             throw SweepError.capture(
                 "native LOD stream length differs")
         }
+        let streamPrefix =
+            flatProfile ? "native-flat-lod" : "native-lod"
         let controlURL = outputDirectory
             .appendingPathComponent(
-                "native-lod-control-patches.rgb8")
+                "\(streamPrefix)-control-patches.rgb8")
         let lodURL = outputDirectory
             .appendingPathComponent(
-                "native-lod-identity-patches.rgb8")
+                "\(streamPrefix)-identity-patches.rgb8")
         try controlStream.write(
             to: controlURL,
             options: .atomic)
@@ -1835,9 +1847,14 @@ private final class SpatialSweepDelegate:
         }
         let report: [String: Any] = [
             "schemaVersion": 1,
-            "rigVersion": "native-lod-sweep-1.0.0",
+            "rigVersion":
+                flatProfile
+                ? "native-flat-lod-sweep-1.0.0"
+                : "native-lod-sweep-1.0.0",
             "sweepKind":
-                "deep-interior-phase-controlled-lod-curve",
+                flatProfile
+                ? "flat-blur-profile-phase-controlled-lod-curve"
+                : "deep-interior-phase-controlled-lod-curve",
             "ciCommit":
                 ProcessInfo.processInfo
                     .environment["GITHUB_SHA"]
@@ -1905,6 +1922,14 @@ private final class SpatialSweepDelegate:
                 "productionState":
                     "production-blur-1",
             ],
+            "flatBlurProfileInputs":
+                flatProfile
+                ? Dictionary(
+                    uniqueKeysWithValues:
+                        flatBlurValues.map {
+                            ($0.key, $0.value)
+                        })
+                : NSNull(),
             "captures": records,
             "nativeCaptureEvidence": nativeEvidence,
         ]
@@ -2349,10 +2374,19 @@ private final class SpatialSweepDelegate:
                 return
             }
             if CommandLine.arguments.dropFirst(2)
+                .contains("--flat-lod")
+            {
+                try await runLodSweep(
+                    workspace: workspace,
+                    flatProfile: true)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
                 .contains("--lod")
             {
                 try await runLodSweep(
-                    workspace: workspace)
+                    workspace: workspace,
+                    flatProfile: false)
                 return
             }
             if CommandLine.arguments.dropFirst(2)

@@ -1085,6 +1085,18 @@ python Analysis/compare_runs.py previous-captures captures \
 The environment includes Python 3.14, NumPy, SciPy, OpenCV, scikit-image,
 Matplotlib, Pillow, ImageMagick, and `gh`.
 
+The focused `GlassSpatialSweep` target also has two non-destructive
+identification modes for the private clear-material mip path:
+
+- `--flat-stripe` fixes all five blur opacities to one and both refraction
+  amounts to zero, proving that radial response changes disappear while
+  Apple still executes its real texture path.
+- `--flat-lod` applies the same settings to the complete 0/64 through 128/64
+  LOD grid. Every requested filter input is read back bit-for-bit for every
+  state. This keeps the historical `--stripe` and `--lod` modes unchanged
+  while producing an uncontaminated oracle for matching the default
+  SDF-conditioned profile.
+
 ## What happens after capture
 
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle

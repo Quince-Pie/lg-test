@@ -1,4 +1,4 @@
-name: Capture Liquid Glass flat-profile stripe sweep
+name: Capture Liquid Glass flat-profile LOD sweep
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ concurrency:
 jobs:
   spatial-sweep:
     runs-on: macos-26
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -42,11 +42,11 @@ jobs:
             -o glass-spatial-sweep 2>&1 |
             tee spatial-sweep/build.log
 
-      - name: Capture flat-profile stripe sweep
+      - name: Capture flat-profile LOD sweep
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
-        run: ./glass-spatial-sweep spatial-sweep --flat-stripe
+        run: ./glass-spatial-sweep spatial-sweep --flat-lod
 
       - name: Inventory native spatial sweep
         if: always()
@@ -57,7 +57,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-flat-stripe-sweep-${{ github.run_id }}
+          name: liquid-glass-flat-lod-sweep-${{ github.run_id }}
           path: spatial-sweep
           if-no-files-found: error
           retention-days: 7
@@ -68,8 +68,5 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test -s spatial-sweep/manifest.json
-          test -s spatial-sweep/native-stripe-control-patches.rgb8
-          test -s spatial-sweep/native-stripe-flat-blur-0-patches.rgb8
-          test -s spatial-sweep/native-stripe-flat-blur-1-patches.rgb8
-          test -s spatial-sweep/native-stripe-flat-blur-2-patches.rgb8
-          test -s spatial-sweep/native-stripe-flat-blur-4-patches.rgb8
+          test -s spatial-sweep/native-flat-lod-control-patches.rgb8
+          test -s spatial-sweep/native-flat-lod-identity-patches.rgb8
