@@ -563,6 +563,74 @@ inline half3 replay_color_matrix(
         + half3(row0.w, row1.w, row2.w);
 }
 
+inline half4 replay_edge_bleed_layer(
+    float2 source_uv,
+    half distance,
+    half2 displacement,
+    half4 current,
+    texture2d<half, access::sample> source_texture,
+    constant ReplayGlassBackgroundUniforms &uniforms)
+{
+    constexpr sampler source_sampler(
+        coord::normalized,
+        address::clamp_to_edge,
+        filter::linear,
+        mip_filter::linear);
+    const half shift = replay_refraction_shift(
+        distance,
+        uniforms.edge_bleed_amount,
+        uniforms.edge_bleed_inv_height);
+    const float2 bleed_uv = float2(
+        half2(source_uv) + half2(shift) * displacement);
+    const half4 sampled = source_texture.sample(
+        source_sampler,
+        bleed_uv,
+        level(replay_lod(
+            half(uniforms.edge_bleed_blur_radius))));
+    const half sample_alpha = max(
+        sampled.a,
+        replay_epsilon());
+    half3 straight = sampled.rgb / half3(sample_alpha);
+    straight = select(
+        straight,
+        half3(0.0),
+        fabs(straight) < half3(replay_epsilon()));
+    const half3 mapped = replay_color_matrix(
+        straight,
+        uniforms.bleed_cm0,
+        uniforms.bleed_cm1,
+        uniforms.bleed_cm2);
+
+    const float lower = float(uniforms.edge_bleed_dist0);
+    const float upper = float(uniforms.edge_bleed_dist1);
+    const float span = upper - lower;
+    const half distance_amount = half(saturate(fma(
+        float(distance),
+        1.0 / span,
+        -lower / span)));
+    const half luminance = saturate(dot(
+        current.rgb,
+        half3(
+            replay_half_constant(0x32cd),
+            replay_half_constant(0x39b9),
+            replay_half_constant(0x2c9d))));
+    half darken =
+        uniforms.bleed_darken.x * luminance
+        + uniforms.bleed_darken.y;
+    darken *= darken;
+    half amount = darken * distance_amount;
+    amount *= amount;
+    amount *= uniforms.edge_bleed_opacity;
+    const half3 color =
+        uniforms.x86_workaround != half(0.0)
+        ? half3(mix(
+            float3(current.rgb),
+            float3(mapped),
+            float3(float(amount))))
+        : mix(current.rgb, mapped, half3(amount));
+    return half4(color, current.a);
+}
+
 inline half replay_shadow_alpha(
     half2 shadow_sdf,
     constant ReplayGlassBackgroundUniforms &uniforms)
@@ -676,6 +744,7 @@ struct ReplayProfileStages {
     half4 source;
     half4 face;
     half4 composite;
+    half4 bleed;
     half4 holding;
     half4 final_color;
 };
@@ -691,6 +760,7 @@ inline ReplayProfileStages replay_profile_stages(
     stages.source = half4(0.0);
     stages.face = half4(0.0);
     stages.composite = half4(0.0);
+    stages.bleed = half4(0.0);
     stages.holding = half4(0.0);
     stages.final_color = half4(0.0);
 
@@ -801,6 +871,17 @@ inline ReplayProfileStages replay_profile_stages(
             half4(coverage));
     stages.composite = composite;
 
+    if (uniforms.glass.edge_bleed_opacity > half(0.0)) {
+        composite = replay_edge_bleed_layer(
+            input.src_uv,
+            distance,
+            displacement,
+            composite,
+            source_texture,
+            uniforms.glass);
+    }
+    stages.bleed = composite;
+
     if (uniforms.glass.holding_tone_opacity > half(0.0)) {
         half holding_distance;
         if (uniforms.glass.sdr_shadow_dist0 > distance) {
@@ -900,6 +981,24 @@ fragment half4 glass_fragment_final_color_trace(
         uniforms,
         edr_scale);
     return stages.final_color;
+}
+
+fragment half4 glass_fragment_bleed_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return half4(0.0);
+    }
+    const ReplayProfileStages stages = replay_profile_stages(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale);
+    return stages.bleed;
 }
 
 inline uint replay_pack_half_pair(half first, half second)
@@ -5743,6 +5842,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let stoppedAfterGlass: Bool
     }
 
+    private func isGlassPipeline(
+        _ state: MTLRenderPipelineState
+    ) -> Bool {
+        guard let label = state.label else {
+            return false
+        }
+        return label.contains("_Tghz")
+            || label.contains("_Tghs")
+    }
+
     private func encodeReplayCommands(
         _ commands: [ReplayCommand],
         with encoder: MTLRenderCommandEncoder,
@@ -5760,8 +5869,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
         commandLoop: for command in commands {
             if case .pipeline(let state) = command {
-                let isGlass =
-                    state.label?.contains("_Tghz") == true
+                let isGlass = isGlassPipeline(state)
                 if stopAfterGlass,
                    enteredGlass,
                    !isGlass
@@ -5975,7 +6083,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 69,
+            "schemaVersion": 70,
             "capture": capture,
             "phase": phase,
         ]
@@ -6028,7 +6136,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let capturedGlassState = pass.commands.compactMap {
             command -> MTLRenderPipelineState? in
             guard case .pipeline(let state) = command,
-                  state.label?.contains("_Tghz") == true
+                  isGlassPipeline(state)
             else {
                 return nil
             }
@@ -6050,6 +6158,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         + "is unavailable",
                 ])
         }
+        guard let capturedFragmentName =
+                capturedDescriptor.fragmentFunction?.name,
+              [
+                  "glass_background_sdf_no_bleed_lph",
+                  "glass_background_sdf_lph",
+              ].contains(capturedFragmentName)
+        else {
+            throw NSError(
+                domain: "GlassIntrospect.IndependentGlass",
+                code: 3,
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "captured glass fragment is unsupported",
+                ])
+        }
 
         let options = MTLCompileOptions()
         options.fastMathEnabled = true
@@ -6066,10 +6189,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
             capture: capture,
             phase: "after-independent-libraries",
             outputDirectory: outputDirectory)
-        guard let noBleedFragment =
+        guard let capturedFragment =
                 quartzCoreLibrary.makeFunction(
-                    name:
-                        "glass_background_sdf_no_bleed_lph"),
+                    name: capturedFragmentName),
               let sdfVertex =
                 quartzCoreLibrary.makeFunction(
                     name: "sdf_filter_vert_lph"),
@@ -6085,6 +6207,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customFinalColorTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_final_color_trace"),
+              let customBleedTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_bleed_trace"),
               let customColorStagesATraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_color_stages_a_trace"),
@@ -6125,7 +6250,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         else {
             throw NSError(
                 domain: "GlassIntrospect.IndependentGlass",
-                code: 3,
+                code: 4,
                 userInfo: [
                     NSLocalizedDescriptionKey:
                         "independent Apple or custom glass "
@@ -6141,7 +6266,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             else {
                 throw NSError(
                     domain: "GlassIntrospect.IndependentGlass",
-                    code: 4,
+                    code: 5,
                     userInfo: [
                         NSLocalizedDescriptionKey:
                             "captured descriptor copy failed",
@@ -6158,9 +6283,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
             descriptor: try copyCapturedDescriptor()))
 
         let reloadedFragment = try copyCapturedDescriptor()
-        reloadedFragment.fragmentFunction = noBleedFragment
+        reloadedFragment.fragmentFunction = capturedFragment
         descriptorCandidates.append((
-            name: "reloaded_no_bleed_fragment",
+            name: "reloaded_captured_fragment",
             descriptor: reloadedFragment))
 
         let reloadedVertex = try copyCapturedDescriptor()
@@ -6171,9 +6296,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
         let reloadedBoth = try copyCapturedDescriptor()
         reloadedBoth.vertexFunction = sdfVertex
-        reloadedBoth.fragmentFunction = noBleedFragment
+        reloadedBoth.fragmentFunction = capturedFragment
         descriptorCandidates.append((
-            name: "reloaded_sdf_vertex_no_bleed_fragment",
+            name: "reloaded_sdf_vertex_captured_fragment",
             descriptor: reloadedBoth))
 
         let customPair = try copyCapturedDescriptor()
@@ -6208,7 +6333,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 69,
+                    "schemaVersion": 70,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -6216,7 +6341,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "reloadedVertexFunction":
                         sdfVertex.name,
                     "reloadedFragmentFunction":
-                        noBleedFragment.name,
+                        capturedFragment.name,
                     "attachmentFormats":
                         attachmentFormats,
                     "candidates": buildRecords,
@@ -6271,6 +6396,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             (
                 name: "final-color",
                 fragment: customFinalColorTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "bleed",
+                fragment: customBleedTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba16Float
             ),
             (
@@ -6379,7 +6509,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         capturedDescriptor),
                 "reloadedVertexFunction": sdfVertex.name,
                 "reloadedFragmentFunction":
-                    noBleedFragment.name,
+                    capturedFragment.name,
                 "shaderSourceUTF8Bytes":
                     independentGlassShaderSource.utf8.count,
                 "attachmentFormats": attachmentFormats,
@@ -6393,7 +6523,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     ) -> [ReplayCommand] {
         guard let glassIndex = commands.firstIndex(where: {
             if case .pipeline(let pipeline) = $0 {
-                return pipeline.label?.contains("_Tghz") == true
+                return isGlassPipeline(pipeline)
             }
             return false
         }) else {
@@ -6633,7 +6763,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 69,
+                "schemaVersion": 70,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -6826,7 +6956,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             switch command {
             case .pipeline(let pipeline):
                 currentPipelineIsGlass =
-                    pipeline.label?.contains("_Tghz") == true
+                    isGlassPipeline(pipeline)
             case .fragmentBuffer(
                 let buffer,
                 let offset,
@@ -6925,7 +7055,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             switch command {
             case .pipeline(let pipeline):
                 currentPipelineIsGlass =
-                    pipeline.label?.contains("_Tghz") == true
+                    isGlassPipeline(pipeline)
             case .fragmentTexture(let texture, let index):
                 if index == 3 {
                     activeSource = texture
@@ -7549,8 +7679,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let zeroHalf = halfBytes(0x0000)
         let halfHalf = halfBytes(0x3800)
         let oneHalf = halfBytes(0x3c00)
+        let zeroFloat = floatBytes(0x0000_0000)
         let oneFloat = floatBytes(0x3f80_0000)
-        let interventions = [
+        var interventions = [
             GlassUniformIntervention(
                 name: "simple-refraction",
                 edits: [
@@ -7609,6 +7740,58 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     edit("shadow_opacity", 238, oneHalf),
                 ]),
         ]
+        let usesEdgeBleed = pass.commands.contains { command in
+            guard case .pipeline(let pipeline) = command else {
+                return false
+            }
+            return pipeline.label?.contains("_Tghs") == true
+        }
+        if usesEdgeBleed {
+            var neutralBleedDarken = zeroHalf
+            neutralBleedDarken.append(oneHalf)
+            interventions.append(contentsOf: [
+                GlassUniformIntervention(
+                    name: "edge-bleed-opacity-zero",
+                    edits: [
+                        edit(
+                            "edge_bleed_opacity",
+                            228,
+                            zeroHalf),
+                    ]),
+                GlassUniformIntervention(
+                    name: "edge-bleed-opacity-one",
+                    edits: [
+                        edit(
+                            "edge_bleed_opacity",
+                            228,
+                            oneHalf),
+                    ]),
+                GlassUniformIntervention(
+                    name: "edge-bleed-amount-zero",
+                    edits: [
+                        edit(
+                            "edge_bleed_amount",
+                            96,
+                            zeroFloat),
+                    ]),
+                GlassUniformIntervention(
+                    name: "edge-bleed-blur-zero",
+                    edits: [
+                        edit(
+                            "edge_bleed_blur_radius",
+                            92,
+                            zeroFloat),
+                    ]),
+                GlassUniformIntervention(
+                    name: "edge-bleed-darken-neutral",
+                    edits: [
+                        edit(
+                            "bleed_darken",
+                            232,
+                            neutralBleedDarken),
+                    ]),
+            ])
+        }
 
         var records: [[String: Any]] = []
         for intervention in interventions {
@@ -7738,7 +7921,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func containsGlassPipeline(_ pass: ReplayPass) -> Bool {
             for command in pass.commands {
                 if case .pipeline(let state) = command,
-                   state.label?.contains("_Tghz") == true
+                   isGlassPipeline(state)
                 {
                     return true
                 }
@@ -10919,7 +11102,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 69,
+                    "schemaVersion": 70,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -10935,7 +11118,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 69,
+            "schemaVersion": 70,
             "materialProfileEvidence": [
                 "material": material.rawValue,
                 "requestedAppearance": appearance.rawValue,

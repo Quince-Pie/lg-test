@@ -669,8 +669,8 @@ jobs:
           root = pathlib.Path("introspection")
           with (root / "runtime.json").open(encoding="utf-8") as stream:
               runtime = json.load(stream)
-          if runtime.get("schemaVersion") != 69:
-              raise SystemExit("introspection schema is not 69")
+          if runtime.get("schemaVersion") != 70:
+              raise SystemExit("introspection schema is not 70")
 
           profile = runtime.get("materialProfileEvidence", {})
           if (
@@ -682,7 +682,7 @@ jobs:
               ) is not True
           ):
               raise SystemExit(
-                  "schema-69 material profile differs: "
+                  "schema-70 material profile differs: "
                   f"{profile}"
               )
 
@@ -696,7 +696,7 @@ jobs:
               or background.get("rows") != 1024
           ):
               raise SystemExit(
-                  "schema-69 diagnostic background metadata differs"
+                  "schema-70 diagnostic background metadata differs"
               )
 
           install = runtime.get("sdfGeneratorEvidence", {}).get(
@@ -733,7 +733,7 @@ jobs:
               )
           ):
               raise SystemExit(
-                  "schema-69 Metal command-provenance hooks differ: "
+                  "schema-70 Metal command-provenance hooks differ: "
                   f"{install}"
               )
 
@@ -766,101 +766,220 @@ jobs:
               or command_provenance["blitEncoderCount"] < 1
           ):
               raise SystemExit(
-                  "schema-69 Metal command provenance differs: "
+                  "schema-70 Metal command provenance differs: "
                   f"{command_provenance}"
               )
 
           downsample = runtime.get(
               "variableBlurDownsampleEvidence", {}
           )
-          candidates = downsample.get("candidates", [])
-          candidate_names = {
-              candidate.get("function")
-              for candidate in candidates
-              if isinstance(candidate, dict)
-          }
-          if (
-              downsample.get("schemaVersion") != 2
-              or downsample.get("executed") is not True
-              or downsample.get("uniformLayoutBytes") != 16
-              or candidate_names
-              != {
-                  "variable_blur_downsample_compute_agx2",
-                  "variable_blur_downsample_compute",
+          if profile["material"] == "clear":
+              candidates = downsample.get("candidates", [])
+              candidate_names = {
+                  candidate.get("function")
+                  for candidate in candidates
+                  if isinstance(candidate, dict)
               }
-          ):
-              raise SystemExit(
-                  "schema-69 native downsample replay metadata differs"
-              )
-          candidates_by_name = {
-              candidate["function"]: candidate
-              for candidate in candidates
-          }
-          for name, candidate in candidates_by_name.items():
-              half_trace = candidate.get("halfTrace", {})
               if (
-                  candidate.get("executed") is not True
-                  or candidate.get("outputBytes") != 224 * 224 * 4
-                  or half_trace.get("executed") is not True
-                  or half_trace.get("outputBytes") != 224 * 224 * 8
+                  downsample.get("schemaVersion") != 2
+                  or downsample.get("executed") is not True
+                  or downsample.get("uniformLayoutBytes") != 16
+                  or candidate_names
+                  != {
+                      "variable_blur_downsample_compute_agx2",
+                      "variable_blur_downsample_compute",
+                  }
               ):
                   raise SystemExit(
-                      "schema-69 native downsample candidate failed: "
-                      f"{name}: {candidate}"
+                      "schema-70 clear downsample replay metadata differs"
                   )
-              for record in (candidate, half_trace):
-                  path = root / str(record.get("outputFile", ""))
+              candidates_by_name = {
+                  candidate["function"]: candidate
+                  for candidate in candidates
+              }
+              for name, candidate in candidates_by_name.items():
+                  half_trace = candidate.get("halfTrace", {})
+                  if (
+                      candidate.get("executed") is not True
+                      or candidate.get("outputBytes")
+                          != 224 * 224 * 4
+                      or half_trace.get("executed") is not True
+                      or half_trace.get("outputBytes")
+                          != 224 * 224 * 8
+                  ):
+                      raise SystemExit(
+                          "schema-70 clear downsample candidate failed: "
+                          f"{name}: {candidate}"
+                      )
+                  for record in (candidate, half_trace):
+                      path = root / str(
+                          record.get("outputFile", "")
+                      )
+                      if (
+                          not path.is_file()
+                          or path.stat().st_size
+                              != record.get("outputBytes")
+                      ):
+                          raise SystemExit(
+                              "schema-70 clear downsample payload "
+                              f"differs: {path}"
+                          )
+
+              in_place = downsample.get("inPlaceCandidates", [])
+              expected_modes = {
+                  "in-place-shared-mip1",
+                  "in-place-private-mip1",
+              }
+              if {
+                  candidate.get("mode")
+                  for candidate in in_place
+                  if isinstance(candidate, dict)
+              } != expected_modes:
+                  raise SystemExit(
+                      "schema-70 clear in-place modes differ"
+                  )
+              for candidate in in_place:
+                  if (
+                      candidate.get("executed") is not True
+                      or candidate.get(
+                          "sourceAndDestinationAreSameTexture"
+                      ) is not True
+                      or candidate.get("sourceLevel") != 0
+                      or candidate.get("destinationLevel") != 1
+                      or candidate.get("mipmapLevelCount") != 2
+                      or candidate.get("outputBytes")
+                          != 224 * 224 * 4
+                  ):
+                      raise SystemExit(
+                          "schema-70 clear in-place replay failed: "
+                          f"{candidate}"
+                      )
+                  path = root / str(
+                      candidate.get("outputFile", "")
+                  )
                   if (
                       not path.is_file()
                       or path.stat().st_size
-                          != record.get("outputBytes")
+                          != candidate.get("outputBytes")
                   ):
                       raise SystemExit(
-                          "schema-69 native downsample payload differs: "
+                          "schema-70 clear in-place payload differs: "
                           f"{path}"
                       )
-
-          in_place = downsample.get("inPlaceCandidates", [])
-          expected_modes = {
-              "in-place-shared-mip1",
-              "in-place-private-mip1",
-          }
-          if {
-              candidate.get("mode")
-              for candidate in in_place
-              if isinstance(candidate, dict)
-          } != expected_modes:
-              raise SystemExit(
-                  "schema-69 in-place downsample modes differ"
-              )
-          for candidate in in_place:
+          else:
               if (
-                  candidate.get("executed") is not True
-                  or candidate.get(
-                      "sourceAndDestinationAreSameTexture"
-                  ) is not True
-                  or candidate.get("sourceLevel") != 0
-                  or candidate.get("destinationLevel") != 1
-                  or candidate.get("mipmapLevelCount") != 2
-                  or candidate.get("outputBytes") != 224 * 224 * 4
+                  downsample.get("schemaVersion") != 2
+                  or downsample.get("executed") is not False
               ):
                   raise SystemExit(
-                      "schema-69 in-place downsample failed: "
-                      f"{candidate}"
+                      "schema-70 regular downsample classification "
+                      f"differs: {downsample}"
                   )
-              path = root / str(candidate.get("outputFile", ""))
+
+              records = command_provenance["records"]
+              copy_label = (
+                  "com.apple.coreanimation."
+                  "variable_blur_copy_base_mip_compute"
+              )
+              agx2_label = (
+                  "com.apple.coreanimation."
+                  "variable_blur_downsample_compute_agx2"
+              )
+              def label(record):
+                  pipeline = record.get("pipeline", {})
+                  return (
+                      pipeline.get("label")
+                      if isinstance(pipeline, dict)
+                      else None
+                  )
+              copy_uniforms = [
+                  record for record in records
+                  if label(record) == copy_label
+                  and record.get("kind") == "buffer"
+                  and record.get("index") == 0
+              ]
+              copy_dispatches = [
+                  record for record in records
+                  if label(record) == copy_label
+                  and record.get("kind")
+                      == "dispatchThreadgroups"
+              ]
+              expected_copy = (
+                  "c0ffc0ff0000000000000000ff00ff00"
+                  "80018001c000c00001000000"
+              )
               if (
-                  not path.is_file()
-                  or path.stat().st_size
-                      != candidate.get("outputBytes")
+                  len(copy_uniforms) != 1
+                  or len(copy_dispatches) != 1
+                  or not copy_uniforms[0].get(
+                      "payload", {}
+                  ).get("hex", "").startswith(expected_copy)
+                  or copy_dispatches[0].get("grid")
+                      != [12, 12, 1]
+                  or copy_dispatches[0].get(
+                      "threadsPerThreadgroup"
+                  ) != [20, 20, 1]
               ):
                   raise SystemExit(
-                      "schema-69 in-place payload differs: "
-                      f"{path}"
+                      "schema-70 regular copy-base topology differs"
+                  )
+
+              agx2_uniforms = [
+                  record for record in records
+                  if label(record) == agx2_label
+                  and record.get("kind") == "buffer"
+                  and record.get("index") == 0
+              ]
+              agx2_dispatches = [
+                  record for record in records
+                  if label(record) == agx2_label
+                  and record.get("kind")
+                      == "dispatchThreadgroups"
+              ]
+              expected_uniforms = (
+                  "0100020060006000abaa2a3cabaa2a3c",
+                  "0200030030003000abaaaa3cabaaaa3c",
+                  "0300040018001800abaa2a3dabaa2a3d",
+                  "040005000c000c00abaaaa3dabaaaa3d",
+              )
+              expected_grids = (
+                  [6, 3, 1],
+                  [3, 2, 1],
+                  [2, 1, 1],
+                  [1, 1, 1],
+              )
+              if (
+                  len(agx2_uniforms) != 4
+                  or len(agx2_dispatches) != 4
+                  or any(
+                      not record.get("payload", {}).get(
+                          "hex", ""
+                      ).startswith(expected)
+                      for record, expected in zip(
+                          agx2_uniforms,
+                          expected_uniforms,
+                          strict=True,
+                      )
+                  )
+                  or any(
+                      record.get("grid") != grid
+                      or record.get("threadsPerThreadgroup")
+                          != [16, 16, 1]
+                      for record, grid in zip(
+                          agx2_dispatches,
+                          expected_grids,
+                          strict=True,
+                      )
+                  )
+              ):
+                  raise SystemExit(
+                      "schema-70 regular AGX2 topology differs"
                   )
 
           expected_sizes = {
               "carenderer-live-tree-glass-final-color-numeric-trace-rgba16f.raw":
+                  1024 * 1024 * 8,
+              "carenderer-live-tree-glass-bleed-numeric-trace-rgba16f.raw":
                   1024 * 1024 * 8,
               "carenderer-live-tree-glass-color-stages-a-numeric-trace-rgba32ui.raw":
                   1024 * 1024 * 16,
@@ -903,7 +1022,7 @@ jobs:
               or exact_replay.get("maximumChannelDelta") != 0
           ):
               raise SystemExit(
-                  "schema-69 captured pass replay is not exact: "
+                  "schema-70 captured pass replay is not exact: "
                   f"{exact_replay}"
               )
           independent = exact_replay.get(
@@ -914,6 +1033,31 @@ jobs:
               for candidate in independent.get("candidates", [])
               if isinstance(candidate, dict)
           }
+          for candidate_name in (
+              "captured_descriptor_rebuild",
+              "reloaded_captured_fragment",
+              "reloaded_sdf_vertex_captured_fragment",
+          ):
+              candidate = profiles.get(candidate_name, {})
+              candidate_comparison = candidate.get(
+                  "comparison", {}
+              )
+              if (
+                  candidate_comparison.get("compared") is not True
+                  or candidate_comparison.get(
+                      "exactByteMatch"
+                  ) is not True
+                  or candidate_comparison.get(
+                      "mismatchedByteCount"
+                  ) != 0
+                  or candidate_comparison.get(
+                      "maximumChannelDelta"
+                  ) != 0
+              ):
+                  raise SystemExit(
+                      "schema-70 reloaded Apple material is not "
+                      f"byte-exact: {candidate_name}: {candidate}"
+                  )
           profile_replay = profiles.get(
               "custom_profile_fragment_replay", {}
           )
@@ -931,7 +1075,7 @@ jobs:
               ) != 0
           ):
               raise SystemExit(
-                  "schema-69 independent material replay is not "
+                  "schema-70 independent material replay is not "
                   "byte-exact: "
                   f"{profile_replay}"
               )
@@ -939,9 +1083,38 @@ jobs:
           texture_evidence = runtime.get("carendererEvidence", {}).get(
               "metalTextureSnapshots", {}
           )
+          snapshots = texture_evidence.get("snapshots", [])
+          if profile["material"] == "clear":
+              copy_side = 448
+              pyramid_side = 448
+              pyramid_levels = 2
+              glass_fragment = (
+                  "glass_background_sdf_no_bleed_lph"
+              )
+              expected_levels = {
+                  0: (448, 448, 448 * 448 * 4),
+                  1: (224, 224, 224 * 224 * 4),
+              }
+              minimum_distinct_rgb = 50_000
+          else:
+              copy_side = 256
+              pyramid_side = 384
+              pyramid_levels = 6
+              glass_fragment = "glass_background_sdf_lph"
+              expected_levels = {
+                  0: (384, 384, 384 * 384 * 4),
+                  1: (192, 192, 192 * 192 * 4),
+                  2: (96, 96, 96 * 96 * 4),
+                  3: (48, 48, 48 * 48 * 4),
+                  4: (24, 24, 24 * 24 * 4),
+                  5: (12, 12, 12 * 12 * 4),
+              }
+              minimum_distinct_rgb = 25_000
+
           copy_base_inputs = []
           source_candidates = []
-          for snapshot in texture_evidence.get("snapshots", []):
+          diagnostic_sources = []
+          for snapshot in snapshots:
               pipeline = snapshot.get("pipeline", {})
               descriptor = snapshot.get("pipeline", {}).get(
                   "creationDescriptor", {}
@@ -952,24 +1125,33 @@ jobs:
                      "variable_blur_copy_base_mip_compute"
                   and snapshot.get("index") == 0
                   and snapshot.get("pixelFormat") == 80
-                  and snapshot.get("width") == 448
-                  and snapshot.get("height") == 448
+                  and snapshot.get("width") == copy_side
+                  and snapshot.get("height") == copy_side
                   and snapshot.get("mipmapLevelCount") == 1
               ):
                   copy_base_inputs.append(snapshot)
               if (
                   descriptor.get("fragmentFunction")
-                  == "glass_background_sdf_no_bleed_lph"
+                  == glass_fragment
                   and snapshot.get("index") == 3
                   and snapshot.get("pixelFormat") == 80
-                  and snapshot.get("width") == 448
-                  and snapshot.get("height") == 448
-                  and snapshot.get("mipmapLevelCount") == 2
+                  and snapshot.get("width") == pyramid_side
+                  and snapshot.get("height") == pyramid_side
+                  and snapshot.get("mipmapLevelCount")
+                      == pyramid_levels
               ):
                   source_candidates.append(snapshot)
+              if (
+                  snapshot.get("pixelFormat") == 70
+                  and snapshot.get("width") == 1024
+                  and snapshot.get("height") == 1024
+                  and "PBGRAXm_TimgA2Xhfc_Ixrg"
+                      in str(pipeline.get("label", ""))
+              ):
+                  diagnostic_sources.append(snapshot)
           if len(copy_base_inputs) != 1:
               raise SystemExit(
-                  "schema-69 copy-base input texture is not unique: "
+                  "schema-70 copy-base input texture is not unique: "
                   f"{len(copy_base_inputs)} candidates"
               )
           copy_base_input = copy_base_inputs[0]
@@ -979,28 +1161,43 @@ jobs:
           if (
               copy_base_input.get("rawCapture") is not True
               or copy_base_input.get("rawBytes")
-                  != 448 * 448 * 4
+                  != copy_side * copy_side * 4
               or not copy_base_path.is_file()
               or copy_base_path.stat().st_size
-                  != 448 * 448 * 4
+                  != copy_side * copy_side * 4
           ):
               raise SystemExit(
-                  "schema-69 copy-base input payload differs: "
+                  "schema-70 copy-base input payload differs: "
                   f"{copy_base_input}"
               )
           if len(source_candidates) != 1:
               raise SystemExit(
-                  "schema-69 live backdrop source texture is not unique: "
+                  "schema-70 live backdrop source texture is not unique: "
                   f"{len(source_candidates)} candidates"
+              )
+          if len(diagnostic_sources) != 1:
+              raise SystemExit(
+                  "schema-70 diagnostic source texture is not unique: "
+                  f"{len(diagnostic_sources)} candidates"
+              )
+          diagnostic_path = root / str(
+              diagnostic_sources[0].get("rawFile", "")
+          )
+          if (
+              diagnostic_sources[0].get("rawCapture") is not True
+              or diagnostic_sources[0].get("rawBytes")
+                  != 1024 * 1024 * 4
+              or not diagnostic_path.is_file()
+              or diagnostic_path.stat().st_size
+                  != 1024 * 1024 * 4
+          ):
+              raise SystemExit(
+                  "schema-70 diagnostic source payload differs"
               )
 
           levels = {
               level.get("level"): level
               for level in source_candidates[0].get("mipSnapshots", [])
-          }
-          expected_levels = {
-              0: (448, 448, 448 * 448 * 4),
-              1: (224, 224, 224 * 224 * 4),
           }
           for level, (width, height, expected_size) in (
               expected_levels.items()
@@ -1013,7 +1210,7 @@ jobs:
                   or record.get("rawBytes") != expected_size
               ):
                   raise SystemExit(
-                      f"schema-69 backdrop mip {level} metadata differs"
+                      f"schema-70 backdrop mip {level} metadata differs"
                   )
               path = root / str(record.get("rawFile", ""))
               if (
@@ -1021,7 +1218,7 @@ jobs:
                   or path.stat().st_size != expected_size
               ):
                   raise SystemExit(
-                      f"schema-69 backdrop mip {level} payload differs"
+                      f"schema-70 backdrop mip {level} payload differs"
                   )
 
           mip_zero = (
@@ -1031,9 +1228,43 @@ jobs:
               mip_zero[offset : offset + 3]
               for offset in range(0, len(mip_zero), 4)
           })
-          if distinct_rgb < 50_000:
+          if distinct_rgb < minimum_distinct_rgb:
               raise SystemExit(
-                  "schema-69 backdrop mip zero lacks identification rank: "
+                  "schema-70 backdrop mip zero lacks identification rank: "
                   f"{distinct_rgb} distinct RGB texels"
               )
+
+          if profile["material"] == "regular":
+              buffer_snapshots = runtime.get(
+                  "carendererEvidence", {}
+              ).get("metalBufferSnapshots", {}).get(
+                  "snapshots", []
+              )
+              downsample_four = [
+                  snapshot for snapshot in buffer_snapshots
+                  if snapshot.get("stage") == "fragment"
+                  and snapshot.get("index") == 1
+                  and snapshot.get("pipeline", {}).get(
+                      "creationDescriptor", {}
+                  ).get("fragmentFunction")
+                      == "downsample_4_frag_lph"
+              ]
+              expected_downsample_four = (
+                  "000080ba0000803a0000803a0000803a"
+                  "000080ba000080ba0000803a000080ba"
+                  "00000000000000000000000000000000"
+                  "00000000000000000000000000000000"
+                  "00340034003400340000000000000000"
+              )
+              if (
+                  len(downsample_four) != 1
+                  or not downsample_four[0].get(
+                      "payload", {}
+                  ).get("hex", "").startswith(
+                      expected_downsample_four
+                  )
+              ):
+                  raise SystemExit(
+                      "schema-70 regular downsample-four uniforms differ"
+                  )
           PY

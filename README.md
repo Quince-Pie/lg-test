@@ -1238,6 +1238,23 @@ effective appearance. CI independently requires the recovered profile fragment
 to match Apple's live render byte for byte in every matrix job; it does not
 pool profiles, tolerate a channel delta, or infer a dark or regular profile
 from the already exact clear-light capture.
+Schema 70 follows the evidence that the two materials are separate native
+paths. It recognizes both the clear `_Tghz`/no-bleed pipeline and the regular
+`_Tghs`/edge-bleed pipeline, reloads the exact captured QuartzCore fragment
+instead of hard-coding the clear symbol, and requires the rebuilt descriptor,
+reloaded fragment, reloaded vertex/fragment pair, and portable replay to match
+the live pass with zero byte or channel tolerance. The portable fragment now
+implements the AIR-observed regular edge-bleed sample, color matrix, distance
+window, luminance-darkening curve, and half/float mix branch. A dedicated
+post-bleed numeric trace and regular-only uniform interventions isolate that
+stage independently.
+
+The backdrop gate is also material-specific. Clear retains its exhaustive
+448-to-224 native compute and in-place controls. Regular instead requires the
+captured 1024-to-256 `downsample_4_frag_lph` coefficients, the centered
+256-to-384 copy-base dispatch, and every raw level of the six-mip
+384/192/96/48/24/12 chain with all four AGX2 uniform and dispatch records.
+Neither branch is treated as a fallback for the other.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
