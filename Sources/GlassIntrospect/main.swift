@@ -4954,7 +4954,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 64,
+            "schemaVersion": 65,
             "capture": capture,
             "phase": phase,
         ]
@@ -5187,7 +5187,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 64,
+                    "schemaVersion": 65,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5612,7 +5612,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 64,
+                "schemaVersion": 65,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8668,6 +8668,99 @@ private func variableBlurDownsampleEvidence(
         record["maximumCodeDelta"] = maximumCodeDelta
         record["exact"] = mismatchedBytes == 0
         record["firstMismatches"] = firstMismatches
+
+        var halfTrace: [String: Any] = [
+            "pixelFormat": MTLPixelFormat.rgba16Float.rawValue,
+            "width": 224,
+            "height": 224,
+            "bytesPerPixel": 8,
+        ]
+        let halfDescriptor =
+            MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: .rgba16Float,
+                width: 224,
+                height: 224,
+                mipmapped: false)
+        halfDescriptor.storageMode = .shared
+        halfDescriptor.usage = [.shaderWrite]
+        if let halfTexture = device.makeTexture(
+                descriptor: halfDescriptor),
+           let halfQueue = device.makeCommandQueue(),
+           let halfCommandBuffer =
+                halfQueue.makeCommandBuffer(),
+           let halfEncoder =
+                halfCommandBuffer.makeComputeCommandEncoder()
+        {
+            halfEncoder.label =
+                "Liquid Glass variable-blur half trace"
+            halfEncoder.setComputePipelineState(pipeline)
+            halfEncoder.setTexture(sourceTexture, index: 0)
+            halfEncoder.setTexture(halfTexture, index: 1)
+            halfEncoder.setBytes(
+                &uniforms,
+                length:
+                    MemoryLayout<VariableBlurDownsampleUniforms>.size,
+                index: 0)
+            halfEncoder.setImageblockWidth(
+                candidate.imageblockWidth,
+                height: candidate.imageblockHeight)
+            halfEncoder.dispatchThreadgroups(
+                threadgroups,
+                threadsPerThreadgroup: threads)
+            halfEncoder.endEncoding()
+            halfCommandBuffer.commit()
+            halfCommandBuffer.waitUntilCompleted()
+            if halfCommandBuffer.status == .completed {
+                var halfOutput = Data(
+                    count: 224 * 224 * 8)
+                halfOutput.withUnsafeMutableBytes { bytes in
+                    if let baseAddress = bytes.baseAddress {
+                        halfTexture.getBytes(
+                            baseAddress,
+                            bytesPerRow: 224 * 8,
+                            from: MTLRegionMake2D(
+                                0,
+                                0,
+                                224,
+                                224),
+                            mipmapLevel: 0)
+                    }
+                }
+                let halfFilename =
+                    "variable-blur-downsample-"
+                    + candidate.functionName
+                    + "-rgba16f.raw"
+                do {
+                    try halfOutput.write(
+                        to: outputDirectory.appendingPathComponent(
+                            halfFilename),
+                        options: .atomic)
+                } catch {
+                    halfTrace["outputWriteError"] =
+                        error.localizedDescription
+                }
+                let halfBytes = [UInt8](halfOutput)
+                halfTrace["executed"] = true
+                halfTrace["outputFile"] = halfFilename
+                halfTrace["outputBytes"] =
+                    halfOutput.count
+                halfTrace["outputFNV1a64"] =
+                    fnv1a64(halfBytes)
+            } else {
+                halfTrace["executed"] = false
+                halfTrace["reason"] =
+                    halfCommandBuffer.error?
+                        .localizedDescription
+                    ?? "half-trace compute command failed"
+                halfTrace["commandBufferStatus"] =
+                    halfCommandBuffer.status.rawValue
+            }
+        } else {
+            halfTrace["executed"] = false
+            halfTrace["reason"] =
+                "half-trace compute resources are unavailable"
+        }
+        record["halfTrace"] = halfTrace
         return record
     }
 
@@ -9180,7 +9273,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 64,
+                    "schemaVersion": 65,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -9196,7 +9289,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 64,
+            "schemaVersion": 65,
             "diagnosticBackgroundEvidence": [
                 "pattern": diagnosticBackgroundPattern,
                 "cellWidthPoints":
@@ -9249,12 +9342,6 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 "recommendedMaxWorkingSetSize":
                     device.recommendedMaxWorkingSetSize,
             ]
-            writeProgress("before-variable-blur-downsample-evidence")
-            report["variableBlurDownsampleEvidence"] =
-                variableBlurDownsampleEvidence(
-                    device: device,
-                    outputDirectory: outputDirectory)
-            writeProgress("after-variable-blur-downsample-evidence")
             do {
                 report["halfDotEvidence"] = try writeHalfDotEvidence(
                     device: device,
@@ -9292,6 +9379,14 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     capture: "carenderer-live-tree",
                     outputDirectory: outputDirectory)
                 writeProgress("after-carenderer-evidence")
+                writeProgress(
+                    "before-variable-blur-downsample-evidence")
+                report["variableBlurDownsampleEvidence"] =
+                    variableBlurDownsampleEvidence(
+                        device: device,
+                        outputDirectory: outputDirectory)
+                writeProgress(
+                    "after-variable-blur-downsample-evidence")
                 if let failure = MetalUniformProbe.shared
                     .independentReplayGPUFailureDescription()
                 {

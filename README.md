@@ -1192,6 +1192,13 @@ captured first mip. The recorded imageblock dimensions, threadgroup geometry,
 pipeline limits, hashes, mismatch counts, maximum code delta, and first
 counterexamples distinguish the production AGX2 kernel from the generic
 fallback and from software interpretations of fast binary16 contraction.
+Schema 65 schedules that native replay after the live CARenderer snapshot has
+materialized both raw source levels, and repeats each Apple kernel with an
+RGBA16Float destination. The latter preserves every final binary16 word before
+BGRA8 conversion, making the AGX2 backend's fast-half reassociation and
+contraction directly testable instead of inferring it through one-code output
+intervals. CI requires both generic and AGX2 replays and both raw formats to
+execute with their exact declared sizes.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
