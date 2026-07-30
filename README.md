@@ -1279,6 +1279,14 @@ Schema 74 adds a direct half-output trace for the inner refraction sample.
 Together with the existing outer and edge half-output traces, it isolates
 relaxed half-coordinate lowering in every production sampler call without
 having to invert the later refraction mix.
+Schema 75 isolates the refraction operands inside the unchanged compiled
+profile-stage function. Runtime-only threshold edits force the mix amount to
+zero across the complete covered face, retain its live threshold with opacity
+one, or force it to one across the face. The existing packed source-stage
+pipeline records each result without recompiling a diagnostic fragment. These
+three traces expose the optimizer's effective inner sample, mixed result, and
+outer sample in one compiler context, while paired Apple/custom final renders
+make each uniform intervention an independent held-out branch gate.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

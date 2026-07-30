@@ -6487,7 +6487,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 74,
+            "schemaVersion": 75,
             "capture": capture,
             "phase": phase,
         ]
@@ -6767,7 +6767,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 74,
+                    "schemaVersion": 75,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -7025,6 +7025,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private func replayGlassNumericTrace(
         pass: ReplayPass,
         queue: MTLCommandQueue,
+        commands commandOverride: [ReplayCommand]? = nil,
         replacement: MTLRenderPipelineState,
         pixelFormat: MTLPixelFormat,
         glassFragmentTextureOverrides:
@@ -7072,7 +7073,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "reason": "numeric-trace encoder unavailable",
             ]
         }
-        let commands = glassTraceCommands(pass.commands)
+        let commands = glassTraceCommands(
+            commandOverride ?? pass.commands)
         let summary = encodeReplayCommands(
             commands,
             with: encoder,
@@ -7242,7 +7244,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 74,
+                "schemaVersion": 75,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8112,6 +8114,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         preColor0: MTLTexture,
         queue: MTLCommandQueue,
         customPipeline: MTLRenderPipelineState,
+        sourceStageTracePipeline: MTLRenderPipelineState?,
         capture: String,
         outputDirectory: URL
     ) -> [String: Any] {
@@ -8160,6 +8163,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let oneHalf = halfBytes(0x3c00)
         let zeroFloat = floatBytes(0x0000_0000)
         let oneFloat = floatBytes(0x3f80_0000)
+        let negative512Float = floatBytes(0xc400_0000)
+        let negative511Float = floatBytes(0xc3ff_8000)
+        let positive511Float = floatBytes(0x43ff_8000)
+        let positive512Float = floatBytes(0x4400_0000)
         var interventions = [
             GlassUniformIntervention(
                 name: "simple-refraction",
@@ -8167,8 +8174,33 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     edit("complex_refraction", 256, zeroHalf),
                 ]),
             GlassUniformIntervention(
+                name: "inner-refraction-isolated",
+                edits: [
+                    edit(
+                        "refraction_threshold0",
+                        80,
+                        positive511Float),
+                    edit(
+                        "refraction_threshold1",
+                        84,
+                        positive512Float),
+                ]),
+            GlassUniformIntervention(
                 name: "outer-refraction-full",
                 edits: [
+                    edit("refraction_opacity", 240, oneHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "outer-refraction-isolated",
+                edits: [
+                    edit(
+                        "refraction_threshold0",
+                        80,
+                        negative512Float),
+                    edit(
+                        "refraction_threshold1",
+                        84,
+                        negative511Float),
                     edit("refraction_opacity", 240, oneHalf),
                 ]),
             GlassUniformIntervention(
@@ -8353,7 +8385,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 suffix:
                     "uniform-\(intervention.name)-custom",
                 outputDirectory: outputDirectory)
-            records.append([
+            var record: [String: Any] = [
                 "name": intervention.name,
                 "executed":
                     reference["executed"] as? Bool == true
@@ -8373,7 +8405,28 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     reference: reference,
                     candidate: candidate,
                     outputDirectory: outputDirectory),
-            ])
+            ]
+            if [
+                "inner-refraction-isolated",
+                "outer-refraction-full",
+                "outer-refraction-isolated",
+            ].contains(intervention.name),
+               let sourceStageTracePipeline
+            {
+                record["sourceStageTrace"] =
+                    replayGlassNumericTrace(
+                        pass: pass,
+                        queue: queue,
+                        commands: commands,
+                        replacement: sourceStageTracePipeline,
+                        pixelFormat: .rgba32Uint,
+                        capture: capture,
+                        name:
+                            "uniform-\(intervention.name)"
+                            + "-color-stages-a",
+                        outputDirectory: outputDirectory)
+            }
+            records.append(record)
             if candidate["executed"] as? Bool != true {
                 break
             }
@@ -8636,6 +8689,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         queue: queue,
                         customPipeline:
                             customProfile.pipeline,
+                        sourceStageTracePipeline:
+                            pipelineSet.numericTraces
+                                .first(where: {
+                                    $0.name == "color-stages-a"
+                                })?.pipeline,
                         capture: capture,
                         outputDirectory: outputDirectory)
                     independentGlassReplay[
@@ -11581,7 +11639,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 74,
+                    "schemaVersion": 75,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -11597,7 +11655,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 74,
+            "schemaVersion": 75,
             "materialProfileEvidence": [
                 "material": material.rawValue,
                 "requestedAppearance": appearance.rawValue,
