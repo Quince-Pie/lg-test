@@ -3492,9 +3492,35 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let report: [String: Any]
     }
 
+    private func writeIndependentGlassProgress(
+        capture: String,
+        phase: String,
+        candidate: String? = nil,
+        outputDirectory: URL
+    ) {
+        var progress: [String: Any] = [
+            "schemaVersion": 41,
+            "capture": capture,
+            "phase": phase,
+        ]
+        if let candidate {
+            progress["candidate"] = candidate
+        }
+        try? writeJSON(
+            progress,
+            to: outputDirectory.appendingPathComponent(
+                "independent-glass-progress.json"))
+    }
+
     private func makeIndependentGlassPipelines(
-        for pass: ReplayPass
+        for pass: ReplayPass,
+        capture: String,
+        outputDirectory: URL
     ) throws -> IndependentGlassPipelineSet {
+        writeIndependentGlassProgress(
+            capture: capture,
+            phase: "before-vertex-library",
+            outputDirectory: outputDirectory)
         guard let target =
                 pass.descriptor.colorAttachments[0]?.texture
         else {
@@ -3512,12 +3538,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let vertexLibrary = try device.makeLibrary(
             source: independentGlassVertexSource,
             options: options)
+        writeIndependentGlassProgress(
+            capture: capture,
+            phase: "after-vertex-library",
+            outputDirectory: outputDirectory)
         let quartzCoreLibraryURL = URL(
             fileURLWithPath:
                 "/System/Library/Frameworks/QuartzCore.framework"
                 + "/Versions/A/Resources/default.metallib")
         let quartzCoreLibrary = try device.makeLibrary(
             URL: quartzCoreLibraryURL)
+        writeIndependentGlassProgress(
+            capture: capture,
+            phase: "after-quartzcore-library",
+            outputDirectory: outputDirectory)
         guard let fragmentFunction =
                 quartzCoreLibrary.makeFunction(
                     name: "glass_background_sdf_lph")
@@ -3555,6 +3589,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
         }
         for functionName in vertexFunctionNames {
+            writeIndependentGlassProgress(
+                capture: capture,
+                phase: "before-pipeline-build",
+                candidate: functionName,
+                outputDirectory: outputDirectory)
             guard let vertexFunction =
                     vertexLibrary.makeFunction(name: functionName)
             else {
@@ -3599,6 +3638,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 candidates.append((
                     name: functionName,
                     pipeline: pipeline))
+                writeIndependentGlassProgress(
+                    capture: capture,
+                    phase: "after-pipeline-build",
+                    candidate: functionName,
+                    outputDirectory: outputDirectory)
                 buildRecords.append([
                     "name": functionName,
                     "built": true,
@@ -3633,6 +3677,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
         suffix: String,
         outputDirectory: URL
     ) -> [String: Any] {
+        writeIndependentGlassProgress(
+            capture: capture,
+            phase: "before-prefix-command-buffer",
+            candidate: suffix,
+            outputDirectory: outputDirectory)
         guard let commandBuffer = queue.makeCommandBuffer(),
               let blit = commandBuffer.makeBlitCommandEncoder()
         else {
@@ -3728,9 +3777,24 @@ private final class MetalUniformProbe: @unchecked Sendable {
             with: encoder,
             replacingGlassPipeline: replacement,
             stopAfterGlass: true)
+        writeIndependentGlassProgress(
+            capture: capture,
+            phase: "after-prefix-encoding",
+            candidate: suffix,
+            outputDirectory: outputDirectory)
         encoder.endEncoding()
         commandBuffer.commit()
+        writeIndependentGlassProgress(
+            capture: capture,
+            phase: "after-prefix-commit",
+            candidate: suffix,
+            outputDirectory: outputDirectory)
         commandBuffer.waitUntilCompleted()
+        writeIndependentGlassProgress(
+            capture: capture,
+            phase: "after-prefix-wait",
+            candidate: suffix,
+            outputDirectory: outputDirectory)
         guard commandBuffer.status == .completed else {
             return [
                 "executed": false,
@@ -3744,6 +3808,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             target,
             commandQueue: queue,
             capture: "\(capture)-\(suffix)",
+            outputDirectory: outputDirectory)
+        writeIndependentGlassProgress(
+            capture: capture,
+            phase: "after-prefix-snapshot",
+            candidate: suffix,
             outputDirectory: outputDirectory)
         return [
             "executed": true,
@@ -4040,7 +4109,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
         ]
         do {
             let pipelineSet =
-                try makeIndependentGlassPipelines(for: pass)
+                try makeIndependentGlassPipelines(
+                    for: pass,
+                    capture: capture,
+                    outputDirectory: outputDirectory)
             independentGlassReplay["pipelineBuild"] =
                 pipelineSet.report
             var candidateRecords: [[String: Any]] = []

@@ -66,15 +66,22 @@ jobs:
             python3 - <<'PY'
           import json
           import pathlib
+          import shutil
           import subprocess
 
           error_path = pathlib.Path("introspection/runtime-error.json")
+          stdout_path = pathlib.Path("introspection/runtime-stdout.log")
+          stderr_path = pathlib.Path("introspection/runtime-stderr.log")
           try:
-              result = subprocess.run(
-                  ["./glassintrospect", "introspection"],
-                  check=False,
-                  timeout=180,
-              )
+              with stdout_path.open("wb") as stdout_stream, \
+                   stderr_path.open("wb") as stderr_stream:
+                  result = subprocess.run(
+                      ["./glassintrospect", "introspection"],
+                      check=False,
+                      timeout=180,
+                      stdout=stdout_stream,
+                      stderr=stderr_stream,
+                  )
               if result.returncode != 0:
                   error_path.write_text(
                       json.dumps(
@@ -101,6 +108,22 @@ jobs:
                   + "\n",
                   encoding="utf-8",
               )
+          diagnostic_root = (
+              pathlib.Path.home()
+              / "Library"
+              / "Logs"
+              / "DiagnosticReports"
+          )
+          if diagnostic_root.is_dir():
+              for diagnostic in sorted(
+                  diagnostic_root.glob("glassintrospect*")
+              ):
+                  if diagnostic.is_file():
+                      shutil.copy2(
+                          diagnostic,
+                          pathlib.Path("introspection")
+                          / f"crash-{diagnostic.name}",
+                      )
           PY
           else
             echo "introspection app did not build" \
