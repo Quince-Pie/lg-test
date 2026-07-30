@@ -656,8 +656,8 @@ jobs:
           root = pathlib.Path("introspection")
           with (root / "runtime.json").open(encoding="utf-8") as stream:
               runtime = json.load(stream)
-          if runtime.get("schemaVersion") != 63:
-              raise SystemExit("introspection schema is not 63")
+          if runtime.get("schemaVersion") != 64:
+              raise SystemExit("introspection schema is not 64")
 
           background = runtime.get("diagnosticBackgroundEvidence", {})
           if (
@@ -669,7 +669,30 @@ jobs:
               or background.get("rows") != 512
           ):
               raise SystemExit(
-                  "schema-63 diagnostic background metadata differs"
+                  "schema-64 diagnostic background metadata differs"
+              )
+
+          downsample = runtime.get(
+              "variableBlurDownsampleEvidence", {}
+          )
+          candidates = downsample.get("candidates", [])
+          candidate_names = {
+              candidate.get("function")
+              for candidate in candidates
+              if isinstance(candidate, dict)
+          }
+          if (
+              downsample.get("schemaVersion") != 1
+              or downsample.get("executed") is not True
+              or downsample.get("uniformLayoutBytes") != 16
+              or candidate_names
+              != {
+                  "variable_blur_downsample_compute_agx2",
+                  "variable_blur_downsample_compute",
+              }
+          ):
+              raise SystemExit(
+                  "schema-64 native downsample replay metadata differs"
               )
 
           expected_sizes = {
@@ -726,7 +749,7 @@ jobs:
                   source_candidates.append(snapshot)
           if len(source_candidates) != 1:
               raise SystemExit(
-                  "schema-63 live backdrop source texture is not unique: "
+                  "schema-64 live backdrop source texture is not unique: "
                   f"{len(source_candidates)} candidates"
               )
 
@@ -749,7 +772,7 @@ jobs:
                   or record.get("rawBytes") != expected_size
               ):
                   raise SystemExit(
-                      f"schema-63 backdrop mip {level} metadata differs"
+                      f"schema-64 backdrop mip {level} metadata differs"
                   )
               path = root / str(record.get("rawFile", ""))
               if (
@@ -757,7 +780,7 @@ jobs:
                   or path.stat().st_size != expected_size
               ):
                   raise SystemExit(
-                      f"schema-63 backdrop mip {level} payload differs"
+                      f"schema-64 backdrop mip {level} payload differs"
                   )
 
           mip_zero = (
@@ -769,7 +792,7 @@ jobs:
           })
           if distinct_rgb < 50_000:
               raise SystemExit(
-                  "schema-63 backdrop mip zero lacks identification rank: "
+                  "schema-64 backdrop mip zero lacks identification rank: "
                   f"{distinct_rgb} distinct RGB texels"
               )
           PY

@@ -4954,7 +4954,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 63,
+            "schemaVersion": 64,
             "capture": capture,
             "phase": phase,
         ]
@@ -5187,7 +5187,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 63,
+                    "schemaVersion": 64,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5612,7 +5612,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 63,
+                "schemaVersion": 64,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -8354,6 +8354,332 @@ private func sdfLayerRenderEvidence(
     }
 }
 
+private struct VariableBlurDownsampleUniforms {
+    var sourceLevel: UInt16
+    var destinationLevel: UInt16
+    var destinationWidth: UInt16
+    var destinationHeight: UInt16
+    var destinationDX: Float
+    var destinationDY: Float
+}
+
+private func variableBlurDownsampleEvidence(
+    device: MTLDevice,
+    outputDirectory: URL
+) -> [String: Any] {
+    let sourceFilename =
+        "sdf-generator-carenderer-live-tree-texture-005"
+        + "-pf80-448x448.raw"
+    let referenceFilename =
+        "sdf-generator-carenderer-live-tree-texture-005"
+        + "-pf80-448x448-mip-01.raw"
+    let sourceURL = outputDirectory.appendingPathComponent(
+        sourceFilename)
+    let referenceURL = outputDirectory.appendingPathComponent(
+        referenceFilename)
+    var evidence: [String: Any] = [
+        "schemaVersion": 1,
+        "sourceFile": sourceFilename,
+        "referenceFile": referenceFilename,
+        "sourceWidth": 448,
+        "sourceHeight": 448,
+        "destinationWidth": 224,
+        "destinationHeight": 224,
+        "pixelFormat": MTLPixelFormat.bgra8Unorm.rawValue,
+        "uniformLayoutBytes":
+            MemoryLayout<VariableBlurDownsampleUniforms>.size,
+    ]
+
+    let sourceData: Data
+    let referenceData: Data
+    do {
+        sourceData = try Data(contentsOf: sourceURL)
+        referenceData = try Data(contentsOf: referenceURL)
+    } catch {
+        evidence["executed"] = false
+        evidence["reason"] =
+            "raw source/reference load failed: "
+            + error.localizedDescription
+        return evidence
+    }
+    guard sourceData.count == 448 * 448 * 4,
+          referenceData.count == 224 * 224 * 4
+    else {
+        evidence["executed"] = false
+        evidence["reason"] = "raw source/reference size differs"
+        evidence["sourceBytes"] = sourceData.count
+        evidence["referenceBytes"] = referenceData.count
+        return evidence
+    }
+    guard MemoryLayout<VariableBlurDownsampleUniforms>.size == 16
+    else {
+        evidence["executed"] = false
+        evidence["reason"] = "downsample uniform layout is not 16 bytes"
+        return evidence
+    }
+
+    let sourceDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .bgra8Unorm,
+        width: 448,
+        height: 448,
+        mipmapped: false)
+    sourceDescriptor.storageMode = .shared
+    sourceDescriptor.usage = [.shaderRead]
+    guard let sourceTexture = device.makeTexture(
+            descriptor: sourceDescriptor)
+    else {
+        evidence["executed"] = false
+        evidence["reason"] = "source texture allocation failed"
+        return evidence
+    }
+    sourceData.withUnsafeBytes { bytes in
+        if let baseAddress = bytes.baseAddress {
+            sourceTexture.replace(
+                region: MTLRegionMake2D(0, 0, 448, 448),
+                mipmapLevel: 0,
+                withBytes: baseAddress,
+                bytesPerRow: 448 * 4)
+        }
+    }
+
+    let quartzCoreLibraryURL = URL(
+        fileURLWithPath:
+            "/System/Library/Frameworks/QuartzCore.framework"
+            + "/Versions/A/Resources/default.metallib")
+    let library: MTLLibrary
+    do {
+        library = try device.makeLibrary(URL: quartzCoreLibraryURL)
+    } catch {
+        evidence["executed"] = false
+        evidence["reason"] =
+            "QuartzCore Metal library load failed: "
+            + error.localizedDescription
+        return evidence
+    }
+
+    struct Candidate {
+        let functionName: String
+        let threadsWidth: Int
+        let threadsHeight: Int
+        let imageblockWidth: Int
+        let imageblockHeight: Int
+    }
+    let candidates = [
+        Candidate(
+            functionName:
+                "variable_blur_downsample_compute_agx2",
+            threadsWidth: 16,
+            threadsHeight: 16,
+            imageblockWidth: 16,
+            imageblockHeight: 32),
+        Candidate(
+            functionName:
+                "variable_blur_downsample_compute",
+            threadsWidth: 8,
+            threadsHeight: 16,
+            imageblockWidth: 8,
+            imageblockHeight: 16),
+    ]
+
+    func run(_ candidate: Candidate) -> [String: Any] {
+        var record: [String: Any] = [
+            "function": candidate.functionName,
+            "threadsPerThreadgroup": [
+                candidate.threadsWidth,
+                candidate.threadsHeight,
+                1,
+            ],
+            "imageblockDimensions": [
+                candidate.imageblockWidth,
+                candidate.imageblockHeight,
+                1,
+            ],
+        ]
+        guard let function = library.makeFunction(
+                name: candidate.functionName)
+        else {
+            record["executed"] = false
+            record["reason"] = "QuartzCore function is unavailable"
+            return record
+        }
+        let pipeline: MTLComputePipelineState
+        do {
+            pipeline = try device.makeComputePipelineState(
+                function: function)
+        } catch {
+            record["executed"] = false
+            record["reason"] =
+                "compute pipeline creation failed: "
+                + error.localizedDescription
+            return record
+        }
+
+        let outputDescriptor =
+            MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: .bgra8Unorm,
+                width: 224,
+                height: 224,
+                mipmapped: false)
+        outputDescriptor.storageMode = .shared
+        outputDescriptor.usage = [.shaderWrite]
+        guard let outputTexture = device.makeTexture(
+                descriptor: outputDescriptor),
+              let queue = device.makeCommandQueue(),
+              let commandBuffer = queue.makeCommandBuffer(),
+              let encoder =
+                commandBuffer.makeComputeCommandEncoder()
+        else {
+            record["executed"] = false
+            record["reason"] = "compute resources are unavailable"
+            return record
+        }
+
+        var uniforms = VariableBlurDownsampleUniforms(
+            sourceLevel: 0,
+            destinationLevel: 0,
+            destinationWidth: 224,
+            destinationHeight: 224,
+            destinationDX: Float(1.0 / 224.0),
+            destinationDY: Float(1.0 / 224.0))
+        let threads = MTLSize(
+            width: candidate.threadsWidth,
+            height: candidate.threadsHeight,
+            depth: 1)
+        let imageblock = MTLSize(
+            width: candidate.imageblockWidth,
+            height: candidate.imageblockHeight,
+            depth: 1)
+        let threadgroups = MTLSize(
+            width:
+                (224 + candidate.imageblockWidth - 1)
+                / candidate.imageblockWidth,
+            height:
+                (224 + candidate.imageblockHeight - 1)
+                / candidate.imageblockHeight,
+            depth: 1)
+        record["threadgroups"] = [
+            threadgroups.width,
+            threadgroups.height,
+            threadgroups.depth,
+        ]
+        record["pipelineThreadExecutionWidth"] =
+            pipeline.threadExecutionWidth
+        record["pipelineMaxTotalThreadsPerThreadgroup"] =
+            pipeline.maxTotalThreadsPerThreadgroup
+        record["imageblockMemoryBytes"] =
+            pipeline.imageblockMemoryLength(
+                forDimensions: imageblock)
+
+        encoder.label =
+            "Liquid Glass variable-blur downsample replay"
+        encoder.setComputePipelineState(pipeline)
+        encoder.setTexture(sourceTexture, index: 0)
+        encoder.setTexture(outputTexture, index: 1)
+        encoder.setBytes(
+            &uniforms,
+            length:
+                MemoryLayout<VariableBlurDownsampleUniforms>.size,
+            index: 0)
+        encoder.setImageblockWidth(
+            candidate.imageblockWidth,
+            height: candidate.imageblockHeight)
+        encoder.dispatchThreadgroups(
+            threadgroups,
+            threadsPerThreadgroup: threads)
+        encoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        guard commandBuffer.status == .completed else {
+            record["executed"] = false
+            record["reason"] =
+                commandBuffer.error?.localizedDescription
+                ?? "compute command failed"
+            record["commandBufferStatus"] =
+                commandBuffer.status.rawValue
+            return record
+        }
+
+        var output = Data(count: 224 * 224 * 4)
+        output.withUnsafeMutableBytes { bytes in
+            if let baseAddress = bytes.baseAddress {
+                outputTexture.getBytes(
+                    baseAddress,
+                    bytesPerRow: 224 * 4,
+                    from: MTLRegionMake2D(0, 0, 224, 224),
+                    mipmapLevel: 0)
+            }
+        }
+        let filename =
+            "variable-blur-downsample-"
+            + candidate.functionName
+            + "-bgra8.raw"
+        do {
+            try output.write(
+                to: outputDirectory.appendingPathComponent(
+                    filename),
+                options: .atomic)
+        } catch {
+            record["outputWriteError"] =
+                error.localizedDescription
+        }
+
+        let outputBytes = [UInt8](output)
+        let referenceBytes = [UInt8](referenceData)
+        var mismatchedBytes = 0
+        var mismatchedPixels = 0
+        var maximumCodeDelta = 0
+        var firstMismatches: [[String: Any]] = []
+        for pixel in 0..<(224 * 224) {
+            var pixelMismatch = false
+            for channel in 0..<4 {
+                let offset = pixel * 4 + channel
+                let predicted = Int(outputBytes[offset])
+                let measured = Int(referenceBytes[offset])
+                let delta = abs(predicted - measured)
+                if delta != 0 {
+                    mismatchedBytes += 1
+                    pixelMismatch = true
+                    maximumCodeDelta =
+                        max(maximumCodeDelta, delta)
+                    if firstMismatches.count < 16 {
+                        firstMismatches.append([
+                            "x": pixel % 224,
+                            "y": pixel / 224,
+                            "channel": channel,
+                            "nativeReplayCode": predicted,
+                            "capturedMipCode": measured,
+                        ])
+                    }
+                }
+            }
+            if pixelMismatch {
+                mismatchedPixels += 1
+            }
+        }
+        record["executed"] = true
+        record["outputFile"] = filename
+        record["outputBytes"] = output.count
+        record["outputFNV1a64"] = fnv1a64(outputBytes)
+        record["referenceFNV1a64"] =
+            fnv1a64(referenceBytes)
+        record["observedBytes"] = output.count
+        record["mismatchedBytes"] = mismatchedBytes
+        record["mismatchedPixels"] = mismatchedPixels
+        record["maximumCodeDelta"] = maximumCodeDelta
+        record["exact"] = mismatchedBytes == 0
+        record["firstMismatches"] = firstMismatches
+        return record
+    }
+
+    evidence["executed"] = true
+    evidence["sourceFNV1a64"] =
+        fnv1a64([UInt8](sourceData))
+    evidence["referenceFNV1a64"] =
+        fnv1a64([UInt8](referenceData))
+    evidence["candidates"] = candidates.map(run)
+    return evidence
+}
+
 private func carendererOutputSnapshot(
     _ texture: MTLTexture,
     commandQueue: MTLCommandQueue,
@@ -8854,7 +9180,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 63,
+                    "schemaVersion": 64,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -8870,7 +9196,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 63,
+            "schemaVersion": 64,
             "diagnosticBackgroundEvidence": [
                 "pattern": diagnosticBackgroundPattern,
                 "cellWidthPoints":
@@ -8923,6 +9249,12 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 "recommendedMaxWorkingSetSize":
                     device.recommendedMaxWorkingSetSize,
             ]
+            writeProgress("before-variable-blur-downsample-evidence")
+            report["variableBlurDownsampleEvidence"] =
+                variableBlurDownsampleEvidence(
+                    device: device,
+                    outputDirectory: outputDirectory)
+            writeProgress("after-variable-blur-downsample-evidence")
             do {
                 report["halfDotEvidence"] = try writeHalfDotEvidence(
                     device: device,

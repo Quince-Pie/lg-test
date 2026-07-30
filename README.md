@@ -1183,6 +1183,15 @@ host-supplied offsets and binary16 weights in Apple's disassembled seven-sample
 downsample shader; disjoint spatial regions provide the protected bitwise
 holdout for that fit. Every pre-existing compositor, numeric-trace, held-out
 source, fixed-function blend, and image-comparison gate remains mandatory.
+Schema 64 loads QuartzCore's exported
+`variable_blur_downsample_compute_agx2` and
+`variable_blur_downsample_compute` kernels and runs both directly on the
+Schema 63 full-rank 448-by-448 source. It archives each native 224-by-224
+BGRA8Unorm result and compares every byte against the live source texture's
+captured first mip. The recorded imageblock dimensions, threadgroup geometry,
+pipeline limits, hashes, mismatch counts, maximum code delta, and first
+counterexamples distinguish the production AGX2 kernel from the generic
+fallback and from software interpretations of fast binary16 contraction.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
