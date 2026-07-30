@@ -141,8 +141,13 @@ private func serializedMirrorValue(
     depth: Int
 ) -> Any {
     let mirror = Mirror(reflecting: value)
-    guard depth < 3,
-          mirror.displayStyle != .class,
+    let expandable =
+        mirror.displayStyle == .struct
+        || mirror.displayStyle == .tuple
+        || mirror.displayStyle == .optional
+        || mirror.displayStyle == .enum
+    guard depth < 2,
+          expandable,
           !mirror.children.isEmpty
     else {
         return serializedRuntimeValue(value)
@@ -155,7 +160,7 @@ private func serializedMirrorValue(
                 String(describing: $0)
             }
                 ?? "none",
-        "children": mirror.children.prefix(64).map { child in
+        "children": mirror.children.prefix(16).map { child in
             [
                 "label": child.label ?? "",
                 "value": serializedMirrorValue(
@@ -169,23 +174,28 @@ private func serializedMirrorValue(
 private func runtimeMirrorDescription(
     _ object: NSObject
 ) -> [[String: Any]] {
-    var levels: [[String: Any]] = []
-    var current: Mirror? = Mirror(reflecting: object)
-    while let mirror = current {
-        levels.append([
-            "subjectType": String(reflecting: mirror.subjectType),
-            "children": mirror.children.prefix(64).map { child in
-                [
-                    "label": child.label ?? "",
-                    "value": serializedMirrorValue(
-                        child.value,
-                        depth: 0),
-                ]
-            },
-        ])
-        current = mirror.superclassMirror
-    }
-    return levels
+    let selectedLabels = Set([
+        "distanceRange",
+        "ovalization",
+        "shapeBounds",
+    ])
+    let mirror = Mirror(reflecting: object)
+    return [[
+        "subjectType": String(reflecting: mirror.subjectType),
+        "children": mirror.children.compactMap { child in
+            guard let label = child.label,
+                  selectedLabels.contains(label)
+            else {
+                return nil
+            }
+            return [
+                "label": label,
+                "value": serializedMirrorValue(
+                    child.value,
+                    depth: 0),
+            ]
+        },
+    ]]
 }
 
 private struct ExportedCodeProbe {
