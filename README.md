@@ -641,6 +641,8 @@ positions from 0/256 through 256/256, recording both `rgba16Float` and
 `rgba8Unorm` texture results. This identifies the GPU's interpolation and LOD
 fraction quantization directly instead of inferring either from rounded
 WindowServer pixels.
+The same probe exhausts the 1/16, 3/16, and 9/16 two-dimensional bilinear
+corner weights needed by the half-resolution backdrop reconstruction.
 This companion does not alter the capture app, manifest, reference catalog,
 case order, validator, or measurement report. Its output is forensic evidence,
 not a pixel-parity oracle: a trace may be unsupported on the hosted runner,

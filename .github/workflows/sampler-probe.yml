@@ -58,3 +58,4 @@ jobs:
           test -s sampler-probe/manifest.json
           test -s sampler-probe/sampler-probe.bin
           test -s sampler-probe/sampler-fraction-grid.bin
+          test -s sampler-probe/sampler-bilinear.bin

@@ -30,6 +30,12 @@ struct FractionRecord {
     ushort unorm;
 };
 
+struct BilinearRecord {
+    ushort weight_1_16;
+    ushort weight_3_16;
+    ushort weight_9_16;
+};
+
 kernel void sampler_probe(
     texture2d<half, access::sample> linear_texture [[texture(0)]],
     texture2d<half, access::sample> mip_texture [[texture(1)]],
@@ -132,6 +138,48 @@ kernel void sampler_fraction_probe(
             level(0.0f)).x);
     records[index] = record;
 }
+
+kernel void sampler_bilinear_probe(
+    texture2d<half, access::sample> texture [[texture(0)]],
+    sampler linear_sampler [[sampler(0)]],
+    device BilinearRecord *records [[buffer(0)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= 65536) {
+        return;
+    }
+
+    uint input_a = index >> 8;
+    uint input_b = index & 255;
+    uint tile_x = input_b * 4;
+    uint tile_y = input_a * 4;
+    float x_025 =
+        (float(tile_x) + 1.75f) / 1024.0f;
+    float x_075 =
+        (float(tile_x) + 2.25f) / 1024.0f;
+    float y_025 =
+        (float(tile_y) + 1.75f) / 1024.0f;
+    float y_075 =
+        (float(tile_y) + 2.25f) / 1024.0f;
+
+    BilinearRecord record;
+    record.weight_1_16 = as_type<ushort>(
+        texture.sample(
+            linear_sampler,
+            float2(x_025, y_025),
+            level(0.0f)).x);
+    record.weight_3_16 = as_type<ushort>(
+        texture.sample(
+            linear_sampler,
+            float2(x_025, y_075),
+            level(0.0f)).x);
+    record.weight_9_16 = as_type<ushort>(
+        texture.sample(
+            linear_sampler,
+            float2(x_075, y_075),
+            level(0.0f)).x);
+    records[index] = record;
+}
 """
 
 private enum ProbeError: LocalizedError {
@@ -168,6 +216,12 @@ private struct ProbeRecord {
 private struct FractionRecord {
     let halfFloat: UInt16
     let unorm: UInt16
+}
+
+private struct BilinearRecord {
+    let weight1of16: UInt16
+    let weight3of16: UInt16
+    let weight9of16: UInt16
 }
 
 private func halfBits(_ code: Int) -> UInt16 {
@@ -307,6 +361,53 @@ private func makeLinearUnormTexture(
     return texture
 }
 
+private func makeBilinearTexture(
+    device: MTLDevice
+) throws -> MTLTexture {
+    let width = 1024
+    let height = 1024
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .rgba16Float,
+        width: width,
+        height: height,
+        mipmapped: false)
+    descriptor.storageMode = .shared
+    descriptor.usage = [.shaderRead]
+    guard let texture = device.makeTexture(
+        descriptor: descriptor)
+    else {
+        throw ProbeError.resource("bilinear texture")
+    }
+    var pixels = [UInt16](
+        repeating: 0,
+        count: width * height * channelCount)
+    for inputA in 0..<codeCount {
+        for inputB in 0..<codeCount {
+            let tileX = inputB * 4
+            let tileY = inputA * 4
+            for y in 0..<4 {
+                for x in 0..<4 {
+                    setPixel(
+                        &pixels,
+                        width: width,
+                        x: tileX + x,
+                        y: tileY + y,
+                        code: x == 2 && y == 2
+                            ? inputA
+                            : inputB)
+                }
+            }
+        }
+    }
+    replace(
+        texture: texture,
+        level: 0,
+        width: width,
+        height: height,
+        pixels: pixels)
+    return texture
+}
+
 private func makeMipTexture(
     device: MTLDevice
 ) throws -> MTLTexture {
@@ -405,6 +506,8 @@ private func run(outputDirectory: URL) throws {
         name: "sampler_probe"),
           let fractionFunction = library.makeFunction(
             name: "sampler_fraction_probe"),
+          let bilinearFunction = library.makeFunction(
+            name: "sampler_bilinear_probe"),
           let queue = device.makeCommandQueue()
     else {
         throw ProbeError.resource("library functions or queue")
@@ -413,8 +516,12 @@ private func run(outputDirectory: URL) throws {
         function: function)
     let fractionPipeline = try device.makeComputePipelineState(
         function: fractionFunction)
+    let bilinearPipeline = try device.makeComputePipelineState(
+        function: bilinearFunction)
     let linearTexture = try makeLinearTexture(device: device)
     let linearUnormTexture = try makeLinearUnormTexture(
+        device: device)
+    let bilinearTexture = try makeBilinearTexture(
         device: device)
     let mipTexture = try makeMipTexture(device: device)
 
@@ -433,13 +540,19 @@ private func run(outputDirectory: URL) throws {
 
     let stride = MemoryLayout<ProbeRecord>.stride
     let fractionStride = MemoryLayout<FractionRecord>.stride
+    let bilinearStride =
+        MemoryLayout<BilinearRecord>.stride
     guard stride == 16,
           fractionStride == 4,
+          bilinearStride == 6,
           let output = device.makeBuffer(
             length: pairCount * stride,
             options: .storageModeShared),
           let fractionOutput = device.makeBuffer(
             length: fractionRecordCount * fractionStride,
+            options: .storageModeShared),
+          let bilinearOutput = device.makeBuffer(
+            length: pairCount * bilinearStride,
             options: .storageModeShared),
           let commandBuffer = queue.makeCommandBuffer(),
           let encoder = commandBuffer.makeComputeCommandEncoder()
@@ -485,6 +598,32 @@ private func run(outputDirectory: URL) throws {
                 depth: 1))
     fractionEncoder.endEncoding()
 
+    guard let bilinearEncoder =
+        commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource("bilinear command encoder")
+    }
+    bilinearEncoder.setComputePipelineState(
+        bilinearPipeline)
+    bilinearEncoder.setTexture(
+        bilinearTexture,
+        index: 0)
+    bilinearEncoder.setSamplerState(sampler, index: 0)
+    bilinearEncoder.setBuffer(
+        bilinearOutput,
+        offset: 0,
+        index: 0)
+    let bilinearWidth =
+        bilinearPipeline.threadExecutionWidth
+    bilinearEncoder.dispatchThreads(
+        MTLSize(width: pairCount, height: 1, depth: 1),
+        threadsPerThreadgroup:
+            MTLSize(
+                width: bilinearWidth,
+                height: 1,
+                depth: 1))
+    bilinearEncoder.endEncoding()
+
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
@@ -508,9 +647,18 @@ private func run(outputDirectory: URL) throws {
     try fractionBinary.write(
         to: fractionBinaryURL,
         options: .atomic)
+    let bilinearBinary = Data(
+        bytes: bilinearOutput.contents(),
+        count: bilinearOutput.length)
+    let bilinearBinaryURL =
+        outputDirectory.appendingPathComponent(
+            "sampler-bilinear.bin")
+    try bilinearBinary.write(
+        to: bilinearBinaryURL,
+        options: .atomic)
     let manifest: [String: Any] = [
-        "schemaVersion": 2,
-        "rigVersion": "metal-sampler-probe-1.1.0",
+        "schemaVersion": 3,
+        "rigVersion": "metal-sampler-probe-1.2.0",
         "ciCommit":
             ProcessInfo.processInfo.environment["GITHUB_SHA"]
             ?? "local",
@@ -561,6 +709,19 @@ private func run(outputDirectory: URL) throws {
             "recordFields": [
                 "rgba16_float_result",
                 "rgba8_unorm_result",
+            ],
+        ],
+        "bilinearGrid": [
+            "file": bilinearBinaryURL.lastPathComponent,
+            "fileBytes": bilinearBinary.count,
+            "fileSha256": sha256(bilinearBinary),
+            "recordCount": pairCount,
+            "recordOrder": "input_a major, input_b minor",
+            "recordStrideBytes": bilinearStride,
+            "recordFields": [
+                "input_a_weight_1_of_16",
+                "input_a_weight_3_of_16",
+                "input_a_weight_9_of_16",
             ],
         ],
     ]
