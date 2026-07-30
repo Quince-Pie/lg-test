@@ -1287,11 +1287,47 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
             snapshots.append(record)
         }
-        return [
+        var result: [String: Any] = [
             "bindingCount": bindings.count,
             "uniqueTextureCount": seen.count,
             "snapshots": snapshots,
         ]
+        if capture == "bounded-depth2-gradient-smoothing3" {
+            let baseBinding = bindings.first {
+                $0.index == 3
+                    && $0.texture.width == 384
+                    && $0.texture.height == 384
+                    && $0.texture.pixelFormat == .rgba16Float
+                    && (($0.pipeline["label"] as? String)?
+                        .contains("_Tn19") ?? false)
+            }
+            let blurredBinding = bindings.last {
+                $0.index == 4
+                    && $0.texture.width == 384
+                    && $0.texture.height == 384
+                    && $0.texture.pixelFormat == .rgba16Float
+                    && (($0.pipeline["label"] as? String)?
+                        .contains("_Tdgg") ?? false)
+            }
+            if let baseBinding, let blurredBinding {
+                do {
+                    result["stageTrace"] = try writeSDFStageEvidence(
+                        device: baseBinding.texture.device,
+                        baseField: baseBinding.texture,
+                        blurredField: blurredBinding.texture,
+                        outputDirectory: outputDirectory)
+                } catch {
+                    result["stageTrace"] = [
+                        "error": error.localizedDescription,
+                    ]
+                }
+            } else {
+                result["stageTrace"] = [
+                    "error": "base or blurred texture binding unavailable",
+                ]
+            }
+        }
+        return result
     }
 
     func forwardPipelineState(
@@ -2428,7 +2464,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 21,
+                    "schemaVersion": 22,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2444,7 +2480,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 21,
+            "schemaVersion": 22,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

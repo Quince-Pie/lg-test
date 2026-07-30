@@ -50,6 +50,7 @@ jobs:
             -target "$(uname -m)-apple-macos26.0" \
             -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
             Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
             Sources/GlassIntrospect/main.swift \
             introspection/MatrixBridge.o \
             -o glassintrospect 2>&1 |

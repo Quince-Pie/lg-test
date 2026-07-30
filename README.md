@@ -776,6 +776,14 @@ materialized, include their exact Metal format and binding provenance, and
 target the base-field and post-blur surfaces read by Apple's final gradient
 shader. Other smoothing cases retain metadata without multiplying artifact
 size.
+Schema 22 runs two explicit diagnostic kernels against those retained native
+textures on the same Apple GPU. The first records all ten bilinear samples,
+five pair sums, five weighted terms, and four half-precision accumulation
+stages for the horizontal smoothing-three pass. The second records the exact
+Float32 deltas, squared length, `fast::rsqrt`, normalized components, and
+Float16 conversion for every final gradient pixel. Their outputs remain
+diagnostic until their last-stage bits match the independently captured Apple
+surfaces.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
