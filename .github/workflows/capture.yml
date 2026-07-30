@@ -157,24 +157,116 @@ jobs:
             -o glassintrospect 2>&1 |
             tee -a "$build_root/build.log"
 
+      - name: Set up analysis Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: Analysis/requirements.txt
+
+      - name: Install analysis dependencies
+        run: python -m pip install --disable-pip-version-check -r Analysis/requirements.txt
+
+      - name: Test artifact validator
+        run: python -m unittest discover -s Analysis -v
+
       - name: Capture
         id: capture
         continue-on-error: true
         run: |
+          set -uo pipefail
           extra_args=()
           if [ "${{ inputs.exact_sweeps }}" = "false" ]; then
             extra_args+=(--skip-exact-sweeps)
           fi
-          ./glasscap \
-            --out captures \
-            --width "${{ inputs.capture_width || 3200 }}" \
-            --height "${{ inputs.capture_height || 2000 }}" \
-            --suite "${{ github.event_name == 'workflow_dispatch' && inputs.suite || 'static' }}" \
-            --dynamic-frames "${{ inputs.dynamic_frames || 61 }}" \
-            --dynamic-duration "${{ inputs.dynamic_duration || 1.0 }}" \
-            --dynamic-modes "${{ inputs.dynamic_modes || 'all' }}" \
-            --transition-origin "${{ inputs.transition_origin || '0.25,0.30' }}" \
+          suite="${{ github.event_name == 'workflow_dispatch' && inputs.suite || 'static' }}"
+          capture_args=(
+            --width "${{ inputs.capture_width || 3200 }}"
+            --height "${{ inputs.capture_height || 2000 }}"
+            --suite "$suite"
+            --dynamic-frames "${{ inputs.dynamic_frames || 61 }}"
+            --dynamic-duration "${{ inputs.dynamic_duration || 1.0 }}"
+            --dynamic-modes "${{ inputs.dynamic_modes || 'all' }}"
+            --transition-origin "${{ inputs.transition_origin || '0.25,0.30' }}"
             "${extra_args[@]}"
+          )
+
+          if [ "$suite" != dynamic ]; then
+            ./glasscap --out captures "${capture_args[@]}"
+            exit
+          fi
+
+          # WindowServer snapshot realization on hosted macOS is stochastic:
+          # acquisition calls can remain fast while presented pixels stall.
+          # Retry the complete focused suite, never individual frames, and
+          # accept only the first artifact that passes the same strict
+          # validator used by the final gate. Resolution, animation schedule,
+          # source fields, and every temporal/pixel threshold remain unchanged.
+          max_attempts=3
+          diagnostics="$RUNNER_TEMP/liquid-glass-capture-attempts"
+          mkdir -p "$diagnostics"
+          selected=false
+
+          for attempt in $(seq 1 "$max_attempts"); do
+            attempt_dir="$RUNNER_TEMP/liquid-glass-captures-attempt-$attempt"
+            attempt_diagnostics="$diagnostics/attempt-$attempt"
+            mkdir -p "$attempt_diagnostics"
+            echo "dynamic capture attempt $attempt/$max_attempts"
+
+            set +e
+            ./glasscap \
+              --out "$attempt_dir" \
+              "${capture_args[@]}" 2>&1 |
+              tee "$attempt_diagnostics/capture.log"
+            capture_status=${PIPESTATUS[0]}
+
+            validation_status=1
+            if [ -f "$attempt_dir/manifest.json" ]; then
+              python Analysis/validate.py "$attempt_dir" \
+                --strict \
+                --report "$attempt_dir/validation.json" 2>&1 |
+                tee "$attempt_diagnostics/validation.log"
+              validation_status=${PIPESTATUS[0]}
+              cp "$attempt_dir/manifest.json" \
+                "$attempt_diagnostics/manifest.json"
+              if [ -f "$attempt_dir/validation.json" ]; then
+                cp "$attempt_dir/validation.json" \
+                  "$attempt_diagnostics/validation.json"
+              fi
+            else
+              echo "manifest missing" |
+                tee "$attempt_diagnostics/validation.log"
+            fi
+            set -e
+
+            {
+              echo "capture_status=$capture_status"
+              echo "validation_status=$validation_status"
+            } > "$attempt_diagnostics/status.txt"
+
+            if [ "$capture_status" -eq 0 ] &&
+               [ "$validation_status" -eq 0 ]; then
+              mv "$attempt_dir" captures
+              selected=true
+              echo "selected strict-valid dynamic attempt $attempt"
+              break
+            fi
+
+            echo "rejected dynamic attempt $attempt"
+            if [ "$attempt" -eq "$max_attempts" ]; then
+              if [ -d "$attempt_dir" ]; then
+                mv "$attempt_dir" captures
+              else
+                mkdir -p captures
+              fi
+            fi
+          done
+
+          cp -R "$diagnostics" captures/capture-attempts
+          if [ "$selected" != true ]; then
+            echo "::error::No dynamic attempt passed strict validation."
+            exit 1
+          fi
 
       - name: Probe real Liquid Glass render pipeline
         if: always()
@@ -239,22 +331,6 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Set up analysis Python
-        if: always()
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.14"
-          cache: pip
-          cache-dependency-path: Analysis/requirements.txt
-
-      - name: Install analysis dependencies
-        if: always()
-        run: python -m pip install --disable-pip-version-check -r Analysis/requirements.txt
-
-      - name: Test artifact validator
-        if: always()
-        run: python -m unittest discover -s Analysis -v
-
       - name: Validate artifact
         if: always()
         id: validate
@@ -265,9 +341,7 @@ jobs:
             --report captures/validation.json
 
       - name: Measure optical evidence
-        if: >-
-          steps.capture.outcome == 'success' &&
-          (github.event_name != 'workflow_dispatch' || inputs.suite != 'dynamic')
+        if: steps.capture.outcome == 'success'
         id: measure
         continue-on-error: true
         run: |
@@ -333,8 +407,7 @@ jobs:
             echo "::error::Artifact validation failed; inspect validation.json."
             exit 1
           fi
-          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.suite || 'static' }}" != dynamic ] &&
-             [ "${{ steps.measure.outcome }}" != success ]; then
+          if [ "${{ steps.measure.outcome }}" != success ]; then
             echo "::error::Optical measurement failed; inspect the job log."
             exit 1
           fi

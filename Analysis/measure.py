@@ -2301,6 +2301,7 @@ class Measurements:
                 "xcodeVersion": manifest.get("xcodeVersion"),
                 "ciCommit": manifest.get("ciCommit"),
                 "runnerImageVersion": manifest.get("runnerImageVersion"),
+                "requestedSuite": manifest.get("requestedSuite"),
                 "presentationClockPreflight": manifest.get(
                     "presentationClockPreflight"
                 ),
@@ -2335,6 +2336,16 @@ class Measurements:
                     for sequence in sweep_sequences
                 ),
             },
+            "staticMeasurementsAvailable": bool(
+                manifest.get("captures", [])
+            ),
+            "dynamicTiming": self.dynamic_timing(),
+            "dynamicSourceControls": self.dynamic_source_controls(),
+            "sweepStates": self.sweep_states(),
+        }
+        if not result["staticMeasurementsAvailable"]:
+            return result
+        result.update({
             "toneTransfer": self.tone_transfer(),
             "denseToneTransfer": self.dense_tone_transfer(),
             "sparseColorTransfer": self.sparse_color_transfer(),
@@ -2356,10 +2367,7 @@ class Measurements:
             "phaseRefraction": self.phase_refraction(),
             "phaseResponse": self.phase_response(),
             "spatialConsistency": self.spatial_consistency(),
-            "dynamicTiming": self.dynamic_timing(),
-            "dynamicSourceControls": self.dynamic_source_controls(),
-            "sweepStates": self.sweep_states(),
-        }
+        })
         if rig_version in {
             "2.11.0",
             "2.12.0",

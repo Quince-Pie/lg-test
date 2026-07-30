@@ -58,6 +58,23 @@ from probe_catalog import (
 
 
 class MeasurementTests(unittest.TestCase):
+    def test_dynamic_only_report_does_not_require_static_matrix(self) -> None:
+        manifest = {
+            "requestedSuite": "dynamic",
+            "rigVersion": "2.19.0",
+            "captures": [],
+            "scenes": [],
+            "references": [],
+            "dynamicSequences": [],
+            "sweepSequences": [],
+        }
+        report = Measurements(
+            Artifact(path=Path("."), manifest=manifest),
+        ).run()
+        self.assertFalse(report["staticMeasurementsAvailable"])
+        self.assertEqual(report["dynamicTiming"], {})
+        self.assertNotIn("toneTransfer", report)
+
     def test_v219_probe_catalog_matches_capture_source(self) -> None:
         source = (
             Path(__file__).resolve().parents[1]

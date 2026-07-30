@@ -1486,6 +1486,16 @@ manifest. Requested-time error is diagnostic; strictly increasing actual
 time, no actual or presentation gap over 200 ms, both presented endpoints,
 and at least ten distinct frames remain hard requirements.
 
+A focused manual `dynamic` workflow makes at most three complete capture
+attempts because WindowServer presentation can stall independently of the
+measured screenshot-call duration on a hosted runner. It accepts the first
+attempt that passes `Analysis/validate.py --strict`; it does not retry or
+synthesize individual frames, lower the resolution, alter the animation, or
+widen a threshold. Compact manifests, validation reports, and logs from
+rejected attempts are retained under `capture-attempts/` in the selected
+artifact. If all three attempts fail, the final full attempt is still uploaded
+for diagnosis and the workflow remains red.
+
 Dynamic sequences use smooth, deterministic RGB code fields whose independent
 frequencies supply local gradients in both axes. This supports quantitative
 optical-flow fitting of transient refraction and blur while remaining much
@@ -1562,6 +1572,9 @@ all 114 clear outputs and 24 selected controls, and scopes the 90 new control
 exemptions exactly. Analysis schema v16 records all four complete matrices
 without decoding a protected output. A validation failure still uploads the
 artifact so the cause can be inspected, but the workflow ends red.
+`Analysis/measure.py` accepts both complete static/all artifacts and focused
+dynamic artifacts; dynamic-only reports explicitly set
+`staticMeasurementsAvailable` to false rather than inventing a static matrix.
 
 ## Run on GitHub
 
