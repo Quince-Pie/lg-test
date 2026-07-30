@@ -842,6 +842,11 @@ pipeline-state transition in order. The CARenderer evidence therefore carries
 the exact fragment byte payloads, shared-buffer prefixes, textures, samplers,
 and specialized Core Animation pipeline associated with the visibly rendered
 Liquid Glass frame, rather than only the retained texture snapshots.
+Schema 34 retains each shared/managed fragment-buffer binding and snapshots
+its bytes after the CARenderer completion fence. This captures Core
+Animation's late-filled, 256-byte-aligned uniform slices at the time the GPU
+actually consumes them. It also saves every mip level of each bounded texture
+so an exact compositor replay cannot silently substitute a reconstructed LOD.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

@@ -801,11 +801,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let sampler: MTLSamplerState
     }
 
+    private struct BufferBinding {
+        let capture: String
+        let sequence: Int
+        let index: Int
+        let pipeline: [String: Any]
+        let buffer: MTLBuffer
+        let offset: Int
+    }
+
     static let shared = MetalUniformProbe()
 
     private let lock = NSLock()
     private var captureName: String?
     private var records: [[String: Any]] = []
+    private var bufferBindings: [BufferBinding] = []
     private var textureBindings: [TextureBinding] = []
     private var samplerBindings: [SamplerBinding] = []
     private var samplerRuntimeClasses:
@@ -1148,6 +1158,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 String(reflecting: type(of: metalBuffer))
             record["bufferLength"] = metalBuffer.length
             record["storageMode"] = metalBuffer.storageMode.rawValue
+            bufferBindings.append(BufferBinding(
+                capture: captureName,
+                sequence: records.count,
+                index: index,
+                pipeline: encoderPipeline(encoder),
+                buffer: metalBuffer,
+                offset: offset))
             if metalBuffer.storageMode != .private,
                offset >= 0,
                offset <= metalBuffer.length
@@ -1299,6 +1316,50 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
     }
 
+    func snapshotBuffers(capture: String) -> [String: Any] {
+        lock.lock()
+        let bindings = bufferBindings.filter {
+            $0.capture == capture
+        }
+        lock.unlock()
+
+        let snapshots: [[String: Any]] = bindings.map { binding in
+            let buffer = binding.buffer
+            var record: [String: Any] = [
+                "sequence": binding.sequence,
+                "index": binding.index,
+                "pipeline": binding.pipeline,
+                "bufferLength": buffer.length,
+                "storageMode": buffer.storageMode.rawValue,
+                "offset": binding.offset,
+            ]
+            guard buffer.storageMode != .private else {
+                record["payloadUnavailable"] = "private storage"
+                return record
+            }
+            guard binding.offset >= 0,
+                  binding.offset <= buffer.length
+            else {
+                record["payloadError"] = "buffer offset out of bounds"
+                return record
+            }
+            let available = buffer.length - binding.offset
+            let length = min(available, maximumCapturedBytes)
+            let payload = Array(UnsafeRawBufferPointer(
+                start: buffer.contents().advanced(by: binding.offset),
+                count: length))
+            record["payload"] = serializedPayload(
+                payload,
+                className: "MTLBuffer post-completion prefix")
+            record["fnv1a64"] = fnv1a64(payload)
+            return record
+        }
+        return [
+            "bindingCount": bindings.count,
+            "snapshots": snapshots,
+        ]
+    }
+
     func snapshotTextures(
         capture: String,
         outputDirectory: URL
@@ -1417,6 +1478,115 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 record["rawCapture"] = false
                 record["reason"] = error.localizedDescription
             }
+            var mipSnapshots: [[String: Any]] = [[
+                "level": 0,
+                "width": texture.width,
+                "height": texture.height,
+                "rawFile": filename,
+                "rawBytes": raw.count,
+                "bytesPerRow": tightBytesPerRow,
+                "fnv1a64": fnv1a64([UInt8](raw)),
+            ]]
+            if texture.mipmapLevelCount > 1 {
+                for level in 1..<texture.mipmapLevelCount {
+                    let mipWidth = max(1, texture.width >> level)
+                    let mipHeight = max(1, texture.height >> level)
+                    let mipTightBytesPerRow = mipWidth * pixelBytes
+                    let mipAlignedBytesPerRow =
+                        (mipTightBytesPerRow + 255) & ~255
+                    let mipBufferBytes =
+                        mipAlignedBytesPerRow * mipHeight
+                    guard let mipBuffer = device.makeBuffer(
+                            length: mipBufferBytes,
+                            options: .storageModeShared),
+                          let mipQueue = device.makeCommandQueue(),
+                          let mipCommandBuffer =
+                            mipQueue.makeCommandBuffer(),
+                          let mipBlit =
+                            mipCommandBuffer.makeBlitCommandEncoder()
+                    else {
+                        mipSnapshots.append([
+                            "level": level,
+                            "width": mipWidth,
+                            "height": mipHeight,
+                            "rawCapture": false,
+                            "reason": "mip snapshot command unavailable",
+                        ])
+                        continue
+                    }
+                    mipBlit.copy(
+                        from: texture,
+                        sourceSlice: 0,
+                        sourceLevel: level,
+                        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                        sourceSize: MTLSize(
+                            width: mipWidth,
+                            height: mipHeight,
+                            depth: 1),
+                        to: mipBuffer,
+                        destinationOffset: 0,
+                        destinationBytesPerRow: mipAlignedBytesPerRow,
+                        destinationBytesPerImage: mipBufferBytes)
+                    mipBlit.endEncoding()
+                    mipCommandBuffer.commit()
+                    mipCommandBuffer.waitUntilCompleted()
+                    guard mipCommandBuffer.status == .completed else {
+                        mipSnapshots.append([
+                            "level": level,
+                            "width": mipWidth,
+                            "height": mipHeight,
+                            "rawCapture": false,
+                            "reason":
+                                mipCommandBuffer.error?
+                                    .localizedDescription
+                                    ?? "mip snapshot command failed",
+                        ])
+                        continue
+                    }
+                    var mipRaw = Data(
+                        capacity: mipTightBytesPerRow * mipHeight)
+                    for row in 0..<mipHeight {
+                        mipRaw.append(Data(
+                            bytes: mipBuffer.contents().advanced(
+                                by: row * mipAlignedBytesPerRow),
+                            count: mipTightBytesPerRow))
+                    }
+                    let mipFilename = String(
+                        format:
+                            "sdf-generator-%@-texture-%03d-pf%lu-%dx%d-mip-%02d.raw",
+                        capture,
+                        snapshots.count,
+                        texture.pixelFormat.rawValue,
+                        texture.width,
+                        texture.height,
+                        level)
+                    do {
+                        try mipRaw.write(
+                            to: outputDirectory.appendingPathComponent(
+                                mipFilename),
+                            options: .atomic)
+                        mipSnapshots.append([
+                            "level": level,
+                            "width": mipWidth,
+                            "height": mipHeight,
+                            "rawCapture": true,
+                            "rawFile": mipFilename,
+                            "rawBytes": mipRaw.count,
+                            "bytesPerRow": mipTightBytesPerRow,
+                            "fnv1a64": fnv1a64([UInt8](mipRaw)),
+                        ])
+                    } catch {
+                        mipSnapshots.append([
+                            "level": level,
+                            "width": mipWidth,
+                            "height": mipHeight,
+                            "rawCapture": false,
+                            "reason": error.localizedDescription,
+                        ])
+                    }
+                }
+            }
+            record["mipSnapshots"] = mipSnapshots
             snapshots.append(record)
         }
         var result: [String: Any] = [
@@ -2740,6 +2910,8 @@ private func carendererEvidence(
             MetalUniformProbe.shared.snapshotTextures(
                 capture: capture,
                 outputDirectory: outputDirectory),
+        "metalBufferSnapshots":
+            MetalUniformProbe.shared.snapshotBuffers(capture: capture),
         "metalUniformProbe":
             MetalUniformProbe.shared.report(capture: capture),
     ]
@@ -2869,7 +3041,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 33,
+                    "schemaVersion": 34,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2885,7 +3057,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 33,
+            "schemaVersion": 34,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
