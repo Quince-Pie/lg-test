@@ -1176,6 +1176,23 @@ identification modes for the private clear-material mip path:
   sources, and two preregistered holdouts excite all sixteen reduced-grid
   phases. The holdouts are forbidden during coefficient recovery and require
   zero unequal native RGB values for acceptance.
+- Run `30517618605` passed all source, stability, and repeatability controls,
+  and all 1,889,568 sampled channel curves were monotonic. It rejected the
+  fixed-pyramid premise exactly as designed: grid state 37 differs from exact
+  opacity one in 390,968 native RGB values, despite both states sharing the
+  same measured 37/64 LOD bucket. Maximum disagreement is two codes. Active
+  blur opacity therefore conditions the upstream source resource and cannot
+  be used as a supposedly independent LOD control.
+- `--production-distance` leaves every blur opacity and requested-radius bit
+  at its real production value and varies only the five distance inputs. Two
+  far-positive profiles must reproduce the live opacity-one endpoint, while
+  two far-negative profiles must reproduce one common opacity-one-half
+  endpoint. Sixty-five ordered adjacent-binary16 thresholds then coarsely
+  bracket the private field from `-10008` through `-400.25`. Every threshold
+  value must equal one of the two fixed endpoint responses and every
+  discriminating value may transition at most once. This simultaneously
+  tests whether distances preserve the production source resource and narrows
+  the exact SDF range without changing the production opacity profile.
 
 ## What happens after capture
 
