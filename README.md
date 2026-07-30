@@ -828,6 +828,14 @@ Schema 31 captures the final RG16Uint jump-flood winner surface and evaluates
 the recovered signed-field expression with Metal `fast::sqrt` on the same
 Apple GPU. Its binary16 trace is compared directly with the native 384-by-384
 base field, isolating the last higher-precision SDF arithmetic dependency.
+Schema 32 renders the settled, real SwiftUI layer tree through the public
+Metal-backed `CARenderer` API after the bounded encoder observer is installed.
+It retains the BGRA8 target and every bounded fragment texture, byte payload,
+shared-buffer prefix, sampler, and pipeline binding issued by that local
+Core Animation render. This tests whether QuartzCore exposes the live
+`glass_background` source/SDF textures and 224-byte uniform record outside
+WindowServer; an absent glass pipeline is a useful negative result, not
+permission to infer those resources from screenshots.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

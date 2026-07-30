@@ -828,6 +828,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         "default",
         "bounded-depth0-gradient-smoothing3",
         "bounded-depth2-gradient-smoothing3",
+        "carenderer-live-tree",
     ])
 
     private init() {}
@@ -2538,6 +2539,191 @@ private func sdfLayerRenderEvidence(
     }
 }
 
+private func carendererOutputSnapshot(
+    _ texture: MTLTexture,
+    commandQueue: MTLCommandQueue,
+    outputDirectory: URL
+) -> [String: Any] {
+    let width = texture.width
+    let height = texture.height
+    var record: [String: Any] = [
+        "width": width,
+        "height": height,
+        "pixelFormat": texture.pixelFormat.rawValue,
+        "storageMode": texture.storageMode.rawValue,
+    ]
+    guard texture.textureType == .type2D,
+          texture.depth == 1,
+          texture.arrayLength == 1,
+          texture.sampleCount == 1,
+          width > 0,
+          height > 0,
+          width <= 1_024,
+          height <= 1_024
+    else {
+        record["rawCapture"] = false
+        record["reason"] = "CARenderer output layout outside probe bounds"
+        return record
+    }
+
+    let tightBytesPerRow = width * 4
+    let alignedBytesPerRow = (tightBytesPerRow + 255) & ~255
+    let bufferBytes = alignedBytesPerRow * height
+    guard let buffer = texture.device.makeBuffer(
+            length: bufferBytes,
+            options: .storageModeShared),
+          let commandBuffer = commandQueue.makeCommandBuffer(),
+          let blit = commandBuffer.makeBlitCommandEncoder()
+    else {
+        record["rawCapture"] = false
+        record["reason"] = "CARenderer output blit unavailable"
+        return record
+    }
+    blit.copy(
+        from: texture,
+        sourceSlice: 0,
+        sourceLevel: 0,
+        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+        sourceSize: MTLSize(
+            width: width,
+            height: height,
+            depth: 1),
+        to: buffer,
+        destinationOffset: 0,
+        destinationBytesPerRow: alignedBytesPerRow,
+        destinationBytesPerImage: bufferBytes)
+    blit.endEncoding()
+    commandBuffer.commit()
+    commandBuffer.waitUntilCompleted()
+    guard commandBuffer.status == .completed else {
+        record["rawCapture"] = false
+        record["reason"] =
+            commandBuffer.error?.localizedDescription
+                ?? "CARenderer output blit failed"
+        return record
+    }
+
+    var raw = Data(capacity: tightBytesPerRow * height)
+    for row in 0..<height {
+        raw.append(Data(
+            bytes: buffer.contents().advanced(
+                by: row * alignedBytesPerRow),
+            count: tightBytesPerRow))
+    }
+    let filename = "carenderer-live-tree-bgra8.raw"
+    do {
+        try raw.write(
+            to: outputDirectory.appendingPathComponent(filename),
+            options: .atomic)
+        record["rawCapture"] = true
+        record["rawFile"] = filename
+        record["rawBytes"] = raw.count
+        record["bytesPerRow"] = tightBytesPerRow
+        record["fnv1a64"] = fnv1a64([UInt8](raw))
+    } catch {
+        record["rawCapture"] = false
+        record["reason"] = error.localizedDescription
+    }
+    return record
+}
+
+private func carendererEvidence(
+    rootLayer: CALayer,
+    device: MTLDevice,
+    outputDirectory: URL
+) -> [String: Any] {
+    let bounds = rootLayer.bounds.standardized
+    guard bounds.width.isFinite,
+          bounds.height.isFinite,
+          bounds.width > 0,
+          bounds.height > 0
+    else {
+        return [
+            "executed": false,
+            "reason": "root layer has invalid bounds",
+        ]
+    }
+    let width = Int(ceil(bounds.width))
+    let height = Int(ceil(bounds.height))
+    guard width <= 1_024,
+          height <= 1_024
+    else {
+        return [
+            "executed": false,
+            "reason": "root layer exceeds CARenderer probe bounds",
+        ]
+    }
+
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .bgra8Unorm,
+        width: width,
+        height: height,
+        mipmapped: false)
+    descriptor.storageMode = .private
+    descriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
+    guard let output = device.makeTexture(descriptor: descriptor),
+          let commandQueue = device.makeCommandQueue(),
+          let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
+    else {
+        return [
+            "executed": false,
+            "reason": "CARenderer Metal resources unavailable",
+        ]
+    }
+
+    let options: [AnyHashable: Any] = [
+        kCARendererColorSpace: colorSpace,
+        kCARendererMetalCommandQueue: commandQueue,
+    ]
+    let renderer = CARenderer(
+        mtlTexture: output,
+        options: options)
+    renderer.layer = rootLayer
+    renderer.bounds = bounds
+
+    CATransaction.flush()
+    let capture = "carenderer-live-tree"
+    MetalUniformProbe.shared.beginCapture(capture)
+    renderer.beginFrame(
+        atTime: CACurrentMediaTime(),
+        timeStamp: nil)
+    renderer.addUpdate(bounds)
+    renderer.render()
+    renderer.endFrame()
+    guard let completion = commandQueue.makeCommandBuffer() else {
+        MetalUniformProbe.shared.endCapture()
+        return [
+            "executed": false,
+            "reason": "CARenderer completion command unavailable",
+        ]
+    }
+    completion.commit()
+    completion.waitUntilCompleted()
+    MetalUniformProbe.shared.endCapture()
+    guard completion.status == .completed else {
+        return [
+            "executed": false,
+            "reason":
+                completion.error?.localizedDescription
+                    ?? "CARenderer completion command failed",
+        ]
+    }
+
+    return [
+        "executed": true,
+        "rootLayerClass": String(reflecting: type(of: rootLayer)),
+        "bounds": NSStringFromRect(bounds),
+        "output": carendererOutputSnapshot(
+            output,
+            commandQueue: commandQueue,
+            outputDirectory: outputDirectory),
+        "metalTextureSnapshots":
+            MetalUniformProbe.shared.snapshotTextures(
+                capture: capture,
+                outputDirectory: outputDirectory),
+    ]
+}
+
 private func writeJSON(_ object: Any, to url: URL) throws {
     let data = try JSONSerialization.data(
         withJSONObject: object,
@@ -2662,7 +2848,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 31,
+                    "schemaVersion": 32,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2678,7 +2864,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 31,
+            "schemaVersion": 32,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -2726,6 +2912,14 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 report["halfDotEvidence"] = [
                     "error": error.localizedDescription,
                 ]
+            }
+            if let rootLayer = window.contentView?.layer {
+                writeProgress("before-carenderer-evidence")
+                report["carendererEvidence"] = carendererEvidence(
+                    rootLayer: rootLayer,
+                    device: device,
+                    outputDirectory: outputDirectory)
+                writeProgress("after-carenderer-evidence")
             }
         }
         let inspectedFrameworks = Bundle.allFrameworks.filter {
