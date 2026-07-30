@@ -81,6 +81,7 @@ private enum LodSweepMode: Equatable {
     case sdfScale
     case pinnedSdfScale
     case sdfThreshold
+    case sdfCalibration
 }
 
 private struct LodCaptureState {
@@ -1196,9 +1197,134 @@ private func sdfThresholdCaptureState(
         ])
 }
 
+private struct SdfCalibrationDefinition {
+    let name: String
+    let blurOpacities: [Float]
+    let blurDistances: [Float]
+    let hypothesis: String
+}
+
+private let sdfCalibrationDefinitions = [
+    SdfCalibrationDefinition(
+        name: "pinned-radius-zero",
+        blurOpacities: [0, 0, 1, 1, 1],
+        blurDistances: [-400, -1, 0, 0, 0],
+        hypothesis:
+            "radius-zero endpoint with the trailing resource maxima pinned"),
+    SdfCalibrationDefinition(
+        name: "pinned-radius-four",
+        blurOpacities: [1, 1, 1, 1, 1],
+        blurDistances: [-400, -1, 0, 0, 0],
+        hypothesis: "radius-four endpoint"),
+    SdfCalibrationDefinition(
+        name: "far-negative-threshold",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [-10_000, -9_999, 0, 0, 0],
+        hypothesis:
+            "reported SDF range predicts the radius-four endpoint"),
+    SdfCalibrationDefinition(
+        name: "far-positive-threshold",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [1, 2, 2, 2, 2],
+        hypothesis:
+            "protected interior predicts the radius-zero endpoint"),
+    SdfCalibrationDefinition(
+        name: "live-range-threshold",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [-400, -1, 0, 0, 0],
+        hypothesis: "tests the live public distance interval"),
+    SdfCalibrationDefinition(
+        name: "raw-lower-threshold",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [-400.25, -400, 0, 0, 0],
+        hypothesis: "repeats the first failed raw threshold endpoint"),
+    SdfCalibrationDefinition(
+        name: "raw-upper-threshold",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [-271.75, -271.5, 0, 0, 0],
+        hypothesis: "repeats the last failed raw threshold endpoint"),
+    SdfCalibrationDefinition(
+        name: "normalized-full-threshold",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [-1, 0, 0, 0, 0],
+        hypothesis: "tests a normalized signed-distance interval"),
+    SdfCalibrationDefinition(
+        name: "normalized-interior-threshold",
+        blurOpacities: [0, 1, 1, 1, 1],
+        blurDistances: [-0.75, -0.5, 0, 0, 0],
+        hypothesis: "tests the protected normalized interior"),
+]
+
+private func sdfCalibrationCaptureState(
+    _ definition: SdfCalibrationDefinition,
+    index: Int
+) -> LodCaptureState {
+    precondition(definition.blurOpacities.count == 5)
+    precondition(definition.blurDistances.count == 5)
+    var profileValues: [(key: String, value: NSNumber)] = []
+    for inputIndex in 0..<5 {
+        profileValues.append((
+            "inputBlurOpacity\(inputIndex)",
+            NSNumber(value: definition.blurOpacities[inputIndex])
+        ))
+        profileValues.append((
+            "inputBlurDistance\(inputIndex)",
+            NSNumber(value: definition.blurDistances[inputIndex])
+        ))
+    }
+    let values =
+        identityValues
+        + profileValues
+        + [
+            (
+                "inputInnerRefractionAmount",
+                NSNumber(value: Float(-60))
+            ),
+            (
+                "inputOuterRefractionAmount",
+                NSNumber(value: Float(160))
+            ),
+            (
+                "inputRefractionOpacity",
+                NSNumber(value: Float(0))
+            ),
+            (
+                "inputBlurRadius",
+                NSNumber(value: sdfScaleResourceRadius)
+            ),
+        ]
+    return LodCaptureState(
+        name: "sdf-calibration-\(definition.name)",
+        targetNumerator: -1,
+        productionRadius: false,
+        values: values,
+        manifest: [
+            "index": index,
+            "name": "sdf-calibration-\(definition.name)",
+            "resourceBlurRadius":
+                Double(sdfScaleResourceRadius),
+            "resourceBlurRadiusFloat32Bits": String(
+                format: "%08x",
+                sdfScaleResourceRadius.bitPattern),
+            "blurOpacities":
+                definition.blurOpacities.map { Double($0) },
+            "blurDistances":
+                definition.blurDistances.map { Double($0) },
+            "hypothesis": definition.hypothesis,
+        ])
+}
+
 private func lodCaptureStates(
     mode: LodSweepMode
 ) -> [LodCaptureState] {
+    if mode == .sdfCalibration {
+        return sdfCalibrationDefinitions.enumerated().map {
+            index, definition in
+            sdfCalibrationCaptureState(
+                definition,
+                index: index)
+        }
+    }
     if mode == .sdfThreshold {
         return sdfThresholdLowerHalfBits.enumerated().map {
             index, lowerHalfBits in
@@ -1944,6 +2070,7 @@ private final class SpatialSweepDelegate:
         let captureStates = lodCaptureStates(mode: mode)
         let captureAmplitudes =
             mode == .sdfThreshold
+                || mode == .sdfCalibration
             ? [sdfThresholdSourceLabel]
             : lodAmplitudes
         let fullReadbacks = mode != .defaultProfile
@@ -1957,6 +2084,7 @@ private final class SpatialSweepDelegate:
         for amplitude in captureAmplitudes {
             let source =
                 mode == .sdfThreshold
+                    || mode == .sdfCalibration
                 ? renderSdfThresholdSource()
                 : renderKernelSource(amplitude: amplitude)
             hostingView.rootView = SpatialSweepView(
@@ -2073,10 +2201,11 @@ private final class SpatialSweepDelegate:
                     state.manifest["index"] as? Int
                 let auditState =
                     mode == .sdfThreshold
+                        || mode == .sdfCalibration
                     ? (
-                        stateIndex == 0
-                        || stateIndex
-                            == captureStates.count - 1
+                        mode == .sdfCalibration
+                        || stateIndex == 0
+                        || stateIndex == captureStates.count - 1
                     )
                     : (
                         amplitude == 127
@@ -2089,6 +2218,7 @@ private final class SpatialSweepDelegate:
                 if auditState {
                     let fileName =
                         mode == .sdfThreshold
+                            || mode == .sdfCalibration
                         ? "\(state.name).png"
                         : "lod-amplitude-127-\(state.name).png"
                     let captureURL = outputDirectory
@@ -2119,15 +2249,21 @@ private final class SpatialSweepDelegate:
                 "captureBackend": control.backend,
                 "states": stateRecords,
             ]
-            if mode == .sdfThreshold {
+            if mode == .sdfThreshold
+                || mode == .sdfCalibration
+            {
                 record["sourcePatternIndex"] =
                     sdfThresholdSourceLabel
+                let sourcePrefix =
+                    mode == .sdfThreshold
+                    ? "sdf-threshold"
+                    : "sdf-calibration"
                 let sourceURL = outputDirectory
                     .appendingPathComponent(
-                        "sdf-threshold-source.png")
+                        "\(sourcePrefix)-source.png")
                 let controlURL = outputDirectory
                     .appendingPathComponent(
-                        "sdf-threshold-control.png")
+                        "\(sourcePrefix)-control.png")
                 try writePNG(source, to: sourceURL)
                 try writePNG(
                     control.canonicalImage,
@@ -2143,7 +2279,10 @@ private final class SpatialSweepDelegate:
             } else {
                 record["amplitudeCodes"] = amplitude
             }
-            if mode != .sdfThreshold && amplitude == 127 {
+            if mode != .sdfThreshold
+                && mode != .sdfCalibration
+                && amplitude == 127
+            {
                 let sourceURL = outputDirectory
                     .appendingPathComponent(
                         "lod-amplitude-127-source.png")
@@ -2197,6 +2336,8 @@ private final class SpatialSweepDelegate:
             streamPrefix = "native-pinned-sdf-scale"
         case .sdfThreshold:
             streamPrefix = "native-sdf-threshold"
+        case .sdfCalibration:
+            streamPrefix = "native-sdf-calibration"
         }
         let controlURL = outputDirectory
             .appendingPathComponent(
@@ -2213,6 +2354,7 @@ private final class SpatialSweepDelegate:
             "schemaVersion": 1,
             "recordOrder":
                 mode == .sdfThreshold
+                    || mode == .sdfCalibration
                 ? (
                     "source-pattern order, threshold-state order, "
                     + "reduced-grid phase row-major, "
@@ -2231,6 +2373,7 @@ private final class SpatialSweepDelegate:
             "fileBytes": lodStream.count,
             "controlRecordOrder":
                 mode == .sdfThreshold
+                    || mode == .sdfCalibration
                 ? (
                     "source-pattern order, reduced-grid phase "
                     + "row-major, patch y-major then x-major"
@@ -2253,6 +2396,7 @@ private final class SpatialSweepDelegate:
                     || mode == .sdfScale
                     || mode == .pinnedSdfScale
                     || mode == .sdfThreshold
+                    || mode == .sdfCalibration
                 )
                 ? streamPrefix
                 : "native-lod"
@@ -2413,9 +2557,34 @@ private final class SpatialSweepDelegate:
                 "blurOpacities": [0, 1, 1, 1, 1],
                 "fixedTrailingBlurDistances": [0, 0, 0],
             ]
+        case .sdfCalibration:
+            rigVersion =
+                "native-sdf-distance-calibration-1.0.0"
+            sweepKind =
+                "controlled-sdf-distance-mutability-and-range-grid"
+            lodDesign = [
+                "states": captureStates.map(\.manifest),
+                "resourceBlurRadius":
+                    sdfScaleResourceRadius,
+                "stateCount": captureStates.count,
+                "controlledVariables":
+                    [
+                        "inputBlurOpacity0Through4",
+                        "inputBlurDistance0Through4",
+                    ],
+                "fixedInputs": [
+                    "inputBlurRadius":
+                        sdfScaleResourceRadius,
+                    "inputInnerRefractionAmount": -60,
+                    "inputOuterRefractionAmount": 160,
+                    "inputRefractionOpacity": 0,
+                ],
+            ]
         }
         let sourceDesign: [String: Any]
-        if mode == .sdfThreshold {
+        if mode == .sdfThreshold
+            || mode == .sdfCalibration
+        {
             sourceDesign = [
                 "kind":
                     "periodic-deterministic-hash-rgb",
@@ -2574,6 +2743,18 @@ private final class SpatialSweepDelegate:
                     "inputBlurDistance1":
                         "next greater finite binary16 value",
                     "inputBlurDistance2Through4": [0, 0, 0],
+                    "inputInnerRefractionAmount": -60,
+                    "inputOuterRefractionAmount": 160,
+                    "inputRefractionOpacity": 0,
+                ]
+                : NSNull(),
+            "sdfCalibrationInputs":
+                mode == .sdfCalibration
+                ? [
+                    "inputBlurRadius":
+                        sdfScaleResourceRadius,
+                    "stateNames":
+                        sdfCalibrationDefinitions.map(\.name),
                     "inputInnerRefractionAmount": -60,
                     "inputOuterRefractionAmount": 160,
                     "inputRefractionOpacity": 0,
@@ -3036,6 +3217,14 @@ private final class SpatialSweepDelegate:
                 try await runLodSweep(
                     workspace: workspace,
                     mode: .sdfThreshold)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--sdf-calibration")
+            {
+                try await runLodSweep(
+                    workspace: workspace,
+                    mode: .sdfCalibration)
                 return
             }
             if CommandLine.arguments.dropFirst(2)

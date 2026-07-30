@@ -1145,6 +1145,14 @@ identification modes for the private clear-material mip path:
   The retained native RGB8 stream therefore identifies the sampled SDF
   half word by its transition index, while non-monotonic or endpoint-equal
   pixels remain explicit failures instead of being fitted.
+- `--sdf-calibration` is the preregistered falsification follow-up when the
+  raw-distance threshold sweep has equal endpoints. It captures pinned
+  radius-zero and radius-four controls, then tests far-negative,
+  far-positive, live `[-400, -1]`, raw-interior, and normalized distance
+  intervals. All states retain the same radius-four resource maximum and
+  deterministic source. Exact equality with the two controls therefore
+  distinguishes an incorrect coordinate range from blur-distance values
+  that are accepted by KVC but do not invalidate the rendered uniforms.
 
 ## What happens after capture
 
