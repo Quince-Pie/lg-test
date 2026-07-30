@@ -785,12 +785,23 @@ private func generatedSDFRecord(
     name: String,
     outputDirectory: URL
 ) -> [String: Any] {
+    let progressURL = outputDirectory.appendingPathComponent(
+        "sdf-generator-\(name)-progress.json")
+    var progress: [String: Any] = [
+        "name": name,
+        "phase": "before-generator-call",
+    ]
+    func writeProgress(_ phase: String) {
+        progress["phase"] = phase
+        try? writeJSON(progress, to: progressURL)
+    }
     var record: [String: Any] = [
         "name": name,
-        "requestValues": knownRuntimeValues(
+        "requestValues": sdfScalarValues(
             request,
             keys: sdfGeneratorRequestKeys),
     ]
+    writeProgress("before-generator-call")
     let selector = NSSelectorFromString(
         "generateSDFWithRequest:forImage:")
     guard let method = class_getInstanceMethod(
@@ -813,6 +824,12 @@ private func generatedSDFRecord(
         return record
     }
     let output = unmanaged.takeUnretainedValue()
+    progress["width"] = output.width
+    progress["height"] = output.height
+    progress["bitsPerComponent"] = output.bitsPerComponent
+    progress["bitsPerPixel"] = output.bitsPerPixel
+    progress["bytesPerRow"] = output.bytesPerRow
+    writeProgress("after-generator-call")
     record["width"] = output.width
     record["height"] = output.height
     record["bitsPerComponent"] = output.bitsPerComponent
@@ -827,6 +844,7 @@ private func generatedSDFRecord(
         record["error"] = "output data provider has no data"
         return record
     }
+    writeProgress("after-provider-data")
     let bytes = [UInt8](data as Data)
     let filename = "sdf-generator-\(name).raw"
     do {
@@ -836,6 +854,10 @@ private func generatedSDFRecord(
         record["rawFile"] = filename
         record["rawBytes"] = bytes.count
         record["fnv1a64"] = fnv1a64(bytes)
+        progress["rawFile"] = filename
+        progress["rawBytes"] = bytes.count
+        progress["fnv1a64"] = fnv1a64(bytes)
+        writeProgress("after-raw-write")
     } catch {
         record["rawWriteError"] = error.localizedDescription
     }
@@ -849,10 +871,14 @@ private func generatedSDFRecord(
                 options: .atomic)
             record["pngFile"] = pngFilename
             record["pngBytes"] = png.count
+            progress["pngFile"] = pngFilename
+            progress["pngBytes"] = png.count
+            writeProgress("after-png-write")
         } catch {
             record["pngWriteError"] = error.localizedDescription
         }
     }
+    writeProgress("complete")
     return record
 }
 
@@ -872,13 +898,17 @@ private func sdfGeneratorEvidence(
     writePhase("before-private-class-lookup")
     guard let requestClass = NSClassFromString(
         "CASDFGeneratorRequest"),
+          let generatorClass = NSClassFromString(
+            "CASDFGenerator"),
+          let generatorType = generatorClass as? NSObject.Type,
           let input = makeSDFGeneratorMask()
     else {
-        return ["error": "private SDF request class unavailable"]
+        return ["error": "private SDF generator classes unavailable"]
     }
+    let generator = generatorType.init()
     writePhase("before-default-request-factory")
     var record: [String: Any] = [
-        "mode": "request-inspection-only",
+        "mode": "direct-generation",
         "input": [
             "kind": "binary-centered-128x160-rectangle",
             "width": input.width,
@@ -900,6 +930,16 @@ private func sdfGeneratorEvidence(
         defaultRequest,
         keys: sdfGeneratorRequestKeys)
     writePhase("after-default-request-values")
+    writePhase("before-default-generation")
+    var captures = [
+        generatedSDFRecord(
+            generator: generator,
+            request: defaultRequest,
+            input: input,
+            name: "default",
+            outputDirectory: outputDirectory),
+    ]
+    writePhase("after-default-generation")
 
     if let outputEffectClass = NSClassFromString(
         "CASDFOutputEffect") as? NSObject.Type
@@ -929,8 +969,50 @@ private func sdfGeneratorEvidence(
         record["effectRequestError"] =
             "CASDFOutputEffect unavailable"
     }
-    record["generationDeferred"] =
-        "Inspect and bound the native request before invoking the generator"
+
+    for includeGradient in [false, true] {
+        guard let boundedRequest = invokeClassFactory(
+            requestClass,
+            selector: NSSelectorFromString("request"))
+        else {
+            record["boundedRequestError"] =
+                "bounded request factory failed"
+            break
+        }
+        boundedRequest.setValue(
+            NSNumber(value: includeGradient),
+            forKey: "includeGradient")
+        boundedRequest.setValue(
+            NSNumber(value: 0),
+            forKey: "outputBitDepth")
+        boundedRequest.setValue(
+            NSNumber(value: 64.0),
+            forKey: "padding")
+        boundedRequest.setValue(
+            NSNumber(value: 64.0),
+            forKey: "maximumDistance")
+        boundedRequest.setValue(
+            NSNumber(value: -64.0),
+            forKey: "zeroValueDistance")
+        boundedRequest.setValue(
+            NSNumber(value: 16.0),
+            forKey: "oneValueDistance")
+        boundedRequest.setValue(
+            NSNumber(value: 3.0),
+            forKey: "gradientSmoothing")
+        let name = includeGradient
+            ? "bounded-minus64-plus16-gradient"
+            : "bounded-minus64-plus16-field"
+        writePhase("before-\(name)-generation")
+        captures.append(generatedSDFRecord(
+            generator: generator,
+            request: boundedRequest,
+            input: input,
+            name: name,
+            outputDirectory: outputDirectory))
+        writePhase("after-\(name)-generation")
+    }
+    record["captures"] = captures
     do {
         let checkpoint = try JSONSerialization.data(
             withJSONObject: record,
@@ -1576,7 +1658,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 16,
+                    "schemaVersion": 17,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -1592,7 +1674,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 16,
+            "schemaVersion": 17,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

@@ -748,6 +748,11 @@ its Objective-C encoding, finite/non-finite decimal spelling, and exact
 Float64 bit pattern before JSON serialization. This avoids retaining a private
 `NSNumber` subclass in the report and preserves infinities and NaNs without
 coercion.
+Schema 17 invokes the generator with Apple's now-safe default request and two
+explicitly bounded `[-64, 16]` requests, one scalar-only and one including
+Apple's gradients. Each call has an independent atomic phase record and
+retains the native image format, raw provider bytes, checksum, and PNG audit
+view when AppKit can encode the result.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
