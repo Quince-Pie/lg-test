@@ -1355,6 +1355,70 @@ private final class SpatialSweepDelegate:
                 captureColorSpaceICC.count
         }
 
+        let stripeIntervals: [[Int]] = stride(
+            from: 0,
+            to: stripePositions.count,
+            by: 2
+        ).map {
+            [
+                stripePositions[$0],
+                stripePositions[$0 + 1],
+            ]
+        }
+        let stripeEdges: [[String: Any]] =
+            stripePositions.enumerated().map {
+                stripeEdgeManifest(
+                    position: $0.element,
+                    index: $0.offset)
+            }
+        let stripeSamples: [[String: Any]] =
+            stripeSampleSites.map(
+                stripeSampleSiteManifest)
+        let sourceDesign: [String: Any] = [
+            "baseCode": sourceCode,
+            "amplitudesCodes": amplitudes,
+            "channelSigns": [
+                "red": 1,
+                "green": -1,
+                "blue": 1,
+            ],
+            "orientationOrder":
+                StripeOrientation.allCases.map(\.rawValue),
+            "alternatingInsideIntervals": stripeIntervals,
+            "edges": stripeEdges,
+            "sampleSites": stripeSamples,
+            "edgeMinimumSpacingPixels": 26,
+            "patchRadiusPixels": stripePatchRadius,
+            "patchSidePixels": stripePatchSide,
+            "priorMeasuredSupportRadiusUpperBoundPixels": 12,
+            "minimumGapBeyondAdjacentMeasuredSupportsPixels": 2,
+            "geometryStateCoordinate":
+                "hypot(pixel-center)/(glassDiameter/2)",
+            "geometryStateBoundaries":
+                geometryStateBoundaries,
+            "geometryBoundaryEvidence":
+                "Apple oversized-circle captures; first "
+                + "boundary independently recrossed by stripe "
+                + "sweeps 1.0 and 1.1",
+        ]
+        let fixedFaceState: [String: Any] = [
+            "inputFaceColorMatrixBlack": 0,
+            "inputFaceColorMatrixWhite": 1,
+            "inputFaceColorMatrixSaturation": 1,
+            "inputSDRHoldingToneEnabled": false,
+        ]
+        let reportInterventions: [[String: Any]] =
+            stripeInterventions.map { intervention in
+                let values = Dictionary(
+                    uniqueKeysWithValues:
+                        intervention.values.map {
+                            ($0.key, $0.value)
+                        })
+                return [
+                    "name": intervention.name,
+                    "values": values,
+                ]
+            }
         let report: [String: Any] = [
             "schemaVersion": 1,
             "rigVersion": "native-stripe-sweep-1.2.0",
@@ -1396,68 +1460,9 @@ private final class SpatialSweepDelegate:
                 "centerX": imageWidth / 2,
                 "centerY": imageHeight / 2,
             ],
-            "sourceDesign": [
-                "baseCode": sourceCode,
-                "amplitudesCodes": amplitudes,
-                "channelSigns": [
-                    "red": 1,
-                    "green": -1,
-                    "blue": 1,
-                ],
-                "orientationOrder":
-                    StripeOrientation.allCases.map(\.rawValue),
-                "alternatingInsideIntervals": stride(
-                    from: 0,
-                    to: stripePositions.count,
-                    by: 2
-                ).map {
-                    [
-                        stripePositions[$0],
-                        stripePositions[$0 + 1],
-                    ]
-                },
-                "edges":
-                    stripePositions.enumerated().map {
-                        stripeEdgeManifest(
-                            position: $0.element,
-                            index: $0.offset)
-                    },
-                "sampleSites":
-                    stripeSampleSites.map(
-                        stripeSampleSiteManifest),
-                "edgeMinimumSpacingPixels": 26,
-                "patchRadiusPixels": stripePatchRadius,
-                "patchSidePixels": stripePatchSide,
-                "priorMeasuredSupportRadiusUpperBoundPixels":
-                    12,
-                "minimumGapBeyondAdjacentMeasuredSupportsPixels":
-                    2,
-                "geometryStateCoordinate":
-                    "hypot(pixel-center)/(glassDiameter/2)",
-                "geometryStateBoundaries":
-                    geometryStateBoundaries,
-                "geometryBoundaryEvidence":
-                    "Apple oversized-circle captures; first "
-                    + "boundary independently recrossed by stripe "
-                    + "sweeps 1.0 and 1.1",
-            ],
-            "fixedFaceState": [
-                "inputFaceColorMatrixBlack": 0,
-                "inputFaceColorMatrixWhite": 1,
-                "inputFaceColorMatrixSaturation": 1,
-                "inputSDRHoldingToneEnabled": false,
-            ],
-            "interventions":
-                stripeInterventions.map {
-                    [
-                        "name": $0.name,
-                        "values": Dictionary(
-                            uniqueKeysWithValues:
-                                $0.values.map {
-                                    ($0.key, $0.value)
-                                }),
-                    ]
-                },
+            "sourceDesign": sourceDesign,
+            "fixedFaceState": fixedFaceState,
+            "interventions": reportInterventions,
             "captures": records,
             "nativeCaptureEvidence": nativeEvidence,
         ]
