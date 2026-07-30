@@ -942,6 +942,16 @@ attribute zero by the buffer-two MVP and forwards attributes one and two
 unchanged, exactly matching the exported AIR signature and operations. It
 keeps the freshly loaded no-bleed Apple fragment until the replacement vertex
 passes the same 4,194,304-byte live and forced-local gates.
+Run `30539053573` rejected that cross-library candidate: it linked, but the
+virtual GPU hung when the custom stage-structure vertex fed Apple's separately
+compiled fragment. All four Apple-function controls remained exact. Schema 45
+therefore tests the ABI without crossing metallib boundaries. It declares the
+three AIR-observed vertex attributes as individual arguments, preserves the
+exact `sdf_uv` and `src_uv` varying names, and pairs that vertex with a tiny
+fragment compiled from the same source. A completed, intentionally nonmatching
+render distinguishes a valid independent vertex/fragment ABI from another
+GPU submission failure. Joint exactness will subsequently be required from
+the independently compiled full fragment; this probe is not a quality gate.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
