@@ -809,6 +809,11 @@ passes, once from raster position and once from a center-perspective vertex
 varying. It also saves the varying-driven RGBA16F result. Comparing those
 surfaces with the compute trace and Apple's first native blur surface
 separates coordinate interpolation from fragment arithmetic scheduling.
+Schema 28 executes the arithmetic model selected by those traces: each
+symmetric pair is rounded to binary16, then accumulated with binary16 fused
+multiply-adds in native order `0, 3, 2, 1, 4`. It uses a no-fast-math
+diagnostic pipeline so the explicit FMA sequence is an executable bit gate
+rather than a compiler-dependent algebraic expression.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
