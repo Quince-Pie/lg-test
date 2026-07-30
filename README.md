@@ -836,6 +836,12 @@ Core Animation render. This tests whether QuartzCore exposes the live
 `glass_background` source/SDF textures and 224-byte uniform record outside
 WindowServer; an absent glass pipeline is a useful negative result, not
 permission to infer those resources from screenshots.
+Schema 33 serializes the per-frame encoder records that schema 32 retained in
+memory but did not attach to `runtime.json`. It also records every render
+pipeline-state transition in order. The CARenderer evidence therefore carries
+the exact fragment byte payloads, shared-buffer prefixes, textures, samplers,
+and specialized Core Animation pipeline associated with the visibly rendered
+Liquid Glass frame, rather than only the retained texture snapshots.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

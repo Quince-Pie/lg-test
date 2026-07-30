@@ -1077,7 +1077,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     ) {
         lock.lock()
         defer { lock.unlock() }
-        guard captureName != nil else { return }
+        guard let captureName else { return }
         var record: [String: Any] = [
             "class": String(reflecting: type(of: pipelineState)),
             "description": String(describing: pipelineState),
@@ -1093,6 +1093,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             record["label"] = label
         }
         pipelineRecords[ObjectIdentifier(encoder)] = record
+        appendRecord([
+            "capture": captureName,
+            "kind": "pipeline",
+            "pipeline": record,
+        ])
     }
 
     func recordFragmentBytes(
@@ -1591,6 +1596,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     String(describing: $0["name"])
                         < String(describing: $1["name"])
                 },
+        ]
+    }
+
+    func report(capture: String) -> [String: Any] {
+        lock.lock()
+        defer { lock.unlock() }
+        let captureRecords = records.filter {
+            $0["capture"] as? String == capture
+        }
+        return [
+            "capture": capture,
+            "records": captureRecords,
+            "recordCount": captureRecords.count,
+            "globalDroppedRecordCount": droppedRecordCount,
         ]
     }
 }
@@ -2721,6 +2740,8 @@ private func carendererEvidence(
             MetalUniformProbe.shared.snapshotTextures(
                 capture: capture,
                 outputDirectory: outputDirectory),
+        "metalUniformProbe":
+            MetalUniformProbe.shared.report(capture: capture),
     ]
 }
 
@@ -2848,7 +2869,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 32,
+                    "schemaVersion": 33,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2864,7 +2885,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 32,
+            "schemaVersion": 33,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
