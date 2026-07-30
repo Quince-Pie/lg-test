@@ -997,6 +997,14 @@ threshold and adds the complete shadow path: offset SDF, binary16 polynomial
 coverage, displaced source sampling, shadow color matrix, face opacity, and
 premultiplied composition. The unchanged ten-state matrix remeasures every
 accepted branch as a regression gate.
+Run `30541242081` kept the production profile and seven accepted branches
+exact, but falsified the proposed outer-threshold fix: its 7,283-byte mismatch
+was unchanged. The first shadow translation also overreached the Apple support
+because it converted the infinite inverse radius to binary16 before
+multiplication. Schema 50 follows the AIR precision boundaries literally.
+Blur interpolation now forms a float3 reciprocal and bias and evaluates the
+three factors with `fma`; shadow normalization multiplies the binary16 SDF
+distance by the float inverse radius and truncates only the product.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
