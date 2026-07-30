@@ -1,0 +1,89 @@
+name: Measure Apple Metal raster interpolation
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-interpolant-probe.yml
+      - Sources/GlassRasterProbe/**
+
+concurrency:
+  group: raster-interpolant-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-interpolant-probe:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Build Metal raster-interpolant probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-interpolant-probe
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterProbe/main.swift \
+            -o glass-raster-probe 2>&1 |
+            tee raster-interpolant-probe/build.log
+
+      - name: Measure Metal raster interpolation
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: ./glass-raster-probe raster-interpolant-probe
+
+      - name: Upload Metal raster-interpolant evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-interpolant-probe-${{ github.run_id }}
+          path: raster-interpolant-probe
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce Metal raster-interpolant evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test -s raster-interpolant-probe/manifest.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("raster-interpolant-probe")
+          with (root / "manifest.json").open(
+              encoding="utf-8",
+          ) as stream:
+              manifest = json.load(stream)
+          if manifest.get("schemaVersion") != 1:
+              raise SystemExit("raster-interpolant schema differs")
+          if manifest.get("rigVersion") != (
+              "metal-raster-interpolant-probe-1.0.0"
+          ):
+              raise SystemExit("raster-interpolant rig differs")
+          records = manifest.get("cases", [])
+          if len(records) != 6:
+              raise SystemExit("raster-interpolant case count differs")
+          for record in records:
+              crop = record["crop"]
+              expected = crop["width"] * crop["height"] * 16
+              path = root / record["file"]
+              if record["fileBytes"] != expected:
+                  raise SystemExit(
+                      f"{record['name']} manifest size differs"
+                  )
+              if path.stat().st_size != expected:
+                  raise SystemExit(
+                      f"{record['name']} file size differs"
+                  )
+          PY
