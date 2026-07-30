@@ -129,6 +129,11 @@ inline half replay_epsilon()
     return as_type<half>(ushort(0x068e));
 }
 
+inline half replay_half_constant(ushort bits)
+{
+    return as_type<half>(bits);
+}
+
 inline float replay_float_constant(uint bits)
 {
     return as_type<float>(bits);
@@ -379,12 +384,17 @@ inline half4 replay_sample_refracted(
                 half2(source_uv)
                 + half2(outer_shift) * displacement),
             level(replay_lod(outer_blur))));
-    const half threshold = half(saturate(
-        (float(distance) - uniforms.refraction_threshold0)
-        / (uniforms.refraction_threshold1
-            - uniforms.refraction_threshold0)));
+    const float threshold_span =
+        uniforms.refraction_threshold1
+        - uniforms.refraction_threshold0;
+    const float threshold = fma(
+        float(distance),
+        1.0 / threshold_span,
+        -uniforms.refraction_threshold0
+            / threshold_span);
     const half amount =
-        uniforms.refraction_opacity * threshold;
+        uniforms.refraction_opacity
+        * half(saturate(threshold));
     return uniforms.x86_workaround != half(0.0)
         ? half4(mix(
             float4(inner_sample),
@@ -406,6 +416,114 @@ inline half3 replay_color_matrix(
         + half3(row0.w, row1.w, row2.w);
 }
 
+inline half replay_shadow_alpha(
+    half2 shadow_sdf,
+    constant ReplayGlassBackgroundUniforms &uniforms)
+{
+    const half normalized = saturate(
+        shadow_sdf.x * half(uniforms.shadow_inv_radius));
+    const half centered =
+        saturate(normalized * half(0.25) + half(0.5))
+            * half(4.0)
+        - half(2.0);
+    const half squared = centered * centered;
+    half curve = fma(
+        replay_half_constant(0x1a0d),
+        squared,
+        replay_half_constant(0xa869));
+    curve = fma(
+        curve,
+        squared,
+        replay_half_constant(0x3162));
+    curve = fma(
+        curve,
+        squared,
+        replay_half_constant(0xb87c));
+    curve = fma(
+        curve,
+        centered,
+        half(0.5));
+    return curve
+        * shadow_sdf.y
+        * uniforms.shadow_opacity;
+}
+
+inline half4 replay_shadow_layer(
+    float2 source_uv,
+    half primary_distance,
+    half2 displacement,
+    half shadow_alpha,
+    texture2d<half, access::sample> source_texture,
+    constant ReplayGlassBackgroundUniforms &uniforms)
+{
+    const half shifted_distance =
+        uniforms.shadow_dist_offset + primary_distance;
+    const half height = saturate(
+        -shifted_distance
+        * half(uniforms.shadow_inv_height));
+    const half curve = saturate(
+        sqrt((half(2.0) - height) * height));
+    const half amount = half(uniforms.shadow_amount);
+    const half shift = amount - curve * amount;
+    const float2 shadow_uv = float2(
+        half2(source_uv)
+        + half2(shift) * displacement);
+
+    half4 shadow_color;
+    if (uniforms.shadow_contribution
+        > float(replay_epsilon()))
+    {
+        constexpr sampler source_sampler(
+            coord::normalized,
+            address::clamp_to_edge,
+            filter::linear,
+            mip_filter::linear);
+        const half4 sampled = source_texture.sample(
+            source_sampler,
+            shadow_uv,
+            level(replay_lod(
+                half(uniforms.shadow_blur_radius))));
+        const half sample_alpha = max(
+            sampled.a,
+            replay_epsilon());
+        half3 straight = sampled.rgb / sample_alpha;
+        straight = select(
+            straight,
+            half3(0.0),
+            fabs(straight) < half3(replay_epsilon()));
+        const half3 mapped = half3(
+            dot(straight, uniforms.shadow_cm0.xyz),
+            dot(straight, uniforms.shadow_cm1.xyz),
+            dot(straight, uniforms.shadow_cm2.xyz));
+        const half contribution =
+            half(uniforms.shadow_contribution);
+        const half3 color =
+            mapped * half3(contribution)
+            + half3(
+                uniforms.shadow_cm0.w,
+                uniforms.shadow_cm1.w,
+                uniforms.shadow_cm2.w);
+        const half alpha =
+            uniforms.x86_workaround != half(0.0)
+            ? half(mix(
+                uniforms.shadow_face_opacity,
+                1.0,
+                uniforms.shadow_contribution))
+            : mix(
+                half(uniforms.shadow_face_opacity),
+                half(1.0),
+                contribution);
+        shadow_color = half4(color, alpha);
+    } else {
+        shadow_color = half4(
+            uniforms.shadow_cm0.w,
+            uniforms.shadow_cm1.w,
+            uniforms.shadow_cm2.w,
+            half(uniforms.shadow_face_opacity));
+    }
+    return shadow_color * half4(shadow_alpha);
+}
+
 fragment half4 glass_fragment_profile_replay(
     GlassReplayVertexOutput input [[stage_in]],
     texture2d<half, access::sample> source_texture [[texture(3)]],
@@ -413,29 +531,38 @@ fragment half4 glass_fragment_profile_replay(
     constant half &edr_scale [[buffer(6)]])
 {
     const int mode = int(uniforms.sdf.arg.z);
-    if (mode < 0) {
-        discard_fragment();
-        return half4(0.0);
-    }
-    if (mode != 4) {
+    if (mode >= 0 && mode != 4) {
         return half4(1.0, 0.0, 1.0, 1.0);
     }
 
-    const half4 sdf = replay_compute_mode4_sdf(
-        input.sdf_uv,
-        uniforms.sdf);
-    const half distance = sdf.x;
-    const half feather = max(
-        fwidth(distance),
-        replay_epsilon());
-    const half coverage = sdf.w * half(saturate(
-        float(-distance / feather) + 0.5));
-    if (coverage == half(0.0)) {
-        discard_fragment();
-        return half4(0.0);
+    half distance = half(0.0);
+    float2 normal = float2(0.0);
+    half coverage = half(0.0);
+    if (mode >= 0) {
+        const half4 sdf = replay_compute_mode4_sdf(
+            input.sdf_uv,
+            uniforms.sdf);
+        distance = sdf.x;
+        normal = float2(sdf.yz);
+        const half feather = max(
+            fwidth(distance),
+            replay_epsilon());
+        coverage = sdf.w * half(saturate(
+            float(-distance / feather) + 0.5));
     }
 
-    const float2 normal = float2(sdf.yz);
+    half2 shadow_sdf = half2(0.0);
+    if (coverage < half(1.0)) {
+        const int shadow_mode = abs(mode) | 4;
+        if (shadow_mode != 4) {
+            return half4(0.0, 1.0, 1.0, 1.0);
+        }
+        const half4 shadow = replay_compute_mode4_sdf(
+            input.sdf_uv + uniforms.glass.shadow_offset,
+            uniforms.sdf);
+        shadow_sdf = shadow.xw;
+    }
+
     const half2 displacement = half2(
         half(dot(
             normal,
@@ -443,44 +570,73 @@ fragment half4 glass_fragment_profile_replay(
         half(dot(
             normal,
             uniforms.glass.displacement_mat.zw)));
-    const half4 sampled = replay_sample_refracted(
-        input.src_uv,
-        distance,
-        displacement,
-        source_texture,
-        uniforms.glass);
-    const half sample_alpha = max(
-        sampled.a,
-        replay_epsilon());
-    const half3 source_color = sampled.rgb / sample_alpha;
-    half4 face = half4(source_color, half(1.0));
+    const half shadow_alpha =
+        coverage < half(1.0)
+        ? replay_shadow_alpha(
+            shadow_sdf,
+            uniforms.glass)
+        : half(0.0);
+    if (shadow_alpha < replay_epsilon()
+        && coverage == half(0.0))
+    {
+        discard_fragment();
+        return half4(0.0);
+    }
+    const half4 shadow_layer =
+        coverage < half(1.0)
+        ? replay_shadow_layer(
+            input.src_uv,
+            distance,
+            displacement,
+            shadow_alpha,
+            source_texture,
+            uniforms.glass)
+        : half4(0.0);
 
-    if (uniforms.glass.face_opacity > half(0.0)) {
-        const half3 mapped = replay_color_matrix(
-            source_color,
-            uniforms.glass.face_cm0,
-            uniforms.glass.face_cm1,
-            uniforms.glass.face_cm2);
-        face.rgb =
-            uniforms.glass.x86_workaround != half(0.0)
-            ? half3(mix(
-                float3(source_color),
-                float3(mapped),
-                float3(float(uniforms.glass.face_opacity))))
-            : mix(
+    half4 face = half4(0.0);
+    if (coverage > half(0.0)) {
+        const half4 sampled = replay_sample_refracted(
+            input.src_uv,
+            distance,
+            displacement,
+            source_texture,
+            uniforms.glass);
+        const half sample_alpha = max(
+            sampled.a,
+            replay_epsilon());
+        const half3 source_color =
+            sampled.rgb / sample_alpha;
+        face = half4(source_color, half(1.0));
+
+        if (uniforms.glass.face_opacity > half(0.0)) {
+            const half3 mapped = replay_color_matrix(
                 source_color,
-                mapped,
-                half3(uniforms.glass.face_opacity));
+                uniforms.glass.face_cm0,
+                uniforms.glass.face_cm1,
+                uniforms.glass.face_cm2);
+            face.rgb =
+                uniforms.glass.x86_workaround != half(0.0)
+                ? half3(mix(
+                    float3(source_color),
+                    float3(mapped),
+                    float3(
+                        float(
+                            uniforms.glass.face_opacity))))
+                : mix(
+                    source_color,
+                    mapped,
+                    half3(uniforms.glass.face_opacity));
+        }
     }
 
     half4 composite =
         uniforms.glass.x86_workaround != half(0.0)
         ? half4(mix(
-            float4(0.0),
+            float4(shadow_layer),
             float4(face),
             float4(float(coverage))))
         : mix(
-            half4(0.0),
+            shadow_layer,
             face,
             half4(coverage));
 
@@ -4195,7 +4351,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 48,
+            "schemaVersion": 49,
             "capture": capture,
             "phase": phase,
         ]
@@ -4388,7 +4544,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 48,
+                    "schemaVersion": 49,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4588,7 +4744,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 48,
+                "schemaVersion": 49,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -7163,7 +7319,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 48,
+                    "schemaVersion": 49,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -7179,7 +7335,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 48,
+            "schemaVersion": 49,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

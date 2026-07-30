@@ -985,6 +985,18 @@ tone, disabled clamp, hue-preserving clamp, float-mix workaround, alpha-only
 shadow, and sampled shadow states each receive a full 4,194,304-byte
 comparison. Raw paired outputs are retained; expected shadow failures remain
 measurements rather than being waived.
+Run `30540849812` returned zero mismatches for seven previously inactive
+branches: simple refraction, zero and half face opacity, disabled holding
+tone, disabled clamp, hue-preserving clamp, and the float-mix workaround.
+Full outer refraction differed in 7,283/4,194,304 bytes over 3,372 pixels
+with maximum delta 12, localizing the remaining error to its threshold blend.
+Both shadow interventions differed over the same approximately 7,200-pixel
+support because schema 48 intentionally lacked the negative/shadow draw.
+Schema 49 reproduces the AIR's explicit reciprocal-and-FMA refraction
+threshold and adds the complete shadow path: offset SDF, binary16 polynomial
+coverage, displaced source sampling, shadow color matrix, face opacity, and
+premultiplied composition. The unchanged ten-state matrix remeasures every
+accepted branch as a regression gate.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a
