@@ -656,8 +656,8 @@ jobs:
           root = pathlib.Path("introspection")
           with (root / "runtime.json").open(encoding="utf-8") as stream:
               runtime = json.load(stream)
-          if runtime.get("schemaVersion") != 61:
-              raise SystemExit("introspection schema is not 61")
+          if runtime.get("schemaVersion") != 62:
+              raise SystemExit("introspection schema is not 62")
 
           expected_sizes = {
               "carenderer-live-tree-glass-final-color-numeric-trace-rgba16f.raw":
@@ -676,6 +676,12 @@ jobs:
                   1024 * 1024 * 16,
               "carenderer-live-tree-glass-sdf-coverage-numeric-trace-rgba32ui.raw":
                   1024 * 1024 * 16,
+              "half-blend-source-conversion-bgra8.raw":
+                  256 * 124 * 4,
+              "half-blend-alpha-destination-bgra8.raw":
+                  1024 * 3841 * 4,
+              "half-blend-combined-hash-bgra8.raw":
+                  2048 * 2048 * 4,
           }
           for name, expected_size in expected_sizes.items():
               path = root / name
