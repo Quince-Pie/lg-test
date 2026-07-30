@@ -27,14 +27,19 @@ private let kernelPatchSide = 2 * kernelPatchRadius + 1
 private let lodAmplitudes = [0, 1, 8, 32, 127]
 private let lodAuditNumerators: Set<Int> = [0, 37, 64, 128]
 private let stripePositions = [
-    280, 312,
-    338, 370,
-    396, 428,
-    454, 486,
+    24, 50, 76, 102,
+    400, 426, 452, 478,
 ]
-private let stripePatchRadius = 13
+private let stripePatchRadius = 12
 private let stripePatchSide = 2 * stripePatchRadius + 1
-private let stripeCrossAxisCenter = 384
+private let geometryStateBoundaries = [
+    0.0,
+    0.08,
+    0.1577545,
+    0.2289485,
+    0.3037185,
+    0.3753005,
+]
 
 private struct Site {
     let index: Int
@@ -71,6 +76,47 @@ private enum StripeOrientation: String, CaseIterable {
     case horizontal
 }
 
+private struct StripeSampleSite {
+    let index: Int
+    let state: Int
+    let edgePosition: Int
+    let crossAxisCenter: Int
+    let phase: Int
+    let transitionSign: Int
+}
+
+private let stripeSampleSites: [StripeSampleSite] = {
+    let groups: [
+        (
+            state: Int,
+            positions: [Int],
+            crossAxisCenter: Int
+        )
+    ] = [
+        (0, [400, 426, 452, 478], 470),
+        (1, [400, 426, 452, 478], 290),
+        (2, [400, 426, 452, 478], 135),
+        (3, [24, 50, 76, 102], 228),
+        (4, [24, 50, 76, 102], 25),
+    ]
+    var result: [StripeSampleSite] = []
+    for group in groups {
+        for position in group.positions {
+            let edgeIndex =
+                stripePositions.firstIndex(of: position)!
+            result.append(StripeSampleSite(
+                index: result.count,
+                state: group.state,
+                edgePosition: position,
+                crossAxisCenter: group.crossAxisCenter,
+                phase: (position / 2) & 3,
+                transitionSign:
+                    edgeIndex.isMultiple(of: 2) ? 1 : -1))
+        }
+    }
+    return result
+}()
+
 private let identityValues: [(key: String, value: NSNumber)] = [
     ("inputFaceColorMatrixBlack", NSNumber(value: Float(0))),
     ("inputFaceColorMatrixWhite", NSNumber(value: Float(1))),
@@ -85,6 +131,9 @@ private let spatialInterventions = [0, 1, 2, 4].map { radius in
             ("inputBlurRadius", NSNumber(value: Float(radius))),
         ])
 }
+
+private let stripeInterventions =
+    Array(spatialInterventions.prefix(3))
 
 private let lodStates: [LodState] = {
     var result = (0...128).map { numerator in
@@ -660,18 +709,20 @@ private func stripePatchRGBData(
         }
         var result = Data(
             count:
-                stripePositions.count
+                stripeSampleSites.count
                 * stripePatchSide * stripePatchSide * 3)
         result.withUnsafeMutableBytes { resultBytes in
             let destination = resultBytes.bindMemory(
                 to: UInt8.self
             ).baseAddress!
             var destinationOffset = 0
-            for position in stripePositions {
+            for site in stripeSampleSites {
                 let centerX = orientation == .vertical
-                    ? position : stripeCrossAxisCenter
+                    ? site.edgePosition
+                    : site.crossAxisCenter
                 let centerY = orientation == .horizontal
-                    ? position : stripeCrossAxisCenter
+                    ? site.edgePosition
+                    : site.crossAxisCenter
                 for deltaY in
                     -stripePatchRadius...stripePatchRadius
                 {
@@ -817,8 +868,46 @@ private func stripeEdgeManifest(
         "position": position,
         "reducedGridPhase": (position / 2) & 3,
         "transitionSign": index.isMultiple(of: 2) ? 1 : -1,
-        "distanceFromCandidateTileStart": position - 256,
-        "distanceFromCandidateTileEnd": 512 - position,
+    ]
+}
+
+private func stripeSampleRadiusRange(
+    _ site: StripeSampleSite
+) -> (minimum: Double, maximum: Double) {
+    var minimumRadius = Double.infinity
+    var maximumRadius = 0.0
+    for deltaY in -stripePatchRadius...stripePatchRadius {
+        for deltaX in -stripePatchRadius...stripePatchRadius {
+            let x = site.edgePosition + deltaX
+            let y = site.crossAxisCenter + deltaY
+            let radius = hypot(
+                Double(x - imageWidth / 2),
+                Double(y - imageHeight / 2))
+                / (Double(glassDiameter) / 2)
+            minimumRadius = min(minimumRadius, radius)
+            maximumRadius = max(maximumRadius, radius)
+        }
+    }
+    return (minimumRadius, maximumRadius)
+}
+
+private func stripeSampleSiteManifest(
+    _ site: StripeSampleSite
+) -> [String: Any] {
+    let radius = stripeSampleRadiusRange(site)
+    return [
+        "index": site.index,
+        "geometryState": site.state,
+        "edgePosition": site.edgePosition,
+        "crossAxisCenter": site.crossAxisCenter,
+        "reducedGridPhase": site.phase,
+        "transitionSign": site.transitionSign,
+        "normalizedRadiusMinimum": radius.minimum,
+        "normalizedRadiusMaximum": radius.maximum,
+        "geometryStateLowerBoundary":
+            geometryStateBoundaries[site.state],
+        "geometryStateUpperBoundary":
+            geometryStateBoundaries[site.state + 1],
     ]
 }
 
@@ -944,18 +1033,41 @@ private final class SpatialSweepDelegate:
     private func runStripeSweep(
         workspace: NSWorkspace
     ) async throws {
+        for site in stripeSampleSites {
+            let radius = stripeSampleRadiusRange(site)
+            guard radius.minimum
+                    > geometryStateBoundaries[site.state],
+                  radius.maximum
+                    < geometryStateBoundaries[site.state + 1]
+            else {
+                throw SweepError.environment(
+                    "stripe sample crosses geometry state "
+                        + "\(site.state)")
+            }
+            let minimumCoordinate = min(
+                site.edgePosition,
+                site.crossAxisCenter)
+                - stripePatchRadius - 12
+            let maximumCoordinate = max(
+                site.edgePosition,
+                site.crossAxisCenter)
+                + stripePatchRadius + 12
+            guard minimumCoordinate >= 0,
+                  maximumCoordinate < imageWidth
+            else {
+                throw SweepError.environment(
+                    "stripe sample support leaves the source")
+            }
+        }
         var controlStream = Data()
-        var identityStream = Data()
+        var interventionStreams = Dictionary(
+            uniqueKeysWithValues: stripeInterventions.map {
+                ($0.name, Data())
+            })
         var records: [[String: Any]] = []
         var requiredFormatSignature: String?
         var captureColorSpaceICC: Data?
         var captureFormat: [String: Any]?
-        let identityBlurOne = identityValues + [
-            (
-                "inputBlurRadius",
-                NSNumber(value: Float(1))
-            ),
-        ]
 
         for amplitude in amplitudes {
             var orientationRecords: [[String: Any]] = []
@@ -1016,41 +1128,9 @@ private final class SpatialSweepDelegate:
                 else {
                     throw SweepError.glassFilterMissing
                 }
-                let stateFilter =
-                    try copiedFilter(target.filter)
-                installFilter(
-                    target: target,
-                    filter: stateFilter,
-                    values: identityBlurOne)
-                let (identity, identitySamples) =
-                    try await stableCapture(
-                        window,
-                        name:
-                            "stripe-a\(amplitude)-"
-                            + "\(orientation.rawValue)-identity",
-                        settleNanoseconds: 450_000_000)
-                let (identitySignature, _, _) =
-                    formatSignature(identity)
-                guard identitySignature == controlSignature else {
-                    throw SweepError.environment(
-                        "stripe identity capture format changed")
-                }
-                guard let readback = stateFilter.value(
-                    forKey: "inputBlurRadius"
-                ) as? NSNumber,
-                      readback.floatValue.bitPattern
-                        == Float(1).bitPattern
-                else {
-                    throw SweepError.capture(
-                        "stripe production blur readback differs")
-                }
                 controlStream.append(
                     try stripePatchRGBData(
                         control.nativePixels,
-                        orientation: orientation))
-                identityStream.append(
-                    try stripePatchRGBData(
-                        identity.nativePixels,
                         orientation: orientation))
 
                 var orientationRecord: [String: Any] = [
@@ -1066,39 +1146,115 @@ private final class SpatialSweepDelegate:
                         sha256(materialized.nativePixels),
                     "materializedStabilitySamples":
                         materializedSamples,
-                    "identityCanonicalPixelSha256":
-                        sha256(identity.canonicalPixels),
-                    "identityNativePixelSha256":
-                        sha256(identity.nativePixels),
-                    "identityStabilitySamples": identitySamples,
-                    "captureBackend": identity.backend,
-                    "inputBlurRadiusReadback":
-                        Double(readback.floatValue),
-                    "inputBlurRadiusReadbackFloat32Bits":
-                        String(
-                            format: "%08x",
-                            readback.floatValue.bitPattern),
+                    "captureBackend": materialized.backend,
                 ]
-                if amplitude == 127 {
-                    let prefix =
-                        "stripe-amplitude-127-"
-                        + orientation.rawValue
+                var interventionRecords: [[String: Any]] = []
+                for intervention in stripeInterventions {
+                    guard let requested = intervention.values
+                        .first(where: {
+                            $0.key == "inputBlurRadius"
+                        })?.value.floatValue
+                    else {
+                        throw SweepError.capture(
+                            "stripe intervention has no blur radius")
+                    }
+                    let stateFilter =
+                        try copiedFilter(target.filter)
+                    installFilter(
+                        target: target,
+                        filter: stateFilter,
+                        values: intervention.values)
+                    let (capture, stabilitySamples) =
+                        try await stableCapture(
+                            window,
+                            name:
+                                "stripe-a\(amplitude)-"
+                                + "\(orientation.rawValue)-"
+                                + intervention.name,
+                            settleNanoseconds: 450_000_000)
+                    let (signature, _, _) =
+                        formatSignature(capture)
+                    guard signature == controlSignature else {
+                        throw SweepError.environment(
+                            "stripe capture format changed during "
+                                + intervention.name)
+                    }
+                    guard let readback = stateFilter.value(
+                        forKey: "inputBlurRadius"
+                    ) as? NSNumber,
+                          readback.floatValue.bitPattern
+                            == requested.bitPattern
+                    else {
+                        throw SweepError.capture(
+                            "stripe blur-radius readback differs "
+                                + "during \(intervention.name)")
+                    }
+                    interventionStreams[
+                        intervention.name,
+                        default: Data()
+                    ].append(
+                        try stripePatchRGBData(
+                            capture.nativePixels,
+                            orientation: orientation))
+                    var interventionRecord: [String: Any] = [
+                        "name": intervention.name,
+                        "canonicalPixelSha256":
+                            sha256(capture.canonicalPixels),
+                        "nativePixelSha256":
+                            sha256(capture.nativePixels),
+                        "stabilitySamples": stabilitySamples,
+                        "captureBackend": capture.backend,
+                        "values": Dictionary(
+                            uniqueKeysWithValues:
+                                intervention.values.map {
+                                    ($0.key, $0.value)
+                                }),
+                        "inputBlurRadiusReadback":
+                            Double(readback.floatValue),
+                        "inputBlurRadiusReadbackFloat32Bits":
+                            String(
+                                format: "%08x",
+                                readback.floatValue.bitPattern),
+                    ]
+                    if auditAmplitudes.contains(amplitude) {
+                        let prefix = String(
+                            format:
+                                "stripe-amplitude-%03d-%@",
+                            amplitude,
+                            orientation.rawValue)
+                        let captureURL = outputDirectory
+                            .appendingPathComponent(
+                                "\(prefix)-"
+                                    + "\(intervention.name).png")
+                        try writePNG(
+                            capture.canonicalImage,
+                            to: captureURL)
+                        interventionRecord["file"] =
+                            captureURL.lastPathComponent
+                        interventionRecord["fileSha256"] =
+                            sha256(captureURL)
+                    }
+                    interventionRecords.append(
+                        interventionRecord)
+                }
+                orientationRecord["interventions"] =
+                    interventionRecords
+                if auditAmplitudes.contains(amplitude) {
+                    let prefix = String(
+                        format:
+                            "stripe-amplitude-%03d-%@",
+                        amplitude,
+                        orientation.rawValue)
                     let sourceURL = outputDirectory
                         .appendingPathComponent(
                             "\(prefix)-source.png")
                     let controlURL = outputDirectory
                         .appendingPathComponent(
                             "\(prefix)-control.png")
-                    let identityURL = outputDirectory
-                        .appendingPathComponent(
-                            "\(prefix)-identity.png")
                     try writePNG(source, to: sourceURL)
                     try writePNG(
                         control.canonicalImage,
                         to: controlURL)
-                    try writePNG(
-                        identity.canonicalImage,
-                        to: identityURL)
                     orientationRecord["sourceFile"] =
                         sourceURL.lastPathComponent
                     orientationRecord["sourceFileSha256"] =
@@ -1107,10 +1263,6 @@ private final class SpatialSweepDelegate:
                         controlURL.lastPathComponent
                     orientationRecord["controlFileSha256"] =
                         sha256(controlURL)
-                    orientationRecord["identityFile"] =
-                        identityURL.lastPathComponent
-                    orientationRecord["identityFileSha256"] =
-                        sha256(identityURL)
                 }
                 orientationRecords.append(orientationRecord)
             }
@@ -1127,11 +1279,14 @@ private final class SpatialSweepDelegate:
         let recordCount =
             amplitudes.count
             * StripeOrientation.allCases.count
-            * stripePositions.count
+            * stripeSampleSites.count
             * stripePatchSide * stripePatchSide
         let expectedBytes = recordCount * 3
         guard controlStream.count == expectedBytes,
-              identityStream.count == expectedBytes
+              stripeInterventions.allSatisfy({
+                  interventionStreams[$0.name]?.count
+                      == expectedBytes
+              })
         else {
             throw SweepError.capture(
                 "native stripe stream length differs")
@@ -1139,21 +1294,41 @@ private final class SpatialSweepDelegate:
         let controlURL = outputDirectory
             .appendingPathComponent(
                 "native-stripe-control-patches.rgb8")
-        let identityURL = outputDirectory
-            .appendingPathComponent(
-                "native-stripe-identity-blur-1-patches.rgb8")
         try controlStream.write(
             to: controlURL,
             options: .atomic)
-        try identityStream.write(
-            to: identityURL,
-            options: .atomic)
+
+        var interventionEvidence: [[String: Any]] = []
+        for intervention in stripeInterventions {
+            guard let stream =
+                    interventionStreams[intervention.name]
+            else {
+                throw SweepError.capture(
+                    "missing stripe "
+                        + intervention.name + " stream")
+            }
+            let url = outputDirectory.appendingPathComponent(
+                "native-stripe-\(intervention.name)"
+                    + "-patches.rgb8")
+            try stream.write(to: url, options: .atomic)
+            interventionEvidence.append([
+                "name": intervention.name,
+                "file": url.lastPathComponent,
+                "fileSha256": sha256(stream),
+                "fileBytes": stream.count,
+                "values": Dictionary(
+                    uniqueKeysWithValues:
+                        intervention.values.map {
+                            ($0.key, $0.value)
+                        }),
+            ])
+        }
 
         var nativeEvidence: [String: Any] = [
             "schemaVersion": 1,
             "recordOrder":
                 "amplitude ascending, orientation vertical then "
-                + "horizontal, edge order, patch y-major then "
+                + "horizontal, sample-site order, patch y-major then "
                 + "x-major",
             "recordFormat": "RGB8",
             "recordStrideBytes": 3,
@@ -1161,9 +1336,7 @@ private final class SpatialSweepDelegate:
             "controlFile": controlURL.lastPathComponent,
             "controlFileSha256": sha256(controlStream),
             "controlFileBytes": controlStream.count,
-            "identityFile": identityURL.lastPathComponent,
-            "identityFileSha256": sha256(identityStream),
-            "identityFileBytes": identityStream.count,
+            "interventions": interventionEvidence,
             "captureFormat":
                 captureFormat as Any? ?? NSNull(),
         ]
@@ -1184,9 +1357,9 @@ private final class SpatialSweepDelegate:
 
         let report: [String: Any] = [
             "schemaVersion": 1,
-            "rigVersion": "native-stripe-sweep-1.1.0",
+            "rigVersion": "native-stripe-sweep-1.2.0",
             "sweepKind":
-                "same-tile-phase-controlled-production-stripes",
+                "geometry-state-interior-phase-stripes",
             "ciCommit":
                 ProcessInfo.processInfo
                     .environment["GITHUB_SHA"]
@@ -1249,27 +1422,42 @@ private final class SpatialSweepDelegate:
                             position: $0.element,
                             index: $0.offset)
                     },
-                "phaseDirectionPairs": true,
+                "sampleSites":
+                    stripeSampleSites.map(
+                        stripeSampleSiteManifest),
                 "edgeMinimumSpacingPixels": 26,
                 "patchRadiusPixels": stripePatchRadius,
                 "patchSidePixels": stripePatchSide,
-                "crossAxisCenter": stripeCrossAxisCenter,
-                "candidateTileInterval": [256, 512],
-                "minimumEdgeDistanceFromCandidateTileBoundary":
-                    24,
                 "priorMeasuredSupportRadiusUpperBoundPixels":
                     12,
-                "minimumGapBeyondPairedMeasuredSupportsPixels":
+                "minimumGapBeyondAdjacentMeasuredSupportsPixels":
                     2,
+                "geometryStateCoordinate":
+                    "hypot(pixel-center)/(glassDiameter/2)",
+                "geometryStateBoundaries":
+                    geometryStateBoundaries,
+                "geometryBoundaryEvidence":
+                    "Apple oversized-circle captures; first "
+                    + "boundary independently recrossed by stripe "
+                    + "sweeps 1.0 and 1.1",
             ],
-            "fixedFilterState": [
+            "fixedFaceState": [
                 "inputFaceColorMatrixBlack": 0,
                 "inputFaceColorMatrixWhite": 1,
                 "inputFaceColorMatrixSaturation": 1,
                 "inputSDRHoldingToneEnabled": false,
-                "inputBlurRadius": 1,
-                "inputBlurRadiusFloat32Bits": "3f800000",
             ],
+            "interventions":
+                stripeInterventions.map {
+                    [
+                        "name": $0.name,
+                        "values": Dictionary(
+                            uniqueKeysWithValues:
+                                $0.values.map {
+                                    ($0.key, $0.value)
+                                }),
+                    ]
+                },
             "captures": records,
             "nativeCaptureEvidence": nativeEvidence,
         ]

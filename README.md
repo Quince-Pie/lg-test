@@ -678,6 +678,15 @@ while the filter stays at production blur radius one and the face stage stays
 identity. This removes transition direction as the last phase-recovery
 confound; radius readback, source controls, two-frame stability, native RGB
 streams, and audit PNGs remain mandatory.
+Those two stripe corpora also independently recross the first radial optical
+state boundary: the changing orthogonal profiles follow a circle of normalized
+radius 0.08, not a compositor-tile line. The state-interior refinement places
+four reduced-grid phases wholly inside each of the five radial states visible
+in the 1024-pixel oversized-circle capture. Every 25x25 patch has a recorded
+minimum and maximum normalized radius strictly between its state's fitted
+boundaries. Identity face captures at blur radii zero, one, and two test the
+two mip endpoints and the production blend without mixing adjacent radial
+states.
 The focused native kernel mode complements the impulse sweep with sixteen
 96-pixel square steps spanning every phase of the first two reduced mip
 levels. Its red/blue positive and green negative channels capture the
