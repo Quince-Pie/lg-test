@@ -1282,7 +1282,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return 2
         case .rgba8Unorm, .rgba8Unorm_srgb,
              .bgra8Unorm, .bgra8Unorm_srgb,
-             .rg16Unorm, .rg16Float, .r32Float:
+             .rg16Unorm, .rg16Uint, .rg16Float, .r32Float:
             return 4
         case .rgba16Unorm, .rgba16Float, .rg32Float:
             return 8
@@ -1451,10 +1451,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && (($0.pipeline["label"] as? String)?
                         .contains("_A2Xghfc") ?? false)
             }
+            let finalWinnerBinding = bindings.last {
+                $0.index == 3
+                    && $0.texture.width == 384
+                    && $0.texture.height == 384
+                    && $0.texture.pixelFormat == .rg16Uint
+                    && (($0.pipeline["label"] as? String)?
+                        .contains("_Tdgf") ?? false)
+            }
             if let baseBinding,
                let blurredBinding,
                let nativeHorizontalBinding,
-               let nativeVerticalBinding
+               let nativeVerticalBinding,
+               let finalWinnerBinding
             {
                 let exactSampler = samplers
                     .filter {
@@ -1474,6 +1483,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             nativeHorizontalBinding.texture,
                         nativeVerticalField:
                             nativeVerticalBinding.texture,
+                        winnerField: finalWinnerBinding.texture,
                         blurSampler: exactSampler?.sampler,
                         outputDirectory: outputDirectory)
                     result["stageTraceSamplerSelection"] = [
@@ -2652,7 +2662,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 30,
+                    "schemaVersion": 31,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -2668,7 +2678,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 30,
+            "schemaVersion": 31,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,

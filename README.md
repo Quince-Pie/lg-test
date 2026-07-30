@@ -824,6 +824,10 @@ Schema 30 removes that native-intermediate dependency. It inserts the exact
 feeds it through the vertical FMA pass, and saves both the resulting active
 region and the final 384-by-384 crop. This is the protected end-to-end blur
 gate from the captured base field onward.
+Schema 31 captures the final RG16Uint jump-flood winner surface and evaluates
+the recovered signed-field expression with Metal `fast::sqrt` on the same
+Apple GPU. Its binary16 trace is compared directly with the native 384-by-384
+base field, isolating the last higher-precision SDF arithmetic dependency.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

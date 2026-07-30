@@ -411,6 +411,28 @@ kernel void sdf_blur_trace(
     trace[base + 23] = as_type<ushort>(stage_3.r);
 }
 
+kernel void sdf_field_trace(
+    texture2d<ushort, access::read> winners [[texture(0)]],
+    device ushort *half_trace [[buffer(0)]],
+    uint2 gid [[thread_position_in_grid]])
+{
+    if (gid.x >= gradient_width || gid.y >= gradient_width) {
+        return;
+    }
+    const ushort2 winner = winners.read(gid).xy;
+    const float2 delta = float2(gid) - float2(winner);
+    const float distance = fast::sqrt(dot(delta, delta));
+    const bool inside =
+        gid.x >= 128 && gid.x < 256
+        && gid.y >= 112 && gid.y < 272;
+    const float signed_distance = inside ? -distance : distance;
+    const float winner_alpha = winner.x == 0 ? 0.0 : 1.0;
+    const half field = half(
+        signed_distance + 0.5 - winner_alpha);
+    const uint index = gid.y * gradient_width + gid.x;
+    half_trace[index] = as_type<ushort>(field);
+}
+
 kernel void sdf_gradient_trace(
     texture2d<half, access::read> blurred [[texture(0)]],
     device uint *float_trace [[buffer(0)]],
@@ -475,6 +497,7 @@ func writeSDFStageEvidence(
     blurredField: MTLTexture,
     nativeHorizontalField: MTLTexture,
     nativeVerticalField: MTLTexture,
+    winnerField: MTLTexture,
     blurSampler: MTLSamplerState?,
     outputDirectory: URL
 ) throws -> [String: Any] {
@@ -492,6 +515,8 @@ func writeSDFStageEvidence(
         name: "sdf_blur_trace"),
           let gradientFunction = library.makeFunction(
               name: "sdf_gradient_trace"),
+          let fieldFunction = library.makeFunction(
+              name: "sdf_field_trace"),
           let blurVertexFunction = library.makeFunction(
               name: "sdf_blur_vertex"),
           let privateBlurVertexFunction = library.makeFunction(
@@ -518,6 +543,8 @@ func writeSDFStageEvidence(
         function: blurFunction)
     let gradientPipeline = try device.makeComputePipelineState(
         function: gradientFunction)
+    let fieldPipeline = try device.makeComputePipelineState(
+        function: fieldFunction)
     let blurRenderDescriptor = MTLRenderPipelineDescriptor()
     blurRenderDescriptor.vertexFunction = blurVertexFunction
     blurRenderDescriptor.fragmentFunction = blurFragmentFunction
@@ -661,6 +688,9 @@ func writeSDFStageEvidence(
     let gradientHalfStride = 2 * MemoryLayout<UInt16>.stride
     let gradientHalfBytes =
         gradientSide * gradientSide * gradientHalfStride
+    let fieldHalfBytes =
+        gradientSide * gradientSide
+        * MemoryLayout<UInt16>.stride
     let blurReplayBytesPerPixel = 8
     let blurReplayTightBytesPerRow =
         blurSide * blurReplayBytesPerPixel
@@ -740,6 +770,9 @@ func writeSDFStageEvidence(
             options: .storageModeShared),
         let gradientHalfOutput = device.makeBuffer(
             length: gradientHalfBytes,
+            options: .storageModeShared),
+        let fieldHalfOutput = device.makeBuffer(
+            length: fieldHalfBytes,
             options: .storageModeShared),
         let blurReplayTexture = device.makeTexture(
             descriptor: blurReplayTextureDescriptor),
@@ -839,6 +872,17 @@ func writeSDFStageEvidence(
         MTLSize(width: gradientSide, height: gradientSide, depth: 1),
         threadsPerThreadgroup:
             sdfProbeThreadgroup(gradientPipeline))
+
+    encoder.setComputePipelineState(fieldPipeline)
+    encoder.setTexture(winnerField, index: 0)
+    encoder.setBuffer(fieldHalfOutput, offset: 0, index: 0)
+    encoder.dispatchThreads(
+        MTLSize(
+            width: gradientSide,
+            height: gradientSide,
+            depth: 1),
+        threadsPerThreadgroup:
+            sdfProbeThreadgroup(fieldPipeline))
     encoder.endEncoding()
 
     let renderPass = MTLRenderPassDescriptor()
@@ -1305,6 +1349,8 @@ func writeSDFStageEvidence(
         "sdf-stage-gradient-float-trace.bin"
     let gradientHalfFilename =
         "sdf-stage-gradient-half-trace.bin"
+    let fieldHalfFilename =
+        "sdf-stage-field-half-trace.bin"
     let blurReplayFilename = "sdf-stage-blur-fragment.raw"
     let nativeFMABlurReplayFilename =
         "sdf-stage-blur-native-fma-fragment.raw"
@@ -1343,6 +1389,13 @@ func writeSDFStageEvidence(
     ).write(
         to: outputDirectory.appendingPathComponent(
             gradientHalfFilename),
+        options: .atomic)
+    try Data(
+        bytes: fieldHalfOutput.contents(),
+        count: fieldHalfBytes
+    ).write(
+        to: outputDirectory.appendingPathComponent(
+            fieldHalfFilename),
         options: .atomic)
     try Data(
         bytes: positionFragmentTraceOutput.contents(),
@@ -1480,7 +1533,7 @@ func writeSDFStageEvidence(
     }
 
     return [
-        "schemaVersion": 7,
+        "schemaVersion": 8,
         "metalFastMathEnabled": options.fastMathEnabled,
         "baseField": [
             "width": baseField.width,
@@ -1503,6 +1556,11 @@ func writeSDFStageEvidence(
             "height": nativeVerticalField.height,
             "pixelFormat":
                 nativeVerticalField.pixelFormat.rawValue,
+        ],
+        "winnerField": [
+            "width": winnerField.width,
+            "height": winnerField.height,
+            "pixelFormat": winnerField.pixelFormat.rawValue,
         ],
         "blurTrace": [
             "width": blurSide,
@@ -1669,6 +1727,16 @@ func writeSDFStageEvidence(
                 "little-endian IEEE-754 binary16 bit pattern",
             "outputFile": gradientHalfFilename,
             "outputBytes": gradientHalfBytes,
+        ],
+        "fieldHalfTrace": [
+            "width": gradientSide,
+            "height": gradientSide,
+            "recordStrideBytes": MemoryLayout<UInt16>.stride,
+            "componentType":
+                "little-endian IEEE-754 binary16 bit pattern",
+            "distanceFunction": "Metal fast::sqrt",
+            "outputFile": fieldHalfFilename,
+            "outputBytes": fieldHalfBytes,
         ],
     ]
 }
