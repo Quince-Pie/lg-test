@@ -1099,8 +1099,17 @@ identification modes for the private clear-material mip path:
 - `--flat-lod` applies the same settings to the complete 0/64 through 128/64
   LOD grid. Every requested filter input is read back bit-for-bit for every
   state. This keeps the historical `--stripe` and `--lod` modes unchanged
-  while producing an uncontaminated oracle for matching the default
-  SDF-conditioned profile.
+  while removing spatial SDF conditioning. Run `30511273548` proved this is
+  a spatially stationary cross-radius catalog, not a bitwise-complete LOD
+  oracle: requested radius also configures upstream mip generation.
+- `--fixed-resource-lod` holds requested blur radius at either one or four
+  while setting all five blur opacities to the same controlled scale. The
+  radius-one group covers the production range and includes both grid state
+  37 and exact scale one; the radius-four group covers the complete 0/64
+  through 128/64 target grid. Refraction amounts remain at their observed
+  live values so this mode shares the complex Apple path with the default
+  profile. This distinguishes the shader's effective LOD from any upstream
+  resource generation keyed by requested radius.
 
 ## What happens after capture
 

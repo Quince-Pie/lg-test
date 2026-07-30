@@ -72,6 +72,20 @@ private struct LodState {
     let productionRadius: Bool
 }
 
+private enum LodSweepMode: Equatable {
+    case defaultProfile
+    case flatProfile
+    case fixedResource
+}
+
+private struct LodCaptureState {
+    let name: String
+    let targetNumerator: Int
+    let productionRadius: Bool
+    let values: [(key: String, value: NSNumber)]
+    let manifest: [String: Any]
+}
+
 private enum StripeOrientation: String, CaseIterable {
     case vertical
     case horizontal
@@ -879,6 +893,125 @@ private func lodStateManifest(
     ]
 }
 
+private func constantBlurProfileValues(
+    scale: Float
+) -> [(key: String, value: NSNumber)] {
+    [
+        ("inputBlurOpacity0", NSNumber(value: scale)),
+        ("inputBlurOpacity1", NSNumber(value: scale)),
+        ("inputBlurOpacity2", NSNumber(value: scale)),
+        ("inputBlurOpacity3", NSNumber(value: scale)),
+        ("inputBlurOpacity4", NSNumber(value: scale)),
+        (
+            "inputInnerRefractionAmount",
+            NSNumber(value: Float(-60))
+        ),
+        (
+            "inputOuterRefractionAmount",
+            NSNumber(value: Float(160))
+        ),
+        ("inputRefractionOpacity", NSNumber(value: Float(0))),
+    ]
+}
+
+private func fixedResourceCaptureState(
+    _ state: LodState,
+    resourceRadius: Float,
+    name: String,
+    index: Int,
+    productionEffectiveRadius: Bool
+) -> LodCaptureState {
+    let scale = state.blurRadius / resourceRadius
+    let values =
+        identityValues
+        + constantBlurProfileValues(scale: scale)
+        + [
+            (
+                "inputBlurRadius",
+                NSNumber(value: resourceRadius)
+            ),
+        ]
+    return LodCaptureState(
+        name: name,
+        targetNumerator: state.targetNumerator,
+        productionRadius: productionEffectiveRadius,
+        values: values,
+        manifest: [
+            "index": index,
+            "name": name,
+            "resourceBlurRadius":
+                Double(resourceRadius),
+            "resourceBlurRadiusFloat32Bits": String(
+                format: "%08x",
+                resourceRadius.bitPattern),
+            "constantBlurOpacityScale": Double(scale),
+            "constantBlurOpacityScaleFloat32Bits": String(
+                format: "%08x",
+                scale.bitPattern),
+            "targetEffectiveBlurRadius":
+                Double(state.blurRadius),
+            "targetEffectiveBlurRadiusFloat32Bits": String(
+                format: "%08x",
+                state.blurRadius.bitPattern),
+            "targetLodNumerator": state.targetNumerator,
+            "targetLodDenominator": 64,
+            "productionEffectiveRadius":
+                productionEffectiveRadius,
+        ])
+}
+
+private func lodCaptureStates(
+    mode: LodSweepMode
+) -> [LodCaptureState] {
+    if mode != .fixedResource {
+        return lodStates.enumerated().map { index, state in
+            let values =
+                identityValues
+                + (mode == .flatProfile ? flatBlurValues : [])
+                + [
+                    (
+                        "inputBlurRadius",
+                        NSNumber(value: state.blurRadius)
+                    ),
+                ]
+            return LodCaptureState(
+                name: state.name,
+                targetNumerator: state.targetNumerator,
+                productionRadius: state.productionRadius,
+                values: values,
+                manifest: lodStateManifest(
+                    state,
+                    index: index))
+        }
+    }
+
+    var result: [LodCaptureState] = []
+    for state in lodStates.prefix(38) {
+        result.append(fixedResourceCaptureState(
+            state,
+            resourceRadius: 1,
+            name: "fixed-r1-\(state.name)",
+            index: result.count,
+            productionEffectiveRadius: false))
+    }
+    let production = lodStates.last!
+    result.append(fixedResourceCaptureState(
+        production,
+        resourceRadius: 1,
+        name: "fixed-r1-production-blur-1",
+        index: result.count,
+        productionEffectiveRadius: true))
+    for state in lodStates.prefix(129) {
+        result.append(fixedResourceCaptureState(
+            state,
+            resourceRadius: 4,
+            name: "fixed-r4-\(state.name)",
+            index: result.count,
+            productionEffectiveRadius: false))
+    }
+    return result
+}
+
 private func stripeEdgeManifest(
     position: Int,
     index: Int
@@ -1553,8 +1686,10 @@ private final class SpatialSweepDelegate:
 
     private func runLodSweep(
         workspace: NSWorkspace,
-        flatProfile: Bool
+        mode: LodSweepMode
     ) async throws {
+        let captureStates = lodCaptureStates(mode: mode)
+        let fullReadbacks = mode != .defaultProfile
         var controlStream = Data()
         var lodStream = Data()
         var records: [[String: Any]] = []
@@ -1620,24 +1755,13 @@ private final class SpatialSweepDelegate:
             }
 
             var stateRecords: [[String: Any]] = []
-            for (stateIndex, state) in
-                lodStates.enumerated()
-            {
+            for state in captureStates {
                 let stateFilter =
                     try copiedFilter(target.filter)
-                let values =
-                    identityValues
-                    + (flatProfile ? flatBlurValues : [])
-                    + [
-                    (
-                        "inputBlurRadius",
-                        NSNumber(value: state.blurRadius)
-                    ),
-                ]
                 installFilter(
                     target: target,
                     filter: stateFilter,
-                    values: values)
+                    values: state.values)
                 let captureName =
                     "lod-a\(amplitude)-\(state.name)"
                 let (capture, stabilitySamples) =
@@ -1654,7 +1778,7 @@ private final class SpatialSweepDelegate:
                 }
                 let readbacks = try checkedFilterReadbacks(
                     stateFilter,
-                    values: values)
+                    values: state.values)
                 guard let readback =
                     readbacks.values["inputBlurRadius"]
                         as? Double
@@ -1667,16 +1791,14 @@ private final class SpatialSweepDelegate:
                     try kernelPatchRGBData(
                         capture.nativePixels))
 
-                var stateRecord = lodStateManifest(
-                    state,
-                    index: stateIndex)
+                var stateRecord = state.manifest
                 stateRecord["readbackBlurRadius"] =
                     readback
                 stateRecord[
                     "readbackBlurRadiusFloat32Bits"
                 ] = readbacks.float32Bits[
                     "inputBlurRadius"]
-                if flatProfile {
+                if fullReadbacks {
                     stateRecord["inputReadbacks"] =
                         readbacks.values
                     stateRecord["inputReadbackFloat32Bits"] =
@@ -1757,7 +1879,7 @@ private final class SpatialSweepDelegate:
             lodAmplitudes.count * kernelSites.count
             * kernelPatchSide * kernelPatchSide
         let lodRecordCount =
-            lodAmplitudes.count * lodStates.count
+            lodAmplitudes.count * captureStates.count
             * kernelSites.count
             * kernelPatchSide * kernelPatchSide
         guard controlStream.count == controlRecordCount * 3,
@@ -1766,8 +1888,15 @@ private final class SpatialSweepDelegate:
             throw SweepError.capture(
                 "native LOD stream length differs")
         }
-        let streamPrefix =
-            flatProfile ? "native-flat-lod" : "native-lod"
+        let streamPrefix: String
+        switch mode {
+        case .defaultProfile:
+            streamPrefix = "native-lod"
+        case .flatProfile:
+            streamPrefix = "native-flat-lod"
+        case .fixedResource:
+            streamPrefix = "native-fixed-resource-lod"
+        }
         let controlURL = outputDirectory
             .appendingPathComponent(
                 "\(streamPrefix)-control-patches.rgb8")
@@ -1802,9 +1931,13 @@ private final class SpatialSweepDelegate:
                 captureFormat as Any? ?? NSNull(),
         ]
         if let captureColorSpaceICC {
+            let iccPrefix =
+                mode == .fixedResource
+                ? streamPrefix
+                : "native-lod"
             let iccURL = outputDirectory
                 .appendingPathComponent(
-                    "native-lod-capture-colorspace.icc")
+                    "\(iccPrefix)-capture-colorspace.icc")
             try captureColorSpaceICC.write(
                 to: iccURL,
                 options: .atomic)
@@ -1845,16 +1978,60 @@ private final class SpatialSweepDelegate:
                         Double(y - imageHeight / 2))
                 }.max() ?? 0)
         }
+        let rigVersion: String
+        let sweepKind: String
+        let lodDesign: [String: Any]
+        switch mode {
+        case .defaultProfile:
+            rigVersion = "native-lod-sweep-1.0.0"
+            sweepKind =
+                "deep-interior-phase-controlled-lod-curve"
+            lodDesign = [
+                "quantizedFractionDenominator": 64,
+                "states": captureStates.map(\.manifest),
+                "productionState": "production-blur-1",
+            ]
+        case .flatProfile:
+            rigVersion = "native-flat-lod-sweep-1.0.0"
+            sweepKind =
+                "flat-blur-profile-phase-controlled-lod-curve"
+            lodDesign = [
+                "quantizedFractionDenominator": 64,
+                "states": captureStates.map(\.manifest),
+                "productionState": "production-blur-1",
+            ]
+        case .fixedResource:
+            rigVersion =
+                "native-fixed-resource-lod-sweep-1.0.0"
+            sweepKind =
+                "constant-opacity-fixed-resource-lod-curve"
+            lodDesign = [
+                "quantizedFractionDenominator": 64,
+                "states": captureStates.map(\.manifest),
+                "resourceGroups": [
+                    [
+                        "resourceBlurRadius": 1,
+                        "stateIndexRangeInclusive": [0, 38],
+                        "targetLodNumeratorRangeInclusive":
+                            [0, 37],
+                        "productionEffectiveRadiusStateIndex":
+                            38,
+                    ],
+                    [
+                        "resourceBlurRadius": 4,
+                        "stateIndexRangeInclusive": [39, 167],
+                        "targetLodNumeratorRangeInclusive":
+                            [0, 128],
+                        "productionEffectiveRadiusStateIndex":
+                            NSNull(),
+                    ],
+                ],
+            ]
+        }
         let report: [String: Any] = [
             "schemaVersion": 1,
-            "rigVersion":
-                flatProfile
-                ? "native-flat-lod-sweep-1.0.0"
-                : "native-lod-sweep-1.0.0",
-            "sweepKind":
-                flatProfile
-                ? "flat-blur-profile-phase-controlled-lod-curve"
-                : "deep-interior-phase-controlled-lod-curve",
+            "rigVersion": rigVersion,
+            "sweepKind": sweepKind,
             "ciCommit":
                 ProcessInfo.processInfo
                     .environment["GITHUB_SHA"]
@@ -1914,21 +2091,26 @@ private final class SpatialSweepDelegate:
                 "sites":
                     kernelSites.map(kernelSiteManifest),
             ],
-            "lodDesign": [
-                "quantizedFractionDenominator": 64,
-                "states": lodStates.enumerated().map {
-                    lodStateManifest($0.element, index: $0.offset)
-                },
-                "productionState":
-                    "production-blur-1",
-            ],
+            "lodDesign": lodDesign,
             "flatBlurProfileInputs":
-                flatProfile
+                mode == .flatProfile
                 ? Dictionary(
                     uniqueKeysWithValues:
                         flatBlurValues.map {
                             ($0.key, $0.value)
                         })
+                : NSNull(),
+            "fixedResourceInputs":
+                mode == .fixedResource
+                ? [
+                    "inputBlurRadius":
+                        "held at the resource-group radius",
+                    "inputBlurOpacity0Through4":
+                        "all held at constantBlurOpacityScale",
+                    "inputInnerRefractionAmount": -60,
+                    "inputOuterRefractionAmount": 160,
+                    "inputRefractionOpacity": 0,
+                ]
                 : NSNull(),
             "captures": records,
             "nativeCaptureEvidence": nativeEvidence,
@@ -2378,7 +2560,15 @@ private final class SpatialSweepDelegate:
             {
                 try await runLodSweep(
                     workspace: workspace,
-                    flatProfile: true)
+                    mode: .flatProfile)
+                return
+            }
+            if CommandLine.arguments.dropFirst(2)
+                .contains("--fixed-resource-lod")
+            {
+                try await runLodSweep(
+                    workspace: workspace,
+                    mode: .fixedResource)
                 return
             }
             if CommandLine.arguments.dropFirst(2)
@@ -2386,7 +2576,7 @@ private final class SpatialSweepDelegate:
             {
                 try await runLodSweep(
                     workspace: workspace,
-                    flatProfile: false)
+                    mode: .defaultProfile)
                 return
             }
             if CommandLine.arguments.dropFirst(2)
