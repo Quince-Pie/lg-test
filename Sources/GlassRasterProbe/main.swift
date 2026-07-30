@@ -48,11 +48,11 @@ vertex ProbeVertexOutput raster_probe_vertex(
     constant float4x4 &mvp [[buffer(1)]],
     uint vertex_id [[vertex_id]])
 {
-    const ProbeVertex vertex = vertices[vertex_id];
+    const ProbeVertex record = vertices[vertex_id];
     ProbeVertexOutput output;
-    output.position = mvp * vertex.position;
-    output.sdf = vertex.sdf;
-    output.source = vertex.source;
+    output.position = mvp * record.position;
+    output.sdf = record.sdf;
+    output.source = record.source;
     return output;
 }
 
