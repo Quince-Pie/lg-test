@@ -911,6 +911,15 @@ reference and every candidate use the same shared color-zero scratch target
 on the unified-memory runner and are read only after their command-buffer
 completion fence; this avoids introducing a second private-texture blit into
 the comparison path.
+Schema 42 installs the Metal observer before the SwiftUI tree is constructed
+and intercepts synchronous render-pipeline creation. It retains a copy of
+each real `MTLRenderPipelineDescriptor` keyed to the returned pipeline state
+and records the selected function names, complete vertex layout, blend
+factors, write masks, sample count, and attachment formats when that state is
+later used. Independent-fragment execution is disabled for this descriptor
+capture run unless `LG_EXECUTE_INDEPENDENT_GLASS=1`; a prior reconstructed
+descriptor linked successfully but hung the virtual GPU, so exact Apple state
+must be captured before another submission.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

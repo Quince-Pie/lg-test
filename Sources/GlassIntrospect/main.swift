@@ -779,6 +779,13 @@ private typealias MetalMakeRenderCommandEncoderFunction =
         Selector,
         MTLRenderPassDescriptor
     ) -> Unmanaged<AnyObject>?
+private typealias MetalNewRenderPipelineStateFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLRenderPipelineDescriptor,
+        AutoreleasingUnsafeMutablePointer<NSError?>?
+    ) -> Unmanaged<AnyObject>?
 private typealias MetalSetFragmentBytesFunction =
     @convention(c) (
         AnyObject,
@@ -889,6 +896,27 @@ private typealias MetalDrawIndexedPrimitivesBaseVertexFunction =
         Int,
         Int
     ) -> Void
+
+private func probeNewRenderPipelineState(
+    _ device: AnyObject,
+    _ selector: Selector,
+    _ descriptor: MTLRenderPipelineDescriptor,
+    _ error: AutoreleasingUnsafeMutablePointer<NSError?>?
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardNewRenderPipelineState(
+            device: device,
+            selector: selector,
+            descriptor: descriptor,
+            error: error)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordCreatedPipeline(
+        pipelineState: result.takeUnretainedValue(),
+        descriptor: descriptor)
+    return result
+}
 
 private func probeMakeRenderCommandEncoder(
     _ commandBuffer: AnyObject,
@@ -1418,6 +1446,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
         [String: [String: Any]] = [:]
     private var droppedRecordCount = 0
     private var pipelineRecords: [ObjectIdentifier: [String: Any]] = [:]
+    private var pipelineDescriptors:
+        [ObjectIdentifier: MTLRenderPipelineDescriptor] = [:]
+    private var installReport: [String: Any]?
+    private var originalNewRenderPipelineState:
+        MetalNewRenderPipelineStateFunction?
     private var originalMakeRenderCommandEncoder:
         MetalMakeRenderCommandEncoderFunction?
     private var originalPipelineState:
@@ -1471,6 +1504,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private init() {}
 
     func install() -> [String: Any] {
+        lock.lock()
+        if let installReport {
+            lock.unlock()
+            return installReport
+        }
+        lock.unlock()
         guard let device = MTLCreateSystemDefaultDevice(),
               let queue = device.makeCommandQueue(),
               let commandBuffer = queue.makeCommandBuffer()
@@ -1500,6 +1539,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             descriptor: pass),
               let commandBufferClass = object_getClass(
                 commandBuffer as AnyObject),
+              let deviceClass = object_getClass(
+                device as AnyObject),
               let encoderClass = object_getClass(encoder as AnyObject)
         else {
             return [
@@ -1535,6 +1576,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 } ?? "",
             ])
             return original
+        }
+
+        let newRenderPipelineSelector =
+            "newRenderPipelineStateWithDescriptor:error:"
+        if let original = installMethod(
+            on: deviceClass,
+            selectorName: newRenderPipelineSelector,
+            replacement: unsafeBitCast(
+                probeNewRenderPipelineState
+                    as MetalNewRenderPipelineStateFunction,
+                to: IMP.self))
+        {
+            originalNewRenderPipelineState = unsafeBitCast(
+                original,
+                to: MetalNewRenderPipelineStateFunction.self)
         }
 
         let makeRenderEncoderSelector = NSSelectorFromString(
@@ -1983,6 +2039,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         let requiredSelectors = Set([
+            newRenderPipelineSelector,
             "renderCommandEncoderWithDescriptor:",
             "setRenderPipelineState:",
             "setFragmentBytes:length:atIndex:",
@@ -2005,15 +2062,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let installedSelectors = Set(methods.compactMap {
             $0["selector"] as? String
         })
-        return [
+        let report: [String: Any] = [
             "installed":
                 requiredSelectors.isSubset(of: installedSelectors),
+            "deviceClass": NSStringFromClass(deviceClass),
             "commandBufferClass": NSStringFromClass(commandBufferClass),
             "encoderClass": NSStringFromClass(encoderClass),
             "methods": methods,
             "missingRequiredSelectors":
                 requiredSelectors.subtracting(installedSelectors).sorted(),
         ]
+        lock.lock()
+        installReport = report
+        lock.unlock()
+        return report
     }
 
     func beginCapture(_ name: String) {
@@ -2255,6 +2317,113 @@ private final class MetalUniformProbe: @unchecked Sendable {
         appendRecord(record)
     }
 
+    private func pipelineDescriptorRecord(
+        _ descriptor: MTLRenderPipelineDescriptor
+    ) -> [String: Any] {
+        var colorAttachments: [[String: Any]] = []
+        for index in 0..<8 {
+            guard let color = descriptor.colorAttachments[index],
+                  color.pixelFormat != .invalid
+                    || color.isBlendingEnabled
+            else {
+                continue
+            }
+            colorAttachments.append([
+                "index": index,
+                "pixelFormat": color.pixelFormat.rawValue,
+                "blendingEnabled": color.isBlendingEnabled,
+                "rgbBlendOperation":
+                    color.rgbBlendOperation.rawValue,
+                "alphaBlendOperation":
+                    color.alphaBlendOperation.rawValue,
+                "sourceRGBBlendFactor":
+                    color.sourceRGBBlendFactor.rawValue,
+                "sourceAlphaBlendFactor":
+                    color.sourceAlphaBlendFactor.rawValue,
+                "destinationRGBBlendFactor":
+                    color.destinationRGBBlendFactor.rawValue,
+                "destinationAlphaBlendFactor":
+                    color.destinationAlphaBlendFactor.rawValue,
+                "writeMask": color.writeMask.rawValue,
+            ])
+        }
+        var attributes: [[String: Any]] = []
+        var layouts: [[String: Any]] = []
+        if let vertexDescriptor = descriptor.vertexDescriptor {
+            for index in 0..<31 {
+                guard let attribute =
+                        vertexDescriptor.attributes[index],
+                      attribute.format != .invalid
+                else {
+                    continue
+                }
+                attributes.append([
+                    "index": index,
+                    "format": attribute.format.rawValue,
+                    "offset": attribute.offset,
+                    "bufferIndex": attribute.bufferIndex,
+                ])
+            }
+            for index in 0..<31 {
+                guard let layout =
+                        vertexDescriptor.layouts[index],
+                      layout.stride != 0
+                        || layout.stepFunction != .constant
+                else {
+                    continue
+                }
+                layouts.append([
+                    "index": index,
+                    "stride": layout.stride,
+                    "stepFunction":
+                        layout.stepFunction.rawValue,
+                    "stepRate": layout.stepRate,
+                ])
+            }
+        }
+        return [
+            "label": descriptor.label ?? "",
+            "vertexFunction":
+                descriptor.vertexFunction?.name ?? "",
+            "fragmentFunction":
+                descriptor.fragmentFunction?.name ?? "",
+            "rasterSampleCount":
+                descriptor.rasterSampleCount,
+            "alphaToCoverageEnabled":
+                descriptor.isAlphaToCoverageEnabled,
+            "alphaToOneEnabled":
+                descriptor.isAlphaToOneEnabled,
+            "rasterizationEnabled":
+                descriptor.isRasterizationEnabled,
+            "inputPrimitiveTopology":
+                descriptor.inputPrimitiveTopology.rawValue,
+            "depthAttachmentPixelFormat":
+                descriptor.depthAttachmentPixelFormat.rawValue,
+            "stencilAttachmentPixelFormat":
+                descriptor.stencilAttachmentPixelFormat.rawValue,
+            "colorAttachments": colorAttachments,
+            "vertexAttributes": attributes,
+            "vertexLayouts": layouts,
+        ]
+    }
+
+    func recordCreatedPipeline(
+        pipelineState: AnyObject,
+        descriptor: MTLRenderPipelineDescriptor
+    ) {
+        guard let copy =
+                descriptor.copy()
+                    as? MTLRenderPipelineDescriptor
+        else {
+            return
+        }
+        lock.lock()
+        pipelineDescriptors[
+            ObjectIdentifier(pipelineState)
+        ] = copy
+        lock.unlock()
+    }
+
     func recordPipelineState(
         encoder: AnyObject,
         pipelineState: AnyObject
@@ -2276,6 +2445,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             appendReplayCommand(
                 encoder: encoder,
                 .pipeline(state))
+        }
+        if let descriptor = pipelineDescriptors[
+            ObjectIdentifier(pipelineState)
+        ] {
+            record["creationDescriptor"] =
+                pipelineDescriptorRecord(descriptor)
         }
         pipelineRecords[ObjectIdentifier(encoder)] = record
         appendRecord([
@@ -3500,7 +3675,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 41,
+            "schemaVersion": 42,
             "capture": capture,
             "phase": phase,
         ]
@@ -3608,7 +3783,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 41,
+                    "schemaVersion": 42,
                     "capture": capture,
                     "fragmentFunction":
                         fragmentFunction.name,
@@ -3828,7 +4003,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 41,
+                "schemaVersion": 42,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -4159,43 +4334,54 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var independentGlassReplay: [String: Any] = [
             "reference": glassPrefixReference,
         ]
-        do {
-            let pipelineSet =
-                try makeIndependentGlassPipelines(
-                    for: pass,
-                    capture: capture,
-                    outputDirectory: outputDirectory)
-            independentGlassReplay["pipelineBuild"] =
-                pipelineSet.report
-            var candidateRecords: [[String: Any]] = []
-            for candidate in pipelineSet.candidates {
-                let replay = replayGlassPrefix(
-                    pass: pass,
-                    preColor0: preColor0,
-                    queue: queue,
-                    replacingGlassPipeline:
-                        candidate.pipeline,
-                    capture: capture,
-                    suffix:
-                        "glass-prefix-\(candidate.name)",
-                    outputDirectory: outputDirectory)
-                candidateRecords.append([
-                    "name": candidate.name,
-                    "replay": replay,
-                    "comparison": compareReplaySnapshots(
-                        reference: glassPrefixReference,
-                        candidate: replay,
-                        outputDirectory: outputDirectory),
-                ])
-                if replay["executed"] as? Bool != true {
-                    break
+        let executeIndependentCandidates =
+            ProcessInfo.processInfo.environment[
+                "LG_EXECUTE_INDEPENDENT_GLASS"
+            ] == "1"
+        independentGlassReplay["candidateExecutionEnabled"] =
+            executeIndependentCandidates
+        if executeIndependentCandidates {
+            do {
+                let pipelineSet =
+                    try makeIndependentGlassPipelines(
+                        for: pass,
+                        capture: capture,
+                        outputDirectory: outputDirectory)
+                independentGlassReplay["pipelineBuild"] =
+                    pipelineSet.report
+                var candidateRecords: [[String: Any]] = []
+                for candidate in pipelineSet.candidates {
+                    let replay = replayGlassPrefix(
+                        pass: pass,
+                        preColor0: preColor0,
+                        queue: queue,
+                        replacingGlassPipeline:
+                            candidate.pipeline,
+                        capture: capture,
+                        suffix:
+                            "glass-prefix-\(candidate.name)",
+                        outputDirectory: outputDirectory)
+                    candidateRecords.append([
+                        "name": candidate.name,
+                        "replay": replay,
+                        "comparison": compareReplaySnapshots(
+                            reference: glassPrefixReference,
+                            candidate: replay,
+                            outputDirectory: outputDirectory),
+                    ])
+                    if replay["executed"] as? Bool != true {
+                        break
+                    }
                 }
+                independentGlassReplay["candidates"] =
+                    candidateRecords
+            } catch {
+                independentGlassReplay["pipelineBuildError"] =
+                    error.localizedDescription
             }
-            independentGlassReplay["candidates"] =
-                candidateRecords
-        } catch {
-            independentGlassReplay["pipelineBuildError"] =
-                error.localizedDescription
+        } else {
+            independentGlassReplay["candidateExecutionDeferredReason"] =
+                "capturing Apple's original creation descriptor first"
         }
         result["independentGlassReplay"] =
             independentGlassReplay
@@ -4262,6 +4448,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
             result["comparisonError"] = error.localizedDescription
         }
         return result
+    }
+
+    func forwardNewRenderPipelineState(
+        device: AnyObject,
+        selector: Selector,
+        descriptor: MTLRenderPipelineDescriptor,
+        error: AutoreleasingUnsafeMutablePointer<NSError?>?
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalNewRenderPipelineState else {
+            return nil
+        }
+        return originalNewRenderPipelineState(
+            device,
+            selector,
+            descriptor,
+            error)
     }
 
     func forwardMakeRenderCommandEncoder(
@@ -5955,6 +6157,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 at: outputDirectory,
                 withIntermediateDirectories: true)
 
+            _ = MetalUniformProbe.shared.install()
             let manager = MTLCaptureManager.shared()
             if manager.supportsDestination(.gpuTraceDocument),
                let device = MTLCreateSystemDefaultDevice() {
@@ -6008,7 +6211,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 41,
+                    "schemaVersion": 42,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -6024,7 +6227,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 41,
+            "schemaVersion": 42,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
