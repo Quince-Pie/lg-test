@@ -952,6 +952,15 @@ fragment compiled from the same source. A completed, intentionally nonmatching
 render distinguishes a valid independent vertex/fragment ABI from another
 GPU submission failure. Joint exactness will subsequently be required from
 the independently compiled full fragment; this probe is not a quality gate.
+Run `30539434145` rejected the individual-argument spelling at compile time:
+Metal requires vertex attributes to be members of a stage-input structure.
+No replacement command buffer was submitted, and both live and forced-local
+exact Apple replays still passed. Schema 46 restores that required structure,
+renames its varyings to the exact AIR-observed `sdf_uv` and `src_uv` semantics,
+and tests two intentionally nonmatching ABI controls. The first compiles the
+vertex and fragment together; the second feeds the custom fragment from the
+freshly loaded Apple vertex. Their command-buffer completion, rather than
+their deliberately false image comparison, is the acceptance criterion.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

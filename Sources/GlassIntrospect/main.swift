@@ -19,20 +19,14 @@ struct GlassReplayVertex {
 
 struct GlassReplayVertexOutput {
     float4 position [[position]];
-    float2 sdfUV [[user(sdf_uv)]];
-    float2 srcUV [[user(src_uv)]];
+    float2 sdf_uv [[user(sdf_uv)]];
+    float2 src_uv [[user(src_uv)]];
 };
 
 struct GlassReplayStageInput {
     float4 position [[attribute(0)]];
-    float2 sdfUV [[attribute(1)]];
-    float2 srcUV [[attribute(2)]];
-};
-
-struct GlassReplayAIRVertexOutput {
-    float4 position [[position]];
-    float2 sdf_uv [[user(sdf_uv)]];
-    float2 src_uv [[user(src_uv)]];
+    float2 sdf_uv [[attribute(1)]];
+    float2 src_uv [[attribute(2)]];
 };
 
 inline float2 transform_texcoord(
@@ -50,28 +44,13 @@ vertex GlassReplayVertexOutput glass_vertex_stage_in(
     (void)unusedTextureMatrix;
     GlassReplayVertexOutput output;
     output.position = mvp * input.position;
-    output.sdfUV = input.sdfUV;
-    output.srcUV = input.srcUV;
-    return output;
-}
-
-vertex GlassReplayAIRVertexOutput glass_vertex_air_signature(
-    float4 position [[attribute(0)]],
-    float2 sdf_uv [[attribute(1)]],
-    float2 src_uv [[attribute(2)]],
-    constant float4x4 &mvp_matrix [[buffer(2)]],
-    constant float4 &texmat [[buffer(3)]])
-{
-    (void)texmat;
-    GlassReplayAIRVertexOutput output;
-    output.position = mvp_matrix * position;
-    output.sdf_uv = sdf_uv;
-    output.src_uv = src_uv;
+    output.sdf_uv = input.sdf_uv;
+    output.src_uv = input.src_uv;
     return output;
 }
 
 fragment half4 glass_fragment_abi_probe(
-    GlassReplayAIRVertexOutput input [[stage_in]])
+    GlassReplayVertexOutput input [[stage_in]])
 {
     return half4(
         half(input.sdf_uv.x),
@@ -88,8 +67,8 @@ vertex GlassReplayVertexOutput glass_vertex_raw(
     const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
     output.position = mvp * input.position;
-    output.sdfUV = input.texcoord0;
-    output.srcUV = input.texcoord1;
+    output.sdf_uv = input.texcoord0;
+    output.src_uv = input.texcoord1;
     return output;
 }
 
@@ -102,9 +81,9 @@ vertex GlassReplayVertexOutput glass_vertex_transformed(
     const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
     output.position = mvp * input.position;
-    output.sdfUV =
+    output.sdf_uv =
         transform_texcoord(input.texcoord0, textureMatrix[0]);
-    output.srcUV =
+    output.src_uv =
         transform_texcoord(input.texcoord1, textureMatrix[1]);
     return output;
 }
@@ -118,9 +97,9 @@ vertex GlassReplayVertexOutput glass_vertex_sdf_transformed(
     const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
     output.position = mvp * input.position;
-    output.sdfUV =
+    output.sdf_uv =
         transform_texcoord(input.texcoord0, textureMatrix[0]);
-    output.srcUV = input.texcoord1;
+    output.src_uv = input.texcoord1;
     return output;
 }
 
@@ -133,8 +112,8 @@ vertex GlassReplayVertexOutput glass_vertex_src_transformed(
     const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
     output.position = mvp * input.position;
-    output.sdfUV = input.texcoord0;
-    output.srcUV =
+    output.sdf_uv = input.texcoord0;
+    output.src_uv =
         transform_texcoord(input.texcoord1, textureMatrix[1]);
     return output;
 }
@@ -147,8 +126,8 @@ vertex GlassReplayVertexOutput glass_vertex_swapped(
     const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
     output.position = mvp * input.position;
-    output.sdfUV = input.texcoord1;
-    output.srcUV = input.texcoord0;
+    output.sdf_uv = input.texcoord1;
+    output.src_uv = input.texcoord0;
     return output;
 }
 
@@ -160,8 +139,8 @@ vertex GlassReplayVertexOutput glass_vertex_row_matrix(
     const GlassReplayVertex input = vertices[vertexID];
     GlassReplayVertexOutput output;
     output.position = input.position * mvp;
-    output.sdfUV = input.texcoord0;
-    output.srcUV = input.texcoord1;
+    output.sdf_uv = input.texcoord0;
+    output.src_uv = input.texcoord1;
     return output;
 }
 """
@@ -3724,7 +3703,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 45,
+            "schemaVersion": 46,
             "capture": capture,
             "phase": phase,
         ]
@@ -3822,9 +3801,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let sdfVertex =
                 quartzCoreLibrary.makeFunction(
                     name: "sdf_filter_vert_lph"),
-              let customAIRVertex =
+              let customStageInVertex =
                 shaderLibrary.makeFunction(
-                    name: "glass_vertex_air_signature"),
+                    name: "glass_vertex_stage_in"),
               let customABIFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_abi_probe")
@@ -3882,12 +3861,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
             name: "reloaded_sdf_vertex_no_bleed_fragment",
             descriptor: reloadedBoth))
 
-        let customABI = try copyCapturedDescriptor()
-        customABI.vertexFunction = customAIRVertex
-        customABI.fragmentFunction = customABIFragment
+        let customPair = try copyCapturedDescriptor()
+        customPair.vertexFunction = customStageInVertex
+        customPair.fragmentFunction = customABIFragment
         descriptorCandidates.append((
             name: "custom_vertex_fragment_abi_probe",
-            descriptor: customABI))
+            descriptor: customPair))
+
+        let customFragment = try copyCapturedDescriptor()
+        customFragment.vertexFunction = sdfVertex
+        customFragment.fragmentFunction = customABIFragment
+        descriptorCandidates.append((
+            name: "apple_vertex_custom_fragment_abi_probe",
+            descriptor: customFragment))
 
         var candidates: [(
             name: String,
@@ -3907,7 +3893,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 45,
+                    "schemaVersion": 46,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -4106,7 +4092,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 45,
+                "schemaVersion": 46,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -6314,7 +6300,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 45,
+                    "schemaVersion": 46,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -6330,7 +6316,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 45,
+            "schemaVersion": 46,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
