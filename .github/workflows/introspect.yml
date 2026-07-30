@@ -656,8 +656,8 @@ jobs:
           root = pathlib.Path("introspection")
           with (root / "runtime.json").open(encoding="utf-8") as stream:
               runtime = json.load(stream)
-          if runtime.get("schemaVersion") != 66:
-              raise SystemExit("introspection schema is not 66")
+          if runtime.get("schemaVersion") != 67:
+              raise SystemExit("introspection schema is not 67")
 
           background = runtime.get("diagnosticBackgroundEvidence", {})
           if (
@@ -669,7 +669,78 @@ jobs:
               or background.get("rows") != 512
           ):
               raise SystemExit(
-                  "schema-66 diagnostic background metadata differs"
+                  "schema-67 diagnostic background metadata differs"
+              )
+
+          install = runtime.get("sdfGeneratorEvidence", {}).get(
+              "metalUniformProbeInstall", {}
+          )
+          required_metal_selectors = {
+              "newComputePipelineStateWithFunction:error:",
+              "computeCommandEncoder",
+              "computeCommandEncoderWithDispatchType:",
+              "computeCommandEncoderWithDescriptor:",
+              "blitCommandEncoder",
+              "blitCommandEncoderWithDescriptor:",
+              "setComputePipelineState:",
+              "setBytes:length:atIndex:",
+              "setBuffer:offset:atIndex:",
+              "setBufferOffset:atIndex:",
+              "setTexture:atIndex:",
+              "setSamplerState:atIndex:",
+              "setImageblockWidth:height:",
+              "dispatchThreadgroups:threadsPerThreadgroup:",
+              "dispatchThreads:threadsPerThreadgroup:",
+              "generateMipmapsForTexture:",
+          }
+          installed_metal_selectors = {
+              method.get("selector")
+              for method in install.get("methods", [])
+              if isinstance(method, dict)
+          }
+          if (
+              install.get("installed") is not True
+              or install.get("missingRequiredSelectors") != []
+              or not required_metal_selectors.issubset(
+                  installed_metal_selectors
+              )
+          ):
+              raise SystemExit(
+                  "schema-67 Metal command-provenance hooks differ: "
+                  f"{install}"
+              )
+
+          command_provenance = runtime.get(
+              "carendererEvidence", {}
+          ).get("metalCommandProvenance", {})
+          count_keys = (
+              "capturedRecordCount",
+              "computeEncoderCount",
+              "computePipelineCount",
+              "dispatchThreadgroupsCount",
+              "dispatchThreadsCount",
+              "blitEncoderCount",
+              "generateMipmapsCount",
+          )
+          if (
+              command_provenance.get("schemaVersion") != 1
+              or command_provenance.get("capture")
+                  != "carenderer-live-tree"
+              or not isinstance(
+                  command_provenance.get("records"), list
+              )
+              or any(
+                  not isinstance(command_provenance.get(key), int)
+                  or command_provenance[key] < 0
+                  for key in count_keys
+              )
+              or command_provenance["capturedRecordCount"]
+                  != len(command_provenance["records"])
+              or command_provenance["blitEncoderCount"] < 1
+          ):
+              raise SystemExit(
+                  "schema-67 Metal command provenance differs: "
+                  f"{command_provenance}"
               )
 
           downsample = runtime.get(
@@ -692,7 +763,7 @@ jobs:
               }
           ):
               raise SystemExit(
-                  "schema-66 native downsample replay metadata differs"
+                  "schema-67 native downsample replay metadata differs"
               )
           candidates_by_name = {
               candidate["function"]: candidate
@@ -707,7 +778,7 @@ jobs:
                   or half_trace.get("outputBytes") != 224 * 224 * 8
               ):
                   raise SystemExit(
-                      "schema-66 native downsample candidate failed: "
+                      "schema-67 native downsample candidate failed: "
                       f"{name}: {candidate}"
                   )
               for record in (candidate, half_trace):
@@ -718,7 +789,7 @@ jobs:
                           != record.get("outputBytes")
                   ):
                       raise SystemExit(
-                          "schema-66 native downsample payload differs: "
+                          "schema-67 native downsample payload differs: "
                           f"{path}"
                       )
 
@@ -733,7 +804,7 @@ jobs:
               if isinstance(candidate, dict)
           } != expected_modes:
               raise SystemExit(
-                  "schema-66 in-place downsample modes differ"
+                  "schema-67 in-place downsample modes differ"
               )
           for candidate in in_place:
               if (
@@ -747,7 +818,7 @@ jobs:
                   or candidate.get("outputBytes") != 224 * 224 * 4
               ):
                   raise SystemExit(
-                      "schema-66 in-place downsample failed: "
+                      "schema-67 in-place downsample failed: "
                       f"{candidate}"
                   )
               path = root / str(candidate.get("outputFile", ""))
@@ -757,7 +828,7 @@ jobs:
                       != candidate.get("outputBytes")
               ):
                   raise SystemExit(
-                      "schema-66 in-place payload differs: "
+                      "schema-67 in-place payload differs: "
                       f"{path}"
                   )
 
@@ -815,7 +886,7 @@ jobs:
                   source_candidates.append(snapshot)
           if len(source_candidates) != 1:
               raise SystemExit(
-                  "schema-66 live backdrop source texture is not unique: "
+                  "schema-67 live backdrop source texture is not unique: "
                   f"{len(source_candidates)} candidates"
               )
 
@@ -838,7 +909,7 @@ jobs:
                   or record.get("rawBytes") != expected_size
               ):
                   raise SystemExit(
-                      f"schema-66 backdrop mip {level} metadata differs"
+                      f"schema-67 backdrop mip {level} metadata differs"
                   )
               path = root / str(record.get("rawFile", ""))
               if (
@@ -846,7 +917,7 @@ jobs:
                   or path.stat().st_size != expected_size
               ):
                   raise SystemExit(
-                      f"schema-66 backdrop mip {level} payload differs"
+                      f"schema-67 backdrop mip {level} payload differs"
                   )
 
           mip_zero = (
@@ -858,7 +929,7 @@ jobs:
           })
           if distinct_rgb < 50_000:
               raise SystemExit(
-                  "schema-66 backdrop mip zero lacks identification rank: "
+                  "schema-67 backdrop mip zero lacks identification rank: "
                   f"{distinct_rgb} distinct RGB texels"
               )
           PY

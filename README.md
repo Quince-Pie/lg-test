@@ -1207,6 +1207,19 @@ separates kernel arithmetic, already preserved in the Schema 65 RGBA16Float
 trace, from any mip-level, imageblock-write, storage-mode, or UNORM conversion
 effect. Both in-place payloads, descriptor facts, hashes, and bytewise
 comparisons against the untouched live first mip are mandatory CI evidence.
+Schema 67 observes the command provenance of that untouched live first mip
+inside the real CARenderer frame. Before constructing the SwiftUI tree it
+interposes the concrete Metal device, command-buffer, compute-encoder, and
+blit-encoder classes. During `carenderer-live-tree` it records compute pipeline
+identity, inline bytes, buffers and offsets, texture and sampler bindings,
+imageblock dimensions, direct dispatch geometry, encoder creation mode, and
+blit mip generation. The bounded record preserves object identities and
+texture descriptors so the render pass that writes the 448-by-448 base, any
+intervening producer, and the subsequent glass read can be joined by sequence
+and address. CI requires every hook and the complete provenance record but
+does not assume in advance that the producer is compute or blit; a measured
+absence is evidence against those public command paths rather than a reason to
+invent one.
 The probe also asks both the model and presentation SDF layer trees to render
 directly into bounded RGBA8 sRGB contexts. It preserves every raw buffer and a
 PNG audit view, plus dimensions, channel extrema, nonzero counts, and a

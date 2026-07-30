@@ -2045,6 +2045,36 @@ private typealias MetalNewRenderPipelineStateFunction =
         MTLRenderPipelineDescriptor,
         AutoreleasingUnsafeMutablePointer<NSError?>?
     ) -> Unmanaged<AnyObject>?
+private typealias MetalMakeCommandEncoderFunction =
+    @convention(c) (
+        AnyObject,
+        Selector
+    ) -> Unmanaged<AnyObject>?
+private typealias MetalMakeComputeCommandEncoderDispatchFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLDispatchType
+    ) -> Unmanaged<AnyObject>?
+private typealias MetalMakeComputeCommandEncoderDescriptorFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLComputePassDescriptor
+    ) -> Unmanaged<AnyObject>?
+private typealias MetalMakeBlitCommandEncoderDescriptorFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLBlitPassDescriptor
+    ) -> Unmanaged<AnyObject>?
+private typealias MetalNewComputePipelineStateFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        AnyObject,
+        AutoreleasingUnsafeMutablePointer<NSError?>?
+    ) -> Unmanaged<AnyObject>?
 private typealias MetalSetFragmentBytesFunction =
     @convention(c) (
         AnyObject,
@@ -2093,6 +2123,26 @@ private typealias MetalSetScissorRectFunction =
         AnyObject,
         Selector,
         MTLScissorRect
+    ) -> Void
+private typealias MetalSetImageblockSizeFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        Int,
+        Int
+    ) -> Void
+private typealias MetalDispatchFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        MTLSize,
+        MTLSize
+    ) -> Void
+private typealias MetalGenerateMipmapsFunction =
+    @convention(c) (
+        AnyObject,
+        Selector,
+        AnyObject
     ) -> Void
 private typealias MetalDrawPrimitivesFunction =
     @convention(c) (
@@ -2199,6 +2249,308 @@ private func probeMakeRenderCommandEncoder(
         descriptor: descriptor,
         preColor0: preColor0)
     return result
+}
+
+private func probeMakeComputeCommandEncoder(
+    _ commandBuffer: AnyObject,
+    _ selector: Selector
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardMakeComputeCommandEncoder(
+            commandBuffer: commandBuffer,
+            selector: selector)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordCommandEncoder(
+        commandBuffer: commandBuffer,
+        encoder: result.takeUnretainedValue(),
+        kind: "computeEncoder",
+        creationSelector: selector)
+    return result
+}
+
+private func probeMakeComputeCommandEncoderWithDispatchType(
+    _ commandBuffer: AnyObject,
+    _ selector: Selector,
+    _ dispatchType: MTLDispatchType
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardMakeComputeCommandEncoderWithDispatchType(
+            commandBuffer: commandBuffer,
+            selector: selector,
+            dispatchType: dispatchType)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordCommandEncoder(
+        commandBuffer: commandBuffer,
+        encoder: result.takeUnretainedValue(),
+        kind: "computeEncoder",
+        creationSelector: selector,
+        fields: ["dispatchType": dispatchType.rawValue])
+    return result
+}
+
+private func probeMakeComputeCommandEncoderWithDescriptor(
+    _ commandBuffer: AnyObject,
+    _ selector: Selector,
+    _ descriptor: MTLComputePassDescriptor
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardMakeComputeCommandEncoderWithDescriptor(
+            commandBuffer: commandBuffer,
+            selector: selector,
+            descriptor: descriptor)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordCommandEncoder(
+        commandBuffer: commandBuffer,
+        encoder: result.takeUnretainedValue(),
+        kind: "computeEncoder",
+        creationSelector: selector,
+        fields: [
+            "dispatchType": descriptor.dispatchType.rawValue,
+        ])
+    return result
+}
+
+private func probeMakeBlitCommandEncoder(
+    _ commandBuffer: AnyObject,
+    _ selector: Selector
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardMakeBlitCommandEncoder(
+            commandBuffer: commandBuffer,
+            selector: selector)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordCommandEncoder(
+        commandBuffer: commandBuffer,
+        encoder: result.takeUnretainedValue(),
+        kind: "blitEncoder",
+        creationSelector: selector)
+    return result
+}
+
+private func probeMakeBlitCommandEncoderWithDescriptor(
+    _ commandBuffer: AnyObject,
+    _ selector: Selector,
+    _ descriptor: MTLBlitPassDescriptor
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardMakeBlitCommandEncoderWithDescriptor(
+            commandBuffer: commandBuffer,
+            selector: selector,
+            descriptor: descriptor)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordCommandEncoder(
+        commandBuffer: commandBuffer,
+        encoder: result.takeUnretainedValue(),
+        kind: "blitEncoder",
+        creationSelector: selector)
+    return result
+}
+
+private func probeNewComputePipelineState(
+    _ device: AnyObject,
+    _ selector: Selector,
+    _ function: AnyObject,
+    _ error: AutoreleasingUnsafeMutablePointer<NSError?>?
+) -> Unmanaged<AnyObject>? {
+    guard let result = MetalUniformProbe.shared
+        .forwardNewComputePipelineState(
+            device: device,
+            selector: selector,
+            function: function,
+            error: error)
+    else {
+        return nil
+    }
+    MetalUniformProbe.shared.recordCreatedComputePipeline(
+        pipelineState: result.takeUnretainedValue(),
+        function: function)
+    return result
+}
+
+private func probeSetComputePipelineState(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ pipelineState: AnyObject
+) {
+    MetalUniformProbe.shared.recordComputePipelineState(
+        encoder: encoder,
+        pipelineState: pipelineState)
+    MetalUniformProbe.shared.forwardComputePipelineState(
+        encoder: encoder,
+        selector: selector,
+        pipelineState: pipelineState)
+}
+
+private func probeSetComputeBytes(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ bytes: UnsafeRawPointer,
+    _ length: Int,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordComputeBytes(
+        encoder: encoder,
+        bytes: bytes,
+        length: length,
+        index: index)
+    MetalUniformProbe.shared.forwardComputeBytes(
+        encoder: encoder,
+        selector: selector,
+        bytes: bytes,
+        length: length,
+        index: index)
+}
+
+private func probeSetComputeBuffer(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ buffer: AnyObject?,
+    _ offset: Int,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordComputeBuffer(
+        encoder: encoder,
+        buffer: buffer,
+        offset: offset,
+        index: index)
+    MetalUniformProbe.shared.forwardComputeBuffer(
+        encoder: encoder,
+        selector: selector,
+        buffer: buffer,
+        offset: offset,
+        index: index)
+}
+
+private func probeSetComputeBufferOffset(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ offset: Int,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordBufferOffset(
+        encoder: encoder,
+        stage: "compute",
+        offset: offset,
+        index: index)
+    MetalUniformProbe.shared.forwardComputeBufferOffset(
+        encoder: encoder,
+        selector: selector,
+        offset: offset,
+        index: index)
+}
+
+private func probeSetComputeTexture(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ texture: AnyObject?,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordComputeTexture(
+        encoder: encoder,
+        texture: texture,
+        index: index)
+    MetalUniformProbe.shared.forwardComputeTexture(
+        encoder: encoder,
+        selector: selector,
+        texture: texture,
+        index: index)
+}
+
+private func probeSetComputeSamplerState(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ sampler: AnyObject?,
+    _ index: Int
+) {
+    MetalUniformProbe.shared.recordComputeSamplerState(
+        encoder: encoder,
+        sampler: sampler,
+        index: index)
+    MetalUniformProbe.shared.forwardComputeSamplerState(
+        encoder: encoder,
+        selector: selector,
+        sampler: sampler,
+        index: index)
+}
+
+private func probeSetImageblockSize(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ width: Int,
+    _ height: Int
+) {
+    MetalUniformProbe.shared.recordComputeCommand(
+        encoder: encoder,
+        kind: "imageblockSize",
+        fields: [
+            "width": width,
+            "height": height,
+        ])
+    MetalUniformProbe.shared.forwardImageblockSize(
+        encoder: encoder,
+        selector: selector,
+        width: width,
+        height: height)
+}
+
+private func probeDispatchThreadgroups(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ threadgroups: MTLSize,
+    _ threadsPerThreadgroup: MTLSize
+) {
+    MetalUniformProbe.shared.recordComputeDispatch(
+        encoder: encoder,
+        kind: "dispatchThreadgroups",
+        grid: threadgroups,
+        threadsPerThreadgroup: threadsPerThreadgroup)
+    MetalUniformProbe.shared.forwardDispatchThreadgroups(
+        encoder: encoder,
+        selector: selector,
+        threadgroups: threadgroups,
+        threadsPerThreadgroup: threadsPerThreadgroup)
+}
+
+private func probeDispatchThreads(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ threads: MTLSize,
+    _ threadsPerThreadgroup: MTLSize
+) {
+    MetalUniformProbe.shared.recordComputeDispatch(
+        encoder: encoder,
+        kind: "dispatchThreads",
+        grid: threads,
+        threadsPerThreadgroup: threadsPerThreadgroup)
+    MetalUniformProbe.shared.forwardDispatchThreads(
+        encoder: encoder,
+        selector: selector,
+        threads: threads,
+        threadsPerThreadgroup: threadsPerThreadgroup)
+}
+
+private func probeGenerateMipmaps(
+    _ encoder: AnyObject,
+    _ selector: Selector,
+    _ texture: AnyObject
+) {
+    MetalUniformProbe.shared.recordGenerateMipmaps(
+        encoder: encoder,
+        texture: texture)
+    MetalUniformProbe.shared.forwardGenerateMipmaps(
+        encoder: encoder,
+        selector: selector,
+        texture: texture)
 }
 
 private func probeSetRenderPipelineState(
@@ -2707,23 +3059,57 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var pipelineRecords: [ObjectIdentifier: [String: Any]] = [:]
     private var pipelineDescriptors:
         [ObjectIdentifier: MTLRenderPipelineDescriptor] = [:]
+    private var computePipelineCreationRecords:
+        [ObjectIdentifier: [String: Any]] = [:]
     private var installReport: [String: Any]?
     private var originalNewRenderPipelineState:
         MetalNewRenderPipelineStateFunction?
+    private var originalNewComputePipelineState:
+        MetalNewComputePipelineStateFunction?
     private var originalMakeRenderCommandEncoder:
         MetalMakeRenderCommandEncoderFunction?
+    private var originalMakeComputeCommandEncoder:
+        MetalMakeCommandEncoderFunction?
+    private var originalMakeComputeCommandEncoderWithDispatchType:
+        MetalMakeComputeCommandEncoderDispatchFunction?
+    private var originalMakeComputeCommandEncoderWithDescriptor:
+        MetalMakeComputeCommandEncoderDescriptorFunction?
+    private var originalMakeBlitCommandEncoder:
+        MetalMakeCommandEncoderFunction?
+    private var originalMakeBlitCommandEncoderWithDescriptor:
+        MetalMakeBlitCommandEncoderDescriptorFunction?
     private var originalPipelineState:
+        MetalSetRenderPipelineStateFunction?
+    private var originalComputePipelineState:
         MetalSetRenderPipelineStateFunction?
     private var originalFragmentBytes:
         MetalSetFragmentBytesFunction?
+    private var originalComputeBytes:
+        MetalSetFragmentBytesFunction?
     private var originalFragmentBuffer:
+        MetalSetFragmentBufferFunction?
+    private var originalComputeBuffer:
         MetalSetFragmentBufferFunction?
     private var originalFragmentBufferOffset:
         MetalSetBufferOffsetFunction?
+    private var originalComputeBufferOffset:
+        MetalSetBufferOffsetFunction?
     private var originalFragmentTexture:
+        MetalSetFragmentTextureFunction?
+    private var originalComputeTexture:
         MetalSetFragmentTextureFunction?
     private var originalFragmentSamplerState:
         MetalSetFragmentSamplerStateFunction?
+    private var originalComputeSamplerState:
+        MetalSetFragmentSamplerStateFunction?
+    private var originalImageblockSize:
+        MetalSetImageblockSizeFunction?
+    private var originalDispatchThreadgroups:
+        MetalDispatchFunction?
+    private var originalDispatchThreads:
+        MetalDispatchFunction?
+    private var originalGenerateMipmaps:
+        MetalGenerateMipmapsFunction?
     private var originalVertexBytes:
         MetalSetFragmentBytesFunction?
     private var originalVertexBuffer:
@@ -2796,11 +3182,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
         pass.colorAttachments[0].storeAction = .dontCare
         guard let encoder = commandBuffer.makeRenderCommandEncoder(
             descriptor: pass),
+              let computeCommandBuffer = queue.makeCommandBuffer(),
+              let computeEncoder =
+                computeCommandBuffer.makeComputeCommandEncoder(),
+              let blitCommandBuffer = queue.makeCommandBuffer(),
+              let blitEncoder =
+                blitCommandBuffer.makeBlitCommandEncoder(),
               let commandBufferClass = object_getClass(
                 commandBuffer as AnyObject),
               let deviceClass = object_getClass(
                 device as AnyObject),
-              let encoderClass = object_getClass(encoder as AnyObject)
+              let encoderClass = object_getClass(encoder as AnyObject),
+              let computeEncoderClass = object_getClass(
+                computeEncoder as AnyObject),
+              let blitEncoderClass = object_getClass(
+                blitEncoder as AnyObject)
         else {
             return [
                 "installed": false,
@@ -2850,6 +3246,103 @@ private final class MetalUniformProbe: @unchecked Sendable {
             originalNewRenderPipelineState = unsafeBitCast(
                 original,
                 to: MetalNewRenderPipelineStateFunction.self)
+        }
+
+        let newComputePipelineSelector =
+            "newComputePipelineStateWithFunction:error:"
+        if let original = installMethod(
+            on: deviceClass,
+            selectorName: newComputePipelineSelector,
+            replacement: unsafeBitCast(
+                probeNewComputePipelineState
+                    as MetalNewComputePipelineStateFunction,
+                to: IMP.self))
+        {
+            originalNewComputePipelineState = unsafeBitCast(
+                original,
+                to: MetalNewComputePipelineStateFunction.self)
+        }
+
+        let makeComputeEncoderSelector = "computeCommandEncoder"
+        if let original = installMethod(
+            on: commandBufferClass,
+            selectorName: makeComputeEncoderSelector,
+            replacement: unsafeBitCast(
+                probeMakeComputeCommandEncoder
+                    as MetalMakeCommandEncoderFunction,
+                to: IMP.self))
+        {
+            originalMakeComputeCommandEncoder = unsafeBitCast(
+                original,
+                to: MetalMakeCommandEncoderFunction.self)
+        }
+
+        let makeComputeEncoderDispatchSelector =
+            "computeCommandEncoderWithDispatchType:"
+        if let original = installMethod(
+            on: commandBufferClass,
+            selectorName: makeComputeEncoderDispatchSelector,
+            replacement: unsafeBitCast(
+                probeMakeComputeCommandEncoderWithDispatchType
+                    as MetalMakeComputeCommandEncoderDispatchFunction,
+                to: IMP.self))
+        {
+            originalMakeComputeCommandEncoderWithDispatchType =
+                unsafeBitCast(
+                    original,
+                    to:
+                        MetalMakeComputeCommandEncoderDispatchFunction
+                            .self)
+        }
+
+        let makeComputeEncoderDescriptorSelector =
+            "computeCommandEncoderWithDescriptor:"
+        if let original = installMethod(
+            on: commandBufferClass,
+            selectorName: makeComputeEncoderDescriptorSelector,
+            replacement: unsafeBitCast(
+                probeMakeComputeCommandEncoderWithDescriptor
+                    as MetalMakeComputeCommandEncoderDescriptorFunction,
+                to: IMP.self))
+        {
+            originalMakeComputeCommandEncoderWithDescriptor =
+                unsafeBitCast(
+                    original,
+                    to:
+                        MetalMakeComputeCommandEncoderDescriptorFunction
+                            .self)
+        }
+
+        let makeBlitEncoderSelector = "blitCommandEncoder"
+        if let original = installMethod(
+            on: commandBufferClass,
+            selectorName: makeBlitEncoderSelector,
+            replacement: unsafeBitCast(
+                probeMakeBlitCommandEncoder
+                    as MetalMakeCommandEncoderFunction,
+                to: IMP.self))
+        {
+            originalMakeBlitCommandEncoder = unsafeBitCast(
+                original,
+                to: MetalMakeCommandEncoderFunction.self)
+        }
+
+        let makeBlitEncoderDescriptorSelector =
+            "blitCommandEncoderWithDescriptor:"
+        if let original = installMethod(
+            on: commandBufferClass,
+            selectorName: makeBlitEncoderDescriptorSelector,
+            replacement: unsafeBitCast(
+                probeMakeBlitCommandEncoderWithDescriptor
+                    as MetalMakeBlitCommandEncoderDescriptorFunction,
+                to: IMP.self))
+        {
+            originalMakeBlitCommandEncoderWithDescriptor =
+                unsafeBitCast(
+                    original,
+                    to:
+                        MetalMakeBlitCommandEncoderDescriptorFunction
+                            .self)
         }
 
         let makeRenderEncoderSelector = NSSelectorFromString(
@@ -2913,6 +3406,156 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     String(cString: $0)
                 } ?? "",
             ])
+        }
+
+        let computePipelineSelector =
+            "setComputePipelineState:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: computePipelineSelector,
+            replacement: unsafeBitCast(
+                probeSetComputePipelineState
+                    as MetalSetRenderPipelineStateFunction,
+                to: IMP.self))
+        {
+            originalComputePipelineState = unsafeBitCast(
+                original,
+                to: MetalSetRenderPipelineStateFunction.self)
+        }
+
+        let computeBytesSelector =
+            "setBytes:length:atIndex:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: computeBytesSelector,
+            replacement: unsafeBitCast(
+                probeSetComputeBytes
+                    as MetalSetFragmentBytesFunction,
+                to: IMP.self))
+        {
+            originalComputeBytes = unsafeBitCast(
+                original,
+                to: MetalSetFragmentBytesFunction.self)
+        }
+
+        let computeBufferSelector =
+            "setBuffer:offset:atIndex:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: computeBufferSelector,
+            replacement: unsafeBitCast(
+                probeSetComputeBuffer
+                    as MetalSetFragmentBufferFunction,
+                to: IMP.self))
+        {
+            originalComputeBuffer = unsafeBitCast(
+                original,
+                to: MetalSetFragmentBufferFunction.self)
+        }
+
+        let computeBufferOffsetSelector =
+            "setBufferOffset:atIndex:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: computeBufferOffsetSelector,
+            replacement: unsafeBitCast(
+                probeSetComputeBufferOffset
+                    as MetalSetBufferOffsetFunction,
+                to: IMP.self))
+        {
+            originalComputeBufferOffset = unsafeBitCast(
+                original,
+                to: MetalSetBufferOffsetFunction.self)
+        }
+
+        let computeTextureSelector =
+            "setTexture:atIndex:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: computeTextureSelector,
+            replacement: unsafeBitCast(
+                probeSetComputeTexture
+                    as MetalSetFragmentTextureFunction,
+                to: IMP.self))
+        {
+            originalComputeTexture = unsafeBitCast(
+                original,
+                to: MetalSetFragmentTextureFunction.self)
+        }
+
+        let computeSamplerSelector =
+            "setSamplerState:atIndex:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: computeSamplerSelector,
+            replacement: unsafeBitCast(
+                probeSetComputeSamplerState
+                    as MetalSetFragmentSamplerStateFunction,
+                to: IMP.self))
+        {
+            originalComputeSamplerState = unsafeBitCast(
+                original,
+                to: MetalSetFragmentSamplerStateFunction.self)
+        }
+
+        let imageblockSelector =
+            "setImageblockWidth:height:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: imageblockSelector,
+            replacement: unsafeBitCast(
+                probeSetImageblockSize
+                    as MetalSetImageblockSizeFunction,
+                to: IMP.self))
+        {
+            originalImageblockSize = unsafeBitCast(
+                original,
+                to: MetalSetImageblockSizeFunction.self)
+        }
+
+        let dispatchThreadgroupsSelector =
+            "dispatchThreadgroups:threadsPerThreadgroup:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: dispatchThreadgroupsSelector,
+            replacement: unsafeBitCast(
+                probeDispatchThreadgroups
+                    as MetalDispatchFunction,
+                to: IMP.self))
+        {
+            originalDispatchThreadgroups = unsafeBitCast(
+                original,
+                to: MetalDispatchFunction.self)
+        }
+
+        let dispatchThreadsSelector =
+            "dispatchThreads:threadsPerThreadgroup:"
+        if let original = installMethod(
+            on: computeEncoderClass,
+            selectorName: dispatchThreadsSelector,
+            replacement: unsafeBitCast(
+                probeDispatchThreads
+                    as MetalDispatchFunction,
+                to: IMP.self))
+        {
+            originalDispatchThreads = unsafeBitCast(
+                original,
+                to: MetalDispatchFunction.self)
+        }
+
+        let generateMipmapsSelector =
+            "generateMipmapsForTexture:"
+        if let original = installMethod(
+            on: blitEncoderClass,
+            selectorName: generateMipmapsSelector,
+            replacement: unsafeBitCast(
+                probeGenerateMipmaps
+                    as MetalGenerateMipmapsFunction,
+                to: IMP.self))
+        {
+            originalGenerateMipmaps = unsafeBitCast(
+                original,
+                to: MetalGenerateMipmapsFunction.self)
         }
 
         let bytesSelector = NSSelectorFromString(
@@ -3295,12 +3938,34 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
 
         encoder.endEncoding()
+        computeEncoder.endEncoding()
+        blitEncoder.endEncoding()
         commandBuffer.commit()
+        computeCommandBuffer.commit()
+        blitCommandBuffer.commit()
         commandBuffer.waitUntilCompleted()
+        computeCommandBuffer.waitUntilCompleted()
+        blitCommandBuffer.waitUntilCompleted()
         let requiredSelectors = Set([
             newRenderPipelineSelector,
+            newComputePipelineSelector,
             "renderCommandEncoderWithDescriptor:",
+            makeComputeEncoderSelector,
+            makeComputeEncoderDispatchSelector,
+            makeComputeEncoderDescriptorSelector,
+            makeBlitEncoderSelector,
+            makeBlitEncoderDescriptorSelector,
             "setRenderPipelineState:",
+            computePipelineSelector,
+            computeBytesSelector,
+            computeBufferSelector,
+            computeBufferOffsetSelector,
+            computeTextureSelector,
+            computeSamplerSelector,
+            imageblockSelector,
+            dispatchThreadgroupsSelector,
+            dispatchThreadsSelector,
+            generateMipmapsSelector,
             "setFragmentBytes:length:atIndex:",
             "setFragmentBuffer:offset:atIndex:",
             fragmentBufferOffsetSelector,
@@ -3327,6 +3992,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "deviceClass": NSStringFromClass(deviceClass),
             "commandBufferClass": NSStringFromClass(commandBufferClass),
             "encoderClass": NSStringFromClass(encoderClass),
+            "computeEncoderClass":
+                NSStringFromClass(computeEncoderClass),
+            "blitEncoderClass":
+                NSStringFromClass(blitEncoderClass),
             "methods": methods,
             "missingRequiredSelectors":
                 requiredSelectors.subtracting(installedSelectors).sorted(),
@@ -3401,6 +4070,321 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "usage": texture.usage.rawValue,
             "storageMode": texture.storageMode.rawValue,
         ]
+    }
+
+    func recordCommandEncoder(
+        commandBuffer: AnyObject,
+        encoder: AnyObject,
+        kind: String,
+        creationSelector: Selector,
+        fields: [String: Any] = [:]
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": kind,
+            "creationSelector":
+                NSStringFromSelector(creationSelector),
+            "commandBuffer": objectAddress(commandBuffer),
+            "encoder": objectAddress(encoder),
+            "encoderClass": String(reflecting: type(of: encoder)),
+        ]
+        if let metalEncoder = encoder as? MTLCommandEncoder,
+           let label = metalEncoder.label
+        {
+            record["label"] = label
+        }
+        for (key, value) in fields {
+            record[key] = value
+        }
+        appendRecord(record)
+    }
+
+    func recordCreatedComputePipeline(
+        pipelineState: AnyObject,
+        function: AnyObject
+    ) {
+        var record: [String: Any] = [
+            "functionClass": String(reflecting: type(of: function)),
+            "functionDescription": String(describing: function),
+        ]
+        if let metalFunction = function as? MTLFunction {
+            record["functionName"] = metalFunction.name
+            record["functionType"] =
+                metalFunction.functionType.rawValue
+            if let label = metalFunction.label {
+                record["functionLabel"] = label
+            }
+        }
+        lock.lock()
+        computePipelineCreationRecords[
+            ObjectIdentifier(pipelineState)
+        ] = record
+        lock.unlock()
+    }
+
+    func recordComputePipelineState(
+        encoder: AnyObject,
+        pipelineState: AnyObject
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "pipelineKind": "compute",
+            "class": String(reflecting: type(of: pipelineState)),
+            "description": String(describing: pipelineState),
+            "address": objectAddress(pipelineState),
+        ]
+        if let state = pipelineState as? MTLComputePipelineState {
+            record["threadExecutionWidth"] =
+                state.threadExecutionWidth
+            record["maxTotalThreadsPerThreadgroup"] =
+                state.maxTotalThreadsPerThreadgroup
+            if let label = state.label {
+                record["label"] = label
+            }
+        }
+        if let creation = computePipelineCreationRecords[
+            ObjectIdentifier(pipelineState)
+        ] {
+            record["creationFunction"] = creation
+        }
+        pipelineRecords[ObjectIdentifier(encoder)] = record
+        appendRecord([
+            "capture": captureName,
+            "kind": "computePipeline",
+            "encoder": objectAddress(encoder),
+            "pipeline": record,
+        ])
+    }
+
+    func recordComputeBytes(
+        encoder: AnyObject,
+        bytes: UnsafeRawPointer,
+        length: Int,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName,
+              length >= 0,
+              length <= maximumCapturedBytes
+        else {
+            return
+        }
+        let payload = Array(UnsafeRawBufferPointer(
+            start: bytes,
+            count: length))
+        var record = serializedPayload(
+            payload,
+            className: "setComputeBytes")
+        record["capture"] = captureName
+        record["kind"] = "bytes"
+        record["stage"] = "compute"
+        record["index"] = index
+        record["encoder"] = objectAddress(encoder)
+        record["pipeline"] = encoderPipeline(encoder)
+        appendRecord(record)
+    }
+
+    func recordComputeBuffer(
+        encoder: AnyObject,
+        buffer: AnyObject?,
+        offset: Int,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        let slot = BufferSlot(
+            encoder: ObjectIdentifier(encoder),
+            stage: "compute",
+            index: index)
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "buffer",
+            "stage": "compute",
+            "index": index,
+            "offset": offset,
+            "encoder": objectAddress(encoder),
+            "pipeline": encoderPipeline(encoder),
+        ]
+        if let metalBuffer = buffer as? MTLBuffer {
+            activeBuffers[slot] = metalBuffer
+            record["bufferClass"] =
+                String(reflecting: type(of: metalBuffer))
+            record["bufferAddress"] =
+                objectAddress(metalBuffer as AnyObject)
+            record["bufferLength"] = metalBuffer.length
+            record["storageMode"] = metalBuffer.storageMode.rawValue
+            bufferBindings.append(BufferBinding(
+                capture: captureName,
+                sequence: records.count,
+                stage: "compute",
+                index: index,
+                pipeline: encoderPipeline(encoder),
+                buffer: metalBuffer,
+                offset: offset))
+            if metalBuffer.storageMode != .private,
+               offset >= 0,
+               offset <= metalBuffer.length
+            {
+                let available = metalBuffer.length - offset
+                let length = min(available, maximumCapturedBytes)
+                let payload = Array(UnsafeRawBufferPointer(
+                    start: metalBuffer.contents().advanced(by: offset),
+                    count: length))
+                record["payload"] = serializedPayload(
+                    payload,
+                    className: "MTLBuffer prefix")
+            } else if offset < 0
+                || offset > metalBuffer.length
+            {
+                record["payloadError"] =
+                    "buffer offset out of bounds"
+            } else {
+                record["payloadUnavailable"] = "private storage"
+            }
+        } else if buffer == nil {
+            activeBuffers.removeValue(forKey: slot)
+            record["buffer"] = "nil"
+        } else {
+            activeBuffers.removeValue(forKey: slot)
+            record["bufferClass"] =
+                String(reflecting: type(of: buffer!))
+        }
+        appendRecord(record)
+    }
+
+    func recordComputeTexture(
+        encoder: AnyObject,
+        texture: AnyObject?,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "texture",
+            "stage": "compute",
+            "index": index,
+            "encoder": objectAddress(encoder),
+            "pipeline": encoderPipeline(encoder),
+        ]
+        if let metalTexture = texture as? MTLTexture {
+            record["texture"] = textureRecord(metalTexture)
+        } else if texture == nil {
+            record["texture"] = "nil"
+        } else {
+            record["textureClass"] =
+                String(reflecting: type(of: texture!))
+        }
+        appendRecord(record)
+    }
+
+    func recordComputeSamplerState(
+        encoder: AnyObject,
+        sampler: AnyObject?,
+        index: Int
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "sampler",
+            "stage": "compute",
+            "index": index,
+            "encoder": objectAddress(encoder),
+            "pipeline": encoderPipeline(encoder),
+        ]
+        if let metalSampler = sampler as? MTLSamplerState {
+            record["samplerClass"] =
+                String(reflecting: type(of: metalSampler))
+            record["description"] =
+                String(describing: metalSampler)
+            record["address"] =
+                objectAddress(metalSampler as AnyObject)
+            if let label = metalSampler.label {
+                record["label"] = label
+            }
+        } else if sampler == nil {
+            record["sampler"] = "nil"
+        } else {
+            record["samplerClass"] =
+                String(reflecting: type(of: sampler!))
+        }
+        appendRecord(record)
+    }
+
+    func recordComputeCommand(
+        encoder: AnyObject,
+        kind: String,
+        fields: [String: Any]
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": kind,
+            "stage": "compute",
+            "encoder": objectAddress(encoder),
+            "pipeline": encoderPipeline(encoder),
+        ]
+        for (key, value) in fields {
+            record[key] = value
+        }
+        appendRecord(record)
+    }
+
+    func recordComputeDispatch(
+        encoder: AnyObject,
+        kind: String,
+        grid: MTLSize,
+        threadsPerThreadgroup: MTLSize
+    ) {
+        recordComputeCommand(
+            encoder: encoder,
+            kind: kind,
+            fields: [
+                "grid": [
+                    grid.width,
+                    grid.height,
+                    grid.depth,
+                ],
+                "threadsPerThreadgroup": [
+                    threadsPerThreadgroup.width,
+                    threadsPerThreadgroup.height,
+                    threadsPerThreadgroup.depth,
+                ],
+            ])
+    }
+
+    func recordGenerateMipmaps(
+        encoder: AnyObject,
+        texture: AnyObject
+    ) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let captureName else { return }
+        var record: [String: Any] = [
+            "capture": captureName,
+            "kind": "generateMipmaps",
+            "stage": "blit",
+            "encoder": objectAddress(encoder),
+        ]
+        if let metalTexture = texture as? MTLTexture {
+            record["texture"] = textureRecord(metalTexture)
+        } else {
+            record["textureClass"] =
+                String(reflecting: type(of: texture))
+        }
+        appendRecord(record)
     }
 
     private func renderPassAttachmentRecord(
@@ -4954,7 +5938,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL
     ) {
         var progress: [String: Any] = [
-            "schemaVersion": 66,
+            "schemaVersion": 67,
             "capture": capture,
             "phase": phase,
         ]
@@ -5187,7 +6171,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func checkpointBuildRecords() {
             try? writeJSON(
                 [
-                    "schemaVersion": 66,
+                    "schemaVersion": 67,
                     "capture": capture,
                     "capturedDescriptor":
                         pipelineDescriptorRecord(
@@ -5612,7 +6596,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             outputDirectory: outputDirectory)
         try? writeJSON(
             [
-                "schemaVersion": 66,
+                "schemaVersion": 67,
                 "capture": capture,
                 "candidate": suffix,
                 "commandBufferStatus":
@@ -7075,6 +8059,231 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return result
     }
 
+    func forwardNewComputePipelineState(
+        device: AnyObject,
+        selector: Selector,
+        function: AnyObject,
+        error: AutoreleasingUnsafeMutablePointer<NSError?>?
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalNewComputePipelineState else {
+            return nil
+        }
+        return originalNewComputePipelineState(
+            device,
+            selector,
+            function,
+            error)
+    }
+
+    func forwardMakeComputeCommandEncoder(
+        commandBuffer: AnyObject,
+        selector: Selector
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalMakeComputeCommandEncoder else {
+            return nil
+        }
+        return originalMakeComputeCommandEncoder(
+            commandBuffer,
+            selector)
+    }
+
+    func forwardMakeComputeCommandEncoderWithDispatchType(
+        commandBuffer: AnyObject,
+        selector: Selector,
+        dispatchType: MTLDispatchType
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalMakeComputeCommandEncoderWithDispatchType
+        else {
+            return nil
+        }
+        return originalMakeComputeCommandEncoderWithDispatchType(
+            commandBuffer,
+            selector,
+            dispatchType)
+    }
+
+    func forwardMakeComputeCommandEncoderWithDescriptor(
+        commandBuffer: AnyObject,
+        selector: Selector,
+        descriptor: MTLComputePassDescriptor
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalMakeComputeCommandEncoderWithDescriptor
+        else {
+            return nil
+        }
+        return originalMakeComputeCommandEncoderWithDescriptor(
+            commandBuffer,
+            selector,
+            descriptor)
+    }
+
+    func forwardMakeBlitCommandEncoder(
+        commandBuffer: AnyObject,
+        selector: Selector
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalMakeBlitCommandEncoder else {
+            return nil
+        }
+        return originalMakeBlitCommandEncoder(
+            commandBuffer,
+            selector)
+    }
+
+    func forwardMakeBlitCommandEncoderWithDescriptor(
+        commandBuffer: AnyObject,
+        selector: Selector,
+        descriptor: MTLBlitPassDescriptor
+    ) -> Unmanaged<AnyObject>? {
+        guard let originalMakeBlitCommandEncoderWithDescriptor
+        else {
+            return nil
+        }
+        return originalMakeBlitCommandEncoderWithDescriptor(
+            commandBuffer,
+            selector,
+            descriptor)
+    }
+
+    func forwardComputePipelineState(
+        encoder: AnyObject,
+        selector: Selector,
+        pipelineState: AnyObject
+    ) {
+        guard let originalComputePipelineState else { return }
+        originalComputePipelineState(
+            encoder,
+            selector,
+            pipelineState)
+    }
+
+    func forwardComputeBytes(
+        encoder: AnyObject,
+        selector: Selector,
+        bytes: UnsafeRawPointer,
+        length: Int,
+        index: Int
+    ) {
+        guard let originalComputeBytes else { return }
+        originalComputeBytes(
+            encoder,
+            selector,
+            bytes,
+            length,
+            index)
+    }
+
+    func forwardComputeBuffer(
+        encoder: AnyObject,
+        selector: Selector,
+        buffer: AnyObject?,
+        offset: Int,
+        index: Int
+    ) {
+        guard let originalComputeBuffer else { return }
+        originalComputeBuffer(
+            encoder,
+            selector,
+            buffer,
+            offset,
+            index)
+    }
+
+    func forwardComputeBufferOffset(
+        encoder: AnyObject,
+        selector: Selector,
+        offset: Int,
+        index: Int
+    ) {
+        guard let originalComputeBufferOffset else { return }
+        originalComputeBufferOffset(
+            encoder,
+            selector,
+            offset,
+            index)
+    }
+
+    func forwardComputeTexture(
+        encoder: AnyObject,
+        selector: Selector,
+        texture: AnyObject?,
+        index: Int
+    ) {
+        guard let originalComputeTexture else { return }
+        originalComputeTexture(
+            encoder,
+            selector,
+            texture,
+            index)
+    }
+
+    func forwardComputeSamplerState(
+        encoder: AnyObject,
+        selector: Selector,
+        sampler: AnyObject?,
+        index: Int
+    ) {
+        guard let originalComputeSamplerState else { return }
+        originalComputeSamplerState(
+            encoder,
+            selector,
+            sampler,
+            index)
+    }
+
+    func forwardImageblockSize(
+        encoder: AnyObject,
+        selector: Selector,
+        width: Int,
+        height: Int
+    ) {
+        guard let originalImageblockSize else { return }
+        originalImageblockSize(
+            encoder,
+            selector,
+            width,
+            height)
+    }
+
+    func forwardDispatchThreadgroups(
+        encoder: AnyObject,
+        selector: Selector,
+        threadgroups: MTLSize,
+        threadsPerThreadgroup: MTLSize
+    ) {
+        guard let originalDispatchThreadgroups else { return }
+        originalDispatchThreadgroups(
+            encoder,
+            selector,
+            threadgroups,
+            threadsPerThreadgroup)
+    }
+
+    func forwardDispatchThreads(
+        encoder: AnyObject,
+        selector: Selector,
+        threads: MTLSize,
+        threadsPerThreadgroup: MTLSize
+    ) {
+        guard let originalDispatchThreads else { return }
+        originalDispatchThreads(
+            encoder,
+            selector,
+            threads,
+            threadsPerThreadgroup)
+    }
+
+    func forwardGenerateMipmaps(
+        encoder: AnyObject,
+        selector: Selector,
+        texture: AnyObject
+    ) {
+        guard let originalGenerateMipmaps else { return }
+        originalGenerateMipmaps(
+            encoder,
+            selector,
+            texture)
+    }
+
     func forwardNewRenderPipelineState(
         device: AnyObject,
         selector: Selector,
@@ -7406,6 +8615,44 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "records": captureRecords,
             "recordCount": captureRecords.count,
             "globalDroppedRecordCount": droppedRecordCount,
+        ]
+    }
+
+    func commandProvenance(capture: String) -> [String: Any] {
+        lock.lock()
+        defer { lock.unlock() }
+        let captureRecords = records.filter {
+            $0["capture"] as? String == capture
+        }
+        let encoderKinds = Set([
+            "computeEncoder",
+            "blitEncoder",
+        ])
+        let provenanceRecords = captureRecords.filter { record in
+            let stage = record["stage"] as? String
+            let kind = record["kind"] as? String
+            return stage == "compute"
+                || stage == "blit"
+                || kind.map { encoderKinds.contains($0) } == true
+                || kind == "computePipeline"
+        }
+        func count(kind: String) -> Int {
+            provenanceRecords.filter {
+                $0["kind"] as? String == kind
+            }.count
+        }
+        return [
+            "schemaVersion": 1,
+            "capture": capture,
+            "capturedRecordCount": provenanceRecords.count,
+            "computeEncoderCount": count(kind: "computeEncoder"),
+            "computePipelineCount": count(kind: "computePipeline"),
+            "dispatchThreadgroupsCount":
+                count(kind: "dispatchThreadgroups"),
+            "dispatchThreadsCount": count(kind: "dispatchThreads"),
+            "blitEncoderCount": count(kind: "blitEncoder"),
+            "generateMipmapsCount": count(kind: "generateMipmaps"),
+            "records": provenanceRecords,
         ]
     }
 }
@@ -9321,6 +10568,9 @@ private func carendererEvidence(
                 outputDirectory: outputDirectory),
         "metalBufferSnapshots":
             MetalUniformProbe.shared.snapshotBuffers(capture: capture),
+        "metalCommandProvenance":
+            MetalUniformProbe.shared.commandProvenance(
+                capture: capture),
         "metalUniformProbe":
             MetalUniformProbe.shared.report(capture: capture),
     ]
@@ -9585,7 +10835,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         func writeProgress(_ phase: String) {
             try? writeJSON(
                 [
-                    "schemaVersion": 66,
+                    "schemaVersion": 67,
                     "phase": phase,
                 ],
                 to: outputDirectory.appendingPathComponent(
@@ -9601,7 +10851,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         writeProgress("after-sdf-generator-evidence")
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 66,
+            "schemaVersion": 67,
             "diagnosticBackgroundEvidence": [
                 "pattern": diagnosticBackgroundPattern,
                 "cellWidthPoints":
