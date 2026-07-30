@@ -523,45 +523,53 @@ jobs:
           with open("introspection/runtime.json", encoding="utf-8") as stream:
               report = json.load(stream)
 
-          for record in report.get("exportedCode", []):
-              print(f"SYMBOL {record.get('symbol', '<unknown>')}")
-              for key in (
-                  "imagePath",
-                  "imageBase",
-                  "imageOffset",
-                  "runtimeAddress",
-                  "resolvedName",
-                  "resolvedAddress",
-                  "requestedByteCount",
-                  "error",
-              ):
-                  if key in record:
-                      print(f"{key}={record[key]}")
-              encoded = record.get("hex")
-              if not encoded:
-                  print("NO INSTRUCTION BYTES")
-                  continue
+          groups = (
+              ("EXPORTED", report.get("exportedCode", [])),
+              ("RUNTIME METHOD", report.get("runtimeMethodCode", [])),
+          )
+          for group, records in groups:
+              for record in records:
+                  print(f"{group} RECORD")
+                  for key in (
+                      "symbol",
+                      "class",
+                      "selector",
+                      "imagePath",
+                      "imageBase",
+                      "imageOffset",
+                      "runtimeAddress",
+                      "resolvedName",
+                      "resolvedAddress",
+                      "requestedByteCount",
+                      "error",
+                  ):
+                      if key in record:
+                          print(f"{key}={record[key]}")
+                  encoded = record.get("hex")
+                  if not encoded:
+                      print("NO INSTRUCTION BYTES")
+                      continue
 
-              command = [
-                  "xcrun",
-                  "llvm-mc",
-                  "--disassemble",
-                  "--hex",
-                  "--triple=arm64e-apple-macos26.0",
-                  "--print-imm-hex",
-              ]
-              result = subprocess.run(
-                  command,
-                  input=encoded,
-                  text=True,
-                  capture_output=True,
-                  check=False,
-              )
-              print(f"LLVM-MC EXIT {result.returncode}")
-              print(result.stdout, end="")
-              if result.stderr:
-                  print("LLVM-MC STDERR")
-                  print(result.stderr, end="")
+                  command = [
+                      "xcrun",
+                      "llvm-mc",
+                      "--disassemble",
+                      "--hex",
+                      "--triple=arm64e-apple-macos26.0",
+                      "--print-imm-hex",
+                  ]
+                  result = subprocess.run(
+                      command,
+                      input=encoded,
+                      text=True,
+                      capture_output=True,
+                      check=False,
+                  )
+                  print(f"LLVM-MC EXIT {result.returncode}")
+                  print(result.stdout, end="")
+                  if result.stderr:
+                      print("LLVM-MC STDERR")
+                      print(result.stderr, end="")
           PY
 
       - name: Upload Liquid Glass introspection

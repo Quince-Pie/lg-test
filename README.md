@@ -722,6 +722,14 @@ Swift compiler transcript as `build.log`, collects the runtime and framework
 evidence, uploads that small directory even on failure, and then enforces both
 a successful build and a nonempty `runtime.json`. Changes confined to the
 probe therefore do not launch another multi-gigabyte static capture.
+Schema 12 also enumerates every loaded Objective-C class whose name contains
+`SDF`, `glass`, `backdrop`, `colorMatrix`, or `holdingTone`, including class
+methods and defining image paths. It preserves and disassembles bounded
+instruction windows for the real SDF element/layer render-copy methods,
+effect configuration methods, and `SwiftUI.SDFLayer.layoutSublayers`. This
+targets the host-side generator request, jump schedule, field scale/bias, and
+source-pyramid uniform construction that are not present in the already
+recovered Metal AIR.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range

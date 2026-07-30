@@ -556,6 +556,33 @@ private func runtimeClassDescription(_ cls: AnyClass) -> [String: Any] {
                 < String(describing: $1["name"])
         },
     ]
+    if let imageName = class_getImageName(cls) {
+        record["imagePath"] = String(cString: imageName)
+    }
+    if let metaclass = object_getClass(cls) {
+        var classMethodCount: UInt32 = 0
+        let classMethodList = class_copyMethodList(
+            metaclass,
+            &classMethodCount)
+        defer {
+            if let classMethodList { free(classMethodList) }
+        }
+        var classMethods: [[String: String]] = []
+        if let classMethodList {
+            for index in 0..<Int(classMethodCount) {
+                let method = classMethodList[index]
+                classMethods.append([
+                    "name": NSStringFromSelector(method_getName(method)),
+                    "types": method_getTypeEncoding(method).map {
+                        String(cString: $0)
+                    } ?? "",
+                ])
+            }
+        }
+        record["classMethods"] = classMethods.sorted {
+            ($0["name"] ?? "") < ($1["name"] ?? "")
+        }
+    }
     if let superclass = class_getSuperclass(cls) {
         record["superclass"] = NSStringFromClass(superclass)
     } else {
@@ -580,6 +607,38 @@ private let runtimeClassTokens = [
     "sdf",
     "vibrant",
 ]
+
+private let forensicRuntimeClassTokens = [
+    "backdrop",
+    "colormatrix",
+    "glass",
+    "holdingtone",
+    "sdf",
+]
+
+private func allForensicRuntimeClasses() -> [[String: Any]] {
+    var classCount: UInt32 = 0
+    guard let classes = objc_copyClassList(&classCount) else {
+        return []
+    }
+    defer { free(classes) }
+    var records: [[String: Any]] = []
+    for index in 0..<Int(classCount) {
+        let cls: AnyClass = classes[index]
+        let name = NSStringFromClass(cls)
+        let lowercased = name.lowercased()
+        guard forensicRuntimeClassTokens.contains(where: {
+            lowercased.contains($0)
+        }) else {
+            continue
+        }
+        records.append(runtimeClassDescription(cls))
+    }
+    return records.sorted {
+        String(describing: $0["name"])
+            < String(describing: $1["name"])
+    }
+}
 
 private struct RuntimeMethodCodeProbe {
     let className: String
@@ -627,6 +686,26 @@ private let runtimeMethodCodeProbes = [
         className: "CAFilter",
         selectorName: "setValue:forKey:",
         byteCount: 0x800),
+    RuntimeMethodCodeProbe(
+        className: "CASDFElementLayer",
+        selectorName: "_copyRenderLayer:layerFlags:commitFlags:",
+        byteCount: 0x2000),
+    RuntimeMethodCodeProbe(
+        className: "CASDFLayer",
+        selectorName: "_copyRenderLayer:layerFlags:commitFlags:",
+        byteCount: 0x2000),
+    RuntimeMethodCodeProbe(
+        className: "CASDFOutputEffect",
+        selectorName: "configureLayer:transaction:",
+        byteCount: 0x1000),
+    RuntimeMethodCodeProbe(
+        className: "CASDFKeyFillHighlightEffect",
+        selectorName: "configureLayer:transaction:",
+        byteCount: 0x1000),
+    RuntimeMethodCodeProbe(
+        className: "SwiftUI.SDFLayer",
+        selectorName: "layoutSublayers",
+        byteCount: 0x4000),
 ]
 
 private func runtimeMethodCodeEvidence() -> [[String: Any]] {
@@ -1177,7 +1256,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         }
         let device = MTLCreateSystemDefaultDevice()
         var report: [String: Any] = [
-            "schemaVersion": 11,
+            "schemaVersion": 12,
             "osVersion":
                 ProcessInfo.processInfo.operatingSystemVersionString,
             "captureStarted": captureStarted,
@@ -1200,6 +1279,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             "exportedCode": exportedCodeEvidence(),
             "constructedMatrices": constructedMatrixEvidence(),
             "runtimeMethodCode": runtimeMethodCodeEvidence(),
+            "allForensicRuntimeClasses":
+                allForensicRuntimeClasses(),
         ]
         if let captureError {
             report["captureError"] = captureError
