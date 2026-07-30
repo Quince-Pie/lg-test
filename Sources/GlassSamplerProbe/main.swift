@@ -291,6 +291,55 @@ kernel void sampler_unorm_trilinear_probe(
                 level(1.0f)).x);
     }
 }
+
+kernel void sampler_unorm_phase_trilinear_probe(
+    texture2d<half, access::sample> texture [[texture(0)]],
+    sampler linear_sampler [[sampler(0)]],
+    device ushort *records [[buffer(0)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= 65536) {
+        return;
+    }
+
+    uint mip_x = index & 511;
+    uint mip_y = index >> 9;
+    float2 origin = float2(float(mip_x), float(mip_y));
+    float phase_offsets[4] = {
+        0.625f,
+        0.875f,
+        1.125f,
+        1.375f,
+    };
+    uint base = index * 48;
+    for (uint phase_y = 0; phase_y < 4; ++phase_y) {
+        for (uint phase_x = 0; phase_x < 4; ++phase_x) {
+            uint position = phase_y * 4 + phase_x;
+            float2 uv = (
+                origin
+                + float2(
+                    phase_offsets[phase_x],
+                    phase_offsets[phase_y])
+            ) / float2(512.0f, 256.0f);
+            uint output = base + position * 3;
+            records[output] = as_type<ushort>(
+                texture.sample(
+                    linear_sampler,
+                    uv,
+                    level(0.0f)).x);
+            records[output + 1] = as_type<ushort>(
+                texture.sample(
+                    linear_sampler,
+                    uv,
+                    level(148.0f / 256.0f)).x);
+            records[output + 2] = as_type<ushort>(
+                texture.sample(
+                    linear_sampler,
+                    uv,
+                    level(1.0f)).x);
+        }
+    }
+}
 """
 
 private enum ProbeError: LocalizedError {
@@ -775,6 +824,9 @@ private func run(outputDirectory: URL) throws {
             name: "sampler_unorm_mip_probe"),
           let unormTrilinearFunction = library.makeFunction(
             name: "sampler_unorm_trilinear_probe"),
+          let unormPhaseTrilinearFunction =
+            library.makeFunction(
+                name: "sampler_unorm_phase_trilinear_probe"),
           let queue = device.makeCommandQueue()
     else {
         throw ProbeError.resource("library functions or queue")
@@ -793,6 +845,9 @@ private func run(outputDirectory: URL) throws {
     let unormTrilinearPipeline =
         try device.makeComputePipelineState(
             function: unormTrilinearFunction)
+    let unormPhaseTrilinearPipeline =
+        try device.makeComputePipelineState(
+            function: unormPhaseTrilinearFunction)
     let linearTexture = try makeLinearTexture(device: device)
     let linearUnormTexture = try makeLinearUnormTexture(
         device: device)
@@ -823,6 +878,7 @@ private func run(outputDirectory: URL) throws {
         MemoryLayout<BilinearRecord>.stride
     let unormMipStride = MemoryLayout<UInt16>.stride
     let unormTrilinearWords = 21
+    let unormPhaseTrilinearWords = 48
     guard stride == 16,
           fractionStride == 4,
           bilinearStride == 6,
@@ -846,6 +902,12 @@ private func run(outputDirectory: URL) throws {
             length:
                 pairCount
                 * unormTrilinearWords
+                * unormMipStride,
+            options: .storageModeShared),
+          let unormPhaseTrilinearOutput = device.makeBuffer(
+            length:
+                pairCount
+                * unormPhaseTrilinearWords
                 * unormMipStride,
             options: .storageModeShared),
           let commandBuffer = queue.makeCommandBuffer(),
@@ -999,6 +1061,35 @@ private func run(outputDirectory: URL) throws {
                 depth: 1))
     unormTrilinearEncoder.endEncoding()
 
+    guard let unormPhaseTrilinearEncoder =
+        commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource(
+            "unorm phase trilinear command encoder")
+    }
+    unormPhaseTrilinearEncoder.setComputePipelineState(
+        unormPhaseTrilinearPipeline)
+    unormPhaseTrilinearEncoder.setTexture(
+        unormMipTexture,
+        index: 0)
+    unormPhaseTrilinearEncoder.setSamplerState(
+        sampler,
+        index: 0)
+    unormPhaseTrilinearEncoder.setBuffer(
+        unormPhaseTrilinearOutput,
+        offset: 0,
+        index: 0)
+    let unormPhaseTrilinearWidth =
+        unormPhaseTrilinearPipeline.threadExecutionWidth
+    unormPhaseTrilinearEncoder.dispatchThreads(
+        MTLSize(width: pairCount, height: 1, depth: 1),
+        threadsPerThreadgroup:
+            MTLSize(
+                width: unormPhaseTrilinearWidth,
+                height: 1,
+                depth: 1))
+    unormPhaseTrilinearEncoder.endEncoding()
+
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
@@ -1058,9 +1149,18 @@ private func run(outputDirectory: URL) throws {
     try unormTrilinearBinary.write(
         to: unormTrilinearBinaryURL,
         options: .atomic)
+    let unormPhaseTrilinearBinary = Data(
+        bytes: unormPhaseTrilinearOutput.contents(),
+        count: unormPhaseTrilinearOutput.length)
+    let unormPhaseTrilinearBinaryURL =
+        outputDirectory.appendingPathComponent(
+            "sampler-unorm-phase-trilinear.bin")
+    try unormPhaseTrilinearBinary.write(
+        to: unormPhaseTrilinearBinaryURL,
+        options: .atomic)
     let manifest: [String: Any] = [
-        "schemaVersion": 5,
-        "rigVersion": "metal-sampler-probe-1.4.0",
+        "schemaVersion": 6,
+        "rigVersion": "metal-sampler-probe-1.5.0",
         "ciCommit":
             ProcessInfo.processInfo.environment["GITHUB_SHA"]
             ?? "local",
@@ -1208,6 +1308,32 @@ private func run(outputDirectory: URL) throws {
                     "levelOneTexelOffsetX": 0.0,
                     "levelOneTexelOffsetY": 0.75,
                 ],
+            ],
+            "lodFraction": "37/64",
+            "texturePixelFormat": "rgba8Unorm",
+        ],
+        "unormPhaseTrilinearGrid": [
+            "file":
+                unormPhaseTrilinearBinaryURL.lastPathComponent,
+            "fileBytes": unormPhaseTrilinearBinary.count,
+            "fileSha256":
+                sha256(unormPhaseTrilinearBinary),
+            "recordCount": pairCount,
+            "recordOrder": "input_a major, input_b minor",
+            "recordStrideBytes":
+                unormPhaseTrilinearWords * unormMipStride,
+            "recordFieldsPerPosition": [
+                "level_zero",
+                "lod_37_of_64",
+                "level_one",
+            ],
+            "phaseOrder":
+                "phase_y major, phase_x minor",
+            "levelOneFractionalPhases": [
+                "1/8",
+                "3/8",
+                "5/8",
+                "7/8",
             ],
             "lodFraction": "37/64",
             "texturePixelFormat": "rgba8Unorm",

@@ -652,6 +652,10 @@ Its fourth revision samples the same normalized mip texture at seven
 phase-controlled positions and records level zero, level one, and the exact
 37/64 blend together. Those paired records distinguish staged bilinear/mip
 rounding from a single combined sampler operation.
+Its fifth revision crosses the real reduced-mip fractional phases—1/8, 3/8,
+5/8, and 7/8—in both axes. Their denominator-64 spatial weights make staged
+endpoint rounding and a fused three-dimensional weighted sum observably
+different.
 The focused native kernel mode complements the impulse sweep with sixteen
 96-pixel square steps spanning every phase of the first two reduced mip
 levels. Its red/blue positive and green negative channels capture the
