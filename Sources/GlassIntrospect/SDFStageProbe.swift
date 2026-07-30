@@ -10,6 +10,68 @@ constant uint blur_trace_stride = 24;
 constant uint gradient_width = 384;
 constant uint gradient_float_stride = 6;
 
+struct SDFStageVertexOutput {
+    float4 position [[position]];
+};
+
+vertex SDFStageVertexOutput sdf_blur_vertex(
+    uint vertex_id [[vertex_id]])
+{
+    const float2 positions[3] = {
+        float2(-1.0, -1.0),
+        float2(3.0, -1.0),
+        float2(-1.0, 3.0),
+    };
+    SDFStageVertexOutput output;
+    output.position = float4(positions[vertex_id], 0.0, 1.0);
+    return output;
+}
+
+fragment half4 sdf_blur_fragment(
+    SDFStageVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source [[texture(0)]],
+    sampler linear_clamp [[sampler(0)]],
+    device const float2 *offsets [[buffer(0)]],
+    device const ushort *weight_bits [[buffer(1)]])
+{
+    const float2 source_size = float2(
+        source.get_width(),
+        source.get_height());
+    const float2 coordinate =
+        (input.position.xy - float2(10.0)) / source_size;
+    const half4 sample_0_minus =
+        source.sample(linear_clamp, coordinate - offsets[0]);
+    const half4 sample_0_plus =
+        source.sample(linear_clamp, coordinate + offsets[0]);
+    const half4 sample_1_minus =
+        source.sample(linear_clamp, coordinate - offsets[1]);
+    const half4 sample_1_plus =
+        source.sample(linear_clamp, coordinate + offsets[1]);
+    const half4 sample_2_minus =
+        source.sample(linear_clamp, coordinate - offsets[2]);
+    const half4 sample_2_plus =
+        source.sample(linear_clamp, coordinate + offsets[2]);
+    const half4 sample_3_minus =
+        source.sample(linear_clamp, coordinate - offsets[3]);
+    const half4 sample_3_plus =
+        source.sample(linear_clamp, coordinate + offsets[3]);
+    const half4 sample_4_minus =
+        source.sample(linear_clamp, coordinate - offsets[4]);
+    const half4 sample_4_plus =
+        source.sample(linear_clamp, coordinate + offsets[4]);
+    const half4 term_0 = as_type<half>(weight_bits[0])
+        * (sample_0_plus + sample_0_minus);
+    const half4 term_1 = as_type<half>(weight_bits[1])
+        * (sample_1_plus + sample_1_minus);
+    const half4 term_2 = as_type<half>(weight_bits[2])
+        * (sample_2_plus + sample_2_minus);
+    const half4 term_3 = as_type<half>(weight_bits[3])
+        * (sample_3_plus + sample_3_minus);
+    const half4 term_4 = as_type<half>(weight_bits[4])
+        * (sample_4_plus + sample_4_minus);
+    return (((term_3 + term_0) + term_2) + term_1) + term_4;
+}
+
 kernel void sdf_blur_trace(
     texture2d<half, access::sample> source [[texture(0)]],
     device const float2 *offsets [[buffer(0)]],
@@ -172,7 +234,11 @@ func writeSDFStageEvidence(
     guard let blurFunction = library.makeFunction(
         name: "sdf_blur_trace"),
           let gradientFunction = library.makeFunction(
-              name: "sdf_gradient_trace")
+              name: "sdf_gradient_trace"),
+          let blurVertexFunction = library.makeFunction(
+              name: "sdf_blur_vertex"),
+          let blurFragmentFunction = library.makeFunction(
+              name: "sdf_blur_fragment")
     else {
         throw sdfProbeError(1, "SDF stage functions are unavailable")
     }
@@ -180,6 +246,13 @@ func writeSDFStageEvidence(
         function: blurFunction)
     let gradientPipeline = try device.makeComputePipelineState(
         function: gradientFunction)
+    let blurRenderDescriptor = MTLRenderPipelineDescriptor()
+    blurRenderDescriptor.vertexFunction = blurVertexFunction
+    blurRenderDescriptor.fragmentFunction = blurFragmentFunction
+    blurRenderDescriptor.colorAttachments[0].pixelFormat =
+        .rgba16Float
+    let blurRenderPipeline = try device.makeRenderPipelineState(
+        descriptor: blurRenderDescriptor)
 
     let horizontalOffsets: [SIMD2<Float>] = [
         SIMD2(
@@ -216,6 +289,31 @@ func writeSDFStageEvidence(
     let gradientHalfStride = 2 * MemoryLayout<UInt16>.stride
     let gradientHalfBytes =
         gradientSide * gradientSide * gradientHalfStride
+    let blurReplayBytesPerPixel = 8
+    let blurReplayTightBytesPerRow =
+        blurSide * blurReplayBytesPerPixel
+    let blurReplayAlignedBytesPerRow =
+        (blurReplayTightBytesPerRow + 255) & ~255
+    let blurReplayBufferBytes =
+        blurReplayAlignedBytesPerRow * blurSide
+    let blurReplayTextureDescriptor =
+        MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .rgba16Float,
+            width: blurSide,
+            height: blurSide,
+            mipmapped: false)
+    blurReplayTextureDescriptor.storageMode = .private
+    blurReplayTextureDescriptor.usage = [
+        .renderTarget,
+        .shaderRead,
+    ]
+    let samplerDescriptor = MTLSamplerDescriptor()
+    samplerDescriptor.normalizedCoordinates = true
+    samplerDescriptor.minFilter = .linear
+    samplerDescriptor.magFilter = .linear
+    samplerDescriptor.mipFilter = .notMipmapped
+    samplerDescriptor.sAddressMode = .clampToEdge
+    samplerDescriptor.tAddressMode = .clampToEdge
 
     guard let offsetBuffer = device.makeBuffer(
         bytes: horizontalOffsets,
@@ -238,6 +336,13 @@ func writeSDFStageEvidence(
         let gradientHalfOutput = device.makeBuffer(
             length: gradientHalfBytes,
             options: .storageModeShared),
+        let blurReplayTexture = device.makeTexture(
+            descriptor: blurReplayTextureDescriptor),
+        let blurReplayOutput = device.makeBuffer(
+            length: blurReplayBufferBytes,
+            options: .storageModeShared),
+        let blurReplaySampler = device.makeSamplerState(
+            descriptor: samplerDescriptor),
         let queue = device.makeCommandQueue(),
         let commandBuffer = queue.makeCommandBuffer(),
         let encoder = commandBuffer.makeComputeCommandEncoder()
@@ -263,11 +368,54 @@ func writeSDFStageEvidence(
         threadsPerThreadgroup:
             sdfProbeThreadgroup(gradientPipeline))
     encoder.endEncoding()
+
+    let renderPass = MTLRenderPassDescriptor()
+    renderPass.colorAttachments[0].texture = blurReplayTexture
+    renderPass.colorAttachments[0].loadAction = .clear
+    renderPass.colorAttachments[0].storeAction = .store
+    renderPass.colorAttachments[0].clearColor =
+        MTLClearColorMake(0, 0, 0, 0)
+    guard let renderEncoder =
+        commandBuffer.makeRenderCommandEncoder(
+            descriptor: renderPass)
+    else {
+        throw sdfProbeError(3, "SDF blur render encoder unavailable")
+    }
+    renderEncoder.setRenderPipelineState(blurRenderPipeline)
+    renderEncoder.setFragmentTexture(baseField, index: 0)
+    renderEncoder.setFragmentSamplerState(
+        blurReplaySampler,
+        index: 0)
+    renderEncoder.setFragmentBuffer(offsetBuffer, offset: 0, index: 0)
+    renderEncoder.setFragmentBuffer(weightBuffer, offset: 0, index: 1)
+    renderEncoder.drawPrimitives(
+        type: .triangle,
+        vertexStart: 0,
+        vertexCount: 3)
+    renderEncoder.endEncoding()
+
+    guard let blit = commandBuffer.makeBlitCommandEncoder() else {
+        throw sdfProbeError(4, "SDF blur replay blit unavailable")
+    }
+    blit.copy(
+        from: blurReplayTexture,
+        sourceSlice: 0,
+        sourceLevel: 0,
+        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+        sourceSize: MTLSize(
+            width: blurSide,
+            height: blurSide,
+            depth: 1),
+        to: blurReplayOutput,
+        destinationOffset: 0,
+        destinationBytesPerRow: blurReplayAlignedBytesPerRow,
+        destinationBytesPerImage: blurReplayBufferBytes)
+    blit.endEncoding()
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
     guard commandBuffer.status == .completed else {
         throw commandBuffer.error
-            ?? sdfProbeError(3, "SDF stage command failed")
+            ?? sdfProbeError(5, "SDF stage command failed")
     }
 
     let blurFilename = "sdf-stage-blur-trace.bin"
@@ -275,6 +423,7 @@ func writeSDFStageEvidence(
         "sdf-stage-gradient-float-trace.bin"
     let gradientHalfFilename =
         "sdf-stage-gradient-half-trace.bin"
+    let blurReplayFilename = "sdf-stage-blur-fragment.raw"
     try Data(
         bytes: blurOutput.contents(),
         count: blurOutputBytes
@@ -295,9 +444,21 @@ func writeSDFStageEvidence(
         to: outputDirectory.appendingPathComponent(
             gradientHalfFilename),
         options: .atomic)
+    var blurReplayData = Data(
+        capacity: blurReplayTightBytesPerRow * blurSide)
+    for row in 0..<blurSide {
+        blurReplayData.append(Data(
+            bytes: blurReplayOutput.contents().advanced(
+                by: row * blurReplayAlignedBytesPerRow),
+            count: blurReplayTightBytesPerRow))
+    }
+    try blurReplayData.write(
+        to: outputDirectory.appendingPathComponent(
+            blurReplayFilename),
+        options: .atomic)
 
     return [
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "metalFastMathEnabled": options.fastMathEnabled,
         "baseField": [
             "width": baseField.width,
@@ -321,6 +482,24 @@ func writeSDFStageEvidence(
             "accumulationOffsets": [40, 42, 44, 46],
             "outputFile": blurFilename,
             "outputBytes": blurOutputBytes,
+        ],
+        "blurFragmentReplay": [
+            "width": blurSide,
+            "height": blurSide,
+            "pixelFormat": MTLPixelFormat.rgba16Float.rawValue,
+            "bytesPerRow": blurReplayTightBytesPerRow,
+            "outputFile": blurReplayFilename,
+            "outputBytes": blurReplayData.count,
+            "sampler": [
+                "normalizedCoordinates": true,
+                "minFilter": MTLSamplerMinMagFilter.linear.rawValue,
+                "magFilter": MTLSamplerMinMagFilter.linear.rawValue,
+                "mipFilter": MTLSamplerMipFilter.notMipmapped.rawValue,
+                "sAddressMode":
+                    MTLSamplerAddressMode.clampToEdge.rawValue,
+                "tAddressMode":
+                    MTLSamplerAddressMode.clampToEdge.rawValue,
+            ],
         ],
         "gradientFloatTrace": [
             "width": gradientSide,

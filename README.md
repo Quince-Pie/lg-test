@@ -788,6 +788,11 @@ Schema 23 makes every blur-trace sample and arithmetic stage a packed `half4`,
 matching the recovered private AIR's vector execution shape before selecting
 the red component for the trace. This distinguishes genuine sampler behavior
 from backend differences introduced by a scalar diagnostic expression.
+Schema 24 adds an RGBA16F full-screen fragment replay with normalized,
+linear, clamp-to-edge sampling. Its coordinate map, packed arithmetic, and
+render-target conversion mirror the private `narrow_blur_19_frag_lph` stage,
+so its raw 404-by-404 surface distinguishes fragment-backend behavior from the
+compute trace without using the captured Apple output as an input.
 The probe records the scalar state of `CASDFElementLayer`, including its
 zero/one distance mapping and gradient ovalization, and bounded Swift mirror
 descriptions of the real SDF objects. The latter exposes stored distance-range
