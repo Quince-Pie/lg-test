@@ -2347,6 +2347,15 @@ before any pull bits are exposed. The other 8,191 classes remain unchanged
 prospective tests at the unseen exponent. Passing cannot establish exponent
 transfer for the one boundary class; that claim remains explicitly pending.
 
+Run 30655866281 then showed that the 128-width additive carrier was still not
+independent: changing only its first draw to the width-16,384 control changed
+the complete pass count from 1,778 to zero. No pull corpus or manifest was
+serialized. The amendment therefore isolates each width in its own render
+pass. Each pass contains only the fourteen witness instances, and all eight
+geometry/sample pixels must independently read back exactly fourteen additive
+contributions before their pull records can be serialized. Predictions and
+acceptance remain unchanged.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

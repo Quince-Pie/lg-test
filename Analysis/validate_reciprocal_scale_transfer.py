@@ -15,7 +15,7 @@ import validate_reciprocal_transfer as arithmetic
 type JsonObject = dict[str, Any]
 
 SCHEMA_VERSION = 1
-RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.3"
+RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.4"
 TARGET_WIDTH = 224
 TARGET_HEIGHT = 4_096
 PREREGISTERED_VIEWPORT_WIDTH = 32_768
@@ -47,7 +47,7 @@ CAPTURE_AMENDMENT_PATH = Path(__file__).with_name(
     "raster_reciprocal_scale_transfer_capture_amendment.json"
 )
 CAPTURE_AMENDMENT_SHA256 = (
-    "52f854b27ebd766ee42b8145b4a1a525f38200b08eb19f5cce0601050d6c9fc5"
+    "2f79a80c402a7e8a60d2a06cec78c301c9facd870c3ff1ac78b24194a5e77737"
 )
 GEOMETRY_CASES = (
     {

@@ -31,7 +31,7 @@ private let targetHeight = 4_096
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
-private let batchSize = 128
+private let batchSize = 1
 private let candidateRadius = 8
 
 private let widths = Array(
@@ -477,9 +477,11 @@ private func run(outputDirectory: URL) throws {
                 }
             }
         }
-        print(
-            "reciprocal scale transfer: \(batchEnd)"
-                + "/\(widths.count) widths")
+        if batchEnd % 128 == 0 || batchEnd == widths.count {
+            print(
+                "reciprocal scale transfer: \(batchEnd)"
+                    + "/\(widths.count) widths")
+        }
     }
 
     let records = output.contents().bindMemory(
@@ -538,7 +540,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-scale-transfer-1.0.3"
+        "metal-raster-reciprocal-scale-transfer-1.0.4"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -553,7 +555,7 @@ private func run(outputDirectory: URL) throws {
         "fragmentOutput":
             "two no-perspective pull float bit patterns per record",
         "coverageAttachment":
-            "R32Float additive one per fragment, cleared, stored, and verified",
+            "one-width R32Float additive witness count, cleared/stored/verified",
     ] as [String: Any]
     manifest["reciprocalScaleTransfer"] = [
         "role":
@@ -565,7 +567,7 @@ private func run(outputDirectory: URL) throws {
         "captureAmendmentFile":
             "Analysis/raster_reciprocal_scale_transfer_capture_amendment.json",
         "captureAmendmentSha256":
-            "52f854b27ebd766ee42b8145b4a1a525f38200b08eb19f5cce0601050d6c9fc5",
+            "2f79a80c402a7e8a60d2a06cec78c301c9facd870c3ff1ac78b24194a5e77737",
         "widthFormula":
             "16384-control-if-normalized-denominator-8192-else-2x",
         "widthMinimum": widths.min()!,
