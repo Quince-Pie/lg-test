@@ -1,4 +1,4 @@
-name: Validate Apple Metal low determinant exponents
+name: Separate Apple Metal numerator factorization
 
 on:
   workflow_dispatch:
@@ -11,16 +11,21 @@ on:
       - Analysis/raster_general_height_top_left_preregistration.json
       - Analysis/raster_general_height_top_left_slope_offsets.zlib
       - Analysis/raster_low_exponent_power2_preregistration.json
+      - Analysis/raster_general_height_factorization_preregistration.json
       - Analysis/build_raster_general_height_multitile_candidate_masks.py
       - Analysis/build_raster_general_height_top_left_slope_offsets.py
+      - Analysis/explore_exact_general_height_numerator.py
+      - Analysis/exact_general_height_numerator_analysis.json
       - Analysis/test_validate_raster_general_height_diagnostic.py
       - Analysis/test_validate_raster_general_height_multitile.py
       - Analysis/test_validate_raster_general_height_top_left.py
       - Analysis/test_validate_raster_low_exponent_power2.py
+      - Analysis/test_validate_raster_general_height_factorization.py
       - Analysis/validate_raster_general_height_diagnostic.py
       - Analysis/validate_raster_general_height_multitile.py
       - Analysis/validate_raster_general_height_top_left.py
       - Analysis/validate_raster_low_exponent_power2.py
+      - Analysis/validate_raster_general_height_factorization.py
       - Analysis/validate_reciprocal_factorized_transfer.py
       - Analysis/validate_reciprocal_general_height_transfer.py
       - Analysis/validate_reciprocal_transfer.py
@@ -31,7 +36,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  raster-reciprocal-low-exponent-transfer:
+  raster-general-height-factorization:
     runs-on: macos-26
     timeout-minutes: 45
     steps:
@@ -42,43 +47,43 @@ jobs:
           sw_vers
           test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
 
-      - name: Build Metal low-exponent power-of-two probe
+      - name: Build Metal factorization tomography probe
         id: build
         continue-on-error: true
         run: |
-          mkdir -p raster-low-exponent-power2
+          mkdir -p raster-general-height-factorization
           set -o pipefail
           swiftc -O -parse-as-library \
             -target "$(uname -m)-apple-macos26.0" \
             Sources/GlassRasterReciprocalTransfer/main.swift \
-            -o glass-raster-low-exponent-power2 2>&1 |
-            tee raster-low-exponent-power2/build.log
+            -o glass-raster-general-height-factorization 2>&1 |
+            tee raster-general-height-factorization/build.log
 
-      - name: Measure low-exponent power-of-two coefficients
+      - name: Measure matched odd and power factorizations
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
         env:
           SWIFT_BACKTRACE: enable
         run: |
-          ./glass-raster-low-exponent-power2 \
-            raster-low-exponent-power2
+          ./glass-raster-general-height-factorization \
+            raster-general-height-factorization
 
-      - name: Validate frozen low-exponent transfer
+      - name: Validate factorization controls and discovery corpus
         id: validate
         if: steps.capture.outcome == 'success'
         continue-on-error: true
         run: |
-          python3 Analysis/validate_raster_low_exponent_power2.py \
-            raster-low-exponent-power2 \
-            --output raster-low-exponent-power2/validation.json
+          python3 Analysis/validate_raster_general_height_factorization.py \
+            raster-general-height-factorization \
+            --output raster-general-height-factorization/validation.json
 
-      - name: Upload Metal low-exponent evidence
+      - name: Upload Metal factorization evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-raster-low-exponent-power2-${{ github.run_id }}
-          path: raster-low-exponent-power2
+          name: liquid-glass-raster-general-height-factorization-${{ github.run_id }}
+          path: raster-general-height-factorization
           if-no-files-found: error
           retention-days: 7
 
@@ -88,5 +93,5 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test "${{ steps.validate.outcome }}" = success
-          test -s raster-low-exponent-power2/manifest.json
-          test -s raster-low-exponent-power2/validation.json
+          test -s raster-general-height-factorization/manifest.json
+          test -s raster-general-height-factorization/validation.json

@@ -2572,9 +2572,61 @@ slopes before capture; the four-geometry prediction SHA-256 is
 `35540ba73b2636d2d8e6b147f099d9178d3b86ca99963c9c56f000c2b57e338e`.
 The prospective gate requires the low-magnitude pulls to recover exactly one
 slope per coefficient and requires every slope to equal that frozen
-prediction. A pass localizes the remaining discrepancy to odd-height
-numerator handling; a failure establishes a separate low-exponent setup law
-that must be recovered first.
+prediction. A pass eliminates a separate low-exponent setup law; a failure
+establishes one. It does not by itself distinguish odd-edge numerator
+formation from lower selector state that power-of-two factorization cannot
+expose.
+
+Run 30666092410 passed that prospective gate at commit
+`eba6bae82a5c88ebcf140ded074dc3573e281199`. All 458,752 coefficients
+were unique, all matched the frozen table, and the recovered-minus-predicted
+distribution is exactly zero for every coefficient. The recovered and frozen
+table SHA-256 is
+`35540ba73b2636d2d8e6b147f099d9178d3b86ca99963c9c56f000c2b57e338e`.
+The manifest, raw buffer, and validation SHA-256 values are
+`df5d4f8b631c5c9aa8d96ec7407d8566cb2983515d68311503ab082d0741bb0d`,
+`ebb5af03abd434736b210952f934ae6b40a93979556e305e92a39f76b391b308`,
+and
+`b2e35f12592633acc231aa087765047a547a3f06c94c92f96a3e371454adc5b3`.
+This establishes the calibrated selector projection and physical product at
+the low determinant exponents. It does not establish odd factorization.
+
+`explore_exact_general_height_numerator.py` then exhaustively replays the 484
+odd determinants whose normalization discards no area bit. It tests ordinary
+24-through-36-bit numerator quantizers, edge-first quantizers, both orders of
+the established partial-product operation, internal 27-bit chaining, and
+expanded three-operand partial products. The best simple model is a 28-bit
+ceiling-rounded edge multiplier at 6,452 of 6,776 exact coefficients; the
+best numerator-first model remains at 6,450. More decisively, intersecting
+every known reciprocal class for each fixed height/witness leaves no single
+hidden 28-bit numerator for 48 of 56 groups, seven unique groups, and one
+two-candidate group. Therefore the residual cannot be repaired by choosing a
+different fixed numerator rounding rule. The complete reproducible discovery
+report has SHA-256
+`56851d72d40df3e9777778ad7eaaed271b9ba132b5b37610855c44aa7d6453ae`.
+
+`raster_general_height_factorization_preregistration.json` freezes the direct
+separation. Sixty-four stratified odd width/height cases have determinants
+that normalize without discarding a bit. Every one is paired with floor and
+ceiling power-of-two controls having exactly the same determinant. The first
+4,096 inputs exhaust all low-byte phases across sixteen mantissa banks; eight
+bridge the old odd-height witnesses and 4,088 are new in that domain. The
+other 4,096 unique odd-height-unseen inputs have seven zero low bits, making
+the odd and power control plane numerators mathematically identical as well
+as their determinants. The eight bridges produce 512 mandatory comparisons
+against the frozen run-30663719233 slope table. This creates 262,144 sealed
+exact-factorization comparisons and 262,144 discovery comparisons. A
+two-position preflight
+exposed one adjacent slope ambiguity in the new mantissa domain, so the frozen
+instrument uses x positions 0, 15, and 31 in the same tile. All 1,572,864
+synthetic coefficient cases are then unique across 425,876 distinct slope bit
+patterns. If every
+sealed triplet is bit-identical, the
+remaining arithmetic is numerical/fused but factorization-invariant; any
+mismatch proves a factorization-dependent setup path and records its complete
+height, determinant, and input-bit signature. Either outcome is valid
+discovery and cannot establish non-exact determinant selection, clipping, or
+end-to-end parity.
 
 ### Geometry-transfer introspection
 

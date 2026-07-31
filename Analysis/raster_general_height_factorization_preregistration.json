@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "role": "discovery-with-prospective-exact-factorization-control",
+  "observedAtPreregistration": false,
+  "purpose": "Determine whether Apple raster setup depends only on the numerical plane numerator and determinant, or on the factorization that produced them. Each odd-height case is paired with power-of-two controls having the exact same determinant. A sealed 4096-input bank also makes the mathematical plane numerator exactly equal in the odd and power cases.",
+  "sourceEvidence": {
+    "generalHeightTopLeftRunId": 30663719233,
+    "generalHeightTopLeftCommit": "e56bcd2e0fb6b6fa8ecee8dc5551e020df1fffac",
+    "generalHeightTopLeftRawSha256": "ccb76da172eceba1e9681b6fbcedb47767262964c7d7e423ec86e84fe213d6e0",
+    "generalHeightTopLeftSlopeTableSha256": "1b99ca9285e024147b8797b7831f6e9fcfd2bf3eb9e6c666a29705cd464e9f0a",
+    "generalHeightTopLeftSlopeOffsetsRawSha256": "e4cf23c08f3c080fa61a1ae56067ae4ad318c442a27712032a9314202e409e70",
+    "lowExponentRunId": 30666092410,
+    "lowExponentCommit": "eba6bae82a5c88ebcf140ded074dc3573e281199",
+    "lowExponentManifestSha256": "df5d4f8b631c5c9aa8d96ec7407d8566cb2983515d68311503ab082d0741bb0d",
+    "lowExponentRawSha256": "ebb5af03abd434736b210952f934ae6b40a93979556e305e92a39f76b391b308",
+    "lowExponentValidationSha256": "b2e35f12592633acc231aa087765047a547a3f06c94c92f96a3e371454adc5b3",
+    "lowExponentRecoveredSlopeTableSha256": "35540ba73b2636d2d8e6b147f099d9178d3b86ca99963c9c56f000c2b57e338e",
+    "lowExponentPredictedExactMatchCount": 458752,
+    "exactNumeratorAnalysisScriptSha256": "e291f89446ea595ea1cf7a89051a5b7c8ee126f7df7a92bd6dfb6216d1d9a647",
+    "exactNumeratorAnalysisSha256": "56851d72d40df3e9777778ad7eaaed271b9ba132b5b37610855c44aa7d6453ae",
+    "simpleModelBestName": "28-bit ceiling edge multiplier",
+    "simpleModelBestExactNormalizedMatchCount": 6452,
+    "numeratorModelBestName": "28-bit ceiling numerator",
+    "numeratorModelBestExactNormalizedMatchCount": 6450,
+    "simpleModelExactNormalizedCoefficientCount": 6776,
+    "singleNumeratorValueImpossibleGroupCount": 48,
+    "singleNumeratorValueGroupCount": 56,
+    "productionShaderWasNotChanged": true
+  },
+  "intervention": {
+    "changedVariables": [
+      "replace the 8192-wide normalized-denominator sweep by 64 stratified exact-normalized odd determinant cases",
+      "add two power-of-two factorizations of every determinant",
+      "replace 14 coefficient witnesses by 4096 low-byte phase samples and 4096 unseen exact-product samples"
+    ],
+    "unchangedVariables": [
+      "Apple Metal rasterizer and fast-math compilation",
+      "rectangle vertices and top-left primitive",
+      "32768-pixel horizontal viewport",
+      "256-pixel power-of-two vertical target and viewport transform",
+      "the established divide-by-four boundary delta and divide-by-two remaining deltas",
+      "local y zero",
+      "tile-zero sample x positions 0, 15, and 31",
+      "pull offsets zero and 15/16",
+      "binary32 shared-plane slope recovery",
+      "plus-or-minus-eight-float candidate window"
+    ]
+  },
+  "baseCases": {
+    "heightOrder": [
+      47,
+      61,
+      79,
+      113
+    ],
+    "oddWidthsByHeight": [
+      [8192, 8576, 8928, 9312, 9664, 10048, 10400, 10784, 11136, 11904, 12608, 13376, 14080, 14848, 15552, 16320],
+      [8192, 8480, 8960, 9536, 10048, 10624, 11200, 11776, 12352, 12928, 13504, 14080, 14592, 15168, 15744, 16320],
+      [8192, 8640, 9088, 9536, 9920, 10368, 10816, 11264, 11712, 12160, 12608, 13056, 13568, 14464, 15360, 16256],
+      [8192, 8512, 8768, 9088, 9600, 10240, 10752, 11392, 12032, 12672, 13184, 13824, 14464, 15104, 15616, 16256]
+    ],
+    "selection": "sixteen inclusive quantiles from every sorted exact-normalized width set",
+    "determinantFormula": "oddWidth * oddHeight",
+    "areaShiftFormula": "bitLength(determinant) - 14",
+    "normalizedWidthFormula": "determinant >> areaShift with zero discarded bits",
+    "powerHeightFormula": "1 << areaShift",
+    "matchedPowerDeterminantFormula": "normalizedWidth * powerHeight",
+    "deltaExponentShiftFormula": "2 for odd width 8192, otherwise 1",
+    "baseCaseCount": 64,
+    "baseCaseWordsSha256": "e073bea9809b1fed485418902638baa006fce2b43258bf17d2983f3aa3473f89"
+  },
+  "inputs": {
+    "fineInputCount": 4096,
+    "fineGenerator": "16 banks by all 256 low-byte phases from the established full-mantissa product corpus",
+    "fineBankNumerator": "32768 + 2048*bank + ((73*bank+19)&255)",
+    "fineGeneralHeightWitnessBridgeCount": 8,
+    "fineOddHeightUnobservedCount": 4088,
+    "exactInputCount": 4096,
+    "exactGenerator": "first 4096 non-colliding values of 0x800000 | ((((40503*i)+12345)&65535)<<7)",
+    "exactLowZeroBitCount": 7,
+    "exactInputsDisjointFromGeneralHeightWitnesses": true,
+    "inputCount": 8192,
+    "allInputsUnique": true,
+    "significandsSha256": "d91eafe4caba7e38c40decd5a03e6d8b966c5a4586ee213279fd1118b35be55a"
+  },
+  "capture": {
+    "variantsInOrder": [
+      "odd",
+      "power-floor",
+      "power-ceil"
+    ],
+    "oddDelta": "input significand at binary32 exponent 126, then divided by four at odd width 8192 or by two otherwise",
+    "powerFloorDelta": "floor binary32(scaledOddInputDelta * oddHeight / powerHeight) generated by exact integer arithmetic",
+    "powerCeilDelta": "ceil binary32(scaledOddInputDelta * oddHeight / powerHeight) generated by exact integer arithmetic",
+    "fineFloorEqualsCeilCount": 3936,
+    "fineFloorDiffersFromCeilCount": 258208,
+    "exactFloorEqualsCeilCount": 262144,
+    "exactFloorDiffersFromCeilCount": 0,
+    "caseCount": 192,
+    "caseWordsSha256": "68f90846f919bd6f00a413a4e8061b6412e24567b1b4e1626c8d54a85efdf32c",
+    "caseDeltaBitsCount": 1572864,
+    "caseDeltaBitsSha256": "814c61befbfcbcbbd55c48019ba02c40a659dd4fd37a7b6b5ee776227a302976",
+    "targetWidth": 64,
+    "targetHeight": 256,
+    "viewportWidth": 32768,
+    "originY": 11,
+    "sampleXs": [
+      0,
+      15,
+      31
+    ],
+    "sampleXsSha256": "036f6670f2f5a456953f3bad012b7876e2df65e3cd18a439d79966046cb6477e",
+    "recordComponents": [
+      "pull@0,0.5",
+      "pull@15/16,0.5"
+    ],
+    "recordBytes": 8,
+    "recordCount": 4718592,
+    "rawBytes": 37748736
+  },
+  "slopeRecovery": {
+    "candidateCenter": "roundBinary32(caseDelta / caseWidth)",
+    "candidateRadiusFloatUlps": 8,
+    "pullEvaluation": "roundNearestEvenBinary32(fma(tileLocalXPlusOffset, candidateSlope, sharedTileConstant))",
+    "constantDomain": "binary32",
+    "constantSharing": "one recovered constant shared by x zero, x 15, and x 31",
+    "syntheticPreflightCoefficientCount": 1572864,
+    "syntheticPreflightUniqueCoefficientCount": 1572864,
+    "syntheticPreflightUniqueSlopeBitsCount": 425876,
+    "noTolerance": true
+  },
+  "prospectiveControl": {
+    "exactComparisonCount": 262144,
+    "equalDeterminant": true,
+    "equalMathematicalPlaneNumerator": true,
+    "hypothesis": "If setup depends only on numerical numerator and determinant, every odd, power-floor, and power-ceil recovered slope in the exact bank is bit-identical.",
+    "interpretationOnPass": "The unexplained behavior is not edge factorization; subsequent tomography must target the fused numerical numerator/reciprocal arithmetic.",
+    "interpretationOnFailure": "Apple setup is factorization-dependent; the mismatch signatures directly identify which height, determinant, and input bits expose that path."
+  },
+  "crossRunControl": {
+    "bridgePairCount": 8,
+    "bridgePairsSha256": "284a1566ea432994831a277612ce19bfaf7d382e845f224feb7a63813bae198b",
+    "comparisonCount": 512,
+    "mustMatchFrozenTopLeftSlopes": true,
+    "purpose": "Verify that the retained target, viewport, geometry, scaled deltas, and top-left primitive reproduce the exact Apple slopes frozen from run 30663719233 before interpreting new factorization comparisons."
+  },
+  "acceptance": {
+    "allRecordsWrittenAndFinite": true,
+    "allSamplesSafelyInsideTopLeftPrimitive": true,
+    "everyCoefficientHasExactlyOneRecoveredSlope": true,
+    "allFrozenTopLeftBridgeSlopesMatch": true,
+    "exactFactorizationControlResultMustBeReported": true,
+    "fineFloorAndCeilRelationsMustBeReported": true,
+    "captureValidityDoesNotDependOnWhichFactorizationHypothesisWins": true
+  },
+  "nonClaims": [
+    "This is a discovery capture except for the sealed exact-factorization comparison.",
+    "Neither outcome establishes a complete odd-height arithmetic law.",
+    "This probe does not establish non-exact determinant selection, clip-generated setup, or end-to-end Liquid Glass parity."
+  ]
+}
