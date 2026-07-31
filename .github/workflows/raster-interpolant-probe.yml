@@ -65,10 +65,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 6:
+          if manifest.get("schemaVersion") != 7:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-6.0.0"
+              "metal-raster-interpolant-probe-7.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -87,6 +87,8 @@ jobs:
               "setup-exponent-range",
               "setup-reversed-slopes",
               "setup-near-equal-negative",
+              "setup-near-equal-zero-based",
+              "setup-near-equal-power-two-viewport",
           }
           if (
               len(records) != len(expected_names)

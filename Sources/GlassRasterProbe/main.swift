@@ -423,6 +423,38 @@ private let cases = [
         sourceRight: -7.9990234375,
         sourceTop: 64,
         sourceBottom: 64.015625),
+    ProbeCase(
+        name: "setup-near-equal-zero-based",
+        targetWidth: 512,
+        targetHeight: 384,
+        originX: 63,
+        originY: 32,
+        width: 193,
+        height: 159,
+        sdfLeft: -96.5,
+        sdfRight: 96.5,
+        sdfTop: 79.5,
+        sdfBottom: -79.5,
+        sourceLeft: 0,
+        sourceRight: Float(bitPattern: 0x3a800000),
+        sourceTop: 0,
+        sourceBottom: Float(bitPattern: 0x3c800000)),
+    ProbeCase(
+        name: "setup-near-equal-power-two-viewport",
+        targetWidth: 512,
+        targetHeight: 512,
+        originX: 63,
+        originY: 32,
+        width: 193,
+        height: 159,
+        sdfLeft: -96.5,
+        sdfRight: 96.5,
+        sdfTop: 79.5,
+        sdfBottom: -79.5,
+        sourceLeft: 0,
+        sourceRight: Float(bitPattern: 0x3a800000),
+        sourceTop: 0,
+        sourceBottom: Float(bitPattern: 0x3c800000)),
 ]
 
 private func sha256(_ data: Data) -> String {
@@ -820,8 +852,8 @@ private func run(outputDirectory: URL) throws {
     }
 
     let manifest: [String: Any] = [
-        "schemaVersion": 6,
-        "rigVersion": "metal-raster-interpolant-probe-6.0.0",
+        "schemaVersion": 7,
+        "rigVersion": "metal-raster-interpolant-probe-7.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",

@@ -1854,7 +1854,7 @@ identification modes for the private clear-material mip path:
 `raster-interpolant-probe.yml` measures the Apple GPU's real
 center-perspective float interpolation independently of QuartzCore. It renders
 the production two-triangle ordering into RGBA32Uint targets and preserves the
-four raw float32 varying bit patterns for fourteen preregistered cases. The
+four raw float32 varying bit patterns for sixteen preregistered cases. The
 first six cover the exact 800-by-800 production geometry, translation,
 power-of-two and non-power-of-two dimensions, arbitrary endpoints, scaling,
 and a near-fullscreen case. Schema 6 adds eight compact coefficient-setup
@@ -1895,6 +1895,13 @@ Raster schema 6 retains every schema-5 control and adds only preregistered
 coefficient-setup holdouts. These cases distinguish endpoint-scaling,
 viewport-transform, sign, cancellation, and tile-rebasing arithmetic before a
 portable setup rule can replace a captured coefficient table.
+
+Raster schema 7 adds two fresh holdouts at the schema-6 near-equal geometry.
+The first translates both tiny source ramps to zero without changing their
+deltas or the viewport. The second retains those zero-based ramps and changes
+only the vertical viewport from 384 to 512 pixels. Together they distinguish
+translation-sensitive coefficient setup from viewport-transform rounding and
+resolve adjacent-float gradient candidates without weakening the bit gate.
 
 ### Geometry-transfer introspection
 
