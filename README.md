@@ -2432,6 +2432,44 @@ establishes general-height setup and localizes the old combined failure to
 clip-generated geometry; a failure identifies non-power-of-two area setup
 without any clipping confound.
 
+Run 30658016087 completed that capture and rejected the frozen width-only
+prediction at normalized class 8,193. Its manifest and pull-buffer SHA-256
+values are
+`4778782d955d9ada581ef1ac8b8d283f42af605600a4e7fecebad110dc20b60b`
+and
+`ab0f17a4e991242d74d0fe87e0af56fa291fd738070de37b31244579eaf3b6db`.
+The result localizes the discrepancy to unclipped non-power-of-two setup, but
+does not yet identify which setup input caused it. Correctly rounded division
+is accepted for 110,502, 110,501, 110,415, and 110,583 of the 114,688
+coefficients at heights 47, 61, 79, and 113. Every rejected coefficient has an
+accepted neighbor one float ULP away. A full-height intersection nevertheless
+has 9,863 empty coefficient sets, so the four heights cannot be represented by
+one width-only coefficient hidden inside pull-rounding ambiguity.
+
+The follow-up audit found an additional intervention in that gate: its
+vertical target and viewport were 192 pixels, whereas the historical
+non-power factorization corpus used an exact power-of-two viewport transform.
+On the historical 256-pixel corpus, the independently recovered model—binary32
+rounding of `delta * oppositeEdge`, the measured 25-bit determinant reciprocal,
+and the confirmed physical 24-by-25-bit product—matches all 12,288 recovered
+slopes exactly. On the 192-pixel corpus it is accepted less often than an
+unrounded-numerator approximation, including on determinant classes already
+present in the canonical table. The failed run therefore cannot distinguish a
+viewport-transform setup effect from new low determinant-mantissa state.
+
+`raster_general_height_diagnostic_preregistration.json` freezes the separating
+experiment before another Apple bit is observed. It restores only the vertical
+target and viewport height to 256, keeps every width, height, witness, x
+viewport, triangle, and shared-tile sample position, and expands each raw
+record with the ordinary center value and `dfdx(center)`. The derivative is
+diagnostic and is not fitted into the pull prediction. For the 484
+width/height pairs whose determinant normalization discards no nonzero bit,
+the preregistration freezes 6,776 coefficient predictions with SHA-256
+`6ac1220a2e7884df9655689f84e064ccabef206f3c7135329cfea8820d7db434`.
+Those controls must all pass exactly. The remaining determinant values form a
+discovery corpus for the previously unmeasured low mantissa bits; they cannot
+establish a selector law until a later prospective holdout passes.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

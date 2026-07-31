@@ -27,7 +27,7 @@ private struct SamplePosition {
 private let normalizedDenominatorLower = 8_192
 private let normalizedDenominatorUpper = 16_383
 private let targetWidth = 288
-private let targetHeight = 192
+private let targetHeight = 256
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
@@ -193,17 +193,20 @@ vertex TransferVertexOutput reciprocal_transfer_vertex(
 
 fragment float reciprocal_transfer_fragment(
     TransferFragmentInput input [[stage_in]],
-    device uint2 *results [[buffer(0)]])
+    device uint4 *results [[buffer(0)]])
 {
+    const float center = input.ramp.interpolate_at_center();
     results[
         \(geometryCases.count * sampleSideCount)u
             * input.recordIndex
         + input.outputSlot
-    ] = uint2(
+    ] = uint4(
         as_type<uint>(input.ramp.interpolate_at_offset(
             float2(0.0f, 0.5f))),
         as_type<uint>(input.ramp.interpolate_at_offset(
-            float2(0.9375f, 0.5f))));
+            float2(0.9375f, 0.5f))),
+        as_type<uint>(center),
+        as_type<uint>(dfdx(center)));
     return 1.0f;
 }
 """
@@ -343,7 +346,7 @@ private func run(outputDirectory: URL) throws {
         * geometryCases.count
         * sampleSideCount
     let outputBytes =
-        recordCount * MemoryLayout<SIMD2<UInt32>>.stride
+        recordCount * MemoryLayout<SIMD4<UInt32>>.stride
     guard let target = device.makeTexture(
         descriptor: targetDescriptor),
           let deltaBuffer,
@@ -523,7 +526,7 @@ private func run(outputDirectory: URL) throws {
     }
 
     let records = output.contents().bindMemory(
-        to: SIMD2<UInt32>.self,
+        to: SIMD4<UInt32>.self,
         capacity: recordCount)
     var missingRecordCount = 0
     var firstMissingRecords: [Int] = []
@@ -537,7 +540,7 @@ private func run(outputDirectory: URL) throws {
         repeating: nil,
         count: geometryCases.count * sampleSideCount)
     for index in 0..<recordCount {
-        if records[index] == SIMD2<UInt32>(repeating: .max) {
+        if records[index] == SIMD4<UInt32>(repeating: .max) {
             missingRecordCount += 1
             let slot =
                 index % (geometryCases.count * sampleSideCount)
@@ -567,18 +570,18 @@ private func run(outputDirectory: URL) throws {
     let outputData = Data(
         bytes: output.contents(),
         count: outputBytes)
-    precondition(outputData.count == 7_340_032)
+    precondition(outputData.count == 14_680_064)
     let outputFilename =
-        "raster-reciprocal-general-height-transfer-pulls.raw"
+        "raster-general-height-diagnostic.raw"
     try outputData.write(
         to: outputDirectory.appendingPathComponent(
             outputFilename),
         options: .atomic)
 
     var manifest: [String: Any] = [:]
-    manifest["schemaVersion"] = 1
+    manifest["schemaVersion"] = 2
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-general-height-transfer-1.0.0"
+        "metal-raster-general-height-diagnostic-2.0.0"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -591,17 +594,17 @@ private func run(outputDirectory: URL) throws {
     manifest["compile"] = [
         "fastMathEnabled": true,
         "fragmentOutput":
-            "two no-perspective pull float bit patterns per record",
+            "two pull, center, and dfdx(center) float bit patterns per record",
         "coverageAttachment":
             "one-width R32Float additive witness count, cleared/stored/verified",
     ] as [String: Any]
-    manifest["reciprocalGeneralHeightTransfer"] = [
+    manifest["rasterGeneralHeightDiagnostic"] = [
         "role":
-            "prospective-unclipped-general-height-reciprocal-transfer",
+            "discovery-with-preregistered-calibrated-determinant-controls",
         "preregistrationFile":
-            "Analysis/raster_reciprocal_general_height_transfer_preregistration.json",
+            "Analysis/raster_general_height_diagnostic_preregistration.json",
         "preregistrationSha256":
-            "144330567722e2336ae6b6024c5d12c8c0bfb2c1e168a68406fcf079b22cb3a3",
+            "2e9db3b82a74b0da3761cd19125e1228cc60af9cc08902ddba32a8213aa19002",
         "geometryWidthFormula":
             "normalized-denominator",
         "widthMinimum": widths.min()!,
@@ -637,17 +640,26 @@ private func run(outputDirectory: URL) throws {
             minimumSignedInteriorArea,
         "ordering":
             "normalized-denominator-major,witness-major,"
-            + "geometry-major,sample-side-major,pull-offset-major",
-        "pullOffsets": [
-            ["x": 0.0, "y": 0.5],
-            ["x": 0.9375, "y": 0.5],
+            + "geometry-major,sample-side-major",
+        "recordBytes": 16,
+        "recordComponents": [
+            "pull@0,0.5",
+            "pull@15/16,0.5",
+            "center",
+            "dfdx(center)",
         ],
         "uncoveredRecordSentinel":
-            "0xffffffffffffffff",
-        "frozenSelectedReciprocalTableSha256":
-            "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
-        "frozenRecoveredCoefficientBitsSha256":
-            "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
+            "0xffffffffffffffffffffffffffffffff",
+        "calibratedDeterminantControls": [
+            "pairCount": 484,
+            "coefficientCount": 6_776,
+            "pairsSha256":
+                "5009c0ef63b8c7ea107727537bab3c633d685b2474b0e91d957e3fffe93d9af9",
+            "selectedReciprocalsSha256":
+                "4de707bf7d8e9469537e648d35b6c0f75c843207c91f387d023e16812be2c971",
+            "predictedCoefficientsSha256":
+                "6ac1220a2e7884df9655689f84e064ccabef206f3c7135329cfea8820d7db434",
+        ],
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

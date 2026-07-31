@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "role": "discovery-with-preregistered-calibrated-determinant-controls",
+  "observedAtPreregistration": false,
+  "purpose": "Separate the inexact 192-pixel viewport transform from non-power-of-two opposite-edge arithmetic while preserving a full discovery corpus for previously unmeasured low determinant mantissa bits.",
+  "sourceEvidence": {
+    "legacyNumeratorReport": "liquid-glass-raster-numerator-discovery-30606682503.json",
+    "legacyNumeratorReportSha256": "c9abcb28e3427a27e3917e28cdd0cd3bf8e5aacda515856993c66a2ef9ba01d1",
+    "legacyPowerOfTwoViewportModelMatchCount": 12288,
+    "legacyPowerOfTwoViewportModelExpectedCount": 12288,
+    "failedGeneralHeightRunId": 30658016087,
+    "failedGeneralHeightManifestSha256": "4778782d955d9ada581ef1ac8b8d283f42af605600a4e7fecebad110dc20b60b",
+    "failedGeneralHeightPullsSha256": "ab0f17a4e991242d74d0fe87e0af56fa291fd738070de37b31244579eaf3b6db",
+    "failedGeneralHeightTargetHeight": 192,
+    "failedGeneralHeightDirectDivideAcceptedByHeight": [
+      110502,
+      110501,
+      110415,
+      110583
+    ],
+    "failedGeneralHeightRoundedNumeratorPhysicalModelAcceptedByHeight": [
+      105184,
+      105811,
+      107186,
+      107540
+    ],
+    "failedGeneralHeightExactNumeratorPhysicalModelAcceptedByHeight": [
+      110770,
+      111178,
+      110525,
+      111149
+    ],
+    "failedGateRemainsFalsified": true
+  },
+  "intervention": {
+    "changedVariables": [
+      "target and viewport height 192 to 256",
+      "append center and dfdx(center) float bits to every record"
+    ],
+    "unchangedVariables": [
+      "8192 geometry widths",
+      "14 frozen witness significands",
+      "four non-power-of-two geometry heights",
+      "scaled vertex deltas",
+      "x viewport width",
+      "sample coordinates and shared-tile baseline",
+      "triangle vertices and ordering",
+      "fast-math setting"
+    ],
+    "powerOfTwoViewportReason": "The 256-pixel vertical transform is exact in binary floating point for the integer geometry coordinates and matches the historical corpus where the staged model was exact.",
+    "derivativeReason": "Hardware derivative bits provide an independent direct discriminator for the coefficient register and are retained diagnostically without adapting the frozen pull prediction."
+  },
+  "model": {
+    "name": "float32-opposite-edge-numerator-physical24x25-product",
+    "numerator": "roundBinary32(scaledDelta * integerHeight)",
+    "denominator": "integer geometryWidth * integerHeight",
+    "selector": "canonical measured 25-bit reciprocal for an exactly calibrated normalized determinant class",
+    "partialProductTruncationBits": 16,
+    "productPrecisionBits": 27,
+    "roundingBiasHex": "0x140000",
+    "predictionScope": "only determinant values whose normalization discards no nonzero bit"
+  },
+  "calibratedDeterminantControls": {
+    "pairCount": 484,
+    "coefficientCount": 6776,
+    "pairsSha256": "5009c0ef63b8c7ea107727537bab3c633d685b2474b0e91d957e3fffe93d9af9",
+    "selectedReciprocalsSha256": "4de707bf7d8e9469537e648d35b6c0f75c843207c91f387d023e16812be2c971",
+    "predictedCoefficientsSha256": "6ac1220a2e7884df9655689f84e064ccabef206f3c7135329cfea8820d7db434"
+  },
+  "capture": {
+    "targetWidth": 288,
+    "targetHeight": 256,
+    "viewportWidth": 32768,
+    "recordComponents": [
+      "pull@0,0.5",
+      "pull@15/16,0.5",
+      "center",
+      "dfdx(center)"
+    ],
+    "recordBytes": 16,
+    "rawBytes": 14680064,
+    "discoveryScope": "all remaining determinant values with nonzero discarded normalization bits",
+    "discoveryOutputMustNotChangeFrozenControlPredictions": true
+  },
+  "acceptance": {
+    "allRecordsWrittenAndFinite": true,
+    "allCalibratedDeterminantControlSlopesAcceptedExactly": true,
+    "controlPairHashMustMatch": true,
+    "controlReciprocalHashMustMatch": true,
+    "controlCoefficientHashMustMatch": true,
+    "derivativeBitsAreDiagnosticNotFitted": true,
+    "noAdaptiveFitOrTolerance": true
+  },
+  "nonClaims": [
+    "A pass does not establish the low determinant mantissa selector law.",
+    "A pass does not establish clip-generated setup.",
+    "The discovery records are calibration evidence and require a later prospective holdout.",
+    "No result from this probe establishes end-to-end Liquid Glass parity."
+  ]
+}

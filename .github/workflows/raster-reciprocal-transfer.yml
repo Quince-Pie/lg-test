@@ -1,13 +1,13 @@
-name: Validate Apple Metal general-height reciprocal transfer
+name: Diagnose Apple Metal general-height raster setup
 
 on:
   workflow_dispatch:
   push:
     paths:
       - .github/workflows/raster-reciprocal-transfer.yml
-      - Analysis/raster_reciprocal_general_height_transfer_preregistration.json
-      - Analysis/test_validate_reciprocal_general_height_transfer.py
-      - Analysis/validate_reciprocal_general_height_transfer.py
+      - Analysis/raster_general_height_diagnostic_preregistration.json
+      - Analysis/test_validate_raster_general_height_diagnostic.py
+      - Analysis/validate_raster_general_height_diagnostic.py
       - Sources/GlassRasterReciprocalTransfer/**
 
 concurrency:
@@ -38,7 +38,7 @@ jobs:
             -o glass-raster-reciprocal-general-height-transfer 2>&1 |
             tee raster-reciprocal-general-height-transfer/build.log
 
-      - name: Measure prospective general-height reciprocal transfer
+      - name: Measure power-of-two-viewport general-height diagnostic
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
@@ -48,25 +48,25 @@ jobs:
           ./glass-raster-reciprocal-general-height-transfer \
             raster-reciprocal-general-height-transfer
 
-      - name: Validate frozen transfer predictions
+      - name: Validate frozen controls and discovery structure
         id: validate
         if: steps.capture.outcome == 'success'
         continue-on-error: true
         run: |
-          python3 Analysis/validate_reciprocal_general_height_transfer.py \
+          python3 Analysis/validate_raster_general_height_diagnostic.py \
             raster-reciprocal-general-height-transfer \
             --output raster-reciprocal-general-height-transfer/validation.json
 
-      - name: Upload Metal reciprocal-scale-transfer evidence
+      - name: Upload Metal general-height diagnostic evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-raster-reciprocal-general-height-transfer-${{ github.run_id }}
+          name: liquid-glass-raster-general-height-diagnostic-${{ github.run_id }}
           path: raster-reciprocal-general-height-transfer
           if-no-files-found: error
           retention-days: 7
 
-      - name: Enforce prospective transfer gate
+      - name: Enforce diagnostic control gate
         if: always()
         run: |
           test "${{ steps.build.outcome }}" = success
