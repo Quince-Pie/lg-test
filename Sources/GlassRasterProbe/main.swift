@@ -79,15 +79,61 @@ private struct NumeratorResidueCase {
 
 private let quotientCorpusNumeratorLower: UInt32 = 32_768
 private let quotientCorpusNumeratorUpper: UInt32 = 65_535
-private let quotientCorpusBatchSize = 8_192
 private let quotientCorpusTargetWidth = 160
+private let quotientCorpusTargetHeight = 160
 private let quotientCorpusOriginX: UInt32 = 17
+private let quotientCorpusOriginY: UInt32 = 19
+private let quotientCorpusHeight: UInt32 = 64
+private let quotientCorpusTileCount = 5
 
 private let quotientCorpusHoldoutWidths = Set(
     stride(from: 37, through: 127, by: 6))
 
 private let quotientCorpusDiscoveryWidths = Array(32...127).filter {
     !quotientCorpusHoldoutWidths.contains($0)
+}
+
+private struct QuotientCorpusPosition {
+    let primitive: Int
+    let tile: Int
+    let x: Int
+    let y: Int
+}
+
+private func quotientCorpusPositions(
+    width: Int
+) -> [QuotientCorpusPosition] {
+    let originX = Int(quotientCorpusOriginX)
+    let originY = Int(quotientCorpusOriginY)
+    let height = Int(quotientCorpusHeight)
+    var result: [QuotientCorpusPosition] = []
+    for primitive in 0..<2 {
+        for tile in (originX / 32)...((originX + width - 1) / 32) {
+            let lower = max(originX, tile * 32) - originX
+            let upper =
+                min(originX + width - 1, tile * 32 + 31)
+                - originX
+            let localX = primitive == 0 ? upper : lower
+            let covered = primitive == 0
+                ? height * (2 * localX + 1) > width
+                : height * (2 * localX + 1)
+                    < (2 * height - 1) * width
+            if covered {
+                result.append(QuotientCorpusPosition(
+                    primitive: primitive,
+                    tile: tile,
+                    x: originX + localX,
+                    y: primitive == 0
+                        ? originY + height - 1
+                        : originY))
+            }
+        }
+    }
+    precondition(result.count >= 4 && result.count <= 10)
+    precondition(Set(result.map {
+        $0.primitive * quotientCorpusTileCount + $0.tile
+    }).count == result.count)
+    return result
 }
 
 private func discoveryTomographyCase(
@@ -611,7 +657,7 @@ struct QuotientCorpusVertexOutput {
     float ramp [[user(quotient_corpus_ramp)]];
     uint recordIndex [[user(quotient_corpus_record), flat]];
     uint primitive [[user(quotient_corpus_primitive), flat]];
-    uint width [[user(quotient_corpus_width), flat]];
+    uint outputSlot [[user(quotient_corpus_output_slot), flat]];
 };
 
 struct QuotientCorpusFragmentInput {
@@ -620,7 +666,7 @@ struct QuotientCorpusFragmentInput {
         ramp [[user(quotient_corpus_ramp)]];
     uint recordIndex [[user(quotient_corpus_record), flat]];
     uint primitive [[user(quotient_corpus_primitive), flat]];
-    uint width [[user(quotient_corpus_width), flat]];
+    uint outputSlot [[user(quotient_corpus_output_slot), flat]];
 };
 
 vertex QuotientCorpusVertexOutput raster_quotient_corpus_vertex(
@@ -632,6 +678,7 @@ vertex QuotientCorpusVertexOutput raster_quotient_corpus_vertex(
     const uint width = parameters.x;
     const uint numerator = parameters.y + instance_id;
     const uint record_index = parameters.z + instance_id;
+    const uint output_slot = parameters.w;
     const uint corner = vertex_id % 6;
     const bool is_right =
         corner == 1 || corner == 2 || corner == 3;
@@ -639,7 +686,9 @@ vertex QuotientCorpusVertexOutput raster_quotient_corpus_vertex(
         corner == 0 || corner == 1 || corner == 5;
     const float x =
         float(\(quotientCorpusOriginX)) + (is_right ? float(width) : 0.0f);
-    const float y = float(instance_id) + (is_bottom ? 1.0f : 0.0f);
+    const float y =
+        float(\(quotientCorpusOriginY))
+        + (is_bottom ? float(\(quotientCorpusHeight)) : 0.0f);
     const float delta = float(numerator) * 0x1.0p-16f;
 
     QuotientCorpusVertexOutput output;
@@ -647,7 +696,7 @@ vertex QuotientCorpusVertexOutput raster_quotient_corpus_vertex(
     output.ramp = is_right ? delta : 0.0f;
     output.recordIndex = record_index;
     output.primitive = vertex_id / 3;
-    output.width = width;
+    output.outputSlot = output_slot;
     return output;
 }
 
@@ -655,13 +704,13 @@ fragment uint raster_quotient_corpus_fragment(
     QuotientCorpusFragmentInput input [[stage_in]],
     device uint2 *results [[buffer(0)]])
 {
-    const uint local_x =
-        uint(input.position.x) - \(quotientCorpusOriginX)u;
-    const uint selected_x = input.primitive == 0
-        ? (3u * input.width) / 4u
-        : input.width / 4u;
-    if (local_x == selected_x) {
-        results[2u * input.recordIndex + input.primitive] = uint2(
+    const uint expected_primitive =
+        input.outputSlot / \(quotientCorpusTileCount)u;
+    if (input.primitive == expected_primitive) {
+        results[
+            \(2 * quotientCorpusTileCount)u * input.recordIndex
+            + input.outputSlot
+        ] = uint2(
             as_type<uint>(input.ramp.interpolate_at_offset(
                 float2(0.0f, 0.5f))),
             as_type<uint>(input.ramp.interpolate_at_offset(
@@ -2338,12 +2387,13 @@ private func measureQuotientCorpus(
     let outputBytes =
         sampleCount
         * primitiveCount
+        * quotientCorpusTileCount
         * MemoryLayout<SIMD2<UInt32>>.stride
 
     let targetDescriptor = MTLTextureDescriptor.texture2DDescriptor(
         pixelFormat: .r32Uint,
         width: quotientCorpusTargetWidth,
-        height: quotientCorpusBatchSize,
+        height: quotientCorpusTargetHeight,
         mipmapped: false)
     targetDescriptor.storageMode = .private
     targetDescriptor.usage = [.renderTarget]
@@ -2365,7 +2415,7 @@ private func measureQuotientCorpus(
             0),
         SIMD4<Float>(
             0,
-            -2 / Float(quotientCorpusBatchSize),
+            -2 / Float(quotientCorpusTargetHeight),
             0,
             0),
         SIMD4<Float>(0, 0, 0, 0),
@@ -2375,41 +2425,45 @@ private func measureQuotientCorpus(
     for (widthIndex, width)
         in quotientCorpusDiscoveryWidths.enumerated()
     {
-        var batchOffset = 0
-        while batchOffset < numeratorsPerWidth {
-            let instanceCount = min(
-                quotientCorpusBatchSize,
-                numeratorsPerWidth - batchOffset)
+        let positions = quotientCorpusPositions(width: width)
+        guard let commandBuffer = queue.makeCommandBuffer() else {
+            throw ProbeError.resource(
+                "quotient-corpus command buffer")
+        }
+        for position in positions {
             var parameters = SIMD4<UInt32>(
                 UInt32(width),
-                quotientCorpusNumeratorLower
-                    + UInt32(batchOffset),
+                quotientCorpusNumeratorLower,
+                UInt32(widthIndex * numeratorsPerWidth),
                 UInt32(
-                    widthIndex * numeratorsPerWidth
-                        + batchOffset),
-                UInt32(instanceCount))
+                    position.primitive * quotientCorpusTileCount
+                        + position.tile))
             var matrix = mvp
 
             let pass = MTLRenderPassDescriptor()
             pass.colorAttachments[0].texture = target
             pass.colorAttachments[0].loadAction = .dontCare
             pass.colorAttachments[0].storeAction = .dontCare
-            guard let commandBuffer = queue.makeCommandBuffer(),
-                  let encoder =
-                      commandBuffer.makeRenderCommandEncoder(
-                          descriptor: pass)
+            guard let encoder =
+                commandBuffer.makeRenderCommandEncoder(
+                    descriptor: pass)
             else {
                 throw ProbeError.resource(
-                    "quotient-corpus command or encoder")
+                    "quotient-corpus encoder")
             }
             encoder.setRenderPipelineState(pipeline)
             encoder.setViewport(MTLViewport(
                 originX: 0,
                 originY: 0,
                 width: Double(quotientCorpusTargetWidth),
-                height: Double(quotientCorpusBatchSize),
+                height: Double(quotientCorpusTargetHeight),
                 znear: 0,
                 zfar: 1))
+            encoder.setScissorRect(MTLScissorRect(
+                x: position.x,
+                y: position.y,
+                width: 1,
+                height: 1))
             withUnsafeBytes(of: &parameters) { raw in
                 encoder.setVertexBytes(
                     raw.baseAddress!,
@@ -2427,16 +2481,15 @@ private func measureQuotientCorpus(
                 type: .triangle,
                 vertexStart: 0,
                 vertexCount: 6,
-                instanceCount: instanceCount)
+                instanceCount: numeratorsPerWidth)
             encoder.endEncoding()
-            commandBuffer.commit()
-            commandBuffer.waitUntilCompleted()
-            guard commandBuffer.status == .completed else {
-                throw ProbeError.command(
-                    commandBuffer.error?.localizedDescription
-                        ?? "unknown quotient-corpus render error")
-            }
-            batchOffset += instanceCount
+        }
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        guard commandBuffer.status == .completed else {
+            throw ProbeError.command(
+                commandBuffer.error?.localizedDescription
+                    ?? "unknown quotient-corpus render error")
         }
         if (widthIndex + 1).isMultiple(of: 10) {
             print(
@@ -2448,11 +2501,33 @@ private func measureQuotientCorpus(
 
     let records = output.contents().bindMemory(
         to: SIMD2<UInt32>.self,
-        capacity: sampleCount * primitiveCount)
-    for index in 0..<(sampleCount * primitiveCount) {
-        if records[index] == SIMD2<UInt32>(repeating: .max) {
-            throw ProbeError.command(
-                "quotient-corpus record \(index) was not written")
+        capacity:
+            sampleCount * primitiveCount * quotientCorpusTileCount)
+    for (widthIndex, width)
+        in quotientCorpusDiscoveryWidths.enumerated()
+    {
+        let expectedSlots = Set(
+            quotientCorpusPositions(width: width).map {
+                $0.primitive * quotientCorpusTileCount + $0.tile
+            })
+        for numeratorIndex in 0..<numeratorsPerWidth {
+            let sample =
+                widthIndex * numeratorsPerWidth + numeratorIndex
+            for slot in 0..<(primitiveCount * quotientCorpusTileCount) {
+                let index =
+                    sample * primitiveCount * quotientCorpusTileCount
+                    + slot
+                let absent =
+                    records[index]
+                    == SIMD2<UInt32>(repeating: .max)
+                if absent == expectedSlots.contains(slot) {
+                    throw ProbeError.command(
+                        "quotient-corpus record \(index) "
+                        + (absent
+                            ? "was not written"
+                            : "was written outside the position map"))
+                }
+            }
         }
     }
     return Data(bytes: output.contents(), count: outputBytes)
@@ -3065,8 +3140,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 19,
-        "rigVersion": "metal-raster-interpolant-probe-19.0.0",
+        "schemaVersion": 20,
+        "rigVersion": "metal-raster-interpolant-probe-20.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -3107,8 +3182,8 @@ private func run(outputDirectory: URL) throws {
             "numeratorResidueOutput":
                 "64 phase-by-residue product-lattice samples",
             "quotientCorpusOutput":
-                "two primitive-local pull pairs for every normalized "
-                + "16-bit numerator on 80 discovery widths",
+                "one pull pair per covered primitive/tile for every "
+                + "normalized 16-bit numerator on 80 discovery widths",
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,
@@ -3124,10 +3199,16 @@ private func run(outputDirectory: URL) throws {
             "widths": quotientCorpusDiscoveryWidths,
             "holdoutWidthsExcluded":
                 quotientCorpusHoldoutWidths.sorted(),
-            "height": 1,
+            "height": Int(quotientCorpusHeight),
             "originX": Int(quotientCorpusOriginX),
+            "originY": Int(quotientCorpusOriginY),
             "targetWidth": quotientCorpusTargetWidth,
-            "batchSize": quotientCorpusBatchSize,
+            "targetHeight": quotientCorpusTargetHeight,
+            "instanceCount":
+                Int(
+                    quotientCorpusNumeratorUpper
+                        - quotientCorpusNumeratorLower
+                        + 1),
             "numeratorLowerInclusive":
                 Int(quotientCorpusNumeratorLower),
             "numeratorUpperInclusive":
@@ -3135,6 +3216,8 @@ private func run(outputDirectory: URL) throws {
             "deltaDenominator":
                 Int(tomographyDeltaDenominator),
             "primitiveCount": 2,
+            "tileCount": quotientCorpusTileCount,
+            "uncoveredRecordSentinel": "0xffffffffffffffff",
             "pullOffsets": [
                 ["x": 0.0, "y": 0.5],
                 ["x": 0.9375, "y": 0.5],
@@ -3143,14 +3226,29 @@ private func run(outputDirectory: URL) throws {
             "bytes": quotientCorpusData.count,
             "sha256": sha256(quotientCorpusData),
             "components": [
-                "primitive0XAt0",
-                "primitive0XAt15Over16",
-                "primitive1XAt0",
-                "primitive1XAt15Over16",
+                "xAt0",
+                "xAt15Over16",
             ],
             "ordering":
                 "width-major,numerator-major,primitive-major,"
-                + "pull-offset-major",
+                + "tile-major,pull-offset-major",
+            "positionsByWidth":
+                quotientCorpusDiscoveryWidths.map {
+                    width -> [String: Any] in
+                    [
+                        "width": width,
+                        "positions":
+                            quotientCorpusPositions(width: width).map {
+                                position -> [String: Any] in
+                                [
+                                    "primitive": position.primitive,
+                                    "tile": position.tile,
+                                    "x": position.x,
+                                    "y": position.y,
+                                ]
+                            },
+                    ]
+                },
         ],
         "arithmeticProbe": [
             "role": "discovery",

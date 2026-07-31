@@ -73,10 +73,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 19:
+          if manifest.get("schemaVersion") != 20:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-19.0.0"
+              "metal-raster-interpolant-probe-20.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
