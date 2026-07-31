@@ -2135,12 +2135,7 @@ func capturePresentedAnimation(
     var clockProbeSurface = useSmallClock
         ? "dedicated-clock-window"
         : "full-window-fallback"
-    var candidates: [
-        Int: (
-            probeDistance: Double,
-            frame: RawCapturedFrame
-        )
-    ] = [:]
+    var candidates: [RawCapturedFrame] = []
     var lastError: Error?
     var captureAttempts = 0
     var decodedSamples = 0
@@ -2182,22 +2177,19 @@ func capturePresentedAnimation(
                 max(0, Int((presented * Double(finalIndex)).rounded())))
 
             if index > 0 {
-                let targetProgress = Double(index) / Double(finalIndex)
-                let distance = abs(presented - targetProgress)
-                let previousDistance = candidates[index]?.probeDistance
-                let shouldReplace = previousDistance.map {
-                    distance < $0
-                } ?? true
-                if shouldReplace {
-                    let fullFrame: RawCapturedFrame
-                    if useSmallClock {
-                        fullFrame = try captureRawWindow(windowID)
-                    } else {
-                        fullFrame = probe
-                    }
-                    fullFrameCaptures += 1
-                    candidates[index] = (distance, fullFrame)
+                // Probe and main-window presentation can advance on different
+                // compositor generations. Retain one real full screenshot for
+                // every positive probe observation, then let the embedded
+                // main-window clock perform the only binning below. Filtering
+                // by the probe bin here loses legitimate main-window states.
+                let fullFrame: RawCapturedFrame
+                if useSmallClock {
+                    fullFrame = try captureRawWindow(windowID)
+                } else {
+                    fullFrame = probe
                 }
+                fullFrameCaptures += 1
+                candidates.append(fullFrame)
             }
             decodedSamples += 1
 
@@ -2220,7 +2212,7 @@ func capturePresentedAnimation(
         Thread.sleep(forTimeInterval: 0.001)
     }
 
-    // A bounded clock region can become visible one compositor generation
+    // The dedicated clock window can become visible one compositor generation
     // before the same layer appears in a full-window snapshot. Capture the
     // endpoint at the same two-refresh delay already proven by the clock
     // preflight. This happens after live sampling, so it cannot open a hole in
@@ -2234,7 +2226,7 @@ func capturePresentedAnimation(
         }
         let endpointFrame = try captureRawWindow(windowID)
         fullFrameCaptures += 1
-        candidates[finalIndex] = (0, endpointFrame)
+        candidates.append(endpointFrame)
     }
 
     // The bounded probe controls only acquisition cadence. Decode the clock
@@ -2242,10 +2234,9 @@ func capturePresentedAnimation(
     // bin and timestamp from that full screenshot alone. A probe/full race
     // therefore cannot mislabel optical evidence.
     var bestByIndex: [Int: DynamicTimedFrame] = [:]
-    for candidate in candidates.values.sorted(by: {
-        $0.frame.midpointUptime < $1.frame.midpointUptime
+    for frame in candidates.sorted(by: {
+        $0.midpointUptime < $1.midpointUptime
     }) {
-        let frame = candidate.frame
         let presented = min(
             1,
             max(0, try presentationProgress(
@@ -2263,12 +2254,33 @@ func capturePresentedAnimation(
             frame: frame)
         let targetProgress = Double(index) / Double(finalIndex)
         let distance = abs(presented - targetProgress)
-        let previousDistance = bestByIndex[index].map {
-            abs($0.presentationProgress - targetProgress)
+        let shouldReplace: Bool
+        if index == finalIndex, let previous = bestByIndex[index] {
+            let previousIsEndpoint =
+                previous.presentationProgress >= 0.995
+            let sampleIsEndpoint = presented >= 0.995
+            if sampleIsEndpoint != previousIsEndpoint {
+                shouldReplace = sampleIsEndpoint
+            } else if sampleIsEndpoint {
+                // The delayed endpoint is a fail-closed fallback for a main
+                // window that lagged the dedicated probe. If a live full
+                // screenshot already proves the endpoint, retain the first
+                // such presentation instead of replacing it with a later
+                // duplicate and manufacturing an acquisition-time hole.
+                shouldReplace = sample.actual < previous.actual
+            } else {
+                let previousDistance = abs(
+                    previous.presentationProgress - targetProgress)
+                shouldReplace = distance < previousDistance
+            }
+        } else {
+            let previousDistance = bestByIndex[index].map {
+                abs($0.presentationProgress - targetProgress)
+            }
+            shouldReplace = previousDistance.map {
+                distance < $0
+            } ?? true
         }
-        let shouldReplace = previousDistance.map {
-            distance < $0
-        } ?? true
         if shouldReplace {
             bestByIndex[index] = sample
         }

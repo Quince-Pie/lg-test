@@ -1497,18 +1497,21 @@ artifact. If all three attempts fail, the final full attempt is still uploaded
 for diagnosis and the workflow remains red.
 
 The live sampler drives a synchronized 1024-by-4-point clock in a separate,
-visible own-window surface. That small clock is only an acquisition trigger: a
-newly useful probe bin immediately retains a full main-window screenshot, then
-after the animation the precise full-width clock embedded in that retained
-frame is decoded again and becomes its sole timestamp and bin label. Static
-quarter/three-quarter and live midpoint/endpoint preflights must pass
-independently on both clocks. The probe capture must also have its exact
-expected backing dimensions; otherwise the sequence falls back to the
-historical full-window clock probe. The manifest records the selected surface,
-probe count, full-frame captures, and full-frame clock decodes, and validation
-requires a verified main-window decode for every retained live frame. The
-probe window is not part of the captured optical frame, so it adds no analysis
-exclusion and does not reduce reference-image coverage.
+visible own-window surface. That small clock is only an acquisition trigger:
+every positive decoded probe observation retains a real full main-window
+screenshot. After the animation, the precise full-width clock embedded in
+each retained frame is decoded again and becomes its sole timestamp and bin
+label; duplicate main-window bins are discarded only at that point. The first
+live full frame that independently proves the endpoint is retained, while the
+two-refresh endpoint capture remains a fail-closed fallback if the main window
+lagged the probe. Static quarter/three-quarter and live midpoint/endpoint
+preflights must pass independently on both clocks. The probe capture must also
+have its exact expected backing dimensions; otherwise the sequence falls back
+to the historical full-window clock probe. The manifest records the selected
+surface, probe count, full-frame captures, and full-frame clock decodes, and
+validation requires a verified main-window decode for every retained live
+frame. The probe window is not part of the captured optical frame, so it adds
+no analysis exclusion and does not reduce reference-image coverage.
 
 Dynamic sequences use smooth, deterministic RGB code fields whose independent
 frequencies supply local gradients in both axes. This supports quantitative
