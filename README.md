@@ -2130,6 +2130,14 @@ viable five-mip padding candidates without adding texture or pixel dumps.
 This workflow is manually dispatched and cannot weaken any full pixel-replay
 gate.
 
+`geometry-proof-introspect.yml` transfers the laws recovered from the closure
+pass to independent positions. Its 29 compact jobs move eight no-bleed sizes
+off center, cross the predicted small regular crop boundary independently on
+X and Y, and bracket the remaining 192-to-256 viewport transition around the
+predicted 500/501 diameter boundary. The offset and axis-paired cases are
+proof controls: a law fitted only to centered or one-axis observations is
+rejected if it does not predict them exactly.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

@@ -20,6 +20,12 @@ CLOSURE_WORKFLOW = (
     / "workflows"
     / "geometry-closure-introspect.yml"
 )
+PROOF_WORKFLOW = (
+    ROOT
+    / ".github"
+    / "workflows"
+    / "geometry-proof-introspect.yml"
+)
 
 
 class GeometryPolicyWorkflowTests(unittest.TestCase):
@@ -36,6 +42,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             (WORKFLOW, 35),
             (BOUNDARY_WORKFLOW, 58),
             (CLOSURE_WORKFLOW, 64),
+            (PROOF_WORKFLOW, 29),
         ):
             workflow = path.read_text(encoding="utf-8")
             matrix = set(
@@ -79,6 +86,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             WORKFLOW.read_text(encoding="utf-8"),
             BOUNDARY_WORKFLOW.read_text(encoding="utf-8"),
             CLOSURE_WORKFLOW.read_text(encoding="utf-8"),
+            PROOF_WORKFLOW.read_text(encoding="utf-8"),
         ]
         for workflow in workflows:
             self.assertIn("workflow_dispatch:", workflow)
@@ -130,6 +138,19 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             self.assertIn(f"- circle-{width:03d}-center", workflow)
         for center in range(468, 493, 4):
             self.assertIn(f"- circle-096-pad-{center}", workflow)
+
+    def test_proof_matrix_transfers_recovered_laws(self) -> None:
+        workflow = PROOF_WORKFLOW.read_text(encoding="utf-8")
+        for width in (8, 16, 24, 31, 40, 47, 63, 64):
+            self.assertIn(f"- circle-{width:03d}-offset", workflow)
+        for axis in ("x", "y"):
+            for center in range(445, 449):
+                self.assertIn(
+                    f"- circle-096-pad{axis}-{center}",
+                    workflow,
+                )
+        for width in range(495, 506):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
 
 
 if __name__ == "__main__":

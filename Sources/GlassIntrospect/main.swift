@@ -1945,20 +1945,32 @@ private struct ProbeGeometry {
     private static let specifications: [String: Specification] = [
         "circle-008-center":
             Specification(width: 8, center: CGPoint(x: 512, y: 512)),
+        "circle-008-offset":
+            Specification(width: 8, center: CGPoint(x: 337, y: 419)),
         "circle-016-center":
             Specification(width: 16, center: CGPoint(x: 512, y: 512)),
+        "circle-016-offset":
+            Specification(width: 16, center: CGPoint(x: 337, y: 419)),
         "circle-024-center":
             Specification(width: 24, center: CGPoint(x: 512, y: 512)),
+        "circle-024-offset":
+            Specification(width: 24, center: CGPoint(x: 337, y: 419)),
         "circle-031-center":
             Specification(width: 31, center: CGPoint(x: 512, y: 512)),
+        "circle-031-offset":
+            Specification(width: 31, center: CGPoint(x: 337, y: 419)),
         "circle-032-center":
             Specification(width: 32, center: CGPoint(x: 512, y: 512)),
         "circle-033-center":
             Specification(width: 33, center: CGPoint(x: 512, y: 512)),
         "circle-040-center":
             Specification(width: 40, center: CGPoint(x: 512, y: 512)),
+        "circle-040-offset":
+            Specification(width: 40, center: CGPoint(x: 337, y: 419)),
         "circle-047-center":
             Specification(width: 47, center: CGPoint(x: 512, y: 512)),
+        "circle-047-offset":
+            Specification(width: 47, center: CGPoint(x: 337, y: 419)),
         "circle-048-center":
             Specification(width: 48, center: CGPoint(x: 512, y: 512)),
         "circle-049-center":
@@ -1967,8 +1979,12 @@ private struct ProbeGeometry {
             Specification(width: 56, center: CGPoint(x: 512, y: 512)),
         "circle-063-center":
             Specification(width: 63, center: CGPoint(x: 512, y: 512)),
+        "circle-063-offset":
+            Specification(width: 63, center: CGPoint(x: 337, y: 419)),
         "circle-064-center":
             Specification(width: 64, center: CGPoint(x: 512, y: 512)),
+        "circle-064-offset":
+            Specification(width: 64, center: CGPoint(x: 337, y: 419)),
         "circle-065-center":
             Specification(width: 65, center: CGPoint(x: 512, y: 512)),
         "circle-072-center":
@@ -2125,6 +2141,32 @@ private struct ProbeGeometry {
             Specification(width: 422, center: CGPoint(x: 512, y: 512)),
         "circle-423-center":
             Specification(width: 423, center: CGPoint(x: 512, y: 512)),
+        "circle-447-center":
+            Specification(width: 447, center: CGPoint(x: 512, y: 512)),
+        "circle-487-center":
+            Specification(width: 487, center: CGPoint(x: 512, y: 512)),
+        "circle-495-center":
+            Specification(width: 495, center: CGPoint(x: 512, y: 512)),
+        "circle-496-center":
+            Specification(width: 496, center: CGPoint(x: 512, y: 512)),
+        "circle-497-center":
+            Specification(width: 497, center: CGPoint(x: 512, y: 512)),
+        "circle-498-center":
+            Specification(width: 498, center: CGPoint(x: 512, y: 512)),
+        "circle-499-center":
+            Specification(width: 499, center: CGPoint(x: 512, y: 512)),
+        "circle-500-center":
+            Specification(width: 500, center: CGPoint(x: 512, y: 512)),
+        "circle-501-center":
+            Specification(width: 501, center: CGPoint(x: 512, y: 512)),
+        "circle-502-center":
+            Specification(width: 502, center: CGPoint(x: 512, y: 512)),
+        "circle-503-center":
+            Specification(width: 503, center: CGPoint(x: 512, y: 512)),
+        "circle-504-center":
+            Specification(width: 504, center: CGPoint(x: 512, y: 512)),
+        "circle-505-center":
+            Specification(width: 505, center: CGPoint(x: 512, y: 512)),
         "circle-511-center":
             Specification(width: 511, center: CGPoint(x: 512, y: 512)),
         "circle-512-center":
@@ -2269,6 +2311,22 @@ private struct ProbeGeometry {
             Specification(width: 96, center: CGPoint(x: 488, y: 512)),
         "circle-096-pad-492":
             Specification(width: 96, center: CGPoint(x: 492, y: 512)),
+        "circle-096-padx-445":
+            Specification(width: 96, center: CGPoint(x: 445, y: 512)),
+        "circle-096-padx-446":
+            Specification(width: 96, center: CGPoint(x: 446, y: 512)),
+        "circle-096-padx-447":
+            Specification(width: 96, center: CGPoint(x: 447, y: 512)),
+        "circle-096-padx-448":
+            Specification(width: 96, center: CGPoint(x: 448, y: 512)),
+        "circle-096-pady-445":
+            Specification(width: 96, center: CGPoint(x: 512, y: 445)),
+        "circle-096-pady-446":
+            Specification(width: 96, center: CGPoint(x: 512, y: 446)),
+        "circle-096-pady-447":
+            Specification(width: 96, center: CGPoint(x: 512, y: 447)),
+        "circle-096-pady-448":
+            Specification(width: 96, center: CGPoint(x: 512, y: 448)),
     ]
 
     let rawValue: String
