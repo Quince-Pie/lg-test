@@ -472,6 +472,7 @@ private func run(outputDirectory: URL) throws {
                     throw TransferError.command(
                         "reciprocal-scale-transfer coverage"
                             + " \(geometry.name)/\(sampleSide)"
+                            + " at width \(widths[batchStart])"
                             + " was \(coverage),"
                             + " expected \(expectedCoverage)")
                 }
