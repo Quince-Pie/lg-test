@@ -140,12 +140,20 @@ def scan_records(
                 if absent:
                     record_count += 1
                     continue
+                first_ordered = (
+                    (~first) & 0xFFFFFFFF
+                    if first & 0x80000000
+                    else first | 0x80000000
+                )
+                second_ordered = (
+                    (~second) & 0xFFFFFFFF
+                    if second & 0x80000000
+                    else second | 0x80000000
+                )
                 if (
-                    first & 0x80000000
-                    or second & 0x80000000
-                    or (first >> 23) & 0xFF == 0xFF
+                    (first >> 23) & 0xFF == 0xFF
                     or (second >> 23) & 0xFF == 0xFF
-                    or first > second
+                    or first_ordered > second_ordered
                 ):
                     raise ValueError(
                         f"quotient-corpus record {record_count} "

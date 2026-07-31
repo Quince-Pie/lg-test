@@ -45,6 +45,14 @@ class RasterQuotientCorpusTests(unittest.TestCase):
                 "67396ee08660cecfcc067421",
             )
 
+    def test_record_scanner_accepts_pair_crossing_zero(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "records.raw"
+            path.write_bytes(
+                bytes.fromhex("000080b2c1bd683c")
+            )
+            corpus.scan_records(path, 1)
+
     def test_record_scanner_rejects_absent_record(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "records.raw"

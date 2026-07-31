@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - .github/workflows/raster-interpolant-probe.yml
+      - Analysis/validate_raster_*.py
       - Sources/GlassRasterProbe/**
 
 concurrency:
