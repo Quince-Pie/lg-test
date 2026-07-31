@@ -26,8 +26,8 @@ RESIDUAL_ANCHORS = (
     (124, (103, 163, 197)),
 )
 REFINEMENT_OFFSETS = tuple(range(-3, 5))
-SCHEMA_VERSION = 18
-RIG_VERSION = "metal-raster-interpolant-probe-18.0.0"
+SCHEMA_VERSION = 19
+RIG_VERSION = "metal-raster-interpolant-probe-19.0.0"
 
 
 def sha256(path):

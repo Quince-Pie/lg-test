@@ -2111,6 +2111,21 @@ groups. A separate validator independently reconstructs the complete
 selection and verifies metadata, residue coverage, cross-phase uniqueness,
 float bits, sizes, and hashes without interpreting captured holdout values.
 
+Raster schema 19 keeps every schema-18 surface and all 16 holdout widths
+unchanged and unopened. It adds a compact exhaustive fixed-function quotient
+corpus for the other 80 integer widths from 32 through 127 and every normalized
+16-bit numerator from 32768 through 65535. Instanced one-pixel-high rectangles
+retain the same exact power-of-two opposite-edge isolation while avoiding a
+full image per numerator. For each numerator, one interior fragment from each
+of the two production triangle orderings writes only the two existing affine
+pull values at offsets zero and 15/16 into a shared buffer. The ordering and
+all 2,621,440 width/numerator records are deterministic; the standalone
+validator rejects any holdout width, absent primitive record, non-finite or
+decreasing pull pair, byte-count mismatch, or hash mismatch. The inherited
+schema-18 discovery records independently test that the compact height-one
+capture recovers the same coefficient before the exhaustive corpus is used to
+select a divider law.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

@@ -77,6 +77,19 @@ private struct NumeratorResidueCase {
     let numerators: [UInt32]
 }
 
+private let quotientCorpusNumeratorLower: UInt32 = 32_768
+private let quotientCorpusNumeratorUpper: UInt32 = 65_535
+private let quotientCorpusBatchSize = 8_192
+private let quotientCorpusTargetWidth = 160
+private let quotientCorpusOriginX: UInt32 = 17
+
+private let quotientCorpusHoldoutWidths = Set(
+    stride(from: 37, through: 127, by: 6))
+
+private let quotientCorpusDiscoveryWidths = Array(32...127).filter {
+    !quotientCorpusHoldoutWidths.contains($0)
+}
+
 private func discoveryTomographyCase(
     _ name: String,
     width: Int,
@@ -591,6 +604,70 @@ fragment TomographyFragmentOutput raster_numerator_tomography_fragment(
         as_type<uint>(input.ramps3
             .interpolate_at_offset(float2(0.5, 0.9375)).w));
     return output;
+}
+
+struct QuotientCorpusVertexOutput {
+    float4 position [[position]];
+    float ramp [[user(quotient_corpus_ramp)]];
+    uint recordIndex [[user(quotient_corpus_record), flat]];
+    uint primitive [[user(quotient_corpus_primitive), flat]];
+    uint width [[user(quotient_corpus_width), flat]];
+};
+
+struct QuotientCorpusFragmentInput {
+    float4 position [[position]];
+    interpolant<float, interpolation::no_perspective>
+        ramp [[user(quotient_corpus_ramp)]];
+    uint recordIndex [[user(quotient_corpus_record), flat]];
+    uint primitive [[user(quotient_corpus_primitive), flat]];
+    uint width [[user(quotient_corpus_width), flat]];
+};
+
+vertex QuotientCorpusVertexOutput raster_quotient_corpus_vertex(
+    constant uint4 &parameters [[buffer(0)]],
+    constant float4x4 &mvp [[buffer(1)]],
+    uint vertex_id [[vertex_id]],
+    uint instance_id [[instance_id]])
+{
+    const uint width = parameters.x;
+    const uint numerator = parameters.y + instance_id;
+    const uint record_index = parameters.z + instance_id;
+    const uint corner = vertex_id % 6;
+    const bool is_right =
+        corner == 1 || corner == 2 || corner == 3;
+    const bool is_bottom =
+        corner == 0 || corner == 1 || corner == 5;
+    const float x =
+        float(\(quotientCorpusOriginX)) + (is_right ? float(width) : 0.0f);
+    const float y = float(instance_id) + (is_bottom ? 1.0f : 0.0f);
+    const float delta = float(numerator) * 0x1.0p-16f;
+
+    QuotientCorpusVertexOutput output;
+    output.position = mvp * float4(x, y, 0.0f, 1.0f);
+    output.ramp = is_right ? delta : 0.0f;
+    output.recordIndex = record_index;
+    output.primitive = vertex_id / 3;
+    output.width = width;
+    return output;
+}
+
+fragment uint raster_quotient_corpus_fragment(
+    QuotientCorpusFragmentInput input [[stage_in]],
+    device uint2 *results [[buffer(0)]])
+{
+    const uint local_x =
+        uint(input.position.x) - \(quotientCorpusOriginX)u;
+    const uint selected_x = input.primitive == 0
+        ? (3u * input.width) / 4u
+        : input.width / 4u;
+    if (local_x == selected_x) {
+        results[2u * input.recordIndex + input.primitive] = uint2(
+            as_type<uint>(input.ramp.interpolate_at_offset(
+                float2(0.0f, 0.5f))),
+            as_type<uint>(input.ramp.interpolate_at_offset(
+                float2(0.9375f, 0.5f))));
+    }
+    return input.recordIndex;
 }
 
 kernel void raster_arithmetic_probe(
@@ -2240,6 +2317,147 @@ private func renderTomography(
     }
 }
 
+private func measureQuotientCorpus(
+    device: MTLDevice,
+    queue: MTLCommandQueue,
+    pipeline: MTLRenderPipelineState
+) throws -> Data {
+    precondition(quotientCorpusHoldoutWidths.count == 16)
+    precondition(quotientCorpusDiscoveryWidths.count == 80)
+    precondition(
+        Set(quotientCorpusDiscoveryWidths)
+            .isDisjoint(with: quotientCorpusHoldoutWidths))
+
+    let numeratorsPerWidth = Int(
+        quotientCorpusNumeratorUpper
+            - quotientCorpusNumeratorLower
+            + 1)
+    let sampleCount =
+        quotientCorpusDiscoveryWidths.count * numeratorsPerWidth
+    let primitiveCount = 2
+    let outputBytes =
+        sampleCount
+        * primitiveCount
+        * MemoryLayout<SIMD2<UInt32>>.stride
+
+    let targetDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .r32Uint,
+        width: quotientCorpusTargetWidth,
+        height: quotientCorpusBatchSize,
+        mipmapped: false)
+    targetDescriptor.storageMode = .private
+    targetDescriptor.usage = [.renderTarget]
+    guard let target = device.makeTexture(descriptor: targetDescriptor),
+          let output = device.makeBuffer(
+              length: outputBytes,
+              options: .storageModeShared)
+    else {
+        throw ProbeError.resource(
+            "quotient-corpus target or output buffer")
+    }
+    memset(output.contents(), 0xff, outputBytes)
+
+    let mvp = simd_float4x4(columns: (
+        SIMD4<Float>(
+            2 / Float(quotientCorpusTargetWidth),
+            0,
+            0,
+            0),
+        SIMD4<Float>(
+            0,
+            -2 / Float(quotientCorpusBatchSize),
+            0,
+            0),
+        SIMD4<Float>(0, 0, 0, 0),
+        SIMD4<Float>(-1, 1, 0, 1)
+    ))
+
+    for (widthIndex, width)
+        in quotientCorpusDiscoveryWidths.enumerated()
+    {
+        var batchOffset = 0
+        while batchOffset < numeratorsPerWidth {
+            let instanceCount = min(
+                quotientCorpusBatchSize,
+                numeratorsPerWidth - batchOffset)
+            var parameters = SIMD4<UInt32>(
+                UInt32(width),
+                quotientCorpusNumeratorLower
+                    + UInt32(batchOffset),
+                UInt32(
+                    widthIndex * numeratorsPerWidth
+                        + batchOffset),
+                UInt32(instanceCount))
+            var matrix = mvp
+
+            let pass = MTLRenderPassDescriptor()
+            pass.colorAttachments[0].texture = target
+            pass.colorAttachments[0].loadAction = .dontCare
+            pass.colorAttachments[0].storeAction = .dontCare
+            guard let commandBuffer = queue.makeCommandBuffer(),
+                  let encoder =
+                      commandBuffer.makeRenderCommandEncoder(
+                          descriptor: pass)
+            else {
+                throw ProbeError.resource(
+                    "quotient-corpus command or encoder")
+            }
+            encoder.setRenderPipelineState(pipeline)
+            encoder.setViewport(MTLViewport(
+                originX: 0,
+                originY: 0,
+                width: Double(quotientCorpusTargetWidth),
+                height: Double(quotientCorpusBatchSize),
+                znear: 0,
+                zfar: 1))
+            withUnsafeBytes(of: &parameters) { raw in
+                encoder.setVertexBytes(
+                    raw.baseAddress!,
+                    length: raw.count,
+                    index: 0)
+            }
+            withUnsafeBytes(of: &matrix) { raw in
+                encoder.setVertexBytes(
+                    raw.baseAddress!,
+                    length: raw.count,
+                    index: 1)
+            }
+            encoder.setFragmentBuffer(output, offset: 0, index: 0)
+            encoder.drawPrimitives(
+                type: .triangle,
+                vertexStart: 0,
+                vertexCount: 6,
+                instanceCount: instanceCount)
+            encoder.endEncoding()
+            commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
+            guard commandBuffer.status == .completed else {
+                throw ProbeError.command(
+                    commandBuffer.error?.localizedDescription
+                        ?? "unknown quotient-corpus render error")
+            }
+            batchOffset += instanceCount
+        }
+        if (widthIndex + 1).isMultiple(of: 10) {
+            print(
+                "quotient corpus: \(widthIndex + 1)"
+                    + "/\(quotientCorpusDiscoveryWidths.count)"
+                    + " widths")
+        }
+    }
+
+    let records = output.contents().bindMemory(
+        to: SIMD2<UInt32>.self,
+        capacity: sampleCount * primitiveCount)
+    for index in 0..<(sampleCount * primitiveCount) {
+        if records[index] == SIMD2<UInt32>(repeating: .max) {
+            throw ProbeError.command(
+                "quotient-corpus record \(index) was not written")
+        }
+    }
+    return Data(bytes: output.contents(), count: outputBytes)
+}
+
 private let arithmeticVectorsPerSample = 7
 
 private func measureArithmetic(
@@ -2342,9 +2560,13 @@ private func run(outputDirectory: URL) throws {
           let tomographyFragment = library.makeFunction(
             name: "raster_tomography_fragment"),
           let numeratorTomographyFragment = library.makeFunction(
-            name: "raster_numerator_tomography_fragment"),
+              name: "raster_numerator_tomography_fragment"),
+          let quotientCorpusVertex = library.makeFunction(
+              name: "raster_quotient_corpus_vertex"),
+          let quotientCorpusFragment = library.makeFunction(
+              name: "raster_quotient_corpus_fragment"),
           let arithmeticFunction = library.makeFunction(
-            name: "raster_arithmetic_probe"),
+              name: "raster_arithmetic_probe"),
           let queue = device.makeCommandQueue()
     else {
         throw ProbeError.resource("functions or command queue")
@@ -2384,6 +2606,13 @@ private func run(outputDirectory: URL) throws {
     let numeratorTomographyPipeline =
         try device.makeRenderPipelineState(
             descriptor: numeratorTomographyDescriptor)
+    let quotientCorpusDescriptor = MTLRenderPipelineDescriptor()
+    quotientCorpusDescriptor.vertexFunction = quotientCorpusVertex
+    quotientCorpusDescriptor.fragmentFunction = quotientCorpusFragment
+    quotientCorpusDescriptor.colorAttachments[0].pixelFormat = .r32Uint
+    let quotientCorpusPipeline =
+        try device.makeRenderPipelineState(
+            descriptor: quotientCorpusDescriptor)
     let arithmeticPipeline = try device.makeComputePipelineState(
         function: arithmeticFunction)
 
@@ -2809,6 +3038,17 @@ private func run(outputDirectory: URL) throws {
         ])
     }
 
+    let quotientCorpusData = try measureQuotientCorpus(
+        device: device,
+        queue: queue,
+        pipeline: quotientCorpusPipeline)
+    let quotientCorpusFilename =
+        "raster-quotient-corpus-pulls.raw"
+    try quotientCorpusData.write(
+        to: outputDirectory.appendingPathComponent(
+            quotientCorpusFilename),
+        options: .atomic)
+
     let arithmeticCases = tomographyCases.filter {
         $0.role == "discovery"
     }
@@ -2825,8 +3065,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 18,
-        "rigVersion": "metal-raster-interpolant-probe-18.0.0",
+        "schemaVersion": 19,
+        "rigVersion": "metal-raster-interpolant-probe-19.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -2866,6 +3106,9 @@ private func run(outputDirectory: URL) throws {
                 "eight product phases at two normalization branches",
             "numeratorResidueOutput":
                 "64 phase-by-residue product-lattice samples",
+            "quotientCorpusOutput":
+                "two primitive-local pull pairs for every normalized "
+                + "16-bit numerator on 80 discovery widths",
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,
@@ -2876,6 +3119,39 @@ private func run(outputDirectory: URL) throws {
             numeratorThresholdRecords,
         "numeratorResidueCases":
             numeratorResidueRecords,
+        "quotientCorpus": [
+            "role": "discovery",
+            "widths": quotientCorpusDiscoveryWidths,
+            "holdoutWidthsExcluded":
+                quotientCorpusHoldoutWidths.sorted(),
+            "height": 1,
+            "originX": Int(quotientCorpusOriginX),
+            "targetWidth": quotientCorpusTargetWidth,
+            "batchSize": quotientCorpusBatchSize,
+            "numeratorLowerInclusive":
+                Int(quotientCorpusNumeratorLower),
+            "numeratorUpperInclusive":
+                Int(quotientCorpusNumeratorUpper),
+            "deltaDenominator":
+                Int(tomographyDeltaDenominator),
+            "primitiveCount": 2,
+            "pullOffsets": [
+                ["x": 0.0, "y": 0.5],
+                ["x": 0.9375, "y": 0.5],
+            ],
+            "file": quotientCorpusFilename,
+            "bytes": quotientCorpusData.count,
+            "sha256": sha256(quotientCorpusData),
+            "components": [
+                "primitive0XAt0",
+                "primitive0XAt15Over16",
+                "primitive1XAt0",
+                "primitive1XAt15Over16",
+            ],
+            "ordering":
+                "width-major,numerator-major,primitive-major,"
+                + "pull-offset-major",
+        ],
         "arithmeticProbe": [
             "role": "discovery",
             "cases": arithmeticCases.map {

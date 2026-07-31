@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate schema-18 raster product-threshold evidence."""
+"""Validate inherited raster product-threshold evidence."""
 
 import argparse
 import hashlib
@@ -8,8 +8,8 @@ import struct
 from pathlib import Path
 
 
-SCHEMA_VERSION = 18
-RIG_VERSION = "metal-raster-interpolant-probe-18.0.0"
+SCHEMA_VERSION = 19
+RIG_VERSION = "metal-raster-interpolant-probe-19.0.0"
 HOLDOUT_WIDTHS = frozenset(range(37, 128, 6))
 TARGETS_BY_SHIFT = (
     (0, tuple(range(40, 48))),
