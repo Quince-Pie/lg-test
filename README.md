@@ -2684,6 +2684,30 @@ its two frozen candidates. It completes only this measured selector matrix;
 it cannot establish a selector law outside that matrix, fractional or clipped
 setup, or end-to-end parity.
 
+Run 30670953328 passed both prospective gates at commit
+`569dfb9c3a5e7e6ea7b80d5cfccf5650ad225439`. All 458,752 fresh slopes were
+uniquely recovered, all 458,374 sealed predictions matched bit for bit, and
+the 27 previously ambiguous determinants each selected exactly one frozen
+candidate. The recovered slope-table and resolved selector-table SHA-256
+values are
+`14f89787b189e382b313ae5406dd1a8519e536b96783f74fb29e7959926b3f8f`
+and
+`0b8ece5b7c2ea05475fd76120987670bf29cf69d16916372af5cf4734fd209af`.
+The manifest, raw buffer, and validation SHA-256 values are
+`e9a1baa545ff418f35daaa1107c572e2fc9a6ef1d8b36df20d5e358c297ccb42`,
+`2686d63ce5776c4216e5c7c2d26434e2cb27fb8de7eb4414e3caf02e1b75daad`,
+and
+`4867c8b7b793398e2e7090a7f1d53b10f8ef52885dda9053de68217bb3a067e5`.
+`analyze_raster_general_height_selector_transfer.py` independently replays
+the raw artifact and materializes the 32,768-entry selector table as
+`raster_general_height_resolved_selectors.zlib`; its compressed size is
+110,243 bytes and its SHA-256 is
+`ae266b7bc78ccf28549d376627e73819eefa0596135fca4709a85d1070e00eee`.
+Every measured selector is the exact floor or ceiling endpoint of the ideal
+25-bit reciprocal, including all 484 exact-normalized determinants matching
+the independently calibrated canonical table. This completes the sampled
+matrix without turning it into an unmeasured portable selector law.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

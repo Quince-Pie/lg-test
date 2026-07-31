@@ -1,0 +1,319 @@
+{
+  "ciCommit": "569dfb9c3a5e7e6ea7b80d5cfccf5650ad225439",
+  "ciRunId": 30670953328,
+  "clippedSetupEstablished": false,
+  "coefficientCount": 458752,
+  "compressedSelectorTableBytes": 110243,
+  "compressedSelectorTableSha256": "ae266b7bc78ccf28549d376627e73819eefa0596135fca4709a85d1070e00eee",
+  "determinantCount": 32768,
+  "endToEndLiquidGlassParityEstablished": false,
+  "exactNormalizedCanonicalMatchCount": 484,
+  "exactNormalizedDeterminantCount": 484,
+  "manifestSha256": "e9a1baa545ff418f35daaa1107c572e2fc9a6ef1d8b36df20d5e358c297ccb42",
+  "portableSelectorLawEstablished": false,
+  "preregistrationSha256": "1bdd548c3ecac3fd5f7ed1dd18d8075e88bd18f7870da385830c67f852530ab6",
+  "priorAmbiguousResolutionCount": 27,
+  "priorAmbiguousResolutions": [
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1051917,
+      "height": 113,
+      "selectedOffsetFromNearest": -1,
+      "width": 9309
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1084574,
+      "height": 113,
+      "selectedOffsetFromNearest": 0,
+      "width": 9598
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 677283,
+      "height": 61,
+      "selectedOffsetFromNearest": 0,
+      "width": 11103
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1301986,
+      "height": 113,
+      "selectedOffsetFromNearest": 0,
+      "width": 11522
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 595396,
+      "height": 47,
+      "selectedOffsetFromNearest": 0,
+      "width": 12668
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1049357,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 13283
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1061681,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 13439
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1063972,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 13468
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 634030,
+      "height": 47,
+      "selectedOffsetFromNearest": 0,
+      "width": 13490
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1073610,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 13590
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1091938,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 13822
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -2,
+        -1
+      ],
+      "determinant": 1112004,
+      "height": 79,
+      "selectedOffsetFromNearest": -1,
+      "width": 14076
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1131912,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 14328
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 684179,
+      "height": 47,
+      "selectedOffsetFromNearest": 0,
+      "width": 14557
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 685918,
+      "height": 47,
+      "selectedOffsetFromNearest": 0,
+      "width": 14594
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1649122,
+      "height": 113,
+      "selectedOffsetFromNearest": 0,
+      "width": 14594
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 686576,
+      "height": 47,
+      "selectedOffsetFromNearest": 0,
+      "width": 14608
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1154585,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 14615
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1157192,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 14648
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1213756,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 15364
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1215968,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 15392
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1218970,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 15430
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1221024,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 15456
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1237140,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 15660
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1240616,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 15704
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1288569,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 16311
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1289912,
+      "height": 79,
+      "selectedOffsetFromNearest": 0,
+      "width": 16328
+    }
+  ],
+  "rawSha256": "2686d63ce5776c4216e5c7c2d26434e2cb27fb8de7eb4414e3caf02e1b75daad",
+  "recoveredSlopeTableSha256": "14f89787b189e382b313ae5406dd1a8519e536b96783f74fb29e7959926b3f8f",
+  "resolvedSelectorEndpointFromFloorByHeight": {
+    "113": {
+      "0": 3885,
+      "1": 4307
+    },
+    "47": {
+      "0": 3945,
+      "1": 4247
+    },
+    "61": {
+      "0": 3911,
+      "1": 4281
+    },
+    "79": {
+      "0": 3984,
+      "1": 4208
+    }
+  },
+  "resolvedSelectorEndpointFromFloorDistribution": {
+    "0": 15725,
+    "1": 17043
+  },
+  "resolvedSelectorOffsetFromNearestDistribution": {
+    "-1": 1199,
+    "0": 29661,
+    "1": 1908
+  },
+  "resolvedSelectorTableBytes": 131072,
+  "resolvedSelectorTableSha256": "0b8ece5b7c2ea05475fd76120987670bf29cf69d16916372af5cf4734fd209af"
+}

@@ -3,10 +3,13 @@
 
 import hashlib
 import json
+import struct
 import zlib
+from collections import Counter
 from pathlib import Path
 import unittest
 
+import analyze_raster_general_height_selector_transfer as captured
 import explore_exact_general_height_numerator as previous
 import model_raster_general_height_arithmetic as two_stage
 import recover_raster_general_height_reciprocals as recovery
@@ -14,6 +17,74 @@ import validate_raster_general_height_selector_transfer as selector
 
 
 class RasterGeneralHeightSelectorTransferTests(unittest.TestCase):
+    def test_materialized_selector_table_is_frozen_and_endpoint_exact(self) -> None:
+        root = Path(__file__).parent
+        compressed = (
+            root / "raster_general_height_resolved_selectors.zlib"
+        ).read_bytes()
+        report = json.loads(
+            (
+                root / "raster_general_height_selector_transfer_analysis.json"
+            ).read_text(encoding="utf-8")
+        )
+        selectors = tuple(
+            value
+            for (value,) in struct.iter_unpack("<I", zlib.decompress(compressed))
+        )
+        self.assertEqual(len(selectors), selector.CASE_COUNT)
+        self.assertEqual(
+            hashlib.sha256(compressed).hexdigest(),
+            report["compressedSelectorTableSha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(zlib.decompress(compressed)).hexdigest(),
+            report["resolvedSelectorTableSha256"],
+        )
+
+        endpoints: Counter[int] = Counter()
+        offsets: Counter[int] = Counter()
+        canonical = selector.factorization.low_exponent.factorized.canonical_reciprocals()
+        exact_normalized_count = 0
+        exact_normalized_match_count = 0
+        for case_index, reciprocal in enumerate(selectors):
+            width_index, height_index = divmod(case_index, selector.HEIGHT_COUNT)
+            determinant = selector.WIDTHS[width_index] * selector.HEIGHTS[height_index]
+            reciprocal_power = 1 << (24 + (determinant - 1).bit_length())
+            floor_reciprocal = reciprocal_power // determinant
+            endpoint = reciprocal - floor_reciprocal
+            self.assertIn(endpoint, (0, 1))
+            endpoints[endpoint] += 1
+            nearest = (
+                selector.factorization.top_left.arithmetic.nearest_even_reciprocal_index(
+                    determinant
+                )
+            )
+            offsets[reciprocal - nearest] += 1
+            normalized = captured.exact_normalized_class(determinant)
+            if normalized is not None:
+                normalized_class, _ = normalized
+                exact_normalized_count += 1
+                exact_normalized_match_count += (
+                    reciprocal == canonical[normalized_class - 8_192]
+                )
+
+        self.assertEqual(
+            {str(key): value for key, value in sorted(endpoints.items())},
+            report["resolvedSelectorEndpointFromFloorDistribution"],
+        )
+        self.assertEqual(
+            {str(key): value for key, value in sorted(offsets.items())},
+            report["resolvedSelectorOffsetFromNearestDistribution"],
+        )
+        self.assertEqual(
+            exact_normalized_count,
+            report["exactNormalizedDeterminantCount"],
+        )
+        self.assertEqual(
+            exact_normalized_match_count,
+            report["exactNormalizedCanonicalMatchCount"],
+        )
+
     def test_swift_probe_embeds_frozen_shader_strides_and_hashes(self) -> None:
         source = (
             Path(__file__).parents[1]
