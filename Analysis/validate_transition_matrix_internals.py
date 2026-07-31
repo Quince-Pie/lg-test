@@ -16,6 +16,7 @@ GLASS_BACKGROUND_RENDER_SYMBOL = (
     "EPKNS0_5LayerERNS0_7ContextEfPPNS0_7SurfaceEPfS8_"
     "PKNS_11ColorMatrixE"
 )
+GLASS_MATRIX_CONSTRUCTOR_CALL_OFFSETS = (0x338, 0x3AC, 0x500)
 
 
 def _fail(message: str) -> Never:
@@ -76,6 +77,30 @@ def _byte_capture(
     if hashlib.sha256(raw).hexdigest() != digest:
         _fail(f"{field}.sha256 differs")
     return raw
+
+
+def _arm64_branch_link_target(
+    code: bytes,
+    *,
+    instruction_offset: int,
+    symbol_address: int,
+) -> tuple[int, int]:
+    instruction_end = instruction_offset + 4
+    if instruction_offset < 0 or instruction_end > len(code):
+        _fail("matrix-constructor BL offset is outside symbol code")
+    instruction = int.from_bytes(
+        code[instruction_offset:instruction_end],
+        "little",
+    )
+    if instruction & 0xFC00_0000 != 0x9400_0000:
+        _fail("matrix-constructor source instruction is not BL")
+    immediate = instruction & 0x03FF_FFFF
+    if immediate & 0x0200_0000:
+        immediate -= 0x0400_0000
+    return (
+        instruction,
+        symbol_address + instruction_offset + immediate * 4,
+    )
 
 
 def validate_vibrant_matrix_internals(matrix_basis: object) -> None:
@@ -223,7 +248,7 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
         )
     call_site = _mapping(call_sites[0], "uniformCallSite")
     if (
-        call_site.get("schemaVersion") != 2
+        call_site.get("schemaVersion") != 3
         or call_site.get("executed") is not True
         or call_site.get("capture")
         != "transition-matrix-uniform-01-neutral-axes"
@@ -235,6 +260,7 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
         _fail("uniformCallSite frame count differs")
     code_window_count = 0
     render_code_count = 0
+    matrix_constructor_code_count = 0
     for expected_index, value in enumerate(frames):
         frame = _mapping(value, f"uniformCallSite.frames[{expected_index}]")
         if frame.get("index") != expected_index:
@@ -316,6 +342,109 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
                 _fail("uniformCallSite symbol code is entirely zero")
             render_code_count += 1
 
+            constructor_value = frame.get("matrixConstructorCode")
+            if constructor_value is None:
+                _fail("uniformCallSite matrix-constructor code is absent")
+            constructor = _mapping(
+                constructor_value,
+                "uniformCallSite matrixConstructorCode",
+            )
+            if (
+                constructor.get("requestedByteCount") != 0x800
+                or constructor.get("sourceCallOffsets")
+                != list(GLASS_MATRIX_CONSTRUCTOR_CALL_OFFSETS)
+            ):
+                _fail(
+                    "uniformCallSite matrix-constructor metadata differs"
+                )
+            constructor_code = _byte_capture(
+                constructor,
+                field="uniformCallSite matrixConstructorCode",
+                expected_class=(
+                    "mapped arm64e QuartzCore "
+                    "matrix-constructor region"
+                ),
+                expected_length=0x800,
+            )
+            if not any(constructor_code):
+                _fail(
+                    "uniformCallSite matrix-constructor code "
+                    "is entirely zero"
+                )
+
+            decoded_calls = [
+                _arm64_branch_link_target(
+                    code,
+                    instruction_offset=offset,
+                    symbol_address=symbol_address,
+                )
+                for offset in GLASS_MATRIX_CONSTRUCTOR_CALL_OFFSETS
+            ]
+            call_targets = {
+                target for _, target in decoded_calls
+            }
+            if len(call_targets) != 1:
+                _fail(
+                    "uniformCallSite matrix-constructor "
+                    "BL targets differ"
+                )
+            constructor_address = _hex_integer(
+                constructor.get("startAddress"),
+                (
+                    "uniformCallSite matrix-constructor "
+                    "startAddress"
+                ),
+            )
+            if (
+                constructor_address != next(iter(call_targets))
+                or constructor_address >= symbol_address
+                or symbol_address - constructor_address > 0x10000
+            ):
+                _fail(
+                    "uniformCallSite matrix-constructor address "
+                    "is inconsistent"
+                )
+            constructor_image_offset = _hex_integer(
+                constructor.get("imageOffset"),
+                (
+                    "uniformCallSite matrix-constructor "
+                    "imageOffset"
+                ),
+            )
+            if (
+                constructor_address
+                != image_base + constructor_image_offset
+            ):
+                _fail(
+                    "uniformCallSite matrix-constructor image "
+                    "offset is inconsistent"
+                )
+            expected_instructions = [
+                f"{instruction:08x}"
+                for instruction, _ in decoded_calls
+            ]
+            expected_targets = [
+                f"0x{target:016x}"
+                for _, target in decoded_calls
+            ]
+            if (
+                constructor.get("sourceCallInstructions")
+                != expected_instructions
+                or constructor.get("sourceCallTargets")
+                != expected_targets
+            ):
+                _fail(
+                    "uniformCallSite matrix-constructor source "
+                    "calls are inconsistent"
+                )
+            matrix_constructor_code_count += 1
+
+        elif frame.get("matrixConstructorCode") is not None:
+            _fail(
+                "uniformCallSite matrix-constructor code has "
+                "no render-symbol owner"
+            )
+
         code_value = frame.get("codeWindow")
         if code_value is None:
             continue
@@ -365,3 +494,11 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
         != render_code_count
     ):
         _fail("uniformCallSite glass render-code count differs")
+    if (
+        matrix_constructor_code_count != 1
+        or call_site.get("glassMatrixConstructorCodeCaptureCount")
+        != matrix_constructor_code_count
+    ):
+        _fail(
+            "uniformCallSite matrix-constructor code count differs"
+        )

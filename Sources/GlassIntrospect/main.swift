@@ -3607,12 +3607,51 @@ private let glassBackgroundRenderSymbol =
     "EPKNS0_5LayerERNS0_7ContextEfPPNS0_7SurfaceEPfS8_" +
     "PKNS_11ColorMatrixE"
 private let glassBackgroundRenderCodeByteCount = 0x2000
+private let glassMatrixConstructorCallOffsets = [
+    0x338,
+    0x3AC,
+    0x500,
+]
+private let glassMatrixConstructorCodeByteCount = 0x800
+
+private func arm64BranchLinkTarget(
+    code: [UInt8],
+    instructionOffset: Int,
+    symbolAddress: UInt
+) -> (instruction: UInt32, target: UInt)? {
+    guard instructionOffset >= 0,
+          instructionOffset + 4 <= code.count,
+          symbolAddress <= UInt(Int64.max)
+    else {
+        return nil
+    }
+    let instruction =
+        UInt32(code[instructionOffset])
+        | UInt32(code[instructionOffset + 1]) << 8
+        | UInt32(code[instructionOffset + 2]) << 16
+        | UInt32(code[instructionOffset + 3]) << 24
+    guard instruction & 0xFC00_0000 == 0x9400_0000 else {
+        return nil
+    }
+    var immediate = Int64(instruction & 0x03FF_FFFF)
+    if immediate & 0x0200_0000 != 0 {
+        immediate -= 0x0400_0000
+    }
+    let instructionAddress =
+        Int64(symbolAddress) + Int64(instructionOffset)
+    let targetAddress = instructionAddress + immediate * 4
+    guard targetAddress >= 0 else {
+        return nil
+    }
+    return (instruction, UInt(targetAddress))
+}
 
 private func glassUniformCallSiteEvidence() -> [String: Any] {
     let returnAddresses =
         Array(Thread.callStackReturnAddresses.prefix(32))
     var quartzCoreCodeWindows = 0
     var glassBackgroundRenderCodeCaptures = 0
+    var glassMatrixConstructorCodeCaptures = 0
     let frames: [[String: Any]] = returnAddresses.enumerated().map {
         index, number in
         let addressValue = UInt(truncating: number)
@@ -3693,6 +3732,77 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
                     "sha256": transitionSHA256(Data(bytes)),
                 ]
                 glassBackgroundRenderCodeCaptures += 1
+
+                let constructorCalls =
+                    glassMatrixConstructorCallOffsets.compactMap {
+                        offset in
+                        arm64BranchLinkTarget(
+                            code: bytes,
+                            instructionOffset: offset,
+                            symbolAddress: symbolAddress)
+                    }
+                let constructorTargets = Set(
+                    constructorCalls.map { $0.target })
+                if constructorCalls.count
+                        == glassMatrixConstructorCallOffsets.count,
+                   constructorTargets.count == 1,
+                   let constructorAddress =
+                        constructorTargets.first,
+                   constructorAddress >= imageBase,
+                   constructorAddress < symbolAddress,
+                   symbolAddress - constructorAddress <= 0x10000,
+                   let constructorPointer = UnsafeRawPointer(
+                        bitPattern: constructorAddress)
+                {
+                    let constructorBytes = Array(
+                        UnsafeRawBufferPointer(
+                            start: constructorPointer,
+                            count:
+                                glassMatrixConstructorCodeByteCount))
+                    record["matrixConstructorCode"] = [
+                        "class": (
+                            "mapped arm64e QuartzCore "
+                            + "matrix-constructor region"
+                        ),
+                        "startAddress": String(
+                            format: "0x%016llx",
+                            UInt64(constructorAddress)),
+                        "imageOffset": String(
+                            format: "0x%llx",
+                            UInt64(
+                                constructorAddress - imageBase)),
+                        "sourceCallOffsets":
+                            glassMatrixConstructorCallOffsets,
+                        "sourceCallInstructions":
+                            constructorCalls.map {
+                                String(
+                                    format: "%08x",
+                                    $0.instruction)
+                            },
+                        "sourceCallTargets":
+                            constructorCalls.map {
+                                String(
+                                    format: "0x%016llx",
+                                    UInt64($0.target))
+                            },
+                        "requestedByteCount":
+                            glassMatrixConstructorCodeByteCount,
+                        "lengthBytes": constructorBytes.count,
+                        "hex": Data(constructorBytes).map {
+                            String(format: "%02x", $0)
+                        }.joined(),
+                        "sha256":
+                            transitionSHA256(
+                                Data(constructorBytes)),
+                    ]
+                    glassMatrixConstructorCodeCaptures += 1
+                } else {
+                    record["matrixConstructorCodeError"] = (
+                        "the three validated render-body BL "
+                        + "instructions do not share one "
+                        + "QuartzCore target"
+                    )
+                }
             }
         }
 
@@ -3733,7 +3843,7 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
         return record
     }
     return [
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "executed": true,
         "capture":
             "transition-matrix-uniform-01-neutral-axes",
@@ -3741,6 +3851,8 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
         "quartzCoreCodeWindowCount": quartzCoreCodeWindows,
         "glassBackgroundRenderCodeCaptureCount":
             glassBackgroundRenderCodeCaptures,
+        "glassMatrixConstructorCodeCaptureCount":
+            glassMatrixConstructorCodeCaptures,
         "frames": frames,
     ]
 }
