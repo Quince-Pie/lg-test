@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any
 
 import model_raster_general_height_arithmetic as two_stage
-import recover_raster_general_height_reciprocals as recovery
 import validate_raster_general_height_factorization as factorization
 import validate_raster_quotient_fine_mantissa as fine_mantissa
 
@@ -55,6 +54,9 @@ CANDIDATE_RADIUS_FLOAT_ULPS = 8
 RECORD = struct.Struct("<2I")
 RAW_BYTES = COEFFICIENT_COUNT * SAMPLE_POSITION_COUNT * RECORD.size
 SENTINEL = (0xFFFF_FFFF, 0xFFFF_FFFF)
+RECIPROCAL_CANDIDATE_RADIUS = 16
+CANDIDATE_MASK = struct.Struct("<Q")
+AMBIGUOUS_SELECTOR = 0xFFFF_FFFF
 MASK_PATH = Path(__file__).with_name(
     "raster_general_height_reciprocal_candidate_masks.zlib"
 )
@@ -114,17 +116,20 @@ def candidate_reciprocals(
     case_index: int,
     determinant: int,
 ) -> tuple[int, ...]:
-    (mask,) = recovery.MASK.unpack_from(
+    (mask,) = CANDIDATE_MASK.unpack_from(
         masks,
-        case_index * recovery.MASK.size,
+        case_index * CANDIDATE_MASK.size,
     )
     nearest = factorization.top_left.arithmetic.nearest_even_reciprocal_index(
         determinant
     )
     return tuple(
         nearest + offset
-        for offset in range(-recovery.CANDIDATE_RADIUS, recovery.CANDIDATE_RADIUS + 1)
-        if mask & (1 << (offset + recovery.CANDIDATE_RADIUS))
+        for offset in range(
+            -RECIPROCAL_CANDIDATE_RADIUS,
+            RECIPROCAL_CANDIDATE_RADIUS + 1,
+        )
+        if mask & (1 << (offset + RECIPROCAL_CANDIDATE_RADIUS))
     )
 
 
@@ -489,7 +494,7 @@ def validate(root: Path) -> JsonObject:
             resolved = (
                 accepted_reciprocals[0]
                 if len(accepted_reciprocals) == 1
-                else recovery.AMBIGUOUS_SELECTOR
+                else AMBIGUOUS_SELECTOR
             )
             resolved_selector_digest.update(struct.pack("<I", resolved))
             nearest = factorization.top_left.arithmetic.nearest_even_reciprocal_index(
