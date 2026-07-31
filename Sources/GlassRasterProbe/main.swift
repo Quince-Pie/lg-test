@@ -27,6 +27,37 @@ private struct ProbeCase {
     let sourceBottom: Float
 }
 
+private struct TomographyVertex {
+    var position: SIMD4<Float>
+    var ramps0: SIMD4<Float>
+    var ramps1: SIMD4<Float>
+    var ramps2: SIMD4<Float>
+    var ramps3: SIMD4<Float>
+}
+
+private struct TomographyCase {
+    let name: String
+    let role: String
+    let targetWidth: Int
+    let targetHeight: Int
+    let originX: Int
+    let originY: Int
+    let width: Int
+    let height: Int
+}
+
+private let tomographyDeltaDenominator: UInt32 = 65_536
+private let tomographyDeltaNumerators: [UInt32] = [
+    52_625,
+    51_143,
+    48_667,
+    26_293,
+    4_519,
+    20_780,
+    14_610,
+    22_163,
+]
+
 private let metalSource = """
 #include <metal_stdlib>
 using namespace metal;
@@ -171,6 +202,139 @@ fragment ProbeFragmentOutput raster_probe_fragment(
             .interpolate_at_offset(float2(0.5, 0.0)).y),
         as_type<uint>(input.sourcePullNoPerspective
             .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    return output;
+}
+
+struct TomographyVertex {
+    float4 position;
+    float4 ramps0;
+    float4 ramps1;
+    float4 ramps2;
+    float4 ramps3;
+};
+
+struct TomographyVertexOutput {
+    float4 position [[position]];
+    float4 ramps0 [[user(tomography_ramps_0)]];
+    float4 ramps1 [[user(tomography_ramps_1)]];
+    float4 ramps2 [[user(tomography_ramps_2)]];
+    float4 ramps3 [[user(tomography_ramps_3)]];
+};
+
+struct TomographyFragmentInput {
+    float4 position [[position]];
+    interpolant<float4, interpolation::no_perspective>
+        ramps0 [[user(tomography_ramps_0)]];
+    interpolant<float4, interpolation::no_perspective>
+        ramps1 [[user(tomography_ramps_1)]];
+    interpolant<float4, interpolation::no_perspective>
+        ramps2 [[user(tomography_ramps_2)]];
+    interpolant<float4, interpolation::no_perspective>
+        ramps3 [[user(tomography_ramps_3)]];
+};
+
+struct TomographyFragmentOutput {
+    uint4 ramp0 [[color(0)]];
+    uint4 ramp1 [[color(1)]];
+    uint4 ramp2 [[color(2)]];
+    uint4 ramp3 [[color(3)]];
+    uint4 ramp4 [[color(4)]];
+    uint4 ramp5 [[color(5)]];
+    uint4 ramp6 [[color(6)]];
+    uint4 ramp7 [[color(7)]];
+};
+
+vertex TomographyVertexOutput raster_tomography_vertex(
+    const device TomographyVertex *vertices [[buffer(0)]],
+    constant float4x4 &mvp [[buffer(1)]],
+    uint vertex_id [[vertex_id]])
+{
+    const TomographyVertex record = vertices[vertex_id];
+    TomographyVertexOutput output;
+    output.position = mvp * record.position;
+    output.ramps0 = record.ramps0;
+    output.ramps1 = record.ramps1;
+    output.ramps2 = record.ramps2;
+    output.ramps3 = record.ramps3;
+    return output;
+}
+
+fragment TomographyFragmentOutput raster_tomography_fragment(
+    TomographyFragmentInput input [[stage_in]],
+    uint primitive_id [[primitive_id]])
+{
+    TomographyFragmentOutput output;
+    output.ramp0 = uint4(
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    output.ramp1 = uint4(
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.0, 0.5)).z),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.9375, 0.5)).z),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.5, 0.0)).w),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.5, 0.9375)).w));
+    output.ramp2 = uint4(
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    output.ramp3 = uint4(
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.0, 0.5)).z),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.9375, 0.5)).z),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.5, 0.0)).w),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.5, 0.9375)).w));
+    output.ramp4 = uint4(
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    output.ramp5 = uint4(
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.0, 0.5)).z),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.9375, 0.5)).z),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.5, 0.0)).w),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.5, 0.9375)).w));
+    output.ramp6 = uint4(
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    output.ramp7 = uint4(
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.0, 0.5)).z),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.9375, 0.5)).z),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.5, 0.0)).w),
+        primitive_id);
     return output;
 }
 """
@@ -457,6 +621,153 @@ private let cases = [
         sourceBottom: Float(bitPattern: 0x3c800000)),
 ]
 
+private let tomographyCases = [
+    TomographyCase(
+        name: "tomography-train-067x071",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 3,
+        originY: 5,
+        width: 67,
+        height: 71),
+    TomographyCase(
+        name: "tomography-train-134x142-scaled",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 7,
+        originY: 11,
+        width: 134,
+        height: 142),
+    TomographyCase(
+        name: "tomography-train-073x089",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 13,
+        originY: 17,
+        width: 73,
+        height: 89),
+    TomographyCase(
+        name: "tomography-train-101x103",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 19,
+        originY: 23,
+        width: 101,
+        height: 103),
+    TomographyCase(
+        name: "tomography-train-107x131",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 29,
+        originY: 31,
+        width: 107,
+        height: 131),
+    TomographyCase(
+        name: "tomography-train-137x139",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 37,
+        originY: 41,
+        width: 137,
+        height: 139),
+    TomographyCase(
+        name: "tomography-train-149x167",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 43,
+        originY: 47,
+        width: 149,
+        height: 167),
+    TomographyCase(
+        name: "tomography-train-173x179",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 53,
+        originY: 59,
+        width: 173,
+        height: 179),
+    TomographyCase(
+        name: "tomography-train-181x211",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 61,
+        originY: 67,
+        width: 181,
+        height: 211),
+    TomographyCase(
+        name: "tomography-train-223x227",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 71,
+        originY: 73,
+        width: 223,
+        height: 227),
+    TomographyCase(
+        name: "tomography-train-233x251",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 79,
+        originY: 61,
+        width: 233,
+        height: 251),
+    TomographyCase(
+        name: "tomography-train-194x166-scaled",
+        role: "discovery",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 89,
+        originY: 97,
+        width: 194,
+        height: 166),
+    TomographyCase(
+        name: "tomography-holdout-079x109",
+        role: "holdout",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 101,
+        originY: 103,
+        width: 79,
+        height: 109),
+    TomographyCase(
+        name: "tomography-holdout-127x157",
+        role: "holdout",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 107,
+        originY: 109,
+        width: 127,
+        height: 157),
+    TomographyCase(
+        name: "tomography-holdout-163x197",
+        role: "holdout",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 113,
+        originY: 101,
+        width: 163,
+        height: 197),
+    TomographyCase(
+        name: "tomography-holdout-229x239",
+        role: "holdout",
+        targetWidth: 320,
+        targetHeight: 320,
+        originX: 83,
+        originY: 79,
+        width: 229,
+        height: 239),
+]
+
 private func sha256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
         String(format: "%02x", $0)
@@ -504,7 +815,90 @@ private func vertices(for probe: ProbeCase) -> [ProbeVertex] {
     ]
 }
 
+private func tomographyVertices(
+    for probe: TomographyCase
+) -> [TomographyVertex] {
+    let deltas = tomographyDeltaNumerators.map {
+        Float($0) / Float(tomographyDeltaDenominator)
+    }
+
+    func vertex(
+        x: Float,
+        y: Float,
+        isRight: Bool,
+        isBottom: Bool
+    ) -> TomographyVertex {
+        func ramps(_ base: Int) -> SIMD4<Float> {
+            SIMD4<Float>(
+                isRight ? deltas[base] : 0,
+                isBottom ? deltas[base] : 0,
+                isRight ? deltas[base + 1] : 0,
+                isBottom ? deltas[base + 1] : 0)
+        }
+
+        return TomographyVertex(
+            position: SIMD4<Float>(x, y, 0, 1),
+            ramps0: ramps(0),
+            ramps1: ramps(2),
+            ramps2: ramps(4),
+            ramps3: ramps(6))
+    }
+
+    let left = Float(probe.originX)
+    let right = Float(probe.originX + probe.width)
+    let top = Float(probe.originY)
+    let bottom = Float(probe.originY + probe.height)
+    let topLeft = vertex(
+        x: left,
+        y: top,
+        isRight: false,
+        isBottom: false)
+    let topRight = vertex(
+        x: right,
+        y: top,
+        isRight: true,
+        isBottom: false)
+    let bottomLeft = vertex(
+        x: left,
+        y: bottom,
+        isRight: false,
+        isBottom: true)
+    let bottomRight = vertex(
+        x: right,
+        y: bottom,
+        isRight: true,
+        isBottom: true)
+
+    return [
+        bottomLeft,
+        bottomRight,
+        topRight,
+        topRight,
+        topLeft,
+        bottomLeft,
+    ]
+}
+
 private func matrix(for probe: ProbeCase) -> simd_float4x4 {
+    simd_float4x4(columns: (
+        SIMD4<Float>(
+            2 / Float(probe.targetWidth),
+            0,
+            0,
+            0),
+        SIMD4<Float>(
+            0,
+            -2 / Float(probe.targetHeight),
+            0,
+            0),
+        SIMD4<Float>(0, 0, 0, 0),
+        SIMD4<Float>(-1, 1, 0, 1)
+    ))
+}
+
+private func matrix(
+    for probe: TomographyCase
+) -> simd_float4x4 {
     simd_float4x4(columns: (
         SIMD4<Float>(
             2 / Float(probe.targetWidth),
@@ -678,6 +1072,94 @@ private func render(
     )
 }
 
+private func renderTomography(
+    _ probe: TomographyCase,
+    device: MTLDevice,
+    queue: MTLCommandQueue,
+    pipeline: MTLRenderPipelineState
+) throws -> [Data] {
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .rgba32Uint,
+        width: probe.targetWidth,
+        height: probe.targetHeight,
+        mipmapped: false)
+    descriptor.storageMode = .shared
+    descriptor.usage = [.renderTarget]
+    let textures = (0..<8).compactMap { _ in
+        device.makeTexture(descriptor: descriptor)
+    }
+    guard textures.count == 8 else {
+        throw ProbeError.resource("tomography textures")
+    }
+
+    let pass = MTLRenderPassDescriptor()
+    for index in 0..<8 {
+        pass.colorAttachments[index].texture = textures[index]
+        pass.colorAttachments[index].loadAction = .clear
+        pass.colorAttachments[index].storeAction = .store
+        pass.colorAttachments[index].clearColor =
+            MTLClearColorMake(0, 0, 0, 0)
+    }
+    guard let commandBuffer = queue.makeCommandBuffer(),
+          let encoder = commandBuffer.makeRenderCommandEncoder(
+            descriptor: pass)
+    else {
+        throw ProbeError.resource("tomography command or encoder")
+    }
+
+    let probeVertices = tomographyVertices(for: probe)
+    var mvp = matrix(for: probe)
+    encoder.setRenderPipelineState(pipeline)
+    encoder.setViewport(MTLViewport(
+        originX: 0,
+        originY: 0,
+        width: Double(probe.targetWidth),
+        height: Double(probe.targetHeight),
+        znear: 0,
+        zfar: 1))
+    probeVertices.withUnsafeBufferPointer { buffer in
+        encoder.setVertexBytes(
+            buffer.baseAddress!,
+            length: buffer.count
+                * MemoryLayout<TomographyVertex>.stride,
+            index: 0)
+    }
+    withUnsafeBytes(of: &mvp) { raw in
+        encoder.setVertexBytes(
+            raw.baseAddress!,
+            length: raw.count,
+            index: 1)
+    }
+    encoder.drawPrimitives(
+        type: .triangle,
+        vertexStart: 0,
+        vertexCount: probeVertices.count)
+    encoder.endEncoding()
+    commandBuffer.commit()
+    commandBuffer.waitUntilCompleted()
+    guard commandBuffer.status == .completed else {
+        throw ProbeError.command(
+            commandBuffer.error?.localizedDescription
+                ?? "unknown tomography render error")
+    }
+
+    return textures.map { texture in
+        var data = Data(count: probe.width * probe.height * 16)
+        data.withUnsafeMutableBytes { raw in
+            texture.getBytes(
+                raw.baseAddress!,
+                bytesPerRow: probe.width * 16,
+                from: MTLRegionMake2D(
+                    probe.originX,
+                    probe.originY,
+                    probe.width,
+                    probe.height),
+                mipmapLevel: 0)
+        }
+        return data
+    }
+}
+
 private func run(outputDirectory: URL) throws {
     try FileManager.default.createDirectory(
         at: outputDirectory,
@@ -689,6 +1171,10 @@ private func run(outputDirectory: URL) throws {
     }
     guard MemoryLayout<ProbeVertex>.stride == 32 else {
         throw ProbeError.layout(MemoryLayout<ProbeVertex>.stride)
+    }
+    guard MemoryLayout<TomographyVertex>.stride == 80 else {
+        throw ProbeError.layout(
+            MemoryLayout<TomographyVertex>.stride)
     }
     guard let device = MTLCreateSystemDefaultDevice() else {
         throw ProbeError.device
@@ -702,6 +1188,10 @@ private func run(outputDirectory: URL) throws {
             name: "raster_probe_vertex"),
           let fragment = library.makeFunction(
             name: "raster_probe_fragment"),
+          let tomographyVertex = library.makeFunction(
+            name: "raster_tomography_vertex"),
+          let tomographyFragment = library.makeFunction(
+            name: "raster_tomography_fragment"),
           let queue = device.makeCommandQueue()
     else {
         throw ProbeError.resource("functions or command queue")
@@ -719,6 +1209,15 @@ private func run(outputDirectory: URL) throws {
     descriptor.colorAttachments[7].pixelFormat = .rgba32Uint
     let pipeline = try device.makeRenderPipelineState(
         descriptor: descriptor)
+    let tomographyDescriptor = MTLRenderPipelineDescriptor()
+    tomographyDescriptor.vertexFunction = tomographyVertex
+    tomographyDescriptor.fragmentFunction = tomographyFragment
+    for index in 0..<8 {
+        tomographyDescriptor.colorAttachments[index].pixelFormat =
+            .rgba32Uint
+    }
+    let tomographyPipeline = try device.makeRenderPipelineState(
+        descriptor: tomographyDescriptor)
 
     var records: [[String: Any]] = []
     for probe in cases {
@@ -851,9 +1350,70 @@ private func run(outputDirectory: URL) throws {
         ])
     }
 
+    var tomographyRecords: [[String: Any]] = []
+    for probe in tomographyCases {
+        let surfaces = try renderTomography(
+            probe,
+            device: device,
+            queue: queue,
+            pipeline: tomographyPipeline)
+        var outputs: [[String: Any]] = []
+        for (index, data) in surfaces.enumerated() {
+            let filename =
+                "\(probe.name)-ramp-\(index)-rgba32ui.raw"
+            try data.write(
+                to: outputDirectory.appendingPathComponent(filename),
+                options: .atomic)
+            outputs.append([
+                "deltaIndex": index,
+                "file": filename,
+                "bytes": data.count,
+                "sha256": sha256(data),
+                "components": index == 7
+                    ? "x@0,x@15/16,y@0,primitive-id"
+                    : "x@0,x@15/16,y@0,y@15/16",
+                "primitiveIDPacking": index == 7
+                    ? "channel-3-raw-uint"
+                    : "none",
+            ])
+        }
+        let mvp = matrix(for: probe)
+        tomographyRecords.append([
+            "name": probe.name,
+            "role": probe.role,
+            "target": [
+                "width": probe.targetWidth,
+                "height": probe.targetHeight,
+            ],
+            "crop": [
+                "originX": probe.originX,
+                "originY": probe.originY,
+                "width": probe.width,
+                "height": probe.height,
+            ],
+            "deltaNumerators": tomographyDeltaNumerators.map {
+                Int($0)
+            },
+            "deltaDenominator": Int(
+                tomographyDeltaDenominator),
+            "deltaBits": tomographyDeltaNumerators.map {
+                bits(
+                    Float($0)
+                    / Float(tomographyDeltaDenominator))
+            },
+            "mvpBitsColumnMajor": (0..<16).map {
+                bits(mvp[$0 / 4][$0 % 4])
+            },
+            "vertexOrder":
+                "bottom-left,bottom-right,top-right,"
+                + "top-right,top-left,bottom-left",
+            "outputs": outputs,
+        ])
+    }
+
     let manifest: [String: Any] = [
-        "schemaVersion": 7,
-        "rigVersion": "metal-raster-interpolant-probe-7.0.0",
+        "schemaVersion": 8,
+        "rigVersion": "metal-raster-interpolant-probe-8.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -866,6 +1426,8 @@ private func run(outputDirectory: URL) throws {
         "compile": [
             "fastMathEnabled": true,
             "vertexStride": MemoryLayout<ProbeVertex>.stride,
+            "tomographyVertexStride":
+                MemoryLayout<TomographyVertex>.stride,
             "fragmentOutput": "raw float32 bits as RGBA32Uint",
             "barycentricOutput":
                 "center-perspective float3 bits and primitive ID",
@@ -879,8 +1441,11 @@ private func run(outputDirectory: URL) throws {
                 "basis x/y at four subpixel offsets",
             "sourcePullNoPerspectiveOutput":
                 "source x/y at two subpixel offsets",
+            "reciprocalTomographyOutput":
+                "eight zero-based x/y ramps at two subpixel offsets",
         ],
         "cases": records,
+        "reciprocalTomographyCases": tomographyRecords,
     ]
     let manifestData = try JSONSerialization.data(
         withJSONObject: manifest,

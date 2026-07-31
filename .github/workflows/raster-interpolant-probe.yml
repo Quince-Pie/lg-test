@@ -65,10 +65,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 7:
+          if manifest.get("schemaVersion") != 8:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-7.0.0"
+              "metal-raster-interpolant-probe-8.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -144,5 +144,112 @@ jobs:
                       raise SystemExit(
                           f"{record['name']} {field} file size "
                           "differs"
+                      )
+
+          expected_tomography = {
+              "tomography-train-067x071": "discovery",
+              "tomography-train-134x142-scaled": "discovery",
+              "tomography-train-073x089": "discovery",
+              "tomography-train-101x103": "discovery",
+              "tomography-train-107x131": "discovery",
+              "tomography-train-137x139": "discovery",
+              "tomography-train-149x167": "discovery",
+              "tomography-train-173x179": "discovery",
+              "tomography-train-181x211": "discovery",
+              "tomography-train-223x227": "discovery",
+              "tomography-train-233x251": "discovery",
+              "tomography-train-194x166-scaled": "discovery",
+              "tomography-holdout-079x109": "holdout",
+              "tomography-holdout-127x157": "holdout",
+              "tomography-holdout-163x197": "holdout",
+              "tomography-holdout-229x239": "holdout",
+          }
+          expected_numerators = [
+              52625,
+              51143,
+              48667,
+              26293,
+              4519,
+              20780,
+              14610,
+              22163,
+          ]
+          tomography = manifest.get(
+              "reciprocalTomographyCases",
+              [],
+          )
+          if (
+              len(tomography) != len(expected_tomography)
+              or {
+                  record["name"]: record["role"]
+                  for record in tomography
+              } != expected_tomography
+          ):
+              raise SystemExit(
+                  "raster reciprocal-tomography case set differs"
+              )
+          for record in tomography:
+              crop = record["crop"]
+              target = record["target"]
+              if (
+                  crop["originX"] < 0
+                  or crop["originY"] < 0
+                  or crop["originX"] + crop["width"]
+                      > target["width"]
+                  or crop["originY"] + crop["height"]
+                      > target["height"]
+              ):
+                  raise SystemExit(
+                      f"{record['name']} crop exceeds target"
+                  )
+              if (
+                  record["deltaNumerators"]
+                  != expected_numerators
+                  or record["deltaDenominator"] != 65536
+                  or len(record["deltaBits"]) != 8
+              ):
+                  raise SystemExit(
+                      f"{record['name']} tomography ramps differ"
+                  )
+              outputs = record.get("outputs", [])
+              if (
+                  len(outputs) != 8
+                  or {
+                      output["deltaIndex"]
+                      for output in outputs
+                  } != set(range(8))
+              ):
+                  raise SystemExit(
+                      f"{record['name']} tomography outputs differ"
+                  )
+              expected = crop["width"] * crop["height"] * 16
+              for output in outputs:
+                  path = root / output["file"]
+                  index = output["deltaIndex"]
+                  if (
+                      output["bytes"] != expected
+                      or path.stat().st_size != expected
+                  ):
+                      raise SystemExit(
+                          f"{record['name']} tomography size differs"
+                      )
+                  expected_components = (
+                      "x@0,x@15/16,y@0,primitive-id"
+                      if index == 7
+                      else "x@0,x@15/16,y@0,y@15/16"
+                  )
+                  expected_packing = (
+                      "channel-3-raw-uint"
+                      if index == 7
+                      else "none"
+                  )
+                  if (
+                      output["components"]
+                      != expected_components
+                      or output["primitiveIDPacking"]
+                      != expected_packing
+                  ):
+                      raise SystemExit(
+                          f"{record['name']} tomography layout differs"
                       )
           PY

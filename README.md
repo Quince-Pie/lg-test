@@ -1903,6 +1903,20 @@ only the vertical viewport from 384 to 512 pixels. Together they distinguish
 translation-sensitive coefficient setup from viewport-transform rounding and
 resolve adjacent-float gradient candidates without weakening the bit gate.
 
+Raster schema 8 retains all sixteen schema-7 case definitions and adds a
+compact reciprocal-tomography pass. It applies eight exactly representable,
+zero-based ramps to twelve discovery geometries and four preregistered holdout
+geometries. The ramp numerators were selected offline by a deterministic
+exact-arithmetic discrimination search to distinguish adjacent points on the
+observed 27-significant-bit inverse-area lattice across the complete geometry
+set; they are not fitted to unseen Apple outputs. Each pass preserves two pull
+samples per axis as raw float32 bits for the first seven ramps and both
+x samples for the eighth. Its final channel stores the raw primitive ID, so
+both triangle setup paths remain independently recoverable without modifying
+any observed float bit or allocating another full-size attachment.
+The discovery/holdout role is recorded in the manifest: a reciprocal law must
+be selected from discovery records before the four holdouts are evaluated.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
