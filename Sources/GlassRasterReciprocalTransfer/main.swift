@@ -28,7 +28,7 @@ private let normalizedDenominatorLower = 8_192
 private let normalizedDenominatorUpper = 16_383
 private let targetWidth = 224
 private let targetHeight = 4_096
-private let viewportWidth = 65_536
+private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
 private let batchSize = 128
@@ -37,7 +37,7 @@ private let candidateRadius = 8
 private let widths = Array(
     normalizedDenominatorLower...normalizedDenominatorUpper
 ).map {
-    $0 == normalizedDenominatorLower ? 32_768 : 2 * $0
+    $0 == normalizedDenominatorLower ? 16_384 : 2 * $0
 }
 
 private let geometryCases = [
@@ -229,13 +229,13 @@ private func diagnostic(_ message: String) {
 private func run(outputDirectory: URL) throws {
     diagnostic("entered run")
     precondition(widths.count == 8_192)
-    precondition(widths.first == 32_768)
+    precondition(widths.first == 16_384)
     precondition(widths.last == 32_766)
-    precondition(widths.min() == 16_386)
-    precondition(widths.max() == 32_768)
+    precondition(widths.min() == 16_384)
+    precondition(widths.max() == 32_766)
     precondition(
         sha256(uint32Data(widths.map { UInt32($0) }))
-            == "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce")
+            == "fa2c6295cba5e66fc69ac3d08e536860039d7da1fdf7929b20179c1feff90fac")
     precondition(
         sha256(uint32Data(witnessSignificands))
             == "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a")
@@ -538,7 +538,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-scale-transfer-1.0.2"
+        "metal-raster-reciprocal-scale-transfer-1.0.3"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -556,7 +556,8 @@ private func run(outputDirectory: URL) throws {
             "R32Float additive one per fragment, cleared, stored, and verified",
     ] as [String: Any]
     manifest["reciprocalScaleTransfer"] = [
-        "role": "prospective-unclipped-power2-geometry-scale-transfer",
+        "role":
+            "prospective-unclipped-power2-scale-transfer-with-boundary-control",
         "preregistrationFile":
             "Analysis/raster_reciprocal_scale_transfer_preregistration.json",
         "preregistrationSha256":
@@ -564,14 +565,16 @@ private func run(outputDirectory: URL) throws {
         "captureAmendmentFile":
             "Analysis/raster_reciprocal_scale_transfer_capture_amendment.json",
         "captureAmendmentSha256":
-            "627abbaee90a0d1ee21037c50386fbdba36dc293b21f2cb179955ff1e6f46b9c",
+            "52f854b27ebd766ee42b8145b4a1a525f38200b08eb19f5cce0601050d6c9fc5",
         "widthFormula":
-            "32768-if-normalized-denominator-8192-else-2x",
+            "16384-control-if-normalized-denominator-8192-else-2x",
         "widthMinimum": widths.min()!,
         "widthMaximum": widths.max()!,
         "widthCount": widths.count,
         "widthsSha256":
-            "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",
+            "fa2c6295cba5e66fc69ac3d08e536860039d7da1fdf7929b20179c1feff90fac",
+        "unseenExponentWidthCount": 8_191,
+        "calibrationControlWidthCount": 1,
         "geometryCases": geometryManifest(),
         "geometryCount": geometryCases.count,
         "sampleSideCount": sampleSideCount,
@@ -600,7 +603,7 @@ private func run(outputDirectory: URL) throws {
         "frozenSelectedReciprocalTableSha256":
             "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
         "frozenRecoveredCoefficientBitsSha256":
-            "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
+            "19f9fb11f4f0506f19d1ab8395ce8289af003524155e10d81e5be39402ded6d3",
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

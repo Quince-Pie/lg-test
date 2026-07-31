@@ -15,11 +15,22 @@ import validate_reciprocal_transfer as arithmetic
 type JsonObject = dict[str, Any]
 
 SCHEMA_VERSION = 1
-RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.2"
+RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.3"
 TARGET_WIDTH = 224
 TARGET_HEIGHT = 4_096
 PREREGISTERED_VIEWPORT_WIDTH = 32_768
-VIEWPORT_WIDTH = 65_536
+VIEWPORT_WIDTH = 32_768
+WIDTH_MINIMUM = 16_384
+WIDTH_MAXIMUM = 32_766
+WIDTH_COUNT = 8_192
+UNSEEN_EXPONENT_WIDTH_COUNT = 8_191
+CALIBRATION_CONTROL_WIDTH_COUNT = 1
+WIDTHS_SHA256 = (
+    "fa2c6295cba5e66fc69ac3d08e536860039d7da1fdf7929b20179c1feff90fac"
+)
+PREDICTED_COEFFICIENT_SHA256 = (
+    "19f9fb11f4f0506f19d1ab8395ce8289af003524155e10d81e5be39402ded6d3"
+)
 MINIMUM_SIGNED_INTERIOR_AREA = 1_024
 GEOMETRY_COUNT = 4
 SAMPLE_SIDE_COUNT = 2
@@ -36,7 +47,7 @@ CAPTURE_AMENDMENT_PATH = Path(__file__).with_name(
     "raster_reciprocal_scale_transfer_capture_amendment.json"
 )
 CAPTURE_AMENDMENT_SHA256 = (
-    "627abbaee90a0d1ee21037c50386fbdba36dc293b21f2cb179955ff1e6f46b9c"
+    "52f854b27ebd766ee42b8145b4a1a525f38200b08eb19f5cce0601050d6c9fc5"
 )
 GEOMETRY_CASES = (
     {
@@ -80,6 +91,20 @@ def sha256_path(path: Path) -> str:
         while block := stream.read(1024 * 1024):
             digest.update(block)
     return digest.hexdigest()
+
+
+def capture_widths() -> list[int]:
+    return [
+        (
+            16_384
+            if denominator == arithmetic.NORMALIZED_DENOMINATOR_LOWER
+            else 2 * denominator
+        )
+        for denominator in range(
+            arithmetic.NORMALIZED_DENOMINATOR_LOWER,
+            arithmetic.NORMALIZED_DENOMINATOR_UPPER + 1,
+        )
+    ]
 
 
 def sample_position(
@@ -254,8 +279,36 @@ def load_preregistration() -> JsonObject:
             "recoveredCoefficientBitsSha256"
         )
         != arithmetic.PREDICTED_COEFFICIENT_SHA256
+        or amendment.get("renderableDomainCorrection", {}).get(
+            "amendedWidthsSha256"
+        )
+        != WIDTHS_SHA256
+        or amendment.get("renderableDomainCorrection", {}).get(
+            "selectedReciprocalTableSha256"
+        )
+        != arithmetic.CANONICAL_RECIPROCAL_SHA256
+        or amendment.get("renderableDomainCorrection", {}).get(
+            "amendedRecoveredCoefficientBitsSha256"
+        )
+        != PREDICTED_COEFFICIENT_SHA256
+        or amendment.get("renderableDomainCorrection", {}).get(
+            "refrozenBeforeNumericalOutput"
+        )
+        is not True
     ):
         raise ValueError("reciprocal-scale-transfer amendment differs")
+    amended_widths = capture_widths()
+    if (
+        len(amended_widths) != WIDTH_COUNT
+        or min(amended_widths) != WIDTH_MINIMUM
+        or max(amended_widths) != WIDTH_MAXIMUM
+        or arithmetic.uint32_sha256(amended_widths) != WIDTHS_SHA256
+    ):
+        raise ValueError("reciprocal-scale-transfer amended widths differ")
+    for width in amended_widths:
+        for geometry in GEOMETRY_CASES:
+            for sample_side in range(SAMPLE_SIDE_COUNT):
+                sample_position(width, geometry, sample_side)
     return preregistration
 
 
@@ -271,7 +324,10 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or not isinstance(manifest.get("ciCommit"), str)
         or len(manifest.get("ciCommit", "")) != 40
         or evidence.get("role")
-        != "prospective-unclipped-power2-geometry-scale-transfer"
+        != (
+            "prospective-unclipped-power2-scale-transfer-"
+            "with-boundary-control"
+        )
         or evidence.get("preregistrationFile")
         != "Analysis/raster_reciprocal_scale_transfer_preregistration.json"
         or evidence.get("preregistrationSha256")
@@ -284,11 +340,15 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or evidence.get("captureAmendmentSha256")
         != CAPTURE_AMENDMENT_SHA256
         or evidence.get("widthFormula")
-        != "32768-if-normalized-denominator-8192-else-2x"
-        or evidence.get("widthMinimum") != arithmetic.WIDTH_MINIMUM
-        or evidence.get("widthMaximum") != arithmetic.WIDTH_MAXIMUM
-        or evidence.get("widthCount") != arithmetic.WIDTH_COUNT
-        or evidence.get("widthsSha256") != arithmetic.WIDTHS_SHA256
+        != "16384-control-if-normalized-denominator-8192-else-2x"
+        or evidence.get("widthMinimum") != WIDTH_MINIMUM
+        or evidence.get("widthMaximum") != WIDTH_MAXIMUM
+        or evidence.get("widthCount") != WIDTH_COUNT
+        or evidence.get("widthsSha256") != WIDTHS_SHA256
+        or evidence.get("unseenExponentWidthCount")
+        != UNSEEN_EXPONENT_WIDTH_COUNT
+        or evidence.get("calibrationControlWidthCount")
+        != CALIBRATION_CONTROL_WIDTH_COUNT
         or evidence.get("geometryCases") != list(GEOMETRY_CASES)
         or evidence.get("geometryCount") != GEOMETRY_COUNT
         or evidence.get("sampleSideCount") != SAMPLE_SIDE_COUNT
@@ -319,7 +379,7 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or evidence.get("frozenSelectedReciprocalTableSha256")
         != arithmetic.CANONICAL_RECIPROCAL_SHA256
         or evidence.get("frozenRecoveredCoefficientBitsSha256")
-        != arithmetic.PREDICTED_COEFFICIENT_SHA256
+        != PREDICTED_COEFFICIENT_SHA256
         or evidence.get("bytes") != RAW_BYTES
         or not path.is_file()
         or path.stat().st_size != RAW_BYTES
@@ -339,7 +399,7 @@ def validate(root: Path) -> JsonObject:
     offset_counts: Counter[int] = Counter()
     acceptance_count = 0
     expected_acceptance_count = (
-        arithmetic.WIDTH_COUNT
+        WIDTH_COUNT
         * len(arithmetic.WITNESS_SIGNIFICANDS)
         * GEOMETRY_COUNT
         * SAMPLE_SIDE_COUNT
@@ -363,7 +423,7 @@ def validate(root: Path) -> JsonObject:
         )
         return struct.unpack_from("<II", data, record_index * RECORD_BYTES)
 
-    for width_index, width in enumerate(arithmetic.prospective_widths()):
+    for width_index, width in enumerate(capture_widths()):
         nearest = arithmetic.nearest_even_reciprocal_index(width)
         matching: list[tuple[int, tuple[int, ...]]] = []
         for offset in range(
@@ -447,14 +507,15 @@ def validate(root: Path) -> JsonObject:
     coefficient_sha256 = coefficient_digest.hexdigest()
     if selected_sha256 != arithmetic.CANONICAL_RECIPROCAL_SHA256:
         raise ValueError("prospective reciprocal-table prediction failed")
-    if coefficient_sha256 != arithmetic.PREDICTED_COEFFICIENT_SHA256:
+    if coefficient_sha256 != PREDICTED_COEFFICIENT_SHA256:
         raise ValueError("prospective coefficient-table prediction failed")
     if acceptance_count != expected_acceptance_count:
         raise ValueError("prospective geometry acceptance count differs")
     return {
         "liquidGlassRasterReciprocalScaleTransferValidationSchemaVersion": 1,
         "classification": (
-            "prospective-unclipped-power2-geometry-scale-transfer"
+            "prospective-unclipped-power2-scale-transfer-"
+            "with-boundary-control"
         ),
         "probe": str(root),
         "manifestSha256": sha256_path(root / "manifest.json"),
@@ -462,7 +523,10 @@ def validate(root: Path) -> JsonObject:
         "preregistrationSha256": PREREGISTRATION_SHA256,
         "ciCommit": manifest.get("ciCommit"),
         "measurement": {
-            "widthCount": arithmetic.WIDTH_COUNT,
+            "widthCount": WIDTH_COUNT,
+            "unseenExponentWidthCount": UNSEEN_EXPONENT_WIDTH_COUNT,
+            "calibrationControlWidthCount":
+                CALIBRATION_CONTROL_WIDTH_COUNT,
             "witnessCount": len(arithmetic.WITNESS_SIGNIFICANDS),
             "geometryCount": GEOMETRY_COUNT,
             "sampleSideCount": SAMPLE_SIDE_COUNT,
@@ -483,10 +547,11 @@ def validate(root: Path) -> JsonObject:
             "exact": True,
         },
         "conclusions": {
-            "canonicalReciprocalTableTransfersToUnseenExponentRange": True,
-            "physicalProductLawTransfersToUnseenExponentRange": True,
+            "canonicalReciprocalTableTransfersFor8191UnseenWidths": True,
+            "physicalProductLawTransfersFor8191UnseenWidths": True,
             "powerOfTwoHeightScaleEquivalenceTransfers": True,
             "prospectiveIsolatedScaleTransferGatePassed": True,
+            "normalizationClass8192UnseenExponentTransferPending": True,
             "failedClippedGeneralHeightHypothesisRemainsFalsified": True,
             "closedFormSelectorEstablished": False,
             "endToEndLiquidGlassParityEstablished": False,

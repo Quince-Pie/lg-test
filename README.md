@@ -2333,10 +2333,19 @@ Run 30655450470 reduced the failure to exactly fourteen missing fragments:
 all witnesses for the special width 32,768 in the first batch. Its additive
 attachment counted 1,778 of the expected 1,792 contributions before the probe
 stopped, again without serializing pull bits, a corpus, or a manifest. That
-primitive occupied the entire 32,768-pixel viewport. The same amendment moves
-the viewport boundary to 65,536; both viewport dimensions and MVP scales are
-powers of two, so all vertices become strictly interior while their integer
-screen coordinates and every frozen numerical prediction remain unchanged.
+primitive occupied the entire 32,768-pixel viewport. Run 30655613536 repeated
+the test at a 65,536-pixel viewport and produced the exact same count, which
+falsifies the viewport-boundary explanation.
+
+The correction restores the 32,768-pixel viewport and replaces only that
+unrenderable width with the already measured width-16,384 control for
+normalization class 8,192. It freezes the amended width hash
+`fa2c6295cba5e66fc69ac3d08e536860039d7da1fdf7929b20179c1feff90fac`
+and coefficient hash
+`19f9fb11f4f0506f19d1ab8395ce8289af003524155e10d81e5be39402ded6d3`
+before any pull bits are exposed. The other 8,191 classes remain unchanged
+prospective tests at the unseen exponent. Passing cannot establish exponent
+transfer for the one boundary class; that claim remains explicitly pending.
 
 ### Geometry-transfer introspection
 

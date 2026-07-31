@@ -28,6 +28,11 @@
       "runId": 30655450470,
       "ciCommit": "829a5f36979d19d31bd9c33f7c8dedd9170fe5e5",
       "result": "the first additive batch counted 1778 of 1792 fragments, exactly the fourteen witnesses at width 32768; capture stopped before any pull corpus or manifest was serialized"
+    },
+    {
+      "runId": 30655613536,
+      "ciCommit": "936a7594f99d6ede8cd0bd9ace124907210a2f37",
+      "result": "doubling the viewport to 65536 reproduced the exact 1778-of-1792 first-batch count; capture stopped before any pull corpus or manifest was serialized"
     }
   ],
   "diagnosis": {
@@ -42,11 +47,32 @@
     "after": "R32Float attachment cleared to zero with additive one-plus-destination blending, stored, and read back after every batch",
     "reason": "every fragment now changes the stored attachment value; exact readback counts independently verify all invocations that carry device-buffer pull records"
   },
-  "viewportCorrectionAfterRun30655450470": {
+  "viewportBoundaryHypothesisTest": {
     "before": 32768,
-    "after": 65536,
-    "reason": "the width-32768 primitive occupied the complete viewport and contributed zero of fourteen witness fragments; a power-of-two 65536 viewport makes every vertex strictly interior while the exact power-of-two MVP and viewport transform preserve the same integer screen coordinates",
-    "numericalPredictionsChanged": false
+    "intervention": 65536,
+    "result": "the same fourteen width-32768 fragments were absent",
+    "hypothesisFalsified": true,
+    "finalViewport": 32768
+  },
+  "renderableDomainCorrection": {
+    "reason": "an unclipped width-32768 primitive contributes no fragments at either tested viewport; no numerical pull bits were observed before this correction",
+    "normalizedDenominator8192": {
+      "beforeWidth": 32768,
+      "afterWidth": 16384,
+      "role": "measured-exponent calibration control",
+      "unseenExponentTransferPending": true
+    },
+    "otherNormalizationClasses": {
+      "lowerInclusive": 8193,
+      "upperInclusive": 16383,
+      "count": 8191,
+      "widthFormula": "2x",
+      "role": "prospective unseen-exponent transfer"
+    },
+    "amendedWidthsSha256": "fa2c6295cba5e66fc69ac3d08e536860039d7da1fdf7929b20179c1feff90fac",
+    "selectedReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "amendedRecoveredCoefficientBitsSha256": "19f9fb11f4f0506f19d1ab8395ce8289af003524155e10d81e5be39402ded6d3",
+    "refrozenBeforeNumericalOutput": true
   },
   "frozenNumerics": {
     "widthsSha256": "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",

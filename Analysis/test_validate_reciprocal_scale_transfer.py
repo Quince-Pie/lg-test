@@ -21,7 +21,7 @@ class RasterReciprocalScaleTransferTests(unittest.TestCase):
         )
 
     def test_every_triangle_and_sample_is_inside_the_viewport(self):
-        for width in scale.arithmetic.prospective_widths():
+        for width in scale.capture_widths():
             for geometry in scale.GEOMETRY_CASES:
                 self.assertLessEqual(width, scale.VIEWPORT_WIDTH)
                 self.assertLessEqual(
@@ -38,6 +38,17 @@ class RasterReciprocalScaleTransferTests(unittest.TestCase):
                         position["signedInteriorArea"],
                         scale.MINIMUM_SIGNED_INTERIOR_AREA,
                     )
+
+    def test_only_boundary_class_is_a_calibration_control(self):
+        widths = scale.capture_widths()
+
+        self.assertEqual(len(widths), scale.WIDTH_COUNT)
+        self.assertEqual(widths[0], 16_384)
+        self.assertTrue(all(width > 16_384 for width in widths[1:]))
+        self.assertEqual(
+            scale.arithmetic.uint32_sha256(widths),
+            scale.WIDTHS_SHA256,
+        )
 
 
 if __name__ == "__main__":
