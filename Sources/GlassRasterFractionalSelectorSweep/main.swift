@@ -134,8 +134,8 @@ vertex CaptureVertexOutput fractional_selector_vertex(
     const bool isRight = corner == 1 || corner == 2 || corner == 3;
     const bool isBottom = corner == 0 || corner == 1 || corner == 5;
     const float x = isRight ? width : 0.0f;
-    const float y = float((originY))
-        + (isBottom ? float((oppositeEdge)) : 0.0f);
+    const float y = float((\(originY)))
+        + (isBottom ? float((\(oppositeEdge))) : 0.0f);
 
     CaptureVertexOutput output;
     output.position = mvp * float4(x, y, 0.0f, 1.0f);
@@ -150,7 +150,7 @@ fragment float fractional_selector_fragment(
     device uint2 *results [[buffer(0)]])
 {
     results[
-        (samplePositionCount)u * input.recordIndex + input.outputSlot
+        (\(samplePositionCount))u * input.recordIndex + input.outputSlot
     ] = uint2(
         as_type<uint>(input.ramp.interpolate_at_offset(
             float2(0.0f, 0.5f))),

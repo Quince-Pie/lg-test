@@ -105,8 +105,17 @@ class RasterFractionalSelectorSweepTests(unittest.TestCase):
             sweep.PREREGISTRATION_SHA256,
             sweep.WITNESS_INDEX_SHA256,
             "instanceCount: casesInBatch",
+            r"float((\(originY)))",
+            r"float((\(oppositeEdge)))",
+            r"(\(samplePositionCount))u",
         ):
             self.assertIn(expected, source)
+        for uninterpolated in (
+            "float((originY))",
+            "float((oppositeEdge))",
+            "(samplePositionCount)u",
+        ):
+            self.assertNotIn(uninterpolated, source)
 
 
 if __name__ == "__main__":
