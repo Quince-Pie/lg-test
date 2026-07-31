@@ -11929,6 +11929,144 @@ private func installTransitionBackgroundFilter(
     return true
 }
 
+private func transitionVibrantMatrixInternalsEvidence()
+    -> [String: Any]
+{
+    let symbol =
+        "MTCAColorMatrixMakeWithVibrantShadowAttributes"
+    guard let handle = dlopen(nil, RTLD_LAZY) else {
+        return [
+            "schemaVersion": 1,
+            "executed": false,
+            "symbol": symbol,
+            "reason": dlerror().map { String(cString: $0) }
+                ?? "dlopen(nil) failed",
+        ]
+    }
+    defer { dlclose(handle) }
+    dlerror()
+    guard let address = dlsym(handle, symbol) else {
+        return [
+            "schemaVersion": 1,
+            "executed": false,
+            "symbol": symbol,
+            "reason": dlerror().map { String(cString: $0) }
+                ?? "dlsym failed",
+        ]
+    }
+
+    let functionCodeByteCount = 0x324
+    let dataPageInstructionOffset = 0x2c
+    let dataCaptureOffset = 0x530
+    let dataCaptureByteCount = 0x100
+    let instructionAddress =
+        UnsafeRawPointer(address).advanced(
+            by: dataPageInstructionOffset)
+    let instruction = instructionAddress.load(as: UInt32.self)
+    guard instruction & 0x9f00_001f == 0x9000_0008 else {
+        return [
+            "schemaVersion": 1,
+            "executed": false,
+            "symbol": symbol,
+            "reason": "expected ADRP x8 instruction differs",
+            "instruction": String(
+                format: "%08x",
+                instruction),
+        ]
+    }
+    let immediateLow =
+        Int64((instruction >> 29) & 0x3)
+    let immediateHigh =
+        Int64((instruction >> 5) & 0x7ffff)
+    var pageDelta =
+        (immediateHigh << 2) | immediateLow
+    if pageDelta & (1 << 20) != 0 {
+        pageDelta -= 1 << 21
+    }
+    let instructionPage =
+        UInt(bitPattern: instructionAddress) & ~UInt(0xfff)
+    let signedDataPage =
+        Int64(instructionPage) + pageDelta * 0x1000
+    guard signedDataPage > 0 else {
+        return [
+            "schemaVersion": 1,
+            "executed": false,
+            "symbol": symbol,
+            "reason": "decoded ADRP data page is invalid",
+        ]
+    }
+    let dataPage = UInt(signedDataPage)
+    let dataCaptureAddress = dataPage + dataCaptureOffset
+    guard let dataPointer = UnsafeRawPointer(
+            bitPattern: dataCaptureAddress)
+    else {
+        return [
+            "schemaVersion": 1,
+            "executed": false,
+            "symbol": symbol,
+            "reason": "constant data pointer is invalid",
+        ]
+    }
+
+    let codeBytes = Array(UnsafeRawBufferPointer(
+        start: UnsafeRawPointer(address),
+        count: functionCodeByteCount))
+    let dataBytes = Array(UnsafeRawBufferPointer(
+        start: dataPointer,
+        count: dataCaptureByteCount))
+    var code = serializedRuntimeBytes(
+        codeBytes,
+        className: "mapped arm64e instructions")
+    code["sha256"] =
+        transitionSHA256(Data(codeBytes))
+    var constantData = serializedRuntimeBytes(
+        dataBytes,
+        className: "pc-relative mapped constant data")
+    constantData["sha256"] =
+        transitionSHA256(Data(dataBytes))
+    var report: [String: Any] = [
+        "schemaVersion": 1,
+        "executed": true,
+        "symbol": symbol,
+        "functionAddress": String(
+            format: "0x%016llx",
+            UInt64(UInt(bitPattern: address))),
+        "functionCodeByteCount": functionCodeByteCount,
+        "dataPageInstructionOffset":
+            dataPageInstructionOffset,
+        "dataPageInstruction": String(
+            format: "%08x",
+            instruction),
+        "dataPageDeltaPages": pageDelta,
+        "dataPageAddress": String(
+            format: "0x%016llx",
+            UInt64(dataPage)),
+        "dataCaptureOffset": dataCaptureOffset,
+        "dataCaptureAddress": String(
+            format: "0x%016llx",
+            UInt64(dataCaptureAddress)),
+        "dataCaptureByteCount": dataCaptureByteCount,
+        "code": code,
+        "constantData": constantData,
+    ]
+    var info = Dl_info()
+    if dladdr(address, &info) != 0 {
+        if let imagePath = info.dli_fname {
+            report["imagePath"] = String(cString: imagePath)
+        }
+        if let imageBase = info.dli_fbase {
+            let base = UInt(bitPattern: imageBase)
+            report["imageBase"] = String(
+                format: "0x%016llx",
+                UInt64(base))
+            report["imageOffset"] = String(
+                format: "0x%llx",
+                UInt64(UInt(bitPattern: address) - base))
+        }
+    }
+    return report
+}
+
 private struct TransitionMatrixUniformIntervention {
     let name: String
     let values: [(key: String, value: Any)]
@@ -12260,10 +12398,16 @@ private func transitionMatrixUniformBasisEvidence(
         ($0["render"] as? [String: Any])?["executed"]
             as? Bool == true
     }.count
+    let vibrantMatrixInternals =
+        transitionVibrantMatrixInternalsEvidence()
+    let internalsExecuted =
+        vibrantMatrixInternals["executed"] as? Bool == true
     return [
         "schemaVersion": 1,
         "requested": true,
-        "executed": executed == interventions.count,
+        "executed":
+            executed == interventions.count
+            && internalsExecuted,
         "sourceSampleIndex": sourceSnapshot.sampleIndex,
         "sourceRequestedProgress":
             sourceSnapshot.requestedProgress,
@@ -12274,6 +12418,7 @@ private func transitionMatrixUniformBasisEvidence(
         "method":
             "independent-kvc-axis-interventions-on-copied-endpoint-filter",
         "presentationLayerReplayed": false,
+        "vibrantMatrixInternals": vibrantMatrixInternals,
     ]
 }
 
@@ -13065,6 +13210,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 }
                 var endpointTopologyWaitSeconds: Double?
                 var endpointTopologyMatched: Bool?
+                var endpointTopologyObservedFaceOpacity: Double?
                 if index == sampleCount - 1 {
                     let waitStarted = CACurrentMediaTime()
                     let deadline =
@@ -13075,10 +13221,22 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         CATransaction.flush()
                         let presentationRoot =
                             rootLayer.presentation() ?? rootLayer
-                        let hasBackground =
+                        let backgroundTarget =
                             transitionBackgroundFilterTarget(
-                                in: presentationRoot) != nil
-                        if hasBackground == direction.finalVisible {
+                                in: presentationRoot)
+                        let observedFaceOpacity =
+                            (
+                                backgroundTarget?.filter.value(
+                                    forKey: "inputFaceOpacity")
+                                    as? NSNumber
+                            )?.doubleValue
+                        endpointTopologyObservedFaceOpacity =
+                            observedFaceOpacity
+                        let endpointMatches =
+                            direction.finalVisible
+                            ? observedFaceOpacity == 1.0
+                            : backgroundTarget == nil
+                        if endpointMatches {
                             endpointTopologyMatched = true
                             break
                         }
@@ -13126,6 +13284,11 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     sample[
                         "endpointTopologyMatchedBeforeCapture"
                     ] = endpointTopologyMatched
+                    sample[
+                        "endpointTopologyObservedFaceOpacity"
+                    ] = endpointTopologyObservedFaceOpacity.map {
+                        $0 as Any
+                    } ?? NSNull()
                 }
                 samples.append(sample)
                 if dynamicUniformsRequested,

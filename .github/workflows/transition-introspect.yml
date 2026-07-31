@@ -187,6 +187,7 @@ jobs:
           test "${{ steps.capture.outcome }}" = success
           test -s transition-introspection/transition-timeline.json
           python3 - <<'PY'
+          import hashlib
           import json
           import os
           import pathlib
@@ -490,6 +491,101 @@ jobs:
                       "matrix interventions lack uniform rank: "
                       f"{len(distinct_payloads)} distinct payloads"
                   )
+
+              internals = matrix_basis.get(
+                  "vibrantMatrixInternals", {}
+              )
+              code = internals.get("code", {})
+              constant_data = internals.get(
+                  "constantData", {}
+              )
+
+              def exact_byte_capture(
+                  capture,
+                  expected_class,
+                  expected_length,
+              ):
+                  if (
+                      not isinstance(capture, dict)
+                      or capture.get("class")
+                          != expected_class
+                      or capture.get("lengthBytes")
+                          != expected_length
+                      or not isinstance(
+                          capture.get("hex"), str
+                      )
+                      or len(capture["hex"])
+                          != expected_length * 2
+                      or not isinstance(
+                          capture.get("sha256"), str
+                      )
+                  ):
+                      return False
+                  try:
+                      raw = bytes.fromhex(capture["hex"])
+                  except ValueError:
+                      return False
+                  return (
+                      len(raw) == expected_length
+                      and hashlib.sha256(raw).hexdigest()
+                          == capture["sha256"]
+                  )
+
+              try:
+                  instruction = int(
+                      internals.get(
+                          "dataPageInstruction", ""
+                      ),
+                      16,
+                  )
+              except (TypeError, ValueError):
+                  instruction = -1
+              if (
+                  not isinstance(internals, dict)
+                  or internals.get("schemaVersion") != 1
+                  or internals.get("executed") is not True
+                  or internals.get("symbol")
+                      != "MTCAColorMatrixMakeWithVibrant"
+                         "ShadowAttributes"
+                  or internals.get("functionCodeByteCount")
+                      != 804
+                  or internals.get(
+                      "dataPageInstructionOffset"
+                  ) != 44
+                  or instruction & 0x9f00001f
+                      != 0x90000008
+                  or not isinstance(
+                      internals.get("dataPageDeltaPages"),
+                      int,
+                  )
+                  or internals.get("dataCaptureOffset")
+                      != 1328
+                  or internals.get("dataCaptureByteCount")
+                      != 256
+                  or not str(
+                      internals.get("imagePath", "")
+                  ).endswith("/CoreMaterial")
+                  or not exact_byte_capture(
+                      code,
+                      "mapped arm64e instructions",
+                      804,
+                  )
+                  or not exact_byte_capture(
+                      constant_data,
+                      "pc-relative mapped constant data",
+                      256,
+                  )
+                  or code["hex"][:8] != "7f2303d5"
+                  or int.from_bytes(
+                      bytes.fromhex(code["hex"])[44:48],
+                      "little",
+                  ) != instruction
+                  or set(constant_data["hex"]) <= {"0"}
+              ):
+                  raise SystemExit(
+                      "vibrant matrix internals are incomplete: "
+                      f"{internals}"
+                  )
           elif matrix_basis.get("executed") is not False:
               raise SystemExit(
                   "unrequested matrix basis executed"
@@ -503,6 +599,11 @@ jobs:
           endpoint_wait = endpoint.get(
               "endpointTopologyWaitSeconds"
           )
+          expected_endpoint_face_opacity = (
+              1.0
+              if report["direction"] == "materialize"
+              else None
+          )
           if (
               report.get(
                   "endpointTopologyWaitDeadlineSeconds"
@@ -515,6 +616,9 @@ jobs:
               or endpoint.get(
                   "endpointTopologyMatchedBeforeCapture"
               ) is not True
+              or endpoint.get(
+                  "endpointTopologyObservedFaceOpacity"
+              ) != expected_endpoint_face_opacity
               or not isinstance(endpoint_wait, (int, float))
               or endpoint_wait < 0
               or endpoint_wait > 1.0

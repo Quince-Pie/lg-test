@@ -1728,7 +1728,10 @@ missing uniform payloads, non-background pipelines, or anything other than
 two background uniform bindings per state. The final timeline sample also
 waits, for at most one second, for Core Animation's presentation topology to
 match the declared endpoint; CI rejects a lingering materialized or
-dematerialized layer instead of accepting a nominal-clock endpoint. Dispatch
+dematerialized layer instead of accepting a nominal-clock endpoint. A
+materialized endpoint must also expose `inputFaceOpacity == 1.0` exactly;
+layer presence alone is insufficient because Core Animation can publish the
+topology one presentation tick before the terminal filter state. Dispatch
 `transition-introspect.yml` with `capture_mode=uniform-profiles` to enable
 this evidence on the four material/appearance materialize legs. The
 clear/light leg additionally renders 16 preregistered, independent KVC
@@ -1738,8 +1741,13 @@ three extended-sRGB fill colors, and a combined holdout. CI requires every
 requested value to survive the copy, every render to expose exactly two
 background uniform bindings, and at least 12 distinct byte payloads. This
 separates the private color-matrix coefficients and rounding law without
-fitting the natural transition trajectory to an assumed formula. The other
-matrix legs still rerun the unchanged state/pixel gates as controls.
+fitting the natural transition trajectory to an assumed formula. The same
+leg resolves Apple's private vibrant-matrix constructor, records its exact
+804 instruction bytes, follows its validated PC-relative page reference, and
+records 256 bytes of the referenced constant table. CI recomputes SHA-256 for
+both byte ranges and rejects malformed or relocated evidence, so coefficients
+come from the executing macOS build rather than an assumed color model. The
+other matrix legs still rerun the unchanged state/pixel gates as controls.
 
 ## Run locally on macOS 26
 
