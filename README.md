@@ -2243,6 +2243,26 @@ table-completion run is dispatched with:
 gh workflow run raster-reciprocal-sweep.yml -f role=holdout
 ```
 
+The authorized calibration run 30652316311 recovered the remaining 1,032
+normalized classes. All 2,076 widths selected one candidate, all 29,064
+coefficients matched the frozen physical product law, and all 1,044
+within-partition scale comparisons matched. Merging it with discovery gives a
+complete 8,192-entry table, ordered by normalized denominator 8,192 through
+16,383, with SHA-256
+`2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb`.
+That is complete calibration, not by itself prospective transfer evidence.
+
+`raster-reciprocal-transfer.yml` supplies the required new prospective gate.
+Its preregistration freezes all 8,192 predicted selectors and the
+`c053c9c4f8f92efa4d93145e627dc16086bf2aebc3133e50f576b696c9eb00bb`
+hash of 114,688 predicted raw coefficient bit patterns before capture. The
+probe uses widths 32,768 through 65,532, entirely above the calibration
+domain, and crosses them with four previously unseen translated and clipped
+triangle geometries. The validator recovers coefficients independently from
+the raw Metal pull pairs and accepts no fit or tolerance: every width must
+select exactly one candidate, both frozen hashes must match, and every
+geometry/primitive must accept the predicted coefficient.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

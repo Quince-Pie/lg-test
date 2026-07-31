@@ -1,0 +1,74 @@
+name: Validate Apple Metal raster reciprocal transfer
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-reciprocal-transfer.yml
+      - Analysis/raster_reciprocal_transfer_preregistration.json
+      - Analysis/test_validate_reciprocal_transfer.py
+      - Analysis/validate_reciprocal_transfer.py
+      - Sources/GlassRasterReciprocalTransfer/**
+
+concurrency:
+  group: raster-reciprocal-transfer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-reciprocal-transfer:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Build Metal reciprocal-transfer probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-reciprocal-transfer
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterReciprocalTransfer/main.swift \
+            -o glass-raster-reciprocal-transfer 2>&1 |
+            tee raster-reciprocal-transfer/build.log
+
+      - name: Measure prospective reciprocal transfer
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          ./glass-raster-reciprocal-transfer \
+            raster-reciprocal-transfer
+
+      - name: Validate frozen transfer predictions
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_reciprocal_transfer.py \
+            raster-reciprocal-transfer \
+            --output raster-reciprocal-transfer/validation.json
+
+      - name: Upload Metal reciprocal-transfer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-reciprocal-transfer-${{ github.run_id }}
+          path: raster-reciprocal-transfer
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce prospective transfer gate
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-reciprocal-transfer/manifest.json
+          test -s raster-reciprocal-transfer/validation.json
