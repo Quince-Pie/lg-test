@@ -2120,6 +2120,16 @@ the named diameter or center coordinate changes. This lets the analysis
 identify discrete decision boundaries without conflating them with material,
 appearance, accessibility, backing-scale, or source-image changes.
 
+`geometry-closure-introspect.yml` is the preregistered closure pass selected
+from those boundary results. Its 64 metadata-only jobs sample the no-bleed
+path below 64 points, exhaust the remaining 105-to-110 and 114-to-119
+small-target intervals, densely bracket the 128-to-192 and 192-to-256
+downsample viewport changes, and move a 96-point five-mip case across the
+crop-allocation boundary. The latter intervention distinguishes the still
+viable five-mip padding candidates without adding texture or pixel dumps.
+This workflow is manually dispatched and cannot weaken any full pixel-replay
+gate.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

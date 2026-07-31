@@ -14,6 +14,12 @@ BOUNDARY_WORKFLOW = (
     / "workflows"
     / "geometry-boundary-introspect.yml"
 )
+CLOSURE_WORKFLOW = (
+    ROOT
+    / ".github"
+    / "workflows"
+    / "geometry-closure-introspect.yml"
+)
 
 
 class GeometryPolicyWorkflowTests(unittest.TestCase):
@@ -29,6 +35,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
         for path, expected_count in (
             (WORKFLOW, 35),
             (BOUNDARY_WORKFLOW, 58),
+            (CLOSURE_WORKFLOW, 64),
         ):
             workflow = path.read_text(encoding="utf-8")
             matrix = set(
@@ -71,6 +78,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
         workflows = [
             WORKFLOW.read_text(encoding="utf-8"),
             BOUNDARY_WORKFLOW.read_text(encoding="utf-8"),
+            CLOSURE_WORKFLOW.read_text(encoding="utf-8"),
         ]
         for workflow in workflows:
             self.assertIn("workflow_dispatch:", workflow)
@@ -107,6 +115,21 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             self.assertIn(f"- circle-256-pad-{center}", workflow)
         for center_y in range(416, 424):
             self.assertIn(f"- circle-512-y{center_y}", workflow)
+
+    def test_closure_matrix_targets_only_open_boundaries(self) -> None:
+        workflow = CLOSURE_WORKFLOW.read_text(encoding="utf-8")
+        for width in range(105, 111):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
+        for width in range(114, 120):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
+        for width in range(306, 311):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
+        for width in range(336, 348):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
+        for width in range(408, 424):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
+        for center in range(468, 493, 4):
+            self.assertIn(f"- circle-096-pad-{center}", workflow)
 
 
 if __name__ == "__main__":
