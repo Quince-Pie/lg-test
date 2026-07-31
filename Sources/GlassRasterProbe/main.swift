@@ -53,6 +53,13 @@ private struct NumeratorTomographyCase {
     let numerators: [UInt32]
 }
 
+private struct NumeratorRefinementCase {
+    let name: String
+    let geometry: TomographyCase
+    let anchorNumeratorIndex: Int
+    let numerators: [UInt32]
+}
+
 private func discoveryTomographyCase(
     _ name: String,
     width: Int,
@@ -1343,6 +1350,75 @@ private func numeratorTomographyCases()
 
 private let numeratorCases = numeratorTomographyCases()
 
+private func numeratorRefinementCases()
+    -> [NumeratorRefinementCase]
+{
+    // These 70 anchors are exactly the discovery residuals from the
+    // preregistered schema-15 25-bit-reciprocal/27-bit-product model.
+    // The neighboring numerator offsets are fixed before observing any
+    // schema-16 output.
+    let residualAnchors: [(dimension: Int, indices: [Int])] = [
+        (47, [74, 131, 178, 216]),
+        (58, [190]),
+        (62, [103, 163, 197]),
+        (76, [89, 108, 127, 146, 165, 184]),
+        (78, [30, 31, 88, 90, 212, 214, 251]),
+        (81, [9, 37, 68, 140, 196]),
+        (83, [50, 76, 158, 159, 233, 241]),
+        (84, [39, 54, 136, 157, 178, 187, 208]),
+        (86, [40, 45, 100, 110, 143, 153, 186, 196, 239]),
+        (88, [62, 73]),
+        (89, [4, 89, 117, 139, 206, 224]),
+        (93, [56, 137, 189, 230]),
+        (98, [2, 173, 187]),
+        (119, [31, 91, 158, 218]),
+        (124, [103, 163, 197]),
+    ]
+    let geometryByName = Dictionary(
+        uniqueKeysWithValues: tomographyCases.map {
+            ($0.name, $0)
+        })
+    let refinementOffsets = Array(-3...4)
+    var result: [NumeratorRefinementCase] = []
+    result.reserveCapacity(70)
+    for (dimension, indices) in residualAnchors {
+        let baseName = String(
+            format:
+                "tomography-discovery-factor-h064-w%03d",
+            dimension)
+        guard let geometry = geometryByName[baseName] else {
+            preconditionFailure(
+                "refinement geometry is absent: \(baseName)")
+        }
+        for index in indices {
+            let anchor = 32_832 + 128 * index
+            let numerators = refinementOffsets.map {
+                UInt32(anchor + $0)
+            }
+            result.append(NumeratorRefinementCase(
+                name: String(
+                    format:
+                        "numerator-refinement-discovery-"
+                        + "factor-h064-w%03d-anchor-%03d",
+                    dimension,
+                    index),
+                geometry: geometry,
+                anchorNumeratorIndex: index,
+                numerators: numerators))
+        }
+    }
+    precondition(result.count == 70)
+    precondition(Set(result.map(\.name)).count == result.count)
+    precondition(result.allSatisfy {
+        $0.numerators.count == 8
+            && Set($0.numerators).count == 8
+    })
+    return result
+}
+
+private let numeratorRefinement =
+    numeratorRefinementCases()
+
 private func sha256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
         String(format: "%02x", $0)
@@ -2134,6 +2210,62 @@ private func run(outputDirectory: URL) throws {
         ])
     }
 
+    var numeratorRefinementRecords: [[String: Any]] = []
+    for probe in numeratorRefinement {
+        let geometry = probe.geometry
+        let surfaces = try renderTomography(
+            geometry,
+            device: device,
+            queue: queue,
+            pipeline: numeratorTomographyPipeline,
+            numerators: probe.numerators)
+        var outputs: [[String: Any]] = []
+        for (index, data) in surfaces.enumerated() {
+            let filename =
+                "\(probe.name)-ramp-\(index)-rgba32ui.raw"
+            try data.write(
+                to: outputDirectory.appendingPathComponent(filename),
+                options: .atomic)
+            outputs.append([
+                "deltaIndex": index,
+                "file": filename,
+                "bytes": data.count,
+                "sha256": sha256(data),
+                "components": "x@0,x@15/16,y@0,y@15/16",
+                "primitiveIDPacking": "external-base-case",
+            ])
+        }
+        numeratorRefinementRecords.append([
+            "name": probe.name,
+            "role": "discovery",
+            "baseCase": geometry.name,
+            "primitiveMaskCase": geometry.name,
+            "anchorNumeratorIndex":
+                probe.anchorNumeratorIndex,
+            "target": [
+                "width": geometry.targetWidth,
+                "height": geometry.targetHeight,
+            ],
+            "crop": [
+                "originX": geometry.originX,
+                "originY": geometry.originY,
+                "width": geometry.width,
+                "height": geometry.height,
+            ],
+            "deltaNumerators": probe.numerators.map {
+                Int($0)
+            },
+            "deltaDenominator": Int(
+                tomographyDeltaDenominator),
+            "deltaBits": probe.numerators.map {
+                bits(
+                    Float($0)
+                    / Float(tomographyDeltaDenominator))
+            },
+            "outputs": outputs,
+        ])
+    }
+
     let arithmeticCases = tomographyCases.filter {
         $0.role == "discovery"
     }
@@ -2150,8 +2282,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 15,
-        "rigVersion": "metal-raster-interpolant-probe-15.0.0",
+        "schemaVersion": 16,
+        "rigVersion": "metal-raster-interpolant-probe-16.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -2185,10 +2317,14 @@ private func run(outputDirectory: URL) throws {
                 "128 power-of-two-edge determinant controls",
             "numeratorTomographyOutput":
                 "256 normalized numerator mantissas on 24 geometries",
+            "numeratorRefinementOutput":
+                "eight low-bit neighbors at 70 schema-15 residuals",
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,
         "numeratorTomographyCases": numeratorRecords,
+        "numeratorRefinementCases":
+            numeratorRefinementRecords,
         "arithmeticProbe": [
             "role": "discovery",
             "cases": arithmeticCases.map {

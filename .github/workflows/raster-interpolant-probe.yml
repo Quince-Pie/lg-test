@@ -73,10 +73,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 15:
+          if manifest.get("schemaVersion") != 16:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-15.0.0"
+              "metal-raster-interpolant-probe-16.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -541,6 +541,115 @@ jobs:
                   ):
                       raise SystemExit(
                           f"{record['name']} numerator surface differs"
+                      )
+
+          residual_anchors = [
+              (47, [74, 131, 178, 216]),
+              (58, [190]),
+              (62, [103, 163, 197]),
+              (76, [89, 108, 127, 146, 165, 184]),
+              (78, [30, 31, 88, 90, 212, 214, 251]),
+              (81, [9, 37, 68, 140, 196]),
+              (83, [50, 76, 158, 159, 233, 241]),
+              (84, [39, 54, 136, 157, 178, 187, 208]),
+              (
+                  86,
+                  [40, 45, 100, 110, 143, 153, 186, 196, 239],
+              ),
+              (88, [62, 73]),
+              (89, [4, 89, 117, 139, 206, 224]),
+              (93, [56, 137, 189, 230]),
+              (98, [2, 173, 187]),
+              (119, [31, 91, 158, 218]),
+              (124, [103, 163, 197]),
+          ]
+          expected_refinement_records = []
+          for dimension, indices in residual_anchors:
+              base_name = (
+                  "tomography-discovery-factor-h064-"
+                  f"w{dimension:03d}"
+              )
+              for anchor_index in indices:
+                  anchor = 32832 + 128 * anchor_index
+                  expected_refinement_records.append({
+                      "name": (
+                          "numerator-refinement-discovery-"
+                          f"factor-h064-w{dimension:03d}-"
+                          f"anchor-{anchor_index:03d}"
+                      ),
+                      "baseCase": base_name,
+                      "anchorNumeratorIndex": anchor_index,
+                      "numerators": [
+                          anchor + offset
+                          for offset in range(-3, 5)
+                      ],
+                  })
+          if len(expected_refinement_records) != 70:
+              raise SystemExit(
+                  "numerator refinement anchor count differs"
+              )
+          refinement_records = manifest.get(
+              "numeratorRefinementCases",
+              [],
+          )
+          if (
+              len(refinement_records)
+              != len(expected_refinement_records)
+              or [
+                  {
+                      "name": record["name"],
+                      "baseCase": record["baseCase"],
+                      "anchorNumeratorIndex":
+                          record["anchorNumeratorIndex"],
+                      "numerators": record["deltaNumerators"],
+                  }
+                  for record in refinement_records
+              ] != expected_refinement_records
+          ):
+              raise SystemExit(
+                  "numerator refinement case set differs"
+              )
+          for record in refinement_records:
+              base = tomography_by_name[record["baseCase"]]
+              crop = record["crop"]
+              if (
+                  record["role"] != "discovery"
+                  or "holdout" in record["name"]
+                  or record["primitiveMaskCase"]
+                      != record["baseCase"]
+                  or crop != base["crop"]
+                  or record["target"] != base["target"]
+                  or record["deltaDenominator"] != 65536
+                  or len(record["deltaBits"]) != 8
+              ):
+                  raise SystemExit(
+                      f"{record['name']} refinement metadata differs"
+                  )
+              outputs = record.get("outputs", [])
+              if (
+                  len(outputs) != 8
+                  or {
+                      output["deltaIndex"]
+                      for output in outputs
+                  } != set(range(8))
+              ):
+                  raise SystemExit(
+                      f"{record['name']} refinement outputs differ"
+                  )
+              expected = crop["width"] * crop["height"] * 16
+              for output in outputs:
+                  path = root / output["file"]
+                  if (
+                      output["bytes"] != expected
+                      or path.stat().st_size != expected
+                      or output["components"]
+                          != "x@0,x@15/16,y@0,y@15/16"
+                      or output["primitiveIDPacking"]
+                          != "external-base-case"
+                      or sha256(path) != output["sha256"]
+                  ):
+                      raise SystemExit(
+                          f"{record['name']} refinement surface differs"
                       )
 
           arithmetic = manifest.get("arithmeticProbe", {})

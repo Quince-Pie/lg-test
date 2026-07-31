@@ -2073,6 +2073,16 @@ across both axes, plus power-of-two y controls. CI independently regenerates
 the expanded ordered base list and continues to reject every holdout name and
 role from numerator tomography.
 
+Raster schema 16 keeps every schema-15 surface and the four raster holdouts
+unchanged and unopened. It appends a discovery-only low-bit refinement at the
+70 residuals of the preregistered 25-significant-bit reciprocal followed by a
+27-significant-bit product model. Each residual replays its original numerator
+and the seven fixed neighboring integer numerators `[-3, +4]`, for 560 added
+surfaces. This measures the local quotient boundary without fitting offsets to
+new Apple output. CI independently reconstructs all residual dimensions,
+indices, neighboring numerators, names, geometry links, byte sizes, and hashes;
+it rejects any holdout name or role from the refinement set.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
