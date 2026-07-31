@@ -2101,7 +2101,11 @@ private func serializedRuntimeBytes(
 
 private func serializedRuntimeValue(_ optionalValue: Any?) -> Any {
     guard let value = optionalValue else { return NSNull() }
-    if let color = value as? CGColor {
+    let object = value as AnyObject
+    if CFGetTypeID(object) == CGColor.typeID {
+        let color = unsafeDowncast(
+            object,
+            to: CGColor.self)
         return [
             "class": String(reflecting: type(of: value)),
             "colorSpace":
