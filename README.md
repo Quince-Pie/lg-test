@@ -2147,6 +2147,14 @@ translated, fractional, clipped, and oversized geometries. It prevents an
 exact regular-material allocator from being misreported as parity for
 Walle's separately configurable clear variant.
 
+`geometry-residual-introspect.yml` exhausts the three integer intervals left
+open by the independent proof controls. Its 91 jobs cover both centered and
+translated no-bleed diameters 57 through 62, both axes of the 96-point
+small-target translation from 449 through 468, and every centered diameter
+448 through 486. This matrix is deliberately exhaustive within those
+intervals: any reported switch must be bracketed by adjacent integer inputs,
+not interpolated across an unsampled gap.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

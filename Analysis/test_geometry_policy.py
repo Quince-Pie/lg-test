@@ -32,6 +32,12 @@ CLEAR_WORKFLOW = (
     / "workflows"
     / "clear-geometry-policy-introspect.yml"
 )
+RESIDUAL_WORKFLOW = (
+    ROOT
+    / ".github"
+    / "workflows"
+    / "geometry-residual-introspect.yml"
+)
 
 
 class GeometryPolicyWorkflowTests(unittest.TestCase):
@@ -50,6 +56,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             (CLOSURE_WORKFLOW, 64),
             (PROOF_WORKFLOW, 29),
             (CLEAR_WORKFLOW, 28),
+            (RESIDUAL_WORKFLOW, 91),
         ):
             workflow = path.read_text(encoding="utf-8")
             matrix = set(
@@ -95,6 +102,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             CLOSURE_WORKFLOW.read_text(encoding="utf-8"),
             PROOF_WORKFLOW.read_text(encoding="utf-8"),
             CLEAR_WORKFLOW.read_text(encoding="utf-8"),
+            RESIDUAL_WORKFLOW.read_text(encoding="utf-8"),
         ]
         for workflow in workflows:
             self.assertIn("workflow_dispatch:", workflow)
@@ -167,6 +175,20 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
         self.assertIn("- circle-512-offset", workflow)
         self.assertIn("- circle-640-fractional", workflow)
         self.assertIn("- circle-3072-center", workflow)
+
+    def test_residual_matrix_exhausts_open_integer_intervals(self) -> None:
+        workflow = RESIDUAL_WORKFLOW.read_text(encoding="utf-8")
+        for width in range(57, 63):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
+            self.assertIn(f"- circle-{width:03d}-offset", workflow)
+        for axis in ("x", "y"):
+            for center in range(449, 469):
+                self.assertIn(
+                    f"- circle-096-pad{axis}-{center}",
+                    workflow,
+                )
+        for width in range(448, 487):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
 
 
 if __name__ == "__main__":

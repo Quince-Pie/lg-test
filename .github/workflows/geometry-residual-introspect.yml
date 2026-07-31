@@ -1,0 +1,253 @@
+name: Resolve Liquid Glass geometry residuals
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: geometry-residual-introspect-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  geometry-residual:
+    name: ${{ matrix.geometry }}
+    runs-on: macos-26
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        geometry:
+          - circle-057-center
+          - circle-057-offset
+          - circle-058-center
+          - circle-058-offset
+          - circle-059-center
+          - circle-059-offset
+          - circle-060-center
+          - circle-060-offset
+          - circle-061-center
+          - circle-061-offset
+          - circle-062-center
+          - circle-062-offset
+          - circle-096-padx-449
+          - circle-096-padx-450
+          - circle-096-padx-451
+          - circle-096-padx-452
+          - circle-096-padx-453
+          - circle-096-padx-454
+          - circle-096-padx-455
+          - circle-096-padx-456
+          - circle-096-padx-457
+          - circle-096-padx-458
+          - circle-096-padx-459
+          - circle-096-padx-460
+          - circle-096-padx-461
+          - circle-096-padx-462
+          - circle-096-padx-463
+          - circle-096-padx-464
+          - circle-096-padx-465
+          - circle-096-padx-466
+          - circle-096-padx-467
+          - circle-096-padx-468
+          - circle-096-pady-449
+          - circle-096-pady-450
+          - circle-096-pady-451
+          - circle-096-pady-452
+          - circle-096-pady-453
+          - circle-096-pady-454
+          - circle-096-pady-455
+          - circle-096-pady-456
+          - circle-096-pady-457
+          - circle-096-pady-458
+          - circle-096-pady-459
+          - circle-096-pady-460
+          - circle-096-pady-461
+          - circle-096-pady-462
+          - circle-096-pady-463
+          - circle-096-pady-464
+          - circle-096-pady-465
+          - circle-096-pady-466
+          - circle-096-pady-467
+          - circle-096-pady-468
+          - circle-448-center
+          - circle-449-center
+          - circle-450-center
+          - circle-451-center
+          - circle-452-center
+          - circle-453-center
+          - circle-454-center
+          - circle-455-center
+          - circle-456-center
+          - circle-457-center
+          - circle-458-center
+          - circle-459-center
+          - circle-460-center
+          - circle-461-center
+          - circle-462-center
+          - circle-463-center
+          - circle-464-center
+          - circle-465-center
+          - circle-466-center
+          - circle-467-center
+          - circle-468-center
+          - circle-469-center
+          - circle-470-center
+          - circle-471-center
+          - circle-472-center
+          - circle-473-center
+          - circle-474-center
+          - circle-475-center
+          - circle-476-center
+          - circle-477-center
+          - circle-478-center
+          - circle-479-center
+          - circle-480-center
+          - circle-481-center
+          - circle-482-center
+          - circle-483-center
+          - circle-484-center
+          - circle-485-center
+          - circle-486-center
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
+      LG_GEOMETRY_POLICY: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Build compact geometry-policy probe
+        run: |
+          mkdir -p geometry-policy
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o geometry-policy/MatrixBridge.o
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            geometry-policy/MatrixBridge.o \
+            -o glassintrospect
+
+      - name: Capture real geometry-residual metadata
+        run: |
+          ./glassintrospect geometry-policy
+
+      - name: Enforce compact geometry evidence
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+
+          root = pathlib.Path("geometry-policy")
+          report = json.loads(
+              (root / "geometry-policy.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          if (
+              report.get("schemaVersion") != 1
+              or report.get("probe") != "compact-geometry-policy"
+              or report.get("executed") is not True
+          ):
+              raise SystemExit(
+                  f"geometry-policy report differs: {report}"
+              )
+          geometry = report.get("geometry", {})
+          if geometry.get("name") != os.environ["LG_GLASS_GEOMETRY"]:
+              raise SystemExit(
+                  f"geometry identity differs: {geometry}"
+              )
+          profile = report.get("materialProfile", {})
+          if (
+              profile.get("material") != "regular"
+              or profile.get("requestedAppearance") != "light"
+              or profile.get("effectiveAppearanceMatchesRequest")
+                  is not True
+          ):
+              raise SystemExit(
+                  f"geometry material profile differs: {profile}"
+              )
+          render = report.get("carendererEvidence", {})
+          buffers = render.get("metalBufferSnapshots", {}).get(
+              "snapshots", []
+          )
+          textures = render.get("metalTextureSnapshots", {}).get(
+              "snapshots", []
+          )
+
+          def fragment(record):
+              return (
+                  record.get("pipeline", {})
+                  .get("creationDescriptor", {})
+                  .get("fragmentFunction", "")
+              )
+
+          vertices = [
+              record
+              for record in buffers
+              if record.get("stage") == "vertex"
+              and record.get("index") == 1
+              and fragment(record).startswith("glass_background_sdf")
+              and isinstance(
+                  record.get("payload", {}).get("hex"), str
+              )
+          ]
+          sources = [
+              record
+              for record in textures
+              if record.get("index") == 3
+              and fragment(record).startswith("glass_background_sdf")
+          ]
+          if len(vertices) != 2 or len(sources) != 1:
+              raise SystemExit(
+                  "geometry buffer/texture cardinality differs: "
+                  f"vertices={len(vertices)}, sources={len(sources)}"
+              )
+          source = sources[0]
+          if (
+              not 0 < source.get("width", 0) <= 1024
+              or not 0 < source.get("height", 0) <= 1024
+              or source.get("rawCapture") is not False
+              or source.get("reason")
+                  != "metadata-only geometry-policy capture"
+          ):
+              raise SystemExit(
+                  f"source texture metadata differs: {source}"
+              )
+          if list(root.glob("*.raw")):
+              raise SystemExit(
+                  "compact geometry capture emitted raw stage dumps"
+              )
+          PY
+
+      - name: Upload compact geometry evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-geometry-residual-${{ matrix.geometry }}-${{ github.run_id }}
+          path: geometry-policy
+          if-no-files-found: error
+          retention-days: 7
