@@ -3412,19 +3412,20 @@ private func run(outputDirectory: URL) throws {
         ],
     ]
 
-    let manifest: [String: Any] = [
-        "schemaVersion": 23,
-        "rigVersion": "metal-raster-interpolant-probe-23.0.0",
-        "ciCommit": ProcessInfo.processInfo.environment[
-            "GITHUB_SHA"
-        ] ?? "",
-        "device": [
+    var manifest: [String: Any] = [:]
+    manifest["schemaVersion"] = 23
+    manifest["rigVersion"] =
+        "metal-raster-interpolant-probe-23.0.0"
+    manifest["ciCommit"] = ProcessInfo.processInfo.environment[
+        "GITHUB_SHA"
+    ] ?? ""
+    manifest["device"] = [
             "name": device.name,
             "registryID": String(device.registryID),
             "recommendedMaxWorkingSetSize":
                 String(device.recommendedMaxWorkingSetSize),
-        ],
-        "compile": [
+    ] as [String: Any]
+    manifest["compile"] = [
             "fastMathEnabled": true,
             "vertexStride": MemoryLayout<ProbeVertex>.stride,
             "tomographyVertexStride":
@@ -3466,17 +3467,17 @@ private func run(outputDirectory: URL) throws {
             "quotientArithmeticOutput":
                 "exhaustive exposed Metal division and reciprocal "
                 + "controls over the quotient discovery domain",
-        ],
-        "cases": records,
-        "reciprocalTomographyCases": tomographyRecords,
-        "numeratorTomographyCases": numeratorRecords,
-        "numeratorRefinementCases":
-            numeratorRefinementRecords,
-        "numeratorThresholdCases":
-            numeratorThresholdRecords,
-        "numeratorResidueCases":
-            numeratorResidueRecords,
-        "quotientCorpus": [
+    ] as [String: Any]
+    manifest["cases"] = records
+    manifest["reciprocalTomographyCases"] = tomographyRecords
+    manifest["numeratorTomographyCases"] = numeratorRecords
+    manifest["numeratorRefinementCases"] =
+        numeratorRefinementRecords
+    manifest["numeratorThresholdCases"] =
+        numeratorThresholdRecords
+    manifest["numeratorResidueCases"] =
+        numeratorResidueRecords
+    manifest["quotientCorpus"] = [
             "role": "discovery",
             "widths": quotientCorpusDiscoveryWidths,
             "holdoutWidthsExcluded":
@@ -3531,8 +3532,8 @@ private func run(outputDirectory: URL) throws {
                             },
                     ]
                 },
-        ],
-        "quotientHoldoutCorpus": [
+    ] as [String: Any]
+    manifest["quotientHoldoutCorpus"] = [
             "role": "holdout",
             "widths": quotientHoldoutWidths,
             "discoveryWidthsExcluded":
@@ -3597,10 +3598,10 @@ private func run(outputDirectory: URL) throws {
                 "truthTableSha256":
                     "0ad8899707021f22bc832724a73efa1bd3f7f3dffff7be182ce15885464b6fbb",
             ],
-        ],
-        "quotientFineMantissaCorpus":
-            quotientFineMantissaManifest,
-        "quotientArithmeticProbe": [
+    ] as [String: Any]
+    manifest["quotientFineMantissaCorpus"] =
+        quotientFineMantissaManifest
+    manifest["quotientArithmeticProbe"] = [
             "role": "discovery",
             "widths": quotientCorpusDiscoveryWidths,
             "holdoutWidthsExcluded":
@@ -3632,8 +3633,8 @@ private func run(outputDirectory: URL) throws {
             ],
             "ordering":
                 "width-major,numerator-major,component-major",
-        ],
-        "arithmeticProbe": [
+    ] as [String: Any]
+    manifest["arithmeticProbe"] = [
             "role": "discovery",
             "cases": arithmeticCases.map {
                 [
@@ -3688,8 +3689,7 @@ private func run(outputDirectory: URL) throws {
             ],
             "ordering":
                 "case-major,delta-major,component-major",
-        ],
-    ]
+    ] as [String: Any]
     let manifestData = try JSONSerialization.data(
         withJSONObject: manifest,
         options: [.prettyPrinted, .sortedKeys])
