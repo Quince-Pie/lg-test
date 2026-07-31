@@ -1715,14 +1715,17 @@ rejects any leg with fewer than 16 states containing exact color components.
 Schema 5 adds a separately gated dynamic-uniform mode. The real WindowServer
 timeline is captured completely before this mode performs any local rendering.
 At nine preregistered materialize states it copies the actual presentation
-`glassBackground` filter. After the transition reaches its settled model
-endpoint, each saved filter copy is installed on the model
-`CABackdropLayer` and rendered through a lightweight Metal-backed
-`CARenderer`. Only fragment-buffer bindings from the glass pipelines are
-retained. A presentation layer is never assigned to `CARenderer`; the report
-records `presentationLayerReplayed = false`, and CI rejects missing filter
-copies, missing uniform payloads, non-background pipelines, or anything other
-than two background uniform bindings per state. Dispatch
+`glassBackground` filter. After the complete transition timeline has been
+captured, a fresh static SwiftUI glass model tree with the same material,
+appearance, and geometry is created solely as an offscreen render carrier.
+Each saved filter copy is installed on that model tree's `CABackdropLayer` and
+rendered through a lightweight Metal-backed `CARenderer`. This avoids
+reusing the transition host after Core Animation has retired its render
+context. Only fragment-buffer bindings from the glass pipelines are retained.
+A presentation layer is never assigned to `CARenderer`; the report records
+`presentationLayerReplayed = false`, and CI rejects missing filter copies,
+missing uniform payloads, non-background pipelines, or anything other than
+two background uniform bindings per state. Dispatch
 `transition-introspect.yml` with `capture_mode=uniform-profiles` to enable
 this evidence on the four material/appearance materialize legs. The other
 matrix legs still rerun the unchanged state/pixel gates as controls.

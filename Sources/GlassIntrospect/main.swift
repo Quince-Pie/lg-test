@@ -11563,6 +11563,7 @@ private func carendererUniformEvidence(
     renderer.layer = rootLayer
     renderer.bounds = bounds
 
+    CATransaction.flush()
     let startedMediaTime = CACurrentMediaTime()
     MetalUniformProbe.shared.beginCapture(capture)
     renderer.beginFrame(
@@ -12011,7 +12012,7 @@ private func transitionBackgroundUniformEvidence(
         "executedSampleCount": executed,
         "records": records,
         "method":
-            "copied-presentation-background-filter-on-settled-model-tree",
+            "copied-presentation-background-filter-on-fresh-static-model-tree",
         "presentationLayerReplayed": false,
     ]
 }
@@ -12743,15 +12744,60 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 writeTransitionProbeProgress(
                     outputDirectory: outputDirectory,
                     capture: "transition-background-uniforms",
-                    phase: "before-settled-model-uniform-renders")
+                    phase: "before-static-model-carrier")
+                let carrierModel = TransitionProbeModel()
+                carrierModel.visible = true
+                let carrierWindow = ProbeWindow(
+                    contentRect: NSRect(
+                        x: 0,
+                        y: 0,
+                        width: 1024,
+                        height: 1024),
+                    styleMask: [.borderless],
+                    backing: .buffered,
+                    defer: false)
+                carrierWindow.hasShadow = false
+                carrierWindow.isOpaque = true
+                carrierWindow.backgroundColor = .black
+                carrierWindow.colorSpace = .sRGB
+                carrierWindow.appearance = window.appearance
+                carrierWindow.contentView = NSHostingView(
+                    rootView: ProbeView(
+                        material: material,
+                        geometry: geometry,
+                        transitionTimelineEnabled: false,
+                        transitionModel: carrierModel))
+                carrierWindow.setFrameOrigin(.zero)
+                carrierWindow.makeKeyAndOrderFront(nil)
+                carrierWindow.makeMain()
+                carrierWindow.displayIfNeeded()
+                CATransaction.flush()
+                try? await Task.sleep(
+                    for: .milliseconds(500))
+                carrierWindow.displayIfNeeded()
+                CATransaction.flush()
+                guard let carrierRootLayer =
+                        carrierWindow.contentView?.layer
+                else {
+                    throw NSError(
+                        domain:
+                            "LiquidGlassTransitionProbe",
+                        code: 8,
+                        userInfo: [
+                            NSLocalizedDescriptionKey:
+                                "fresh static uniform carrier "
+                                + "root unavailable",
+                        ])
+                }
                 dynamicUniformEvidence =
                     transitionBackgroundUniformEvidence(
-                        rootLayer: rootLayer,
+                        rootLayer: carrierRootLayer,
                         snapshots: dynamicUniformSnapshots)
+                carrierWindow.orderOut(nil)
                 writeTransitionProbeProgress(
                     outputDirectory: outputDirectory,
                     capture: "transition-background-uniforms",
-                    phase: "after-settled-model-uniform-renders")
+                    phase: "after-static-model-carrier")
             } else {
                 dynamicUniformEvidence = [
                     "schemaVersion": 1,

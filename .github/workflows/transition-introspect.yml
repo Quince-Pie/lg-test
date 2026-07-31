@@ -251,7 +251,7 @@ jobs:
                   or uniforms.get("executedSampleCount") != 9
                   or uniforms.get("method")
                       != "copied-presentation-background-filter-"
-                         "on-settled-model-tree"
+                         "on-fresh-static-model-tree"
                   or not isinstance(
                       uniforms.get("modelTargetPath"), list
                   )
