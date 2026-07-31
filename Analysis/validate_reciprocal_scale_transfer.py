@@ -15,11 +15,10 @@ import validate_reciprocal_transfer as arithmetic
 type JsonObject = dict[str, Any]
 
 SCHEMA_VERSION = 1
-RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.5"
+RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.6"
 TARGET_WIDTH = 224
 TARGET_HEIGHT = 4_096
 PREREGISTERED_VIEWPORT_WIDTH = 32_768
-VIEWPORT_ORIGIN_X = -16_384
 VIEWPORT_WIDTH = 32_768
 WIDTH_MINIMUM = 16_384
 WIDTH_MAXIMUM = 32_766
@@ -48,7 +47,7 @@ CAPTURE_AMENDMENT_PATH = Path(__file__).with_name(
     "raster_reciprocal_scale_transfer_capture_amendment.json"
 )
 CAPTURE_AMENDMENT_SHA256 = (
-    "6c1f0b120ec4811b392090ec422161e2c74b973882d57775be98e474c5017467"
+    "94f81d6c08216dcfcf0ac0e5a464192e60435676c5217c22df8a3d4d8cfa58c3"
 )
 GEOMETRY_CASES = (
     {
@@ -122,8 +121,7 @@ def sample_position(
         else anchor_x - margin_x
     )
     y = int(geometry["originY"]) + int(geometry["sampleLocalY"])
-    local_x = x - VIEWPORT_ORIGIN_X
-    signed_interior = height * (2 * local_x + 1) - width
+    signed_interior = height * (2 * x + 1) - width
     if (
         sample_side not in range(SAMPLE_SIDE_COUNT)
         or not 0 <= x < TARGET_WIDTH
@@ -367,7 +365,6 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or evidence.get("targetWidth") != TARGET_WIDTH
         or evidence.get("targetHeight") != TARGET_HEIGHT
         or evidence.get("viewportWidth") != VIEWPORT_WIDTH
-        or evidence.get("viewportOriginX") != VIEWPORT_ORIGIN_X
         or evidence.get("minimumSignedInteriorArea")
         != MINIMUM_SIGNED_INTERIOR_AREA
         or evidence.get("ordering")

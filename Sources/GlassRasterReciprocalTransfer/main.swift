@@ -28,7 +28,6 @@ private let normalizedDenominatorLower = 8_192
 private let normalizedDenominatorUpper = 16_383
 private let targetWidth = 224
 private let targetHeight = 4_096
-private let viewportOriginX = -16_384
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
@@ -106,15 +105,15 @@ private func samplePosition(
         ? geometry.sampleAnchorX + geometry.sampleMarginX
         : geometry.sampleAnchorX - geometry.sampleMarginX
     let y = geometry.originY + geometry.sampleLocalY
-    let screenOriginX = viewportOriginX + originX
-    let localX = x - screenOriginX
+    let localX = x - originX
     let signed =
         geometry.height * (2 * localX + 1) - threshold
     let signedInteriorArea = signed
     precondition((0..<sampleSideCount).contains(sampleSide))
     precondition((0..<targetWidth).contains(x))
     precondition((0..<targetHeight).contains(y))
-    precondition(screenOriginX >= viewportOriginX)
+    precondition(originX < viewportWidth)
+    precondition(originX + width > 0)
     precondition(originX + width <= viewportWidth)
     precondition(
         geometry.originY + geometry.height <= targetHeight)
@@ -352,6 +351,7 @@ private func run(outputDirectory: URL) throws {
         to: widths.count,
         by: batchSize)
     {
+        try autoreleasepool {
         let batchEnd = min(
             batchStart + batchSize,
             widths.count)
@@ -374,7 +374,7 @@ private func run(outputDirectory: URL) throws {
         }
         encoder.setRenderPipelineState(pipeline)
         encoder.setViewport(MTLViewport(
-            originX: Double(viewportOriginX),
+            originX: 0,
             originY: 0,
             width: Double(viewportWidth),
             height: Double(targetHeight),
@@ -484,6 +484,7 @@ private func run(outputDirectory: URL) throws {
                 "reciprocal scale transfer: \(batchEnd)"
                     + "/\(widths.count) widths")
         }
+        }
     }
 
     let records = output.contents().bindMemory(
@@ -542,7 +543,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-scale-transfer-1.0.5"
+        "metal-raster-reciprocal-scale-transfer-1.0.6"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -569,7 +570,7 @@ private func run(outputDirectory: URL) throws {
         "captureAmendmentFile":
             "Analysis/raster_reciprocal_scale_transfer_capture_amendment.json",
         "captureAmendmentSha256":
-            "6c1f0b120ec4811b392090ec422161e2c74b973882d57775be98e474c5017467",
+            "94f81d6c08216dcfcf0ac0e5a464192e60435676c5217c22df8a3d4d8cfa58c3",
         "widthFormula":
             "16384-control-if-normalized-denominator-8192-else-2x",
         "widthMinimum": widths.min()!,
@@ -593,7 +594,6 @@ private func run(outputDirectory: URL) throws {
         "targetWidth": targetWidth,
         "targetHeight": targetHeight,
         "viewportWidth": viewportWidth,
-        "viewportOriginX": viewportOriginX,
         "minimumSignedInteriorArea":
             minimumSignedInteriorArea,
         "ordering":

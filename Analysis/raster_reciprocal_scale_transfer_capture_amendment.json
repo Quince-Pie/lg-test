@@ -48,6 +48,11 @@
       "runId": 30656114844,
       "ciCommit": "b27d4dc6ed5c1196f940c57a2acb2bafdb6fd032",
       "result": "the first failing isolated width was exactly 28672; no pull corpus or manifest was serialized"
+    },
+    {
+      "runId": 30656308838,
+      "ciCommit": "d810d68dc321f121145b76f915c6a288c8b2c48f",
+      "result": "centering the viewport caused the first width to lose coverage, falsifying the guard-band intervention; no pull corpus or manifest was serialized"
     }
   ],
   "diagnosis": {
@@ -95,13 +100,17 @@
     "reason": "the shared pass count depended on its first width, demonstrating that cross-width visibility processing still affected fragment execution",
     "numericalPredictionsChanged": false
   },
-  "guardBandCenteringAfterRun30656114844": {
+  "guardBandCenteringHypothesisTest": {
     "viewportWidth": 32768,
-    "beforeViewportOriginX": 0,
-    "afterViewportOriginX": -16384,
-    "reason": "isolated widths below 28672 passed and width 28672 did not; centering the same power-of-two viewport keeps every amended primitive strictly in clip space while moving absolute endpoints away from the positive guard-band threshold",
-    "sampleFramebufferCoordinatesChanged": false,
-    "primitiveSpansChanged": false,
+    "interventionViewportOriginX": -16384,
+    "result": "width 16384 contributed zero fragments",
+    "hypothesisFalsified": true,
+    "finalViewportOriginX": 0
+  },
+  "commandResourceLifetimeCorrection": {
+    "evidence": "exactly 6144 sequential one-width command buffers passed before the first failure",
+    "before": "Metal command buffers and encoders remained in the process autorelease pool",
+    "after": "each completed one-width submission is enclosed in its own autorelease pool",
     "numericalPredictionsChanged": false
   },
   "frozenNumerics": {

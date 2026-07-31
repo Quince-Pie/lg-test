@@ -2356,14 +2356,14 @@ geometry/sample pixels must independently read back exactly fourteen additive
 contributions before their pull records can be serialized. Predictions and
 acceptance remain unchanged.
 
-The isolated passes completed 6,144 widths before run 30656033628 stopped.
-Run 30656114844 identified the first failure exactly at width 28,672, while
-28,670 and every earlier tested width passed. This is an absolute-coordinate
-guard-band boundary rather than a normalization-class boundary. The next
-capture keeps the same 32,768-pixel power-of-two viewport and primitive spans
-but centers the viewport at x = -16,384. Every amended primitive is then
-strictly inside clip space, while the framebuffer samples stay at the same
-positive integer coordinates. Frozen slope predictions remain unchanged.
+The isolated passes completed exactly 6,144 widths before run 30656033628
+stopped; run 30656114844 identified the coincident width as 28,672. Centering
+the viewport at x = -16,384 made even the first width fail in run 30656308838,
+falsifying the guard-band hypothesis. The exact 6,144-submission boundary
+instead identifies accumulated autoreleased Metal command objects. The
+viewport is restored unchanged, and every completed one-width submission is
+now enclosed in its own autorelease pool. Frozen slope predictions remain
+unchanged.
 
 ### Geometry-transfer introspection
 
