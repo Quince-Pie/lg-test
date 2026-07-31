@@ -3603,7 +3603,7 @@ private func probeDrawIndexedPrimitivesBaseVertex(
 }
 
 private let glassBackgroundRenderSymbol =
-    "_ZN2CA3OGL21GlassBackgroundFilter6renderEPKNS_6Render6Filter" +
+    "_ZNK2CA3OGL21GlassBackgroundFilter6renderEPKNS_6Render6Filter" +
     "EPKNS0_5LayerERNS0_7ContextEfPPNS0_7SurfaceEPfS8_" +
     "PKNS_11ColorMatrixE"
 private let glassBackgroundRenderCodeByteCount = 0x2000
