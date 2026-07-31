@@ -11967,12 +11967,30 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     userInfo: [
                         NSLocalizedDescriptionKey:
                             "transition model, root layer, or Metal "
-                            + "device unavailable",
+                        + "device unavailable",
                     ])
             }
 
-            let duration = 300.0
+            let duration = 120.0
             let sampleCount = 33
+            CATransaction.flush()
+            let initialMediaTime = CACurrentMediaTime()
+            let initialPresentation =
+                rootLayer.presentation() ?? rootLayer
+            var initialSample = transitionTimelineFrameEvidence(
+                rootLayer: initialPresentation,
+                device: device,
+                capture: "transition-dematerialize-00",
+                frameTime: initialMediaTime,
+                progress: 0,
+                outputDirectory: outputDirectory)
+            initialSample["targetMediaTime"] = initialMediaTime
+            initialSample["actualProgress"] = 0.0
+            initialSample["presentationLayerTree"] =
+                layerDescription(initialPresentation)
+            initialSample["animationInventory"] =
+                transitionAnimationInventory(initialPresentation)
+
             let triggerBeforeCommit = CACurrentMediaTime()
             withAnimation(.linear(duration: duration)) {
                 transitionModel.visible = false
@@ -11980,39 +11998,54 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             window.displayIfNeeded()
             CATransaction.flush()
             let triggerAfterCommit = CACurrentMediaTime()
-            try? await Task.sleep(for: .milliseconds(100))
-            let observationMediaTime = CACurrentMediaTime()
-            let animationInventory =
-                transitionAnimationInventory(rootLayer)
-            let modelLayerTree = layerDescription(rootLayer)
-            let presentationLayerTree =
-                rootLayer.presentation().map(layerDescription)
 
-            var samples: [[String: Any]] = []
+            var samples: [[String: Any]] = [initialSample]
             samples.reserveCapacity(sampleCount)
-            for index in 0..<sampleCount {
+            for index in 1..<sampleCount {
                 let progress =
                     Double(index) / Double(sampleCount - 1)
+                let targetMediaTime =
+                    triggerBeforeCommit + progress * duration
+                let remaining =
+                    targetMediaTime - CACurrentMediaTime()
+                if remaining > 0 {
+                    try? await Task.sleep(
+                        nanoseconds:
+                            UInt64(remaining * 1_000_000_000))
+                }
+                window.displayIfNeeded()
+                CATransaction.flush()
+                let actualMediaTime = CACurrentMediaTime()
+                let presentation =
+                    rootLayer.presentation() ?? rootLayer
                 let capture = String(
                     format: "transition-dematerialize-%02d",
                     index)
-                samples.append(transitionTimelineFrameEvidence(
-                    rootLayer: rootLayer,
+                var sample = transitionTimelineFrameEvidence(
+                    rootLayer: presentation,
                     device: device,
                     capture: capture,
-                    frameTime:
-                        triggerBeforeCommit + progress * duration,
+                    frameTime: actualMediaTime,
                     progress: progress,
-                    outputDirectory: outputDirectory))
+                    outputDirectory: outputDirectory)
+                sample["targetMediaTime"] = targetMediaTime
+                sample["actualProgress"] =
+                    (actualMediaTime - triggerBeforeCommit)
+                    / duration
+                sample["presentationLayerTree"] =
+                    layerDescription(presentation)
+                sample["animationInventory"] =
+                    transitionAnimationInventory(presentation)
+                samples.append(sample)
             }
 
             let failedSamples = samples.filter {
                 $0["executed"] as? Bool != true
             }.count
-            var report: [String: Any] = [
-                "schemaVersion": 1,
+            let report: [String: Any] = [
+                "schemaVersion": 2,
                 "probe":
-                    "deterministic-carenderer-dematerialize-timeline",
+                    "paced-presentation-tree-dematerialize-timeline",
                 "material": material.rawValue,
                 "appearance": appearance.rawValue,
                 "geometry": geometry.evidence,
@@ -12020,29 +12053,28 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 "animationDurationSeconds": duration,
                 "sampleCount": sampleCount,
                 "sampleProgressRule": "index/(sampleCount-1)",
-                "frameTimeOrigin": triggerBeforeCommit,
+                "samplingMethod":
+                    "real-presentation-tree-paced-by-media-time",
+                "initialMediaTime": initialMediaTime,
                 "triggerMediaTimeBeforeCommit":
                     triggerBeforeCommit,
                 "triggerMediaTimeAfterCommit":
                     triggerAfterCommit,
-                "observationMediaTime": observationMediaTime,
-                "animationInventory": animationInventory,
-                "modelLayerTree": modelLayerTree,
+                "modelLayerTreeAfterTrigger":
+                    layerDescription(rootLayer),
+                "modelAnimationInventoryAfterTrigger":
+                    transitionAnimationInventory(rootLayer),
                 "samples": samples,
                 "failedSamples": failedSamples,
             ]
-            if let presentationLayerTree {
-                report["presentationLayerTreeAtObservation"] =
-                    presentationLayerTree
-            }
             try writeJSON(report, to: reportURL)
             exit(failedSamples == 0 ? 0 : 1)
         } catch {
             try? writeJSON(
                 [
-                    "schemaVersion": 1,
+                    "schemaVersion": 2,
                     "probe":
-                        "deterministic-carenderer-dematerialize-timeline",
+                        "paced-presentation-tree-dematerialize-timeline",
                     "material": material.rawValue,
                     "appearance": appearance.rawValue,
                     "error": error.localizedDescription,

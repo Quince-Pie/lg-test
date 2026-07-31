@@ -69,7 +69,7 @@ jobs:
             -o glass-transition-introspect 2>&1 |
             tee -a transition-introspection/build.log
 
-      - name: Capture deterministic dematerialize timeline
+      - name: Capture paced presentation-tree timeline
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
@@ -103,12 +103,14 @@ jobs:
                   encoding="utf-8"
               )
           )
-          if report.get("schemaVersion") != 1:
-              raise SystemExit("transition timeline schema is not 1")
+          if report.get("schemaVersion") != 2:
+              raise SystemExit("transition timeline schema is not 2")
           if (
               report.get("material") != "${{ matrix.material }}"
               or report.get("appearance") != "${{ matrix.appearance }}"
               or report.get("animationCurve") != "linear"
+              or report.get("samplingMethod")
+                  != "real-presentation-tree-paced-by-media-time"
               or report.get("sampleCount") != 33
               or report.get("failedSamples") != 0
           ):
@@ -117,6 +119,7 @@ jobs:
                   f"{report.get('material')}, "
                   f"{report.get('appearance')}, "
                   f"{report.get('animationCurve')}, "
+                  f"{report.get('samplingMethod')}, "
                   f"{report.get('sampleCount')}, "
                   f"{report.get('failedSamples')}"
               )
@@ -133,6 +136,33 @@ jobs:
           ] != expected_progress:
               raise SystemExit(
                   "transition timeline progress grid differs"
+              )
+          actual_progress = [
+              sample.get("actualProgress") for sample in samples
+          ]
+          if (
+              actual_progress[0] != 0
+              or any(
+                  not isinstance(value, (int, float))
+                  for value in actual_progress
+              )
+              or any(
+                  later <= earlier
+                  for earlier, later in zip(
+                      actual_progress, actual_progress[1:]
+                  )
+              )
+              or max(
+                  abs(actual - requested)
+                  for actual, requested in zip(
+                      actual_progress[1:],
+                      expected_progress[1:],
+                  )
+              ) > 0.04
+          ):
+              raise SystemExit(
+                  "transition presentation sampling drifted: "
+                  f"{actual_progress}"
               )
           for index, sample in enumerate(samples):
               if sample.get("executed") is not True:
@@ -153,8 +183,17 @@ jobs:
                       f"transition sample {index} output differs: "
                       f"{output}"
                   )
+              if not isinstance(
+                  sample.get("presentationLayerTree"), dict
+              ):
+                  raise SystemExit(
+                      f"transition sample {index} lacks "
+                      "presentation-layer evidence"
+                  )
           glass_profiles = []
+          glass_profile_samples = 0
           for sample in samples:
+              sample_profiles = []
               snapshots = sample.get(
                   "metalBufferSnapshots", {}
               ).get("snapshots", [])
@@ -172,13 +211,30 @@ jobs:
                           snapshot.get("payload", {}).get("hex", "")
                       ) >= 1_664
                   ):
-                      glass_profiles.append(snapshot)
-          if not glass_profiles:
+                      sample_profiles.append(snapshot)
+              if sample_profiles:
+                  glass_profile_samples += 1
+                  glass_profiles.extend(sample_profiles)
+          if glass_profile_samples < 16:
               raise SystemExit(
-                  "transition timeline captured no glass profile buffers"
+                  "transition timeline captured glass profiles in only "
+                  f"{glass_profile_samples}/33 states"
               )
-          if not report.get("animationInventory"):
+          profile_payloads = {
+              snapshot["payload"]["hex"]
+              for snapshot in glass_profiles
+          }
+          if len(profile_payloads) < 8:
               raise SystemExit(
-                  "transition timeline captured no Core Animation metadata"
+                  "transition timeline profile buffers lack state rank: "
+                  f"{len(profile_payloads)} distinct payloads"
+              )
+          output_hashes = {
+              sample["output"]["fnv1a64"] for sample in samples
+          }
+          if len(output_hashes) < 8:
+              raise SystemExit(
+                  "transition timeline outputs lack state rank: "
+                  f"{len(output_hashes)} distinct frames"
               )
           PY

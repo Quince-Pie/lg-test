@@ -1685,15 +1685,19 @@ problem: their monotonic clock measures WindowServer presentation time, not
 the private Core Animation state that drives `GlassEffectTransition`.
 Independent sequences can therefore begin at different clock coordinates even
 when their normalized material law is identical. The focused **Introspect
-Liquid Glass transition** workflow removes that scheduler variable. It applies
-a 300-second linear dematerialize transaction, asks `CARenderer` for the same
-real layer tree at 33 exact virtual times, and records the Core Animation
-objects, rendered BGRA output, Metal command provenance, and live fragment
-uniform buffers for clear/regular glass in light/dark appearance. Transition
-introspection schema 1 fails closed unless all 33 outputs are complete and at
-least one genuine `glass_background` profile buffer is present. These samples
-identify whether Apple changes layer opacity, SDF geometry, or glass-profile
-fields; they do not replace the compositor-captured dynamic holdout.
+Liquid Glass transition** workflow removes that ambiguity. Schema 1 proved
+that SwiftUI installs no ordinary model-tree `CAAnimation`: the live
+transition exists only in the presentation tree, whose private filter values
+already expose the actual state. Schema 2 therefore applies a 120-second
+linear dematerialize transaction and samples the real presentation tree at 33
+paced media times. Each state records its actual time, complete private layer
+values, rendered BGRA output, Metal command provenance, and live fragment
+uniform buffers for clear/regular glass in light/dark appearance. It fails
+closed unless all outputs are complete, at least 16 states contain genuine
+`glass_background` profiles, and both the profiles and pixels have at least
+eight distinct states. These samples identify whether Apple changes layer
+opacity, SDF geometry, or glass-profile fields; they do not replace the
+compositor-captured dynamic holdout.
 
 ## Run locally on macOS 26
 
