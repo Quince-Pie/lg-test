@@ -1,24 +1,21 @@
-name: Validate Apple Metal raster reciprocal transfer
+name: Validate Apple Metal raster reciprocal scale transfer
 
 on:
   workflow_dispatch:
   push:
     paths:
       - .github/workflows/raster-reciprocal-transfer.yml
-      - Analysis/raster_reciprocal_transfer_domain_amendment.json
-      - Analysis/raster_reciprocal_transfer_amendment.json
-      - Analysis/raster_reciprocal_transfer_preregistration.json
-      - Analysis/raster_reciprocal_transfer_routing_amendment.json
-      - Analysis/test_validate_reciprocal_transfer.py
-      - Analysis/validate_reciprocal_transfer.py
+      - Analysis/raster_reciprocal_scale_transfer_preregistration.json
+      - Analysis/test_validate_reciprocal_scale_transfer.py
+      - Analysis/validate_reciprocal_scale_transfer.py
       - Sources/GlassRasterReciprocalTransfer/**
 
 concurrency:
-  group: raster-reciprocal-transfer-${{ github.ref }}
+  group: raster-reciprocal-scale-transfer-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  raster-reciprocal-transfer:
+  raster-reciprocal-scale-transfer:
     runs-on: macos-26
     timeout-minutes: 45
     steps:
@@ -29,41 +26,41 @@ jobs:
           sw_vers
           test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
 
-      - name: Build Metal reciprocal-transfer probe
+      - name: Build Metal reciprocal-scale-transfer probe
         id: build
         continue-on-error: true
         run: |
-          mkdir -p raster-reciprocal-transfer
+          mkdir -p raster-reciprocal-scale-transfer
           set -o pipefail
           swiftc -O -parse-as-library \
             -target "$(uname -m)-apple-macos26.0" \
             Sources/GlassRasterReciprocalTransfer/main.swift \
-            -o glass-raster-reciprocal-transfer 2>&1 |
-            tee raster-reciprocal-transfer/build.log
+            -o glass-raster-reciprocal-scale-transfer 2>&1 |
+            tee raster-reciprocal-scale-transfer/build.log
 
-      - name: Measure prospective reciprocal transfer
+      - name: Measure isolated prospective reciprocal scale transfer
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
         run: |
-          ./glass-raster-reciprocal-transfer \
-            raster-reciprocal-transfer
+          ./glass-raster-reciprocal-scale-transfer \
+            raster-reciprocal-scale-transfer
 
       - name: Validate frozen transfer predictions
         id: validate
         if: steps.capture.outcome == 'success'
         continue-on-error: true
         run: |
-          python3 Analysis/validate_reciprocal_transfer.py \
-            raster-reciprocal-transfer \
-            --output raster-reciprocal-transfer/validation.json
+          python3 Analysis/validate_reciprocal_scale_transfer.py \
+            raster-reciprocal-scale-transfer \
+            --output raster-reciprocal-scale-transfer/validation.json
 
-      - name: Upload Metal reciprocal-transfer evidence
+      - name: Upload Metal reciprocal-scale-transfer evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-raster-reciprocal-transfer-${{ github.run_id }}
-          path: raster-reciprocal-transfer
+          name: liquid-glass-raster-reciprocal-scale-transfer-${{ github.run_id }}
+          path: raster-reciprocal-scale-transfer
           if-no-files-found: error
           retention-days: 7
 
@@ -73,5 +70,5 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test "${{ steps.validate.outcome }}" = success
-          test -s raster-reciprocal-transfer/manifest.json
-          test -s raster-reciprocal-transfer/validation.json
+          test -s raster-reciprocal-scale-transfer/manifest.json
+          test -s raster-reciprocal-scale-transfer/validation.json

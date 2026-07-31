@@ -27,7 +27,7 @@ private struct SamplePosition {
 private let normalizedDenominatorLower = 8_192
 private let normalizedDenominatorUpper = 16_383
 private let targetWidth = 224
-private let targetHeight = 192
+private let targetHeight = 4_096
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
@@ -42,33 +42,33 @@ private let widths = Array(
 
 private let geometryCases = [
     GeometryCase(
-        name: "high-threshold-clipped",
-        height: 47,
-        sampleLocalY: 8,
-        sampleAnchorX: 37,
-        originY: 11,
-        sampleMarginX: 13),
-    GeometryCase(
-        name: "mid-threshold-translated",
-        height: 61,
-        sampleLocalY: 29,
+        name: "power2-height-256",
+        height: 256,
+        sampleLocalY: 255,
         sampleAnchorX: 83,
-        originY: 23,
+        originY: 11,
         sampleMarginX: 11),
     GeometryCase(
-        name: "low-threshold-clipped",
-        height: 79,
-        sampleLocalY: 63,
-        sampleAnchorX: 131,
-        originY: 37,
-        sampleMarginX: 9),
+        name: "power2-height-512",
+        height: 512,
+        sampleLocalY: 511,
+        sampleAnchorX: 43,
+        originY: 19,
+        sampleMarginX: 7),
     GeometryCase(
-        name: "center-threshold-translated",
-        height: 113,
-        sampleLocalY: 56,
-        sampleAnchorX: 181,
-        originY: 53,
-        sampleMarginX: 15),
+        name: "power2-height-1024",
+        height: 1_024,
+        sampleLocalY: 1_023,
+        sampleAnchorX: 127,
+        originY: 27,
+        sampleMarginX: 13),
+    GeometryCase(
+        name: "power2-height-2048",
+        height: 2_048,
+        sampleLocalY: 2_047,
+        sampleAnchorX: 189,
+        originY: 35,
+        sampleMarginX: 17),
 ]
 
 private let witnessSignificands: [UInt32] = [
@@ -100,9 +100,7 @@ private func samplePosition(
     let threshold =
         width
         * (2 * (geometry.height - geometry.sampleLocalY) - 1)
-    let localAtAnchor =
-        (threshold - geometry.height) / (2 * geometry.height)
-    let originX = geometry.sampleAnchorX - localAtAnchor
+    let originX = 0
     let x = sampleSide == 0
         ? geometry.sampleAnchorX + geometry.sampleMarginX
         : geometry.sampleAnchorX - geometry.sampleMarginX
@@ -116,6 +114,9 @@ private func samplePosition(
     precondition((0..<targetHeight).contains(y))
     precondition(originX < viewportWidth)
     precondition(originX + width > 0)
+    precondition(originX + width <= viewportWidth)
+    precondition(
+        geometry.originY + geometry.height <= targetHeight)
     precondition(
         signedInteriorArea > minimumSignedInteriorArea)
     return SamplePosition(
@@ -426,7 +427,7 @@ private func run(outputDirectory: URL) throws {
                     ?? "unknown reciprocal-transfer render error")
         }
         print(
-            "reciprocal transfer: \(batchEnd)"
+            "reciprocal scale transfer: \(batchEnd)"
                 + "/\(widths.count) widths")
     }
 
@@ -445,7 +446,7 @@ private func run(outputDirectory: URL) throws {
     }
     if missingRecordCount != 0 {
         throw TransferError.command(
-            "reciprocal-transfer missing \(missingRecordCount)"
+            "reciprocal-scale-transfer missing \(missingRecordCount)"
             + " records; first \(firstMissingRecords)")
     }
 
@@ -454,7 +455,7 @@ private func run(outputDirectory: URL) throws {
         count: outputBytes)
     precondition(outputData.count == 7_340_032)
     let outputFilename =
-        "raster-reciprocal-transfer-pulls.raw"
+        "raster-reciprocal-scale-transfer-pulls.raw"
     try outputData.write(
         to: outputDirectory.appendingPathComponent(
             outputFilename),
@@ -463,7 +464,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-transfer-1.0.0"
+        "metal-raster-reciprocal-scale-transfer-1.0.0"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -478,24 +479,12 @@ private func run(outputDirectory: URL) throws {
         "fragmentOutput":
             "two no-perspective pull float bit patterns per record",
     ] as [String: Any]
-    manifest["reciprocalTransfer"] = [
-        "role": "prospective-scale-geometry-transfer",
+    manifest["reciprocalScaleTransfer"] = [
+        "role": "prospective-unclipped-power2-geometry-scale-transfer",
         "preregistrationFile":
-            "Analysis/raster_reciprocal_transfer_preregistration.json",
+            "Analysis/raster_reciprocal_scale_transfer_preregistration.json",
         "preregistrationSha256":
-            "85dd1466c44725eca9cf67d6c48ef0ad691f08c2dcba79b0acfd010e295c8dfa",
-        "amendmentFile":
-            "Analysis/raster_reciprocal_transfer_amendment.json",
-        "amendmentSha256":
-            "0e8ad8329c643a6b1393dcb970e3b9a8da042d2c9332e9a3783724fab69fbdbf",
-        "routingAmendmentFile":
-            "Analysis/raster_reciprocal_transfer_routing_amendment.json",
-        "routingAmendmentSha256":
-            "7d0f5cee037747a4b883d2c3befa159bafaff1c07cfbf21f402d2ef6a06912c4",
-        "domainAmendmentFile":
-            "Analysis/raster_reciprocal_transfer_domain_amendment.json",
-        "domainAmendmentSha256":
-            "4892a84da4ec8b21211c95a36507585f6d4667a36a4529207ff8336d4ac79056",
+            "bdf385f37e7c4b6c183e2fd550e1abf150ddcc93758855b6ffd8277970b94fd7",
         "widthFormula":
             "32768-if-normalized-denominator-8192-else-2x",
         "widthMinimum": widths.min()!,

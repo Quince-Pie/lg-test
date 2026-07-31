@@ -2294,6 +2294,27 @@ and predicted coefficient hash
 `7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0`.
 The canonical selector hash is unchanged.
 
+Run 30654181785 successfully captured that amended combined gate, but its
+frozen prediction failed immediately: width 32,768 accepted zero of the
+seventeen width-only candidates. The raw corpus and manifest are retained
+with SHA-256 values
+`c0e5a5e139170775042079cf3689411750db52791cc650e4d3839d80ceb4415c`
+and
+`7389c218362ceddc5bf8c39ee008a691b88ba2e9b2cc961548ae7febe0733977`.
+This prospectively falsifies transfer through the combined clipped,
+non-power-of-two-height geometry. It does not invalidate the measured
+reciprocal table; it shows that the gate also excited a separate clipper or
+general-area setup stage hidden by the original height-64 sweep.
+
+`raster_reciprocal_scale_transfer_preregistration.json` defines the isolated
+follow-up before another capture. It retains the same unseen width list and
+the same selector and coefficient hashes, but uses fully in-viewport triangles
+at power-of-two heights 256, 512, 1,024, and 2,048. Area normalization then
+differs only by an exact exponent and no clip-generated vertex can alter the
+varying plane. Passing this follow-up establishes reciprocal exponent
+transfer; the failed clipped/general-height result remains a separate open
+modeling problem rather than being fitted away.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

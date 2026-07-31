@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-unclipped-power2-geometry-reciprocal-scale-transfer",
+  "sourceEvidence": {
+    "canonicalReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "canonicalReciprocalTableBytes": 32768,
+    "canonicalReciprocalClassCount": 8192,
+    "failedCombinedTransferRunId": 30654181785,
+    "failedCombinedTransferCiCommit": "95b6e69322ba07f513917364be33f1636752ba0f",
+    "failedCombinedTransferManifestSha256": "7389c218362ceddc5bf8c39ee008a691b88ba2e9b2cc961548ae7febe0733977",
+    "failedCombinedTransferPullsSha256": "c0e5a5e139170775042079cf3689411750db52791cc650e4d3839d80ceb4415c",
+    "failedCombinedTransferResult": "width 32768 accepted 0 of 17 frozen width-only candidates",
+    "falsifiedHypothesis": "width-only coefficient arithmetic transfers unchanged through clipping and non-power-of-two triangle heights",
+    "separationReason": "The failed combined gate confounded reciprocal exponent transfer with clip-generated vertices and general-area setup. This follow-up changes no numerical prediction; it uses fully in-viewport triangles and power-of-two heights so area normalization differs only by an exact exponent."
+  },
+  "physicalProductModel": {
+    "name": "physicalTruncatedRadix2PartialProducts16Bias0x140000",
+    "operandPrecisionBits": 24,
+    "reciprocalPrecisionBits": 25,
+    "productPrecisionBits": 27,
+    "partialProductRadix": 2,
+    "partialProductTruncationBits": 16,
+    "roundingBias": 1310720,
+    "roundingBiasHex": "0x140000",
+    "finalConversion": "round-to-nearest-even binary32"
+  },
+  "prospectiveDomain": {
+    "normalizedDenominatorLowerInclusive": 8192,
+    "normalizedDenominatorUpperInclusive": 16383,
+    "normalizationClassCount": 8192,
+    "widthFormula": "32768 when normalizedDenominator == 8192; otherwise 2 * normalizedDenominator",
+    "widthMinimum": 16386,
+    "widthMaximum": 32768,
+    "widthCount": 8192,
+    "widthsSha256": "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",
+    "widthsAboveCalibrationUpperBoundCount": 8192,
+    "unobservedWidthCount": 8192,
+    "unseenReciprocalExponent": -15
+  },
+  "geometryCases": [
+    {
+      "name": "power2-height-256",
+      "height": 256,
+      "sampleLocalY": 255,
+      "sampleAnchorX": 83,
+      "originY": 11,
+      "sampleMarginX": 11
+    },
+    {
+      "name": "power2-height-512",
+      "height": 512,
+      "sampleLocalY": 511,
+      "sampleAnchorX": 43,
+      "originY": 19,
+      "sampleMarginX": 7
+    },
+    {
+      "name": "power2-height-1024",
+      "height": 1024,
+      "sampleLocalY": 1023,
+      "sampleAnchorX": 127,
+      "originY": 27,
+      "sampleMarginX": 13
+    },
+    {
+      "name": "power2-height-2048",
+      "height": 2048,
+      "sampleLocalY": 2047,
+      "sampleAnchorX": 189,
+      "originY": 35,
+      "sampleMarginX": 17
+    }
+  ],
+  "geometryRule": {
+    "originX": 0,
+    "primitive": "first triangle at its final covered scanline",
+    "sampleSide0X": "sampleAnchorX + sampleMarginX",
+    "sampleSide1X": "sampleAnchorX - sampleMarginX",
+    "sampleY": "originY + sampleLocalY",
+    "minimumSignedInteriorArea": 1024,
+    "targetWidth": 224,
+    "targetHeight": 4096,
+    "viewportWidth": 32768,
+    "geometryCount": 4,
+    "sampleSideCount": 2,
+    "allVerticesInsideViewport": true,
+    "allGeometryCasesUnobservedAtPreregistration": true
+  },
+  "witnesses": {
+    "significands": [
+      12310539,
+      10561315,
+      8936464,
+      8393727,
+      16724323,
+      8393489,
+      16276106,
+      8393693,
+      16450452,
+      15671128,
+      9479541,
+      16747356,
+      12063463,
+      8393506
+    ],
+    "count": 14,
+    "significandsSha256": "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a",
+    "deltaFloatBitsSha256": "4af6fce64ad188beb784cbea16c1d09ca2713825f8becee8ee64cabfd68caf8a",
+    "candidateRadiusInternalUlps": 8,
+    "candidateCount": 17
+  },
+  "frozenPredictions": {
+    "selectedReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "selectedReciprocalTableBytes": 32768,
+    "selectedReciprocalTableShape": [
+      8192
+    ],
+    "recoveredCoefficientBitsSha256": "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
+    "recoveredCoefficientBitsBytes": 458752,
+    "recoveredCoefficientBitsShape": [
+      8192,
+      14
+    ],
+    "numericalPredictionsChangedFromFailedCombinedGate": false,
+    "capturedPullBytesAreEvidenceCarrierNotPredictionTarget": true
+  },
+  "captureLayout": {
+    "ordering": "normalized-denominator-major,witness-major,geometry-major,sample-side-major,pull-offset-major",
+    "pullOffsets": [
+      {
+        "x": 0.0,
+        "y": 0.5
+      },
+      {
+        "x": 0.9375,
+        "y": 0.5
+      }
+    ],
+    "uncoveredRecordSentinel": "0xffffffffffffffff",
+    "rawBytes": 7340032
+  },
+  "observedAtPreregistration": false,
+  "acceptance": {
+    "everyWidthMustSelectExactlyOneCandidate": true,
+    "selectedReciprocalTableHashMustMatchFrozenPrediction": true,
+    "recoveredCoefficientBitsHashMustMatchFrozenPrediction": true,
+    "everyGeometrySampleSideMustAcceptThePredictedCoefficient": true,
+    "noAdaptiveFitOrTolerance": true
+  }
+}
