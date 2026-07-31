@@ -28,6 +28,28 @@ class RasterReciprocalTransferTests(unittest.TestCase):
             transfer.WIDTHS_SHA256,
         )
 
+    def test_no_evidence_failure_amends_only_the_viewport(self):
+        amendment = transfer.load_amendment()
+
+        self.assertFalse(
+            amendment["failedRun"][
+                "appleReciprocalOrCoefficientOutputsObserved"
+            ]
+        )
+        self.assertEqual(
+            amendment["technicalChange"]["previousValue"],
+            transfer.PREREGISTERED_VIEWPORT_WIDTH,
+        )
+        self.assertEqual(
+            amendment["technicalChange"]["newValue"],
+            transfer.VIEWPORT_WIDTH,
+        )
+        self.assertFalse(
+            amendment["unchangedFrozenPredictions"][
+                "acceptanceCriteriaChanged"
+            ]
+        )
+
     def test_every_geometry_sample_is_safely_interior(self):
         for width in transfer.prospective_widths():
             for geometry in transfer.GEOMETRY_CASES:
@@ -40,6 +62,14 @@ class RasterReciprocalTransferTests(unittest.TestCase):
                     self.assertGreater(
                         position["signedInteriorArea"],
                         transfer.MINIMUM_SIGNED_INTERIOR_AREA,
+                    )
+                    self.assertLess(
+                        position["originX"],
+                        transfer.VIEWPORT_WIDTH,
+                    )
+                    self.assertGreater(
+                        position["originX"] + width,
+                        0,
                     )
 
     def test_float_pair_acceptance_round_trips_a_known_line(self):

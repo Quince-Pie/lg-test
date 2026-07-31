@@ -27,7 +27,8 @@ WIDTHS_SHA256 = (
 )
 TARGET_WIDTH = 224
 TARGET_HEIGHT = 192
-VIEWPORT_WIDTH = 131_072
+PREREGISTERED_VIEWPORT_WIDTH = 131_072
+VIEWPORT_WIDTH = 32_768
 MINIMUM_SIGNED_INTERIOR_AREA = 1_024
 GEOMETRY_COUNT = 4
 PRIMITIVE_COUNT = 2
@@ -41,6 +42,12 @@ PREREGISTRATION_PATH = Path(__file__).with_name(
 )
 PREREGISTRATION_SHA256 = (
     "85dd1466c44725eca9cf67d6c48ef0ad691f08c2dcba79b0acfd010e295c8dfa"
+)
+AMENDMENT_PATH = Path(__file__).with_name(
+    "raster_reciprocal_transfer_amendment.json"
+)
+AMENDMENT_SHA256 = (
+    "0e8ad8329c643a6b1393dcb970e3b9a8da042d2c9332e9a3783724fab69fbdbf"
 )
 CANONICAL_RECIPROCAL_SHA256 = (
     "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb"
@@ -155,6 +162,8 @@ def sample_position(
         primitive not in range(PRIMITIVE_COUNT)
         or not 0 <= x < TARGET_WIDTH
         or not 0 <= y < TARGET_HEIGHT
+        or origin_x >= VIEWPORT_WIDTH
+        or origin_x + width <= 0
         or interior <= MINIMUM_SIGNED_INTERIOR_AREA
     ):
         raise ValueError("prospective geometry position is not safely interior")
@@ -329,7 +338,7 @@ def load_preregistration() -> JsonObject:
         != MINIMUM_SIGNED_INTERIOR_AREA
         or rule.get("targetWidth") != TARGET_WIDTH
         or rule.get("targetHeight") != TARGET_HEIGHT
-        or rule.get("viewportWidth") != VIEWPORT_WIDTH
+        or rule.get("viewportWidth") != PREREGISTERED_VIEWPORT_WIDTH
         or rule.get("geometryCount") != GEOMETRY_COUNT
         or rule.get("primitiveCount") != PRIMITIVE_COUNT
         or rule.get("allGeometryCasesUnobservedAtPreregistration") is not True
@@ -374,6 +383,62 @@ def load_preregistration() -> JsonObject:
     return preregistration
 
 
+def load_amendment() -> JsonObject:
+    amendment: JsonObject = json.loads(
+        AMENDMENT_PATH.read_text(encoding="utf-8")
+    )
+    failed = amendment.get("failedRun", {})
+    change = amendment.get("technicalChange", {})
+    unchanged = amendment.get("unchangedFrozenPredictions", {})
+    if (
+        sha256_path(AMENDMENT_PATH) != AMENDMENT_SHA256
+        or amendment.get("schemaVersion") != 1
+        or amendment.get("role")
+        != "prospective-reciprocal-transfer-technical-amendment"
+        or amendment.get("authorized") is not True
+        or amendment.get("observedAtAmendment") is not False
+        or failed.get("runId") != 30_653_275_362
+        or failed.get("ciCommit")
+        != "3bcc3cf4a64217088726d7ded360288f654957f2"
+        or failed.get("buildSucceeded") is not True
+        or failed.get("captureSucceeded") is not False
+        or failed.get("validatorRan") is not False
+        or failed.get("failure")
+        != "reciprocal-transfer record 0 was not written"
+        or failed.get("uploadedFiles")
+        != [
+            {
+                "name": "build.log",
+                "bytes": 569,
+                "sha256": (
+                    "dd947ae08ab45218a9d93307c38f7716ff9eafbda1009fc1f"
+                    "7fd19259c58bdbd"
+                ),
+            }
+        ]
+        or failed.get("manifestUploaded") is not False
+        or failed.get("pullCorpusUploaded") is not False
+        or failed.get("validationUploaded") is not False
+        or failed.get("appleReciprocalOrCoefficientOutputsObserved")
+        is not False
+        or change.get("field") != "geometryRule.viewportWidth"
+        or change.get("previousValue") != PREREGISTERED_VIEWPORT_WIDTH
+        or change.get("newValue") != VIEWPORT_WIDTH
+        or unchanged.get("selectedReciprocalTableSha256")
+        != CANONICAL_RECIPROCAL_SHA256
+        or unchanged.get("recoveredCoefficientBitsSha256")
+        != PREDICTED_COEFFICIENT_SHA256
+        or unchanged.get("widthsSha256") != WIDTHS_SHA256
+        or unchanged.get("witnessSignificandsSha256")
+        != SIGNIFICAND_SHA256
+        or unchanged.get("geometryCasesChanged") is not False
+        or unchanged.get("samplePositionsChanged") is not False
+        or unchanged.get("acceptanceCriteriaChanged") is not False
+    ):
+        raise ValueError("reciprocal-transfer amendment differs")
+    return amendment
+
+
 def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
     manifest: JsonObject = json.loads(
         (root / "manifest.json").read_text(encoding="utf-8")
@@ -391,6 +456,9 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         != "Analysis/raster_reciprocal_transfer_preregistration.json"
         or evidence.get("preregistrationSha256")
         != PREREGISTRATION_SHA256
+        or evidence.get("amendmentFile")
+        != "Analysis/raster_reciprocal_transfer_amendment.json"
+        or evidence.get("amendmentSha256") != AMENDMENT_SHA256
         or evidence.get("widthLowerInclusive") != WIDTH_LOWER
         or evidence.get("widthUpperInclusive") != WIDTH_UPPER
         or evidence.get("widthStride") != WIDTH_SCALE
@@ -435,6 +503,7 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
 
 def validate(root: Path) -> JsonObject:
     load_preregistration()
+    load_amendment()
     manifest, path = validate_manifest(root)
     data = path.read_bytes()
     selected_digest = hashlib.sha256()
@@ -551,6 +620,7 @@ def validate(root: Path) -> JsonObject:
         "manifestSha256": sha256_path(root / "manifest.json"),
         "pullsSha256": sha256_path(path),
         "preregistrationSha256": PREREGISTRATION_SHA256,
+        "amendmentSha256": AMENDMENT_SHA256,
         "ciCommit": manifest.get("ciCommit"),
         "measurement": {
             "widthCount": WIDTH_COUNT,

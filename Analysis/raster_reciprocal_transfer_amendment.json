@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-reciprocal-transfer-technical-amendment",
+  "authorized": true,
+  "authorizedAtUtcDate": "2026-07-31",
+  "failedRun": {
+    "runId": 30653275362,
+    "ciCommit": "3bcc3cf4a64217088726d7ded360288f654957f2",
+    "buildSucceeded": true,
+    "captureSucceeded": false,
+    "validatorRan": false,
+    "failure": "reciprocal-transfer record 0 was not written",
+    "uploadedFiles": [
+      {
+        "name": "build.log",
+        "bytes": 569,
+        "sha256": "dd947ae08ab45218a9d93307c38f7716ff9eafbda1009fc1f7fd19259c58bdbd"
+      }
+    ],
+    "manifestUploaded": false,
+    "pullCorpusUploaded": false,
+    "validationUploaded": false,
+    "appleReciprocalOrCoefficientOutputsObserved": false
+  },
+  "technicalChange": {
+    "field": "geometryRule.viewportWidth",
+    "previousValue": 131072,
+    "newValue": 32768,
+    "reason": "The failed run submitted every batch but rasterized no fragment at any case. The 131072-pixel viewport was the only new rasterization envelope dimension and exceeded the already successful 32768-pixel viewport. Reducing the viewport preserves every triangle coordinate, scissor sample, width, witness, expected selector, and expected coefficient while allowing clipping inside a previously exercised viewport envelope."
+  },
+  "unchangedFrozenPredictions": {
+    "selectedReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "recoveredCoefficientBitsSha256": "c053c9c4f8f92efa4d93145e627dc16086bf2aebc3133e50f576b696c9eb00bb",
+    "widthsSha256": "d1789dd285e63e23375037362e9df017efdc70f5e25163179e7334897d5fc8ed",
+    "witnessSignificandsSha256": "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a",
+    "geometryCasesChanged": false,
+    "samplePositionsChanged": false,
+    "acceptanceCriteriaChanged": false
+  },
+  "observedAtAmendment": false
+}

@@ -29,7 +29,7 @@ private let normalizedDenominatorUpper = 16_383
 private let widthScale = 4
 private let targetWidth = 224
 private let targetHeight = 192
-private let viewportWidth = 131_072
+private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let primitiveCount = 2
 private let batchSize = 128
@@ -115,6 +115,8 @@ private func samplePosition(
     precondition((0..<primitiveCount).contains(primitive))
     precondition((0..<targetWidth).contains(x))
     precondition((0..<targetHeight).contains(y))
+    precondition(originX < viewportWidth)
+    precondition(originX + width > 0)
     precondition(
         signedInteriorArea > minimumSignedInteriorArea)
     return SamplePosition(
@@ -481,6 +483,10 @@ private func run(outputDirectory: URL) throws {
             "Analysis/raster_reciprocal_transfer_preregistration.json",
         "preregistrationSha256":
             "85dd1466c44725eca9cf67d6c48ef0ad691f08c2dcba79b0acfd010e295c8dfa",
+        "amendmentFile":
+            "Analysis/raster_reciprocal_transfer_amendment.json",
+        "amendmentSha256":
+            "0e8ad8329c643a6b1393dcb970e3b9a8da042d2c9332e9a3783724fab69fbdbf",
         "widthLowerInclusive": widths.first!,
         "widthUpperInclusive": widths.last!,
         "widthStride": widthScale,

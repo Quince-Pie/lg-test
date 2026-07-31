@@ -2263,6 +2263,14 @@ the raw Metal pull pairs and accepts no fit or tolerance: every width must
 select exactly one candidate, both frozen hashes must match, and every
 geometry/primitive must accept the predicted coefficient.
 
+Run 30653275362 built successfully but produced no fragment record and stopped
+before writing a manifest or pull corpus, so the validator never ran and no
+Apple reciprocal or coefficient output was observed. The immutable technical
+amendment records that failure and changes only the viewport width from
+131,072 to the already exercised 32,768-pixel envelope. Widths, triangle
+coordinates, scissor samples, witnesses, frozen hashes, and acceptance
+criteria remain unchanged.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
