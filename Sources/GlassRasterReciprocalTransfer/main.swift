@@ -25,9 +25,9 @@ private struct SamplePosition {
 }
 
 private let normalizedDenominatorLower = 8_192
-private let normalizedDenominatorUpper = 14_335
-private let targetWidth = 224
-private let targetHeight = 4_096
+private let normalizedDenominatorUpper = 16_383
+private let targetWidth = 96
+private let targetHeight = 8_192
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
@@ -36,39 +36,47 @@ private let candidateRadius = 8
 
 private let widths = Array(
     normalizedDenominatorLower...normalizedDenominatorUpper
-).map {
-    $0 == normalizedDenominatorLower ? 16_384 : 2 * $0
+)
+
+private let effectiveWidths = widths.map {
+    $0 == normalizedDenominatorLower ? 32_768 : 2 * $0
+}
+
+private let deltaExponentShiftBits: [UInt32] = widths.map {
+    $0 == normalizedDenominatorLower
+        ? 0x0100_0000
+        : 0x0080_0000
 }
 
 private let geometryCases = [
     GeometryCase(
-        name: "power2-height-256",
-        height: 256,
-        sampleLocalY: 255,
-        sampleAnchorX: 83,
-        originY: 11,
-        sampleMarginX: 11),
-    GeometryCase(
         name: "power2-height-512",
         height: 512,
         sampleLocalY: 511,
-        sampleAnchorX: 43,
-        originY: 19,
-        sampleMarginX: 7),
+        sampleAnchorX: 48,
+        originY: 11,
+        sampleMarginX: 15),
     GeometryCase(
         name: "power2-height-1024",
         height: 1_024,
         sampleLocalY: 1_023,
-        sampleAnchorX: 127,
-        originY: 27,
-        sampleMarginX: 13),
+        sampleAnchorX: 48,
+        originY: 19,
+        sampleMarginX: 15),
     GeometryCase(
         name: "power2-height-2048",
         height: 2_048,
         sampleLocalY: 2_047,
-        sampleAnchorX: 189,
+        sampleAnchorX: 48,
+        originY: 27,
+        sampleMarginX: 15),
+    GeometryCase(
+        name: "power2-height-4096",
+        height: 4_096,
+        sampleLocalY: 4_095,
+        sampleAnchorX: 48,
         originY: 35,
-        sampleMarginX: 17),
+        sampleMarginX: 15),
 ]
 
 private let witnessSignificands: [UInt32] = [
@@ -91,6 +99,11 @@ private let witnessSignificands: [UInt32] = [
 private let witnessDeltaBits = witnessSignificands.map {
     0x3f00_0000 | ($0 & 0x7f_ffff)
 }
+
+private let scaledWitnessDeltaBits =
+    deltaExponentShiftBits.flatMap {
+        shift in witnessDeltaBits.map { $0 - shift }
+    }
 
 private func samplePosition(
     width: Int,
@@ -150,6 +163,7 @@ vertex TransferVertexOutput reciprocal_transfer_vertex(
     constant float4x4 &mvp [[buffer(1)]],
     constant uint *deltaBits [[buffer(2)]],
     constant uint2 &record [[buffer(3)]],
+    constant uint &deltaExponentShiftBits [[buffer(4)]],
     uint vertexID [[vertex_id]],
     uint instanceID [[instance_id]])
 {
@@ -168,7 +182,10 @@ vertex TransferVertexOutput reciprocal_transfer_vertex(
     TransferVertexOutput output;
     output.position = mvp * float4(x, y, 0.0f, 1.0f);
     output.ramp =
-        isRight ? as_type<float>(deltaBits[instanceID]) : 0.0f;
+        isRight
+            ? as_type<float>(
+                deltaBits[instanceID] - deltaExponentShiftBits)
+            : 0.0f;
     output.recordIndex = record.x + instanceID;
     output.outputSlot = record.y;
     return output;
@@ -228,14 +245,24 @@ private func diagnostic(_ message: String) {
 
 private func run(outputDirectory: URL) throws {
     diagnostic("entered run")
-    precondition(widths.count == 6_144)
-    precondition(widths.first == 16_384)
-    precondition(widths.last == 28_670)
-    precondition(widths.min() == 16_384)
-    precondition(widths.max() == 28_670)
+    precondition(widths.count == 8_192)
+    precondition(widths.first == 8_192)
+    precondition(widths.last == 16_383)
+    precondition(widths.min() == 8_192)
+    precondition(widths.max() == 16_383)
     precondition(
         sha256(uint32Data(widths.map { UInt32($0) }))
-            == "8402a612ba7cd68ae8b9baa6a1c42a86b3552eecd7b2c54e66f6cec4a09778b6")
+            == "51543aa53b298402f96f65830302af8f0e4e3aafe49d4ee29c5a6f14f70205d9")
+    precondition(
+        sha256(uint32Data(
+            effectiveWidths.map { UInt32($0) }))
+            == "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce")
+    precondition(
+        sha256(uint32Data(deltaExponentShiftBits))
+            == "e56ee754c91ea5e2eaa945602e0866d96a79dc46018a9ccb9a113828fd88a300")
+    precondition(
+        sha256(uint32Data(scaledWitnessDeltaBits))
+            == "884d0b0f9ea9695965d2ce93ae7e80d318e3e4d0032debf5b83214f03725644e")
     precondition(
         sha256(uint32Data(witnessSignificands))
             == "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a")
@@ -397,6 +424,14 @@ private func run(outputDirectory: URL) throws {
 
         for widthIndex in batchStart..<batchEnd {
             let width = widths[widthIndex]
+            var deltaExponentShift =
+                deltaExponentShiftBits[widthIndex]
+            withUnsafeBytes(of: &deltaExponentShift) {
+                encoder.setVertexBytes(
+                    $0.baseAddress!,
+                    length: $0.count,
+                    index: 4)
+            }
             for (geometryIndex, geometry) in
                 geometryCases.enumerated()
             {
@@ -532,9 +567,9 @@ private func run(outputDirectory: URL) throws {
     let outputData = Data(
         bytes: output.contents(),
         count: outputBytes)
-    precondition(outputData.count == 5_505_024)
+    precondition(outputData.count == 7_340_032)
     let outputFilename =
-        "raster-reciprocal-scale-transfer-pulls.raw"
+        "raster-reciprocal-factorized-transfer-pulls.raw"
     try outputData.write(
         to: outputDirectory.appendingPathComponent(
             outputFilename),
@@ -543,7 +578,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-scale-transfer-1.0.7"
+        "metal-raster-reciprocal-factorized-transfer-1.0.0"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -560,27 +595,30 @@ private func run(outputDirectory: URL) throws {
         "coverageAttachment":
             "one-width R32Float additive witness count, cleared/stored/verified",
     ] as [String: Any]
-    manifest["reciprocalScaleTransfer"] = [
+    manifest["reciprocalFactorizedTransfer"] = [
         "role":
-            "prospective-unclipped-power2-renderable-prefix-with-control",
+            "prospective-factorized-reciprocal-exponent-transfer",
         "preregistrationFile":
-            "Analysis/raster_reciprocal_scale_transfer_preregistration.json",
+            "Analysis/raster_reciprocal_factorized_transfer_preregistration.json",
         "preregistrationSha256":
-            "bdf385f37e7c4b6c183e2fd550e1abf150ddcc93758855b6ffd8277970b94fd7",
-        "captureAmendmentFile":
-            "Analysis/raster_reciprocal_scale_transfer_capture_amendment.json",
-        "captureAmendmentSha256":
-            "94b3bca95fb65bee1a6799ce64f9f36da048fe8bb4e044315bdf4d880b2a4c59",
-        "widthFormula":
-            "16384-control-if-normalized-denominator-8192-else-2x",
+            "1e9de6d0403d0d463ace55daf92b50b99dec1f16b8494041b14f8597c1f775f6",
+        "geometryWidthFormula":
+            "normalized-denominator",
         "widthMinimum": widths.min()!,
         "widthMaximum": widths.max()!,
         "widthCount": widths.count,
-        "widthsSha256":
-            "8402a612ba7cd68ae8b9baa6a1c42a86b3552eecd7b2c54e66f6cec4a09778b6",
-        "unseenExponentWidthCount": 6_143,
-        "calibrationControlWidthCount": 1,
-        "deferredClippedStageClassCount": 2_048,
+        "geometryWidthsSha256":
+            "51543aa53b298402f96f65830302af8f0e4e3aafe49d4ee29c5a6f14f70205d9",
+        "effectiveWidthFormula":
+            "32768-for-class-8192-else-2x",
+        "effectiveWidthsSha256":
+            "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",
+        "deltaExponentShiftFormula":
+            "2-for-class-8192-else-1",
+        "deltaExponentShiftBitsSha256":
+            "e56ee754c91ea5e2eaa945602e0866d96a79dc46018a9ccb9a113828fd88a300",
+        "scaledDeltaFloatBitsSha256":
+            "884d0b0f9ea9695965d2ce93ae7e80d318e3e4d0032debf5b83214f03725644e",
         "geometryCases": geometryManifest(),
         "geometryCount": geometryCases.count,
         "sampleSideCount": sampleSideCount,
@@ -607,9 +645,9 @@ private func run(outputDirectory: URL) throws {
         "uncoveredRecordSentinel":
             "0xffffffffffffffff",
         "frozenSelectedReciprocalTableSha256":
-            "b9543bc2be28e60fde4cd6e5ea24cdcd195ea2d25f64136ae92ada533ff1a7cc",
+            "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
         "frozenRecoveredCoefficientBitsSha256":
-            "35cf2c25264dee3f8bfee5755dc8d38b2980c6446f47c05988ed63f8b99dc85c",
+            "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

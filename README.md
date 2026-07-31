@@ -2378,6 +2378,33 @@ and
 The upper 2,048 normalization classes are deferred to a separately
 preregistered clipped-stage probe; this gate cannot claim them.
 
+Run 30656730832 completed and serialized the 6,144-width corpus. Its manifest
+and pull-buffer SHA-256 values are
+`69817ef5279fc2c7e36df6a02bf36d5da67cb65df3ee217c04dd7033c1e85e57`
+and
+`f8d66aedcd9041a30256cfe2fcc35d34a4307a922ad85b0fc8f02903f8d89eb2`.
+The prospective result has an exact boundary. Through width 20,480, the
+frozen candidate is never rejected: 2,031 classes identify it uniquely and
+18 accept it plus one adjacent candidate under the original independent
+pull-pair constraint. Every 896-byte raw record from width 20,480 through
+28,670 is byte-identical, leaving 4,095 post-boundary widths with no accepted
+candidate. This is fixed wide-primitive geometry saturation, not evidence
+against the arithmetic prediction in those classes.
+
+`raster_reciprocal_factorized_transfer_preregistration.json` defines the
+prospective saturation-free follow-up. Geometry width is the normalized
+denominator 8,192 through 16,383. Vertex deltas are divided by two, except the
+boundary class is divided by four, so each slope is exactly the originally
+frozen effective-width slope while every endpoint stays below 16,384. Heights
+512, 1,024, 2,048, and 4,096 exercise new power-of-two area exponents. Both
+pull pixels share one interpolation tile and one plane constant across a
+30-pixel baseline, tightening the earlier candidate ambiguity without adding
+a tolerance. The gate requires the frozen canonical candidate to pass every
+class and reports any observationally equivalent adjacent candidates; it does
+not pretend that a finite pull corpus uniquely identifies an internal value
+when two candidates produce the same tested outputs. The canonical selector
+hash and original coefficient hash remain unchanged.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
