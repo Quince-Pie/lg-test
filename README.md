@@ -1635,7 +1635,7 @@ becomes an independent zero-to-one heartbeat for one second. The reset
 unambiguously identifies the tail boundary; within tail records the original
 presentation clock is fixed at one and `tailProgress` stores the heartbeat.
 ScreenCaptureKit may stop delivering once the full scene is quiescent and only
-the telemetry strip changes, so up to nine progress-targeted bounded
+the telemetry strip changes, so up to ten progress-targeted bounded
 own-window snapshots acquire the tail after the live stream has already
 covered the transition. At least five must span 0.0–0.8 with no heartbeat gap
 greater than 0.25 and remain inside the hard 1.15-second deadline. Every tail

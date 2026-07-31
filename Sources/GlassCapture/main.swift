@@ -2645,8 +2645,8 @@ func capturePresentedAnimation(
             let tailStart =
                 animationStart + duration + frameInterval + resetDuration
             let targetProgress = [
-                0.05, 0.15, 0.25, 0.35, 0.45,
-                0.55, 0.65, 0.75, 0.85,
+                0.02, 0.12, 0.22, 0.32, 0.42,
+                0.52, 0.62, 0.72, 0.82, 0.90,
             ]
             let tailDeadline =
                 animationStart + duration
