@@ -26,6 +26,7 @@ private let primitiveCount = 2
 private let tileCount = 5
 private let batchSize = 128
 private let candidateRadius = 8
+private let edgeAreaMargin = 512
 
 private let productionHoldoutWidths = [
     640, 800, 976, 1_280, 1_440, 1_600, 1_920, 2_160,
@@ -92,11 +93,11 @@ private func positions(width: Int) -> [SweepPosition] {
                 min(originX + width - 1, tile * 32 + 31)
                 - originX
             let localX = primitive == 0 ? upper : lower
-            let covered = primitive == 0
-                ? geometryHeight * (2 * localX + 1) > width
-                : geometryHeight * (2 * localX + 1)
-                    < (2 * geometryHeight - 1) * width
-            if covered {
+            let signedInterior = primitive == 0
+                ? geometryHeight * (2 * localX + 1) - width
+                : (2 * geometryHeight - 1) * width
+                    - geometryHeight * (2 * localX + 1)
+            if signedInterior > edgeAreaMargin {
                 result.append(SweepPosition(
                     primitive: primitive,
                     tile: tile,
@@ -466,6 +467,7 @@ private func run(outputDirectory: URL) throws {
         "originX": originX,
         "originY": originY,
         "geometryHeight": geometryHeight,
+        "edgeAreaMargin": edgeAreaMargin,
         "primitiveCount": primitiveCount,
         "tileCount": tileCount,
         "pullOffsets": [
@@ -476,7 +478,8 @@ private func run(outputDirectory: URL) throws {
             "xAt0",
             "xAt15Over16",
         ],
-        "positionRule": "clamped-visible-32x32-tiles-v1",
+        "positionRule":
+            "clamped-visible-32x32-interior-area-margin-v2",
         "ordering":
             "width-major,witness-major,primitive-major,"
             + "tile-major,pull-offset-major",

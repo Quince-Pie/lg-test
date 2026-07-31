@@ -21,6 +21,7 @@ TARGET_HEIGHT = 160
 ORIGIN_X = 17
 ORIGIN_Y = 19
 GEOMETRY_HEIGHT = 64
+EDGE_AREA_MARGIN = 512
 PRIMITIVE_COUNT = 2
 TILE_COUNT = 5
 PULL_COUNT = 2
@@ -189,13 +190,13 @@ def expected_positions(width: int) -> list[JsonObject]:
             lower = max(ORIGIN_X, tile * 32) - ORIGIN_X
             upper = min(ORIGIN_X + width - 1, tile * 32 + 31) - ORIGIN_X
             local_x = upper if primitive == 0 else lower
-            covered = (
-                GEOMETRY_HEIGHT * (2 * local_x + 1) > width
+            signed_interior = (
+                GEOMETRY_HEIGHT * (2 * local_x + 1) - width
                 if primitive == 0
-                else GEOMETRY_HEIGHT * (2 * local_x + 1)
-                < (2 * GEOMETRY_HEIGHT - 1) * width
+                else (2 * GEOMETRY_HEIGHT - 1) * width
+                - GEOMETRY_HEIGHT * (2 * local_x + 1)
             )
-            if covered:
+            if signed_interior > EDGE_AREA_MARGIN:
                 positions.append(
                     {
                         "primitive": primitive,
@@ -370,12 +371,14 @@ def validate(root: Path) -> None:
         or evidence.get("originX") != ORIGIN_X
         or evidence.get("originY") != ORIGIN_Y
         or evidence.get("geometryHeight") != GEOMETRY_HEIGHT
+        or evidence.get("edgeAreaMargin") != EDGE_AREA_MARGIN
         or evidence.get("primitiveCount") != PRIMITIVE_COUNT
         or evidence.get("tileCount") != TILE_COUNT
         or evidence.get("pullOffsets")
         != [{"x": 0.0, "y": 0.5}, {"x": 0.9375, "y": 0.5}]
         or evidence.get("components") != ["xAt0", "xAt15Over16"]
-        or evidence.get("positionRule") != "clamped-visible-32x32-tiles-v1"
+        or evidence.get("positionRule")
+        != "clamped-visible-32x32-interior-area-margin-v2"
         or evidence.get("ordering")
         != (
             "width-major,witness-major,primitive-major,"
