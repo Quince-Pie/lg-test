@@ -2138,6 +2138,15 @@ predicted 500/501 diameter boundary. The offset and axis-paired cases are
 proof controls: a law fitted only to centered or one-axis observations is
 rejected if it does not predict them exactly.
 
+`clear-geometry-policy-introspect.yml` applies the same metadata-only method
+to the clear material. Clear uses
+`glass_background_sdf_no_bleed_lph` without the regular material's
+`downsample_4` pass, so its 2x source-coordinate domain and allocation policy
+must be measured independently. The 28-case matrix spans small, centered,
+translated, fractional, clipped, and oversized geometries. It prevents an
+exact regular-material allocator from being misreported as parity for
+Walle's separately configurable clear variant.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

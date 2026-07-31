@@ -26,6 +26,12 @@ PROOF_WORKFLOW = (
     / "workflows"
     / "geometry-proof-introspect.yml"
 )
+CLEAR_WORKFLOW = (
+    ROOT
+    / ".github"
+    / "workflows"
+    / "clear-geometry-policy-introspect.yml"
+)
 
 
 class GeometryPolicyWorkflowTests(unittest.TestCase):
@@ -43,6 +49,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             (BOUNDARY_WORKFLOW, 58),
             (CLOSURE_WORKFLOW, 64),
             (PROOF_WORKFLOW, 29),
+            (CLEAR_WORKFLOW, 28),
         ):
             workflow = path.read_text(encoding="utf-8")
             matrix = set(
@@ -87,6 +94,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             BOUNDARY_WORKFLOW.read_text(encoding="utf-8"),
             CLOSURE_WORKFLOW.read_text(encoding="utf-8"),
             PROOF_WORKFLOW.read_text(encoding="utf-8"),
+            CLEAR_WORKFLOW.read_text(encoding="utf-8"),
         ]
         for workflow in workflows:
             self.assertIn("workflow_dispatch:", workflow)
@@ -151,6 +159,14 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
                 )
         for width in range(495, 506):
             self.assertIn(f"- circle-{width:03d}-center", workflow)
+
+    def test_clear_matrix_spans_size_translation_and_clipping(self) -> None:
+        workflow = CLEAR_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("LG_GLASS_MATERIAL: clear", workflow)
+        self.assertIn("- circle-008-center", workflow)
+        self.assertIn("- circle-512-offset", workflow)
+        self.assertIn("- circle-640-fractional", workflow)
+        self.assertIn("- circle-3072-center", workflow)
 
 
 if __name__ == "__main__":
