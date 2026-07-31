@@ -1628,14 +1628,14 @@ produce a dimension-exact complete frame, the manifest labels the legacy
 bounded-snapshot fallback explicitly; all existing temporal gates remain
 unchanged.
 
-For streamed material insertion/removal probes, three rows of the existing
-four-row magenta marker retain the original normalized presentation clock.
-The fourth row becomes a post-endpoint heartbeat for 500 ms. Taking the median
-of all four rows still decodes the original clock exactly, while the heartbeat
-forces compositor delivery after that clock reaches one. Those same-index
-frames are stored separately as `tailFrames` with presentation timestamps;
-they can expose a real materialization tail without moving or replacing the
-strictly validated endpoint frame.
+For streamed material insertion/removal probes, the existing four-row magenta
+marker retains the original normalized presentation clock through its endpoint.
+It then resets once and becomes an independent zero-to-one heartbeat for
+500 ms. The reset unambiguously identifies the tail boundary; within tail
+records the original presentation clock is fixed at one and `tailProgress`
+stores the heartbeat. Those same-index frames are stored separately as
+`tailFrames` with presentation timestamps, exposing a real materialization
+tail without moving or replacing the strictly validated endpoint frame.
 
 Return the automatic v2.19 `static` artifact first. It contains the fixed-site
 square-size trace needed to identify cumulative sub-threshold filter mass.

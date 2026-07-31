@@ -1748,6 +1748,7 @@ struct DynamicTailFrameRecord: Codable {
     let sample: Int
     let actualSeconds: Double
     let secondsAfterNominalEndpoint: Double
+    let tailProgress: Double
     let captureDurationSeconds: Double
     let presentationProgress: Double
     let fileSha256: String
@@ -1960,6 +1961,7 @@ struct DynamicTimedFrame: @unchecked Sendable {
 struct DynamicTailFrame: @unchecked Sendable {
     let actual: Double
     let presentationProgress: Double
+    let tailProgress: Double
     let frame: RawCapturedFrame
 }
 
@@ -1991,6 +1993,8 @@ final class WindowStreamCollector:
         let capturesTail: Bool
         var bestByIndex: [Int: DynamicTimedFrame] = [:]
         var tailFrames: [DynamicTailFrame] = []
+        var tailStarted = false
+        var lastEncodedProgress = 0.0
         var captureAttempts = 0
         var decodedSamples = 0
         var transientFailures = 0
@@ -2159,7 +2163,13 @@ final class WindowStreamCollector:
             }
             if state.capturesTail {
                 guard state.tailFrames.count >= 3,
+                      let tailStart =
+                        state.tailFrames.first?.tailProgress,
                       let tailEnd = state.tailFrames.last?.actual,
+                      let tailProgress =
+                        state.tailFrames.last?.tailProgress,
+                      tailStart <= 0.2,
+                      tailProgress >= 0.8,
                       tailEnd
                         >= state.duration
                             + dynamicTailCaptureSeconds * 0.8
@@ -2167,6 +2177,7 @@ final class WindowStreamCollector:
                     throw RigError.capture(
                         "streamed animation tail is incomplete; "
                         + "samples=\(state.tailFrames.count), "
+                        + "progress=\(state.tailFrames.last?.tailProgress ?? 0), "
                         + "last=\(state.tailFrames.last?.actual ?? 0)")
                 }
             }
@@ -2239,6 +2250,23 @@ final class WindowStreamCollector:
             return
         }
 
+        let callbackUptime =
+            ProcessInfo.processInfo.systemUptime
+        let hostTime = CMClockGetTime(
+            CMClockGetHostTimeClock())
+        let presentationTime =
+            CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        let hostSeconds = CMTimeGetSeconds(hostTime)
+        let presentationSeconds =
+            CMTimeGetSeconds(presentationTime)
+        let frameUptime =
+            hostSeconds.isFinite
+                && presentationSeconds.isFinite
+            ? callbackUptime
+                + presentationSeconds - hostSeconds
+            : callbackUptime
+        let actual = frameUptime - state.animationStart
+
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
         let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
@@ -2272,8 +2300,22 @@ final class WindowStreamCollector:
             return
         }
 
-        let presented = min(
+        let encodedProgress = min(
             1, max(0, Double(median) / Double(width)))
+        if state.capturesTail,
+           actual >= state.duration,
+           (
+                encodedProgress + 0.10 < state.lastEncodedProgress
+                || (
+                    actual >= state.duration + 0.05
+                    && encodedProgress < 0.25
+                )
+           ) {
+            state.tailStarted = true
+        }
+        let inTail = state.capturesTail && state.tailStarted
+        let presented = inTail ? 1 : encodedProgress
+        state.lastEncodedProgress = encodedProgress
         let finalIndex = state.frameCount - 1
         let index = min(
             finalIndex,
@@ -2305,26 +2347,9 @@ final class WindowStreamCollector:
             } ?? true
         }
 
-        let callbackUptime =
-            ProcessInfo.processInfo.systemUptime
-        let hostTime = CMClockGetTime(
-            CMClockGetHostTimeClock())
-        let presentationTime =
-            CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        let hostSeconds = CMTimeGetSeconds(hostTime)
-        let presentationSeconds =
-            CMTimeGetSeconds(presentationTime)
-        let frameUptime =
-            hostSeconds.isFinite
-                && presentationSeconds.isFinite
-            ? callbackUptime
-                + presentationSeconds - hostSeconds
-            : callbackUptime
-        let actual = frameUptime - state.animationStart
         let retainTarget = index > 0 && shouldReplace
         let retainTail =
-            state.capturesTail
-            && actual >= state.duration
+            inTail
             && (
                 state.tailFrames.last.map {
                     actual > $0.actual
@@ -2380,6 +2405,7 @@ final class WindowStreamCollector:
                 state.tailFrames.append(DynamicTailFrame(
                     actual: actual,
                     presentationProgress: presented,
+                    tailProgress: encodedProgress,
                     frame: raw))
             }
         }
@@ -2860,6 +2886,7 @@ final class CaptureRootView: NSView {
 final class MaterializeClockView: NSView {
     private var progress: CGFloat = 0
     private var heartbeat: CGFloat = 0
+    private var tailActive = false
     private var animationTask: Task<Void, Never>?
 
     override init(frame frameRect: NSRect) {
@@ -2882,23 +2909,24 @@ final class MaterializeClockView: NSView {
         context.setFillColor(NSColor(
             srgbRed: 1, green: 0, blue: 1, alpha: 1
         ).cgColor)
-        let heartbeatHeight = min(1, bounds.height)
-        context.fill(CGRect(
-            x: 0,
-            y: heartbeatHeight,
-            width: bounds.width * progress,
-            height: bounds.height - heartbeatHeight))
         context.fill(CGRect(
             x: 0,
             y: 0,
-            width: bounds.width * heartbeat,
-            height: heartbeatHeight))
+            width:
+                bounds.width
+                * (tailActive ? heartbeat : progress),
+            height: bounds.height))
     }
 
-    func present(progress value: Double, heartbeat heartbeatValue: Double? = nil) {
+    func present(
+        progress value: Double,
+        heartbeat heartbeatValue: Double? = nil,
+        tailActive tailIsActive: Bool = false
+    ) {
         progress = CGFloat(min(1, max(0, value)))
         heartbeat = CGFloat(min(
             1, max(0, heartbeatValue ?? value)))
+        tailActive = tailIsActive
         needsDisplay = true
         displayIfNeeded()
     }
@@ -2935,7 +2963,9 @@ final class MaterializeClockView: NSView {
                 }
                 self.present(
                     progress: value,
-                    heartbeat: heartbeat)
+                    heartbeat: heartbeat,
+                    tailActive:
+                        tailDuration > 0 && elapsed >= duration)
                 if elapsed >= duration + tailDuration { return }
                 try? await Task.sleep(
                     nanoseconds: UInt64(updateInterval * 1_000_000_000))
@@ -4425,6 +4455,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                         actualSeconds: sample.actual,
                                         secondsAfterNominalEndpoint:
                                             sample.actual - duration,
+                                        tailProgress:
+                                            sample.tailProgress,
                                         captureDurationSeconds:
                                             sample.frame
                                                 .captureDurationSeconds,

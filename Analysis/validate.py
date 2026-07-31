@@ -2232,6 +2232,7 @@ def validate_dynamic(
             total_tail_frames += len(tail_values)
             tail_times: list[float] = []
             tail_progress: list[float] = []
+            tail_heartbeat_progress: list[float] = []
             for tail_position, tail_value in enumerate(tail_values):
                 if not isinstance(tail_value, dict):
                     findings.error(
@@ -2286,6 +2287,17 @@ def validate_dynamic(
                     )
                 else:
                     tail_progress.append(float(presented))
+                heartbeat = tail.get("tailProgress")
+                if (
+                    not isinstance(heartbeat, (int, float))
+                    or not 0 <= heartbeat <= 1
+                ):
+                    findings.error(
+                        f"{tail_label}: invalid tailProgress "
+                        f"{heartbeat!r}"
+                    )
+                else:
+                    tail_heartbeat_progress.append(float(heartbeat))
                 if tail_sampling and tail.get("captureBackend") != (
                     "ScreenCaptureKit-SCStream-BGRA"
                 ):
@@ -2339,7 +2351,30 @@ def validate_dynamic(
                 findings.error(
                     f"{label}: tail presentation progress is not monotonic"
                 )
+            if any(
+                right < left
+                for left, right in zip(
+                    tail_heartbeat_progress,
+                    tail_heartbeat_progress[1:],
+                )
+            ):
+                findings.error(
+                    f"{label}: tail heartbeat progress is not monotonic"
+                )
             if tail_sampling and tail_times:
+                if any(progress < 0.995 for progress in tail_progress):
+                    findings.error(
+                        f"{label}: tail frame precedes the logical endpoint"
+                    )
+                if (
+                    not tail_heartbeat_progress
+                    or tail_heartbeat_progress[0] > 0.2
+                    or tail_heartbeat_progress[-1] < 0.8
+                ):
+                    findings.error(
+                        f"{label}: tail heartbeat does not span "
+                        "the required 0.0-to-1.0 interval"
+                    )
                 if tail_times[0] > duration + 0.200:
                     findings.error(
                         f"{label}: tail starts at {tail_times[0]:.6f}s, "

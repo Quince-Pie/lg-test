@@ -1113,8 +1113,9 @@ class ValidatorTests(unittest.TestCase):
                     "sample": sample,
                     "actualSeconds": actual,
                     "secondsAfterNominalEndpoint": actual - 1,
+                    "tailProgress": sample / 2,
                     "captureDurationSeconds": 0,
-                    "presentationProgress": min(1, 0.99 + sample * 0.01),
+                    "presentationProgress": 1,
                     "fileSha256":
                         hashlib.sha256(path.read_bytes()).hexdigest(),
                     "pixelSha256": hashlib.sha256(pixels).hexdigest(),
