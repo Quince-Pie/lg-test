@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-unclipped-general-height-reciprocal-transfer",
+  "sourceEvidence": {
+    "canonicalReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "factorizedTransferRunId": 30657632564,
+    "factorizedTransferCiCommit": "c27fc0bfe4388cbd182c0052db414cc5c6caa99d",
+    "factorizedTransferManifestSha256": "cf695dccda90eea2032649cb1b0ba5227024ec13bc2c960dabaca18f96299c2a",
+    "factorizedTransferPullsSha256": "2de32da043d69e536b5e1b3ad1ed4be2ff7fbf95c894a3a23f0e586a9710cef2",
+    "factorizedTransferValidationSha256": "850f071bbdbb19663b456607e74cc9f792e29bf7df4738063fe61408a2851173",
+    "factorizedTransferExactAcceptanceCount": 458752,
+    "failedCombinedTransferRunId": 30654181785,
+    "failedCombinedTransferPullsSha256": "c0e5a5e139170775042079cf3689411750db52791cc650e4d3839d80ceb4415c",
+    "separationReason": "The combined gate mixed non-power-of-two heights with clip-generated vertices. This prospective follow-up retains the accepted factorization and changes only height classes while keeping every vertex inside clip space."
+  },
+  "physicalProductModel": {
+    "name": "physicalTruncatedRadix2PartialProducts16Bias0x140000",
+    "operandPrecisionBits": 24,
+    "reciprocalPrecisionBits": 25,
+    "productPrecisionBits": 27,
+    "partialProductRadix": 2,
+    "partialProductTruncationBits": 16,
+    "roundingBias": 1310720,
+    "roundingBiasHex": "0x140000",
+    "finalConversion": "round-to-nearest-even binary32"
+  },
+  "factorizedDomain": {
+    "normalizedDenominatorLowerInclusive": 8192,
+    "normalizedDenominatorUpperInclusive": 16383,
+    "normalizationClassCount": 8192,
+    "geometryWidthFormula": "normalized denominator",
+    "geometryWidthsSha256": "51543aa53b298402f96f65830302af8f0e4e3aafe49d4ee29c5a6f14f70205d9",
+    "effectiveWidthFormula": "32768 for class 8192; otherwise 2 * normalized denominator",
+    "effectiveWidthsSha256": "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",
+    "deltaExponentShiftFormula": "2 for class 8192; otherwise 1",
+    "deltaExponentShiftBitsSha256": "e56ee754c91ea5e2eaa945602e0866d96a79dc46018a9ccb9a113828fd88a300",
+    "scaledDeltaFloatBitsSha256": "884d0b0f9ea9695965d2ce93ae7e80d318e3e4d0032debf5b83214f03725644e",
+    "factorizationIdentity": "scaledDelta / geometryWidth == originalDelta / effectiveWidth exactly in binary floating-point before interpolation"
+  },
+  "geometryCases": [
+    {
+      "name": "general-height-47",
+      "height": 47,
+      "sampleLocalY": 46,
+      "sampleAnchorX": 240,
+      "originY": 11,
+      "sampleMarginX": 15
+    },
+    {
+      "name": "general-height-61",
+      "height": 61,
+      "sampleLocalY": 60,
+      "sampleAnchorX": 240,
+      "originY": 23,
+      "sampleMarginX": 15
+    },
+    {
+      "name": "general-height-79",
+      "height": 79,
+      "sampleLocalY": 78,
+      "sampleAnchorX": 240,
+      "originY": 37,
+      "sampleMarginX": 15
+    },
+    {
+      "name": "general-height-113",
+      "height": 113,
+      "sampleLocalY": 112,
+      "sampleAnchorX": 240,
+      "originY": 53,
+      "sampleMarginX": 15
+    }
+  ],
+  "geometryRule": {
+    "originX": 0,
+    "sampleSide0X": 255,
+    "sampleSide1X": 225,
+    "sampleSidesShareTile": true,
+    "sampleSideSeparationPixels": 30,
+    "sharedPlaneConstantRequiredAcrossBothSides": true,
+    "minimumSignedInteriorArea": 1024,
+    "targetWidth": 288,
+    "targetHeight": 192,
+    "viewportWidth": 32768,
+    "geometryCount": 4,
+    "sampleSideCount": 2,
+    "allVerticesInsideViewport": true,
+    "allGeometryHeightFactorizationsUnobservedAtPreregistration": true
+  },
+  "witnesses": {
+    "significands": [
+      12310539,
+      10561315,
+      8936464,
+      8393727,
+      16724323,
+      8393489,
+      16276106,
+      8393693,
+      16450452,
+      15671128,
+      9479541,
+      16747356,
+      12063463,
+      8393506
+    ],
+    "count": 14,
+    "significandsSha256": "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a",
+    "unscaledDeltaFloatBitsSha256": "4af6fce64ad188beb784cbea16c1d09ca2713825f8becee8ee64cabfd68caf8a",
+    "candidateRadiusInternalUlps": 8,
+    "candidateCount": 17
+  },
+  "frozenPredictions": {
+    "selectedReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "recoveredCoefficientBitsSha256": "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
+    "numericalPredictionsChangedFromAcceptedFactorizedGate": false
+  },
+  "captureLayout": {
+    "ordering": "normalized-denominator-major,witness-major,geometry-major,sample-side-major,pull-offset-major",
+    "pullOffsets": [
+      {
+        "x": 0.0,
+        "y": 0.5
+      },
+      {
+        "x": 0.9375,
+        "y": 0.5
+      }
+    ],
+    "sameTileSidePositions": [
+      31,
+      1
+    ],
+    "uncoveredRecordSentinel": "0xffffffffffffffff",
+    "rawBytes": 7340032
+  },
+  "observedAtPreregistration": false,
+  "acceptance": {
+    "frozenCanonicalCandidateMustBeAcceptedEveryWidth": true,
+    "candidateMatchMultiplicityMustBeReported": true,
+    "frozenSelectedReciprocalTableHashMustMatchPrediction": true,
+    "recoveredCoefficientBitsHashMustMatchFrozenPrediction": true,
+    "bothSampleSidesMustShareOnePlaneConstantPerGeometry": true,
+    "everyGeneralHeightMustAcceptThePredictedCoefficient": true,
+    "noAdaptiveFitOrTolerance": true
+  }
+}

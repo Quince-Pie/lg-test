@@ -2405,6 +2405,33 @@ not pretend that a finite pull corpus uniquely identifies an internal value
 when two candidates produce the same tested outputs. The canonical selector
 hash and original coefficient hash remain unchanged.
 
+Run 30657632564 passed the factorized gate prospectively and its downloaded
+artifact reproduced the CI validation byte for byte. All 8,192 frozen
+canonical candidates pass, as do all 458,752 geometry/witness coefficient
+checks. The selected reciprocal and coefficient hashes are exactly
+`2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb`
+and
+`7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0`.
+The 30-pixel baseline uniquely identifies 8,177 classes; fifteen retain one
+observationally equivalent adjacent candidate, while the frozen candidate is
+accepted in every class. The manifest, raw pull buffer, and validation report
+have SHA-256 values
+`cf695dccda90eea2032649cb1b0ba5227024ec13bc2c960dabaca18f96299c2a`,
+`2de32da043d69e536b5e1b3ad1ed4be2ff7fbf95c894a3a23f0e586a9710cef2`,
+and
+`850f071bbdbb19663b456607e74cc9f792e29bf7df4738063fe61408a2851173`.
+This establishes reciprocal exponent transfer over the complete finite
+normalization domain without relying on saturated wide primitives.
+
+`raster_reciprocal_general_height_transfer_preregistration.json` now
+separates the other variable from the failed combined gate. It retains the
+accepted factorized widths, scaled deltas, selector table, product law, and
+30-pixel shared-plane baseline, but replaces the power-of-two heights with
+47, 61, 79, and 113. All vertices remain inside clip space. A pass therefore
+establishes general-height setup and localizes the old combined failure to
+clip-generated geometry; a failure identifies non-power-of-two area setup
+without any clipping confound.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

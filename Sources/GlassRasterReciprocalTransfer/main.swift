@@ -26,8 +26,8 @@ private struct SamplePosition {
 
 private let normalizedDenominatorLower = 8_192
 private let normalizedDenominatorUpper = 16_383
-private let targetWidth = 96
-private let targetHeight = 8_192
+private let targetWidth = 288
+private let targetHeight = 192
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
@@ -50,32 +50,32 @@ private let deltaExponentShiftBits: [UInt32] = widths.map {
 
 private let geometryCases = [
     GeometryCase(
-        name: "power2-height-512",
-        height: 512,
-        sampleLocalY: 511,
-        sampleAnchorX: 48,
+        name: "general-height-47",
+        height: 47,
+        sampleLocalY: 46,
+        sampleAnchorX: 240,
         originY: 11,
         sampleMarginX: 15),
     GeometryCase(
-        name: "power2-height-1024",
-        height: 1_024,
-        sampleLocalY: 1_023,
-        sampleAnchorX: 48,
-        originY: 19,
+        name: "general-height-61",
+        height: 61,
+        sampleLocalY: 60,
+        sampleAnchorX: 240,
+        originY: 23,
         sampleMarginX: 15),
     GeometryCase(
-        name: "power2-height-2048",
-        height: 2_048,
-        sampleLocalY: 2_047,
-        sampleAnchorX: 48,
-        originY: 27,
+        name: "general-height-79",
+        height: 79,
+        sampleLocalY: 78,
+        sampleAnchorX: 240,
+        originY: 37,
         sampleMarginX: 15),
     GeometryCase(
-        name: "power2-height-4096",
-        height: 4_096,
-        sampleLocalY: 4_095,
-        sampleAnchorX: 48,
-        originY: 35,
+        name: "general-height-113",
+        height: 113,
+        sampleLocalY: 112,
+        sampleAnchorX: 240,
+        originY: 53,
         sampleMarginX: 15),
 ]
 
@@ -569,7 +569,7 @@ private func run(outputDirectory: URL) throws {
         count: outputBytes)
     precondition(outputData.count == 7_340_032)
     let outputFilename =
-        "raster-reciprocal-factorized-transfer-pulls.raw"
+        "raster-reciprocal-general-height-transfer-pulls.raw"
     try outputData.write(
         to: outputDirectory.appendingPathComponent(
             outputFilename),
@@ -578,7 +578,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-factorized-transfer-1.0.0"
+        "metal-raster-reciprocal-general-height-transfer-1.0.0"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -595,13 +595,13 @@ private func run(outputDirectory: URL) throws {
         "coverageAttachment":
             "one-width R32Float additive witness count, cleared/stored/verified",
     ] as [String: Any]
-    manifest["reciprocalFactorizedTransfer"] = [
+    manifest["reciprocalGeneralHeightTransfer"] = [
         "role":
-            "prospective-factorized-reciprocal-exponent-transfer",
+            "prospective-unclipped-general-height-reciprocal-transfer",
         "preregistrationFile":
-            "Analysis/raster_reciprocal_factorized_transfer_preregistration.json",
+            "Analysis/raster_reciprocal_general_height_transfer_preregistration.json",
         "preregistrationSha256":
-            "1e9de6d0403d0d463ace55daf92b50b99dec1f16b8494041b14f8597c1f775f6",
+            "144330567722e2336ae6b6024c5d12c8c0bfb2c1e168a68406fcf079b22cb3a3",
         "geometryWidthFormula":
             "normalized-denominator",
         "widthMinimum": widths.min()!,
