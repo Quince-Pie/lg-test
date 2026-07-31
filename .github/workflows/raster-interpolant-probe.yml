@@ -73,10 +73,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 12:
+          if manifest.get("schemaVersion") != 13:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-12.0.0"
+              "metal-raster-interpolant-probe-13.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -264,6 +264,37 @@ jobs:
               name: "discovery"
               for name in reciprocal_sweep_geometry
           })
+          factorized_geometry = {}
+          for width in range(32, 128):
+              name = (
+                  "tomography-discovery-factor-"
+                  f"h064-w{width:03d}"
+              )
+              factorized_geometry[name] = (width, 64)
+          for width in range(32, 64):
+              name = (
+                  "tomography-discovery-factor-"
+                  f"h128-w{width:03d}"
+              )
+              factorized_geometry[name] = (width, 128)
+              if (
+                  width * 128
+                  != factorized_geometry[
+                      "tomography-discovery-factor-"
+                      f"h064-w{2 * width:03d}"
+                  ][0] * 64
+              ):
+                  raise SystemExit(
+                      "factorized equal-area pair differs"
+                  )
+          if len(factorized_geometry) != 128:
+              raise SystemExit(
+                  "factorized reciprocal generator differs"
+              )
+          expected_tomography.update({
+              name: "discovery"
+              for name in factorized_geometry
+          })
           expected_numerators = [
               52625,
               51143,
@@ -294,6 +325,9 @@ jobs:
               sweep_geometry = reciprocal_sweep_geometry.get(
                   record["name"]
               )
+              factor_geometry = factorized_geometry.get(
+                  record["name"]
+              )
               if (
                   sweep_geometry is not None
                   and (
@@ -306,6 +340,19 @@ jobs:
               ):
                   raise SystemExit(
                       f"{record['name']} sweep geometry differs"
+                  )
+              if (
+                  factor_geometry is not None
+                  and (
+                      (crop["width"], crop["height"])
+                      != factor_geometry
+                      or crop["originX"] != 17
+                      or crop["originY"] != 19
+                      or target != {"width": 160, "height": 160}
+                  )
+              ):
+                  raise SystemExit(
+                      f"{record['name']} factor geometry differs"
                   )
               if (
                   crop["originX"] < 0

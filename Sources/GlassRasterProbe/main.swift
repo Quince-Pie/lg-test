@@ -142,6 +142,62 @@ private func reciprocalSweepTomographyCases()
     return result
 }
 
+private func factorizedReciprocalTomographyCases()
+    -> [TomographyCase]
+{
+    var result: [TomographyCase] = []
+    result.reserveCapacity(128)
+
+    // A power-of-two opposite edge makes delta * height exact. The x
+    // coefficient therefore isolates the reciprocal/product stages from
+    // numerator construction over a dense determinant interval.
+    for width in 32...127 {
+        result.append(discoveryTomographyCase(
+            String(
+                format:
+                    "tomography-discovery-factor-h064-w%03d",
+                width),
+            width: width,
+            height: 64,
+            originX: 17,
+            originY: 19,
+            targetWidth: 160,
+            targetHeight: 160))
+    }
+
+    // For widths 32...63, (width, 128) has the same area as
+    // (2 * width, 64). These pairs change factorization and scale the exact
+    // x numerator by two without changing its normalized significand.
+    for width in 32...63 {
+        result.append(discoveryTomographyCase(
+            String(
+                format:
+                    "tomography-discovery-factor-h128-w%03d",
+                width),
+            width: width,
+            height: 128,
+            originX: 17,
+            originY: 19,
+            targetWidth: 160,
+            targetHeight: 160))
+    }
+
+    precondition(result.count == 128)
+    precondition(Set(result.map(\.name)).count == result.count)
+    let byDimensions = Dictionary(
+        uniqueKeysWithValues: result.map {
+            ("\($0.width)x\($0.height)", $0)
+        })
+    for width in 32...63 {
+        let tall = byDimensions["\(width)x128"]!
+        let wide = byDimensions["\(2 * width)x64"]!
+        precondition(
+            tall.width * tall.height
+                == wide.width * wide.height)
+    }
+    return result
+}
+
 private let tomographyDeltaDenominator: UInt32 = 65_536
 private let tomographyDeltaNumerators: [UInt32] = [
     52_625,
@@ -1210,6 +1266,7 @@ private let tomographyExpansionCases = [
 private let tomographyCases =
     tomographyCoreCases
     + tomographyExpansionCases
+    + factorizedReciprocalTomographyCases()
     + reciprocalSweepTomographyCases()
 
 private func numeratorTomographyCases()
@@ -2073,8 +2130,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 12,
-        "rigVersion": "metal-raster-interpolant-probe-12.0.0",
+        "schemaVersion": 13,
+        "rigVersion": "metal-raster-interpolant-probe-13.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -2104,6 +2161,8 @@ private func run(outputDirectory: URL) throws {
                 "source x/y at two subpixel offsets",
             "reciprocalTomographyOutput":
                 "eight zero-based x/y ramps at two subpixel offsets",
+            "factorizedReciprocalOutput":
+                "128 power-of-two-edge determinant controls",
             "numeratorTomographyOutput":
                 "256 normalized numerator mantissas on counterexamples",
         ],

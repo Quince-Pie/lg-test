@@ -1960,6 +1960,18 @@ name, rejects any holdout record, and verifies all 2,048 new surface hashes.
 This matrix distinguishes a shared reciprocal multiplier from a
 numerator-dependent fixed-function divider without fitting against holdouts.
 
+Raster schema 13 keeps every schema-12 surface and holdout unchanged and adds
+128 discovery-only factorization controls. Ninety-six cases hold the opposite
+edge at exactly 64 pixels while sweeping integer widths 32 through 127, so the
+x-plane numerator is an exact power-of-two scaling of each preregistered ramp.
+Another 32 cases use heights of 128 and widths 32 through 63; each has exactly
+the same determinant as the corresponding height-64 case at twice its width.
+The paired normalized numerators differ only by a power of two. CI regenerates
+the complete geometry family, proves all 32 equal-area relationships, rejects
+any undeclared case, and bit-gates every inherited and added surface. This
+separates reciprocal approximation, factorization, and final product behavior
+without opening or fitting the four existing holdouts.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
