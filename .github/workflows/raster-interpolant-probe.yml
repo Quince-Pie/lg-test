@@ -65,10 +65,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 8:
+          if manifest.get("schemaVersion") != 9:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-8.0.0"
+              "metal-raster-interpolant-probe-9.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -164,6 +164,43 @@ jobs:
               "tomography-holdout-163x197": "holdout",
               "tomography-holdout-229x239": "holdout",
           }
+          expected_tomography.update({
+              name: "discovery"
+              for name in (
+                  "tomography-discovery-control-transpose-071x067",
+                  "tomography-discovery-control-origin-067x071",
+                  "tomography-discovery-control-viewport-067x071",
+                  "tomography-discovery-control-area8192-064x128",
+                  "tomography-discovery-control-area8192-032x256",
+                  "tomography-discovery-control-area12000-080x150",
+                  "tomography-discovery-control-area12000-100x120",
+                  "tomography-discovery-control-area12000-075x160",
+                  "tomography-discovery-bin00-063x067",
+                  "tomography-discovery-bin01-065x069",
+                  "tomography-discovery-bin02-057x083",
+                  "tomography-discovery-bin03-065x077",
+                  "tomography-discovery-bin04-059x089",
+                  "tomography-discovery-bin05-059x093",
+                  "tomography-discovery-bin06-057x101",
+                  "tomography-discovery-bin07-071x085",
+                  "tomography-discovery-bin08-069x091",
+                  "tomography-discovery-bin09-061x107",
+                  "tomography-discovery-bin10-059x115",
+                  "tomography-discovery-bin11-067x105",
+                  "tomography-discovery-bin12-067x109",
+                  "tomography-discovery-bin13-083x091",
+                  "tomography-discovery-bin14-073x107",
+                  "tomography-discovery-bin15-083x097",
+                  "tomography-discovery-scaled-bin00-126x134",
+                  "tomography-discovery-scaled-bin01-130x138",
+                  "tomography-discovery-scaled-bin02-114x166",
+                  "tomography-discovery-scaled-bin03-130x154",
+                  "tomography-discovery-scaled-bin04-118x178",
+                  "tomography-discovery-scaled-bin05-118x186",
+                  "tomography-discovery-scaled-bin06-114x202",
+                  "tomography-discovery-scaled-bin07-142x170",
+              )
+          })
           expected_numerators = [
               52625,
               51143,

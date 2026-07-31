@@ -46,6 +46,26 @@ private struct TomographyCase {
     let height: Int
 }
 
+private func discoveryTomographyCase(
+    _ name: String,
+    width: Int,
+    height: Int,
+    originX: Int,
+    originY: Int,
+    targetWidth: Int = 320,
+    targetHeight: Int = 320
+) -> TomographyCase {
+    TomographyCase(
+        name: name,
+        role: "discovery",
+        targetWidth: targetWidth,
+        targetHeight: targetHeight,
+        originX: originX,
+        originY: originY,
+        width: width,
+        height: height)
+}
+
 private let tomographyDeltaDenominator: UInt32 = 65_536
 private let tomographyDeltaNumerators: [UInt32] = [
     52_625,
@@ -621,7 +641,7 @@ private let cases = [
         sourceBottom: Float(bitPattern: 0x3c800000)),
 ]
 
-private let tomographyCases = [
+private let tomographyCoreCases = [
     TomographyCase(
         name: "tomography-train-067x071",
         role: "discovery",
@@ -767,6 +787,206 @@ private let tomographyCases = [
         width: 229,
         height: 239),
 ]
+
+private let tomographyExpansionCases = [
+    discoveryTomographyCase(
+        "tomography-discovery-control-transpose-071x067",
+        width: 71,
+        height: 67,
+        originX: 17,
+        originY: 19),
+    discoveryTomographyCase(
+        "tomography-discovery-control-origin-067x071",
+        width: 67,
+        height: 71,
+        originX: 31,
+        originY: 47),
+    discoveryTomographyCase(
+        "tomography-discovery-control-viewport-067x071",
+        width: 67,
+        height: 71,
+        originX: 113,
+        originY: 79,
+        targetWidth: 384,
+        targetHeight: 288),
+    discoveryTomographyCase(
+        "tomography-discovery-control-area8192-064x128",
+        width: 64,
+        height: 128,
+        originX: 23,
+        originY: 29),
+    discoveryTomographyCase(
+        "tomography-discovery-control-area8192-032x256",
+        width: 32,
+        height: 256,
+        originX: 7,
+        originY: 31),
+    discoveryTomographyCase(
+        "tomography-discovery-control-area12000-080x150",
+        width: 80,
+        height: 150,
+        originX: 37,
+        originY: 41),
+    discoveryTomographyCase(
+        "tomography-discovery-control-area12000-100x120",
+        width: 100,
+        height: 120,
+        originX: 43,
+        originY: 53),
+    discoveryTomographyCase(
+        "tomography-discovery-control-area12000-075x160",
+        width: 75,
+        height: 160,
+        originX: 59,
+        originY: 61),
+    discoveryTomographyCase(
+        "tomography-discovery-bin00-063x067",
+        width: 63,
+        height: 67,
+        originX: 3,
+        originY: 7),
+    discoveryTomographyCase(
+        "tomography-discovery-bin01-065x069",
+        width: 65,
+        height: 69,
+        originX: 5,
+        originY: 11),
+    discoveryTomographyCase(
+        "tomography-discovery-bin02-057x083",
+        width: 57,
+        height: 83,
+        originX: 13,
+        originY: 17),
+    discoveryTomographyCase(
+        "tomography-discovery-bin03-065x077",
+        width: 65,
+        height: 77,
+        originX: 19,
+        originY: 23),
+    discoveryTomographyCase(
+        "tomography-discovery-bin04-059x089",
+        width: 59,
+        height: 89,
+        originX: 29,
+        originY: 31),
+    discoveryTomographyCase(
+        "tomography-discovery-bin05-059x093",
+        width: 59,
+        height: 93,
+        originX: 37,
+        originY: 41),
+    discoveryTomographyCase(
+        "tomography-discovery-bin06-057x101",
+        width: 57,
+        height: 101,
+        originX: 43,
+        originY: 47),
+    discoveryTomographyCase(
+        "tomography-discovery-bin07-071x085",
+        width: 71,
+        height: 85,
+        originX: 53,
+        originY: 59),
+    discoveryTomographyCase(
+        "tomography-discovery-bin08-069x091",
+        width: 69,
+        height: 91,
+        originX: 61,
+        originY: 67),
+    discoveryTomographyCase(
+        "tomography-discovery-bin09-061x107",
+        width: 61,
+        height: 107,
+        originX: 71,
+        originY: 73),
+    discoveryTomographyCase(
+        "tomography-discovery-bin10-059x115",
+        width: 59,
+        height: 115,
+        originX: 79,
+        originY: 83),
+    discoveryTomographyCase(
+        "tomography-discovery-bin11-067x105",
+        width: 67,
+        height: 105,
+        originX: 89,
+        originY: 97),
+    discoveryTomographyCase(
+        "tomography-discovery-bin12-067x109",
+        width: 67,
+        height: 109,
+        originX: 101,
+        originY: 103),
+    discoveryTomographyCase(
+        "tomography-discovery-bin13-083x091",
+        width: 83,
+        height: 91,
+        originX: 107,
+        originY: 109),
+    discoveryTomographyCase(
+        "tomography-discovery-bin14-073x107",
+        width: 73,
+        height: 107,
+        originX: 113,
+        originY: 101),
+    discoveryTomographyCase(
+        "tomography-discovery-bin15-083x097",
+        width: 83,
+        height: 97,
+        originX: 83,
+        originY: 79),
+    discoveryTomographyCase(
+        "tomography-discovery-scaled-bin00-126x134",
+        width: 126,
+        height: 134,
+        originX: 3,
+        originY: 5),
+    discoveryTomographyCase(
+        "tomography-discovery-scaled-bin01-130x138",
+        width: 130,
+        height: 138,
+        originX: 7,
+        originY: 11),
+    discoveryTomographyCase(
+        "tomography-discovery-scaled-bin02-114x166",
+        width: 114,
+        height: 166,
+        originX: 13,
+        originY: 17),
+    discoveryTomographyCase(
+        "tomography-discovery-scaled-bin03-130x154",
+        width: 130,
+        height: 154,
+        originX: 19,
+        originY: 23),
+    discoveryTomographyCase(
+        "tomography-discovery-scaled-bin04-118x178",
+        width: 118,
+        height: 178,
+        originX: 29,
+        originY: 31),
+    discoveryTomographyCase(
+        "tomography-discovery-scaled-bin05-118x186",
+        width: 118,
+        height: 186,
+        originX: 37,
+        originY: 41),
+    discoveryTomographyCase(
+        "tomography-discovery-scaled-bin06-114x202",
+        width: 114,
+        height: 202,
+        originX: 43,
+        originY: 47),
+    discoveryTomographyCase(
+        "tomography-discovery-scaled-bin07-142x170",
+        width: 142,
+        height: 170,
+        originX: 53,
+        originY: 59),
+]
+
+private let tomographyCases =
+    tomographyCoreCases + tomographyExpansionCases
 
 private func sha256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
@@ -1412,8 +1632,8 @@ private func run(outputDirectory: URL) throws {
     }
 
     let manifest: [String: Any] = [
-        "schemaVersion": 8,
-        "rigVersion": "metal-raster-interpolant-probe-8.0.0",
+        "schemaVersion": 9,
+        "rigVersion": "metal-raster-interpolant-probe-9.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",

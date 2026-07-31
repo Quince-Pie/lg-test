@@ -1917,6 +1917,18 @@ any observed float bit or allocating another full-size attachment.
 The discovery/holdout role is recorded in the manifest: a reciprocal law must
 be selected from discovery records before the four holdouts are evaluated.
 
+Raster schema 9 keeps the schema-8 holdouts unchanged and unopened while
+expanding discovery coverage for the staged setup law. Schema-8 evidence
+isolated a unique 27-significant-bit round-to-nearest-even product boundary,
+but did not determine the preceding reciprocal approximation. The added
+discovery set samples sixteen nearly uniform determinant-mantissa bins, eight
+exact four-times-area replicas that preserve the normalized determinant, and
+controls for transposition, origin, viewport, and three different rectangle
+factorizations of the same area. These controls distinguish a determinant
+reciprocal from independent width/height division and distinguish a normalized
+mantissa law from viewport or screen-position rounding before any holdout is
+opened.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
