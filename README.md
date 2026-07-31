@@ -1629,13 +1629,19 @@ bounded-snapshot fallback explicitly; all existing temporal gates remain
 unchanged.
 
 For streamed material insertion/removal probes, the existing four-row magenta
-marker retains the original normalized presentation clock through its endpoint.
-It then resets once and becomes an independent zero-to-one heartbeat for
-500 ms. The reset unambiguously identifies the tail boundary; within tail
-records the original presentation clock is fixed at one and `tailProgress`
-stores the heartbeat. Those same-index frames are stored separately as
-`tailFrames` with presentation timestamps, exposing a real materialization
-tail without moving or replacing the strictly validated endpoint frame.
+marker is a compositor-owned Core Animation clock. It retains the original
+normalized presentation clock through its endpoint, then resets once and
+becomes an independent zero-to-one heartbeat for 500 ms. The reset
+unambiguously identifies the tail boundary; within tail records the original
+presentation clock is fixed at one and `tailProgress` stores the heartbeat.
+ScreenCaptureKit may stop delivering once the full scene is quiescent and only
+the telemetry strip changes, so five bounded own-window snapshots acquire the
+tail after the live stream has already covered the transition. Every tail
+snapshot carries the embedded heartbeat, measured acquisition midpoint and
+duration, exact source metadata, hashes, and explicit
+`CGWindowListCreateImage` provenance. This cannot serialize or open holes in
+the preceding live transition and does not move or replace its strictly
+validated endpoint frame.
 
 Return the automatic v2.19 `static` artifact first. It contains the fixed-site
 square-size trace needed to identify cumulative sub-threshold filter mass.

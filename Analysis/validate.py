@@ -1866,6 +1866,7 @@ def validate_dynamic(
                 "continuous-bounded-clock-full-frame-verified",
                 "continuous-window-stream-full-frame-verified",
                 "continuous-window-stream-tail-full-frame-verified",
+                "continuous-window-stream-bounded-tail-full-frame-verified",
             }:
                 findings.error(f"{label}: unexpected dynamic sampling method")
             attempts = sequence.get("captureAttempts")
@@ -1883,6 +1884,7 @@ def validate_dynamic(
                 "continuous-bounded-clock-full-frame-verified",
                 "continuous-window-stream-full-frame-verified",
                 "continuous-window-stream-tail-full-frame-verified",
+                "continuous-window-stream-bounded-tail-full-frame-verified",
             }:
                 clock_surface = sequence.get("clockProbeSurface")
                 bounded_probes = sequence.get("boundedClockProbes")
@@ -1895,15 +1897,24 @@ def validate_dynamic(
                 stream_sampling = sampling_method in {
                     "continuous-window-stream-full-frame-verified",
                     "continuous-window-stream-tail-full-frame-verified",
+                    "continuous-window-stream-bounded-tail-full-frame-verified",
                 }
-                expected_surfaces = (
-                    {"desktop-independent-window-stream"}
-                    if stream_sampling
-                    else {
+                if sampling_method == (
+                    "continuous-window-stream-bounded-tail-full-frame-verified"
+                ):
+                    expected_surfaces = {
+                        "desktop-independent-window-stream"
+                        "+bounded-own-window-tail"
+                    }
+                elif stream_sampling:
+                    expected_surfaces = {
+                        "desktop-independent-window-stream"
+                    }
+                else:
+                    expected_surfaces = {
                         "dedicated-clock-window",
                         "full-window-fallback",
                     }
-                )
                 if clock_surface not in expected_surfaces:
                     findings.error(
                         f"{label}: invalid bounded clock-probe surface"
@@ -2220,9 +2231,13 @@ def validate_dynamic(
                 pixel_hashes.append(decoded.pixel_sha256)
 
         tail_values = sequence.get("tailFrames")
-        tail_sampling = (
-            sequence.get("samplingMethod")
-            == "continuous-window-stream-tail-full-frame-verified"
+        sampling_method = sequence.get("samplingMethod")
+        tail_sampling = sampling_method in {
+            "continuous-window-stream-tail-full-frame-verified",
+            "continuous-window-stream-bounded-tail-full-frame-verified",
+        }
+        bounded_tail_sampling = sampling_method == (
+            "continuous-window-stream-bounded-tail-full-frame-verified"
         )
         if tail_sampling and (
             not isinstance(tail_values, list) or len(tail_values) < 3
@@ -2298,11 +2313,23 @@ def validate_dynamic(
                     )
                 else:
                     tail_heartbeat_progress.append(float(heartbeat))
-                if tail_sampling and tail.get("captureBackend") != (
-                    "ScreenCaptureKit-SCStream-BGRA"
+                if (
+                    sampling_method
+                    == "continuous-window-stream-tail-full-frame-verified"
+                    and tail.get("captureBackend")
+                    != "ScreenCaptureKit-SCStream-BGRA"
                 ):
                     findings.error(
                         f"{tail_label}: tail is not a streamed full frame"
+                    )
+                if (
+                    bounded_tail_sampling
+                    and tail.get("captureBackend")
+                    != "CGWindowListCreateImage"
+                ):
+                    findings.error(
+                        f"{tail_label}: tail is not a bounded "
+                        "own-window full frame"
                     )
 
                 relative = tail.get("file")

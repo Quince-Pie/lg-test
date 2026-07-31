@@ -1138,6 +1138,33 @@ class ValidatorTests(unittest.TestCase):
             self.assertEqual(tailed.errors, [])
             self.assertEqual(tailed_summary["tailFrames"], 3)
 
+            sequence.update({
+                "samplingMethod":
+                    "continuous-window-stream-bounded-tail-full-frame-verified",
+                "clockProbeSurface":
+                    "desktop-independent-window-stream"
+                    "+bounded-own-window-tail",
+            })
+            for tail in tails:
+                tail["captureBackend"] = "CGWindowListCreateImage"
+            bounded_tail = Findings()
+            bounded_tail_summary, _ = validate_dynamic(
+                root, manifest, references, bounded_tail
+            )
+            self.assertEqual(bounded_tail.errors, [])
+            self.assertEqual(bounded_tail_summary["tailFrames"], 3)
+
+            tails[0]["captureBackend"] = "ScreenCaptureKit-SCStream-BGRA"
+            invalid_bounded_tail = Findings()
+            validate_dynamic(
+                root, manifest, references, invalid_bounded_tail
+            )
+            self.assertTrue(any(
+                "bounded own-window full frame" in error
+                for error in invalid_bounded_tail.errors
+            ))
+            tails[0]["captureBackend"] = "CGWindowListCreateImage"
+
             tails[-1]["secondsAfterNominalEndpoint"] = 0.4
             invalid_tail = Findings()
             validate_dynamic(root, manifest, references, invalid_tail)

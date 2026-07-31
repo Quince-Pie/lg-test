@@ -2138,7 +2138,9 @@ final class WindowStreamCollector:
         }
     }
 
-    func finishSegment() throws -> DynamicCaptureResult {
+    func finishSegment(
+        verifiedTailFrames: [DynamicTailFrame]? = nil
+    ) throws -> DynamicCaptureResult {
         try outputQueue.sync {
             guard let state = segment else {
                 throw RigError.capture(
@@ -2162,13 +2164,18 @@ final class WindowStreamCollector:
                     + "received=\(state.captureAttempts), "
                     + "decoded=\(state.decodedSamples)")
             }
+            let tailFrames = (
+                verifiedTailFrames ?? state.tailFrames
+            ).sorted {
+                $0.actual < $1.actual
+            }
             if state.capturesTail {
-                guard state.tailFrames.count >= 3,
+                guard tailFrames.count >= 3,
                       let tailStart =
-                        state.tailFrames.first?.tailProgress,
-                      let tailEnd = state.tailFrames.last?.actual,
+                        tailFrames.first?.tailProgress,
+                      let tailEnd = tailFrames.last?.actual,
                       let tailProgress =
-                        state.tailFrames.last?.tailProgress,
+                        tailFrames.last?.tailProgress,
                       tailStart <= 0.2,
                       tailProgress >= 0.8,
                       tailEnd
@@ -2176,27 +2183,33 @@ final class WindowStreamCollector:
                             + dynamicTailCaptureSeconds * 0.8
                 else {
                     throw RigError.capture(
-                        "streamed animation tail is incomplete; "
-                        + "samples=\(state.tailFrames.count), "
-                        + "progress=\(state.tailFrames.last?.tailProgress ?? 0), "
-                        + "last=\(state.tailFrames.last?.actual ?? 0)")
+                        "verified animation tail is incomplete; "
+                        + "samples=\(tailFrames.count), "
+                        + "progress=\(tailFrames.last?.tailProgress ?? 0), "
+                        + "last=\(tailFrames.last?.actual ?? 0)")
                 }
             }
+            let boundedTailCount = verifiedTailFrames?.count ?? 0
             return DynamicCaptureResult(
                 frames: state.bestByIndex.keys.sorted().compactMap {
                     state.bestByIndex[$0]
                 },
-                tailFrames: state.tailFrames.sorted {
-                    $0.actual < $1.actual
-                },
-                captureAttempts: state.captureAttempts,
-                decodedSamples: state.decodedSamples,
+                tailFrames: tailFrames,
+                captureAttempts:
+                    state.captureAttempts + boundedTailCount,
+                decodedSamples:
+                    state.decodedSamples + boundedTailCount,
                 transientFailures: state.transientFailures,
                 clockProbeSurface:
-                    "desktop-independent-window-stream",
+                    verifiedTailFrames == nil
+                    ? "desktop-independent-window-stream"
+                    : "desktop-independent-window-stream"
+                        + "+bounded-own-window-tail",
                 boundedClockProbes: 0,
-                fullFrameCaptures: state.fullFrameCaptures,
-                fullFrameClockDecodes: state.fullFrameClockDecodes)
+                fullFrameCaptures:
+                    state.fullFrameCaptures + boundedTailCount,
+                fullFrameClockDecodes:
+                    state.fullFrameClockDecodes + boundedTailCount)
         }
     }
 
@@ -2608,6 +2621,35 @@ func capturePresentedAnimation(
 ) throws -> DynamicCaptureResult {
     let endpointDeadline = animationStart + duration + 0.250
     if let streamCollector {
+        var verifiedTailFrames: [DynamicTailFrame]?
+        if useDedicatedProbe {
+            let frameInterval = 1 / max(refreshRate, 1)
+            let resetDuration = min(0.0005, frameInterval / 4)
+            let tailStart =
+                animationStart + duration + frameInterval + resetDuration
+            let targetProgress = [0.05, 0.25, 0.45, 0.65, 0.85]
+            var tailFrames: [DynamicTailFrame] = []
+            tailFrames.reserveCapacity(targetProgress.count)
+            for progress in targetProgress {
+                let target =
+                    tailStart + progress * dynamicTailCaptureSeconds
+                let now = ProcessInfo.processInfo.systemUptime
+                if target > now {
+                    Thread.sleep(forTimeInterval: target - now)
+                }
+                let frame = try captureRawWindow(windowID)
+                let encodedProgress = min(
+                    1,
+                    max(0, try presentationProgress(
+                        in: frame, backingScale: backingScale)))
+                tailFrames.append(DynamicTailFrame(
+                    actual: frame.midpointUptime - animationStart,
+                    presentationProgress: 1,
+                    tailProgress: encodedProgress,
+                    frame: frame))
+            }
+            verifiedTailFrames = tailFrames
+        }
         let tailDeadline =
             animationStart + duration
             + (
@@ -2621,7 +2663,8 @@ func capturePresentedAnimation(
             Thread.sleep(
                 forTimeInterval: tailDeadline - now)
         }
-        return try streamCollector.finishSegment()
+        return try streamCollector.finishSegment(
+            verifiedTailFrames: verifiedTailFrames)
     }
 
     let finalIndex = frameCount - 1
@@ -4415,7 +4458,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     ? "continuous-bounded-clock-full-frame-verified"
                                     : (
                                         mode.usesRasterClock
-                                        ? "continuous-window-stream-tail-full-frame-verified"
+                                        ? "continuous-window-stream-bounded-tail-full-frame-verified"
                                         : "continuous-window-stream-full-frame-verified"
                                     ),
                                 captureAttempts: captured.captureAttempts,
