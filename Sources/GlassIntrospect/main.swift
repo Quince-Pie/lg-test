@@ -3613,23 +3613,53 @@ private let glassMatrixConstructorCallOffsets = [
     0x500,
 ]
 private let glassMatrixConstructorCodeByteCount = 0x800
+private let glassColorMatrixByteCount = 0x50
+private let glassMatrixConstructorConstantDataByteCount = 0xA0
+
+private struct GlassMatrixBasisReference {
+    let adrpOffset: Int
+    let addOffset: Int
+    let register: UInt32
+}
+
+private let glassMatrixBasisReferences = [
+    GlassMatrixBasisReference(
+        adrpOffset: 0xB8,
+        addOffset: 0xBC,
+        register: 2),
+    GlassMatrixBasisReference(
+        adrpOffset: 0xE0,
+        addOffset: 0xE4,
+        register: 1),
+]
+
+private func littleEndianUInt32(
+    code: [UInt8],
+    offset: Int
+) -> UInt32? {
+    guard offset >= 0, offset + 4 <= code.count else {
+        return nil
+    }
+    return (
+        UInt32(code[offset])
+        | UInt32(code[offset + 1]) << 8
+        | UInt32(code[offset + 2]) << 16
+        | UInt32(code[offset + 3]) << 24
+    )
+}
 
 private func arm64BranchLinkTarget(
     code: [UInt8],
     instructionOffset: Int,
     symbolAddress: UInt
 ) -> (instruction: UInt32, target: UInt)? {
-    guard instructionOffset >= 0,
-          instructionOffset + 4 <= code.count,
+    guard let instruction = littleEndianUInt32(
+            code: code,
+            offset: instructionOffset),
           symbolAddress <= UInt(Int64.max)
     else {
         return nil
     }
-    let instruction =
-        UInt32(code[instructionOffset])
-        | UInt32(code[instructionOffset + 1]) << 8
-        | UInt32(code[instructionOffset + 2]) << 16
-        | UInt32(code[instructionOffset + 3]) << 24
     guard instruction & 0xFC00_0000 == 0x9400_0000 else {
         return nil
     }
@@ -3646,12 +3676,67 @@ private func arm64BranchLinkTarget(
     return (instruction, UInt(targetAddress))
 }
 
+private func arm64PageRelativeAddress(
+    code: [UInt8],
+    codeAddress: UInt,
+    reference: GlassMatrixBasisReference
+) -> (
+    adrpInstruction: UInt32,
+    addInstruction: UInt32,
+    target: UInt
+)? {
+    guard let adrpInstruction = littleEndianUInt32(
+            code: code,
+            offset: reference.adrpOffset),
+          let addInstruction = littleEndianUInt32(
+            code: code,
+            offset: reference.addOffset),
+          codeAddress <= UInt(Int64.max),
+          adrpInstruction & 0x9F00_0000 == 0x9000_0000,
+          adrpInstruction & 0x1F == reference.register,
+          addInstruction & 0xFF00_0000 == 0x9100_0000,
+          addInstruction & 0x1F == reference.register,
+          (addInstruction >> 5) & 0x1F
+            == reference.register
+    else {
+        return nil
+    }
+
+    let immediateLow = Int64(
+        (adrpInstruction >> 29) & 0x3)
+    let immediateHigh = Int64(
+        (adrpInstruction >> 5) & 0x7FFFF)
+    var pageImmediate = (immediateHigh << 2) | immediateLow
+    if pageImmediate & 0x10_0000 != 0 {
+        pageImmediate -= 0x20_0000
+    }
+    let instructionAddress =
+        codeAddress + UInt(reference.adrpOffset)
+    let instructionPage = Int64(
+        instructionAddress & ~UInt(0xFFF))
+    let targetPage = instructionPage + (pageImmediate << 12)
+    let addShift =
+        ((addInstruction >> 22) & 0x1) == 0 ? 0 : 12
+    let addImmediate = Int64(
+        (addInstruction >> 10) & 0xFFF) << addShift
+    let targetAddress = targetPage + addImmediate
+    guard targetAddress >= 0 else {
+        return nil
+    }
+    return (
+        adrpInstruction,
+        addInstruction,
+        UInt(targetAddress)
+    )
+}
+
 private func glassUniformCallSiteEvidence() -> [String: Any] {
     let returnAddresses =
         Array(Thread.callStackReturnAddresses.prefix(32))
     var quartzCoreCodeWindows = 0
     var glassBackgroundRenderCodeCaptures = 0
     var glassMatrixConstructorCodeCaptures = 0
+    var glassMatrixConstructorConstantDataCaptures = 0
     let frames: [[String: Any]] = returnAddresses.enumerated().map {
         index, number in
         let addressValue = UInt(truncating: number)
@@ -3796,6 +3881,91 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
                                 Data(constructorBytes)),
                     ]
                     glassMatrixConstructorCodeCaptures += 1
+
+                    let basisReferences =
+                        glassMatrixBasisReferences.compactMap {
+                            reference in
+                            arm64PageRelativeAddress(
+                                code: constructorBytes,
+                                codeAddress: constructorAddress,
+                                reference: reference)
+                        }
+                    if basisReferences.count
+                            == glassMatrixBasisReferences.count,
+                       basisReferences[1].target
+                            == basisReferences[0].target
+                                + UInt(glassColorMatrixByteCount),
+                       basisReferences[0].target >= imageBase,
+                       basisReferences[0].target - imageBase
+                            < 0x1000000,
+                       let constantDataPointer = UnsafeRawPointer(
+                            bitPattern: basisReferences[0].target)
+                    {
+                        let constantDataBytes = Array(
+                            UnsafeRawBufferPointer(
+                                start: constantDataPointer,
+                                count: (
+                                    glassMatrixConstructorConstantDataByteCount
+                                )))
+                        record["matrixConstructorConstantData"] = [
+                            "class": (
+                                "PC-relative QuartzCore "
+                                + "glass matrix basis data"
+                            ),
+                            "startAddress": String(
+                                format: "0x%016llx",
+                                UInt64(
+                                    basisReferences[0].target)),
+                            "imageOffset": String(
+                                format: "0x%llx",
+                                UInt64(
+                                    basisReferences[0].target
+                                    - imageBase)),
+                            "matrixByteCount":
+                                glassColorMatrixByteCount,
+                            "sourceReferences": zip(
+                                glassMatrixBasisReferences,
+                                basisReferences
+                            ).map { pair in
+                                let (reference, decoded) = pair
+                                return [
+                                    "adrpOffset":
+                                        reference.adrpOffset,
+                                    "addOffset":
+                                        reference.addOffset,
+                                    "register":
+                                        Int(reference.register),
+                                    "adrpInstruction": String(
+                                        format: "%08x",
+                                        decoded.adrpInstruction),
+                                    "addInstruction": String(
+                                        format: "%08x",
+                                        decoded.addInstruction),
+                                    "address": String(
+                                        format: "0x%016llx",
+                                        UInt64(decoded.target)),
+                                ]
+                            },
+                            "requestedByteCount": (
+                                glassMatrixConstructorConstantDataByteCount
+                            ),
+                            "lengthBytes": constantDataBytes.count,
+                            "hex": Data(constantDataBytes).map {
+                                String(format: "%02x", $0)
+                            }.joined(),
+                            "sha256": transitionSHA256(
+                                Data(constantDataBytes)),
+                        ]
+                        glassMatrixConstructorConstantDataCaptures += 1
+                    } else {
+                        record[
+                            "matrixConstructorConstantDataError"
+                        ] = (
+                            "the two validated ADRP+ADD "
+                            + "references do not address adjacent "
+                            + "QuartzCore color matrices"
+                        )
+                    }
                 } else {
                     record["matrixConstructorCodeError"] = (
                         "the three validated render-body BL "
@@ -3843,7 +4013,7 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
         return record
     }
     return [
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "executed": true,
         "capture":
             "transition-matrix-uniform-01-neutral-axes",
@@ -3853,6 +4023,8 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
             glassBackgroundRenderCodeCaptures,
         "glassMatrixConstructorCodeCaptureCount":
             glassMatrixConstructorCodeCaptures,
+        "glassMatrixConstructorConstantDataCaptureCount":
+            glassMatrixConstructorConstantDataCaptures,
         "frames": frames,
     ]
 }

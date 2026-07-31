@@ -1749,14 +1749,17 @@ both byte ranges and rejects malformed or relocated evidence, so coefficients
 come from the executing macOS build rather than an assumed color model. The
 neutral-axis render also records the real QuartzCore uniform-binding stack and
 an independently hashed 8 KiB prefix of
-`GlassBackgroundFilter::render`. Nested call-site schema 3 decodes the three
+`GlassBackgroundFilter::render`. Nested call-site schema 4 decodes the three
 `BL` instructions that construct the face, bleed, and shadow matrices,
 requires all three to resolve to one target in the same QuartzCore image, and
 captures the following 2 KiB constructor region with its exact addresses and
-SHA-256. This covers the private constructor and adjacent concatenation
-implementation without hard-coding a process address or accepting a symbol
-name inferred from unrelated code. The other matrix legs still rerun the
-unchanged state/pixel gates as controls.
+SHA-256. It then decodes the constructor's two `ADRP+ADD` references, requires
+their targets to be adjacent 80-byte color matrices, and records the complete
+160-byte basis table with independent address and SHA-256 validation. This
+covers the private constructor, adjacent concatenation implementation, and
+both of its fixed matrix operands without hard-coding a process address or
+accepting a symbol name inferred from unrelated code. The other matrix legs
+still rerun the unchanged state/pixel gates as controls.
 
 ## Run locally on macOS 26
 

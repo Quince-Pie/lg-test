@@ -17,6 +17,12 @@ GLASS_BACKGROUND_RENDER_SYMBOL = (
     "PKNS_11ColorMatrixE"
 )
 GLASS_MATRIX_CONSTRUCTOR_CALL_OFFSETS = (0x338, 0x3AC, 0x500)
+GLASS_MATRIX_BASIS_REFERENCES = (
+    (0xB8, 0xBC, 2),
+    (0xE0, 0xE4, 1),
+)
+GLASS_COLOR_MATRIX_BYTE_COUNT = 0x50
+GLASS_MATRIX_CONSTRUCTOR_CONSTANT_DATA_BYTE_COUNT = 0xA0
 
 
 def _fail(message: str) -> Never:
@@ -101,6 +107,60 @@ def _arm64_branch_link_target(
         instruction,
         symbol_address + instruction_offset + immediate * 4,
     )
+
+
+def _arm64_page_relative_address(
+    code: bytes,
+    *,
+    code_address: int,
+    adrp_offset: int,
+    add_offset: int,
+    register: int,
+) -> tuple[int, int, int]:
+    adrp_end = adrp_offset + 4
+    add_end = add_offset + 4
+    if (
+        adrp_offset < 0
+        or add_offset < 0
+        or adrp_end > len(code)
+        or add_end > len(code)
+    ):
+        _fail("matrix-basis reference is outside constructor code")
+    adrp_instruction = int.from_bytes(
+        code[adrp_offset:adrp_end],
+        "little",
+    )
+    add_instruction = int.from_bytes(
+        code[add_offset:add_end],
+        "little",
+    )
+    if (
+        adrp_instruction & 0x9F00_0000 != 0x9000_0000
+        or adrp_instruction & 0x1F != register
+    ):
+        _fail("matrix-basis page instruction is not the expected ADRP")
+    if (
+        add_instruction & 0xFF00_0000 != 0x9100_0000
+        or add_instruction & 0x1F != register
+        or (add_instruction >> 5) & 0x1F != register
+    ):
+        _fail("matrix-basis offset instruction is not the expected ADD")
+
+    immediate_low = (adrp_instruction >> 29) & 0x3
+    immediate_high = (adrp_instruction >> 5) & 0x7FFFF
+    page_immediate = (immediate_high << 2) | immediate_low
+    if page_immediate & 0x10_0000:
+        page_immediate -= 0x20_0000
+    instruction_page = (code_address + adrp_offset) & ~0xFFF
+    target_page = instruction_page + page_immediate * 0x1000
+    add_shift = 12 if (add_instruction >> 22) & 0x1 else 0
+    add_immediate = (
+        (add_instruction >> 10) & 0xFFF
+    ) << add_shift
+    target = target_page + add_immediate
+    if target < 0:
+        _fail("matrix-basis reference resolves below address zero")
+    return adrp_instruction, add_instruction, target
 
 
 def validate_vibrant_matrix_internals(matrix_basis: object) -> None:
@@ -248,7 +308,7 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
         )
     call_site = _mapping(call_sites[0], "uniformCallSite")
     if (
-        call_site.get("schemaVersion") != 3
+        call_site.get("schemaVersion") != 4
         or call_site.get("executed") is not True
         or call_site.get("capture")
         != "transition-matrix-uniform-01-neutral-axes"
@@ -261,6 +321,7 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
     code_window_count = 0
     render_code_count = 0
     matrix_constructor_code_count = 0
+    matrix_constructor_constant_data_count = 0
     for expected_index, value in enumerate(frames):
         frame = _mapping(value, f"uniformCallSite.frames[{expected_index}]")
         if frame.get("index") != expected_index:
@@ -439,9 +500,129 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
                 )
             matrix_constructor_code_count += 1
 
-        elif frame.get("matrixConstructorCode") is not None:
+            constant_data_value = frame.get(
+                "matrixConstructorConstantData"
+            )
+            if constant_data_value is None:
+                _fail(
+                    "uniformCallSite matrix-constructor "
+                    "constant data is absent"
+                )
+            constant_data = _mapping(
+                constant_data_value,
+                (
+                    "uniformCallSite "
+                    "matrixConstructorConstantData"
+                ),
+            )
+            if (
+                constant_data.get("requestedByteCount")
+                != GLASS_MATRIX_CONSTRUCTOR_CONSTANT_DATA_BYTE_COUNT
+                or constant_data.get("matrixByteCount")
+                != GLASS_COLOR_MATRIX_BYTE_COUNT
+            ):
+                _fail(
+                    "uniformCallSite matrix-constructor "
+                    "constant-data metadata differs"
+                )
+            constant_bytes = _byte_capture(
+                constant_data,
+                field=(
+                    "uniformCallSite "
+                    "matrixConstructorConstantData"
+                ),
+                expected_class=(
+                    "PC-relative QuartzCore "
+                    "glass matrix basis data"
+                ),
+                expected_length=(
+                    GLASS_MATRIX_CONSTRUCTOR_CONSTANT_DATA_BYTE_COUNT
+                ),
+            )
+            if not any(constant_bytes):
+                _fail(
+                    "uniformCallSite matrix-constructor "
+                    "constant data is entirely zero"
+                )
+
+            decoded_references = [
+                (
+                    reference,
+                    _arm64_page_relative_address(
+                        constructor_code,
+                        code_address=constructor_address,
+                        adrp_offset=reference[0],
+                        add_offset=reference[1],
+                        register=reference[2],
+                    ),
+                )
+                for reference in GLASS_MATRIX_BASIS_REFERENCES
+            ]
+            basis_targets = [
+                decoded[2] for _, decoded in decoded_references
+            ]
+            if (
+                len(basis_targets) != 2
+                or basis_targets[1]
+                != basis_targets[0] + GLASS_COLOR_MATRIX_BYTE_COUNT
+            ):
+                _fail(
+                    "uniformCallSite matrix-constructor "
+                    "basis addresses are not adjacent"
+                )
+            constant_data_address = _hex_integer(
+                constant_data.get("startAddress"),
+                (
+                    "uniformCallSite matrix-constructor "
+                    "constant-data startAddress"
+                ),
+            )
+            constant_data_image_offset = _hex_integer(
+                constant_data.get("imageOffset"),
+                (
+                    "uniformCallSite matrix-constructor "
+                    "constant-data imageOffset"
+                ),
+            )
+            if (
+                constant_data_address != basis_targets[0]
+                or constant_data_address
+                != image_base + constant_data_image_offset
+                or not 0
+                <= constant_data_image_offset
+                < 0x1000000
+            ):
+                _fail(
+                    "uniformCallSite matrix-constructor "
+                    "constant-data address is inconsistent"
+                )
+            expected_references = [
+                {
+                    "adrpOffset": reference[0],
+                    "addOffset": reference[1],
+                    "register": reference[2],
+                    "adrpInstruction": f"{decoded[0]:08x}",
+                    "addInstruction": f"{decoded[1]:08x}",
+                    "address": f"0x{decoded[2]:016x}",
+                }
+                for reference, decoded in decoded_references
+            ]
+            if (
+                constant_data.get("sourceReferences")
+                != expected_references
+            ):
+                _fail(
+                    "uniformCallSite matrix-constructor "
+                    "constant-data references are inconsistent"
+                )
+            matrix_constructor_constant_data_count += 1
+
+        elif (
+            frame.get("matrixConstructorCode") is not None
+            or frame.get("matrixConstructorConstantData") is not None
+        ):
             _fail(
-                "uniformCallSite matrix-constructor code has "
+                "uniformCallSite matrix-constructor evidence has "
                 "no render-symbol owner"
             )
 
@@ -501,4 +682,15 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
     ):
         _fail(
             "uniformCallSite matrix-constructor code count differs"
+        )
+    if (
+        matrix_constructor_constant_data_count != 1
+        or call_site.get(
+            "glassMatrixConstructorConstantDataCaptureCount"
+        )
+        != matrix_constructor_constant_data_count
+    ):
+        _fail(
+            "uniformCallSite matrix-constructor "
+            "constant-data count differs"
         )

@@ -6,7 +6,10 @@ import unittest
 
 from validate_transition_matrix_internals import (
     GLASS_BACKGROUND_RENDER_SYMBOL,
+    GLASS_COLOR_MATRIX_BYTE_COUNT,
+    GLASS_MATRIX_BASIS_REFERENCES,
     GLASS_MATRIX_CONSTRUCTOR_CALL_OFFSETS,
+    GLASS_MATRIX_CONSTRUCTOR_CONSTANT_DATA_BYTE_COUNT,
     MatrixInternalsValidationError,
     validate_glass_uniform_call_site,
     validate_vibrant_matrix_internals,
@@ -33,6 +36,35 @@ def _branch_link_instruction(
     if not -(1 << 25) <= immediate < 1 << 25:
         raise ValueError("BL target is outside the immediate range")
     return 0x9400_0000 | (immediate & 0x03FF_FFFF)
+
+
+def _page_relative_instructions(
+    instruction_address: int,
+    target_address: int,
+    register: int,
+) -> tuple[int, int]:
+    instruction_page = instruction_address & ~0xFFF
+    target_page = target_address & ~0xFFF
+    page_delta = (target_page - instruction_page) // 0x1000
+    if not -(1 << 20) <= page_delta < 1 << 20:
+        raise ValueError("ADRP target is outside the immediate range")
+    page_immediate = page_delta & 0x1F_FFFF
+    adrp = (
+        0x9000_0000
+        | (page_immediate & 0x3) << 29
+        | (page_immediate >> 2) << 5
+        | register
+    )
+    page_offset = target_address - target_page
+    if not 0 <= page_offset < 0x1000:
+        raise ValueError("ADD target offset is outside the page")
+    add = (
+        0x9100_0000
+        | page_offset << 10
+        | register << 5
+        | register
+    )
+    return adrp, add
 
 
 def _valid_basis() -> dict[str, object]:
@@ -79,6 +111,7 @@ def _valid_call_site_basis() -> dict[str, object]:
     return_address = 0x0000_0001_8000_1400
     symbol_address = 0x0000_0001_8000_0800
     constructor_address = 0x0000_0001_8000_0400
+    constant_data_address = 0x0000_0001_8000_3000
     code = bytes.fromhex("1f2003d5") * (0x800 // 4)
     symbol_code = bytearray(
         bytes.fromhex("7f2303d5") * (0x2000 // 4)
@@ -94,17 +127,49 @@ def _valid_call_site_basis() -> dict[str, object]:
             "little",
         )
         source_instructions.append(instruction)
-    constructor_code = (
+    constructor_code = bytearray(
         bytes.fromhex("7f2303d5") * (0x800 // 4)
     )
+    source_references = []
+    for index, reference in enumerate(GLASS_MATRIX_BASIS_REFERENCES):
+        adrp_offset, add_offset, register = reference
+        target = (
+            constant_data_address
+            + index * GLASS_COLOR_MATRIX_BYTE_COUNT
+        )
+        adrp, add = _page_relative_instructions(
+            constructor_address + adrp_offset,
+            target,
+            register,
+        )
+        constructor_code[adrp_offset : adrp_offset + 4] = (
+            adrp.to_bytes(4, "little")
+        )
+        constructor_code[add_offset : add_offset + 4] = (
+            add.to_bytes(4, "little")
+        )
+        source_references.append(
+            {
+                "adrpOffset": adrp_offset,
+                "addOffset": add_offset,
+                "register": register,
+                "adrpInstruction": f"{adrp:08x}",
+                "addInstruction": f"{add:08x}",
+                "address": f"0x{target:016x}",
+            }
+        )
+    constant_data = bytes(
+        range(GLASS_MATRIX_CONSTRUCTOR_CONSTANT_DATA_BYTE_COUNT)
+    )
     call_site = {
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "executed": True,
         "capture": "transition-matrix-uniform-01-neutral-axes",
         "frameCount": 1,
         "quartzCoreCodeWindowCount": 1,
         "glassBackgroundRenderCodeCaptureCount": 1,
         "glassMatrixConstructorCodeCaptureCount": 1,
+        "glassMatrixConstructorConstantDataCaptureCount": 1,
         "frames": [
             {
                 "index": 0,
@@ -130,7 +195,7 @@ def _valid_call_site_basis() -> dict[str, object]:
                 },
                 "matrixConstructorCode": {
                     **_capture(
-                        constructor_code,
+                        bytes(constructor_code),
                         (
                             "mapped arm64e QuartzCore "
                             "matrix-constructor region"
@@ -151,6 +216,24 @@ def _valid_call_site_basis() -> dict[str, object]:
                         for _ in source_instructions
                     ],
                     "requestedByteCount": 0x800,
+                },
+                "matrixConstructorConstantData": {
+                    **_capture(
+                        constant_data,
+                        (
+                            "PC-relative QuartzCore "
+                            "glass matrix basis data"
+                        ),
+                    ),
+                    "startAddress":
+                        f"0x{constant_data_address:016x}",
+                    "imageOffset": "0x3000",
+                    "matrixByteCount":
+                        GLASS_COLOR_MATRIX_BYTE_COUNT,
+                    "sourceReferences": source_references,
+                    "requestedByteCount": (
+                        GLASS_MATRIX_CONSTRUCTOR_CONSTANT_DATA_BYTE_COUNT
+                    ),
                 },
                 "codeWindow": {
                     **_capture(
@@ -336,6 +419,81 @@ class GlassUniformCallSiteValidatorTests(unittest.TestCase):
         with self.assertRaisesRegex(
             MatrixInternalsValidationError,
             "BL targets differ",
+        ):
+            validate_glass_uniform_call_site(basis)
+
+    def test_rejects_changed_matrix_basis_byte(self) -> None:
+        basis = copy.deepcopy(_valid_call_site_basis())
+        records = basis["records"]
+        assert isinstance(records, list)
+        constant_data = records[0]["render"][
+            "glassFragmentUniformBindings"
+        ][0]["uniformCallSite"]["frames"][0][
+            "matrixConstructorConstantData"
+        ]
+        encoded = str(constant_data["hex"])
+        constant_data["hex"] = "ff" + encoded[2:]
+        with self.assertRaisesRegex(
+            MatrixInternalsValidationError,
+            "sha256",
+        ):
+            validate_glass_uniform_call_site(basis)
+
+    def test_rejects_divergent_matrix_basis_reference(
+        self,
+    ) -> None:
+        basis = copy.deepcopy(_valid_call_site_basis())
+        records = basis["records"]
+        assert isinstance(records, list)
+        frame = records[0]["render"][
+            "glassFragmentUniformBindings"
+        ][0]["uniformCallSite"]["frames"][0]
+        constructor_code = frame["matrixConstructorCode"]
+        raw = bytearray.fromhex(str(constructor_code["hex"]))
+        constructor_address = int(
+            str(constructor_code["startAddress"]),
+            16,
+        )
+        adrp_offset, add_offset, register = (
+            GLASS_MATRIX_BASIS_REFERENCES[1]
+        )
+        wrong_target = (
+            int(
+                str(
+                    frame["matrixConstructorConstantData"][
+                        "startAddress"
+                    ]
+                ),
+                16,
+            )
+            + GLASS_COLOR_MATRIX_BYTE_COUNT
+            + 4
+        )
+        adrp, add = _page_relative_instructions(
+            constructor_address + adrp_offset,
+            wrong_target,
+            register,
+        )
+        raw[adrp_offset : adrp_offset + 4] = adrp.to_bytes(
+            4,
+            "little",
+        )
+        raw[add_offset : add_offset + 4] = add.to_bytes(
+            4,
+            "little",
+        )
+        constructor_code.update(
+            _capture(
+                bytes(raw),
+                (
+                    "mapped arm64e QuartzCore "
+                    "matrix-constructor region"
+                ),
+            )
+        )
+        with self.assertRaisesRegex(
+            MatrixInternalsValidationError,
+            "basis addresses are not adjacent",
         ):
             validate_glass_uniform_call_site(basis)
 
