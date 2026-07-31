@@ -7,6 +7,7 @@ on:
       - .github/workflows/raster-reciprocal-transfer.yml
       - Analysis/raster_reciprocal_transfer_amendment.json
       - Analysis/raster_reciprocal_transfer_preregistration.json
+      - Analysis/raster_reciprocal_transfer_routing_amendment.json
       - Analysis/test_validate_reciprocal_transfer.py
       - Analysis/validate_reciprocal_transfer.py
       - Sources/GlassRasterReciprocalTransfer/**

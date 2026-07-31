@@ -2261,7 +2261,7 @@ domain, and crosses them with four previously unseen translated and clipped
 triangle geometries. The validator recovers coefficients independently from
 the raw Metal pull pairs and accepts no fit or tolerance: every width must
 select exactly one candidate, both frozen hashes must match, and every
-geometry/primitive must accept the predicted coefficient.
+geometry sample side must accept the predicted coefficient.
 
 Run 30653275362 built successfully but produced no fragment record and stopped
 before writing a manifest or pull corpus, so the validator never ran and no
@@ -2270,6 +2270,16 @@ amendment records that failure and changes only the viewport width from
 131,072 to the already exercised 32,768-pixel envelope. Widths, triangle
 coordinates, scissor samples, witnesses, frozen hashes, and acceptance
 criteria remain unchanged.
+
+Run 30653519301 reproduced the unwritten first record at the smaller
+viewport, falsifying the viewport hypothesis. Neither failed run serialized
+or uploaded its pull buffer, and the first missing record does not imply that
+all later records were also missing. The second technical amendment corrects
+that inference and removes the fragment-stage triangle-ID discard. Each
+pre-frozen point is safely inside exactly one triangle, both triangles carry
+the same x-ramp, and the raw record order is unchanged; the effective layout
+term is therefore `sample-side`, not `primitive`. No numerical prediction,
+geometry, sample position, or acceptance tolerance changed.
 
 ### Geometry-transfer introspection
 

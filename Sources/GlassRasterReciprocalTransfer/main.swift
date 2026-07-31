@@ -31,7 +31,7 @@ private let targetWidth = 224
 private let targetHeight = 192
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
-private let primitiveCount = 2
+private let sampleSideCount = 2
 private let batchSize = 128
 private let candidateRadius = 8
 
@@ -96,7 +96,7 @@ private let witnessDeltaBits = witnessSignificands.map {
 private func samplePosition(
     width: Int,
     geometry: GeometryCase,
-    primitive: Int
+    sampleSide: Int
 ) -> SamplePosition {
     let threshold =
         width
@@ -104,15 +104,15 @@ private func samplePosition(
     let localAtAnchor =
         (threshold - geometry.height) / (2 * geometry.height)
     let originX = geometry.sampleAnchorX - localAtAnchor
-    let x = primitive == 0
+    let x = sampleSide == 0
         ? geometry.sampleAnchorX + geometry.sampleMarginX
         : geometry.sampleAnchorX - geometry.sampleMarginX
     let y = geometry.originY + geometry.sampleLocalY
     let localX = x - originX
     let signed =
         geometry.height * (2 * localX + 1) - threshold
-    let signedInteriorArea = primitive == 0 ? signed : -signed
-    precondition((0..<primitiveCount).contains(primitive))
+    let signedInteriorArea = sampleSide == 0 ? signed : -signed
+    precondition((0..<sampleSideCount).contains(sampleSide))
     precondition((0..<targetWidth).contains(x))
     precondition((0..<targetHeight).contains(y))
     precondition(originX < viewportWidth)
@@ -134,7 +134,6 @@ struct TransferVertexOutput {
     float4 position [[position]];
     float ramp [[user(reciprocal_transfer_ramp)]];
     uint recordIndex [[user(reciprocal_transfer_record), flat]];
-    uint primitive [[user(reciprocal_transfer_primitive), flat]];
     uint outputSlot [[user(reciprocal_transfer_output_slot), flat]];
 };
 
@@ -143,7 +142,6 @@ struct TransferFragmentInput {
     interpolant<float, interpolation::no_perspective>
         ramp [[user(reciprocal_transfer_ramp)]];
     uint recordIndex [[user(reciprocal_transfer_record), flat]];
-    uint primitive [[user(reciprocal_transfer_primitive), flat]];
     uint outputSlot [[user(reciprocal_transfer_output_slot), flat]];
 };
 
@@ -172,7 +170,6 @@ vertex TransferVertexOutput reciprocal_transfer_vertex(
     output.ramp =
         isRight ? as_type<float>(deltaBits[instanceID]) : 0.0f;
     output.recordIndex = record.x + instanceID;
-    output.primitive = vertexID / 3;
     output.outputSlot = record.y;
     return output;
 }
@@ -181,19 +178,15 @@ fragment uint reciprocal_transfer_fragment(
     TransferFragmentInput input [[stage_in]],
     device uint2 *results [[buffer(0)]])
 {
-    const uint expectedPrimitive =
-        input.outputSlot % \(primitiveCount)u;
-    if (input.primitive == expectedPrimitive) {
-        results[
-            \(geometryCases.count * primitiveCount)u
-                * input.recordIndex
-            + input.outputSlot
-        ] = uint2(
-            as_type<uint>(input.ramp.interpolate_at_offset(
-                float2(0.0f, 0.5f))),
-            as_type<uint>(input.ramp.interpolate_at_offset(
-                float2(0.9375f, 0.5f))));
-    }
+    results[
+        \(geometryCases.count * sampleSideCount)u
+            * input.recordIndex
+        + input.outputSlot
+    ] = uint2(
+        as_type<uint>(input.ramp.interpolate_at_offset(
+            float2(0.0f, 0.5f))),
+        as_type<uint>(input.ramp.interpolate_at_offset(
+            float2(0.9375f, 0.5f))));
     return input.recordIndex;
 }
 """
@@ -243,11 +236,11 @@ private func run(outputDirectory: URL) throws {
             == "4af6fce64ad188beb784cbea16c1d09ca2713825f8becee8ee64cabfd68caf8a")
     for width in widths {
         for geometry in geometryCases {
-            for primitive in 0..<primitiveCount {
+            for sampleSide in 0..<sampleSideCount {
                 _ = samplePosition(
                     width: width,
                     geometry: geometry,
-                    primitive: primitive)
+                    sampleSide: sampleSide)
             }
         }
     }
@@ -300,7 +293,7 @@ private func run(outputDirectory: URL) throws {
         widths.count
         * witnessSignificands.count
         * geometryCases.count
-        * primitiveCount
+        * sampleSideCount
     let outputBytes =
         recordCount * MemoryLayout<SIMD2<UInt32>>.stride
     guard let target = device.makeTexture(
@@ -381,11 +374,11 @@ private func run(outputDirectory: URL) throws {
             for (geometryIndex, geometry) in
                 geometryCases.enumerated()
             {
-                for primitive in 0..<primitiveCount {
+                for sampleSide in 0..<sampleSideCount {
                     let position = samplePosition(
                         width: width,
                         geometry: geometry,
-                        primitive: primitive)
+                        sampleSide: sampleSide)
                     var drawGeometry = SIMD4<Int32>(
                         Int32(width),
                         Int32(position.originX),
@@ -396,8 +389,8 @@ private func run(outputDirectory: URL) throws {
                             widthIndex
                                 * witnessSignificands.count),
                         UInt32(
-                            geometryIndex * primitiveCount
-                                + primitive))
+                            geometryIndex * sampleSideCount
+                                + sampleSide))
                     encoder.setScissorRect(MTLScissorRect(
                         x: position.x,
                         y: position.y,
@@ -439,13 +432,20 @@ private func run(outputDirectory: URL) throws {
     let records = output.contents().bindMemory(
         to: SIMD2<UInt32>.self,
         capacity: recordCount)
+    var missingRecordCount = 0
+    var firstMissingRecords: [Int] = []
     for index in 0..<recordCount {
-        if records[index]
-            == SIMD2<UInt32>(repeating: .max)
-        {
-            throw TransferError.command(
-                "reciprocal-transfer record \(index) was not written")
+        if records[index] == SIMD2<UInt32>(repeating: .max) {
+            missingRecordCount += 1
+            if firstMissingRecords.count < 16 {
+                firstMissingRecords.append(index)
+            }
         }
+    }
+    if missingRecordCount != 0 {
+        throw TransferError.command(
+            "reciprocal-transfer missing \(missingRecordCount)"
+            + " records; first \(firstMissingRecords)")
     }
 
     let outputData = Data(
@@ -487,6 +487,10 @@ private func run(outputDirectory: URL) throws {
             "Analysis/raster_reciprocal_transfer_amendment.json",
         "amendmentSha256":
             "0e8ad8329c643a6b1393dcb970e3b9a8da042d2c9332e9a3783724fab69fbdbf",
+        "routingAmendmentFile":
+            "Analysis/raster_reciprocal_transfer_routing_amendment.json",
+        "routingAmendmentSha256":
+            "7d0f5cee037747a4b883d2c3befa159bafaff1c07cfbf21f402d2ef6a06912c4",
         "widthLowerInclusive": widths.first!,
         "widthUpperInclusive": widths.last!,
         "widthStride": widthScale,
@@ -495,7 +499,7 @@ private func run(outputDirectory: URL) throws {
             "d1789dd285e63e23375037362e9df017efdc70f5e25163179e7334897d5fc8ed",
         "geometryCases": geometryManifest(),
         "geometryCount": geometryCases.count,
-        "primitiveCount": primitiveCount,
+        "sampleSideCount": sampleSideCount,
         "witnessSignificands":
             witnessSignificands.map { Int($0) },
         "witnessCount": witnessSignificands.count,
@@ -511,7 +515,7 @@ private func run(outputDirectory: URL) throws {
             minimumSignedInteriorArea,
         "ordering":
             "normalized-denominator-major,witness-major,"
-            + "geometry-major,primitive-major,pull-offset-major",
+            + "geometry-major,sample-side-major,pull-offset-major",
         "pullOffsets": [
             ["x": 0.0, "y": 0.5],
             ["x": 0.9375, "y": 0.5],

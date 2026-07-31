@@ -31,7 +31,7 @@ PREREGISTERED_VIEWPORT_WIDTH = 131_072
 VIEWPORT_WIDTH = 32_768
 MINIMUM_SIGNED_INTERIOR_AREA = 1_024
 GEOMETRY_COUNT = 4
-PRIMITIVE_COUNT = 2
+SAMPLE_SIDE_COUNT = 2
 PULL_COUNT = 2
 CANDIDATE_RADIUS = 8
 RECORD_BYTES = 8
@@ -48,6 +48,12 @@ AMENDMENT_PATH = Path(__file__).with_name(
 )
 AMENDMENT_SHA256 = (
     "0e8ad8329c643a6b1393dcb970e3b9a8da042d2c9332e9a3783724fab69fbdbf"
+)
+ROUTING_AMENDMENT_PATH = Path(__file__).with_name(
+    "raster_reciprocal_transfer_routing_amendment.json"
+)
+ROUTING_AMENDMENT_SHA256 = (
+    "7d0f5cee037747a4b883d2c3befa159bafaff1c07cfbf21f402d2ef6a06912c4"
 )
 CANONICAL_RECIPROCAL_SHA256 = (
     "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb"
@@ -144,7 +150,7 @@ def witness_delta_bits() -> tuple[int, ...]:
 def sample_position(
     width: int,
     geometry: JsonObject,
-    primitive: int,
+    sample_side: int,
 ) -> JsonObject:
     height = int(geometry["height"])
     local_y = int(geometry["sampleLocalY"])
@@ -153,13 +159,17 @@ def sample_position(
     threshold = width * (2 * (height - local_y) - 1)
     local_at_anchor = (threshold - height) // (2 * height)
     origin_x = anchor_x - local_at_anchor
-    x = anchor_x + margin_x if primitive == 0 else anchor_x - margin_x
+    x = (
+        anchor_x + margin_x
+        if sample_side == 0
+        else anchor_x - margin_x
+    )
     y = int(geometry["originY"]) + local_y
     local_x = x - origin_x
     signed = height * (2 * local_x + 1) - threshold
-    interior = signed if primitive == 0 else -signed
+    interior = signed if sample_side == 0 else -signed
     if (
-        primitive not in range(PRIMITIVE_COUNT)
+        sample_side not in range(SAMPLE_SIDE_COUNT)
         or not 0 <= x < TARGET_WIDTH
         or not 0 <= y < TARGET_HEIGHT
         or origin_x >= VIEWPORT_WIDTH
@@ -340,7 +350,7 @@ def load_preregistration() -> JsonObject:
         or rule.get("targetHeight") != TARGET_HEIGHT
         or rule.get("viewportWidth") != PREREGISTERED_VIEWPORT_WIDTH
         or rule.get("geometryCount") != GEOMETRY_COUNT
-        or rule.get("primitiveCount") != PRIMITIVE_COUNT
+        or rule.get("primitiveCount") != SAMPLE_SIDE_COUNT
         or rule.get("allGeometryCasesUnobservedAtPreregistration") is not True
         or witnesses.get("significands") != list(WITNESS_SIGNIFICANDS)
         or witnesses.get("count") != len(WITNESS_SIGNIFICANDS)
@@ -378,8 +388,8 @@ def load_preregistration() -> JsonObject:
         raise ValueError("reciprocal-transfer preregistration differs")
     for width in widths:
         for geometry in GEOMETRY_CASES:
-            for primitive in range(PRIMITIVE_COUNT):
-                sample_position(width, geometry, primitive)
+            for sample_side in range(SAMPLE_SIDE_COUNT):
+                sample_position(width, geometry, sample_side)
     return preregistration
 
 
@@ -439,6 +449,62 @@ def load_amendment() -> JsonObject:
     return amendment
 
 
+def load_routing_amendment() -> JsonObject:
+    amendment: JsonObject = json.loads(
+        ROUTING_AMENDMENT_PATH.read_text(encoding="utf-8")
+    )
+    correction = amendment.get("correctionToPreviousInference", {})
+    failed = amendment.get("failedRuns", [])
+    change = amendment.get("technicalChange", {})
+    terminology = change.get("layoutTerminology", {})
+    unchanged = amendment.get("unchangedFrozenPredictions", {})
+    if (
+        sha256_path(ROUTING_AMENDMENT_PATH)
+        != ROUTING_AMENDMENT_SHA256
+        or amendment.get("schemaVersion") != 1
+        or amendment.get("role")
+        != "prospective-reciprocal-transfer-routing-amendment"
+        or amendment.get("authorized") is not True
+        or amendment.get("observedAtAmendment") is not False
+        or correction.get("scientificImpact")
+        != (
+            "No manifest, pull corpus, validation result, reciprocal "
+            "selector, or coefficient output was uploaded from either run. "
+            "The frozen numerical predictions therefore remain unobserved."
+        )
+        or not isinstance(failed, list)
+        or len(failed) != 2
+        or [record.get("runId") for record in failed]
+        != [30_653_275_362, 30_653_519_301]
+        or any(
+            record.get("failure")
+            != "reciprocal-transfer record 0 was not written"
+            or record.get("pullCorpusUploaded") is not False
+            for record in failed
+        )
+        or change.get("field") != "fragment capture routing"
+        or terminology
+        != {
+            "previous": "geometry-major,primitive-major",
+            "effective": "geometry-major,sample-side-major",
+            "recordOrderOrBytesChanged": False,
+        }
+        or unchanged.get("selectedReciprocalTableSha256")
+        != CANONICAL_RECIPROCAL_SHA256
+        or unchanged.get("recoveredCoefficientBitsSha256")
+        != PREDICTED_COEFFICIENT_SHA256
+        or unchanged.get("widthsSha256") != WIDTHS_SHA256
+        or unchanged.get("witnessSignificandsSha256")
+        != SIGNIFICAND_SHA256
+        or unchanged.get("geometryCasesChanged") is not False
+        or unchanged.get("samplePositionsChanged") is not False
+        or unchanged.get("recordOrderOrBytesChanged") is not False
+        or unchanged.get("numericAcceptanceCriteriaChanged") is not False
+    ):
+        raise ValueError("reciprocal-transfer routing amendment differs")
+    return amendment
+
+
 def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
     manifest: JsonObject = json.loads(
         (root / "manifest.json").read_text(encoding="utf-8")
@@ -459,6 +525,10 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or evidence.get("amendmentFile")
         != "Analysis/raster_reciprocal_transfer_amendment.json"
         or evidence.get("amendmentSha256") != AMENDMENT_SHA256
+        or evidence.get("routingAmendmentFile")
+        != "Analysis/raster_reciprocal_transfer_routing_amendment.json"
+        or evidence.get("routingAmendmentSha256")
+        != ROUTING_AMENDMENT_SHA256
         or evidence.get("widthLowerInclusive") != WIDTH_LOWER
         or evidence.get("widthUpperInclusive") != WIDTH_UPPER
         or evidence.get("widthStride") != WIDTH_SCALE
@@ -466,7 +536,7 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or evidence.get("widthsSha256") != WIDTHS_SHA256
         or evidence.get("geometryCases") != list(GEOMETRY_CASES)
         or evidence.get("geometryCount") != GEOMETRY_COUNT
-        or evidence.get("primitiveCount") != PRIMITIVE_COUNT
+        or evidence.get("sampleSideCount") != SAMPLE_SIDE_COUNT
         or evidence.get("witnessSignificands")
         != list(WITNESS_SIGNIFICANDS)
         or evidence.get("witnessCount") != len(WITNESS_SIGNIFICANDS)
@@ -482,7 +552,7 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or evidence.get("ordering")
         != (
             "normalized-denominator-major,witness-major,geometry-major,"
-            "primitive-major,pull-offset-major"
+            "sample-side-major,pull-offset-major"
         )
         or evidence.get("pullOffsets")
         != [{"x": 0.0, "y": 0.5}, {"x": 0.9375, "y": 0.5}]
@@ -504,6 +574,7 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
 def validate(root: Path) -> JsonObject:
     load_preregistration()
     load_amendment()
+    load_routing_amendment()
     manifest, path = validate_manifest(root)
     data = path.read_bytes()
     selected_digest = hashlib.sha256()
@@ -515,14 +586,14 @@ def validate(root: Path) -> JsonObject:
         WIDTH_COUNT
         * len(WITNESS_SIGNIFICANDS)
         * GEOMETRY_COUNT
-        * PRIMITIVE_COUNT
+        * SAMPLE_SIDE_COUNT
     )
 
     def pulls_at(
         width_index: int,
         witness_index: int,
         geometry_index: int,
-        primitive: int,
+        sample_side: int,
     ) -> tuple[int, int]:
         record_index = (
             (
@@ -530,9 +601,9 @@ def validate(root: Path) -> JsonObject:
                 + witness_index
             )
             * GEOMETRY_COUNT
-            * PRIMITIVE_COUNT
-            + geometry_index * PRIMITIVE_COUNT
-            + primitive
+            * SAMPLE_SIDE_COUNT
+            + geometry_index * SAMPLE_SIDE_COUNT
+            + sample_side
         )
         return struct.unpack_from("<II", data, record_index * RECORD_BYTES)
 
@@ -548,12 +619,12 @@ def validate(root: Path) -> JsonObject:
             accepted = True
             for witness_index, slope_bits in enumerate(coefficient_bits):
                 for geometry_index, geometry in enumerate(GEOMETRY_CASES):
-                    for primitive in range(PRIMITIVE_COUNT):
+                    for sample_side in range(SAMPLE_SIDE_COUNT):
                         pulls = pulls_at(
                             width_index,
                             witness_index,
                             geometry_index,
-                            primitive,
+                            sample_side,
                         )
                         if pulls == SENTINEL:
                             raise ValueError(
@@ -562,7 +633,7 @@ def validate(root: Path) -> JsonObject:
                         position = sample_position(
                             width,
                             geometry,
-                            primitive,
+                            sample_side,
                         )
                         if not pair_accepts_slope(
                             slope_bits,
@@ -588,8 +659,12 @@ def validate(root: Path) -> JsonObject:
         for witness_index, slope_bits in enumerate(coefficient_bits):
             coefficient_digest.update(struct.pack("<I", slope_bits))
             for geometry_index, geometry in enumerate(GEOMETRY_CASES):
-                for primitive in range(PRIMITIVE_COUNT):
-                    position = sample_position(width, geometry, primitive)
+                for sample_side in range(SAMPLE_SIDE_COUNT):
+                    position = sample_position(
+                        width,
+                        geometry,
+                        sample_side,
+                    )
                     if not pair_accepts_slope(
                         slope_bits,
                         position=int(position["tileLocalX"]),
@@ -597,7 +672,7 @@ def validate(root: Path) -> JsonObject:
                             width_index,
                             witness_index,
                             geometry_index,
-                            primitive,
+                            sample_side,
                         ),
                     ):
                         raise ValueError(
@@ -621,12 +696,13 @@ def validate(root: Path) -> JsonObject:
         "pullsSha256": sha256_path(path),
         "preregistrationSha256": PREREGISTRATION_SHA256,
         "amendmentSha256": AMENDMENT_SHA256,
+        "routingAmendmentSha256": ROUTING_AMENDMENT_SHA256,
         "ciCommit": manifest.get("ciCommit"),
         "measurement": {
             "widthCount": WIDTH_COUNT,
             "witnessCount": len(WITNESS_SIGNIFICANDS),
             "geometryCount": GEOMETRY_COUNT,
-            "primitiveCount": PRIMITIVE_COUNT,
+            "sampleSideCount": SAMPLE_SIDE_COUNT,
             "candidateMatchCountDistribution": {
                 str(count): frequency
                 for count, frequency in sorted(match_counts.items())
@@ -635,10 +711,10 @@ def validate(root: Path) -> JsonObject:
                 str(offset): frequency
                 for offset, frequency in sorted(offset_counts.items())
             },
-            "geometryPrimitiveCoefficientAcceptanceCount": (
+            "geometrySampleSideCoefficientAcceptanceCount": (
                 geometry_acceptance_count
             ),
-            "geometryPrimitiveCoefficientExpectedCount": (
+            "geometrySampleSideCoefficientExpectedCount": (
                 expected_geometry_acceptance_count
             ),
             "selectedReciprocalTableSha256": selected_sha256,
@@ -648,7 +724,7 @@ def validate(root: Path) -> JsonObject:
         "conclusions": {
             "canonicalReciprocalTableTransfersToUnseenExponentRange": True,
             "physicalProductLawTransfersToUnseenExponentRange": True,
-            "allFourUnseenTranslatedClippedGeometriesAcceptPredictions": True,
+            "allUnseenGeometrySampleSidesAcceptPredictions": True,
             "prospectiveTransferGatePassed": True,
             "closedFormSelectorEstablished": False,
             "endToEndLiquidGlassParityEstablished": False,

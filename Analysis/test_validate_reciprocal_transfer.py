@@ -50,14 +50,30 @@ class RasterReciprocalTransferTests(unittest.TestCase):
             ]
         )
 
+    def test_empty_runs_amend_routing_without_changing_predictions(self):
+        amendment = transfer.load_routing_amendment()
+
+        self.assertFalse(amendment["observedAtAmendment"])
+        self.assertTrue(
+            all(
+                not run["pullCorpusUploaded"]
+                for run in amendment["failedRuns"]
+            )
+        )
+        self.assertFalse(
+            amendment["unchangedFrozenPredictions"][
+                "numericAcceptanceCriteriaChanged"
+            ]
+        )
+
     def test_every_geometry_sample_is_safely_interior(self):
         for width in transfer.prospective_widths():
             for geometry in transfer.GEOMETRY_CASES:
-                for primitive in range(transfer.PRIMITIVE_COUNT):
+                for sample_side in range(transfer.SAMPLE_SIDE_COUNT):
                     position = transfer.sample_position(
                         width,
                         geometry,
-                        primitive,
+                        sample_side,
                     )
                     self.assertGreater(
                         position["signedInteriorArea"],
