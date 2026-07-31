@@ -448,9 +448,29 @@ private func run(outputDirectory: URL) throws {
         capacity: recordCount)
     var missingRecordCount = 0
     var firstMissingRecords: [Int] = []
+    var missingBySlot = [Int](
+        repeating: 0,
+        count: geometryCases.count * sampleSideCount)
+    var firstMissingWidthBySlot = [Int?](
+        repeating: nil,
+        count: geometryCases.count * sampleSideCount)
+    var lastMissingWidthBySlot = [Int?](
+        repeating: nil,
+        count: geometryCases.count * sampleSideCount)
     for index in 0..<recordCount {
         if records[index] == SIMD2<UInt32>(repeating: .max) {
             missingRecordCount += 1
+            let slot =
+                index % (geometryCases.count * sampleSideCount)
+            let widthIndex =
+                index
+                / (geometryCases.count * sampleSideCount)
+                / witnessSignificands.count
+            missingBySlot[slot] += 1
+            if firstMissingWidthBySlot[slot] == nil {
+                firstMissingWidthBySlot[slot] = widths[widthIndex]
+            }
+            lastMissingWidthBySlot[slot] = widths[widthIndex]
             if firstMissingRecords.count < 16 {
                 firstMissingRecords.append(index)
             }
@@ -459,7 +479,10 @@ private func run(outputDirectory: URL) throws {
     if missingRecordCount != 0 {
         throw TransferError.command(
             "reciprocal-scale-transfer missing \(missingRecordCount)"
-            + " records; first \(firstMissingRecords)")
+            + " records; first \(firstMissingRecords);"
+            + " bySlot \(missingBySlot);"
+            + " firstWidth \(firstMissingWidthBySlot);"
+            + " lastWidth \(lastMissingWidthBySlot)")
     }
 
     let outputData = Data(
