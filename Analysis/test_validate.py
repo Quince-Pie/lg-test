@@ -1102,7 +1102,9 @@ class ValidatorTests(unittest.TestCase):
             ))
 
             tails = []
-            for sample, actual in enumerate((1.05, 1.25, 1.45)):
+            for sample, actual in enumerate(
+                (1.05, 1.25, 1.45, 1.65, 1.85)
+            ):
                 pixels = bytes((30 + sample, 40 + sample, 50 + sample, 255)) * 10
                 relative = (
                     f"dynamic/{sequence_id}/tail-{sample:04d}.png"
@@ -1113,7 +1115,7 @@ class ValidatorTests(unittest.TestCase):
                     "sample": sample,
                     "actualSeconds": actual,
                     "secondsAfterNominalEndpoint": actual - 1,
-                    "tailProgress": sample / 2,
+                    "tailProgress": sample / 4,
                     "captureDurationSeconds": 0,
                     "presentationProgress": 1,
                     "fileSha256":
@@ -1136,7 +1138,7 @@ class ValidatorTests(unittest.TestCase):
                 root, manifest, references, tailed
             )
             self.assertEqual(tailed.errors, [])
-            self.assertEqual(tailed_summary["tailFrames"], 3)
+            self.assertEqual(tailed_summary["tailFrames"], 5)
 
             sequence.update({
                 "samplingMethod":
@@ -1152,7 +1154,7 @@ class ValidatorTests(unittest.TestCase):
                 root, manifest, references, bounded_tail
             )
             self.assertEqual(bounded_tail.errors, [])
-            self.assertEqual(bounded_tail_summary["tailFrames"], 3)
+            self.assertEqual(bounded_tail_summary["tailFrames"], 5)
 
             tails[0]["captureBackend"] = "ScreenCaptureKit-SCStream-BGRA"
             invalid_bounded_tail = Findings()
@@ -1164,6 +1166,15 @@ class ValidatorTests(unittest.TestCase):
                 for error in invalid_bounded_tail.errors
             ))
             tails[0]["captureBackend"] = "CGWindowListCreateImage"
+
+            tails[1]["tailProgress"] = 0.4
+            invalid_tail_gap = Findings()
+            validate_dynamic(root, manifest, references, invalid_tail_gap)
+            self.assertTrue(any(
+                "gap greater than 0.25" in error
+                for error in invalid_tail_gap.errors
+            ))
+            tails[1]["tailProgress"] = 0.25
 
             tails[-1]["secondsAfterNominalEndpoint"] = 0.4
             invalid_tail = Findings()

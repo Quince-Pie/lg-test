@@ -38,7 +38,7 @@ from probe_catalog import (
 
 type JsonObject = dict[str, Any]
 
-DYNAMIC_TAIL_CAPTURE_SECONDS = 0.5
+DYNAMIC_TAIL_CAPTURE_SECONDS = 1.0
 
 
 @dataclass(slots=True)
@@ -2239,8 +2239,10 @@ def validate_dynamic(
         bounded_tail_sampling = sampling_method == (
             "continuous-window-stream-bounded-tail-full-frame-verified"
         )
+        minimum_tail_frames = 5 if bounded_tail_sampling else 3
         if tail_sampling and (
-            not isinstance(tail_values, list) or len(tail_values) < 3
+            not isinstance(tail_values, list)
+            or len(tail_values) < minimum_tail_frames
         ):
             findings.error(f"{label}: missing verified post-endpoint tail")
         if isinstance(tail_values, list):
@@ -2388,6 +2390,17 @@ def validate_dynamic(
                 findings.error(
                     f"{label}: tail heartbeat progress is not monotonic"
                 )
+            if bounded_tail_sampling and any(
+                right - left > 0.25
+                for left, right in zip(
+                    tail_heartbeat_progress,
+                    tail_heartbeat_progress[1:],
+                )
+            ):
+                findings.error(
+                    f"{label}: bounded tail heartbeat has a gap "
+                    "greater than 0.25"
+                )
             if tail_sampling and tail_times:
                 if any(progress < 0.995 for progress in tail_progress):
                     findings.error(
@@ -2416,10 +2429,14 @@ def validate_dynamic(
                         f"{label}: tail ends at {tail_times[-1]:.6f}s, "
                         f"before {minimum_tail_end:.6f}s"
                     )
-                if tail_times[-1] > duration + 0.650:
+                maximum_tail_end = (
+                    duration + DYNAMIC_TAIL_CAPTURE_SECONDS + 0.150
+                )
+                if tail_times[-1] > maximum_tail_end:
                     findings.error(
                         f"{label}: tail ends at {tail_times[-1]:.6f}s, "
-                        "more than 0.650000s after the endpoint"
+                        f"more than {maximum_tail_end - duration:.6f}s "
+                        "after the endpoint"
                     )
 
         if manifest.get("schemaVersion") == 5:

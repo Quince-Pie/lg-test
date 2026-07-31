@@ -1978,7 +1978,7 @@ struct DynamicCaptureResult: @unchecked Sendable {
     let fullFrameClockDecodes: Int
 }
 
-let dynamicTailCaptureSeconds = 0.5
+let dynamicTailCaptureSeconds = 1.0
 
 final class WindowStreamCollector:
     NSObject,
@@ -2170,7 +2170,16 @@ final class WindowStreamCollector:
                 $0.actual < $1.actual
             }
             if state.capturesTail {
-                guard tailFrames.count >= 3,
+                let heartbeatGaps = zip(
+                    tailFrames, tailFrames.dropFirst()
+                ).map {
+                    $1.tailProgress - $0.tailProgress
+                }
+                let minimumHeartbeatGap =
+                    heartbeatGaps.min() ?? -1
+                let maximumHeartbeatGap =
+                    heartbeatGaps.max() ?? 1
+                guard tailFrames.count >= 5,
                       let tailStart =
                         tailFrames.first?.tailProgress,
                       let tailEnd = tailFrames.last?.actual,
@@ -2180,13 +2189,21 @@ final class WindowStreamCollector:
                       tailProgress >= 0.8,
                       tailEnd
                         >= state.duration
-                            + dynamicTailCaptureSeconds * 0.8
+                            + dynamicTailCaptureSeconds * 0.8,
+                      tailEnd
+                        <= state.duration
+                            + dynamicTailCaptureSeconds + 0.15,
+                      minimumHeartbeatGap >= 0,
+                      maximumHeartbeatGap <= 0.25
                 else {
                     throw RigError.capture(
                         "verified animation tail is incomplete; "
                         + "samples=\(tailFrames.count), "
+                        + "start=\(tailFrames.first?.tailProgress ?? 0), "
                         + "progress=\(tailFrames.last?.tailProgress ?? 0), "
-                        + "last=\(tailFrames.last?.actual ?? 0)")
+                        + "last=\(tailFrames.last?.actual ?? 0), "
+                        + "gap-range=\(minimumHeartbeatGap)"
+                        + "...\(maximumHeartbeatGap)")
                 }
             }
             let boundedTailCount = verifiedTailFrames?.count ?? 0
@@ -2627,10 +2644,19 @@ func capturePresentedAnimation(
             let resetDuration = min(0.0005, frameInterval / 4)
             let tailStart =
                 animationStart + duration + frameInterval + resetDuration
-            let targetProgress = [0.05, 0.25, 0.45, 0.65, 0.85]
+            let targetProgress = [
+                0.05, 0.15, 0.25, 0.35, 0.45,
+                0.55, 0.65, 0.75, 0.85,
+            ]
+            let tailDeadline =
+                animationStart + duration
+                + dynamicTailCaptureSeconds + 0.15
             var tailFrames: [DynamicTailFrame] = []
             tailFrames.reserveCapacity(targetProgress.count)
             for progress in targetProgress {
+                if ProcessInfo.processInfo.systemUptime >= tailDeadline {
+                    break
+                }
                 let target =
                     tailStart + progress * dynamicTailCaptureSeconds
                 let now = ProcessInfo.processInfo.systemUptime
@@ -2647,6 +2673,11 @@ func capturePresentedAnimation(
                     presentationProgress: 1,
                     tailProgress: encodedProgress,
                     frame: frame))
+                if encodedProgress >= 0.85,
+                   tailFrames.count >= 5
+                {
+                    break
+                }
             }
             verifiedTailFrames = tailFrames
         }

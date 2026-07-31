@@ -1563,7 +1563,7 @@ static captures, 32 live dynamic sequences plus 32 post-settle controls, and
 - each live sequence's sampling method and attempted/decoded/failure counters;
 - whether live pixels came from the compositor-delivered window stream or the
   fail-closed legacy snapshot path;
-- every streamed removal transition's independently timestamped 500 ms
+- every streamed removal transition's independently timestamped one-second
   post-endpoint tail;
 - every exact sweep state, direction/trial, requested progress, delayed
   stability result, and hashes.
@@ -1631,12 +1631,14 @@ unchanged.
 For streamed material insertion/removal probes, the existing four-row magenta
 marker is a compositor-owned Core Animation clock. It retains the original
 normalized presentation clock through its endpoint, then resets once and
-becomes an independent zero-to-one heartbeat for 500 ms. The reset
+becomes an independent zero-to-one heartbeat for one second. The reset
 unambiguously identifies the tail boundary; within tail records the original
 presentation clock is fixed at one and `tailProgress` stores the heartbeat.
 ScreenCaptureKit may stop delivering once the full scene is quiescent and only
-the telemetry strip changes, so five bounded own-window snapshots acquire the
-tail after the live stream has already covered the transition. Every tail
+the telemetry strip changes, so up to nine progress-targeted bounded
+own-window snapshots acquire the tail after the live stream has already
+covered the transition. At least five must span 0.0–0.8 with no heartbeat gap
+greater than 0.25 and remain inside the hard 1.15-second deadline. Every tail
 snapshot carries the embedded heartbeat, measured acquisition midpoint and
 duration, exact source metadata, hashes, and explicit
 `CGWindowListCreateImage` provenance. This cannot serialize or open holes in
