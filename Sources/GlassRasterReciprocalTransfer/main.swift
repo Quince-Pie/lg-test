@@ -28,6 +28,7 @@ private let normalizedDenominatorLower = 8_192
 private let normalizedDenominatorUpper = 16_383
 private let targetWidth = 224
 private let targetHeight = 4_096
+private let viewportOriginX = -16_384
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
@@ -105,15 +106,15 @@ private func samplePosition(
         ? geometry.sampleAnchorX + geometry.sampleMarginX
         : geometry.sampleAnchorX - geometry.sampleMarginX
     let y = geometry.originY + geometry.sampleLocalY
-    let localX = x - originX
+    let screenOriginX = viewportOriginX + originX
+    let localX = x - screenOriginX
     let signed =
         geometry.height * (2 * localX + 1) - threshold
     let signedInteriorArea = signed
     precondition((0..<sampleSideCount).contains(sampleSide))
     precondition((0..<targetWidth).contains(x))
     precondition((0..<targetHeight).contains(y))
-    precondition(originX < viewportWidth)
-    precondition(originX + width > 0)
+    precondition(screenOriginX >= viewportOriginX)
     precondition(originX + width <= viewportWidth)
     precondition(
         geometry.originY + geometry.height <= targetHeight)
@@ -373,7 +374,7 @@ private func run(outputDirectory: URL) throws {
         }
         encoder.setRenderPipelineState(pipeline)
         encoder.setViewport(MTLViewport(
-            originX: 0,
+            originX: Double(viewportOriginX),
             originY: 0,
             width: Double(viewportWidth),
             height: Double(targetHeight),
@@ -541,7 +542,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-scale-transfer-1.0.4"
+        "metal-raster-reciprocal-scale-transfer-1.0.5"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -568,7 +569,7 @@ private func run(outputDirectory: URL) throws {
         "captureAmendmentFile":
             "Analysis/raster_reciprocal_scale_transfer_capture_amendment.json",
         "captureAmendmentSha256":
-            "2f79a80c402a7e8a60d2a06cec78c301c9facd870c3ff1ac78b24194a5e77737",
+            "6c1f0b120ec4811b392090ec422161e2c74b973882d57775be98e474c5017467",
         "widthFormula":
             "16384-control-if-normalized-denominator-8192-else-2x",
         "widthMinimum": widths.min()!,
@@ -592,6 +593,7 @@ private func run(outputDirectory: URL) throws {
         "targetWidth": targetWidth,
         "targetHeight": targetHeight,
         "viewportWidth": viewportWidth,
+        "viewportOriginX": viewportOriginX,
         "minimumSignedInteriorArea":
             minimumSignedInteriorArea,
         "ordering":

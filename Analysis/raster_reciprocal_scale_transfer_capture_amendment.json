@@ -38,6 +38,16 @@
       "runId": 30655866281,
       "ciCommit": "a89d9606c234d171408f7fa6ecfc5df281146a1b",
       "result": "replacing the first width with the 16384 control changed the shared 128-width pass count to zero; capture stopped before any pull corpus or manifest was serialized"
+    },
+    {
+      "runId": 30656033628,
+      "ciCommit": "38ca99631601d54b8330f702b5e784d27dc7cecc",
+      "result": "one-width passes completed the first 6144 widths and then lost coverage; no pull corpus or manifest was serialized"
+    },
+    {
+      "runId": 30656114844,
+      "ciCommit": "b27d4dc6ed5c1196f940c57a2acb2bafdb6fd032",
+      "result": "the first failing isolated width was exactly 28672; no pull corpus or manifest was serialized"
     }
   ],
   "diagnosis": {
@@ -83,6 +93,15 @@
     "before": "128 widths overlapped each geometry/sample pixel in one render pass",
     "after": "one width per render pass with fourteen additive witness contributions verified at every geometry/sample pixel",
     "reason": "the shared pass count depended on its first width, demonstrating that cross-width visibility processing still affected fragment execution",
+    "numericalPredictionsChanged": false
+  },
+  "guardBandCenteringAfterRun30656114844": {
+    "viewportWidth": 32768,
+    "beforeViewportOriginX": 0,
+    "afterViewportOriginX": -16384,
+    "reason": "isolated widths below 28672 passed and width 28672 did not; centering the same power-of-two viewport keeps every amended primitive strictly in clip space while moving absolute endpoints away from the positive guard-band threshold",
+    "sampleFramebufferCoordinatesChanged": false,
+    "primitiveSpansChanged": false,
     "numericalPredictionsChanged": false
   },
   "frozenNumerics": {
