@@ -11510,6 +11510,125 @@ private func carendererEvidence(
     ]
 }
 
+private func carendererUniformEvidence(
+    rootLayer: CALayer,
+    device: MTLDevice,
+    capture: String
+) -> [String: Any] {
+    let bounds = rootLayer.bounds.standardized
+    guard bounds.width.isFinite,
+          bounds.height.isFinite,
+          bounds.width > 0,
+          bounds.height > 0
+    else {
+        return [
+            "executed": false,
+            "reason": "root layer has invalid bounds",
+        ]
+    }
+    let width = Int(ceil(bounds.width))
+    let height = Int(ceil(bounds.height))
+    guard width <= 1_024,
+          height <= 1_024
+    else {
+        return [
+            "executed": false,
+            "reason": "root layer exceeds uniform probe bounds",
+        ]
+    }
+
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .bgra8Unorm,
+        width: width,
+        height: height,
+        mipmapped: false)
+    descriptor.storageMode = .private
+    descriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
+    guard let output = device.makeTexture(descriptor: descriptor),
+          let commandQueue = device.makeCommandQueue(),
+          let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
+    else {
+        return [
+            "executed": false,
+            "reason": "CARenderer uniform resources unavailable",
+        ]
+    }
+
+    let renderer = CARenderer(
+        mtlTexture: output,
+        options: [
+            kCARendererColorSpace: colorSpace,
+            kCARendererMetalCommandQueue: commandQueue,
+        ])
+    renderer.layer = rootLayer
+    renderer.bounds = bounds
+
+    let startedMediaTime = CACurrentMediaTime()
+    MetalUniformProbe.shared.beginCapture(capture)
+    renderer.beginFrame(
+        atTime: startedMediaTime,
+        timeStamp: nil)
+    renderer.addUpdate(bounds)
+    renderer.render()
+    renderer.endFrame()
+    guard let completion = commandQueue.makeCommandBuffer() else {
+        MetalUniformProbe.shared.endCapture()
+        return [
+            "executed": false,
+            "reason": "CARenderer uniform completion unavailable",
+        ]
+    }
+    completion.commit()
+    completion.waitUntilCompleted()
+    MetalUniformProbe.shared.endCapture()
+    let finishedMediaTime = CACurrentMediaTime()
+    guard completion.status == .completed else {
+        return [
+            "executed": false,
+            "reason":
+                completion.error?.localizedDescription
+                    ?? "CARenderer uniform command failed",
+            "commandBufferStatus": completion.status.rawValue,
+        ]
+    }
+
+    let allBufferEvidence =
+        MetalUniformProbe.shared.snapshotBuffers(capture: capture)
+    let allSnapshots =
+        allBufferEvidence["snapshots"] as? [[String: Any]] ?? []
+    let glassSnapshots = allSnapshots.filter { snapshot in
+        guard snapshot["stage"] as? String == "fragment",
+              snapshot["index"] as? Int == 1,
+              let pipeline = snapshot["pipeline"]
+                as? [String: Any],
+              let creation = pipeline["creationDescriptor"]
+                as? [String: Any],
+              let fragment = creation["fragmentFunction"]
+                as? String
+        else {
+            return false
+        }
+        return fragment.hasPrefix("glass_background")
+            || fragment.hasPrefix("glass_foreground")
+    }
+    return [
+        "executed": true,
+        "capture": capture,
+        "rootLayerClass": String(reflecting: type(of: rootLayer)),
+        "bounds": NSStringFromRect(bounds),
+        "startedMediaTime": startedMediaTime,
+        "finishedMediaTime": finishedMediaTime,
+        "durationSeconds":
+            finishedMediaTime - startedMediaTime,
+        "allBufferBindingCount": allSnapshots.count,
+        "glassFragmentUniformBindingCount": glassSnapshots.count,
+        "glassFragmentUniformBindings": glassSnapshots,
+        "metalCommandProvenance":
+            MetalUniformProbe.shared.commandProvenance(
+                capture: capture),
+    ]
+}
+
 private func transitionAnimationDescription(
     _ animation: CAAnimation
 ) -> [String: Any] {
@@ -11714,6 +11833,186 @@ private func transitionPresentationState(
         "rootClass": String(reflecting: type(of: layer)),
         "layerCount": records.count,
         "records": records,
+    ]
+}
+
+private struct TransitionBackgroundFilterTarget {
+    let layer: CALayer
+    let path: [Int]
+    let index: Int
+    let filter: NSObject
+}
+
+private struct TransitionBackgroundFilterSnapshot {
+    let sampleIndex: Int
+    let requestedProgress: Double
+    let remaining: Double
+    let filter: NSObject
+}
+
+private func transitionFilterType(_ value: Any) -> String? {
+    guard let object = value as? NSObject,
+          object.responds(to: NSSelectorFromString("type"))
+    else {
+        return nil
+    }
+    return object.value(forKey: "type") as? String
+}
+
+private func transitionBackgroundFilterTarget(
+    in layer: CALayer,
+    path: [Int] = []
+) -> TransitionBackgroundFilterTarget? {
+    for (index, candidate) in (layer.filters ?? []).enumerated()
+    where transitionFilterType(candidate) == "glassBackground" {
+        guard let object = candidate as? NSObject else { continue }
+        return TransitionBackgroundFilterTarget(
+            layer: layer,
+            path: path,
+            index: index,
+            filter: object)
+    }
+    for (index, child) in (layer.sublayers ?? []).enumerated() {
+        if let target = transitionBackgroundFilterTarget(
+            in: child,
+            path: path + [index])
+        {
+            return target
+        }
+    }
+    return nil
+}
+
+private func copiedTransitionFilter(
+    _ filter: NSObject
+) -> NSObject? {
+    guard let copying = filter as? NSCopying else { return nil }
+    return copying.copy(with: nil) as? NSObject
+}
+
+private func transitionBackgroundFilterSnapshot(
+    rootLayer: CALayer,
+    sampleIndex: Int,
+    requestedProgress: Double
+) -> TransitionBackgroundFilterSnapshot? {
+    let presentationRoot = rootLayer.presentation() ?? rootLayer
+    guard let target = transitionBackgroundFilterTarget(
+            in: presentationRoot),
+          let copied = copiedTransitionFilter(target.filter),
+          let remaining = copied.value(
+            forKey: "inputFaceOpacity") as? NSNumber
+    else {
+        return nil
+    }
+    return TransitionBackgroundFilterSnapshot(
+        sampleIndex: sampleIndex,
+        requestedProgress: requestedProgress,
+        remaining: remaining.doubleValue,
+        filter: copied)
+}
+
+private func installTransitionBackgroundFilter(
+    _ filter: NSObject,
+    target: TransitionBackgroundFilterTarget
+) -> Bool {
+    var filters = target.layer.filters ?? []
+    guard target.index < filters.count else { return false }
+    filters[target.index] = filter
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    target.layer.filters = filters
+    target.layer.setNeedsDisplay()
+    target.layer.setNeedsLayout()
+    CATransaction.commit()
+    CATransaction.flush()
+    return true
+}
+
+@MainActor
+private func transitionBackgroundUniformEvidence(
+    rootLayer: CALayer,
+    snapshots: [TransitionBackgroundFilterSnapshot]
+) -> [String: Any] {
+    guard let device = MTLCreateSystemDefaultDevice() else {
+        return [
+            "schemaVersion": 1,
+            "requested": true,
+            "executed": false,
+            "reason": "default Metal device unavailable",
+        ]
+    }
+    guard let target = transitionBackgroundFilterTarget(
+            in: rootLayer)
+    else {
+        return [
+            "schemaVersion": 1,
+            "requested": true,
+            "executed": false,
+            "reason":
+                "settled model glassBackground target unavailable",
+        ]
+    }
+    let originalFilters = target.layer.filters
+    defer {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        target.layer.filters = originalFilters
+        target.layer.setNeedsDisplay()
+        target.layer.setNeedsLayout()
+        CATransaction.commit()
+        CATransaction.flush()
+    }
+
+    var records: [[String: Any]] = []
+    records.reserveCapacity(snapshots.count)
+    for snapshot in snapshots {
+        guard let stateFilter =
+                copiedTransitionFilter(snapshot.filter),
+              installTransitionBackgroundFilter(
+                stateFilter,
+                target: target)
+        else {
+            records.append([
+                "sampleIndex": snapshot.sampleIndex,
+                "requestedProgress":
+                    snapshot.requestedProgress,
+                "remaining": snapshot.remaining,
+                "executed": false,
+                "reason": "filter copy or installation failed",
+            ])
+            continue
+        }
+        let capture = String(
+            format:
+                "transition-background-uniform-%02d",
+            snapshot.sampleIndex)
+        records.append([
+            "sampleIndex": snapshot.sampleIndex,
+            "requestedProgress": snapshot.requestedProgress,
+            "remaining": snapshot.remaining,
+            "filter": filterDescription(stateFilter),
+            "render": carendererUniformEvidence(
+                rootLayer: rootLayer,
+                device: device,
+                capture: capture),
+        ])
+    }
+    let executed = records.filter {
+        ($0["render"] as? [String: Any])?["executed"]
+            as? Bool == true
+    }.count
+    return [
+        "schemaVersion": 1,
+        "requested": true,
+        "executed": executed == snapshots.count,
+        "modelTargetPath": target.path,
+        "sampleIndices": snapshots.map(\.sampleIndex),
+        "sampleCount": snapshots.count,
+        "executedSampleCount": executed,
+        "records": records,
+        "method":
+            "copied-presentation-background-filter-on-settled-model-tree",
+        "presentationLayerReplayed": false,
     ]
 }
 
@@ -11930,7 +12229,7 @@ private func writeTransitionProbeProgress(
 ) {
     try? writeJSON(
         [
-            "schemaVersion": 4,
+            "schemaVersion": 5,
             "capture": capture,
             "phase": phase,
             "mediaTime": CACurrentMediaTime(),
@@ -12316,9 +12615,30 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             "transition root layer unavailable",
                     ])
             }
+            let dynamicUniformsRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_UNIFORMS"
+                ] == "1"
+            if dynamicUniformsRequested,
+               direction != .materialize
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 6,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "dynamic uniform capture requires "
+                            + "materialize direction",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
+            let dynamicUniformSampleIndices = Set([
+                1, 4, 8, 12, 16, 20, 24, 28, 32,
+            ])
+            var dynamicUniformSnapshots:
+                [TransitionBackgroundFilterSnapshot] = []
             if transitionModel.visible != direction.initialVisible {
                 var transaction = Transaction(animation: nil)
                 transaction.disablesAnimations = true
@@ -12391,18 +12711,66 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     (captureMediaTime - triggerBeforeCommit)
                     / duration
                 samples.append(sample)
+                if dynamicUniformsRequested,
+                   dynamicUniformSampleIndices.contains(index)
+                {
+                    guard let snapshot =
+                        transitionBackgroundFilterSnapshot(
+                            rootLayer: rootLayer,
+                            sampleIndex: index,
+                            requestedProgress: progress)
+                    else {
+                        throw NSError(
+                            domain:
+                                "LiquidGlassTransitionProbe",
+                            code: 7,
+                            userInfo: [
+                                NSLocalizedDescriptionKey:
+                                    "presentation glassBackground "
+                                    + "snapshot unavailable at "
+                                    + "sample \(index)",
+                            ])
+                    }
+                    dynamicUniformSnapshots.append(snapshot)
+                }
             }
 
             let failedSamples = samples.filter {
                 $0["executed"] as? Bool != true
             }.count
+            let dynamicUniformEvidence: [String: Any]
+            if dynamicUniformsRequested {
+                writeTransitionProbeProgress(
+                    outputDirectory: outputDirectory,
+                    capture: "transition-background-uniforms",
+                    phase: "before-settled-model-uniform-renders")
+                dynamicUniformEvidence =
+                    transitionBackgroundUniformEvidence(
+                        rootLayer: rootLayer,
+                        snapshots: dynamicUniformSnapshots)
+                writeTransitionProbeProgress(
+                    outputDirectory: outputDirectory,
+                    capture: "transition-background-uniforms",
+                    phase: "after-settled-model-uniform-renders")
+            } else {
+                dynamicUniformEvidence = [
+                    "schemaVersion": 1,
+                    "requested": false,
+                    "executed": false,
+                    "presentationLayerReplayed": false,
+                ]
+            }
+            let dynamicUniformFailed =
+                dynamicUniformsRequested
+                && dynamicUniformEvidence["executed"]
+                    as? Bool != true
             let scale = window.backingScaleFactor
             let expectedPixelWidth = Int(
                 (window.frame.width * scale).rounded())
             let expectedPixelHeight = Int(
                 (window.frame.height * scale).rounded())
             let report: [String: Any] = [
-                "schemaVersion": 4,
+                "schemaVersion": 5,
                 "probe":
                     "paced-presentation-state-window-timeline",
                 "material": material.rawValue,
@@ -12435,13 +12803,18 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     transitionAnimationInventory(rootLayer),
                 "samples": samples,
                 "failedSamples": failedSamples,
+                "dynamicBackgroundUniforms":
+                    dynamicUniformEvidence,
             ]
             try writeJSON(report, to: reportURL)
-            exit(failedSamples == 0 ? 0 : 1)
+            exit(
+                failedSamples == 0 && !dynamicUniformFailed
+                    ? 0
+                    : 1)
         } catch {
             try? writeJSON(
                 [
-                    "schemaVersion": 4,
+                    "schemaVersion": 5,
                     "probe":
                         "paced-presentation-state-window-timeline",
                     "material": material.rawValue,

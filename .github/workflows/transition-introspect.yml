@@ -2,9 +2,18 @@ name: Introspect Liquid Glass transition
 
 on:
   workflow_dispatch:
+    inputs:
+      capture_mode:
+        description: Transition evidence matrix to capture
+        required: true
+        default: state-matrix
+        type: choice
+        options:
+          - state-matrix
+          - uniform-profiles
 
 concurrency:
-  group: transition-introspect-v4-${{ github.ref }}
+  group: transition-introspect-v5-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -102,6 +111,10 @@ jobs:
       LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
       LG_TRANSITION_TIMELINE: "1"
       LG_TRANSITION_DIRECTION: ${{ matrix.direction }}
+      LG_TRANSITION_UNIFORMS: >-
+        ${{ inputs.capture_mode == 'uniform-profiles' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'profile-') && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -171,6 +184,7 @@ jobs:
           test -s transition-introspection/transition-timeline.json
           python3 - <<'PY'
           import json
+          import os
           import pathlib
 
           root = pathlib.Path("transition-introspection")
@@ -179,8 +193,8 @@ jobs:
                   encoding="utf-8"
               )
           )
-          if report.get("schemaVersion") != 4:
-              raise SystemExit("transition timeline schema is not 4")
+          if report.get("schemaVersion") != 5:
+              raise SystemExit("transition timeline schema is not 5")
           if (
               report.get("material") != "${{ matrix.material }}"
               or report.get("appearance") != "${{ matrix.appearance }}"
@@ -205,6 +219,106 @@ jobs:
                   f"{report.get('samplingMethod')}, "
                   f"{report.get('sampleCount')}, "
                   f"{report.get('failedSamples')}"
+              )
+          uniform_requested = (
+              os.environ.get("LG_TRANSITION_UNIFORMS") == "1"
+          )
+          uniforms = report.get(
+              "dynamicBackgroundUniforms", {}
+          )
+          if (
+              not isinstance(uniforms, dict)
+              or uniforms.get("schemaVersion") != 1
+              or uniforms.get("requested")
+                  is not uniform_requested
+              or uniforms.get("presentationLayerReplayed")
+                  is not False
+          ):
+              raise SystemExit(
+                  "transition uniform metadata differs: "
+                  f"{uniforms}"
+              )
+          if uniform_requested:
+              expected_uniform_indices = [
+                  1, 4, 8, 12, 16, 20, 24, 28, 32
+              ]
+              records = uniforms.get("records", [])
+              if (
+                  uniforms.get("executed") is not True
+                  or uniforms.get("sampleIndices")
+                      != expected_uniform_indices
+                  or uniforms.get("sampleCount") != 9
+                  or uniforms.get("executedSampleCount") != 9
+                  or uniforms.get("method")
+                      != "copied-presentation-background-filter-"
+                         "on-settled-model-tree"
+                  or not isinstance(
+                      uniforms.get("modelTargetPath"), list
+                  )
+                  or len(records) != 9
+              ):
+                  raise SystemExit(
+                      "transition uniform capture is incomplete: "
+                      f"{uniforms}"
+                  )
+              for expected_index, record in zip(
+                  expected_uniform_indices,
+                  records,
+              ):
+                  render = record.get("render", {})
+                  filter_values = record.get(
+                      "filter", {}
+                  ).get("inputValues", {})
+                  bindings = render.get(
+                      "glassFragmentUniformBindings", []
+                  )
+                  background_bindings = []
+                  for binding in bindings:
+                      pipeline = binding.get(
+                          "pipeline", {}
+                      ).get("creationDescriptor", {})
+                      fragment = pipeline.get(
+                          "fragmentFunction", ""
+                      )
+                      payload = binding.get("payload", {})
+                      if (
+                          binding.get("stage") != "fragment"
+                          or binding.get("index") != 1
+                          or not isinstance(payload, dict)
+                          or payload.get("lengthBytes", 0) < 258
+                          or not isinstance(
+                              payload.get("hex"), str
+                          )
+                          or len(payload["hex"])
+                              != payload["lengthBytes"] * 2
+                      ):
+                          raise SystemExit(
+                              "transition uniform binding is "
+                              f"incomplete: {binding}"
+                          )
+                      if str(fragment).startswith(
+                          "glass_background"
+                      ):
+                          background_bindings.append(binding)
+                  if (
+                      record.get("sampleIndex")
+                          != expected_index
+                      or render.get("executed") is not True
+                      or render.get(
+                          "glassFragmentUniformBindingCount"
+                      ) != len(bindings)
+                      or len(background_bindings) != 2
+                      or filter_values.get("inputFaceOpacity")
+                          != record.get("remaining")
+                      or render.get("durationSeconds", 31) > 30
+                  ):
+                      raise SystemExit(
+                          "transition uniform sample differs: "
+                          f"{record}"
+                      )
+          elif uniforms.get("executed") is not False:
+              raise SystemExit(
+                  "unrequested transition uniforms executed"
               )
           samples = report.get("samples", [])
           if len(samples) != 33:
