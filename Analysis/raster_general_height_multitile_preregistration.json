@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "role": "discovery-with-preregistered-multitile-slope-recovery",
+  "observedAtPreregistration": false,
+  "purpose": "Remove adjacent-float coefficient ambiguity before fitting the unclipped non-power-of-two raster setup law. Six samples form three independent 32-pixel tile-constant groups while retaining the complete determinant and numerator witness domain.",
+  "sourceEvidence": {
+    "generalHeightDiagnosticRunId": 30660151186,
+    "generalHeightDiagnosticCommit": "7826fae7ca0ed97de3492fc0977faccd1ef751dd",
+    "generalHeightDiagnosticManifestSha256": "4cfe61c8f8db6030251af972f98146c1b534af12c520e87262313b91c8b40821",
+    "generalHeightDiagnosticRawSha256": "d5b2bc2b9cb9aeb5e365f2cda9859e5eb9dd5fe24815a6fc738148bb639771",
+    "coefficientCount": 458752,
+    "singleTileCandidateRadiusFloatUlps": 2,
+    "singleTileZeroCandidateCount": 0,
+    "singleTileUniqueCandidateCount": 66405,
+    "singleTileCandidateMultiplicityRange": [
+      1,
+      5
+    ],
+    "derivativeIsNotDirectCoefficient": true,
+    "derivativeConsistentWithRoundedLaneDifference": true,
+    "roundedNumeratorModelHasNoReciprocalForManyDeterminants": true,
+    "exactNumeratorModelHasNoReciprocalForManyDeterminants": true,
+    "productionShaderWasNotChanged": true
+  },
+  "intervention": {
+    "changedVariables": [
+      "sample x positions 225 and 255 in tile 7 are replaced by paired local-x 1 and 31 positions in tiles 6, 7, and 8",
+      "record count increases from two to six sample positions per geometry"
+    ],
+    "unchangedVariables": [
+      "8192 geometry widths",
+      "14 frozen witness significands",
+      "four non-power-of-two heights",
+      "scaled vertex deltas",
+      "256-pixel target and vertical viewport",
+      "32768-pixel horizontal viewport",
+      "triangle vertices and ordering",
+      "bottom-row primitive",
+      "pull offsets",
+      "center and derivative diagnostics",
+      "fast-math setting"
+    ],
+    "reason": "A slope is shared across tiles while each 32-pixel tile has an independently rebased float32 constant. Intersecting three independently rounded tile groups adds coefficient information without changing geometry arithmetic or assuming a numerator, determinant, reciprocal, or product model."
+  },
+  "capture": {
+    "targetWidth": 288,
+    "targetHeight": 256,
+    "viewportWidth": 32768,
+    "sampleXs": [
+      193,
+      223,
+      225,
+      255,
+      257,
+      287
+    ],
+    "sampleXsSha256": "4922011fae43558ec8e4fa338f4208e275f32dbc3c80feeb3e2afe6496e90464",
+    "sampleTiles": [
+      6,
+      6,
+      7,
+      7,
+      8,
+      8
+    ],
+    "sampleTileLocalXs": [
+      1,
+      31,
+      1,
+      31,
+      1,
+      31
+    ],
+    "sharedTileGroups": [
+      [
+        0,
+        1
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "recordComponents": [
+      "pull@0,0.5",
+      "pull@15/16,0.5",
+      "center",
+      "dfdx(center)"
+    ],
+    "recordBytes": 16,
+    "rawBytes": 44040192
+  },
+  "slopeRecovery": {
+    "candidateCenter": "roundBinary32(scaledVertexDelta / integerGeometryWidth)",
+    "candidateRadiusFloatUlps": 8,
+    "pullEvaluation": "roundNearestEvenBinary32(fma(tileLocalXPlusOffset, candidateSlope, sharedTileConstant))",
+    "constantDomain": "binary32",
+    "constantSharing": "one independently recovered constant per declared tile group",
+    "centerAndDerivativeUsedForSelection": false,
+    "numeratorOrReciprocalModelUsedForSelection": false
+  },
+  "acceptance": {
+    "allRecordsWrittenAndFinite": true,
+    "allSamplesSafelyInterior": true,
+    "samplePositionHashMustMatch": true,
+    "everyCoefficientHasExactlyOneMultitilePullSlope": true,
+    "recoveredSlopeHashIsDiscoveryOutput": true,
+    "centerAndDerivativeBitsAreDiagnosticNotFitted": true,
+    "noAdaptiveFitOrTolerance": true
+  },
+  "nonClaims": [
+    "Uniquely recovering the discovery slopes does not establish a numerator law.",
+    "Uniquely recovering the discovery slopes does not establish the low determinant mantissa reciprocal law.",
+    "The recovered slope table requires a later prospective holdout before a setup model is established.",
+    "This probe does not establish clip-generated setup.",
+    "No result from this probe establishes end-to-end Liquid Glass parity."
+  ]
+}

@@ -30,7 +30,8 @@ private let targetWidth = 288
 private let targetHeight = 256
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
-private let sampleSideCount = 2
+private let sampleXs = [193, 223, 225, 255, 257, 287]
+private let samplePositionCount = sampleXs.count
 private let batchSize = 1
 private let candidateRadius = 8
 
@@ -108,21 +109,15 @@ private let scaledWitnessDeltaBits =
 private func samplePosition(
     width: Int,
     geometry: GeometryCase,
-    sampleSide: Int
+    sampleIndex: Int
 ) -> SamplePosition {
-    let threshold =
-        width
-        * (2 * (geometry.height - geometry.sampleLocalY) - 1)
     let originX = 0
-    let x = sampleSide == 0
-        ? geometry.sampleAnchorX + geometry.sampleMarginX
-        : geometry.sampleAnchorX - geometry.sampleMarginX
+    let x = sampleXs[sampleIndex]
     let y = geometry.originY + geometry.sampleLocalY
     let localX = x - originX
-    let signed =
-        geometry.height * (2 * localX + 1) - threshold
+    let signed = geometry.height * (2 * localX + 1) - width
     let signedInteriorArea = signed
-    precondition((0..<sampleSideCount).contains(sampleSide))
+    precondition((0..<samplePositionCount).contains(sampleIndex))
     precondition((0..<targetWidth).contains(x))
     precondition((0..<targetHeight).contains(y))
     precondition(originX < viewportWidth)
@@ -197,7 +192,7 @@ fragment float reciprocal_transfer_fragment(
 {
     const float center = input.ramp.interpolate_at_center();
     results[
-        \(geometryCases.count * sampleSideCount)u
+        \(geometryCases.count * samplePositionCount)u
             * input.recordIndex
         + input.outputSlot
     ] = uint4(
@@ -270,16 +265,19 @@ private func run(outputDirectory: URL) throws {
         sha256(uint32Data(witnessSignificands))
             == "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a")
     precondition(
+        sha256(uint32Data(sampleXs.map { UInt32($0) }))
+            == "4922011fae43558ec8e4fa338f4208e275f32dbc3c80feeb3e2afe6496e90464")
+    precondition(
         sha256(uint32Data(witnessDeltaBits))
             == "4af6fce64ad188beb784cbea16c1d09ca2713825f8becee8ee64cabfd68caf8a")
     diagnostic("frozen hashes verified")
     for width in widths {
         for geometry in geometryCases {
-            for sampleSide in 0..<sampleSideCount {
+            for sampleIndex in 0..<samplePositionCount {
                 _ = samplePosition(
                     width: width,
                     geometry: geometry,
-                    sampleSide: sampleSide)
+                    sampleIndex: sampleIndex)
             }
         }
     }
@@ -344,7 +342,7 @@ private func run(outputDirectory: URL) throws {
         widths.count
         * witnessSignificands.count
         * geometryCases.count
-        * sampleSideCount
+        * samplePositionCount
     let outputBytes =
         recordCount * MemoryLayout<SIMD4<UInt32>>.stride
     guard let target = device.makeTexture(
@@ -438,11 +436,11 @@ private func run(outputDirectory: URL) throws {
             for (geometryIndex, geometry) in
                 geometryCases.enumerated()
             {
-                for sampleSide in 0..<sampleSideCount {
+                for sampleIndex in 0..<samplePositionCount {
                     let position = samplePosition(
                         width: width,
                         geometry: geometry,
-                        sampleSide: sampleSide)
+                        sampleIndex: sampleIndex)
                     var drawGeometry = SIMD4<Int32>(
                         Int32(width),
                         Int32(position.originX),
@@ -453,8 +451,8 @@ private func run(outputDirectory: URL) throws {
                             widthIndex
                                 * witnessSignificands.count),
                         UInt32(
-                            geometryIndex * sampleSideCount
-                                + sampleSide))
+                            geometryIndex * samplePositionCount
+                                + sampleIndex))
                     encoder.setScissorRect(MTLScissorRect(
                         x: position.x,
                         y: position.y,
@@ -492,11 +490,11 @@ private func run(outputDirectory: URL) throws {
             (batchEnd - batchStart)
                 * witnessSignificands.count)
         for geometry in geometryCases {
-            for sampleSide in 0..<sampleSideCount {
+            for sampleIndex in 0..<samplePositionCount {
                 let position = samplePosition(
                     width: widths[batchStart],
                     geometry: geometry,
-                    sampleSide: sampleSide)
+                    sampleIndex: sampleIndex)
                 var coverage: Float = 0
                 target.getBytes(
                     &coverage,
@@ -510,7 +508,7 @@ private func run(outputDirectory: URL) throws {
                 guard coverage == expectedCoverage else {
                     throw TransferError.command(
                         "reciprocal-scale-transfer coverage"
-                            + " \(geometry.name)/\(sampleSide)"
+                            + " \(geometry.name)/\(sampleIndex)"
                             + " at width \(widths[batchStart])"
                             + " was \(coverage),"
                             + " expected \(expectedCoverage)")
@@ -532,21 +530,21 @@ private func run(outputDirectory: URL) throws {
     var firstMissingRecords: [Int] = []
     var missingBySlot = [Int](
         repeating: 0,
-        count: geometryCases.count * sampleSideCount)
+        count: geometryCases.count * samplePositionCount)
     var firstMissingWidthBySlot = [Int?](
         repeating: nil,
-        count: geometryCases.count * sampleSideCount)
+        count: geometryCases.count * samplePositionCount)
     var lastMissingWidthBySlot = [Int?](
         repeating: nil,
-        count: geometryCases.count * sampleSideCount)
+        count: geometryCases.count * samplePositionCount)
     for index in 0..<recordCount {
         if records[index] == SIMD4<UInt32>(repeating: .max) {
             missingRecordCount += 1
             let slot =
-                index % (geometryCases.count * sampleSideCount)
+                index % (geometryCases.count * samplePositionCount)
             let widthIndex =
                 index
-                / (geometryCases.count * sampleSideCount)
+                / (geometryCases.count * samplePositionCount)
                 / witnessSignificands.count
             missingBySlot[slot] += 1
             if firstMissingWidthBySlot[slot] == nil {
@@ -570,18 +568,18 @@ private func run(outputDirectory: URL) throws {
     let outputData = Data(
         bytes: output.contents(),
         count: outputBytes)
-    precondition(outputData.count == 14_680_064)
+    precondition(outputData.count == 44_040_192)
     let outputFilename =
-        "raster-general-height-diagnostic.raw"
+        "raster-general-height-multitile.raw"
     try outputData.write(
         to: outputDirectory.appendingPathComponent(
             outputFilename),
         options: .atomic)
 
     var manifest: [String: Any] = [:]
-    manifest["schemaVersion"] = 2
+    manifest["schemaVersion"] = 3
     manifest["rigVersion"] =
-        "metal-raster-general-height-diagnostic-2.0.0"
+        "metal-raster-general-height-multitile-3.0.0"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -598,13 +596,13 @@ private func run(outputDirectory: URL) throws {
         "coverageAttachment":
             "one-width R32Float additive witness count, cleared/stored/verified",
     ] as [String: Any]
-    manifest["rasterGeneralHeightDiagnostic"] = [
+    manifest["rasterGeneralHeightMultitile"] = [
         "role":
-            "discovery-with-preregistered-calibrated-determinant-controls",
+            "discovery-with-preregistered-multitile-slope-recovery",
         "preregistrationFile":
-            "Analysis/raster_general_height_diagnostic_preregistration.json",
+            "Analysis/raster_general_height_multitile_preregistration.json",
         "preregistrationSha256":
-            "2e9db3b82a74b0da3761cd19125e1228cc60af9cc08902ddba32a8213aa19002",
+            "6e4a7d74c6a92ca00ed683bb64f8446cb0af70983e58afc5480c56b846bf6df0",
         "geometryWidthFormula":
             "normalized-denominator",
         "widthMinimum": widths.min()!,
@@ -624,7 +622,13 @@ private func run(outputDirectory: URL) throws {
             "884d0b0f9ea9695965d2ce93ae7e80d318e3e4d0032debf5b83214f03725644e",
         "geometryCases": geometryManifest(),
         "geometryCount": geometryCases.count,
-        "sampleSideCount": sampleSideCount,
+        "sampleXs": sampleXs,
+        "sampleXsSha256":
+            "4922011fae43558ec8e4fa338f4208e275f32dbc3c80feeb3e2afe6496e90464",
+        "sampleTiles": sampleXs.map { $0 / 32 },
+        "sampleTileLocalXs": sampleXs.map { $0 % 32 },
+        "samplePositionCount": samplePositionCount,
+        "sharedTileGroups": [[0, 1], [2, 3], [4, 5]],
         "witnessSignificands":
             witnessSignificands.map { Int($0) },
         "witnessCount": witnessSignificands.count,
@@ -640,7 +644,7 @@ private func run(outputDirectory: URL) throws {
             minimumSignedInteriorArea,
         "ordering":
             "normalized-denominator-major,witness-major,"
-            + "geometry-major,sample-side-major",
+            + "geometry-major,sample-position-major",
         "recordBytes": 16,
         "recordComponents": [
             "pull@0,0.5",
@@ -650,16 +654,6 @@ private func run(outputDirectory: URL) throws {
         ],
         "uncoveredRecordSentinel":
             "0xffffffffffffffffffffffffffffffff",
-        "calibratedDeterminantControls": [
-            "pairCount": 484,
-            "coefficientCount": 6_776,
-            "pairsSha256":
-                "5009c0ef63b8c7ea107727537bab3c633d685b2474b0e91d957e3fffe93d9af9",
-            "selectedReciprocalsSha256":
-                "4de707bf7d8e9469537e648d35b6c0f75c843207c91f387d023e16812be2c971",
-            "predictedCoefficientsSha256":
-                "6ac1220a2e7884df9655689f84e064ccabef206f3c7135329cfea8820d7db434",
-        ],
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

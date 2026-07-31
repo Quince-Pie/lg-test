@@ -2470,6 +2470,38 @@ Those controls must all pass exactly. The remaining determinant values form a
 discovery corpus for the previously unmeasured low mantissa bits; they cannot
 establish a selector law until a later prospective holdout passes.
 
+Run 30660151186 captured all 917,504 preregistered records at commit
+`7826fae7ca0ed97de3492fc0977faccd1ef751dd`, then correctly rejected the
+frozen control at width 8,224, height 61, witness 5. Its manifest and raw
+buffer SHA-256 values are
+`4cfe61c8f8db6030251af972f98146c1b534af12c520e87262313b91c8b40821`
+and
+`d5b2bc2b9cb9aeb5e365f2cda9859e5eb9dd5fe24815a6fc738148bb639771`.
+Restoring the exact vertical transform therefore did not restore the legacy
+small-determinant model. The ordinary center sample is the half-pixel AGX
+iterator evaluated toward zero; `dfdx(center)` is not the coefficient register
+and is consistent with a rounded neighboring-lane difference. Combining both
+with the two pull positions leaves one through five adjacent slope candidates
+per coefficient:
+only 66,405 of 458,752 are unique within two float ULPs of correctly rounded
+division. Across all fourteen witnesses, the rounded-numerator physical
+product has no compatible 25-bit reciprocal for 24,008 of the 32,768
+width/height determinants; even an exact numerator has none for 9,592. This
+localizes the remaining discrepancy before selector fitting to wide,
+non-power-of-two setup arithmetic rather than a missing nearby reciprocal.
+
+`raster_general_height_multitile_preregistration.json` freezes the next
+instrument-only intervention. It retains every width, height, witness,
+vertex, viewport, pull offset, center, derivative, and compiler setting, but
+samples local x positions 1 and 31 in each of three independent 32-pixel
+tiles. Each tile receives its own binary32 plane constant while all three must
+share one slope selected from the frozen ±8-float candidate window. The
+44,040,192-byte discovery corpus is accepted only when pull evidence alone
+identifies exactly one slope for every coefficient; center and derivative
+bits remain diagnostic and no numerator, determinant, reciprocal, or product
+model participates in selection. The recovered slope hash is discovery
+output and still requires a later prospective setup-law holdout.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

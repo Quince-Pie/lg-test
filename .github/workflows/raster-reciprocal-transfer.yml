@@ -1,4 +1,4 @@
-name: Diagnose Apple Metal general-height raster setup
+name: Recover Apple Metal general-height slopes across tiles
 
 on:
   workflow_dispatch:
@@ -6,8 +6,11 @@ on:
     paths:
       - .github/workflows/raster-reciprocal-transfer.yml
       - Analysis/raster_general_height_diagnostic_preregistration.json
+      - Analysis/raster_general_height_multitile_preregistration.json
       - Analysis/test_validate_raster_general_height_diagnostic.py
+      - Analysis/test_validate_raster_general_height_multitile.py
       - Analysis/validate_raster_general_height_diagnostic.py
+      - Analysis/validate_raster_general_height_multitile.py
       - Sources/GlassRasterReciprocalTransfer/**
 
 concurrency:
@@ -26,43 +29,43 @@ jobs:
           sw_vers
           test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
 
-      - name: Build Metal reciprocal-scale-transfer probe
+      - name: Build Metal general-height multitile probe
         id: build
         continue-on-error: true
         run: |
-          mkdir -p raster-reciprocal-general-height-transfer
+          mkdir -p raster-general-height-multitile
           set -o pipefail
           swiftc -O -parse-as-library \
             -target "$(uname -m)-apple-macos26.0" \
             Sources/GlassRasterReciprocalTransfer/main.swift \
-            -o glass-raster-reciprocal-general-height-transfer 2>&1 |
-            tee raster-reciprocal-general-height-transfer/build.log
+            -o glass-raster-general-height-multitile 2>&1 |
+            tee raster-general-height-multitile/build.log
 
-      - name: Measure power-of-two-viewport general-height diagnostic
+      - name: Measure general-height coefficients across three tiles
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
         env:
           SWIFT_BACKTRACE: enable
         run: |
-          ./glass-raster-reciprocal-general-height-transfer \
-            raster-reciprocal-general-height-transfer
+          ./glass-raster-general-height-multitile \
+            raster-general-height-multitile
 
-      - name: Validate frozen controls and discovery structure
+      - name: Validate structure and recover unique slopes
         id: validate
         if: steps.capture.outcome == 'success'
         continue-on-error: true
         run: |
-          python3 Analysis/validate_raster_general_height_diagnostic.py \
-            raster-reciprocal-general-height-transfer \
-            --output raster-reciprocal-general-height-transfer/validation.json
+          python3 Analysis/validate_raster_general_height_multitile.py \
+            raster-general-height-multitile \
+            --output raster-general-height-multitile/validation.json
 
       - name: Upload Metal general-height diagnostic evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-raster-general-height-diagnostic-${{ github.run_id }}
-          path: raster-reciprocal-general-height-transfer
+          name: liquid-glass-raster-general-height-multitile-${{ github.run_id }}
+          path: raster-general-height-multitile
           if-no-files-found: error
           retention-days: 7
 
@@ -72,5 +75,5 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test "${{ steps.validate.outcome }}" = success
-          test -s raster-reciprocal-general-height-transfer/manifest.json
-          test -s raster-reciprocal-general-height-transfer/validation.json
+          test -s raster-general-height-multitile/manifest.json
+          test -s raster-general-height-multitile/validation.json
