@@ -42,6 +42,8 @@ jobs:
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
         run: |
           ./glass-raster-reciprocal-scale-transfer \
             raster-reciprocal-scale-transfer

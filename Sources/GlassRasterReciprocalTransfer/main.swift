@@ -221,7 +221,13 @@ private func geometryManifest() -> [[String: Any]] {
     }
 }
 
+private func diagnostic(_ message: String) {
+    FileHandle.standardError.write(
+        Data("diagnostic: \(message)\n".utf8))
+}
+
 private func run(outputDirectory: URL) throws {
+    diagnostic("entered run")
     precondition(widths.count == 8_192)
     precondition(widths.first == 32_768)
     precondition(widths.last == 32_766)
@@ -236,6 +242,7 @@ private func run(outputDirectory: URL) throws {
     precondition(
         sha256(uint32Data(witnessDeltaBits))
             == "4af6fce64ad188beb784cbea16c1d09ca2713825f8becee8ee64cabfd68caf8a")
+    diagnostic("frozen hashes verified")
     for width in widths {
         for geometry in geometryCases {
             for sampleSide in 0..<sampleSideCount {
@@ -246,6 +253,7 @@ private func run(outputDirectory: URL) throws {
             }
         }
     }
+    diagnostic("geometry invariants verified")
 
     try FileManager.default.createDirectory(
         at: outputDirectory,
@@ -256,6 +264,7 @@ private func run(outputDirectory: URL) throws {
         throw TransferError.resource(
             "Metal device or command queue")
     }
+    diagnostic("Metal device and queue created")
 
     let options = MTLCompileOptions()
     options.fastMathEnabled = true
@@ -276,6 +285,7 @@ private func run(outputDirectory: URL) throws {
     pipelineDescriptor.colorAttachments[0].pixelFormat = .r32Uint
     let pipeline = try device.makeRenderPipelineState(
         descriptor: pipelineDescriptor)
+    diagnostic("Metal pipeline created")
 
     let targetDescriptor = MTLTextureDescriptor.texture2DDescriptor(
         pixelFormat: .r32Uint,
@@ -308,6 +318,7 @@ private func run(outputDirectory: URL) throws {
         throw TransferError.resource(
             "reciprocal-transfer target or buffers")
     }
+    diagnostic("Metal target and buffers created")
     memset(output.contents(), 0xff, outputBytes)
 
     var matrix = simd_float4x4(columns: (
@@ -324,6 +335,7 @@ private func run(outputDirectory: URL) throws {
         SIMD4<Float>(0, 0, 0, 0),
         SIMD4<Float>(-1, 1, 0, 1)
     ))
+    diagnostic("starting render batches")
 
     for batchStart in stride(
         from: 0,
