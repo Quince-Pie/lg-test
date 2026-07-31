@@ -3602,6 +3602,109 @@ private func probeDrawIndexedPrimitivesBaseVertex(
         baseInstance: baseInstance)
 }
 
+private func glassUniformCallSiteEvidence() -> [String: Any] {
+    let returnAddresses =
+        Array(Thread.callStackReturnAddresses.prefix(32))
+    var quartzCoreCodeWindows = 0
+    let frames: [[String: Any]] = returnAddresses.enumerated().map {
+        index, number in
+        let addressValue = UInt(truncating: number)
+        var record: [String: Any] = [
+            "index": index,
+            "returnAddress": String(
+                format: "0x%016llx",
+                UInt64(addressValue)),
+        ]
+        guard let address = UnsafeRawPointer(
+                bitPattern: addressValue)
+        else {
+            record["dladdrError"] = "invalid return address"
+            return record
+        }
+        var info = Dl_info()
+        guard dladdr(address, &info) != 0 else {
+            record["dladdrError"] = true
+            return record
+        }
+        var imagePath: String?
+        if let path = info.dli_fname {
+            let value = String(cString: path)
+            imagePath = value
+            record["imagePath"] = value
+        }
+        if let imageBasePointer = info.dli_fbase {
+            let imageBase = UInt(bitPattern: imageBasePointer)
+            record["imageBase"] = String(
+                format: "0x%016llx",
+                UInt64(imageBase))
+            if addressValue >= imageBase {
+                record["imageOffset"] = String(
+                    format: "0x%llx",
+                    UInt64(addressValue - imageBase))
+            }
+        }
+        if let name = info.dli_sname {
+            record["symbol"] = String(cString: name)
+        }
+        if let symbolPointer = info.dli_saddr {
+            let symbolAddress = UInt(bitPattern: symbolPointer)
+            record["symbolAddress"] = String(
+                format: "0x%016llx",
+                UInt64(symbolAddress))
+            if addressValue >= symbolAddress {
+                record["symbolOffset"] = String(
+                    format: "0x%llx",
+                    UInt64(addressValue - symbolAddress))
+            }
+        }
+
+        guard quartzCoreCodeWindows < 8,
+              imagePath?.contains(
+                "/QuartzCore.framework/") == true,
+              let imageBasePointer = info.dli_fbase
+        else {
+            return record
+        }
+        let imageBase = UInt(bitPattern: imageBasePointer)
+        let alignedAddress = addressValue & ~UInt(0x3)
+        guard alignedAddress >= imageBase + 0x400,
+              let windowStart = UnsafeRawPointer(
+                bitPattern: alignedAddress - 0x400)
+        else {
+            record["codeWindowError"] =
+                "return address is too close to image base"
+            return record
+        }
+        let byteCount = 0x800
+        let bytes = Array(UnsafeRawBufferPointer(
+            start: windowStart,
+            count: byteCount))
+        record["codeWindow"] = [
+            "class": "mapped arm64e call-site window",
+            "startAddress": String(
+                format: "0x%016llx",
+                UInt64(alignedAddress - 0x400)),
+            "returnInstructionOffset": 0x400,
+            "lengthBytes": byteCount,
+            "hex": Data(bytes).map {
+                String(format: "%02x", $0)
+            }.joined(),
+            "sha256": transitionSHA256(Data(bytes)),
+        ]
+        quartzCoreCodeWindows += 1
+        return record
+    }
+    return [
+        "schemaVersion": 1,
+        "executed": true,
+        "capture":
+            "transition-matrix-uniform-01-neutral-axes",
+        "frameCount": frames.count,
+        "quartzCoreCodeWindowCount": quartzCoreCodeWindows,
+        "frames": frames,
+    ]
+}
+
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
         let capture: String
@@ -3629,6 +3732,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let pipeline: [String: Any]
         let buffer: MTLBuffer
         let offset: Int
+        let callSite: [String: Any]?
     }
 
     private struct BufferSlot: Hashable {
@@ -3729,6 +3833,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         [ObjectIdentifier: MTLRenderPipelineDescriptor] = [:]
     private var computePipelineCreationRecords:
         [ObjectIdentifier: [String: Any]] = [:]
+    private var glassUniformCallSiteCaptured = false
     private var installReport: [String: Any]?
     private var originalNewRenderPipelineState:
         MetalNewRenderPipelineStateFunction?
@@ -3815,6 +3920,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
     ])
 
     private init() {}
+
+    private func captureGlassUniformCallSiteIfNeeded(
+        capture: String,
+        pipeline: [String: Any],
+        index: Int
+    ) -> [String: Any]? {
+        let creation =
+            pipeline["creationDescriptor"] as? [String: Any]
+        let fragment = creation?["fragmentFunction"] as? String
+        guard !glassUniformCallSiteCaptured,
+              capture
+                == "transition-matrix-uniform-01-neutral-axes",
+              index == 1,
+              fragment?.hasPrefix("glass_background") == true
+        else {
+            return nil
+        }
+        glassUniformCallSiteCaptured = true
+        return glassUniformCallSiteEvidence()
+    }
 
     func install() -> [String: Any] {
         lock.lock()
@@ -4895,7 +5020,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 index: index,
                 pipeline: encoderPipeline(encoder),
                 buffer: metalBuffer,
-                offset: offset))
+                offset: offset,
+                callSite: nil))
             if metalBuffer.storageMode != .private,
                offset >= 0,
                offset <= metalBuffer.length
@@ -5427,6 +5553,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        let pipeline = encoderPipeline(encoder)
         var record: [String: Any] = [
             "capture": captureName,
             "kind": "buffer",
@@ -5434,7 +5561,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "index": index,
             "offset": offset,
             "encoder": objectAddress(encoder),
-            "pipeline": encoderPipeline(encoder),
+            "pipeline": pipeline,
         ]
         appendReplayCommand(
             encoder: encoder,
@@ -5447,6 +5574,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             stage: "fragment",
             index: index)
         if let metalBuffer = buffer as? MTLBuffer {
+            let callSite =
+                captureGlassUniformCallSiteIfNeeded(
+                    capture: captureName,
+                    pipeline: pipeline,
+                    index: index)
             activeBuffers[slot] = metalBuffer
             record["bufferClass"] =
                 String(reflecting: type(of: metalBuffer))
@@ -5459,9 +5591,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 sequence: records.count,
                 stage: "fragment",
                 index: index,
-                pipeline: encoderPipeline(encoder),
+                pipeline: pipeline,
                 buffer: metalBuffer,
-                offset: offset))
+                offset: offset,
+                callSite: callSite))
             if metalBuffer.storageMode != .private,
                offset >= 0,
                offset <= metalBuffer.length
@@ -5677,7 +5810,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 index: index,
                 pipeline: encoderPipeline(encoder),
                 buffer: metalBuffer,
-                offset: offset))
+                offset: offset,
+                callSite: nil))
             if metalBuffer.storageMode != .private,
                offset >= 0,
                offset <= metalBuffer.length
@@ -5721,6 +5855,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             encoder: ObjectIdentifier(encoder),
             stage: stage,
             index: index)
+        let pipeline = encoderPipeline(encoder)
         var record: [String: Any] = [
             "capture": captureName,
             "kind": "bufferOffset",
@@ -5728,7 +5863,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "index": index,
             "offset": offset,
             "encoder": objectAddress(encoder),
-            "pipeline": encoderPipeline(encoder),
+            "pipeline": pipeline,
         ]
         if stage == "fragment" {
             appendReplayCommand(
@@ -5744,6 +5879,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             appendRecord(record)
             return
         }
+        let callSite = stage == "fragment"
+            ? captureGlassUniformCallSiteIfNeeded(
+                capture: captureName,
+                pipeline: pipeline,
+                index: index)
+            : nil
         record["bufferAddress"] =
             objectAddress(buffer as AnyObject)
         record["bufferLength"] = buffer.length
@@ -5753,9 +5894,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             sequence: records.count,
             stage: stage,
             index: index,
-            pipeline: encoderPipeline(encoder),
+            pipeline: pipeline,
             buffer: buffer,
-            offset: offset))
+            offset: offset,
+            callSite: callSite))
         if buffer.storageMode != .private,
            offset >= 0,
            offset <= buffer.length
@@ -5978,7 +6120,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     index: -1,
                     pipeline: encoderPipeline(encoder),
                     buffer: buffer,
-                    offset: resource.offset))
+                    offset: resource.offset,
+                    callSite: nil))
             } else {
                 record[resource.key] = [
                     "class": String(
@@ -6031,6 +6174,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "storageMode": buffer.storageMode.rawValue,
                 "offset": binding.offset,
             ]
+            if let callSite = binding.callSite {
+                record["uniformCallSite"] = callSite
+            }
             guard buffer.storageMode != .private else {
                 record["payloadUnavailable"] = "private storage"
                 return record

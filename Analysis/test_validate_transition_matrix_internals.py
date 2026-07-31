@@ -6,6 +6,7 @@ import unittest
 
 from validate_transition_matrix_internals import (
     MatrixInternalsValidationError,
+    validate_glass_uniform_call_site,
     validate_vibrant_matrix_internals,
 )
 
@@ -56,6 +57,51 @@ def _valid_basis() -> dict[str, object]:
                 "pc-relative mapped constant data",
             ),
         }
+    }
+
+
+def _valid_call_site_basis() -> dict[str, object]:
+    return_address = 0x0000_0001_8000_1400
+    code = bytes.fromhex("1f2003d5") * (0x800 // 4)
+    call_site = {
+        "schemaVersion": 1,
+        "executed": True,
+        "capture": "transition-matrix-uniform-01-neutral-axes",
+        "frameCount": 1,
+        "quartzCoreCodeWindowCount": 1,
+        "frames": [
+            {
+                "index": 0,
+                "returnAddress": f"0x{return_address:016x}",
+                "imagePath": (
+                    "/System/Library/Frameworks/"
+                    "QuartzCore.framework/Versions/A/QuartzCore"
+                ),
+                "imageBase": "0x0000000180000000",
+                "imageOffset": "0x1400",
+                "codeWindow": {
+                    **_capture(
+                        code,
+                        "mapped arm64e call-site window",
+                    ),
+                    "startAddress": "0x0000000180001000",
+                    "returnInstructionOffset": 0x400,
+                },
+            }
+        ],
+    }
+    return {
+        "records": [
+            {
+                "name": "neutral-axes",
+                "render": {
+                    "glassFragmentUniformBindings": [
+                        {"uniformCallSite": call_site},
+                        {},
+                    ]
+                },
+            }
+        ]
     }
 
 
@@ -112,6 +158,43 @@ class MatrixInternalsValidatorTests(unittest.TestCase):
             "not ADRP",
         ):
             validate_vibrant_matrix_internals(basis)
+
+
+class GlassUniformCallSiteValidatorTests(unittest.TestCase):
+    def test_accepts_coherent_call_site(self) -> None:
+        validate_glass_uniform_call_site(_valid_call_site_basis())
+
+    def test_rejects_changed_code_byte(self) -> None:
+        basis = copy.deepcopy(_valid_call_site_basis())
+        records = basis["records"]
+        assert isinstance(records, list)
+        call_site = records[0]["render"][
+            "glassFragmentUniformBindings"
+        ][0]["uniformCallSite"]
+        code_window = call_site["frames"][0]["codeWindow"]
+        encoded = str(code_window["hex"])
+        code_window["hex"] = "00" + encoded[2:]
+        with self.assertRaisesRegex(
+            MatrixInternalsValidationError,
+            "sha256",
+        ):
+            validate_glass_uniform_call_site(basis)
+
+    def test_rejects_inconsistent_return_address(self) -> None:
+        basis = copy.deepcopy(_valid_call_site_basis())
+        records = basis["records"]
+        assert isinstance(records, list)
+        call_site = records[0]["render"][
+            "glassFragmentUniformBindings"
+        ][0]["uniformCallSite"]
+        call_site["frames"][0]["returnAddress"] = (
+            "0x0000000180001404"
+        )
+        with self.assertRaisesRegex(
+            MatrixInternalsValidationError,
+            "image offset",
+        ):
+            validate_glass_uniform_call_site(basis)
 
 
 if __name__ == "__main__":

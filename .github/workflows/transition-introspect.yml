@@ -192,6 +192,7 @@ jobs:
           import pathlib
 
           from Analysis.validate_transition_matrix_internals import (
+              validate_glass_uniform_call_site,
               validate_vibrant_matrix_internals,
           )
 
@@ -495,6 +496,7 @@ jobs:
                       f"{len(distinct_payloads)} distinct payloads"
                   )
               validate_vibrant_matrix_internals(matrix_basis)
+              validate_glass_uniform_call_site(matrix_basis)
           elif matrix_basis.get("executed") is not False:
               raise SystemExit(
                   "unrequested matrix basis executed"

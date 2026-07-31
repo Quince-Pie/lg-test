@@ -21,6 +21,12 @@ def _mapping(value: object, field: str) -> Mapping[str, Any]:
     return value
 
 
+def _list(value: object, field: str) -> list[Any]:
+    if not isinstance(value, list):
+        _fail(f"{field} is not an array")
+    return value
+
+
 def _integer(value: object, field: str) -> int:
     if type(value) is not int:
         _fail(f"{field} is not an integer")
@@ -175,3 +181,112 @@ def validate_vibrant_matrix_internals(matrix_basis: object) -> None:
         "/CoreMaterial"
     ):
         _fail("constructor image path differs")
+
+
+def validate_glass_uniform_call_site(matrix_basis: object) -> None:
+    """Fail unless the real QuartzCore uniform-bind call site is captured."""
+
+    basis = _mapping(matrix_basis, "matrixUniformBasis")
+    records = _list(basis.get("records"), "matrixUniformBasis.records")
+    neutral_records = [
+        _mapping(record, "matrixUniformBasis.records[]")
+        for record in records
+        if isinstance(record, Mapping)
+        and record.get("name") == "neutral-axes"
+    ]
+    if len(neutral_records) != 1:
+        _fail("neutral-axes intervention is not unique")
+    render = _mapping(
+        neutral_records[0].get("render"),
+        "neutral-axes.render",
+    )
+    bindings = _list(
+        render.get("glassFragmentUniformBindings"),
+        "neutral-axes glass bindings",
+    )
+    call_sites = [
+        binding.get("uniformCallSite")
+        for binding in bindings
+        if isinstance(binding, Mapping)
+        and binding.get("uniformCallSite") is not None
+    ]
+    if len(call_sites) != 1:
+        _fail(
+            "neutral-axes does not contain exactly one uniform call site"
+        )
+    call_site = _mapping(call_sites[0], "uniformCallSite")
+    if (
+        call_site.get("schemaVersion") != 1
+        or call_site.get("executed") is not True
+        or call_site.get("capture")
+        != "transition-matrix-uniform-01-neutral-axes"
+    ):
+        _fail("uniformCallSite metadata differs")
+
+    frames = _list(call_site.get("frames"), "uniformCallSite.frames")
+    if call_site.get("frameCount") != len(frames) or not frames:
+        _fail("uniformCallSite frame count differs")
+    code_window_count = 0
+    for expected_index, value in enumerate(frames):
+        frame = _mapping(value, f"uniformCallSite.frames[{expected_index}]")
+        if frame.get("index") != expected_index:
+            _fail("uniformCallSite frame order differs")
+        return_address = _hex_integer(
+            frame.get("returnAddress"),
+            "uniformCallSite returnAddress",
+        )
+        if "imageBase" in frame or "imageOffset" in frame:
+            image_base = _hex_integer(
+                frame.get("imageBase"),
+                "uniformCallSite imageBase",
+            )
+            image_offset = _hex_integer(
+                frame.get("imageOffset"),
+                "uniformCallSite imageOffset",
+            )
+            if return_address != image_base + image_offset:
+                _fail("uniformCallSite image offset is inconsistent")
+
+        code_value = frame.get("codeWindow")
+        if code_value is None:
+            continue
+        image_path = frame.get("imagePath")
+        if (
+            not isinstance(image_path, str)
+            or "/QuartzCore.framework/" not in image_path
+        ):
+            _fail("uniformCallSite code window is not from QuartzCore")
+        code_window = _mapping(
+            code_value,
+            "uniformCallSite codeWindow",
+        )
+        code = _byte_capture(
+            code_window,
+            field="uniformCallSite codeWindow",
+            expected_class="mapped arm64e call-site window",
+            expected_length=0x800,
+        )
+        if not any(code):
+            _fail("uniformCallSite code window is entirely zero")
+        start_address = _hex_integer(
+            code_window.get("startAddress"),
+            "uniformCallSite codeWindow startAddress",
+        )
+        return_offset = _integer(
+            code_window.get("returnInstructionOffset"),
+            "uniformCallSite returnInstructionOffset",
+        )
+        if (
+            return_offset != 0x400
+            or start_address + return_offset != return_address & ~0x3
+        ):
+            _fail("uniformCallSite code window address is inconsistent")
+        code_window_count += 1
+
+    if (
+        code_window_count < 1
+        or code_window_count > 8
+        or call_site.get("quartzCoreCodeWindowCount")
+        != code_window_count
+    ):
+        _fail("uniformCallSite QuartzCore code-window count differs")
