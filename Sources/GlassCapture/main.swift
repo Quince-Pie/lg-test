@@ -1775,6 +1775,11 @@ struct PresentationClockPreflightRecord: Codable {
     let staticThreeQuarterProgress: Double
     let liveMidpointProgress: Double
     let liveEndpointProgress: Double
+    let probePixelSize: [Int]
+    let probeStaticQuarterProgress: Double
+    let probeStaticThreeQuarterProgress: Double
+    let probeLiveMidpointProgress: Double
+    let probeLiveEndpointProgress: Double
 }
 
 struct SweepFrameRecord: Codable {
@@ -1943,16 +1948,13 @@ struct DynamicCaptureResult: @unchecked Sendable {
     let fullFrameClockDecodes: Int
 }
 
-func captureRawWindow(
-    _ wid: CGWindowID,
-    screenBounds: CGRect = .null
-) throws -> RawCapturedFrame {
+func captureRawWindow(_ wid: CGWindowID) throws -> RawCapturedFrame {
     let started = ProcessInfo.processInfo.systemUptime
 
     // listOption: kCGWindowListOptionIncludingWindow (1<<3)
     // imageOption: kCGWindowImageBoundsIgnoreFraming (1<<0) | kCGWindowImageBestResolution (1<<3)
     if let img = legacyWindowImage.function?(
-        screenBounds, 1 << 3, wid, (1 << 0) | (1 << 3))?
+        .null, 1 << 3, wid, (1 << 0) | (1 << 3))?
         .takeRetainedValue() {
         let finished = ProcessInfo.processInfo.systemUptime
         return RawCapturedFrame(
@@ -1984,35 +1986,6 @@ func captureRawWindow(
         backend: "screencapture",
         midpointUptime: (started + finished) / 2,
         captureDurationSeconds: finished - started)
-}
-
-func clockScreenBounds(
-    windowID: CGWindowID,
-    markerPointHeight: CGFloat
-) -> CGRect? {
-    guard markerPointHeight > 0,
-          let records = CGWindowListCopyWindowInfo(
-              .optionIncludingWindow, windowID
-          ) as? [[String: Any]],
-          let record = records.first(where: {
-              ($0[kCGWindowNumber as String] as? NSNumber)?.uint32Value
-                  == windowID
-          }),
-          let value = record[kCGWindowBounds as String] as? [String: Any]
-    else {
-        return nil
-    }
-
-    let dictionary = value as CFDictionary
-    var bounds = CGRect.zero
-    guard CGRectMakeWithDictionaryRepresentation(dictionary, &bounds),
-          bounds.width > 0,
-          bounds.height >= markerPointHeight
-    else {
-        return nil
-    }
-    bounds.size.height = markerPointHeight
-    return bounds
 }
 
 @MainActor
@@ -2145,22 +2118,22 @@ func presentationProgress(
 
 func capturePresentedAnimation(
     windowID: CGWindowID,
+    probeWindowID: CGWindowID,
     animationStart: Double,
     duration: Double,
     frameCount: Int,
     backingScale: CGFloat,
+    probeBackingScale: CGFloat,
     refreshRate: Double,
-    expectedPixelWidth: Int
+    expectedProbePixelWidth: Int,
+    expectedProbePixelHeight: Int,
+    useDedicatedProbe: Bool
 ) throws -> DynamicCaptureResult {
     let finalIndex = frameCount - 1
     let endpointDeadline = animationStart + duration + 0.250
-    let markerHeight = max(1, Int((4 * backingScale).rounded()))
-    let boundedScreen = clockScreenBounds(
-        windowID: windowID,
-        markerPointHeight: CGFloat(markerHeight) / backingScale)
-    var useBoundedClock = boundedScreen != nil
-    var clockProbeSurface = useBoundedClock
-        ? "window-top-marker-bounds"
+    var useSmallClock = useDedicatedProbe
+    var clockProbeSurface = useSmallClock
+        ? "dedicated-clock-window"
         : "full-window-fallback"
     var candidates: [
         Int: (
@@ -2180,18 +2153,19 @@ func capturePresentedAnimation(
         captureAttempts += 1
         do {
             var probe: RawCapturedFrame
-            if useBoundedClock, let boundedScreen {
-                let bounded = try captureRawWindow(
-                    windowID, screenBounds: boundedScreen)
-                if bounded.image.width == expectedPixelWidth,
-                   bounded.image.height == markerHeight {
-                    probe = bounded
+            var progressScale = backingScale
+            if useSmallClock {
+                let small = try captureRawWindow(probeWindowID)
+                if small.image.width == expectedProbePixelWidth,
+                   small.image.height == expectedProbePixelHeight {
+                    probe = small
+                    progressScale = probeBackingScale
                     boundedClockProbes += 1
                 } else {
-                    // A clipped off-screen region would encode progress
-                    // against the wrong width. Fall back to the historical
-                    // full-window probe rather than accepting that ambiguity.
-                    useBoundedClock = false
+                    // Never normalize against a clipped or unexpectedly
+                    // scaled probe. The historical main-window clock remains
+                    // the fail-closed fallback.
+                    useSmallClock = false
                     clockProbeSurface = "full-window-fallback"
                     probe = try captureRawWindow(windowID)
                 }
@@ -2201,7 +2175,7 @@ func capturePresentedAnimation(
             let presented = min(
                 1,
                 max(0, try presentationProgress(
-                    in: probe, backingScale: backingScale)))
+                    in: probe, backingScale: progressScale)))
             lastProbeProgress = presented
             let index = min(
                 finalIndex,
@@ -2216,7 +2190,7 @@ func capturePresentedAnimation(
                 } ?? true
                 if shouldReplace {
                     let fullFrame: RawCapturedFrame
-                    if useBoundedClock {
+                    if useSmallClock {
                         fullFrame = try captureRawWindow(windowID)
                     } else {
                         fullFrame = probe
@@ -2393,6 +2367,11 @@ final class CaptureWindow: NSWindow {
     override var canBecomeMain: Bool { true }
 }
 
+final class ClockProbeWindow: NSWindow {
+    override var canBecomeKey: Bool { false }
+    override var canBecomeMain: Bool { false }
+}
+
 final class CaptureRootView: NSView {
     override var isFlipped: Bool { true }
 }
@@ -2479,6 +2458,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         scene: calibrationScenes(width: config.width, height: config.height)[0])
     var window: NSWindow!
     var materializeClock: MaterializeClockView!
+    var clockProbeWindow: NSWindow!
+    var clockProbe: MaterializeClockView!
 
     func verifyMaterializeClock(
         backingScale: CGFloat,
@@ -2487,7 +2468,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let duration = 0.4
         let frameInterval = 1 / max(refreshRate, 1)
         materializeClock.prepare()
-        defer { materializeClock.deactivate() }
+        clockProbe.prepare()
+        defer {
+            materializeClock.deactivate()
+            clockProbe.deactivate()
+        }
+        let probeScale = clockProbeWindow.backingScaleFactor
 
         func settleRaster() async throws {
             try await Task.sleep(
@@ -2496,24 +2482,40 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         materializeClock.present(progress: 0.25)
+        clockProbe.present(progress: 0.25)
         try await settleRaster()
         let staticQuarter = try presentationProgress(
             in: captureRawWindow(window), backingScale: backingScale)
+        let probeQuarterFrame = try captureRawWindow(clockProbeWindow)
+        let probeStaticQuarter = try presentationProgress(
+            in: probeQuarterFrame, backingScale: probeScale)
         materializeClock.present(progress: 0.75)
+        clockProbe.present(progress: 0.75)
         try await settleRaster()
         let staticThreeQuarter = try presentationProgress(
             in: captureRawWindow(window), backingScale: backingScale)
+        let probeThreeQuarterFrame = try captureRawWindow(clockProbeWindow)
+        let probeStaticThreeQuarter = try presentationProgress(
+            in: probeThreeQuarterFrame, backingScale: probeScale)
 
         materializeClock.present(progress: 0)
+        clockProbe.present(progress: 0)
         try await settleRaster()
         let started = ProcessInfo.processInfo.systemUptime
         materializeClock.animate(
             startTime: started,
             duration: duration,
             refreshRate: refreshRate)
+        clockProbe.animate(
+            startTime: started,
+            duration: duration,
+            refreshRate: refreshRate)
         try await Task.sleep(nanoseconds: UInt64(duration * 0.5 * 1_000_000_000))
         let middle = try presentationProgress(
             in: captureRawWindow(window), backingScale: backingScale)
+        let probeMiddle = try presentationProgress(
+            in: captureRawWindow(clockProbeWindow),
+            backingScale: probeScale)
 
         let endpointTime = started + duration + 2 * frameInterval
         let now = ProcessInfo.processInfo.systemUptime
@@ -2523,30 +2525,56 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let endpoint = try presentationProgress(
             in: captureRawWindow(window), backingScale: backingScale)
+        let probeEndpoint = try presentationProgress(
+            in: captureRawWindow(clockProbeWindow),
+            backingScale: probeScale)
         guard staticQuarter > 0.20,
               staticQuarter < 0.30,
               staticThreeQuarter > 0.70,
               staticThreeQuarter < 0.80,
               middle > 0.05,
               middle < 0.95,
-              endpoint >= 0.995
+              endpoint >= 0.995,
+              probeStaticQuarter > 0.20,
+              probeStaticQuarter < 0.30,
+              probeStaticThreeQuarter > 0.70,
+              probeStaticThreeQuarter < 0.80,
+              probeMiddle > 0.05,
+              probeMiddle < 0.95,
+              probeEndpoint >= 0.995
         else {
             throw RigError.capture(
                 "AppKit raster clock preflight decoded "
                 + "static-quarter \(staticQuarter), "
                 + "static-three-quarter \(staticThreeQuarter), "
-                + "live-midpoint \(middle), live-endpoint \(endpoint)")
+                + "live-midpoint \(middle), live-endpoint \(endpoint), "
+                + "probe-quarter \(probeStaticQuarter), "
+                + "probe-three-quarter \(probeStaticThreeQuarter), "
+                + "probe-midpoint \(probeMiddle), "
+                + "probe-endpoint \(probeEndpoint)")
         }
         let result = PresentationClockPreflightRecord(
             backend: "appkit-raster-monotonic",
             staticQuarterProgress: staticQuarter,
             staticThreeQuarterProgress: staticThreeQuarter,
             liveMidpointProgress: middle,
-            liveEndpointProgress: endpoint)
+            liveEndpointProgress: endpoint,
+            probePixelSize: [
+                probeQuarterFrame.image.width,
+                probeQuarterFrame.image.height,
+            ],
+            probeStaticQuarterProgress: probeStaticQuarter,
+            probeStaticThreeQuarterProgress: probeStaticThreeQuarter,
+            probeLiveMidpointProgress: probeMiddle,
+            probeLiveEndpointProgress: probeEndpoint)
         log(
             "clock preflight: static-quarter \(staticQuarter), "
             + "static-three-quarter \(staticThreeQuarter), "
-            + "live-midpoint \(middle), live-endpoint \(endpoint)")
+            + "live-midpoint \(middle), live-endpoint \(endpoint), "
+            + "probe-quarter \(probeStaticQuarter), "
+            + "probe-three-quarter \(probeStaticThreeQuarter), "
+            + "probe-midpoint \(probeMiddle), "
+            + "probe-endpoint \(probeEndpoint)")
         return result
     }
 
@@ -2571,6 +2599,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             materializeClock, positioned: .above, relativeTo: hosting)
         window.contentView = root
         window.setFrameOrigin(NSPoint(x: 0, y: 0))
+
+        // The main capture window intentionally exceeds the hosted display,
+        // so its precise full-width clock cannot be sampled through a small
+        // screen-bounds rectangle. A separate 1024x4 own-window clock is only
+        // an acquisition trigger; every retained optical frame is still
+        // labeled from the precise clock embedded in the main window.
+        let probeSize = CGSize(width: min(size.width, 1024), height: 4)
+        clockProbeWindow = ClockProbeWindow(
+            contentRect: NSRect(origin: .zero, size: probeSize),
+            styleMask: [.borderless], backing: .buffered, defer: false)
+        clockProbeWindow.hasShadow = false
+        clockProbeWindow.isOpaque = true
+        clockProbeWindow.colorSpace = .sRGB
+        clockProbeWindow.backgroundColor = .black
+        clockProbeWindow.ignoresMouseEvents = true
+        clockProbeWindow.level = .floating
+        clockProbe = MaterializeClockView(
+            frame: NSRect(origin: .zero, size: probeSize))
+        clockProbeWindow.contentView = clockProbe
+        clockProbeWindow.setFrameOrigin(NSPoint(x: 0, y: 0))
+        clockProbeWindow.orderFrontRegardless()
+
         NSApplication.shared.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
         window.makeMain()
@@ -3605,8 +3655,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                         }
                         if mode.usesRasterClock {
                             materializeClock.prepare()
+                            clockProbe.prepare()
                         } else {
                             materializeClock.deactivate()
+                            clockProbe.deactivate()
                         }
 
                         var phaseTask: Task<Void, Never>?
@@ -3634,6 +3686,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             let animationStart = ProcessInfo.processInfo.systemUptime
                             if mode.usesRasterClock {
                                 materializeClock.animate(
+                                    startTime: animationStart,
+                                    duration: config.dynamicDuration,
+                                    refreshRate: refresh)
+                                clockProbe.animate(
                                     startTime: animationStart,
                                     duration: config.dynamicDuration,
                                     refreshRate: refresh)
@@ -3679,20 +3735,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             }
 
                             let windowID = CGWindowID(window.windowNumber)
+                            let probeWindowID = CGWindowID(
+                                clockProbeWindow.windowNumber)
+                            let probeScale =
+                                clockProbeWindow.backingScaleFactor
+                            let probePixelWidth = Int(
+                                (clockProbe.bounds.width * probeScale).rounded())
+                            let probePixelHeight = Int(
+                                (clockProbe.bounds.height * probeScale).rounded())
                             let duration = config.dynamicDuration
                             let frameCount = config.dynamicFrames
+                            let useDedicatedProbe = mode.usesRasterClock
                             let captured = try await Task.detached(
                                 priority: .userInitiated
                             ) {
                                 try capturePresentedAnimation(
                                     windowID: windowID,
+                                    probeWindowID: probeWindowID,
                                     animationStart: animationStart,
                                     duration: duration,
                                     frameCount: frameCount,
                                     backingScale: scale,
+                                    probeBackingScale: probeScale,
                                     refreshRate: refresh,
-                                    expectedPixelWidth:
-                                        initial.frame.source.width)
+                                    expectedProbePixelWidth:
+                                        probePixelWidth,
+                                    expectedProbePixelHeight:
+                                        probePixelHeight,
+                                    useDedicatedProbe:
+                                        useDedicatedProbe)
                             }.value
                             timed.append(contentsOf: captured.frames)
                             phaseTask?.cancel()
@@ -3800,6 +3871,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             // and to prove exact source replacement for
                             // dematerialize and the two-wallpaper transition.
                             materializeClock.deactivate()
+                            clockProbe.deactivate()
                             var endTransaction = Transaction()
                             endTransaction.disablesAnimations = true
                             withTransaction(endTransaction) {
@@ -3852,6 +3924,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 + error.localizedDescription)
                         }
                         materializeClock.deactivate()
+                        clockProbe.deactivate()
                     }
                 }
             }

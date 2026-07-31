@@ -451,6 +451,39 @@ def validate_environment(manifest: JsonObject, findings: Findings) -> None:
                         f"presentationClockPreflight.{key} is {value!r}; "
                         f"expected {lower} <= value < {upper}"
                     )
+            if "probePixelSize" in clock:
+                probe_size = clock.get("probePixelSize")
+                if (
+                    not isinstance(probe_size, list)
+                    or len(probe_size) != 2
+                    or any(
+                        not isinstance(value, int) or value <= 0
+                        for value in probe_size
+                    )
+                ):
+                    findings.error(
+                        "presentationClockPreflight.probePixelSize is "
+                        f"{probe_size!r}; expected two positive integers"
+                    )
+                probe_ranges = {
+                    "probeStaticQuarterProgress": (0.20, 0.30),
+                    "probeStaticThreeQuarterProgress": (0.70, 0.80),
+                    "probeLiveMidpointProgress": (0.05, 0.95),
+                    "probeLiveEndpointProgress": (0.995, 1.000_001),
+                }
+                for key, (lower, upper) in probe_ranges.items():
+                    value = clock.get(key)
+                    if (
+                        isinstance(value, bool)
+                        or not isinstance(value, (int, float))
+                        or not math.isfinite(value)
+                        or not lower <= value < upper
+                    ):
+                        findings.error(
+                            f"presentationClockPreflight.{key} is "
+                            f"{value!r}; expected {lower} <= value < "
+                            f"{upper}"
+                        )
     tolerance = manifest.get("sourceRoundTripTolerance")
     if not isinstance(tolerance, dict) or not source_diff_is_within_tolerance(
         (0, 0, 0.0), 1, tolerance
@@ -1854,7 +1887,7 @@ def validate_dynamic(
                     len(sequence.get("frames", [])) - 1,
                 )
                 if clock_surface not in {
-                    "window-top-marker-bounds",
+                    "dedicated-clock-window",
                     "full-window-fallback",
                 }:
                     findings.error(

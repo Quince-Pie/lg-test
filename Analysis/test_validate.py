@@ -665,6 +665,26 @@ class ValidatorTests(unittest.TestCase):
         validate_environment(manifest, valid)
         self.assertEqual(valid.errors, [])
 
+        manifest["presentationClockPreflight"].update({
+            "probePixelSize": [1024, 4],
+            "probeStaticQuarterProgress": 0.25,
+            "probeStaticThreeQuarterProgress": 0.75,
+            "probeLiveMidpointProgress": 0.50,
+            "probeLiveEndpointProgress": 1.0,
+        })
+        probe_valid = Findings()
+        validate_environment(manifest, probe_valid)
+        self.assertEqual(probe_valid.errors, [])
+
+        manifest["presentationClockPreflight"]["probeLiveEndpointProgress"] = 0
+        probe_invalid = Findings()
+        validate_environment(manifest, probe_invalid)
+        self.assertTrue(any(
+            "probeLiveEndpointProgress" in error
+            for error in probe_invalid.errors
+        ))
+        manifest["presentationClockPreflight"]["probeLiveEndpointProgress"] = 1
+
         manifest["presentationClockPreflight"]["liveMidpointProgress"] = 0
         invalid = Findings()
         validate_environment(manifest, invalid)
@@ -1038,7 +1058,7 @@ class ValidatorTests(unittest.TestCase):
             sequence.update({
                 "samplingMethod":
                     "continuous-bounded-clock-full-frame-verified",
-                "clockProbeSurface": "window-top-marker-bounds",
+                "clockProbeSurface": "dedicated-clock-window",
                 "boundedClockProbes": 19,
                 "fullFrameCaptures": 9,
                 "fullFrameClockDecodes": 9,

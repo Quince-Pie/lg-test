@@ -1496,16 +1496,19 @@ rejected attempts are retained under `capture-attempts/` in the selected
 artifact. If all three attempts fail, the final full attempt is still uploaded
 for diagnosis and the workflow remains red.
 
-The live sampler probes only the four clock rows while the animation is
-running. A newly useful clock bin immediately retains a full-window screenshot,
-but the bounded probe is never trusted as that screenshot's label: after the
-animation, the clock embedded in each retained full frame is decoded again and
-the frame is timestamped and binned from that value alone. The bounded capture
-must have exactly the full window width and four-row backing height; otherwise
-the sequence falls back to the historical full-window clock probe. The manifest
-records the selected surface, bounded-probe count, full-frame captures, and
-full-frame clock decodes, and validation requires a verified full-frame decode
-for every retained live frame.
+The live sampler drives a synchronized 1024-by-4-point clock in a separate,
+visible own-window surface. That small clock is only an acquisition trigger: a
+newly useful probe bin immediately retains a full main-window screenshot, then
+after the animation the precise full-width clock embedded in that retained
+frame is decoded again and becomes its sole timestamp and bin label. Static
+quarter/three-quarter and live midpoint/endpoint preflights must pass
+independently on both clocks. The probe capture must also have its exact
+expected backing dimensions; otherwise the sequence falls back to the
+historical full-window clock probe. The manifest records the selected surface,
+probe count, full-frame captures, and full-frame clock decodes, and validation
+requires a verified main-window decode for every retained live frame. The
+probe window is not part of the captured optical frame, so it adds no analysis
+exclusion and does not reduce reference-image coverage.
 
 Dynamic sequences use smooth, deterministic RGB code fields whose independent
 frequencies supply local gradients in both axes. This supports quantitative
