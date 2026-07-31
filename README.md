@@ -1949,6 +1949,17 @@ The workflow independently verifies the compact control's case order, layout,
 size, and SHA-256, and now also rehashes every raster surface before accepting
 the artifact. No arithmetic control is emitted for a holdout geometry.
 
+Raster schema 12 keeps every earlier surface and holdout unchanged, exposes the
+raw `fast::` and `precise::` reciprocals used by the arithmetic control, and
+adds numerator tomography on eight measured counterexamples. Each selected
+discovery geometry receives 256 equal normalized numerator-mantissa samples
+over `[0.5, 1)`, split into deterministic banks of eight. A separate fragment
+entry point preserves both x and y pull pairs; its primitive masks are reused
+from the bit-gated schema-10 base cases. CI regenerates every numerator and bank
+name, rejects any holdout record, and verifies all 2,048 new surface hashes.
+This matrix distinguishes a shared reciprocal multiplier from a
+numerator-dependent fixed-function divider without fitting against holdouts.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

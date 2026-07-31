@@ -46,6 +46,13 @@ private struct TomographyCase {
     let height: Int
 }
 
+private struct NumeratorTomographyCase {
+    let name: String
+    let geometry: TomographyCase
+    let bankIndex: Int
+    let numerators: [UInt32]
+}
+
 private func discoveryTomographyCase(
     _ name: String,
     width: Int,
@@ -427,6 +434,85 @@ fragment TomographyFragmentOutput raster_tomography_fragment(
     return output;
 }
 
+fragment TomographyFragmentOutput raster_numerator_tomography_fragment(
+    TomographyFragmentInput input [[stage_in]])
+{
+    TomographyFragmentOutput output;
+    output.ramp0 = uint4(
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    output.ramp1 = uint4(
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.0, 0.5)).z),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.9375, 0.5)).z),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.5, 0.0)).w),
+        as_type<uint>(input.ramps0
+            .interpolate_at_offset(float2(0.5, 0.9375)).w));
+    output.ramp2 = uint4(
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    output.ramp3 = uint4(
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.0, 0.5)).z),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.9375, 0.5)).z),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.5, 0.0)).w),
+        as_type<uint>(input.ramps1
+            .interpolate_at_offset(float2(0.5, 0.9375)).w));
+    output.ramp4 = uint4(
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    output.ramp5 = uint4(
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.0, 0.5)).z),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.9375, 0.5)).z),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.5, 0.0)).w),
+        as_type<uint>(input.ramps2
+            .interpolate_at_offset(float2(0.5, 0.9375)).w));
+    output.ramp6 = uint4(
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.0, 0.5)).x),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.9375, 0.5)).x),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.5, 0.0)).y),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.5, 0.9375)).y));
+    output.ramp7 = uint4(
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.0, 0.5)).z),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.9375, 0.5)).z),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.5, 0.0)).w),
+        as_type<uint>(input.ramps3
+            .interpolate_at_offset(float2(0.5, 0.9375)).w));
+    return output;
+}
+
 kernel void raster_arithmetic_probe(
     const device uint2 *dimensions [[buffer(0)]],
     const device float *deltas [[buffer(1)]],
@@ -434,7 +520,7 @@ kernel void raster_arithmetic_probe(
     uint thread_id [[thread_position_in_grid]])
 {
     constexpr uint delta_count = 8;
-    constexpr uint vectors_per_sample = 5;
+    constexpr uint vectors_per_sample = 7;
     const uint case_index = thread_id / delta_count;
     const uint delta_index = thread_id % delta_count;
     const float width = float(dimensions[case_index].x);
@@ -482,6 +568,16 @@ kernel void raster_arithmetic_probe(
             numerator_x * precise::divide(1.0f, area)),
         as_type<uint>(
             numerator_y * precise::divide(1.0f, area)));
+    results[base + 5] = uint4(
+        as_type<uint>(fast::divide(1.0f, width)),
+        as_type<uint>(fast::divide(1.0f, height)),
+        as_type<uint>(fast::divide(1.0f, area)),
+        0u);
+    results[base + 6] = uint4(
+        as_type<uint>(precise::divide(1.0f, width)),
+        as_type<uint>(precise::divide(1.0f, height)),
+        as_type<uint>(precise::divide(1.0f, area)),
+        0u);
 }
 """
 
@@ -1116,6 +1212,60 @@ private let tomographyCases =
     + tomographyExpansionCases
     + reciprocalSweepTomographyCases()
 
+private func numeratorTomographyCases()
+    -> [NumeratorTomographyCase]
+{
+    let selectedNames = [
+        "tomography-discovery-reciprocal-bin-019-058x076",
+        "tomography-discovery-reciprocal-bin-055-056x089",
+        "tomography-discovery-reciprocal-bin-093-047x119",
+        "tomography-discovery-reciprocal-bin-148-078x083",
+        "tomography-discovery-reciprocal-bin-195-084x086",
+        "tomography-discovery-reciprocal-bin-224-062x124",
+        "tomography-discovery-reciprocal-bin-240-081x098",
+        "tomography-discovery-reciprocal-bin-255-088x093",
+    ]
+    let geometryByName = Dictionary(
+        uniqueKeysWithValues: tomographyCases.map {
+            ($0.name, $0)
+        })
+    let numerators = (0..<256).map {
+        UInt32(32_832 + 128 * $0)
+    }
+    precondition(Set(numerators).count == 256)
+    var result: [NumeratorTomographyCase] = []
+    result.reserveCapacity(selectedNames.count * 32)
+    for name in selectedNames {
+        guard let geometry = geometryByName[name] else {
+            preconditionFailure(
+                "numerator geometry is absent: \(name)")
+        }
+        let suffix = name.replacingOccurrences(
+            of: "tomography-discovery-reciprocal-",
+            with: "")
+        for bankIndex in 0..<32 {
+            let lower = bankIndex * 8
+            let bankNumerators = Array(
+                numerators[lower..<(lower + 8)])
+            let bankSuffix = String(
+                format: "%02d",
+                bankIndex)
+            result.append(NumeratorTomographyCase(
+                name:
+                    "numerator-discovery-\(suffix)-"
+                    + "bank-\(bankSuffix)",
+                geometry: geometry,
+                bankIndex: bankIndex,
+                numerators: bankNumerators))
+        }
+    }
+    precondition(result.count == 256)
+    precondition(Set(result.map(\.name)).count == result.count)
+    return result
+}
+
+private let numeratorCases = numeratorTomographyCases()
+
 private func sha256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
         String(format: "%02x", $0)
@@ -1164,9 +1314,11 @@ private func vertices(for probe: ProbeCase) -> [ProbeVertex] {
 }
 
 private func tomographyVertices(
-    for probe: TomographyCase
+    for probe: TomographyCase,
+    numerators: [UInt32] = tomographyDeltaNumerators
 ) -> [TomographyVertex] {
-    let deltas = tomographyDeltaNumerators.map {
+    precondition(numerators.count == 8)
+    let deltas = numerators.map {
         Float($0) / Float(tomographyDeltaDenominator)
     }
 
@@ -1424,7 +1576,8 @@ private func renderTomography(
     _ probe: TomographyCase,
     device: MTLDevice,
     queue: MTLCommandQueue,
-    pipeline: MTLRenderPipelineState
+    pipeline: MTLRenderPipelineState,
+    numerators: [UInt32] = tomographyDeltaNumerators
 ) throws -> [Data] {
     let descriptor = MTLTextureDescriptor.texture2DDescriptor(
         pixelFormat: .rgba32Uint,
@@ -1455,7 +1608,9 @@ private func renderTomography(
         throw ProbeError.resource("tomography command or encoder")
     }
 
-    let probeVertices = tomographyVertices(for: probe)
+    let probeVertices = tomographyVertices(
+        for: probe,
+        numerators: numerators)
     var mvp = matrix(for: probe)
     encoder.setRenderPipelineState(pipeline)
     encoder.setViewport(MTLViewport(
@@ -1508,7 +1663,7 @@ private func renderTomography(
     }
 }
 
-private let arithmeticVectorsPerSample = 5
+private let arithmeticVectorsPerSample = 7
 
 private func measureArithmetic(
     _ probes: [TomographyCase],
@@ -1609,6 +1764,8 @@ private func run(outputDirectory: URL) throws {
             name: "raster_tomography_vertex"),
           let tomographyFragment = library.makeFunction(
             name: "raster_tomography_fragment"),
+          let numeratorTomographyFragment = library.makeFunction(
+            name: "raster_numerator_tomography_fragment"),
           let arithmeticFunction = library.makeFunction(
             name: "raster_arithmetic_probe"),
           let queue = device.makeCommandQueue()
@@ -1637,6 +1794,19 @@ private func run(outputDirectory: URL) throws {
     }
     let tomographyPipeline = try device.makeRenderPipelineState(
         descriptor: tomographyDescriptor)
+    let numeratorTomographyDescriptor =
+        MTLRenderPipelineDescriptor()
+    numeratorTomographyDescriptor.vertexFunction =
+        tomographyVertex
+    numeratorTomographyDescriptor.fragmentFunction =
+        numeratorTomographyFragment
+    for index in 0..<8 {
+        numeratorTomographyDescriptor
+            .colorAttachments[index].pixelFormat = .rgba32Uint
+    }
+    let numeratorTomographyPipeline =
+        try device.makeRenderPipelineState(
+            descriptor: numeratorTomographyDescriptor)
     let arithmeticPipeline = try device.makeComputePipelineState(
         function: arithmeticFunction)
 
@@ -1832,6 +2002,61 @@ private func run(outputDirectory: URL) throws {
         ])
     }
 
+    var numeratorRecords: [[String: Any]] = []
+    for probe in numeratorCases {
+        let geometry = probe.geometry
+        let surfaces = try renderTomography(
+            geometry,
+            device: device,
+            queue: queue,
+            pipeline: numeratorTomographyPipeline,
+            numerators: probe.numerators)
+        var outputs: [[String: Any]] = []
+        for (index, data) in surfaces.enumerated() {
+            let filename =
+                "\(probe.name)-ramp-\(index)-rgba32ui.raw"
+            try data.write(
+                to: outputDirectory.appendingPathComponent(filename),
+                options: .atomic)
+            outputs.append([
+                "deltaIndex": index,
+                "file": filename,
+                "bytes": data.count,
+                "sha256": sha256(data),
+                "components": "x@0,x@15/16,y@0,y@15/16",
+                "primitiveIDPacking": "external-base-case",
+            ])
+        }
+        numeratorRecords.append([
+            "name": probe.name,
+            "role": "discovery",
+            "baseCase": geometry.name,
+            "primitiveMaskCase": geometry.name,
+            "bankIndex": probe.bankIndex,
+            "target": [
+                "width": geometry.targetWidth,
+                "height": geometry.targetHeight,
+            ],
+            "crop": [
+                "originX": geometry.originX,
+                "originY": geometry.originY,
+                "width": geometry.width,
+                "height": geometry.height,
+            ],
+            "deltaNumerators": probe.numerators.map {
+                Int($0)
+            },
+            "deltaDenominator": Int(
+                tomographyDeltaDenominator),
+            "deltaBits": probe.numerators.map {
+                bits(
+                    Float($0)
+                    / Float(tomographyDeltaDenominator))
+            },
+            "outputs": outputs,
+        ])
+    }
+
     let arithmeticCases = tomographyCases.filter {
         $0.role == "discovery"
     }
@@ -1848,8 +2073,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 11,
-        "rigVersion": "metal-raster-interpolant-probe-11.0.0",
+        "schemaVersion": 12,
+        "rigVersion": "metal-raster-interpolant-probe-12.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -1879,9 +2104,12 @@ private func run(outputDirectory: URL) throws {
                 "source x/y at two subpixel offsets",
             "reciprocalTomographyOutput":
                 "eight zero-based x/y ramps at two subpixel offsets",
+            "numeratorTomographyOutput":
+                "256 normalized numerator mantissas on counterexamples",
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,
+        "numeratorTomographyCases": numeratorRecords,
         "arithmeticProbe": [
             "role": "discovery",
             "cases": arithmeticCases.map {
@@ -1926,6 +2154,14 @@ private func run(outputDirectory: URL) throws {
                 "fastAreaReciprocalProductY",
                 "preciseAreaReciprocalProductX",
                 "preciseAreaReciprocalProductY",
+                "fastReciprocalWidth",
+                "fastReciprocalHeight",
+                "fastReciprocalArea",
+                "fastReciprocalPadding",
+                "preciseReciprocalWidth",
+                "preciseReciprocalHeight",
+                "preciseReciprocalArea",
+                "preciseReciprocalPadding",
             ],
             "ordering":
                 "case-major,delta-major,component-major",

@@ -73,10 +73,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 11:
+          if manifest.get("schemaVersion") != 12:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-11.0.0"
+              "metal-raster-interpolant-probe-12.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -373,6 +373,106 @@ jobs:
                           f"{record['name']} tomography hash differs"
                       )
 
+          tomography_by_name = {
+              record["name"]: record
+              for record in tomography
+          }
+          numerator_base_names = [
+              "tomography-discovery-reciprocal-bin-019-058x076",
+              "tomography-discovery-reciprocal-bin-055-056x089",
+              "tomography-discovery-reciprocal-bin-093-047x119",
+              "tomography-discovery-reciprocal-bin-148-078x083",
+              "tomography-discovery-reciprocal-bin-195-084x086",
+              "tomography-discovery-reciprocal-bin-224-062x124",
+              "tomography-discovery-reciprocal-bin-240-081x098",
+              "tomography-discovery-reciprocal-bin-255-088x093",
+          ]
+          numerator_values = [
+              32832 + 128 * index
+              for index in range(256)
+          ]
+          expected_numerator_records = []
+          for base_name in numerator_base_names:
+              base = tomography_by_name[base_name]
+              suffix = base_name.removeprefix(
+                  "tomography-discovery-reciprocal-"
+              )
+              for bank_index in range(32):
+                  lower = bank_index * 8
+                  expected_numerator_records.append({
+                      "name": (
+                          f"numerator-discovery-{suffix}-"
+                          f"bank-{bank_index:02d}"
+                      ),
+                      "baseCase": base_name,
+                      "bankIndex": bank_index,
+                      "numerators": numerator_values[
+                          lower:lower + 8
+                      ],
+                  })
+          numerator_records = manifest.get(
+              "numeratorTomographyCases",
+              [],
+          )
+          if (
+              len(numerator_records)
+              != len(expected_numerator_records)
+              or [
+                  {
+                      "name": record["name"],
+                      "baseCase": record["baseCase"],
+                      "bankIndex": record["bankIndex"],
+                      "numerators": record["deltaNumerators"],
+                  }
+                  for record in numerator_records
+              ] != expected_numerator_records
+          ):
+              raise SystemExit(
+                  "numerator tomography case set differs"
+              )
+          for record in numerator_records:
+              base = tomography_by_name[record["baseCase"]]
+              crop = record["crop"]
+              if (
+                  record["role"] != "discovery"
+                  or "holdout" in record["name"]
+                  or record["primitiveMaskCase"]
+                      != record["baseCase"]
+                  or crop != base["crop"]
+                  or record["target"] != base["target"]
+                  or record["deltaDenominator"] != 65536
+                  or len(record["deltaBits"]) != 8
+              ):
+                  raise SystemExit(
+                      f"{record['name']} numerator metadata differs"
+                  )
+              outputs = record.get("outputs", [])
+              if (
+                  len(outputs) != 8
+                  or {
+                      output["deltaIndex"]
+                      for output in outputs
+                  } != set(range(8))
+              ):
+                  raise SystemExit(
+                      f"{record['name']} numerator outputs differ"
+                  )
+              expected = crop["width"] * crop["height"] * 16
+              for output in outputs:
+                  path = root / output["file"]
+                  if (
+                      output["bytes"] != expected
+                      or path.stat().st_size != expected
+                      or output["components"]
+                          != "x@0,x@15/16,y@0,y@15/16"
+                      or output["primitiveIDPacking"]
+                          != "external-base-case"
+                      or sha256(path) != output["sha256"]
+                  ):
+                      raise SystemExit(
+                          f"{record['name']} numerator surface differs"
+                      )
+
           arithmetic = manifest.get("arithmeticProbe", {})
           expected_components = [
               "operatorDivideX",
@@ -395,6 +495,14 @@ jobs:
               "fastAreaReciprocalProductY",
               "preciseAreaReciprocalProductX",
               "preciseAreaReciprocalProductY",
+              "fastReciprocalWidth",
+              "fastReciprocalHeight",
+              "fastReciprocalArea",
+              "fastReciprocalPadding",
+              "preciseReciprocalWidth",
+              "preciseReciprocalHeight",
+              "preciseReciprocalArea",
+              "preciseReciprocalPadding",
           ]
           expected_arithmetic_cases = [
               {
@@ -420,7 +528,7 @@ jobs:
                   != expected_numerators
               or arithmetic.get("deltaDenominator") != 65536
               or len(arithmetic.get("deltaBits", [])) != 8
-              or arithmetic.get("vectorsPerSample") != 5
+              or arithmetic.get("vectorsPerSample") != 7
               or arithmetic.get("components")
                   != expected_components
               or arithmetic.get("ordering")
