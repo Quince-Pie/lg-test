@@ -28,7 +28,7 @@ private let normalizedDenominatorLower = 8_192
 private let normalizedDenominatorUpper = 16_383
 private let targetWidth = 224
 private let targetHeight = 4_096
-private let viewportWidth = 32_768
+private let viewportWidth = 65_536
 private let minimumSignedInteriorArea = 1_024
 private let sampleSideCount = 2
 private let batchSize = 128
@@ -538,7 +538,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-scale-transfer-1.0.1"
+        "metal-raster-reciprocal-scale-transfer-1.0.2"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -564,7 +564,7 @@ private func run(outputDirectory: URL) throws {
         "captureAmendmentFile":
             "Analysis/raster_reciprocal_scale_transfer_capture_amendment.json",
         "captureAmendmentSha256":
-            "dc6112f98ab038c5ade346a023a241b6def9a54cd0085c4eb18bcf70486d01a5",
+            "627abbaee90a0d1ee21037c50386fbdba36dc293b21f2cb179955ff1e6f46b9c",
         "widthFormula":
             "32768-if-normalized-denominator-8192-else-2x",
         "widthMinimum": widths.min()!,

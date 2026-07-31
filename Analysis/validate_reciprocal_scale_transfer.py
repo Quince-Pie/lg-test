@@ -15,10 +15,11 @@ import validate_reciprocal_transfer as arithmetic
 type JsonObject = dict[str, Any]
 
 SCHEMA_VERSION = 1
-RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.1"
+RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.2"
 TARGET_WIDTH = 224
 TARGET_HEIGHT = 4_096
-VIEWPORT_WIDTH = 32_768
+PREREGISTERED_VIEWPORT_WIDTH = 32_768
+VIEWPORT_WIDTH = 65_536
 MINIMUM_SIGNED_INTERIOR_AREA = 1_024
 GEOMETRY_COUNT = 4
 SAMPLE_SIDE_COUNT = 2
@@ -35,7 +36,7 @@ CAPTURE_AMENDMENT_PATH = Path(__file__).with_name(
     "raster_reciprocal_scale_transfer_capture_amendment.json"
 )
 CAPTURE_AMENDMENT_SHA256 = (
-    "dc6112f98ab038c5ade346a023a241b6def9a54cd0085c4eb18bcf70486d01a5"
+    "627abbaee90a0d1ee21037c50386fbdba36dc293b21f2cb179955ff1e6f46b9c"
 )
 GEOMETRY_CASES = (
     {
@@ -182,7 +183,7 @@ def load_preregistration() -> JsonObject:
         != MINIMUM_SIGNED_INTERIOR_AREA
         or rule.get("targetWidth") != TARGET_WIDTH
         or rule.get("targetHeight") != TARGET_HEIGHT
-        or rule.get("viewportWidth") != VIEWPORT_WIDTH
+        or rule.get("viewportWidth") != PREREGISTERED_VIEWPORT_WIDTH
         or rule.get("geometryCount") != GEOMETRY_COUNT
         or rule.get("sampleSideCount") != SAMPLE_SIDE_COUNT
         or rule.get("allVerticesInsideViewport") is not True

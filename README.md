@@ -2329,6 +2329,15 @@ sum independently verifies that every overlapping fragment ran. This leaves
 geometry, interpolants, pull offsets, widths, witnesses, frozen hashes, and
 acceptance criteria unchanged.
 
+Run 30655450470 reduced the failure to exactly fourteen missing fragments:
+all witnesses for the special width 32,768 in the first batch. Its additive
+attachment counted 1,778 of the expected 1,792 contributions before the probe
+stopped, again without serializing pull bits, a corpus, or a manifest. That
+primitive occupied the entire 32,768-pixel viewport. The same amendment moves
+the viewport boundary to 65,536; both viewport dimensions and MVP scales are
+powers of two, so all vertices become strictly interior while their integer
+screen coordinates and every frozen numerical prediction remain unchanged.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

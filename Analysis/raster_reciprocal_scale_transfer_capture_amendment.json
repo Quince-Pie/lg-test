@@ -23,6 +23,11 @@
       "runId": 30655096601,
       "ciCommit": "8eb13f3a0421fae31629be0fac00309551cbd896",
       "result": "each of eight geometry/sample slots lost exactly 28686 records across the complete width range; no pull corpus or manifest was serialized"
+    },
+    {
+      "runId": 30655450470,
+      "ciCommit": "829a5f36979d19d31bd9c33f7c8dedd9170fe5e5",
+      "result": "the first additive batch counted 1778 of 1792 fragments, exactly the fourteen witnesses at width 32768; capture stopped before any pull corpus or manifest was serialized"
     }
   ],
   "diagnosis": {
@@ -36,6 +41,12 @@
     "before": "R32Uint overwrite attachment with dont-care load and no blending",
     "after": "R32Float attachment cleared to zero with additive one-plus-destination blending, stored, and read back after every batch",
     "reason": "every fragment now changes the stored attachment value; exact readback counts independently verify all invocations that carry device-buffer pull records"
+  },
+  "viewportCorrectionAfterRun30655450470": {
+    "before": 32768,
+    "after": 65536,
+    "reason": "the width-32768 primitive occupied the complete viewport and contributed zero of fourteen witness fragments; a power-of-two 65536 viewport makes every vertex strictly interior while the exact power-of-two MVP and viewport transform preserve the same integer screen coordinates",
+    "numericalPredictionsChanged": false
   },
   "frozenNumerics": {
     "widthsSha256": "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",
