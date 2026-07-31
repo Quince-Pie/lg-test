@@ -150,7 +150,7 @@ fragment float fractional_selector_fragment(
     device uint2 *results [[buffer(0)]])
 {
     results[
-        (\(samplePositionCount))u * input.recordIndex + input.outputSlot
+        \(samplePositionCount)u * input.recordIndex + input.outputSlot
     ] = uint2(
         as_type<uint>(input.ramp.interpolate_at_offset(
             float2(0.0f, 0.5f))),

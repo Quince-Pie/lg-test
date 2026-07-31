@@ -107,13 +107,14 @@ class RasterFractionalSelectorSweepTests(unittest.TestCase):
             "instanceCount: casesInBatch",
             r"float((\(originY)))",
             r"float((\(oppositeEdge)))",
-            r"(\(samplePositionCount))u",
+            r"\(samplePositionCount)u",
         ):
             self.assertIn(expected, source)
         for uninterpolated in (
             "float((originY))",
             "float((oppositeEdge))",
-            "(samplePositionCount)u",
+            "        (samplePositionCount)u * input.recordIndex",
+            r"(\(samplePositionCount))u",
         ):
             self.assertNotIn(uninterpolated, source)
 
