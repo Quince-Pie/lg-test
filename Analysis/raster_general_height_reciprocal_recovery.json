@@ -1,0 +1,341 @@
+{
+  "ambiguousCases": [
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1051917,
+      "height": 113,
+      "nearestReciprocalIndex": 33447860,
+      "width": 9309,
+      "widthIndex": 1117
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1084574,
+      "height": 113,
+      "nearestReciprocalIndex": 32440730,
+      "width": 9598,
+      "widthIndex": 1406
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 677283,
+      "height": 61,
+      "nearestReciprocalIndex": 25974646,
+      "width": 11103,
+      "widthIndex": 2911
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1301986,
+      "height": 113,
+      "nearestReciprocalIndex": 27023618,
+      "width": 11522,
+      "widthIndex": 3330
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 595396,
+      "height": 47,
+      "nearestReciprocalIndex": 29547034,
+      "width": 12668,
+      "widthIndex": 4476
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1049357,
+      "height": 79,
+      "nearestReciprocalIndex": 33529459,
+      "width": 13283,
+      "widthIndex": 5091
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1061681,
+      "height": 79,
+      "nearestReciprocalIndex": 33140248,
+      "width": 13439,
+      "widthIndex": 5247
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1063972,
+      "height": 79,
+      "nearestReciprocalIndex": 33068889,
+      "width": 13468,
+      "widthIndex": 5276
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 634030,
+      "height": 47,
+      "nearestReciprocalIndex": 27746615,
+      "width": 13490,
+      "widthIndex": 5298
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1073610,
+      "height": 79,
+      "nearestReciprocalIndex": 32772023,
+      "width": 13590,
+      "widthIndex": 5398
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1091938,
+      "height": 79,
+      "nearestReciprocalIndex": 32221950,
+      "width": 13822,
+      "widthIndex": 5630
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -2,
+        -1
+      ],
+      "determinant": 1112004,
+      "height": 79,
+      "nearestReciprocalIndex": 31640509,
+      "width": 14076,
+      "widthIndex": 5884
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1131912,
+      "height": 79,
+      "nearestReciprocalIndex": 31084017,
+      "width": 14328,
+      "widthIndex": 6136
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 684179,
+      "height": 47,
+      "nearestReciprocalIndex": 25712841,
+      "width": 14557,
+      "widthIndex": 6365
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 685918,
+      "height": 47,
+      "nearestReciprocalIndex": 25647652,
+      "width": 14594,
+      "widthIndex": 6402
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1649122,
+      "height": 113,
+      "nearestReciprocalIndex": 21335215,
+      "width": 14594,
+      "widthIndex": 6402
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 686576,
+      "height": 47,
+      "nearestReciprocalIndex": 25623072,
+      "width": 14608,
+      "widthIndex": 6416
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1154585,
+      "height": 79,
+      "nearestReciprocalIndex": 30473609,
+      "width": 14615,
+      "widthIndex": 6423
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1157192,
+      "height": 79,
+      "nearestReciprocalIndex": 30404956,
+      "width": 14648,
+      "widthIndex": 6456
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1213756,
+      "height": 79,
+      "nearestReciprocalIndex": 28988011,
+      "width": 15364,
+      "widthIndex": 7172
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        0,
+        1
+      ],
+      "determinant": 1215968,
+      "height": 79,
+      "nearestReciprocalIndex": 28935278,
+      "width": 15392,
+      "widthIndex": 7200
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1218970,
+      "height": 79,
+      "nearestReciprocalIndex": 28864018,
+      "width": 15430,
+      "widthIndex": 7238
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1221024,
+      "height": 79,
+      "nearestReciprocalIndex": 28815463,
+      "width": 15456,
+      "widthIndex": 7264
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1237140,
+      "height": 79,
+      "nearestReciprocalIndex": 28440089,
+      "width": 15660,
+      "widthIndex": 7468
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1240616,
+      "height": 79,
+      "nearestReciprocalIndex": 28360405,
+      "width": 15704,
+      "widthIndex": 7512
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1288569,
+      "height": 79,
+      "nearestReciprocalIndex": 27304997,
+      "width": 16311,
+      "widthIndex": 8119
+    },
+    {
+      "candidateOffsetsFromNearest": [
+        -1,
+        0
+      ],
+      "determinant": 1289912,
+      "height": 79,
+      "nearestReciprocalIndex": 27276568,
+      "width": 16328,
+      "widthIndex": 8136
+    }
+  ],
+  "candidateMaskBytes": 262144,
+  "candidateMaskSha256": "fde68ee1cc04fb5fbba75d04b72abb6e74954c66405de174bca0202b12169ce9",
+  "candidateMultiplicity": {
+    "1": 32741,
+    "2": 27
+  },
+  "candidateOffsetDistribution": {
+    "-1": 1213,
+    "-2": 1,
+    "0": 29662,
+    "1": 1919
+  },
+  "candidateRadiusReciprocalUlps": 16,
+  "candidateSetDistribution": {
+    "[-1, 0]": 15,
+    "[-1]": 1197,
+    "[-2, -1]": 1,
+    "[0, 1]": 11,
+    "[0]": 29636,
+    "[1]": 1908
+  },
+  "coefficientCount": 458752,
+  "compressedCandidateMaskBytes": 4635,
+  "compressedCandidateMaskSha256": "0257dd6718ddabd584952fcb86949c3c0b657186a03405c1b653e4f4cddf425f",
+  "determinantCount": 32768,
+  "exactNormalizedCanonicalMatchCount": 484,
+  "exactNormalizedDeterminantCount": 484,
+  "model": {
+    "firstStageBiasEquivalenceClass": [
+      14,
+      15
+    ],
+    "firstStageOutputBits": 27,
+    "firstStageTruncationBits": 16,
+    "secondStageBiasUnits": 20,
+    "secondStageOutputBits": 27,
+    "secondStageTruncationBits": 19
+  },
+  "uniqueSelectorTableBytes": 131072,
+  "uniqueSelectorTableSha256": "80658525fb182d8fc7abe1ce065423e5be989acebe5efdcb8a6cce209165bd04"
+}

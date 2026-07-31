@@ -2628,6 +2628,62 @@ height, determinant, and input-bit signature. Either outcome is valid
 discovery and cannot establish non-exact determinant selection, clipping, or
 end-to-end parity.
 
+Run 30668629253 passed every structural and scientific gate at commit
+`eb97f07367007d53627d43bb9cf77a2050c08085`. All 1,572,864 coefficients
+were uniquely recovered, all 512 frozen top-left bridges matched, and all
+262,144 exact-numerator triplets were bit-identical. The 262,144 fine
+comparisons always placed the odd-height result between its matched floor and
+ceiling controls. The manifest, raw buffer, and validation SHA-256 values are
+`0fcd57dce8524398ca4b266a455dfe7240ef364f05cc13eda3f8b79fbb04eb90`,
+`edf41edebeda9b8998e62a0084a84ae3996c71331f03b005d62b1cd6ba26fbd1`,
+and
+`b5b29d036be2e6313898fa5848d58275877bfd3cec57dcf85cb191091ab22deb`.
+This prospectively rules out factorization-dependent setup for the sealed
+bank; it does not by itself identify the fused numerical law.
+
+Post-capture discovery then identified that law. The first stage multiplies
+the 24-bit varying significand by the 24-bit opposite-edge significand,
+truncates every radix-2 partial product at bit 16, adds 14 or 15 units at that
+bit, and normalizes to 27 bits. Those two adjacent biases are observationally
+equivalent for every measured integer edge. The second stage multiplies that
+27-bit numerator by the measured 25-bit reciprocal, truncates each partial at
+bit 19, adds 20 units at that bit, and again normalizes to 27 bits before
+binary32 conversion. Both bias encodings reproduce all 6,776 older
+exact-normalized odd-height coefficients and all 1,572,864 new coefficients
+with zero float-ULP error. The new corpus's predicted and recovered slope hash
+is identically
+`0cebd0b7d4c670e0f7fa3f38d583242d38be4d31699d4aa912b2452f28c67120`.
+The independently recovered signed-byte offsets compress to 47,381 bytes with
+SHA-256
+`0f355cb8a4a8fe14d70116c9bb5bada4679c5a5bb8445c6f82e2a15acaff8936`.
+
+Replaying the complete run-30663719233 slope table through this corrected
+two-stage model recovers one reciprocal for 32,741 of its 32,768
+width/height determinants. Twenty-seven retain exactly two adjacent
+candidates under the fourteen old witnesses; none has zero candidates. All
+484 exact-normalized determinants recover their independently calibrated
+canonical reciprocal. The complete candidate-mask stream has raw and
+compressed SHA-256 values
+`fde68ee1cc04fb5fbba75d04b72abb6e74954c66405de174bca0202b12169ce9`
+and
+`0257dd6718ddabd584952fcb86949c3c0b657186a03405c1b653e4f4cddf425f`.
+This recovery is discovery evidence, not a portable law for arbitrary
+determinants.
+
+`raster_general_height_selector_transfer_preregistration.json` freezes the
+prospective transfer test before another Apple value is observed. Fourteen
+fresh significands are disjoint from the old witness set, the schema-23
+fine-mantissa bank, and both factorization banks. Two were selected solely to
+distinguish every frozen two-candidate determinant; the other twelve are one
+deterministic value from each equal mantissa stratum. Across all 32,768
+determinants this produces 458,374 sealed predictions and 378 discovery
+coefficients. Three same-tile pull positions uniquely identify all 459,130
+candidate coefficient paths in the offline preflight. A pass must match every
+sealed coefficient exactly and reduce every ambiguous determinant to one of
+its two frozen candidates. It completes only this measured selector matrix;
+it cannot establish a selector law outside that matrix, fractional or clipped
+setup, or end-to-end parity.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

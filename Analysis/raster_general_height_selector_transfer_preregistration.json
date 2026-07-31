@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-unique-selector-transfer-with-ambiguous-selector-discovery",
+  "observedAtPreregistration": false,
+  "sourceEvidence": {
+    "topLeftRunId": 30663719233,
+    "topLeftRecoveredSlopeTableSha256": "1b99ca9285e024147b8797b7831f6e9fcfd2bf3eb9e6c666a29705cd464e9f0a",
+    "topLeftSlopeOffsetsCompressedSha256": "bd022b0b87c7f485092d28877231880f4d359057216418ee8e018cb30189bf42",
+    "factorizationRunId": 30668629253,
+    "factorizationCommit": "eb97f07367007d53627d43bb9cf77a2050c08085",
+    "factorizationManifestSha256": "0fcd57dce8524398ca4b266a455dfe7240ef364f05cc13eda3f8b79fbb04eb90",
+    "factorizationRawSha256": "edf41edebeda9b8998e62a0084a84ae3996c71331f03b005d62b1cd6ba26fbd1",
+    "factorizationValidationSha256": "b5b29d036be2e6313898fa5848d58275877bfd3cec57dcf85cb191091ab22deb",
+    "factorizationRecoveredSlopeTableSha256": "0cebd0b7d4c670e0f7fa3f38d583242d38be4d31699d4aa912b2452f28c67120",
+    "factorizationRecoveredSlopeOffsetsCompressedSha256": "0f355cb8a4a8fe14d70116c9bb5bada4679c5a5bb8445c6f82e2a15acaff8936",
+    "factorizationRecoveryReportSha256": "9ee092636350cd483314d0747acfe2d4326bb1eb2c8b1a161a061e616a53a7a7"
+  },
+  "discoveredArithmeticModel": {
+    "script": "Analysis/model_raster_general_height_arithmetic.py",
+    "scriptSha256": "7c8422c940d228eb3c747bc9011abc2b56889865b30d097fdd9d3df1dfd798fb",
+    "firstStage": {
+      "operands": "24-bit delta significand by 24-bit opposite-edge significand",
+      "partialProductTruncationBits": 16,
+      "biasUnitsAtTruncationBit": [14, 15],
+      "outputBits": 27,
+      "integerEdgeBiasValuesObservationallyEquivalent": true
+    },
+    "secondStage": {
+      "operands": "27-bit numerator index by 25-bit reciprocal index",
+      "partialProductTruncationBits": 19,
+      "biasUnitsAtTruncationBit": 20,
+      "outputBits": 27
+    },
+    "oldExactNormalizedCoefficientMatches": 6776,
+    "oldExactNormalizedCoefficientCount": 6776,
+    "factorizationCoefficientMatches": 1572864,
+    "factorizationCoefficientCount": 1572864,
+    "factorizationPredictedSlopeTableSha256": "0cebd0b7d4c670e0f7fa3f38d583242d38be4d31699d4aa912b2452f28c67120"
+  },
+  "recoveredSelectorCandidates": {
+    "recoveryScript": "Analysis/recover_raster_general_height_reciprocals.py",
+    "recoveryScriptSha256": "d6ff4b510c26b8660ec7115df880b5cbd4ce6a998874d73a45b33d0f5c95ed01",
+    "report": "Analysis/raster_general_height_reciprocal_recovery.json",
+    "reportSha256": "fa3730c82d485b93bd47b055405c8012c2f2f37ab789e79fa17b6e70857ca311",
+    "candidateMaskFile": "Analysis/raster_general_height_reciprocal_candidate_masks.zlib",
+    "candidateMaskCompressedBytes": 4635,
+    "candidateMaskCompressedSha256": "0257dd6718ddabd584952fcb86949c3c0b657186a03405c1b653e4f4cddf425f",
+    "candidateMaskRawBytes": 262144,
+    "candidateMaskRawSha256": "fde68ee1cc04fb5fbba75d04b72abb6e74954c66405de174bca0202b12169ce9",
+    "candidateRadiusReciprocalUlps": 16,
+    "uniqueDeterminantCount": 32741,
+    "ambiguousDeterminantCount": 27,
+    "ambiguousCandidateMultiplicity": 2,
+    "uniqueSelectorTableSha256WithAmbiguousSentinel": "80658525fb182d8fc7abe1ce065423e5be989acebe5efdcb8a6cce209165bd04"
+  },
+  "freshWitnessSelection": {
+    "significands": [
+      14858314,
+      8971239,
+      8983642,
+      9466755,
+      9949868,
+      11105558,
+      11588671,
+      12071784,
+      13227474,
+      13380500,
+      14193700,
+      15019303,
+      15502416,
+      16658106
+    ],
+    "significandsSha256": "c6aa0a1d8d751850a0b81ec7bc447d00abb144b4a40dc86019c7eecd348b1dbd",
+    "count": 14,
+    "firstTwoRole": "discovery witnesses selected from frozen two-candidate sets to distinguish all 27 ambiguous determinants",
+    "remainingTwelveRole": "one deterministic fresh LCG value from each equal mantissa stratum",
+    "disjointFromPriorFourteenWitnesses": true,
+    "disjointFromSchema23FineMantissaBank": true,
+    "disjointFromFactorizationFineAndExactBanks": true,
+    "appleOutputFromThisCaptureUsedForSelection": false
+  },
+  "capture": {
+    "widthLowerInclusive": 8192,
+    "widthUpperInclusive": 16383,
+    "widthCount": 8192,
+    "heights": [47, 61, 79, 113],
+    "heightCount": 4,
+    "caseCount": 32768,
+    "targetWidth": 64,
+    "targetHeight": 256,
+    "viewportWidth": 32768,
+    "originY": 11,
+    "sampleXs": [0, 15, 31],
+    "recordComponents": ["pull@0,0.5", "pull@15/16,0.5"],
+    "recordBytes": 8,
+    "ordering": "width-major,height-major,witness-major,sample-position-major",
+    "batchCaseCount": 1024,
+    "candidateRadiusFloatUlps": 8
+  },
+  "frozenLayout": {
+    "ambiguousDeterminantCount": 27,
+    "ambiguousDeterminantsDistinguishedByWitnessSet": 27,
+    "ambiguousPredictionCount": 378,
+    "candidatePathDirectOffsetDistribution": {
+      "-1": 33953,
+      "0": 390022,
+      "1": 35155
+    },
+    "candidateSlopeMultiplicity": {
+      "1": 458590,
+      "2": 162
+    },
+    "candidateSlopeSetSha256": "5ed98b09eddff1389dd370ec2576e45f4d6bcf7dbb22d79751912322f2b0f1dd",
+    "caseCount": 32768,
+    "caseDeltaBitsSha256": "66b6a6f29008ac08486040caa577c4acdb68a3c79081483db22d3c928a2e6093",
+    "caseWordsSha256": "2ff9e3c8a3cd296c79e38ec7b9e3c4a9c3230875ceb422c90b98fd1463eec4e8",
+    "coefficientCount": 458752,
+    "heightCount": 4,
+    "rawBytes": 11010048,
+    "recordCount": 1376256,
+    "samplePositionCount": 3,
+    "sampleXsSha256": "036f6670f2f5a456953f3bad012b7876e2df65e3cd18a439d79966046cb6477e",
+    "selectorSignatureSha256": "102c781d92d81a3caf129b41ba4e7fc4f22d800ebdf632e13f836ad4870b52ec",
+    "uniqueDeterminantCount": 32741,
+    "uniquePredictionCount": 458374,
+    "uniquePredictionSha256": "e0c5855d07b7f0302f8c7d4fb2edcc317dc8abd89689d63c22657bb6b01b86e0",
+    "widthCount": 8192,
+    "widthDeltaBitsSha256": "37021e40ed64cab9aaa0e4e7a3b7af8b24fbba73ac0a410c918793eec5c809cd",
+    "widthsSha256": "51543aa53b298402f96f65830302af8f0e4e3aafe49d4ee29c5a6f14f70205d9",
+    "witnessCount": 14,
+    "witnessSignificandsSha256": "c6aa0a1d8d751850a0b81ec7bc447d00abb144b4a40dc86019c7eecd348b1dbd"
+  },
+  "acceptance": {
+    "allRecordsWrittenAndFinite": true,
+    "allSamplesSafelyInsideTopLeftPrimitive": true,
+    "everyCoefficientHasExactlyOneSlopeWithinFrozenFloatUlpWindow": true,
+    "all458374FreshUniqueSelectorPredictionsMatchExactly": true,
+    "all27AmbiguousDeterminantsResolveToOneFrozenCandidate": true,
+    "noAdaptiveFitOrTolerance": true,
+    "resolvedSelectorTableIsDiscoveryOutput": true
+  },
+  "claimsNotEstablishedByPass": [
+    "A portable selector law outside the measured 32768-determinant matrix.",
+    "Fractional or clip-generated opposite-edge setup.",
+    "End-to-end Liquid Glass image parity."
+  ]
+}

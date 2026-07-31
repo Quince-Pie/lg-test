@@ -1,0 +1,80 @@
+name: Validate Apple Metal general-height selector transfer
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-general-height-selector-transfer.yml
+      - Analysis/model_raster_general_height_arithmetic.py
+      - Analysis/recover_raster_general_height_reciprocals.py
+      - Analysis/raster_general_height_reciprocal_candidate_masks.zlib
+      - Analysis/raster_general_height_reciprocal_recovery.json
+      - Analysis/raster_general_height_selector_transfer_preregistration.json
+      - Analysis/test_validate_raster_general_height_selector_transfer.py
+      - Analysis/validate_raster_general_height_selector_transfer.py
+      - Sources/GlassRasterGeneralHeightSelectorTransfer/**
+
+concurrency:
+  group: raster-general-height-selector-transfer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-general-height-selector-transfer:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Build Metal selector-transfer probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-general-height-selector-transfer
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterGeneralHeightSelectorTransfer/main.swift \
+            -o glass-raster-general-height-selector-transfer 2>&1 |
+            tee raster-general-height-selector-transfer/build.log
+
+      - name: Measure fresh general-height selector witnesses
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-general-height-selector-transfer \
+            raster-general-height-selector-transfer
+
+      - name: Validate unique transfer and resolve ambiguous selectors
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_raster_general_height_selector_transfer.py \
+            raster-general-height-selector-transfer \
+            --output raster-general-height-selector-transfer/validation.json
+
+      - name: Upload Metal selector-transfer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-general-height-selector-transfer-${{ github.run_id }}
+          path: raster-general-height-selector-transfer
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce selector-transfer control gate
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-general-height-selector-transfer/manifest.json
+          test -s raster-general-height-selector-transfer/validation.json
