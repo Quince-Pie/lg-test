@@ -1,4 +1,4 @@
-name: Recover Apple Metal top-left general-height slopes
+name: Validate Apple Metal low determinant exponents
 
 on:
   workflow_dispatch:
@@ -9,13 +9,21 @@ on:
       - Analysis/raster_general_height_multitile_preregistration.json
       - Analysis/raster_general_height_multitile_candidate_masks.zlib
       - Analysis/raster_general_height_top_left_preregistration.json
+      - Analysis/raster_general_height_top_left_slope_offsets.zlib
+      - Analysis/raster_low_exponent_power2_preregistration.json
       - Analysis/build_raster_general_height_multitile_candidate_masks.py
+      - Analysis/build_raster_general_height_top_left_slope_offsets.py
       - Analysis/test_validate_raster_general_height_diagnostic.py
       - Analysis/test_validate_raster_general_height_multitile.py
       - Analysis/test_validate_raster_general_height_top_left.py
+      - Analysis/test_validate_raster_low_exponent_power2.py
       - Analysis/validate_raster_general_height_diagnostic.py
       - Analysis/validate_raster_general_height_multitile.py
       - Analysis/validate_raster_general_height_top_left.py
+      - Analysis/validate_raster_low_exponent_power2.py
+      - Analysis/validate_reciprocal_factorized_transfer.py
+      - Analysis/validate_reciprocal_general_height_transfer.py
+      - Analysis/validate_reciprocal_transfer.py
       - Sources/GlassRasterReciprocalTransfer/**
 
 concurrency:
@@ -23,7 +31,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  raster-reciprocal-general-height-transfer:
+  raster-reciprocal-low-exponent-transfer:
     runs-on: macos-26
     timeout-minutes: 45
     steps:
@@ -34,43 +42,43 @@ jobs:
           sw_vers
           test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
 
-      - name: Build Metal top-left general-height probe
+      - name: Build Metal low-exponent power-of-two probe
         id: build
         continue-on-error: true
         run: |
-          mkdir -p raster-general-height-top-left
+          mkdir -p raster-low-exponent-power2
           set -o pipefail
           swiftc -O -parse-as-library \
             -target "$(uname -m)-apple-macos26.0" \
             Sources/GlassRasterReciprocalTransfer/main.swift \
-            -o glass-raster-general-height-top-left 2>&1 |
-            tee raster-general-height-top-left/build.log
+            -o glass-raster-low-exponent-power2 2>&1 |
+            tee raster-low-exponent-power2/build.log
 
-      - name: Measure top-left general-height coefficients at low magnitude
+      - name: Measure low-exponent power-of-two coefficients
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
         env:
           SWIFT_BACKTRACE: enable
         run: |
-          ./glass-raster-general-height-top-left \
-            raster-general-height-top-left
+          ./glass-raster-low-exponent-power2 \
+            raster-low-exponent-power2
 
-      - name: Validate slopes and cross-primitive equality
+      - name: Validate frozen low-exponent transfer
         id: validate
         if: steps.capture.outcome == 'success'
         continue-on-error: true
         run: |
-          python3 Analysis/validate_raster_general_height_top_left.py \
-            raster-general-height-top-left \
-            --output raster-general-height-top-left/validation.json
+          python3 Analysis/validate_raster_low_exponent_power2.py \
+            raster-low-exponent-power2 \
+            --output raster-low-exponent-power2/validation.json
 
-      - name: Upload Metal top-left general-height evidence
+      - name: Upload Metal low-exponent evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-raster-general-height-top-left-${{ github.run_id }}
-          path: raster-general-height-top-left
+          name: liquid-glass-raster-low-exponent-power2-${{ github.run_id }}
+          path: raster-low-exponent-power2
           if-no-files-found: error
           retention-days: 7
 
@@ -80,5 +88,5 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test "${{ steps.validate.outcome }}" = success
-          test -s raster-general-height-top-left/manifest.json
-          test -s raster-general-height-top-left/validation.json
+          test -s raster-low-exponent-power2/manifest.json
+          test -s raster-low-exponent-power2/validation.json

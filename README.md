@@ -2533,6 +2533,49 @@ coefficient belongs to the bottom-right candidate set frozen from run
 not a setup-law fit. Center and derivative bits remain excluded from
 selection, and success still cannot establish clipping or end-to-end parity.
 
+Run 30663719233 passed both preregistered gates at commit
+`e56bcd2e0fb6b6fa8ecee8dc5551e020df1fffac`. Its manifest, raw buffer, and
+validation SHA-256 values are
+`09ad9cedaa8d7cea955a31364c59e64825c20958f112c9cc2313918197adb6f7`,
+`ccb76da172eceba1e9681b6fbcedb47767262964c7d7e423ec86e84fe213d6e0`,
+and
+`87bbef5ab6474e906adcf27a6f2657493ef4d219135651b63211078187dcdac3`.
+Every one of the 458,752 top-left coefficients has exactly one candidate, and
+every recovered coefficient is in the independently frozen bottom-right
+candidate set. The primitive intersection multiplicity is exactly one for
+all coefficients. Relative to correctly rounded direct division, the exact
+offset distribution is 31,570 at minus one ULP, 391,258 at zero, and 35,924
+at plus one ULP. The recovered slope-table SHA-256 is
+`1b99ca9285e024147b8797b7831f6e9fcfd2bf3eb9e6c666a29705cd464e9f0a`.
+Its complete signed-byte offset table is preserved in a 50,115-byte
+hash-locked zlib stream; the raw and compressed SHA-256 values are
+`e4cf23c08f3c080fa61a1ae56067ae4ad318c442a27712032a9314202e409e70`
+and
+`bd022b0b87c7f485092d28877231880f4d359057216418ee8e018cb30189bf42`.
+
+The exact table rules out the remaining permissive-fit ambiguity. Ordinary
+binary32 division matches 391,258 coefficients, and the established physical
+product with an exact odd-height numerator and nearest area reciprocal matches
+409,997; neither is exact. Across the 484 determinants whose areas normalize
+exactly to a calibrated reciprocal class, the best tested frozen-selector
+model is a 28-bit ceiling-rounded numerator, at 6,450 of 6,776 coefficients.
+The 326 exact mismatches leave two separable causes: low determinant exponent
+handling, which the previous power-of-two gate did not reach, and odd-height
+numerator handling.
+
+`raster_low_exponent_power2_preregistration.json` freezes that separation.
+It changes only the four heights to 16, 32, 64, and 128. Every determinant is
+therefore the normalized geometry width times an exact power of two, while
+its exponent spans and brackets the odd-height corpus. The canonical
+reciprocal table and established physical-product law predict all 458,752
+slopes before capture; the four-geometry prediction SHA-256 is
+`35540ba73b2636d2d8e6b147f099d9178d3b86ca99963c9c56f000c2b57e338e`.
+The prospective gate requires the low-magnitude pulls to recover exactly one
+slope per coefficient and requires every slope to equal that frozen
+prediction. A pass localizes the remaining discrepancy to odd-height
+numerator handling; a failure establishes a separate low-exponent setup law
+that must be recovered first.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

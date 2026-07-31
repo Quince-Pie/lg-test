@@ -49,23 +49,23 @@ private let deltaExponentShiftBits: [UInt32] = widths.map {
 
 private let geometryCases = [
     GeometryCase(
-        name: "general-height-47",
-        height: 47,
+        name: "low-exponent-power2-height-16",
+        height: 16,
         sampleLocalY: 0,
         originY: 11),
     GeometryCase(
-        name: "general-height-61",
-        height: 61,
+        name: "low-exponent-power2-height-32",
+        height: 32,
         sampleLocalY: 0,
         originY: 23),
     GeometryCase(
-        name: "general-height-79",
-        height: 79,
+        name: "low-exponent-power2-height-64",
+        height: 64,
         sampleLocalY: 0,
         originY: 37),
     GeometryCase(
-        name: "general-height-113",
-        height: 113,
+        name: "low-exponent-power2-height-128",
+        height: 128,
         sampleLocalY: 0,
         originY: 53),
 ]
@@ -498,7 +498,7 @@ private func run(outputDirectory: URL) throws {
                     mipmapLevel: 0)
                 guard coverage == expectedCoverage else {
                     throw TransferError.command(
-                        "general-height-top-left coverage"
+                        "low-exponent-power2 coverage"
                             + " \(geometry.name)/\(sampleIndex)"
                             + " at width \(widths[batchStart])"
                             + " was \(coverage),"
@@ -508,7 +508,7 @@ private func run(outputDirectory: URL) throws {
         }
         if batchEnd % 128 == 0 || batchEnd == widths.count {
             print(
-                "general-height top-left: \(batchEnd)"
+                "low-exponent power2: \(batchEnd)"
                     + "/\(widths.count) widths")
         }
         }
@@ -549,7 +549,7 @@ private func run(outputDirectory: URL) throws {
     }
     if missingRecordCount != 0 {
         throw TransferError.command(
-            "general-height-top-left missing \(missingRecordCount)"
+            "low-exponent-power2 missing \(missingRecordCount)"
             + " records; first \(firstMissingRecords);"
             + " bySlot \(missingBySlot);"
             + " firstWidth \(firstMissingWidthBySlot);"
@@ -561,16 +561,16 @@ private func run(outputDirectory: URL) throws {
         count: outputBytes)
     precondition(outputData.count == 14_680_064)
     let outputFilename =
-        "raster-general-height-top-left.raw"
+        "raster-low-exponent-power2.raw"
     try outputData.write(
         to: outputDirectory.appendingPathComponent(
             outputFilename),
         options: .atomic)
 
     var manifest: [String: Any] = [:]
-    manifest["schemaVersion"] = 4
+    manifest["schemaVersion"] = 5
     manifest["rigVersion"] =
-        "metal-raster-general-height-top-left-4.0.0"
+        "metal-raster-low-exponent-power2-5.0.0"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -587,13 +587,13 @@ private func run(outputDirectory: URL) throws {
         "coverageAttachment":
             "one-width R32Float additive witness count, cleared/stored/verified",
     ] as [String: Any]
-    manifest["rasterGeneralHeightTopLeft"] = [
+    manifest["rasterLowExponentPower2"] = [
         "role":
-            "discovery-with-preregistered-top-left-slope-recovery",
+            "prospective-low-determinant-exponent-transfer",
         "preregistrationFile":
-            "Analysis/raster_general_height_top_left_preregistration.json",
+            "Analysis/raster_low_exponent_power2_preregistration.json",
         "preregistrationSha256":
-            "5d8ae8d8a215ab6615ba2c2e4a2feacd268bec5da6668fdbc92680d2ea85cd3c",
+            "27b61c89cb25c953a48c4ff06e176633c21fb27f35451d63e6bc69246d6e27b2",
         "geometryWidthFormula":
             "normalized-denominator",
         "widthMinimum": widths.min()!,
@@ -633,6 +633,12 @@ private func run(outputDirectory: URL) throws {
         "viewportWidth": viewportWidth,
         "minimumSignedInteriorArea":
             minimumSignedInteriorArea,
+        "frozenCanonicalReciprocalTableSha256":
+            "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+        "frozenCoefficientTableOneGeometrySha256":
+            "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
+        "frozenCoefficientTableFourGeometrySha256":
+            "35540ba73b2636d2d8e6b147f099d9178d3b86ca99963c9c56f000c2b57e338e",
         "ordering":
             "normalized-denominator-major,witness-major,"
             + "geometry-major,sample-position-major",

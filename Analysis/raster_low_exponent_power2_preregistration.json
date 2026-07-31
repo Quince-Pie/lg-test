@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-low-determinant-exponent-transfer",
+  "observedAtPreregistration": false,
+  "purpose": "Test the already-established canonical reciprocal and physical-product prediction at determinant exponents matching the non-power-of-two general-height failures. Power-of-two heights make the numerator cancellation exact, so this separates low determinant exponent handling from odd-height numerator handling.",
+  "sourceEvidence": {
+    "factorizedRunId": 30657632564,
+    "factorizedCommit": "c27fc0bfe4388cbd182c0052db414cc5c6caa99d",
+    "factorizedManifestSha256": "cf695dccda90eea2032649cb1b0ba5227024ec13bc2c960dabaca18f96299c2a",
+    "factorizedRawSha256": "2de32da043d69e536b5e1b3ad1ed4be2ff7fbf95c894a3a23f0e586a9710cef2",
+    "factorizedValidationSha256": "850f071bbdbb19663b456607e74cc9f792e29bf7df4738063fe61408a2851173",
+    "factorizedHeights": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "topLeftRunId": 30663719233,
+    "topLeftCommit": "e56bcd2e0fb6b6fa8ecee8dc5551e020df1fffac",
+    "topLeftManifestSha256": "09ad9cedaa8d7cea955a31364c59e64825c20958f112c9cc2313918197adb6f7",
+    "topLeftRawSha256": "ccb76da172eceba1e9681b6fbcedb47767262964c7d7e423ec86e84fe213d6e0",
+    "topLeftValidationSha256": "87bbef5ab6474e906adcf27a6f2657493ef4d219135651b63211078187dcdac3",
+    "topLeftRecoveredSlopeTableSha256": "1b99ca9285e024147b8797b7831f6e9fcfd2bf3eb9e6c666a29705cd464e9f0a",
+    "topLeftSlopeOffsetRawSha256": "e4cf23c08f3c080fa61a1ae56067ae4ad318c442a27712032a9314202e409e70",
+    "topLeftSlopeOffsetCompressedSha256": "bd022b0b87c7f485092d28877231880f4d359057216418ee8e018cb30189bf42",
+    "topLeftCoefficientCount": 458752,
+    "topLeftUniqueCoefficientCount": 458752,
+    "topLeftPrimitiveEqualityAcceptedCount": 458752,
+    "exactNormalizedAreaPairCount": 484,
+    "exactNormalizedAreaCoefficientCount": 6776,
+    "bestTestedKnownSelectorModel": "28-bit-ceiling numerator followed by canonical reciprocal and established physical product",
+    "bestTestedKnownSelectorModelMatchCount": 6450,
+    "bestTestedKnownSelectorModelMismatchCount": 326,
+    "productionShaderWasNotChanged": true
+  },
+  "intervention": {
+    "changedVariables": [
+      "the four heights change from 47, 61, 79, and 113 to 16, 32, 64, and 128"
+    ],
+    "unchangedVariables": [
+      "8192 geometry widths",
+      "14 frozen witness significands",
+      "scaled vertex deltas",
+      "rectangle vertices and triangle ordering",
+      "top-left primitive",
+      "sample local y zero",
+      "tile-zero sample x positions 0 and 31",
+      "256-pixel target and vertical viewport",
+      "32768-pixel horizontal viewport",
+      "pull offsets",
+      "center and derivative diagnostics",
+      "fast-math setting",
+      "candidate center and plus-or-minus-eight-float search window",
+      "binary32 shared-plane acceptance rule"
+    ],
+    "reason": "The accepted factorized gate exercises determinant heights 512 through 4096, while the exact odd-height slopes use determinant exponents corresponding to much smaller heights. The new power-of-two heights span and bracket that low-exponent domain while removing all odd-height numerator rounding."
+  },
+  "capture": {
+    "targetWidth": 288,
+    "targetHeight": 256,
+    "viewportWidth": 32768,
+    "geometryCases": [
+      {
+        "name": "low-exponent-power2-height-16",
+        "height": 16,
+        "sampleLocalY": 0,
+        "originY": 11
+      },
+      {
+        "name": "low-exponent-power2-height-32",
+        "height": 32,
+        "sampleLocalY": 0,
+        "originY": 23
+      },
+      {
+        "name": "low-exponent-power2-height-64",
+        "height": 64,
+        "sampleLocalY": 0,
+        "originY": 37
+      },
+      {
+        "name": "low-exponent-power2-height-128",
+        "height": 128,
+        "sampleLocalY": 0,
+        "originY": 53
+      }
+    ],
+    "determinantFormula": "integerGeometryWidth * powerOfTwoHeight",
+    "normalizedDeterminantClassFormula": "integerGeometryWidth exactly",
+    "heightExponentRangeInclusive": [
+      4,
+      7
+    ],
+    "sampleXs": [
+      0,
+      31
+    ],
+    "sampleXsSha256": "3786b5685d81fe8c584105b439bc5a4dc7a0af4a76548dc49f5b3f47e2984238",
+    "sampleTiles": [
+      0,
+      0
+    ],
+    "sampleTileLocalXs": [
+      0,
+      31
+    ],
+    "sharedTileGroups": [
+      [
+        0,
+        1
+      ]
+    ],
+    "recordComponents": [
+      "pull@0,0.5",
+      "pull@15/16,0.5",
+      "center",
+      "dfdx(center)"
+    ],
+    "recordBytes": 16,
+    "rawBytes": 14680064
+  },
+  "frozenPrediction": {
+    "canonicalReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "coefficientTableOneGeometrySha256": "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
+    "coefficientTableFourGeometrySha256": "35540ba73b2636d2d8e6b147f099d9178d3b86ca99963c9c56f000c2b57e338e",
+    "coefficientCount": 458752,
+    "directDivisionOffsetDistribution": {
+      "-1": 27680,
+      "0": 392552,
+      "1": 38520
+    },
+    "heightIndependent": true,
+    "predictionChangedAfterObservingCapture": false
+  },
+  "slopeRecovery": {
+    "candidateCenter": "roundBinary32(scaledVertexDelta / integerGeometryWidth)",
+    "candidateRadiusFloatUlps": 8,
+    "pullEvaluation": "roundNearestEvenBinary32(fma(tileLocalXPlusOffset, candidateSlope, sharedTileConstant))",
+    "constantDomain": "binary32",
+    "constantSharing": "one recovered constant shared by both tile-zero sample positions",
+    "centerAndDerivativeUsedForSelection": false
+  },
+  "acceptance": {
+    "allRecordsWrittenAndFinite": true,
+    "allSamplesSafelyInsideTopLeftPrimitive": true,
+    "samplePositionHashMustMatch": true,
+    "everyCoefficientHasExactlyOneRecoveredSlope": true,
+    "everyRecoveredSlopeEqualsFrozenCanonicalPrediction": true,
+    "recoveredSlopeHashEqualsFrozenFourGeometryPrediction": true,
+    "centerAndDerivativeBitsAreDiagnosticNotFitted": true,
+    "noAdaptiveFitOrTolerance": true
+  },
+  "nonClaims": [
+    "A successful gate establishes only low determinant exponent transfer for power-of-two heights.",
+    "A successful gate does not establish odd-height numerator handling.",
+    "This probe does not establish clip-generated setup.",
+    "No result from this probe establishes end-to-end Liquid Glass parity."
+  ]
+}
