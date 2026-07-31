@@ -15,27 +15,38 @@ import validate_reciprocal_transfer as arithmetic
 type JsonObject = dict[str, Any]
 
 SCHEMA_VERSION = 1
-RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.6"
+RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.7"
 TARGET_WIDTH = 224
 TARGET_HEIGHT = 4_096
 PREREGISTERED_VIEWPORT_WIDTH = 32_768
 VIEWPORT_WIDTH = 32_768
 WIDTH_MINIMUM = 16_384
-WIDTH_MAXIMUM = 32_766
-WIDTH_COUNT = 8_192
-UNSEEN_EXPONENT_WIDTH_COUNT = 8_191
+WIDTH_MAXIMUM = 28_670
+WIDTH_COUNT = 6_144
+UNSEEN_EXPONENT_WIDTH_COUNT = 6_143
 CALIBRATION_CONTROL_WIDTH_COUNT = 1
+DEFERRED_CLIPPED_STAGE_CLASS_COUNT = 2_048
 WIDTHS_SHA256 = (
+    "8402a612ba7cd68ae8b9baa6a1c42a86b3552eecd7b2c54e66f6cec4a09778b6"
+)
+INTERMEDIATE_WIDTHS_SHA256 = (
     "fa2c6295cba5e66fc69ac3d08e536860039d7da1fdf7929b20179c1feff90fac"
 )
+SELECTED_RECIPROCAL_SHA256 = (
+    "b9543bc2be28e60fde4cd6e5ea24cdcd195ea2d25f64136ae92ada533ff1a7cc"
+)
 PREDICTED_COEFFICIENT_SHA256 = (
+    "35cf2c25264dee3f8bfee5755dc8d38b2980c6446f47c05988ed63f8b99dc85c"
+)
+INTERMEDIATE_COEFFICIENT_SHA256 = (
     "19f9fb11f4f0506f19d1ab8395ce8289af003524155e10d81e5be39402ded6d3"
 )
 MINIMUM_SIGNED_INTERIOR_AREA = 1_024
 GEOMETRY_COUNT = 4
 SAMPLE_SIDE_COUNT = 2
 RECORD_BYTES = 8
-RAW_BYTES = 7_340_032
+PREREGISTERED_RAW_BYTES = 7_340_032
+RAW_BYTES = 5_505_024
 SENTINEL = (0xFFFF_FFFF, 0xFFFF_FFFF)
 PREREGISTRATION_PATH = Path(__file__).with_name(
     "raster_reciprocal_scale_transfer_preregistration.json"
@@ -47,7 +58,7 @@ CAPTURE_AMENDMENT_PATH = Path(__file__).with_name(
     "raster_reciprocal_scale_transfer_capture_amendment.json"
 )
 CAPTURE_AMENDMENT_SHA256 = (
-    "94f81d6c08216dcfcf0ac0e5a464192e60435676c5217c22df8a3d4d8cfa58c3"
+    "94b3bca95fb65bee1a6799ce64f9f36da048fe8bb4e044315bdf4d880b2a4c59"
 )
 GEOMETRY_CASES = (
     {
@@ -102,7 +113,7 @@ def capture_widths() -> list[int]:
         )
         for denominator in range(
             arithmetic.NORMALIZED_DENOMINATOR_LOWER,
-            arithmetic.NORMALIZED_DENOMINATOR_UPPER + 1,
+            14_336,
         )
     ]
 
@@ -242,7 +253,7 @@ def load_preregistration() -> JsonObject:
             "normalized-denominator-major,witness-major,geometry-major,"
             "sample-side-major,pull-offset-major"
         )
-        or layout.get("rawBytes") != RAW_BYTES
+        or layout.get("rawBytes") != PREREGISTERED_RAW_BYTES
         or layout.get("uncoveredRecordSentinel")
         != "0xffffffffffffffff"
         or set(acceptance.values()) != {True}
@@ -282,7 +293,7 @@ def load_preregistration() -> JsonObject:
         or amendment.get("renderableDomainCorrection", {}).get(
             "amendedWidthsSha256"
         )
-        != WIDTHS_SHA256
+        != INTERMEDIATE_WIDTHS_SHA256
         or amendment.get("renderableDomainCorrection", {}).get(
             "selectedReciprocalTableSha256"
         )
@@ -290,10 +301,26 @@ def load_preregistration() -> JsonObject:
         or amendment.get("renderableDomainCorrection", {}).get(
             "amendedRecoveredCoefficientBitsSha256"
         )
-        != PREDICTED_COEFFICIENT_SHA256
+        != INTERMEDIATE_COEFFICIENT_SHA256
         or amendment.get("renderableDomainCorrection", {}).get(
             "refrozenBeforeNumericalOutput"
         )
+        is not True
+        or amendment.get(
+            "renderablePrefixRefreezeAfterRun30656492415", {}
+        ).get("amendedWidthsSha256")
+        != WIDTHS_SHA256
+        or amendment.get(
+            "renderablePrefixRefreezeAfterRun30656492415", {}
+        ).get("selectedReciprocalTableSha256")
+        != SELECTED_RECIPROCAL_SHA256
+        or amendment.get(
+            "renderablePrefixRefreezeAfterRun30656492415", {}
+        ).get("amendedRecoveredCoefficientBitsSha256")
+        != PREDICTED_COEFFICIENT_SHA256
+        or amendment.get(
+            "renderablePrefixRefreezeAfterRun30656492415", {}
+        ).get("refrozenBeforeNumericalOutput")
         is not True
     ):
         raise ValueError("reciprocal-scale-transfer amendment differs")
@@ -325,8 +352,8 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or len(manifest.get("ciCommit", "")) != 40
         or evidence.get("role")
         != (
-            "prospective-unclipped-power2-scale-transfer-"
-            "with-boundary-control"
+            "prospective-unclipped-power2-renderable-prefix-"
+            "with-control"
         )
         or evidence.get("preregistrationFile")
         != "Analysis/raster_reciprocal_scale_transfer_preregistration.json"
@@ -349,6 +376,8 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         != UNSEEN_EXPONENT_WIDTH_COUNT
         or evidence.get("calibrationControlWidthCount")
         != CALIBRATION_CONTROL_WIDTH_COUNT
+        or evidence.get("deferredClippedStageClassCount")
+        != DEFERRED_CLIPPED_STAGE_CLASS_COUNT
         or evidence.get("geometryCases") != list(GEOMETRY_CASES)
         or evidence.get("geometryCount") != GEOMETRY_COUNT
         or evidence.get("sampleSideCount") != SAMPLE_SIDE_COUNT
@@ -377,7 +406,7 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or evidence.get("uncoveredRecordSentinel")
         != "0xffffffffffffffff"
         or evidence.get("frozenSelectedReciprocalTableSha256")
-        != arithmetic.CANONICAL_RECIPROCAL_SHA256
+        != SELECTED_RECIPROCAL_SHA256
         or evidence.get("frozenRecoveredCoefficientBitsSha256")
         != PREDICTED_COEFFICIENT_SHA256
         or evidence.get("bytes") != RAW_BYTES
@@ -505,7 +534,7 @@ def validate(root: Path) -> JsonObject:
 
     selected_sha256 = selected_digest.hexdigest()
     coefficient_sha256 = coefficient_digest.hexdigest()
-    if selected_sha256 != arithmetic.CANONICAL_RECIPROCAL_SHA256:
+    if selected_sha256 != SELECTED_RECIPROCAL_SHA256:
         raise ValueError("prospective reciprocal-table prediction failed")
     if coefficient_sha256 != PREDICTED_COEFFICIENT_SHA256:
         raise ValueError("prospective coefficient-table prediction failed")
@@ -514,8 +543,8 @@ def validate(root: Path) -> JsonObject:
     return {
         "liquidGlassRasterReciprocalScaleTransferValidationSchemaVersion": 1,
         "classification": (
-            "prospective-unclipped-power2-scale-transfer-"
-            "with-boundary-control"
+            "prospective-unclipped-power2-renderable-prefix-"
+            "with-control"
         ),
         "probe": str(root),
         "manifestSha256": sha256_path(root / "manifest.json"),
@@ -527,6 +556,8 @@ def validate(root: Path) -> JsonObject:
             "unseenExponentWidthCount": UNSEEN_EXPONENT_WIDTH_COUNT,
             "calibrationControlWidthCount":
                 CALIBRATION_CONTROL_WIDTH_COUNT,
+            "deferredClippedStageClassCount":
+                DEFERRED_CLIPPED_STAGE_CLASS_COUNT,
             "witnessCount": len(arithmetic.WITNESS_SIGNIFICANDS),
             "geometryCount": GEOMETRY_COUNT,
             "sampleSideCount": SAMPLE_SIDE_COUNT,
@@ -547,11 +578,12 @@ def validate(root: Path) -> JsonObject:
             "exact": True,
         },
         "conclusions": {
-            "canonicalReciprocalTableTransfersFor8191UnseenWidths": True,
-            "physicalProductLawTransfersFor8191UnseenWidths": True,
+            "canonicalReciprocalPrefixTransfersFor6143UnseenWidths": True,
+            "physicalProductLawTransfersFor6143UnseenWidths": True,
             "powerOfTwoHeightScaleEquivalenceTransfers": True,
             "prospectiveIsolatedScaleTransferGatePassed": True,
             "normalizationClass8192UnseenExponentTransferPending": True,
+            "upper2048ClassesRequireClippedStageProbe": True,
             "failedClippedGeneralHeightHypothesisRemainsFalsified": True,
             "closedFormSelectorEstablished": False,
             "endToEndLiquidGlassParityEstablished": False,

@@ -25,7 +25,7 @@ private struct SamplePosition {
 }
 
 private let normalizedDenominatorLower = 8_192
-private let normalizedDenominatorUpper = 16_383
+private let normalizedDenominatorUpper = 14_335
 private let targetWidth = 224
 private let targetHeight = 4_096
 private let viewportWidth = 32_768
@@ -228,14 +228,14 @@ private func diagnostic(_ message: String) {
 
 private func run(outputDirectory: URL) throws {
     diagnostic("entered run")
-    precondition(widths.count == 8_192)
+    precondition(widths.count == 6_144)
     precondition(widths.first == 16_384)
-    precondition(widths.last == 32_766)
+    precondition(widths.last == 28_670)
     precondition(widths.min() == 16_384)
-    precondition(widths.max() == 32_766)
+    precondition(widths.max() == 28_670)
     precondition(
         sha256(uint32Data(widths.map { UInt32($0) }))
-            == "fa2c6295cba5e66fc69ac3d08e536860039d7da1fdf7929b20179c1feff90fac")
+            == "8402a612ba7cd68ae8b9baa6a1c42a86b3552eecd7b2c54e66f6cec4a09778b6")
     precondition(
         sha256(uint32Data(witnessSignificands))
             == "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a")
@@ -532,7 +532,7 @@ private func run(outputDirectory: URL) throws {
     let outputData = Data(
         bytes: output.contents(),
         count: outputBytes)
-    precondition(outputData.count == 7_340_032)
+    precondition(outputData.count == 5_505_024)
     let outputFilename =
         "raster-reciprocal-scale-transfer-pulls.raw"
     try outputData.write(
@@ -543,7 +543,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-scale-transfer-1.0.6"
+        "metal-raster-reciprocal-scale-transfer-1.0.7"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -562,7 +562,7 @@ private func run(outputDirectory: URL) throws {
     ] as [String: Any]
     manifest["reciprocalScaleTransfer"] = [
         "role":
-            "prospective-unclipped-power2-scale-transfer-with-boundary-control",
+            "prospective-unclipped-power2-renderable-prefix-with-control",
         "preregistrationFile":
             "Analysis/raster_reciprocal_scale_transfer_preregistration.json",
         "preregistrationSha256":
@@ -570,16 +570,17 @@ private func run(outputDirectory: URL) throws {
         "captureAmendmentFile":
             "Analysis/raster_reciprocal_scale_transfer_capture_amendment.json",
         "captureAmendmentSha256":
-            "94f81d6c08216dcfcf0ac0e5a464192e60435676c5217c22df8a3d4d8cfa58c3",
+            "94b3bca95fb65bee1a6799ce64f9f36da048fe8bb4e044315bdf4d880b2a4c59",
         "widthFormula":
             "16384-control-if-normalized-denominator-8192-else-2x",
         "widthMinimum": widths.min()!,
         "widthMaximum": widths.max()!,
         "widthCount": widths.count,
         "widthsSha256":
-            "fa2c6295cba5e66fc69ac3d08e536860039d7da1fdf7929b20179c1feff90fac",
-        "unseenExponentWidthCount": 8_191,
+            "8402a612ba7cd68ae8b9baa6a1c42a86b3552eecd7b2c54e66f6cec4a09778b6",
+        "unseenExponentWidthCount": 6_143,
         "calibrationControlWidthCount": 1,
+        "deferredClippedStageClassCount": 2_048,
         "geometryCases": geometryManifest(),
         "geometryCount": geometryCases.count,
         "sampleSideCount": sampleSideCount,
@@ -606,9 +607,9 @@ private func run(outputDirectory: URL) throws {
         "uncoveredRecordSentinel":
             "0xffffffffffffffff",
         "frozenSelectedReciprocalTableSha256":
-            "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+            "b9543bc2be28e60fde4cd6e5ea24cdcd195ea2d25f64136ae92ada533ff1a7cc",
         "frozenRecoveredCoefficientBitsSha256":
-            "19f9fb11f4f0506f19d1ab8395ce8289af003524155e10d81e5be39402ded6d3",
+            "35cf2c25264dee3f8bfee5755dc8d38b2980c6446f47c05988ed63f8b99dc85c",
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

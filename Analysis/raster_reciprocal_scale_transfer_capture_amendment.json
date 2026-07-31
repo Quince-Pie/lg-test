@@ -53,6 +53,11 @@
       "runId": 30656308838,
       "ciCommit": "d810d68dc321f121145b76f915c6a288c8b2c48f",
       "result": "centering the viewport caused the first width to lose coverage, falsifying the guard-band intervention; no pull corpus or manifest was serialized"
+    },
+    {
+      "runId": 30656492415,
+      "ciCommit": "1d8abfaa477865c9b99e6e1247353f6a82d109d7",
+      "result": "per-submission autorelease pools reproduced the first failure at width 28672 after exactly 6144 passing widths; no pull corpus or manifest was serialized"
     }
   ],
   "diagnosis": {
@@ -107,11 +112,26 @@
     "hypothesisFalsified": true,
     "finalViewportOriginX": 0
   },
-  "commandResourceLifetimeCorrection": {
+  "commandResourceLifetimeHypothesisTest": {
     "evidence": "exactly 6144 sequential one-width command buffers passed before the first failure",
-    "before": "Metal command buffers and encoders remained in the process autorelease pool",
-    "after": "each completed one-width submission is enclosed in its own autorelease pool",
-    "numericalPredictionsChanged": false
+    "intervention": "each completed one-width submission was enclosed in its own autorelease pool",
+    "result": "the same width-28672 failure remained",
+    "hypothesisFalsified": true,
+    "autoreleasePoolRetainedAsResourceHygiene": true
+  },
+  "renderablePrefixRefreezeAfterRun30656492415": {
+    "reason": "all 6144 prefix widths passed every exact fragment-count check, while the remaining 2048 widths begin at the reproducible positive-coordinate raster limit and require a separately preregistered clipped-stage probe",
+    "normalizedDenominatorLowerInclusive": 8192,
+    "normalizedDenominatorUpperInclusive": 14335,
+    "normalizationClassCount": 6144,
+    "calibrationControlWidthCount": 1,
+    "unseenExponentWidthCount": 6143,
+    "deferredClippedStageClassCount": 2048,
+    "amendedWidthsSha256": "8402a612ba7cd68ae8b9baa6a1c42a86b3552eecd7b2c54e66f6cec4a09778b6",
+    "selectedReciprocalTableSha256": "b9543bc2be28e60fde4cd6e5ea24cdcd195ea2d25f64136ae92ada533ff1a7cc",
+    "amendedRecoveredCoefficientBitsSha256": "35cf2c25264dee3f8bfee5755dc8d38b2980c6446f47c05988ed63f8b99dc85c",
+    "rawBytes": 5505024,
+    "refrozenBeforeNumericalOutput": true
   },
   "frozenNumerics": {
     "widthsSha256": "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",

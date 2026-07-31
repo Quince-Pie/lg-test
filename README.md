@@ -2365,6 +2365,19 @@ viewport is restored unchanged, and every completed one-width submission is
 now enclosed in its own autorelease pool. Frozen slope predictions remain
 unchanged.
 
+Run 30656492415 retained the autorelease pools and reproduced the same first
+failure at width 28,672, falsifying the resource-lifetime explanation. The
+6,144-width renderable prefix had nevertheless passed every coverage check.
+Before exposing its pull bits, the prefix is frozen as a separate prospective
+corpus: one measured width-16,384 control plus 6,143 unseen-exponent widths
+through 28,670. Its width, selector, and coefficient hashes are respectively
+`8402a612ba7cd68ae8b9baa6a1c42a86b3552eecd7b2c54e66f6cec4a09778b6`,
+`b9543bc2be28e60fde4cd6e5ea24cdcd195ea2d25f64136ae92ada533ff1a7cc`,
+and
+`35cf2c25264dee3f8bfee5755dc8d38b2980c6446f47c05988ed63f8b99dc85c`.
+The upper 2,048 normalization classes are deferred to a separately
+preregistered clipped-stage probe; this gate cannot claim them.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
