@@ -2,9 +2,9 @@
 // calibration backgrounds, from a real AppKit/SwiftUI window.
 //
 // The app draws each background inside its own window and composites real
-// `glassEffect` shapes on top, then screenshots its own window via
-// CGWindowListCreateImage (own-window capture does not require the Screen
-// Recording TCC grant, which makes this reliable on CI runners).
+// `glassEffect` shapes on top. Settled states use an own-window snapshot;
+// live states use ScreenCaptureKit so acquiring evidence cannot serialize
+// WindowServer behind one oversized screenshot per requested sample.
 //
 // Every numerical background has paired no-overlay controls for both
 // appearances. Separate targeted matrices identify material transfer,
@@ -13,6 +13,9 @@
 import AppKit
 import SwiftUI
 import CoreGraphics
+import CoreMedia
+import CoreVideo
+import ScreenCaptureKit
 import ImageIO
 import UniformTypeIdentifiers
 import CryptoKit
@@ -1948,6 +1951,385 @@ struct DynamicCaptureResult: @unchecked Sendable {
     let fullFrameClockDecodes: Int
 }
 
+final class WindowStreamCollector:
+    NSObject,
+    SCStreamOutput,
+    SCStreamDelegate,
+    @unchecked Sendable
+{
+    private final class Segment {
+        let animationStart: Double
+        let duration: Double
+        let frameCount: Int
+        let backingScale: CGFloat
+        var bestByIndex: [Int: DynamicTimedFrame] = [:]
+        var captureAttempts = 0
+        var decodedSamples = 0
+        var transientFailures = 0
+        var fullFrameCaptures = 0
+        var fullFrameClockDecodes = 0
+
+        init(
+            animationStart: Double,
+            duration: Double,
+            frameCount: Int,
+            backingScale: CGFloat
+        ) {
+            self.animationStart = animationStart
+            self.duration = duration
+            self.frameCount = frameCount
+            self.backingScale = backingScale
+        }
+    }
+
+    private let outputQueue = DispatchQueue(
+        label: "GlassCapture.WindowStreamCollector",
+        qos: .userInteractive)
+    private let expectedWidth: Int
+    private let expectedHeight: Int
+    private let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+    private var stream: SCStream?
+    private var segment: Segment?
+    private var ready = false
+    private var terminalError: String?
+
+    private init(expectedWidth: Int, expectedHeight: Int) {
+        self.expectedWidth = expectedWidth
+        self.expectedHeight = expectedHeight
+        super.init()
+    }
+
+    static func start(
+        windowID: CGWindowID,
+        expectedWidth: Int,
+        expectedHeight: Int,
+        refreshRate: Double
+    ) async throws -> WindowStreamCollector {
+        let content = try await SCShareableContent.excludingDesktopWindows(
+            false, onScreenWindowsOnly: false)
+        guard let sourceWindow = content.windows.first(where: {
+            $0.windowID == windowID
+        }) else {
+            throw RigError.capture(
+                "ScreenCaptureKit could not resolve window \(windowID)")
+        }
+
+        let collector = WindowStreamCollector(
+            expectedWidth: expectedWidth,
+            expectedHeight: expectedHeight)
+        let configuration = SCStreamConfiguration()
+        configuration.width = expectedWidth
+        configuration.height = expectedHeight
+        configuration.pixelFormat = kCVPixelFormatType_32BGRA
+        configuration.colorSpaceName = CGColorSpace.sRGB
+        configuration.minimumFrameInterval = CMTime(
+            value: 1,
+            timescale: Int32(max(1, Int(refreshRate.rounded()))))
+        configuration.queueDepth = 8
+        configuration.showsCursor = false
+        configuration.capturesAudio = false
+        configuration.scalesToFit = false
+        configuration.preservesAspectRatio = true
+        configuration.shouldBeOpaque = true
+        configuration.ignoreShadowsSingleWindow = true
+        configuration.ignoreGlobalClipSingleWindow = true
+
+        let filter = SCContentFilter(desktopIndependentWindow: sourceWindow)
+        let stream = SCStream(
+            filter: filter, configuration: configuration, delegate: collector)
+        collector.stream = stream
+        try stream.addStreamOutput(
+            collector,
+            type: .screen,
+            sampleHandlerQueue: collector.outputQueue)
+        do {
+            try await stream.startCapture()
+            try await collector.waitUntilReady(timeoutSeconds: 3)
+        } catch {
+            try? await stream.stopCapture()
+            throw error
+        }
+        return collector
+    }
+
+    func stop() async {
+        guard let stream else { return }
+        try? await stream.stopCapture()
+    }
+
+    private func waitUntilReady(timeoutSeconds: Double) async throws {
+        let deadline =
+            ProcessInfo.processInfo.systemUptime + timeoutSeconds
+        while ProcessInfo.processInfo.systemUptime < deadline {
+            let status = outputQueue.sync {
+                (ready, terminalError)
+            }
+            if status.0 {
+                return
+            }
+            if let error = status.1 {
+                throw RigError.capture(
+                    "ScreenCaptureKit stopped before its first frame: \(error)")
+            }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        throw RigError.capture(
+            "ScreenCaptureKit produced no complete \(expectedWidth)x"
+            + "\(expectedHeight) frame within \(timeoutSeconds) seconds")
+    }
+
+    func beginSegment(
+        animationStart: Double,
+        duration: Double,
+        frameCount: Int,
+        backingScale: CGFloat
+    ) throws {
+        try outputQueue.sync {
+            guard segment == nil else {
+                throw RigError.capture(
+                    "ScreenCaptureKit segment already active")
+            }
+            if let terminalError {
+                throw RigError.capture(
+                    "ScreenCaptureKit stream stopped: \(terminalError)")
+            }
+            segment = Segment(
+                animationStart: animationStart,
+                duration: duration,
+                frameCount: frameCount,
+                backingScale: backingScale)
+        }
+    }
+
+    func finishSegment() throws -> DynamicCaptureResult {
+        try outputQueue.sync {
+            guard let state = segment else {
+                throw RigError.capture(
+                    "ScreenCaptureKit segment is not active")
+            }
+            segment = nil
+            if let terminalError {
+                throw RigError.capture(
+                    "ScreenCaptureKit stream stopped: \(terminalError)")
+            }
+            let finalIndex = state.frameCount - 1
+            guard let endpoint = state.bestByIndex[finalIndex],
+                  endpoint.presentationProgress >= 0.995
+            else {
+                let maximumPresented = state.bestByIndex.values.map(
+                    \.presentationProgress
+                ).max() ?? 0
+                throw RigError.capture(
+                    "streamed animation endpoint was not presented; "
+                    + "full-frame=\(maximumPresented), "
+                    + "received=\(state.captureAttempts), "
+                    + "decoded=\(state.decodedSamples)")
+            }
+            return DynamicCaptureResult(
+                frames: state.bestByIndex.keys.sorted().compactMap {
+                    state.bestByIndex[$0]
+                },
+                captureAttempts: state.captureAttempts,
+                decodedSamples: state.decodedSamples,
+                transientFailures: state.transientFailures,
+                clockProbeSurface:
+                    "desktop-independent-window-stream",
+                boundedClockProbes: 0,
+                fullFrameCaptures: state.fullFrameCaptures,
+                fullFrameClockDecodes: state.fullFrameClockDecodes)
+        }
+    }
+
+    func cancelSegment() {
+        outputQueue.sync {
+            segment = nil
+        }
+    }
+
+    func stream(
+        _ stream: SCStream,
+        didOutputSampleBuffer sampleBuffer: CMSampleBuffer,
+        of outputType: SCStreamOutputType
+    ) {
+        guard outputType == .screen else { return }
+        let state = segment
+        state?.captureAttempts += 1
+
+        guard sampleBuffer.isValid,
+              let attachmentsArray =
+                CMSampleBufferGetSampleAttachmentsArray(
+                    sampleBuffer, createIfNecessary: false)
+                    as? [[SCStreamFrameInfo: Any]],
+              let attachments = attachmentsArray.first,
+              let statusRawValue =
+                attachments[SCStreamFrameInfo.status] as? Int,
+              let status = SCFrameStatus(rawValue: statusRawValue),
+              status == .complete,
+              let pixelBuffer =
+                CMSampleBufferGetImageBuffer(sampleBuffer),
+              CVPixelBufferGetPixelFormatType(pixelBuffer)
+                == kCVPixelFormatType_32BGRA,
+              CVPixelBufferGetWidth(pixelBuffer) == expectedWidth,
+              CVPixelBufferGetHeight(pixelBuffer) == expectedHeight
+        else {
+            state?.transientFailures += 1
+            return
+        }
+
+        ready = true
+        guard let state else { return }
+        state.fullFrameCaptures += 1
+
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer {
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
+        }
+        guard let baseAddress =
+                CVPixelBufferGetBaseAddress(pixelBuffer)
+        else {
+            state.transientFailures += 1
+            return
+        }
+
+        let width = CVPixelBufferGetWidth(pixelBuffer)
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+        let markerHeight = min(
+            height,
+            max(1, Int((4 * state.backingScale).rounded())))
+        let bytes = baseAddress.assumingMemoryBound(to: UInt8.self)
+        var lengths: [Int] = []
+        lengths.reserveCapacity(markerHeight)
+        for row in 0..<markerHeight {
+            var length = 0
+            let rowOffset = row * bytesPerRow
+            while length < width {
+                let offset = rowOffset + length * 4
+                // Native 32BGRA: the coded prefix is opaque magenta. The
+                // symmetric red/blue threshold matches presentationProgress.
+                if bytes[offset] < 240
+                    || bytes[offset + 1] > 24
+                    || bytes[offset + 2] < 240 {
+                    break
+                }
+                length += 1
+            }
+            lengths.append(length)
+        }
+        lengths.sort()
+        guard let median =
+                lengths.dropFirst(lengths.count / 2).first
+        else {
+            state.transientFailures += 1
+            return
+        }
+
+        let presented = min(
+            1, max(0, Double(median) / Double(width)))
+        let finalIndex = state.frameCount - 1
+        let index = min(
+            finalIndex,
+            max(0, Int((presented * Double(finalIndex)).rounded())))
+        let targetProgress = Double(index) / Double(finalIndex)
+        let distance = abs(presented - targetProgress)
+        let previous = state.bestByIndex[index]
+        let shouldReplace: Bool
+        if index == finalIndex, let previous {
+            let previousIsEndpoint =
+                previous.presentationProgress >= 0.995
+            let sampleIsEndpoint = presented >= 0.995
+            if sampleIsEndpoint != previousIsEndpoint {
+                shouldReplace = sampleIsEndpoint
+            } else if sampleIsEndpoint {
+                shouldReplace = false
+            } else {
+                shouldReplace =
+                    distance
+                    < abs(
+                        previous.presentationProgress
+                            - targetProgress)
+            }
+        } else {
+            shouldReplace = previous.map {
+                distance
+                    < abs(
+                        $0.presentationProgress - targetProgress)
+            } ?? true
+        }
+
+        if index > 0, shouldReplace {
+            let data = Data(
+                bytes: baseAddress,
+                count: bytesPerRow * height)
+            guard let provider =
+                    CGDataProvider(data: data as CFData),
+                  let image = CGImage(
+                    width: width,
+                    height: height,
+                    bitsPerComponent: 8,
+                    bitsPerPixel: 32,
+                    bytesPerRow: bytesPerRow,
+                    space: colorSpace,
+                    bitmapInfo:
+                        CGBitmapInfo(
+                            rawValue:
+                                CGImageAlphaInfo
+                                    .premultipliedFirst.rawValue)
+                        .union(.byteOrder32Little),
+                    provider: provider,
+                    decode: nil,
+                    shouldInterpolate: false,
+                    intent: .defaultIntent)
+            else {
+                state.transientFailures += 1
+                return
+            }
+
+            let callbackUptime =
+                ProcessInfo.processInfo.systemUptime
+            let hostTime = CMClockGetTime(
+                CMClockGetHostTimeClock())
+            let presentationTime =
+                CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            let hostSeconds = CMTimeGetSeconds(hostTime)
+            let presentationSeconds =
+                CMTimeGetSeconds(presentationTime)
+            let frameUptime =
+                hostSeconds.isFinite
+                    && presentationSeconds.isFinite
+                ? callbackUptime
+                    + presentationSeconds - hostSeconds
+                : callbackUptime
+            let target =
+                state.duration * Double(index)
+                / Double(finalIndex)
+            state.bestByIndex[index] = DynamicTimedFrame(
+                index: index,
+                target: target,
+                actual:
+                    frameUptime - state.animationStart,
+                presentationProgress: presented,
+                frame: RawCapturedFrame(
+                    image: image,
+                    backend:
+                        "ScreenCaptureKit-SCStream-BGRA",
+                    midpointUptime: frameUptime,
+                    captureDurationSeconds: 0))
+        }
+        state.decodedSamples += 1
+        state.fullFrameClockDecodes += 1
+    }
+
+    func stream(
+        _ stream: SCStream,
+        didStopWithError error: any Error
+    ) {
+        outputQueue.async {
+            self.terminalError = error.localizedDescription
+        }
+    }
+}
+
 func captureRawWindow(_ wid: CGWindowID) throws -> RawCapturedFrame {
     let started = ProcessInfo.processInfo.systemUptime
 
@@ -2127,10 +2509,20 @@ func capturePresentedAnimation(
     refreshRate: Double,
     expectedProbePixelWidth: Int,
     expectedProbePixelHeight: Int,
-    useDedicatedProbe: Bool
+    useDedicatedProbe: Bool,
+    streamCollector: WindowStreamCollector?
 ) throws -> DynamicCaptureResult {
-    let finalIndex = frameCount - 1
     let endpointDeadline = animationStart + duration + 0.250
+    if let streamCollector {
+        let now = ProcessInfo.processInfo.systemUptime
+        if endpointDeadline > now {
+            Thread.sleep(
+                forTimeInterval: endpointDeadline - now)
+        }
+        return try streamCollector.finishSegment()
+    }
+
+    let finalIndex = frameCount - 1
     var useSmallClock = useDedicatedProbe
     var clockProbeSurface = useSmallClock
         ? "dedicated-clock-window"
@@ -3627,6 +4019,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             model.dynamicOriginX = CGFloat(config.transitionOriginX)
             model.dynamicOriginY = CGFloat(config.transitionOriginY)
 
+            let dynamicWindowID = CGWindowID(window.windowNumber)
+            let liveRefresh = max(
+                displayMode?.refreshRate ?? 60, 1)
+            let liveStream: WindowStreamCollector?
+            do {
+                liveStream = try await WindowStreamCollector.start(
+                    windowID: dynamicWindowID,
+                    expectedWidth: pw,
+                    expectedHeight: ph,
+                    refreshRate: liveRefresh)
+                log(
+                    "dynamic capture surface: "
+                    + "ScreenCaptureKit desktop-independent window")
+            } catch {
+                liveStream = nil
+                log(
+                    "dynamic capture surface fallback: "
+                    + error.localizedDescription)
+            }
+
             for appearance in Appearance.allCases {
                 window.appearance = appearance.ns
                 for overlay in [Overlay.regular, .clear] {
@@ -3696,15 +4108,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             let refresh = max(
                                 displayMode?.refreshRate ?? 60, 1)
                             let animationStart = ProcessInfo.processInfo.systemUptime
+                            try liveStream?.beginSegment(
+                                animationStart: animationStart,
+                                duration: config.dynamicDuration,
+                                frameCount: config.dynamicFrames,
+                                backingScale: scale)
                             if mode.usesRasterClock {
                                 materializeClock.animate(
                                     startTime: animationStart,
                                     duration: config.dynamicDuration,
                                     refreshRate: refresh)
-                                clockProbe.animate(
-                                    startTime: animationStart,
-                                    duration: config.dynamicDuration,
-                                    refreshRate: refresh)
+                                if liveStream == nil {
+                                    clockProbe.animate(
+                                        startTime: animationStart,
+                                        duration: config.dynamicDuration,
+                                        refreshRate: refresh)
+                                } else {
+                                    clockProbe.deactivate()
+                                }
                             }
                             switch mode {
                             case .materialize:
@@ -3746,7 +4167,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 }
                             }
 
-                            let windowID = CGWindowID(window.windowNumber)
                             let probeWindowID = CGWindowID(
                                 clockProbeWindow.windowNumber)
                             let probeScale =
@@ -3762,7 +4182,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 priority: .userInitiated
                             ) {
                                 try capturePresentedAnimation(
-                                    windowID: windowID,
+                                    windowID: dynamicWindowID,
                                     probeWindowID: probeWindowID,
                                     animationStart: animationStart,
                                     duration: duration,
@@ -3775,7 +4195,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     expectedProbePixelHeight:
                                         probePixelHeight,
                                     useDedicatedProbe:
-                                        useDedicatedProbe)
+                                        useDedicatedProbe,
+                                    streamCollector:
+                                        liveStream)
                             }.value
                             timed.append(contentsOf: captured.frames)
                             phaseTask?.cancel()
@@ -3832,7 +4254,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     ? "appkit-raster-monotonic"
                                     : "swiftui-animatable-frame",
                                 samplingMethod:
-                                    "continuous-bounded-clock-full-frame-verified",
+                                    liveStream == nil
+                                    ? "continuous-bounded-clock-full-frame-verified"
+                                    : "continuous-window-stream-full-frame-verified",
                                 captureAttempts: captured.captureAttempts,
                                 decodedSamples: captured.decodedSamples,
                                 transientFailures: captured.transientFailures,
@@ -3930,6 +4354,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 + "\(timed.count)/\(config.dynamicFrames) target frames")
                         } catch {
                             phaseTask?.cancel()
+                            liveStream?.cancelSegment()
                             failures += 1
                             log(
                                 "FAILED dynamic sequence \(sequenceID): "
@@ -3940,6 +4365,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     }
                 }
             }
+            await liveStream?.stop()
 
             // Live animations reveal temporal material behavior, but a loaded
             // CI host cannot guarantee a screenshot at every requested time.

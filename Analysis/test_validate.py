@@ -1075,6 +1075,27 @@ class ValidatorTests(unittest.TestCase):
                 for error in incomplete.errors
             ))
 
+            sequence.update({
+                "samplingMethod":
+                    "continuous-window-stream-full-frame-verified",
+                "clockProbeSurface":
+                    "desktop-independent-window-stream",
+                "boundedClockProbes": 0,
+                "fullFrameCaptures": 19,
+                "fullFrameClockDecodes": 19,
+            })
+            streamed = Findings()
+            validate_dynamic(root, manifest, references, streamed)
+            self.assertEqual(streamed.errors, [])
+
+            sequence["boundedClockProbes"] = 1
+            invalid_stream = Findings()
+            validate_dynamic(root, manifest, references, invalid_stream)
+            self.assertTrue(any(
+                "bounded clock/full-frame verification counters" in error
+                for error in invalid_stream.errors
+            ))
+
     def test_schema5_sweeps_measure_repeatability_and_hysteresis(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

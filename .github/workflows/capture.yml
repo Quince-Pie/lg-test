@@ -108,10 +108,10 @@ jobs:
           defaults read com.apple.universalAccess reduceMotion
           defaults read com.apple.universalAccess increaseContrast
 
-      # Best effort: pre-grant Screen Recording so the `screencapture`
-      # fallback path works. The primary path (an app capturing its OWN
-      # window via CGWindowListCreateImage) does not need this.
-      - name: Grant Screen Recording TCC (fallback path, best effort)
+      # Live evidence uses a desktop-independent SCStream so frame delivery
+      # does not serialize WindowServer behind oversized snapshots. Settled
+      # own-window captures retain the legacy no-TCC path.
+      - name: Grant Screen Recording TCC (live stream, best effort)
         continue-on-error: true
         run: |
           db="/Library/Application Support/com.apple.TCC/TCC.db"
@@ -196,8 +196,8 @@ jobs:
             exit
           fi
 
-          # WindowServer snapshot realization on hosted macOS is stochastic:
-          # acquisition calls can remain fast while presented pixels stall.
+          # Hosted WindowServer scheduling is stochastic even when stream
+          # delivery itself is healthy.
           # Retry the complete focused suite, never individual frames, and
           # accept only the first artifact that passes the same strict
           # validator used by the final gate. Resolution, animation schedule,

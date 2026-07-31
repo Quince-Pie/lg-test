@@ -1861,6 +1861,7 @@ def validate_dynamic(
             if sampling_method not in {
                 "continuous-off-main-presentation-binned",
                 "continuous-bounded-clock-full-frame-verified",
+                "continuous-window-stream-full-frame-verified",
             }:
                 findings.error(f"{label}: unexpected dynamic sampling method")
             attempts = sequence.get("captureAttempts")
@@ -1874,10 +1875,10 @@ def validate_dynamic(
                 or attempts != decoded_samples + transient_failures
             ):
                 findings.error(f"{label}: inconsistent dynamic sampler counters")
-            if (
-                sampling_method
-                == "continuous-bounded-clock-full-frame-verified"
-            ):
+            if sampling_method in {
+                "continuous-bounded-clock-full-frame-verified",
+                "continuous-window-stream-full-frame-verified",
+            }:
                 clock_surface = sequence.get("clockProbeSurface")
                 bounded_probes = sequence.get("boundedClockProbes")
                 full_captures = sequence.get("fullFrameCaptures")
@@ -1886,10 +1887,16 @@ def validate_dynamic(
                     0,
                     len(sequence.get("frames", [])) - 1,
                 )
-                if clock_surface not in {
-                    "dedicated-clock-window",
-                    "full-window-fallback",
-                }:
+                expected_surfaces = (
+                    {"desktop-independent-window-stream"}
+                    if sampling_method
+                    == "continuous-window-stream-full-frame-verified"
+                    else {
+                        "dedicated-clock-window",
+                        "full-window-fallback",
+                    }
+                )
+                if clock_surface not in expected_surfaces:
                     findings.error(
                         f"{label}: invalid bounded clock-probe surface"
                     )
@@ -1906,6 +1913,11 @@ def validate_dynamic(
                     or bounded_probes > attempts
                     or full_decodes > full_captures
                     or full_decodes < retained_live_frames
+                    or (
+                        sampling_method
+                        == "continuous-window-stream-full-frame-verified"
+                        and bounded_probes != 0
+                    )
                 ):
                     findings.error(
                         f"{label}: inconsistent bounded clock/full-frame "

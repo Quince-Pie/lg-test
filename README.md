@@ -3,8 +3,9 @@
 This repository measures Apple's real macOS 26 Liquid Glass renderer. It does
 not use screenshots from articles, hand-tuned imitations, or an assumed blur
 model. A SwiftUI/AppKit program renders controlled inputs beneath
-`glassEffect`, captures its own window, and records enough provenance to reject
-bad evidence before it reaches Walle's shader.
+`glassEffect`, captures settled states from its own window, streams live states
+from the same desktop-independent window, and records enough provenance to
+reject bad evidence before it reaches Walle's shader.
 
 The target is observational parity: for the tested backgrounds, geometries,
 appearances, and transitions, Walle must match captured output within explicit
@@ -1560,6 +1561,8 @@ static captures, 32 live dynamic sequences plus 32 post-settle controls, and
   schedule, subtree isolation, presentation-clock backend, and delayed
   post-settle control;
 - each live sequence's sampling method and attempted/decoded/failure counters;
+- whether live pixels came from the compositor-delivered window stream or the
+  fail-closed legacy snapshot path;
 - every exact sweep state, direction/trial, requested progress, delayed
   stability result, and hashes.
 
@@ -1612,6 +1615,16 @@ The workflow requires the `macos-26` runner label and uploads:
 ```text
 liquid-glass-captures-<run-id>-<suite>
 ```
+
+Live capture uses a single-window ScreenCaptureKit stream at the display
+refresh interval. The clock is decoded directly from each delivered BGRA
+frame, and only the closest real frame in each requested bin is retained.
+There is no interpolation or synthesized frame. This removes the measurement
+feedback loop in which requesting a 2560×2880 synchronous snapshot delayed
+presentation of the animation being measured. If the stream cannot start or
+produce a dimension-exact complete frame, the manifest labels the legacy
+bounded-snapshot fallback explicitly; all existing temporal gates remain
+unchanged.
 
 Return the automatic v2.19 `static` artifact first. It contains the fixed-site
 square-size trace needed to identify cumulative sub-threshold filter mass.
