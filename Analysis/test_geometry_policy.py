@@ -67,6 +67,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             "metadata-only geometry-policy capture",
             source,
         )
+        self.assertIn('"geometry-policy",', source)
         self.assertIn(
             "compact geometry capture emitted raw stage dumps",
             workflow,

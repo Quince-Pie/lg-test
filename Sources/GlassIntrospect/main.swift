@@ -4305,6 +4305,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         "bounded-depth2-gradient-smoothing3",
         "carenderer-live-tree",
         "carenderer-local-backdrop",
+        "geometry-policy",
     ])
     private let replayCaptureNames = Set([
         "carenderer-live-tree",
