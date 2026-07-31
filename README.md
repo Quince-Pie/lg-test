@@ -2281,6 +2281,19 @@ the same x-ramp, and the raw record order is unchanged; the effective layout
 term is therefore `sample-side`, not `primitive`. No numerical prediction,
 geometry, sample position, or acceptance tolerance changed.
 
+Run 30653858985 then wrote 602,476 of 917,504 records and identified the
+coverage boundary without serializing or uploading the pull buffer. The first
+missing record occurred at width 35,508. The domain amendment therefore
+assigns normalized class 8,192 to the already covered but still unobserved
+width 32,768 and every other class to twice its denominator, yielding 8,192
+unique widths from 16,386 through 32,768. Every width remains above the
+16,384 calibration limit and uses the new reciprocal exponent. Before another
+capture, the amendment freezes the new width-list hash
+`f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce`
+and predicted coefficient hash
+`7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0`.
+The canonical selector hash is unchanged.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

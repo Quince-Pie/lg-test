@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-reciprocal-transfer-domain-amendment",
+  "authorized": true,
+  "authorizedAtUtcDate": "2026-07-31",
+  "failedRun": {
+    "runId": 30653858985,
+    "ciCommit": "61a08ddeb0806e26627339dd42ba67ab23ca5009",
+    "captureSucceeded": false,
+    "validatorRan": false,
+    "totalRecordCount": 917504,
+    "writtenRecordCount": 602476,
+    "missingRecordCount": 315028,
+    "firstMissingRecordIndices": [
+      76724,
+      76725,
+      76732,
+      76733,
+      76740,
+      76741,
+      76748,
+      76749,
+      76756,
+      76757,
+      76764,
+      76765,
+      76772,
+      76773,
+      76780,
+      76781
+    ],
+    "firstMissingRecordDecoded": {
+      "normalizedDenominatorIndex": 685,
+      "width": 35508,
+      "witnessIndex": 0,
+      "geometryIndex": 2,
+      "sampleSide": 0
+    },
+    "uploadedBuildLogSha256": "c22400625c200b7cf9a2f6128b9fb8565bbc54142a45776717bfcededcb5c71d",
+    "manifestUploaded": false,
+    "pullCorpusUploaded": false,
+    "validationUploaded": false,
+    "appleReciprocalOrCoefficientOutputsObserved": false
+  },
+  "technicalChange": {
+    "field": "prospective width mapping",
+    "previousFormula": "4 * normalizedDenominator",
+    "newFormula": "32768 when normalizedDenominator == 8192; otherwise 2 * normalizedDenominator",
+    "reason": "The routing diagnostic proves full record coverage through width 35504 and missing coverage beginning at width 35508. The amended mapping keeps every case at or below 32768 while assigning every normalized class a width strictly above the 16384 calibration domain. It changes no selector hypothesis, witness, geometry, sample position rule, or acceptance tolerance.",
+    "normalizationClassCount": 8192,
+    "widthCount": 8192,
+    "widthMinimum": 16386,
+    "widthMaximum": 32768,
+    "widthsAboveCalibrationUpperBoundCount": 8192,
+    "unobservedWidthCount": 8192,
+    "unseenReciprocalExponent": -15,
+    "previousWidthsSha256": "d1789dd285e63e23375037362e9df017efdc70f5e25163179e7334897d5fc8ed",
+    "amendedWidthsSha256": "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce"
+  },
+  "refrozenPredictionsBeforeObservation": {
+    "selectedReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "selectedReciprocalTableChanged": false,
+    "previousRecoveredCoefficientBitsSha256": "c053c9c4f8f92efa4d93145e627dc16086bf2aebc3133e50f576b696c9eb00bb",
+    "amendedRecoveredCoefficientBitsSha256": "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
+    "recoveredCoefficientBitsBytes": 458752,
+    "recoveredCoefficientBitsShape": [
+      8192,
+      14
+    ],
+    "geometryCasesChanged": false,
+    "samplePositionRuleChanged": false,
+    "recordLayoutChanged": false,
+    "numericAcceptanceCriteriaChanged": false
+  },
+  "observedAtAmendment": false
+}

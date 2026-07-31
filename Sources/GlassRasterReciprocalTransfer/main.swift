@@ -26,7 +26,6 @@ private struct SamplePosition {
 
 private let normalizedDenominatorLower = 8_192
 private let normalizedDenominatorUpper = 16_383
-private let widthScale = 4
 private let targetWidth = 224
 private let targetHeight = 192
 private let viewportWidth = 32_768
@@ -38,7 +37,7 @@ private let candidateRadius = 8
 private let widths = Array(
     normalizedDenominatorLower...normalizedDenominatorUpper
 ).map {
-    widthScale * $0
+    $0 == normalizedDenominatorLower ? 32_768 : 2 * $0
 }
 
 private let geometryCases = [
@@ -224,10 +223,12 @@ private func geometryManifest() -> [[String: Any]] {
 private func run(outputDirectory: URL) throws {
     precondition(widths.count == 8_192)
     precondition(widths.first == 32_768)
-    precondition(widths.last == 65_532)
+    precondition(widths.last == 32_766)
+    precondition(widths.min() == 16_386)
+    precondition(widths.max() == 32_768)
     precondition(
         sha256(uint32Data(widths.map { UInt32($0) }))
-            == "d1789dd285e63e23375037362e9df017efdc70f5e25163179e7334897d5fc8ed")
+            == "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce")
     precondition(
         sha256(uint32Data(witnessSignificands))
             == "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a")
@@ -491,12 +492,17 @@ private func run(outputDirectory: URL) throws {
             "Analysis/raster_reciprocal_transfer_routing_amendment.json",
         "routingAmendmentSha256":
             "7d0f5cee037747a4b883d2c3befa159bafaff1c07cfbf21f402d2ef6a06912c4",
-        "widthLowerInclusive": widths.first!,
-        "widthUpperInclusive": widths.last!,
-        "widthStride": widthScale,
+        "domainAmendmentFile":
+            "Analysis/raster_reciprocal_transfer_domain_amendment.json",
+        "domainAmendmentSha256":
+            "4892a84da4ec8b21211c95a36507585f6d4667a36a4529207ff8336d4ac79056",
+        "widthFormula":
+            "32768-if-normalized-denominator-8192-else-2x",
+        "widthMinimum": widths.min()!,
+        "widthMaximum": widths.max()!,
         "widthCount": widths.count,
         "widthsSha256":
-            "d1789dd285e63e23375037362e9df017efdc70f5e25163179e7334897d5fc8ed",
+            "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",
         "geometryCases": geometryManifest(),
         "geometryCount": geometryCases.count,
         "sampleSideCount": sampleSideCount,
@@ -525,7 +531,7 @@ private func run(outputDirectory: URL) throws {
         "frozenSelectedReciprocalTableSha256":
             "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
         "frozenRecoveredCoefficientBitsSha256":
-            "c053c9c4f8f92efa4d93145e627dc16086bf2aebc3133e50f576b696c9eb00bb",
+            "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

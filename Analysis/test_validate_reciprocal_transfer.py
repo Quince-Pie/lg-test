@@ -20,8 +20,11 @@ class RasterReciprocalTransferTests(unittest.TestCase):
         widths = transfer.prospective_widths()
 
         self.assertEqual(len(widths), transfer.WIDTH_COUNT)
-        self.assertEqual(widths[0], transfer.WIDTH_LOWER)
-        self.assertEqual(widths[-1], transfer.WIDTH_UPPER)
+        self.assertEqual(widths[0], 32_768)
+        self.assertEqual(widths[-1], 32_766)
+        self.assertEqual(min(widths), transfer.WIDTH_MINIMUM)
+        self.assertEqual(max(widths), transfer.WIDTH_MAXIMUM)
+        self.assertEqual(len(set(widths)), transfer.WIDTH_COUNT)
         self.assertTrue(all(width > 16_384 for width in widths))
         self.assertEqual(
             transfer.uint32_sha256(widths),
@@ -48,6 +51,25 @@ class RasterReciprocalTransferTests(unittest.TestCase):
             amendment["unchangedFrozenPredictions"][
                 "acceptanceCriteriaChanged"
             ]
+        )
+
+    def test_domain_amendment_refreezes_before_outputs_are_observed(self):
+        amendment = transfer.load_domain_amendment()
+
+        self.assertFalse(
+            amendment["failedRun"][
+                "appleReciprocalOrCoefficientOutputsObserved"
+            ]
+        )
+        self.assertEqual(
+            amendment["technicalChange"]["amendedWidthsSha256"],
+            transfer.WIDTHS_SHA256,
+        )
+        self.assertEqual(
+            amendment["refrozenPredictionsBeforeObservation"][
+                "amendedRecoveredCoefficientBitsSha256"
+            ],
+            transfer.PREDICTED_COEFFICIENT_SHA256,
         )
 
     def test_empty_runs_amend_routing_without_changing_predictions(self):

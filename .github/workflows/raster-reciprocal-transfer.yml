@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - .github/workflows/raster-reciprocal-transfer.yml
+      - Analysis/raster_reciprocal_transfer_domain_amendment.json
       - Analysis/raster_reciprocal_transfer_amendment.json
       - Analysis/raster_reciprocal_transfer_preregistration.json
       - Analysis/raster_reciprocal_transfer_routing_amendment.json

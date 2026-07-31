@@ -18,12 +18,17 @@ RIG_VERSION = "metal-raster-reciprocal-transfer-1.0.0"
 NORMALIZED_DENOMINATOR_LOWER = 8_192
 NORMALIZED_DENOMINATOR_UPPER = 16_383
 NORMALIZED_DENOMINATOR_COUNT = 8_192
-WIDTH_SCALE = 4
-WIDTH_LOWER = 32_768
-WIDTH_UPPER = 65_532
+PREREGISTERED_WIDTH_SCALE = 4
+PREREGISTERED_WIDTH_LOWER = 32_768
+PREREGISTERED_WIDTH_UPPER = 65_532
+PREREGISTERED_WIDTHS_SHA256 = (
+    "d1789dd285e63e23375037362e9df017efdc70f5e25163179e7334897d5fc8ed"
+)
+WIDTH_MINIMUM = 16_386
+WIDTH_MAXIMUM = 32_768
 WIDTH_COUNT = 8_192
 WIDTHS_SHA256 = (
-    "d1789dd285e63e23375037362e9df017efdc70f5e25163179e7334897d5fc8ed"
+    "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce"
 )
 TARGET_WIDTH = 224
 TARGET_HEIGHT = 192
@@ -55,11 +60,20 @@ ROUTING_AMENDMENT_PATH = Path(__file__).with_name(
 ROUTING_AMENDMENT_SHA256 = (
     "7d0f5cee037747a4b883d2c3befa159bafaff1c07cfbf21f402d2ef6a06912c4"
 )
+DOMAIN_AMENDMENT_PATH = Path(__file__).with_name(
+    "raster_reciprocal_transfer_domain_amendment.json"
+)
+DOMAIN_AMENDMENT_SHA256 = (
+    "4892a84da4ec8b21211c95a36507585f6d4667a36a4529207ff8336d4ac79056"
+)
 CANONICAL_RECIPROCAL_SHA256 = (
     "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb"
 )
-PREDICTED_COEFFICIENT_SHA256 = (
+PREREGISTERED_COEFFICIENT_SHA256 = (
     "c053c9c4f8f92efa4d93145e627dc16086bf2aebc3133e50f576b696c9eb00bb"
+)
+PREDICTED_COEFFICIENT_SHA256 = (
+    "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0"
 )
 SIGNIFICAND_SHA256 = "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a"
 DELTA_BITS_SHA256 = "4af6fce64ad188beb784cbea16c1d09ca2713825f8becee8ee64cabfd68caf8a"
@@ -132,7 +146,21 @@ def uint32_sha256(values: list[int] | tuple[int, ...]) -> str:
 
 def prospective_widths() -> list[int]:
     return [
-        WIDTH_SCALE * denominator
+        (
+            32_768
+            if denominator == NORMALIZED_DENOMINATOR_LOWER
+            else 2 * denominator
+        )
+        for denominator in range(
+            NORMALIZED_DENOMINATOR_LOWER,
+            NORMALIZED_DENOMINATOR_UPPER + 1,
+        )
+    ]
+
+
+def preregistered_widths() -> list[int]:
+    return [
+        PREREGISTERED_WIDTH_SCALE * denominator
         for denominator in range(
             NORMALIZED_DENOMINATOR_LOWER,
             NORMALIZED_DENOMINATOR_UPPER + 1,
@@ -297,7 +325,7 @@ def load_preregistration() -> JsonObject:
     predictions = preregistration.get("frozenPredictions", {})
     layout = preregistration.get("captureLayout", {})
     acceptance = preregistration.get("acceptance", {})
-    widths = prospective_widths()
+    widths = preregistered_widths()
     if (
         sha256_path(PREREGISTRATION_PATH) != PREREGISTRATION_SHA256
         or preregistration.get("schemaVersion") != 1
@@ -334,15 +362,18 @@ def load_preregistration() -> JsonObject:
         != NORMALIZED_DENOMINATOR_UPPER
         or domain.get("normalizationClassCount")
         != NORMALIZED_DENOMINATOR_COUNT
-        or domain.get("widthLowerInclusive") != WIDTH_LOWER
-        or domain.get("widthUpperInclusive") != WIDTH_UPPER
-        or domain.get("widthStride") != WIDTH_SCALE
+        or domain.get("widthLowerInclusive")
+        != PREREGISTERED_WIDTH_LOWER
+        or domain.get("widthUpperInclusive")
+        != PREREGISTERED_WIDTH_UPPER
+        or domain.get("widthStride") != PREREGISTERED_WIDTH_SCALE
         or domain.get("widthCount") != WIDTH_COUNT
-        or domain.get("widthsSha256") != WIDTHS_SHA256
+        or domain.get("widthsSha256")
+        != PREREGISTERED_WIDTHS_SHA256
         or domain.get("allWidthsAboveCalibrationUpperBound16384") is not True
         or domain.get("allWidthsUnobservedAtPreregistration") is not True
         or len(widths) != WIDTH_COUNT
-        or uint32_sha256(widths) != WIDTHS_SHA256
+        or uint32_sha256(widths) != PREREGISTERED_WIDTHS_SHA256
         or preregistration.get("geometryCases") != list(GEOMETRY_CASES)
         or rule.get("minimumSignedInteriorArea")
         != MINIMUM_SIGNED_INTERIOR_AREA
@@ -367,7 +398,7 @@ def load_preregistration() -> JsonObject:
         or predictions.get("selectedReciprocalTableShape")
         != [NORMALIZED_DENOMINATOR_COUNT]
         or predictions.get("recoveredCoefficientBitsSha256")
-        != PREDICTED_COEFFICIENT_SHA256
+        != PREREGISTERED_COEFFICIENT_SHA256
         or predictions.get("recoveredCoefficientBitsBytes") != 458_752
         or predictions.get("recoveredCoefficientBitsShape")
         != [WIDTH_COUNT, len(WITNESS_SIGNIFICANDS)]
@@ -437,8 +468,9 @@ def load_amendment() -> JsonObject:
         or unchanged.get("selectedReciprocalTableSha256")
         != CANONICAL_RECIPROCAL_SHA256
         or unchanged.get("recoveredCoefficientBitsSha256")
-        != PREDICTED_COEFFICIENT_SHA256
-        or unchanged.get("widthsSha256") != WIDTHS_SHA256
+        != PREREGISTERED_COEFFICIENT_SHA256
+        or unchanged.get("widthsSha256")
+        != PREREGISTERED_WIDTHS_SHA256
         or unchanged.get("witnessSignificandsSha256")
         != SIGNIFICAND_SHA256
         or unchanged.get("geometryCasesChanged") is not False
@@ -492,8 +524,9 @@ def load_routing_amendment() -> JsonObject:
         or unchanged.get("selectedReciprocalTableSha256")
         != CANONICAL_RECIPROCAL_SHA256
         or unchanged.get("recoveredCoefficientBitsSha256")
-        != PREDICTED_COEFFICIENT_SHA256
-        or unchanged.get("widthsSha256") != WIDTHS_SHA256
+        != PREREGISTERED_COEFFICIENT_SHA256
+        or unchanged.get("widthsSha256")
+        != PREREGISTERED_WIDTHS_SHA256
         or unchanged.get("witnessSignificandsSha256")
         != SIGNIFICAND_SHA256
         or unchanged.get("geometryCasesChanged") is not False
@@ -502,6 +535,94 @@ def load_routing_amendment() -> JsonObject:
         or unchanged.get("numericAcceptanceCriteriaChanged") is not False
     ):
         raise ValueError("reciprocal-transfer routing amendment differs")
+    return amendment
+
+
+def load_domain_amendment() -> JsonObject:
+    amendment: JsonObject = json.loads(
+        DOMAIN_AMENDMENT_PATH.read_text(encoding="utf-8")
+    )
+    failed = amendment.get("failedRun", {})
+    change = amendment.get("technicalChange", {})
+    predictions = amendment.get("refrozenPredictionsBeforeObservation", {})
+    if (
+        sha256_path(DOMAIN_AMENDMENT_PATH) != DOMAIN_AMENDMENT_SHA256
+        or amendment.get("schemaVersion") != 1
+        or amendment.get("role")
+        != "prospective-reciprocal-transfer-domain-amendment"
+        or amendment.get("authorized") is not True
+        or amendment.get("observedAtAmendment") is not False
+        or failed.get("runId") != 30_653_858_985
+        or failed.get("ciCommit")
+        != "61a08ddeb0806e26627339dd42ba67ab23ca5009"
+        or failed.get("captureSucceeded") is not False
+        or failed.get("validatorRan") is not False
+        or failed.get("totalRecordCount") != 917_504
+        or failed.get("writtenRecordCount") != 602_476
+        or failed.get("missingRecordCount") != 315_028
+        or failed.get("firstMissingRecordIndices")
+        != [
+            76_724,
+            76_725,
+            76_732,
+            76_733,
+            76_740,
+            76_741,
+            76_748,
+            76_749,
+            76_756,
+            76_757,
+            76_764,
+            76_765,
+            76_772,
+            76_773,
+            76_780,
+            76_781,
+        ]
+        or failed.get("manifestUploaded") is not False
+        or failed.get("pullCorpusUploaded") is not False
+        or failed.get("validationUploaded") is not False
+        or failed.get("appleReciprocalOrCoefficientOutputsObserved")
+        is not False
+        or change.get("field") != "prospective width mapping"
+        or change.get("newFormula")
+        != (
+            "32768 when normalizedDenominator == 8192; otherwise 2 * "
+            "normalizedDenominator"
+        )
+        or change.get("normalizationClassCount")
+        != NORMALIZED_DENOMINATOR_COUNT
+        or change.get("widthCount") != WIDTH_COUNT
+        or change.get("widthMinimum") != WIDTH_MINIMUM
+        or change.get("widthMaximum") != WIDTH_MAXIMUM
+        or change.get("widthsAboveCalibrationUpperBoundCount")
+        != WIDTH_COUNT
+        or change.get("unobservedWidthCount") != WIDTH_COUNT
+        or change.get("unseenReciprocalExponent") != -15
+        or change.get("previousWidthsSha256")
+        != PREREGISTERED_WIDTHS_SHA256
+        or change.get("amendedWidthsSha256") != WIDTHS_SHA256
+        or predictions.get("selectedReciprocalTableSha256")
+        != CANONICAL_RECIPROCAL_SHA256
+        or predictions.get("selectedReciprocalTableChanged") is not False
+        or predictions.get("previousRecoveredCoefficientBitsSha256")
+        != PREREGISTERED_COEFFICIENT_SHA256
+        or predictions.get("amendedRecoveredCoefficientBitsSha256")
+        != PREDICTED_COEFFICIENT_SHA256
+        or predictions.get("recoveredCoefficientBitsBytes") != 458_752
+        or predictions.get("recoveredCoefficientBitsShape")
+        != [WIDTH_COUNT, len(WITNESS_SIGNIFICANDS)]
+        or predictions.get("geometryCasesChanged") is not False
+        or predictions.get("samplePositionRuleChanged") is not False
+        or predictions.get("recordLayoutChanged") is not False
+        or predictions.get("numericAcceptanceCriteriaChanged") is not False
+        or len(prospective_widths()) != WIDTH_COUNT
+        or min(prospective_widths()) != WIDTH_MINIMUM
+        or max(prospective_widths()) != WIDTH_MAXIMUM
+        or any(width <= 16_384 for width in prospective_widths())
+        or uint32_sha256(prospective_widths()) != WIDTHS_SHA256
+    ):
+        raise ValueError("reciprocal-transfer domain amendment differs")
     return amendment
 
 
@@ -529,9 +650,14 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         != "Analysis/raster_reciprocal_transfer_routing_amendment.json"
         or evidence.get("routingAmendmentSha256")
         != ROUTING_AMENDMENT_SHA256
-        or evidence.get("widthLowerInclusive") != WIDTH_LOWER
-        or evidence.get("widthUpperInclusive") != WIDTH_UPPER
-        or evidence.get("widthStride") != WIDTH_SCALE
+        or evidence.get("domainAmendmentFile")
+        != "Analysis/raster_reciprocal_transfer_domain_amendment.json"
+        or evidence.get("domainAmendmentSha256")
+        != DOMAIN_AMENDMENT_SHA256
+        or evidence.get("widthFormula")
+        != "32768-if-normalized-denominator-8192-else-2x"
+        or evidence.get("widthMinimum") != WIDTH_MINIMUM
+        or evidence.get("widthMaximum") != WIDTH_MAXIMUM
         or evidence.get("widthCount") != WIDTH_COUNT
         or evidence.get("widthsSha256") != WIDTHS_SHA256
         or evidence.get("geometryCases") != list(GEOMETRY_CASES)
@@ -575,6 +701,7 @@ def validate(root: Path) -> JsonObject:
     load_preregistration()
     load_amendment()
     load_routing_amendment()
+    load_domain_amendment()
     manifest, path = validate_manifest(root)
     data = path.read_bytes()
     selected_digest = hashlib.sha256()
@@ -697,6 +824,7 @@ def validate(root: Path) -> JsonObject:
         "preregistrationSha256": PREREGISTRATION_SHA256,
         "amendmentSha256": AMENDMENT_SHA256,
         "routingAmendmentSha256": ROUTING_AMENDMENT_SHA256,
+        "domainAmendmentSha256": DOMAIN_AMENDMENT_SHA256,
         "ciCommit": manifest.get("ciCommit"),
         "measurement": {
             "widthCount": WIDTH_COUNT,
