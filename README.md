@@ -2189,6 +2189,38 @@ used to derive the physical model. The schema-23 validator independently
 regenerates the inputs and the full prediction hash before it accepts the
 captured pull corpus.
 
+Run 30647112143 opened that schema-23 test after commit
+`777dfea521580115023668b9179fb65a9ff84d73`. All 196,608 recovered
+coefficients were unique and matched the preregistered physical model, with
+zero mismatches. The observed truth-table SHA-256 is exactly the frozen
+`069c044c3b38d0535656c0a6e4d12c07a80a2b9b528ae4eb80c4735381c2469a`.
+Ordinary nearest-even 27-bit multiplication differs on 3,051 of those
+samples; Apple selected the partial-product prediction on all 3,051. This is
+a prospective confirmation of nonzero low-eight-bit operand behavior, not an
+exhaustive test of all 24-bit mantissas or widths above 127.
+
+### Raster reciprocal sweep
+
+`raster-reciprocal-sweep.yml` is a separate lightweight Metal rig for the
+remaining reciprocal-index problem. It does not recapture or upload the large
+legacy raster corpus. Its discovery domain covers every integer width from
+128 through 16,384 except a sealed normalized-denominator holdout.
+Power-of-two-equivalent widths always receive the same role, preventing a
+scaled copy of a holdout denominator from leaking into discovery. Common
+production dimensions, including 640, 800, 976, 1920, 2560, 3840, 4096,
+7680, 8192, and 16,384, are explicitly held out with their entire scaling
+class.
+
+The immutable preregistration records 14 full-mantissa witnesses. Their
+selection is a deterministic greedy set cover over the confirmed physical
+partial-product model. For every width in the complete 128-to-16,384 domain,
+the 14-output signature uniquely distinguishes all 17 reciprocal candidates
+from eight internal 25-bit ULPs below correctly rounded through eight above.
+The discovery capture contains 14,181 widths and 198,534 coefficients in a
+15,882,720-byte raw file. The 2,076 excluded widths remain unopened until a
+reciprocal-generation law and the complete holdout prediction hash have been
+committed.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

@@ -1,0 +1,64 @@
+name: Discover Apple Metal raster reciprocals
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-reciprocal-sweep.yml
+      - Analysis/raster_reciprocal_sweep_preregistration.json
+      - Analysis/validate_reciprocal_sweep.py
+      - Sources/GlassRasterReciprocalSweep/**
+
+concurrency:
+  group: raster-reciprocal-sweep-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-reciprocal-sweep:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Build Metal reciprocal-sweep probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-reciprocal-sweep
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterReciprocalSweep/main.swift \
+            -o glass-raster-reciprocal-sweep 2>&1 |
+            tee raster-reciprocal-sweep/build.log
+
+      - name: Measure Metal raster reciprocals
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          ./glass-raster-reciprocal-sweep \
+            raster-reciprocal-sweep
+
+      - name: Upload Metal reciprocal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-reciprocal-sweep-${{ github.run_id }}
+          path: raster-reciprocal-sweep
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce Metal reciprocal evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test -s raster-reciprocal-sweep/manifest.json
+          python3 Analysis/validate_reciprocal_sweep.py \
+            raster-reciprocal-sweep
