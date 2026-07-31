@@ -18,6 +18,7 @@ WIDTH_LOWER = 128
 WIDTH_UPPER = 16_384
 TARGET_WIDTH = 160
 TARGET_HEIGHT = 160
+VIEWPORT_WIDTH = 32_768
 ORIGIN_X = 17
 ORIGIN_Y = 19
 GEOMETRY_HEIGHT = 64
@@ -368,6 +369,7 @@ def validate(root: Path) -> None:
         or evidence.get("candidateCount") != 2 * CANDIDATE_RADIUS + 1
         or evidence.get("targetWidth") != TARGET_WIDTH
         or evidence.get("targetHeight") != TARGET_HEIGHT
+        or evidence.get("viewportWidth") != VIEWPORT_WIDTH
         or evidence.get("originX") != ORIGIN_X
         or evidence.get("originY") != ORIGIN_Y
         or evidence.get("geometryHeight") != GEOMETRY_HEIGHT
@@ -378,7 +380,7 @@ def validate(root: Path) -> None:
         != [{"x": 0.0, "y": 0.5}, {"x": 0.9375, "y": 0.5}]
         or evidence.get("components") != ["xAt0", "xAt15Over16"]
         or evidence.get("positionRule")
-        != "clamped-visible-32x32-interior-area-margin-v2"
+        != "unclipped-power2-viewport-interior-area-margin-v3"
         or evidence.get("ordering")
         != (
             "width-major,witness-major,primitive-major,"

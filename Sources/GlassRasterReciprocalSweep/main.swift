@@ -19,6 +19,7 @@ private let widthLower = 128
 private let widthUpper = 16_384
 private let targetWidth = 160
 private let targetHeight = 160
+private let viewportWidth = 32_768
 private let originX = 17
 private let originY = 19
 private let geometryHeight = 64
@@ -289,7 +290,7 @@ private func run(outputDirectory: URL) throws {
 
     var matrix = simd_float4x4(columns: (
         SIMD4<Float>(
-            2 / Float(targetWidth),
+            2 / Float(viewportWidth),
             0,
             0,
             0),
@@ -329,7 +330,7 @@ private func run(outputDirectory: URL) throws {
         encoder.setViewport(MTLViewport(
             originX: 0,
             originY: 0,
-            width: Double(targetWidth),
+            width: Double(viewportWidth),
             height: Double(targetHeight),
             znear: 0,
             zfar: 1))
@@ -464,6 +465,7 @@ private func run(outputDirectory: URL) throws {
         "candidateCount": 2 * candidateRadius + 1,
         "targetWidth": targetWidth,
         "targetHeight": targetHeight,
+        "viewportWidth": viewportWidth,
         "originX": originX,
         "originY": originY,
         "geometryHeight": geometryHeight,
@@ -479,7 +481,7 @@ private func run(outputDirectory: URL) throws {
             "xAt15Over16",
         ],
         "positionRule":
-            "clamped-visible-32x32-interior-area-margin-v2",
+            "unclipped-power2-viewport-interior-area-margin-v3",
         "ordering":
             "width-major,witness-major,primitive-major,"
             + "tile-major,pull-offset-major",
