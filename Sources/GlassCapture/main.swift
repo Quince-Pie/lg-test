@@ -15,6 +15,7 @@ import SwiftUI
 import CoreGraphics
 import CoreMedia
 import CoreVideo
+import QuartzCore
 import ScreenCaptureKit
 import ImageIO
 import UniformTypeIdentifiers
@@ -2929,6 +2930,9 @@ final class MaterializeClockView: NSView {
         tailActive = tailIsActive
         needsDisplay = true
         displayIfNeeded()
+        layer?.displayIfNeeded()
+        window?.displayIfNeeded()
+        CATransaction.flush()
     }
 
     func prepare() {
