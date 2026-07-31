@@ -4,28 +4,104 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: transition-introspect-v3-${{ github.ref }}
+  group: transition-introspect-v4-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   transition-introspect:
-    name: ${{ matrix.material }}-${{ matrix.appearance }}
+    name: ${{ matrix.label }}
     runs-on: macos-26
     timeout-minutes: 12
     strategy:
       fail-fast: false
       matrix:
-        material:
-          - clear
-          - regular
-        appearance:
-          - light
-          - dark
+        include:
+          - label: profile-clear-light-materialize
+            material: clear
+            appearance: light
+            geometry: circle-800-center
+            direction: materialize
+          - label: profile-clear-light-dematerialize
+            material: clear
+            appearance: light
+            geometry: circle-800-center
+            direction: dematerialize
+          - label: profile-clear-dark-materialize
+            material: clear
+            appearance: dark
+            geometry: circle-800-center
+            direction: materialize
+          - label: profile-clear-dark-dematerialize
+            material: clear
+            appearance: dark
+            geometry: circle-800-center
+            direction: dematerialize
+          - label: profile-regular-light-materialize
+            material: regular
+            appearance: light
+            geometry: circle-800-center
+            direction: materialize
+          - label: profile-regular-light-dematerialize
+            material: regular
+            appearance: light
+            geometry: circle-800-center
+            direction: dematerialize
+          - label: profile-regular-dark-materialize
+            material: regular
+            appearance: dark
+            geometry: circle-800-center
+            direction: materialize
+          - label: profile-regular-dark-dematerialize
+            material: regular
+            appearance: dark
+            geometry: circle-800-center
+            direction: dematerialize
+          - label: geometry-256-materialize
+            material: clear
+            appearance: light
+            geometry: circle-256-center
+            direction: materialize
+          - label: geometry-256-dematerialize
+            material: clear
+            appearance: light
+            geometry: circle-256-center
+            direction: dematerialize
+          - label: geometry-offset-materialize
+            material: clear
+            appearance: light
+            geometry: circle-512-offset
+            direction: materialize
+          - label: geometry-offset-dematerialize
+            material: clear
+            appearance: light
+            geometry: circle-512-offset
+            direction: dematerialize
+          - label: geometry-fractional-materialize
+            material: clear
+            appearance: light
+            geometry: circle-640-fractional
+            direction: materialize
+          - label: geometry-fractional-dematerialize
+            material: clear
+            appearance: light
+            geometry: circle-640-fractional
+            direction: dematerialize
+          - label: geometry-clipped-materialize
+            material: clear
+            appearance: light
+            geometry: circle-1536-center
+            direction: materialize
+          - label: geometry-clipped-dematerialize
+            material: clear
+            appearance: light
+            geometry: circle-1536-center
+            direction: dematerialize
     env:
       LG_GLASS_MATERIAL: ${{ matrix.material }}
       LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
-      LG_GLASS_GEOMETRY: circle-800-center
+      LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
       LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: ${{ matrix.direction }}
     steps:
       - uses: actions/checkout@v4
 
@@ -82,7 +158,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-transition-introspection-${{ matrix.material }}-${{ matrix.appearance }}-${{ github.run_id }}
+          name: liquid-glass-transition-introspection-${{ matrix.label }}-${{ github.run_id }}
           path: transition-introspection
           if-no-files-found: error
           retention-days: 7
@@ -103,11 +179,14 @@ jobs:
                   encoding="utf-8"
               )
           )
-          if report.get("schemaVersion") != 3:
-              raise SystemExit("transition timeline schema is not 3")
+          if report.get("schemaVersion") != 4:
+              raise SystemExit("transition timeline schema is not 4")
           if (
               report.get("material") != "${{ matrix.material }}"
               or report.get("appearance") != "${{ matrix.appearance }}"
+              or report.get("direction") != "${{ matrix.direction }}"
+              or report.get("geometry", {}).get("name")
+                  != "${{ matrix.geometry }}"
               or report.get("animationCurve") != "linear"
               or report.get("samplingMethod")
                   != "real-presentation-state-plus-own-window-pixels"
@@ -120,6 +199,8 @@ jobs:
                   "transition timeline metadata differs: "
                   f"{report.get('material')}, "
                   f"{report.get('appearance')}, "
+                  f"{report.get('direction')}, "
+                  f"{report.get('geometry', {}).get('name')}, "
                   f"{report.get('animationCurve')}, "
                   f"{report.get('samplingMethod')}, "
                   f"{report.get('sampleCount')}, "
@@ -311,6 +392,8 @@ jobs:
 
           glass_profiles = set()
           glass_profile_samples = 0
+          exact_color_samples = 0
+          glass_presence = []
           for sample in samples:
               sample_profiles = [
                   value
@@ -323,8 +406,49 @@ jobs:
                   )
                   if is_glass_background(value)
               ]
+              glass_presence.append(bool(sample_profiles))
               if sample_profiles:
                   glass_profile_samples += 1
+                  exact_colors = []
+                  for profile in sample_profiles:
+                      values = profile.get(
+                          "inputValues", {}
+                      )
+                      for key in (
+                          "inputFaceColorMatrixFillColor",
+                          "inputShadowColorMatrixFillColor",
+                      ):
+                          color = values.get(key)
+                          if not isinstance(color, dict):
+                              continue
+                          components = color.get("components")
+                          count = color.get(
+                              "numberOfComponents"
+                          )
+                          if (
+                              not isinstance(components, list)
+                              or not isinstance(count, int)
+                              or len(components) != count
+                              or not components
+                              or any(
+                                  not isinstance(
+                                      component,
+                                      (int, float),
+                                  )
+                                  for component in components
+                              )
+                              or not isinstance(
+                                  color.get("alpha"),
+                                  (int, float),
+                              )
+                          ):
+                              raise SystemExit(
+                                  "transition CGColor evidence "
+                                  f"is incomplete: {color}"
+                              )
+                          exact_colors.append(color)
+                  if exact_colors:
+                      exact_color_samples += 1
                   glass_profiles.update(
                       json.dumps(
                           filter_state(value),
@@ -338,10 +462,28 @@ jobs:
                   "transition timeline captured glass profiles in only "
                   f"{glass_profile_samples}/33 states"
               )
+          expected_endpoints = (
+              (False, True)
+              if report["direction"] == "materialize"
+              else (True, False)
+          )
+          if (
+              glass_presence[0],
+              glass_presence[-1],
+          ) != expected_endpoints:
+              raise SystemExit(
+                  "transition endpoint topology differs: "
+                  f"{glass_presence[0]}, {glass_presence[-1]}"
+              )
           if len(glass_profiles) < 8:
               raise SystemExit(
                   "transition private profiles lack state rank: "
                   f"{len(glass_profiles)} distinct profiles"
+              )
+          if exact_color_samples < 16:
+              raise SystemExit(
+                  "transition timeline captured exact CGColor "
+                  f"components in only {exact_color_samples}/33 states"
               )
           state_hashes = {
               __import__("hashlib").sha256(

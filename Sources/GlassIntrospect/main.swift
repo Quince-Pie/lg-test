@@ -1923,6 +1923,19 @@ private enum ProbeAppearance: String {
     }
 }
 
+private enum TransitionDirection: String {
+    case materialize
+    case dematerialize
+
+    var initialVisible: Bool {
+        self == .dematerialize
+    }
+
+    var finalVisible: Bool {
+        self == .materialize
+    }
+}
+
 private enum ProbeGeometry: String {
     case circle256Center = "circle-256-center"
     case circle512Offset = "circle-512-offset"
@@ -2088,6 +2101,24 @@ private func serializedRuntimeBytes(
 
 private func serializedRuntimeValue(_ optionalValue: Any?) -> Any {
     guard let value = optionalValue else { return NSNull() }
+    if let color = value as? CGColor {
+        return [
+            "class": String(reflecting: type(of: value)),
+            "colorSpace":
+                color.colorSpace.map {
+                    String(describing: $0)
+                } ?? "none",
+            "colorSpaceName":
+                color.colorSpace?.name.map {
+                    String(describing: $0)
+                } ?? "none",
+            "numberOfComponents":
+                color.numberOfComponents,
+            "components":
+                color.components?.map { Double($0) } ?? [],
+            "alpha": Double(color.alpha),
+        ]
+    }
     if let data = value as? Data {
         return serializedRuntimeBytes(
             [UInt8](data),
@@ -11895,7 +11926,7 @@ private func writeTransitionProbeProgress(
 ) {
     try? writeJSON(
         [
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "capture": capture,
             "phase": phase,
             "mediaTime": CACurrentMediaTime(),
@@ -12255,6 +12286,22 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         let reportURL = outputDirectory.appendingPathComponent(
             "transition-timeline.json")
         do {
+            let directionName =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_DIRECTION"
+                ] ?? TransitionDirection.dematerialize.rawValue
+            guard let direction =
+                TransitionDirection(rawValue: directionName)
+            else {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 5,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "unsupported transition direction: "
+                            + directionName,
+                    ])
+            }
             guard let rootLayer = window.contentView?.layer
             else {
                 throw NSError(
@@ -12268,12 +12315,26 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
 
             let duration = 60.0
             let sampleCount = 33
+            if transitionModel.visible != direction.initialVisible {
+                var transaction = Transaction(animation: nil)
+                transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    transitionModel.visible =
+                        direction.initialVisible
+                }
+                window.displayIfNeeded()
+                CATransaction.flush()
+                try? await Task.sleep(
+                    for: .milliseconds(250))
+            }
             CATransaction.flush()
             let initialMediaTime = CACurrentMediaTime()
+            let capturePrefix =
+                "transition-" + direction.rawValue
             var initialSample = transitionTimelineSample(
                 window: window,
                 rootLayer: rootLayer,
-                capture: "transition-dematerialize-00",
+                capture: capturePrefix + "-00",
                 progress: 0,
                 outputDirectory: outputDirectory)
             initialSample["targetMediaTime"] = initialMediaTime
@@ -12281,7 +12342,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
 
             let triggerBeforeCommit = CACurrentMediaTime()
             withAnimation(.linear(duration: duration)) {
-                transitionModel.visible = false
+                transitionModel.visible =
+                    direction.finalVisible
             }
             window.displayIfNeeded()
             CATransaction.flush()
@@ -12304,9 +12366,9 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 window.displayIfNeeded()
                 CATransaction.flush()
                 let actualMediaTime = CACurrentMediaTime()
-                let capture = String(
-                    format: "transition-dematerialize-%02d",
-                    index)
+                let capture =
+                    capturePrefix
+                    + String(format: "-%02d", index)
                 var sample = transitionTimelineSample(
                     window: window,
                     rootLayer: rootLayer,
@@ -12336,11 +12398,12 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             let expectedPixelHeight = Int(
                 (window.frame.height * scale).rounded())
             let report: [String: Any] = [
-                "schemaVersion": 3,
+                "schemaVersion": 4,
                 "probe":
                     "paced-presentation-state-window-timeline",
                 "material": material.rawValue,
                 "appearance": appearance.rawValue,
+                "direction": direction.rawValue,
                 "geometry": geometry.evidence,
                 "animationCurve": "linear",
                 "animationDurationSeconds": duration,
@@ -12374,11 +12437,15 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         } catch {
             try? writeJSON(
                 [
-                    "schemaVersion": 3,
+                    "schemaVersion": 4,
                     "probe":
                         "paced-presentation-state-window-timeline",
                     "material": material.rawValue,
                     "appearance": appearance.rawValue,
+                    "direction":
+                        ProcessInfo.processInfo.environment[
+                            "LG_TRANSITION_DIRECTION"
+                        ] ?? "dematerialize",
                     "error": error.localizedDescription,
                 ],
                 to: reportURL)

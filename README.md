@@ -1703,6 +1703,15 @@ pixels contain fewer than eight distinct values. No presentation layer is
 replayed or synthesized. These samples identify Apple's state law; they do
 not replace the compositor-captured dynamic holdout.
 
+Schema 4 preserves those gates and adds the missing falsification matrix. It
+serializes every `CGColor` input as exact numeric components rather than a
+formatted description, captures both materialize and dematerialize directions
+for all four material/appearance profiles, and exercises the transition at
+256-, 512-, 640-, 800-, and 1536-point diameters. The geometry cases include
+an offset center, a fractional center, and a circle clipped by the window.
+Direction and geometry are declared in every report and artifact name; CI
+rejects any leg with fewer than 16 states containing exact color components.
+
 ## Run locally on macOS 26
 
 ```sh
