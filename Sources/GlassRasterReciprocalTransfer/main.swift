@@ -108,7 +108,7 @@ private func samplePosition(
     let localX = x - originX
     let signed =
         geometry.height * (2 * localX + 1) - threshold
-    let signedInteriorArea = sampleSide == 0 ? signed : -signed
+    let signedInteriorArea = signed
     precondition((0..<sampleSideCount).contains(sampleSide))
     precondition((0..<targetWidth).contains(x))
     precondition((0..<targetHeight).contains(y))
