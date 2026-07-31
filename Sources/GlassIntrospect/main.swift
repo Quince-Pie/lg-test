@@ -1971,6 +1971,70 @@ private struct ProbeGeometry {
             Specification(width: 47, center: CGPoint(x: 512, y: 512)),
         "circle-047-offset":
             Specification(width: 47, center: CGPoint(x: 337, y: 419)),
+        "circle-047-tier-x-512":
+            Specification(width: 47, center: CGPoint(x: 512, y: 512)),
+        "circle-047-tier-x-513":
+            Specification(width: 47, center: CGPoint(x: 513, y: 512)),
+        "circle-047-tier-x-514":
+            Specification(width: 47, center: CGPoint(x: 514, y: 512)),
+        "circle-047-tier-x-515":
+            Specification(width: 47, center: CGPoint(x: 515, y: 512)),
+        "circle-047-tier-x-516":
+            Specification(width: 47, center: CGPoint(x: 516, y: 512)),
+        "circle-047-tier-x-517":
+            Specification(width: 47, center: CGPoint(x: 517, y: 512)),
+        "circle-047-tier-x-518":
+            Specification(width: 47, center: CGPoint(x: 518, y: 512)),
+        "circle-047-tier-x-519":
+            Specification(width: 47, center: CGPoint(x: 519, y: 512)),
+        "circle-047-tier-x-520":
+            Specification(width: 47, center: CGPoint(x: 520, y: 512)),
+        "circle-047-tier-x-521":
+            Specification(width: 47, center: CGPoint(x: 521, y: 512)),
+        "circle-047-tier-x-522":
+            Specification(width: 47, center: CGPoint(x: 522, y: 512)),
+        "circle-047-tier-x-523":
+            Specification(width: 47, center: CGPoint(x: 523, y: 512)),
+        "circle-047-tier-x-524":
+            Specification(width: 47, center: CGPoint(x: 524, y: 512)),
+        "circle-047-tier-x-525":
+            Specification(width: 47, center: CGPoint(x: 525, y: 512)),
+        "circle-047-tier-x-526":
+            Specification(width: 47, center: CGPoint(x: 526, y: 512)),
+        "circle-047-tier-x-527":
+            Specification(width: 47, center: CGPoint(x: 527, y: 512)),
+        "circle-047-tier-y-512":
+            Specification(width: 47, center: CGPoint(x: 512, y: 512)),
+        "circle-047-tier-y-513":
+            Specification(width: 47, center: CGPoint(x: 512, y: 513)),
+        "circle-047-tier-y-514":
+            Specification(width: 47, center: CGPoint(x: 512, y: 514)),
+        "circle-047-tier-y-515":
+            Specification(width: 47, center: CGPoint(x: 512, y: 515)),
+        "circle-047-tier-y-516":
+            Specification(width: 47, center: CGPoint(x: 512, y: 516)),
+        "circle-047-tier-y-517":
+            Specification(width: 47, center: CGPoint(x: 512, y: 517)),
+        "circle-047-tier-y-518":
+            Specification(width: 47, center: CGPoint(x: 512, y: 518)),
+        "circle-047-tier-y-519":
+            Specification(width: 47, center: CGPoint(x: 512, y: 519)),
+        "circle-047-tier-y-520":
+            Specification(width: 47, center: CGPoint(x: 512, y: 520)),
+        "circle-047-tier-y-521":
+            Specification(width: 47, center: CGPoint(x: 512, y: 521)),
+        "circle-047-tier-y-522":
+            Specification(width: 47, center: CGPoint(x: 512, y: 522)),
+        "circle-047-tier-y-523":
+            Specification(width: 47, center: CGPoint(x: 512, y: 523)),
+        "circle-047-tier-y-524":
+            Specification(width: 47, center: CGPoint(x: 512, y: 524)),
+        "circle-047-tier-y-525":
+            Specification(width: 47, center: CGPoint(x: 512, y: 525)),
+        "circle-047-tier-y-526":
+            Specification(width: 47, center: CGPoint(x: 512, y: 526)),
+        "circle-047-tier-y-527":
+            Specification(width: 47, center: CGPoint(x: 512, y: 527)),
         "circle-048-center":
             Specification(width: 48, center: CGPoint(x: 512, y: 512)),
         "circle-049-center":

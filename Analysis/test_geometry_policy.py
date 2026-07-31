@@ -38,6 +38,12 @@ RESIDUAL_WORKFLOW = (
     / "workflows"
     / "geometry-residual-introspect.yml"
 )
+NO_BLEED_TIER_WORKFLOW = (
+    ROOT
+    / ".github"
+    / "workflows"
+    / "geometry-nobleed-tier-introspect.yml"
+)
 
 
 class GeometryPolicyWorkflowTests(unittest.TestCase):
@@ -57,6 +63,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             (PROOF_WORKFLOW, 29),
             (CLEAR_WORKFLOW, 28),
             (RESIDUAL_WORKFLOW, 91),
+            (NO_BLEED_TIER_WORKFLOW, 32),
         ):
             workflow = path.read_text(encoding="utf-8")
             matrix = set(
@@ -103,6 +110,7 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
             PROOF_WORKFLOW.read_text(encoding="utf-8"),
             CLEAR_WORKFLOW.read_text(encoding="utf-8"),
             RESIDUAL_WORKFLOW.read_text(encoding="utf-8"),
+            NO_BLEED_TIER_WORKFLOW.read_text(encoding="utf-8"),
         ]
         for workflow in workflows:
             self.assertIn("workflow_dispatch:", workflow)
@@ -189,6 +197,21 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
                 )
         for width in range(448, 487):
             self.assertIn(f"- circle-{width:03d}-center", workflow)
+
+    def test_no_bleed_tier_matrix_exhausts_both_axis_phases(
+        self,
+    ) -> None:
+        workflow = NO_BLEED_TIER_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn(
+            '== "glass_background_sdf_no_bleed_lph"',
+            workflow,
+        )
+        for axis in ("x", "y"):
+            for center in range(512, 528):
+                self.assertIn(
+                    f"- circle-047-tier-{axis}-{center}",
+                    workflow,
+                )
 
 
 if __name__ == "__main__":

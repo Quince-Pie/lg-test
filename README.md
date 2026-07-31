@@ -2155,6 +2155,15 @@ small-target translation from 449 through 468, and every centered diameter
 intervals: any reported switch must be bracketed by adjacent integer inputs,
 not interpolated across an unsampled gap.
 
+`geometry-nobleed-tier-introspect.yml` is the targeted discriminator for the
+two no-bleed crop laws that remain identical on the earlier positions. It
+holds diameter 47, material, appearance, backing scale, and source image
+constant while moving the circle through all 16 integer alignment residues on
+X and then Y. At this diameter the downsample footprint can cross the
+32-pixel tier without crossing a diameter tier. The resulting source origins
+therefore distinguish a per-axis footprint decision from a diameter-only
+decision directly; no coefficient is fitted after seeing the phase results.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
