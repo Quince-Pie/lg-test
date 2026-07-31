@@ -103,7 +103,7 @@ private let oddWidthsByHeight: [(Int, [Int])] = [
 private func makeBaseCases() -> [BaseCase] {
     oddWidthsByHeight.flatMap { entry in
         let (height, widths) = entry
-        widths.map { width in
+        return widths.map { width in
             let result = BaseCase(height: height, oddWidth: width)
             precondition(result.area == result.normalizedWidth * result.powerHeight)
             precondition((8_192...16_383).contains(result.normalizedWidth))
