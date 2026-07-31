@@ -65,10 +65,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 9:
+          if manifest.get("schemaVersion") != 10:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-9.0.0"
+              "metal-raster-interpolant-probe-10.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -201,6 +201,44 @@ jobs:
                   "tomography-discovery-scaled-bin07-142x170",
               )
           })
+          reciprocal_sweep_geometry = {}
+          reciprocal_sweep_areas = set()
+          for bin_index in range(256):
+              doubled_target_area = 8208 + 32 * bin_index
+              candidates = []
+              for width in range(32, 129):
+                  for height in range(width, 129):
+                      area = width * height
+                      if not 4096 <= area < 8192:
+                          continue
+                      candidates.append((
+                          abs(2 * area - doubled_target_area),
+                          height - width,
+                          area,
+                          width,
+                          height,
+                      ))
+              _, _, area, width, height = min(candidates)
+              name = (
+                  "tomography-discovery-reciprocal-bin-"
+                  f"{bin_index:03d}-{width:03d}x{height:03d}"
+              )
+              reciprocal_sweep_geometry[name] = (
+                  width,
+                  height,
+              )
+              reciprocal_sweep_areas.add(area)
+          if (
+              len(reciprocal_sweep_geometry) != 256
+              or len(reciprocal_sweep_areas) != 256
+          ):
+              raise SystemExit(
+                  "reciprocal sweep generator is not bijective"
+              )
+          expected_tomography.update({
+              name: "discovery"
+              for name in reciprocal_sweep_geometry
+          })
           expected_numerators = [
               52625,
               51143,
@@ -228,6 +266,22 @@ jobs:
           for record in tomography:
               crop = record["crop"]
               target = record["target"]
+              sweep_geometry = reciprocal_sweep_geometry.get(
+                  record["name"]
+              )
+              if (
+                  sweep_geometry is not None
+                  and (
+                      (crop["width"], crop["height"])
+                      != sweep_geometry
+                      or crop["originX"] != 17
+                      or crop["originY"] != 19
+                      or target != {"width": 256, "height": 256}
+                  )
+              ):
+                  raise SystemExit(
+                      f"{record['name']} sweep geometry differs"
+                  )
               if (
                   crop["originX"] < 0
                   or crop["originY"] < 0

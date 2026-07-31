@@ -1929,6 +1929,16 @@ reciprocal from independent width/height division and distinguish a normalized
 mantissa law from viewport or screen-position rounding before any holdout is
 opened.
 
+Raster schema 10 keeps every schema-9 control and holdout unchanged and adds a
+deterministic 256-bin reciprocal sweep. For each equal-width bin over the
+normalized determinant interval `[1, 2)`, the generator selects the closest
+unique integer rectangle area in `[4096, 8192)` with stable aspect/size
+tie-breakers. CI independently regenerates the complete name and geometry map,
+requires all 256 areas to be unique, and bit-gates every raw pull surface. The
+sweep is discovery evidence for identifying the reciprocal lookup or
+piecewise-approximation law; it does not authorize opening the four existing
+holdouts.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

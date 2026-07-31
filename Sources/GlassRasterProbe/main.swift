@@ -66,6 +66,75 @@ private func discoveryTomographyCase(
         height: height)
 }
 
+private func reciprocalSweepTomographyCases()
+    -> [TomographyCase]
+{
+    var result: [TomographyCase] = []
+    result.reserveCapacity(256)
+    for bin in 0..<256 {
+        // Midpoints of 256 equal bins over normalized determinants [1, 2).
+        // All candidates stay in [4096, 8192), so scores share one exponent.
+        let doubledTargetArea = 8_208 + 32 * bin
+        var bestScore = Int.max
+        var bestAspect = Int.max
+        var bestArea = Int.max
+        var bestWidth = 0
+        var bestHeight = 0
+        for width in 32...128 {
+            for height in width...128 {
+                let area = width * height
+                guard 4_096 <= area && area < 8_192 else {
+                    continue
+                }
+                let score = abs(2 * area - doubledTargetArea)
+                let aspect = height - width
+                let replace =
+                    score < bestScore
+                    || (score == bestScore
+                        && aspect < bestAspect)
+                    || (score == bestScore
+                        && aspect == bestAspect
+                        && area < bestArea)
+                    || (score == bestScore
+                        && aspect == bestAspect
+                        && area == bestArea
+                        && width < bestWidth)
+                    || (score == bestScore
+                        && aspect == bestAspect
+                        && area == bestArea
+                        && width == bestWidth
+                        && height < bestHeight)
+                if replace {
+                    bestScore = score
+                    bestAspect = aspect
+                    bestArea = area
+                    bestWidth = width
+                    bestHeight = height
+                }
+            }
+        }
+        precondition(bestWidth != 0 && bestHeight != 0)
+        result.append(discoveryTomographyCase(
+            String(
+                format:
+                    "tomography-discovery-reciprocal-bin-%03d-%03dx%03d",
+                bin,
+                bestWidth,
+                bestHeight),
+            width: bestWidth,
+            height: bestHeight,
+            originX: 17,
+            originY: 19,
+            targetWidth: 256,
+            targetHeight: 256))
+    }
+    precondition(Set(result.map(\.name)).count == result.count)
+    precondition(Set(result.map {
+        $0.width * $0.height
+    }).count == result.count)
+    return result
+}
+
 private let tomographyDeltaDenominator: UInt32 = 65_536
 private let tomographyDeltaNumerators: [UInt32] = [
     52_625,
@@ -986,7 +1055,9 @@ private let tomographyExpansionCases = [
 ]
 
 private let tomographyCases =
-    tomographyCoreCases + tomographyExpansionCases
+    tomographyCoreCases
+    + tomographyExpansionCases
+    + reciprocalSweepTomographyCases()
 
 private func sha256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
@@ -1632,8 +1703,8 @@ private func run(outputDirectory: URL) throws {
     }
 
     let manifest: [String: Any] = [
-        "schemaVersion": 9,
-        "rigVersion": "metal-raster-interpolant-probe-9.0.0",
+        "schemaVersion": 10,
+        "rigVersion": "metal-raster-interpolant-probe-10.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
