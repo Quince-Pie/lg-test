@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate schema-16 residual-refinement raster evidence."""
+"""Validate inherited residual-refinement raster evidence."""
 
 import argparse
 import hashlib
@@ -26,8 +26,8 @@ RESIDUAL_ANCHORS = (
     (124, (103, 163, 197)),
 )
 REFINEMENT_OFFSETS = tuple(range(-3, 5))
-SCHEMA_VERSION = 16
-RIG_VERSION = "metal-raster-interpolant-probe-16.0.0"
+SCHEMA_VERSION = 17
+RIG_VERSION = "metal-raster-interpolant-probe-17.0.0"
 
 
 def sha256(path):

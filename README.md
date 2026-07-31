@@ -2083,6 +2083,18 @@ new Apple output. CI independently reconstructs all residual dimensions,
 indices, neighboring numerators, names, geometry links, byte sizes, and hashes;
 it rejects any holdout name or role from the refinement set.
 
+Raster schema 17 keeps every schema-16 surface and the four original raster
+holdouts unchanged and unopened. It targets the two normalized quotient
+branches where schema-16 isolated dimension-dependent product-rounding
+thresholds near `3/8` and `11/16`. For every integer width from 32 through 127,
+a deterministic exact-integer search selects one distinct numerator nearest
+each of eight preregistered product phases around the relevant threshold.
+Power-of-two widths omit their unreachable upper branch. Sixteen interleaved
+widths (`37 + 6k`) are tagged as new holdouts, leaving 158 discovery cases and
+32 unopened holdout cases. A standalone CI validator independently regenerates
+all 190 cases, roles, numerators, float bits, links, sizes, and hashes without
+reading any captured float value.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
