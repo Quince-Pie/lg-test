@@ -2,6 +2,7 @@
 """Tests for matched numerator/determinant factorization tomography."""
 
 import unittest
+from pathlib import Path
 
 import validate_raster_general_height_factorization as factorization
 
@@ -13,6 +14,17 @@ def float_components(bits: int) -> tuple[int, int]:
 
 
 class RasterGeneralHeightFactorizationTests(unittest.TestCase):
+    def test_metal_source_embeds_sample_position_stride(self) -> None:
+        source = (
+            Path(__file__).parents[1]
+            / "Sources"
+            / "GlassRasterReciprocalTransfer"
+            / "main.swift"
+        ).read_text()
+        lines = source.splitlines()
+        self.assertIn(r"        \(samplePositionCount)u * input.recordIndex", lines)
+        self.assertNotIn("        (samplePositionCount)u * input.recordIndex", lines)
+
     def test_preregistration_and_layout_are_frozen(self) -> None:
         factorization.load_preregistration()
         self.assertEqual(

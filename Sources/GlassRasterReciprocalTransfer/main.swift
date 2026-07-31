@@ -296,7 +296,7 @@ fragment float factorization_fragment(
     device uint2 *results [[buffer(0)]])
 {
     results[
-        (samplePositionCount)u * input.recordIndex
+        \(samplePositionCount)u * input.recordIndex
             + input.outputSlot
     ] = uint2(
         as_type<uint>(input.ramp.interpolate_at_offset(
