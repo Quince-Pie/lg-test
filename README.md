@@ -1639,11 +1639,13 @@ the telemetry strip changes, so up to ten progress-targeted bounded
 own-window snapshots acquire the tail after the live stream has already
 covered the transition. At least five must span 0.0–0.8 with no heartbeat gap
 greater than 0.25 and remain inside the hard 1.15-second deadline. Every tail
-snapshot carries the embedded heartbeat, measured acquisition midpoint and
-duration, exact source metadata, hashes, and explicit
-`CGWindowListCreateImage` provenance. This cannot serialize or open holes in
-the preceding live transition and does not move or replace its strictly
-validated endpoint frame.
+frame carries the embedded heartbeat, measured acquisition midpoint and
+duration, exact source metadata, hashes, and explicit backend provenance.
+Stream-delivered frames retain the earliest post-reset states; monotonically
+later `CGWindowListCreateImage` frames complete the quiescent tail. Validation
+requires both backends in every sequence. The bounded acquisitions cannot
+serialize or open holes in the preceding live transition and do not move or
+replace its strictly validated endpoint frame.
 
 Return the automatic v2.19 `static` artifact first. It contains the fixed-site
 square-size trace needed to identify cumulative sub-threshold filter mass.

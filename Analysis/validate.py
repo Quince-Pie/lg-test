@@ -2250,6 +2250,7 @@ def validate_dynamic(
             tail_times: list[float] = []
             tail_progress: list[float] = []
             tail_heartbeat_progress: list[float] = []
+            tail_backends: set[str] = set()
             for tail_position, tail_value in enumerate(tail_values):
                 if not isinstance(tail_value, dict):
                     findings.error(
@@ -2315,23 +2316,26 @@ def validate_dynamic(
                     )
                 else:
                     tail_heartbeat_progress.append(float(heartbeat))
+                backend = tail.get("captureBackend")
+                if isinstance(backend, str):
+                    tail_backends.add(backend)
                 if (
                     sampling_method
                     == "continuous-window-stream-tail-full-frame-verified"
-                    and tail.get("captureBackend")
-                    != "ScreenCaptureKit-SCStream-BGRA"
+                    and backend != "ScreenCaptureKit-SCStream-BGRA"
                 ):
                     findings.error(
                         f"{tail_label}: tail is not a streamed full frame"
                     )
                 if (
                     bounded_tail_sampling
-                    and tail.get("captureBackend")
-                    != "CGWindowListCreateImage"
+                    and backend not in {
+                        "ScreenCaptureKit-SCStream-BGRA",
+                        "CGWindowListCreateImage",
+                    }
                 ):
                     findings.error(
-                        f"{tail_label}: tail is not a bounded "
-                        "own-window full frame"
+                        f"{tail_label}: unsupported hybrid tail backend"
                     )
 
                 relative = tail.get("file")
@@ -2366,6 +2370,14 @@ def validate_dynamic(
                             f"{tail_label}: dimensions disagree with crop "
                             f"{expected_size}"
                         )
+            if bounded_tail_sampling and not {
+                "ScreenCaptureKit-SCStream-BGRA",
+                "CGWindowListCreateImage",
+            }.issubset(tail_backends):
+                findings.error(
+                    f"{label}: hybrid tail requires streamed early frames "
+                    "and bounded own-window frames"
+                )
             if any(
                 right <= left
                 for left, right in zip(tail_times, tail_times[1:])

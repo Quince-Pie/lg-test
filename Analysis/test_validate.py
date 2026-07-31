@@ -1149,6 +1149,7 @@ class ValidatorTests(unittest.TestCase):
             })
             for tail in tails:
                 tail["captureBackend"] = "CGWindowListCreateImage"
+            tails[0]["captureBackend"] = "ScreenCaptureKit-SCStream-BGRA"
             bounded_tail = Findings()
             bounded_tail_summary, _ = validate_dynamic(
                 root, manifest, references, bounded_tail
@@ -1156,16 +1157,29 @@ class ValidatorTests(unittest.TestCase):
             self.assertEqual(bounded_tail.errors, [])
             self.assertEqual(bounded_tail_summary["tailFrames"], 5)
 
-            tails[0]["captureBackend"] = "ScreenCaptureKit-SCStream-BGRA"
+            tails[0]["captureBackend"] = "unit-test"
             invalid_bounded_tail = Findings()
             validate_dynamic(
                 root, manifest, references, invalid_bounded_tail
             )
             self.assertTrue(any(
-                "bounded own-window full frame" in error
+                "unsupported hybrid tail backend" in error
                 for error in invalid_bounded_tail.errors
             ))
-            tails[0]["captureBackend"] = "CGWindowListCreateImage"
+            tails[0]["captureBackend"] = "ScreenCaptureKit-SCStream-BGRA"
+
+            for tail in tails[1:]:
+                tail["captureBackend"] = "ScreenCaptureKit-SCStream-BGRA"
+            missing_bounded_tail = Findings()
+            validate_dynamic(
+                root, manifest, references, missing_bounded_tail
+            )
+            self.assertTrue(any(
+                "hybrid tail requires" in error
+                for error in missing_bounded_tail.errors
+            ))
+            for tail in tails[1:]:
+                tail["captureBackend"] = "CGWindowListCreateImage"
 
             tails[1]["tailProgress"] = 0.4
             invalid_tail_gap = Findings()

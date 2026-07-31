@@ -2164,10 +2164,26 @@ final class WindowStreamCollector:
                     + "received=\(state.captureAttempts), "
                     + "decoded=\(state.decodedSamples)")
             }
-            let tailFrames = (
-                verifiedTailFrames ?? state.tailFrames
+            let tailCandidates = (
+                verifiedTailFrames.map {
+                    state.tailFrames + $0
+                } ?? state.tailFrames
             ).sorted {
                 $0.actual < $1.actual
+            }
+            var tailFrames: [DynamicTailFrame] = []
+            tailFrames.reserveCapacity(tailCandidates.count)
+            for candidate in tailCandidates {
+                guard let previous = tailFrames.last else {
+                    tailFrames.append(candidate)
+                    continue
+                }
+                guard candidate.actual > previous.actual,
+                      candidate.tailProgress >= previous.tailProgress
+                else {
+                    continue
+                }
+                tailFrames.append(candidate)
             }
             if state.capturesTail {
                 let heartbeatGaps = zip(
