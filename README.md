@@ -2743,6 +2743,34 @@ The real capture can complete the finite mantissa table and fractional-width
 setup; it still cannot establish clipped setup, a compact closed-form law, or
 end-to-end image parity by itself.
 
+Run 30672604597 (`0bee7c342ad3c3ab85a0d9ccb98df7f3867de0af`)
+captured all 8,388,608 mantissas and all 25,165,824 two-pull records. It
+correctly falsified the preregistered exact-floating-coordinate hypothesis:
+4,206,449 inputs fit neither exact-width floor nor ceiling candidate. The
+workflow therefore remained red instead of weakening its prospective gate
+after seeing Apple output; its always-uploaded artifact retains the complete
+201,326,592-byte raw capture with SHA-256
+`254b4d81c29a462c19193bee6491566ecb0662f747269003d28adc1faaea283e`.
+
+`analyze_raster_fractional_subpixel_transfer.py` identifies the missing setup
+operation from that raw evidence. Of every phase on grids from 1/1024 through
+1/64 pixel, exactly one policy explains every record: quantize to 1/256 pixel
+by `((mantissa + 2) // 4) * 4`, so half-step ties move toward positive
+infinity. The other 30 grid/phase policies fail between 2,097,152 and
+7,340,032 cases. This is an exhaustive discriminator, not a sampled fit.
+
+The quantizer collapses the inputs into 2,097,153 coordinate classes. Pooling
+the independently selected witnesses in each class resolves every selector
+uniquely: 1,010,674 choose the exact floor endpoint and 1,086,479 choose the
+ceiling. All 8,192 canonical controls and all 32,768 general-height controls
+then match bit-for-bit. The normalized selector table has SHA-256
+`b0990c2ce17fff5ebf06124497a38d38c9cf22e7e9210ccb6f95adb2c6834d53`;
+its 2,979,455-byte zlib materialization has SHA-256
+`2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3`.
+This closes the observed positive-normal fractional input domain, while
+clipped setup, a compact selector law, and end-to-end parity remain separate
+prospective gates.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

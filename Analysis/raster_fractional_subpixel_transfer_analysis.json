@@ -1,0 +1,113 @@
+{
+  "ciCommit": "0bee7c342ad3c3ab85a0d9ccb98df7f3867de0af",
+  "ciRunId": 30672604597,
+  "classification": "post-capture-exhaustive-fractional-width-subpixel-transfer",
+  "conclusions": {
+    "clippedSetupEstablished": false,
+    "endToEndLiquidGlassParityEstablished": false,
+    "fractionalCoordinatesQuantizedToOneOver256Pixels": true,
+    "portableClosedFormSelectorLawEstablished": false,
+    "positiveNormalMantissaInputDomainComplete": true,
+    "priorSelectorCorporaTransferredExactly": true,
+    "quantizedCoordinateSelectorClassDomainComplete": true
+  },
+  "manifestSha256": "c96f6f295dc3924b35462483f34cbe68401d5d28db67c1f683f8d10afcfcd9f9",
+  "measurement": {
+    "allInputRecordsExplained": true,
+    "canonicalIntegerWidthCount": 8192,
+    "canonicalIntegerWidthExactMatchCount": 8192,
+    "compressedSelectorTableBytes": 2979455,
+    "compressedSelectorTableSha256": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+    "exactReciprocalClassCount": 2,
+    "exhaustiveQuantizedClassGate": true,
+    "generalHeightCount": 32768,
+    "generalHeightExactMatchCount": 32768,
+    "individualCandidateMultiplicity": {
+      "1": 5610594,
+      "2": 2778014
+    },
+    "inputMantissaCount": 8388608,
+    "inputRecordCount": 25165824,
+    "jointExactClassCount": 2,
+    "jointLowerOnlyClassCount": 1010672,
+    "jointSelectorUniqueClassCount": 2097153,
+    "jointUpperOnlyClassCount": 1086479,
+    "quantizedClassCount": 2097153,
+    "quantizedClassMemberCountDistribution": {
+      "2": 2,
+      "4": 2097151
+    },
+    "resolvedCaseSlopeTableSha256": "c31c0618ed4bc26c4dc8d482f452b25db3b879f2e2e4f00cc0a82e6fe4160567",
+    "resolvedSelectorEndpointFromFloorDistribution": {
+      "0": 1010674,
+      "1": 1086479
+    },
+    "resolvedSelectorOffsetFromNearestDistribution": {
+      "-1": 80528,
+      "0": 1897705,
+      "1": 118920
+    },
+    "resolvedSelectorTableBytes": 8388612,
+    "resolvedSelectorTableSha256": "b0990c2ce17fff5ebf06124497a38d38c9cf22e7e9210ccb6f95adb2c6834d53",
+    "sealedControlGate": true
+  },
+  "preregistrationSha256": "942a513d58181b89f857401c0e4341edeca90d07e664cae69e1a6c80679afe0a",
+  "prospectiveHypothesis": {
+    "candidateMultiplicity": {
+      "0": 4206449,
+      "1": 4182159
+    },
+    "canonicalIntegerWidthExactMatchCount": 8191,
+    "exactFloatingWidthHypothesisFalsified": true,
+    "generalHeightExactMatchCount": 32768
+  },
+  "quantizerIdentification": {
+    "candidatePolicyMatchingCaseCount": {
+      "quantum-1-bias-0": 4182160,
+      "quantum-16-bias-0": 1048576,
+      "quantum-16-bias-1": 1572864,
+      "quantum-16-bias-10": 2097152,
+      "quantum-16-bias-11": 2097152,
+      "quantum-16-bias-12": 2097152,
+      "quantum-16-bias-13": 2097152,
+      "quantum-16-bias-14": 2097152,
+      "quantum-16-bias-15": 1572864,
+      "quantum-16-bias-2": 2097152,
+      "quantum-16-bias-3": 2097152,
+      "quantum-16-bias-4": 2097152,
+      "quantum-16-bias-5": 2097152,
+      "quantum-16-bias-6": 2097152,
+      "quantum-16-bias-7": 2097152,
+      "quantum-16-bias-8": 2097152,
+      "quantum-16-bias-9": 2097152,
+      "quantum-2-bias-0": 4269793,
+      "quantum-2-bias-1": 4269793,
+      "quantum-4-bias-0": 4194304,
+      "quantum-4-bias-1": 6291456,
+      "quantum-4-bias-2": 8388608,
+      "quantum-4-bias-3": 6291456,
+      "quantum-8-bias-0": 2097152,
+      "quantum-8-bias-1": 3145728,
+      "quantum-8-bias-2": 4194304,
+      "quantum-8-bias-3": 4194304,
+      "quantum-8-bias-4": 4194304,
+      "quantum-8-bias-5": 4194304,
+      "quantum-8-bias-6": 4194304,
+      "quantum-8-bias-7": 3145728
+    },
+    "fullDomainMatchingPolicies": [
+      {
+        "quantumMantissaUlps": 4,
+        "roundingBias": 2
+      }
+    ],
+    "inputCoordinateMantissaUlpPixels": "1/1024",
+    "selectedFormula": "((mantissa + 2) // 4) * 4",
+    "selectedQuantumMantissaUlps": 4,
+    "selectedQuantumPixels": "1/256",
+    "selectedRounding": "nearest with half-step ties toward positive infinity",
+    "selectedRoundingBias": 2
+  },
+  "rasterFractionalSubpixelTransferAnalysisSchemaVersion": 1,
+  "rawSha256": "254b4d81c29a462c19193bee6491566ecb0662f747269003d28adc1faaea283e"
+}
