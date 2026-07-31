@@ -11929,10 +11929,359 @@ private func installTransitionBackgroundFilter(
     return true
 }
 
+private struct TransitionMatrixUniformIntervention {
+    let name: String
+    let values: [(key: String, value: Any)]
+}
+
+private func transitionMatrixScalar(
+    _ key: String,
+    _ value: Float
+) -> (key: String, value: Any) {
+    (key, NSNumber(value: value))
+}
+
+private func transitionMatrixAxes(
+    face: (black: Float, white: Float, saturation: Float),
+    bleed: (black: Float, white: Float, saturation: Float),
+    shadow: (black: Float, white: Float, saturation: Float)
+) -> [(key: String, value: Any)] {
+    [
+        transitionMatrixScalar(
+            "inputFaceColorMatrixBlack", face.black),
+        transitionMatrixScalar(
+            "inputFaceColorMatrixWhite", face.white),
+        transitionMatrixScalar(
+            "inputFaceColorMatrixSaturation", face.saturation),
+        transitionMatrixScalar(
+            "inputBleedColorMatrixBlack", bleed.black),
+        transitionMatrixScalar(
+            "inputBleedColorMatrixWhite", bleed.white),
+        transitionMatrixScalar(
+            "inputBleedColorMatrixSaturation", bleed.saturation),
+        transitionMatrixScalar(
+            "inputShadowColorMatrixBlack", shadow.black),
+        transitionMatrixScalar(
+            "inputShadowColorMatrixWhite", shadow.white),
+        transitionMatrixScalar(
+            "inputShadowColorMatrixSaturation",
+            shadow.saturation),
+    ]
+}
+
+private func transitionMatrixUniformInterventions()
+    -> [TransitionMatrixUniformIntervention]?
+{
+    guard let colorSpace = CGColorSpace(
+            name: CGColorSpace.extendedSRGB),
+          let faceFillLow = CGColor(
+            colorSpace: colorSpace,
+            components: [0.25, 0.5, 0.75, 0.25]),
+          let bleedFillLow = CGColor(
+            colorSpace: colorSpace,
+            components: [0.8, 0.4, 0.2, 0.375]),
+          let shadowFillLow = CGColor(
+            colorSpace: colorSpace,
+            components: [0.1, 0.3, 0.9, 0.2]),
+          let faceFillHigh = CGColor(
+            colorSpace: colorSpace,
+            components: [0.9, 0.2, 0.4, 0.75]),
+          let bleedFillHigh = CGColor(
+            colorSpace: colorSpace,
+            components: [0.3, 0.7, 0.1, 0.625]),
+          let shadowFillHigh = CGColor(
+            colorSpace: colorSpace,
+            components: [0.8, 0.6, 0.2, 0.6]),
+          let faceFillHoldout = CGColor(
+            colorSpace: colorSpace,
+            components: [0.17, 0.43, 0.71, 0.3125]),
+          let bleedFillHoldout = CGColor(
+            colorSpace: colorSpace,
+            components: [0.61, 0.29, 0.83, 0.4375]),
+          let shadowFillHoldout = CGColor(
+            colorSpace: colorSpace,
+            components: [0.37, 0.73, 0.19, 0.28125])
+    else {
+        return nil
+    }
+
+    let neutral = transitionMatrixAxes(
+        face: (0, 1, 1),
+        bleed: (0, 1, 1),
+        shadow: (0, 1, 1))
+    return [
+        TransitionMatrixUniformIntervention(
+            name: "baseline-endpoint",
+            values: []),
+        TransitionMatrixUniformIntervention(
+            name: "neutral-axes",
+            values: neutral),
+        TransitionMatrixUniformIntervention(
+            name: "white-low",
+            values: transitionMatrixAxes(
+                face: (0, 0.5, 1),
+                bleed: (0, 0.75, 1),
+                shadow: (0, 1.25, 1))),
+        TransitionMatrixUniformIntervention(
+            name: "white-high",
+            values: transitionMatrixAxes(
+                face: (0, 1.5, 1),
+                bleed: (0, 1.25, 1),
+                shadow: (0, 0.5, 1))),
+        TransitionMatrixUniformIntervention(
+            name: "black-low",
+            values: transitionMatrixAxes(
+                face: (0.125, 1, 1),
+                bleed: (0.25, 1, 1),
+                shadow: (0.375, 1, 1))),
+        TransitionMatrixUniformIntervention(
+            name: "black-high",
+            values: transitionMatrixAxes(
+                face: (0.625, 1, 1),
+                bleed: (0.5, 1, 1),
+                shadow: (0.25, 1, 1))),
+        TransitionMatrixUniformIntervention(
+            name: "saturation-zero",
+            values: transitionMatrixAxes(
+                face: (0, 1, 0),
+                bleed: (0, 1, 0),
+                shadow: (0, 1, 0))),
+        TransitionMatrixUniformIntervention(
+            name: "saturation-low",
+            values: transitionMatrixAxes(
+                face: (0, 1, 0.25),
+                bleed: (0, 1, 0.5),
+                shadow: (0, 1, 0.75))),
+        TransitionMatrixUniformIntervention(
+            name: "saturation-high",
+            values: transitionMatrixAxes(
+                face: (0, 1, 1.5),
+                bleed: (0, 1, 2),
+                shadow: (0, 1, 1.25))),
+        TransitionMatrixUniformIntervention(
+            name: "opacity-zero",
+            values: neutral + [
+                transitionMatrixScalar("inputFaceOpacity", 0),
+                transitionMatrixScalar("inputSDRShadowOpacity", 0),
+            ]),
+        TransitionMatrixUniformIntervention(
+            name: "opacity-quarter",
+            values: neutral + [
+                transitionMatrixScalar("inputFaceOpacity", 0.25),
+                transitionMatrixScalar(
+                    "inputSDRShadowOpacity", 0.125),
+            ]),
+        TransitionMatrixUniformIntervention(
+            name: "opacity-half",
+            values: neutral + [
+                transitionMatrixScalar("inputFaceOpacity", 0.5),
+                transitionMatrixScalar(
+                    "inputSDRShadowOpacity", 0.375),
+            ]),
+        TransitionMatrixUniformIntervention(
+            name: "opacity-three-quarter",
+            values: neutral + [
+                transitionMatrixScalar("inputFaceOpacity", 0.75),
+                transitionMatrixScalar(
+                    "inputSDRShadowOpacity", 0.625),
+            ]),
+        TransitionMatrixUniformIntervention(
+            name: "fill-low",
+            values: neutral + [
+                (
+                    key: "inputFaceColorMatrixFillColor",
+                    value: faceFillLow
+                ),
+                (
+                    key: "inputBleedColorMatrixFillColor",
+                    value: bleedFillLow
+                ),
+                (
+                    key: "inputShadowColorMatrixFillColor",
+                    value: shadowFillLow
+                ),
+            ]),
+        TransitionMatrixUniformIntervention(
+            name: "fill-high",
+            values: neutral + [
+                (
+                    key: "inputFaceColorMatrixFillColor",
+                    value: faceFillHigh
+                ),
+                (
+                    key: "inputBleedColorMatrixFillColor",
+                    value: bleedFillHigh
+                ),
+                (
+                    key: "inputShadowColorMatrixFillColor",
+                    value: shadowFillHigh
+                ),
+            ]),
+        TransitionMatrixUniformIntervention(
+            name: "combined-holdout",
+            values: transitionMatrixAxes(
+                face: (0.1875, 1.3125, 0.6875),
+                bleed: (0.34375, 0.8125, 1.4375),
+                shadow: (0.09375, 1.1875, 0.4375)) + [
+                    transitionMatrixScalar(
+                        "inputFaceOpacity", 0.5625),
+                    transitionMatrixScalar(
+                        "inputSDRShadowOpacity", 0.3125),
+                    (
+                        key: "inputFaceColorMatrixFillColor",
+                        value: faceFillHoldout
+                    ),
+                    (
+                        key: "inputBleedColorMatrixFillColor",
+                        value: bleedFillHoldout
+                    ),
+                    (
+                        key: "inputShadowColorMatrixFillColor",
+                        value: shadowFillHoldout
+                    ),
+                ]),
+    ]
+}
+
+@MainActor
+private func transitionMatrixUniformBasisEvidence(
+    rootLayer: CALayer,
+    target: TransitionBackgroundFilterTarget,
+    sourceSnapshot: TransitionBackgroundFilterSnapshot?,
+    device: MTLDevice,
+    requested: Bool
+) -> [String: Any] {
+    guard requested else {
+        return [
+            "schemaVersion": 1,
+            "requested": false,
+            "executed": false,
+            "presentationLayerReplayed": false,
+        ]
+    }
+    guard let sourceSnapshot,
+          sourceSnapshot.sampleIndex == 32
+    else {
+        return [
+            "schemaVersion": 1,
+            "requested": true,
+            "executed": false,
+            "reason": "materialized endpoint filter unavailable",
+            "presentationLayerReplayed": false,
+        ]
+    }
+    guard let interventions =
+            transitionMatrixUniformInterventions()
+    else {
+        return [
+            "schemaVersion": 1,
+            "requested": true,
+            "executed": false,
+            "reason": "extended-sRGB intervention colors unavailable",
+            "presentationLayerReplayed": false,
+        ]
+    }
+    guard let inputKeys =
+            sourceSnapshot.filter.value(
+                forKey: "inputKeys") as? [String]
+    else {
+        return [
+            "schemaVersion": 1,
+            "requested": true,
+            "executed": false,
+            "reason": "endpoint filter input keys unavailable",
+            "presentationLayerReplayed": false,
+        ]
+    }
+    let availableKeys = Set(inputKeys)
+    var records: [[String: Any]] = []
+    records.reserveCapacity(interventions.count)
+    for (index, intervention) in interventions.enumerated() {
+        let missingKeys = intervention.values.map { $0.key }.filter {
+            !availableKeys.contains($0)
+        }
+        guard missingKeys.isEmpty,
+              let stateFilter =
+                copiedTransitionFilter(sourceSnapshot.filter)
+        else {
+            records.append([
+                "index": index,
+                "name": intervention.name,
+                "executed": false,
+                "missingInputKeys": missingKeys,
+                "reason":
+                    missingKeys.isEmpty
+                    ? "endpoint filter copy failed"
+                    : "requested input key unavailable",
+            ])
+            continue
+        }
+        for value in intervention.values {
+            stateFilter.setValue(value.value, forKey: value.key)
+        }
+        guard installTransitionBackgroundFilter(
+                stateFilter,
+                target: target)
+        else {
+            records.append([
+                "index": index,
+                "name": intervention.name,
+                "executed": false,
+                "reason": "intervention installation failed",
+            ])
+            continue
+        }
+        let capture = String(
+            format: "transition-matrix-uniform-%02d-%@",
+            index,
+            intervention.name)
+        records.append([
+            "index": index,
+            "name": intervention.name,
+            "sourceSampleIndex": sourceSnapshot.sampleIndex,
+            "sourceRequestedProgress":
+                sourceSnapshot.requestedProgress,
+            "requestedValues": Dictionary(
+                uniqueKeysWithValues:
+                    intervention.values.map {
+                        (
+                            $0.key,
+                            serializedRuntimeValue($0.value)
+                        )
+                    }),
+            "filter": filterDescription(stateFilter),
+            "render": carendererUniformEvidence(
+                rootLayer: rootLayer,
+                device: device,
+                capture: capture),
+        ])
+    }
+    let executed = records.filter {
+        ($0["render"] as? [String: Any])?["executed"]
+            as? Bool == true
+    }.count
+    return [
+        "schemaVersion": 1,
+        "requested": true,
+        "executed": executed == interventions.count,
+        "sourceSampleIndex": sourceSnapshot.sampleIndex,
+        "sourceRequestedProgress":
+            sourceSnapshot.requestedProgress,
+        "interventionNames": interventions.map(\.name),
+        "interventionCount": interventions.count,
+        "executedInterventionCount": executed,
+        "records": records,
+        "method":
+            "independent-kvc-axis-interventions-on-copied-endpoint-filter",
+        "presentationLayerReplayed": false,
+    ]
+}
+
 @MainActor
 private func transitionBackgroundUniformEvidence(
     rootLayer: CALayer,
-    snapshots: [TransitionBackgroundFilterSnapshot]
+    snapshots: [TransitionBackgroundFilterSnapshot],
+    matrixBasisRequested: Bool
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
@@ -12002,6 +12351,13 @@ private func transitionBackgroundUniformEvidence(
         ($0["render"] as? [String: Any])?["executed"]
             as? Bool == true
     }.count
+    let matrixUniformBasis =
+        transitionMatrixUniformBasisEvidence(
+            rootLayer: rootLayer,
+            target: target,
+            sourceSnapshot: snapshots.last,
+            device: device,
+            requested: matrixBasisRequested)
     return [
         "schemaVersion": 1,
         "requested": true,
@@ -12014,6 +12370,7 @@ private func transitionBackgroundUniformEvidence(
         "method":
             "copied-presentation-background-filter-on-fresh-static-model-tree",
         "presentationLayerReplayed": false,
+        "matrixUniformBasis": matrixUniformBasis,
     ]
 }
 
@@ -12620,6 +12977,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_UNIFORMS"
                 ] == "1"
+            let matrixUniformBasisRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_MATRIX_BASIS"
+                ] == "1"
             if dynamicUniformsRequested,
                direction != .materialize
             {
@@ -12632,9 +12993,23 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "materialize direction",
                     ])
             }
+            if matrixUniformBasisRequested,
+               !dynamicUniformsRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 9,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "matrix uniform basis requires "
+                            + "dynamic uniform capture",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
+            let endpointTopologyDeadlineSeconds = 1.0
             let dynamicUniformSampleIndices = Set([
                 1, 4, 8, 12, 16, 20, 24, 28, 32,
             ])
@@ -12688,6 +13063,35 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         nanoseconds:
                             UInt64(remaining * 1_000_000_000))
                 }
+                var endpointTopologyWaitSeconds: Double?
+                var endpointTopologyMatched: Bool?
+                if index == sampleCount - 1 {
+                    let waitStarted = CACurrentMediaTime()
+                    let deadline =
+                        waitStarted
+                        + endpointTopologyDeadlineSeconds
+                    while true {
+                        window.displayIfNeeded()
+                        CATransaction.flush()
+                        let presentationRoot =
+                            rootLayer.presentation() ?? rootLayer
+                        let hasBackground =
+                            transitionBackgroundFilterTarget(
+                                in: presentationRoot) != nil
+                        if hasBackground == direction.finalVisible {
+                            endpointTopologyMatched = true
+                            break
+                        }
+                        if CACurrentMediaTime() >= deadline {
+                            endpointTopologyMatched = false
+                            break
+                        }
+                        try? await Task.sleep(
+                            for: .milliseconds(2))
+                    }
+                    endpointTopologyWaitSeconds =
+                        CACurrentMediaTime() - waitStarted
+                }
                 window.displayIfNeeded()
                 CATransaction.flush()
                 let actualMediaTime = CACurrentMediaTime()
@@ -12711,6 +13115,18 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 sample["actualProgress"] =
                     (captureMediaTime - triggerBeforeCommit)
                     / duration
+                if let endpointTopologyWaitSeconds,
+                   let endpointTopologyMatched
+                {
+                    sample["endpointTopologyWaitSeconds"] =
+                        endpointTopologyWaitSeconds
+                    sample[
+                        "endpointTopologyExpectedGlassBackground"
+                    ] = direction.finalVisible
+                    sample[
+                        "endpointTopologyMatchedBeforeCapture"
+                    ] = endpointTopologyMatched
+                }
                 samples.append(sample)
                 if dynamicUniformsRequested,
                    dynamicUniformSampleIndices.contains(index)
@@ -12792,7 +13208,9 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 dynamicUniformEvidence =
                     transitionBackgroundUniformEvidence(
                         rootLayer: carrierRootLayer,
-                        snapshots: dynamicUniformSnapshots)
+                        snapshots: dynamicUniformSnapshots,
+                        matrixBasisRequested:
+                            matrixUniformBasisRequested)
                 carrierWindow.orderOut(nil)
                 writeTransitionProbeProgress(
                     outputDirectory: outputDirectory,
@@ -12804,6 +13222,12 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     "requested": false,
                     "executed": false,
                     "presentationLayerReplayed": false,
+                    "matrixUniformBasis": [
+                        "schemaVersion": 1,
+                        "requested": false,
+                        "executed": false,
+                        "presentationLayerReplayed": false,
+                    ],
                 ]
             }
             let dynamicUniformFailed =
@@ -12827,6 +13251,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 "animationDurationSeconds": duration,
                 "sampleCount": sampleCount,
                 "sampleProgressRule": "index/(sampleCount-1)",
+                "endpointTopologyWaitDeadlineSeconds":
+                    endpointTopologyDeadlineSeconds,
                 "samplingMethod":
                     "real-presentation-state-plus-own-window-pixels",
                 "captureBackend":

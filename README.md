@@ -1725,9 +1725,20 @@ context. Only fragment-buffer bindings from the glass pipelines are retained.
 A presentation layer is never assigned to `CARenderer`; the report records
 `presentationLayerReplayed = false`, and CI rejects missing filter copies,
 missing uniform payloads, non-background pipelines, or anything other than
-two background uniform bindings per state. Dispatch
+two background uniform bindings per state. The final timeline sample also
+waits, for at most one second, for Core Animation's presentation topology to
+match the declared endpoint; CI rejects a lingering materialized or
+dematerialized layer instead of accepting a nominal-clock endpoint. Dispatch
 `transition-introspect.yml` with `capture_mode=uniform-profiles` to enable
-this evidence on the four material/appearance materialize legs. The other
+this evidence on the four material/appearance materialize legs. The
+clear/light leg additionally renders 16 preregistered, independent KVC
+interventions on copies of the captured endpoint filter. The basis varies the
+face, bleed, and shadow black/white/saturation axes, face and shadow opacity,
+three extended-sRGB fill colors, and a combined holdout. CI requires every
+requested value to survive the copy, every render to expose exactly two
+background uniform bindings, and at least 12 distinct byte payloads. This
+separates the private color-matrix coefficients and rounding law without
+fitting the natural transition trajectory to an assumed formula. The other
 matrix legs still rerun the unchanged state/pixel gates as controls.
 
 ## Run locally on macOS 26

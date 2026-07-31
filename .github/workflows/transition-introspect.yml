@@ -115,6 +115,10 @@ jobs:
         ${{ inputs.capture_mode == 'uniform-profiles' &&
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'profile-') && '1' || '0' }}
+      LG_TRANSITION_MATRIX_BASIS: >-
+        ${{ inputs.capture_mode == 'uniform-profiles' &&
+        matrix.label == 'profile-clear-light-materialize' &&
+        '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -320,10 +324,204 @@ jobs:
               raise SystemExit(
                   "unrequested transition uniforms executed"
               )
+          matrix_basis_requested = (
+              os.environ.get("LG_TRANSITION_MATRIX_BASIS") == "1"
+          )
+          matrix_basis = uniforms.get(
+              "matrixUniformBasis", {}
+          )
+          if (
+              not isinstance(matrix_basis, dict)
+              or matrix_basis.get("schemaVersion") != 1
+              or matrix_basis.get("requested")
+                  is not matrix_basis_requested
+              or matrix_basis.get("presentationLayerReplayed")
+                  is not False
+          ):
+              raise SystemExit(
+                  "transition matrix basis metadata differs: "
+                  f"{matrix_basis}"
+              )
+          if matrix_basis_requested:
+              expected_interventions = [
+                  "baseline-endpoint",
+                  "neutral-axes",
+                  "white-low",
+                  "white-high",
+                  "black-low",
+                  "black-high",
+                  "saturation-zero",
+                  "saturation-low",
+                  "saturation-high",
+                  "opacity-zero",
+                  "opacity-quarter",
+                  "opacity-half",
+                  "opacity-three-quarter",
+                  "fill-low",
+                  "fill-high",
+                  "combined-holdout",
+              ]
+              basis_records = matrix_basis.get("records", [])
+              if (
+                  matrix_basis.get("executed") is not True
+                  or matrix_basis.get("sourceSampleIndex") != 32
+                  or matrix_basis.get("sourceRequestedProgress")
+                      != 1.0
+                  or matrix_basis.get("interventionNames")
+                      != expected_interventions
+                  or matrix_basis.get("interventionCount") != 16
+                  or matrix_basis.get(
+                      "executedInterventionCount"
+                  ) != 16
+                  or matrix_basis.get("method")
+                      != "independent-kvc-axis-interventions-"
+                         "on-copied-endpoint-filter"
+                  or len(basis_records) != 16
+              ):
+                  raise SystemExit(
+                      "transition matrix basis is incomplete: "
+                      f"{matrix_basis}"
+                  )
+
+              def requested_value_matches(
+                  requested,
+                  applied,
+              ):
+                  if (
+                      isinstance(requested, dict)
+                      and isinstance(
+                          requested.get("components"), list
+                      )
+                  ):
+                      return (
+                          isinstance(applied, dict)
+                          and applied.get("components")
+                              == requested["components"]
+                          and applied.get("alpha")
+                              == requested.get("alpha")
+                          and applied.get("colorSpaceName")
+                              == requested.get("colorSpaceName")
+                      )
+                  return applied == requested
+
+              distinct_payloads = set()
+              for index, (
+                  expected_name,
+                  record,
+              ) in enumerate(zip(
+                  expected_interventions,
+                  basis_records,
+              )):
+                  render = record.get("render", {})
+                  requested_values = record.get(
+                      "requestedValues", {}
+                  )
+                  applied_values = record.get(
+                      "filter", {}
+                  ).get("inputValues", {})
+                  if (
+                      record.get("index") != index
+                      or record.get("name") != expected_name
+                      or record.get("sourceSampleIndex") != 32
+                      or record.get(
+                          "sourceRequestedProgress"
+                      ) != 1.0
+                      or not isinstance(
+                          requested_values, dict
+                      )
+                      or any(
+                          not requested_value_matches(
+                              requested,
+                              applied_values.get(key),
+                          )
+                          for key, requested
+                          in requested_values.items()
+                      )
+                      or render.get("executed") is not True
+                      or render.get("durationSeconds", 31) > 30
+                  ):
+                      raise SystemExit(
+                          "transition matrix intervention differs: "
+                          f"{record}"
+                      )
+                  bindings = render.get(
+                      "glassFragmentUniformBindings", []
+                  )
+                  background_bindings = []
+                  for binding in bindings:
+                      creation = binding.get(
+                          "pipeline", {}
+                      ).get("creationDescriptor", {})
+                      payload = binding.get("payload", {})
+                      if str(creation.get(
+                          "fragmentFunction", ""
+                      )).startswith("glass_background"):
+                          background_bindings.append(binding)
+                          if (
+                              binding.get("stage") != "fragment"
+                              or binding.get("index") != 1
+                              or not isinstance(payload, dict)
+                              or payload.get(
+                                  "lengthBytes", 0
+                              ) < 258
+                              or not isinstance(
+                                  payload.get("hex"), str
+                              )
+                              or len(payload["hex"])
+                                  != payload["lengthBytes"] * 2
+                          ):
+                              raise SystemExit(
+                                  "matrix uniform binding is "
+                                  f"incomplete: {binding}"
+                              )
+                          distinct_payloads.add(payload["hex"])
+                  if (
+                      render.get(
+                          "glassFragmentUniformBindingCount"
+                      ) != len(bindings)
+                      or len(background_bindings) != 2
+                  ):
+                      raise SystemExit(
+                          "matrix intervention bindings differ: "
+                          f"{record}"
+                      )
+              if len(distinct_payloads) < 12:
+                  raise SystemExit(
+                      "matrix interventions lack uniform rank: "
+                      f"{len(distinct_payloads)} distinct payloads"
+                  )
+          elif matrix_basis.get("executed") is not False:
+              raise SystemExit(
+                  "unrequested matrix basis executed"
+              )
           samples = report.get("samples", [])
           if len(samples) != 33:
               raise SystemExit(
                   f"transition timeline has {len(samples)} samples"
+              )
+          endpoint = samples[-1]
+          endpoint_wait = endpoint.get(
+              "endpointTopologyWaitSeconds"
+          )
+          if (
+              report.get(
+                  "endpointTopologyWaitDeadlineSeconds"
+              ) != 1.0
+              or endpoint.get(
+                  "endpointTopologyExpectedGlassBackground"
+              ) is not (
+                  report["direction"] == "materialize"
+              )
+              or endpoint.get(
+                  "endpointTopologyMatchedBeforeCapture"
+              ) is not True
+              or not isinstance(endpoint_wait, (int, float))
+              or endpoint_wait < 0
+              or endpoint_wait > 1.0
+          ):
+              raise SystemExit(
+                  "transition endpoint topology did not settle: "
+                  f"{endpoint}"
               )
           expected_progress = [
               index / 32 for index in range(33)
