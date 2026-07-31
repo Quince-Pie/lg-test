@@ -38,6 +38,8 @@ from probe_catalog import (
 
 type JsonObject = dict[str, Any]
 
+DYNAMIC_TAIL_CAPTURE_SECONDS = 0.5
+
 
 @dataclass(slots=True)
 class Findings:
@@ -1814,6 +1816,7 @@ def validate_dynamic(
     materialize_controls: dict[tuple[str, str, str], str] = {}
     timing_reports: list[JsonObject] = []
     total_frames = 0
+    total_tail_frames = 0
     total_post_settle_frames = 0
     tolerance_value = manifest.get("sourceRoundTripTolerance")
     tolerance = tolerance_value if isinstance(tolerance_value, dict) else {}
@@ -1862,6 +1865,7 @@ def validate_dynamic(
                 "continuous-off-main-presentation-binned",
                 "continuous-bounded-clock-full-frame-verified",
                 "continuous-window-stream-full-frame-verified",
+                "continuous-window-stream-tail-full-frame-verified",
             }:
                 findings.error(f"{label}: unexpected dynamic sampling method")
             attempts = sequence.get("captureAttempts")
@@ -1878,6 +1882,7 @@ def validate_dynamic(
             if sampling_method in {
                 "continuous-bounded-clock-full-frame-verified",
                 "continuous-window-stream-full-frame-verified",
+                "continuous-window-stream-tail-full-frame-verified",
             }:
                 clock_surface = sequence.get("clockProbeSurface")
                 bounded_probes = sequence.get("boundedClockProbes")
@@ -1887,10 +1892,13 @@ def validate_dynamic(
                     0,
                     len(sequence.get("frames", [])) - 1,
                 )
+                stream_sampling = sampling_method in {
+                    "continuous-window-stream-full-frame-verified",
+                    "continuous-window-stream-tail-full-frame-verified",
+                }
                 expected_surfaces = (
                     {"desktop-independent-window-stream"}
-                    if sampling_method
-                    == "continuous-window-stream-full-frame-verified"
+                    if stream_sampling
                     else {
                         "dedicated-clock-window",
                         "full-window-fallback",
@@ -1914,8 +1922,7 @@ def validate_dynamic(
                     or full_decodes > full_captures
                     or full_decodes < retained_live_frames
                     or (
-                        sampling_method
-                        == "continuous-window-stream-full-frame-verified"
+                        stream_sampling
                         and bounded_probes != 0
                     )
                 ):
@@ -2212,6 +2219,147 @@ def validate_dynamic(
                     )
                 pixel_hashes.append(decoded.pixel_sha256)
 
+        tail_values = sequence.get("tailFrames")
+        tail_sampling = (
+            sequence.get("samplingMethod")
+            == "continuous-window-stream-tail-full-frame-verified"
+        )
+        if tail_sampling and (
+            not isinstance(tail_values, list) or len(tail_values) < 3
+        ):
+            findings.error(f"{label}: missing verified post-endpoint tail")
+        if isinstance(tail_values, list):
+            total_tail_frames += len(tail_values)
+            tail_times: list[float] = []
+            tail_progress: list[float] = []
+            for tail_position, tail_value in enumerate(tail_values):
+                if not isinstance(tail_value, dict):
+                    findings.error(
+                        f"{label}: tailFrames[{tail_position}] is not an object"
+                    )
+                    continue
+                tail: JsonObject = tail_value
+                tail_label = f"{label} tail[{tail_position}]"
+                if tail.get("sample") != tail_position:
+                    findings.error(
+                        f"{tail_label}: sample is {tail.get('sample')!r}, "
+                        f"expected {tail_position}"
+                    )
+                actual = tail.get("actualSeconds")
+                offset = tail.get("secondsAfterNominalEndpoint")
+                if not isinstance(actual, (int, float)) or actual < duration:
+                    findings.error(
+                        f"{tail_label}: invalid actualSeconds {actual!r}"
+                    )
+                else:
+                    tail_times.append(float(actual))
+                if (
+                    not isinstance(actual, (int, float))
+                    or not isinstance(offset, (int, float))
+                    or not math.isclose(
+                        offset,
+                        actual - duration,
+                        rel_tol=0,
+                        abs_tol=1e-9,
+                    )
+                ):
+                    findings.error(
+                        f"{tail_label}: inconsistent "
+                        "secondsAfterNominalEndpoint"
+                    )
+                capture_duration = tail.get("captureDurationSeconds")
+                if (
+                    not isinstance(capture_duration, (int, float))
+                    or capture_duration < 0
+                ):
+                    findings.error(
+                        f"{tail_label}: invalid capture duration"
+                    )
+                presented = tail.get("presentationProgress")
+                if (
+                    not isinstance(presented, (int, float))
+                    or not 0 <= presented <= 1
+                ):
+                    findings.error(
+                        f"{tail_label}: invalid presentationProgress "
+                        f"{presented!r}"
+                    )
+                else:
+                    tail_progress.append(float(presented))
+                if tail_sampling and tail.get("captureBackend") != (
+                    "ScreenCaptureKit-SCStream-BGRA"
+                ):
+                    findings.error(
+                        f"{tail_label}: tail is not a streamed full frame"
+                    )
+
+                relative = tail.get("file")
+                if isinstance(relative, str):
+                    if relative in seen_files:
+                        findings.error(
+                            f"duplicate dynamic frame path: {relative}"
+                        )
+                    seen_files.add(relative)
+                decoded = verify_image_record(
+                    root=root,
+                    record=tail,
+                    file_hash_key="fileSha256",
+                    label=tail_label,
+                    findings=findings,
+                )
+                if decoded is not None:
+                    verify_image_metadata(
+                        record=tail,
+                        decoded=decoded,
+                        saved_key="savedImage",
+                        label=tail_label,
+                        findings=findings,
+                        require_source=True,
+                    )
+                    expected_size = (
+                        crop.get("width"),
+                        crop.get("height"),
+                    )
+                    if (decoded.width, decoded.height) != expected_size:
+                        findings.error(
+                            f"{tail_label}: dimensions disagree with crop "
+                            f"{expected_size}"
+                        )
+            if any(
+                right <= left
+                for left, right in zip(tail_times, tail_times[1:])
+            ):
+                findings.error(
+                    f"{label}: tail sample times are not strictly increasing"
+                )
+            if any(
+                right < left
+                for left, right in zip(tail_progress, tail_progress[1:])
+            ):
+                findings.error(
+                    f"{label}: tail presentation progress is not monotonic"
+                )
+            if tail_sampling and tail_times:
+                if tail_times[0] > duration + 0.200:
+                    findings.error(
+                        f"{label}: tail starts at {tail_times[0]:.6f}s, "
+                        "more than 0.200000s after the endpoint"
+                    )
+                minimum_tail_end = (
+                    duration
+                    + 0.8 * DYNAMIC_TAIL_CAPTURE_SECONDS
+                )
+                if tail_times[-1] < minimum_tail_end:
+                    findings.error(
+                        f"{label}: tail ends at {tail_times[-1]:.6f}s, "
+                        f"before {minimum_tail_end:.6f}s"
+                    )
+                if tail_times[-1] > duration + 0.650:
+                    findings.error(
+                        f"{label}: tail ends at {tail_times[-1]:.6f}s, "
+                        "more than 0.650000s after the endpoint"
+                    )
+
         if manifest.get("schemaVersion") == 5:
             expected_delay = float(manifest.get("settleSeconds", 0)) * 2
             delay = sequence.get("postSettleDelaySeconds")
@@ -2495,6 +2643,10 @@ def validate_dynamic(
                 "captureAttempts": sequence.get("captureAttempts"),
                 "decodedSamples": sequence.get("decodedSamples"),
                 "transientFailures": sequence.get("transientFailures"),
+                "tailFrames":
+                    len(tail_values)
+                    if isinstance(tail_values, list)
+                    else 0,
             }
         )
     if manifest.get("requestedSuite") in {"dynamic", "all"}:
@@ -2526,6 +2678,7 @@ def validate_dynamic(
             findings.error(f"unexpected dynamic sequences: {sorted(unexpected)}")
     summary: JsonObject = {"sequences": len(values), "frames": total_frames}
     if manifest.get("schemaVersion") == 5:
+        summary["tailFrames"] = total_tail_frames
         summary["postSettleFrames"] = total_post_settle_frames
     return summary, timing_reports
 

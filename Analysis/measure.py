@@ -2078,6 +2078,15 @@ class Measurements:
         result: JsonObject = {}
         for sequence in self.artifact.manifest["dynamicSequences"]:
             frames = sequence["frames"]
+            tail_frames = sequence.get("tailFrames", [])
+            if not isinstance(tail_frames, list):
+                tail_frames = []
+            tail_actual = [
+                float(frame["actualSeconds"])
+                for frame in tail_frames
+                if isinstance(frame, dict)
+                and isinstance(frame.get("actualSeconds"), (int, float))
+            ]
             actual = [float(frame["actualSeconds"]) for frame in frames]
             target = [float(frame["targetSeconds"]) for frame in frames]
             capture = [float(frame["captureDurationSeconds"]) for frame in frames]
@@ -2095,6 +2104,11 @@ class Measurements:
             maximum_gap = max(gaps, default=0)
             result[str(sequence["id"])] = {
                 "capturedFrames": len(frames),
+                "tailFrames": len(tail_frames),
+                "tailStartSeconds":
+                    tail_actual[0] if tail_actual else None,
+                "tailEndSeconds":
+                    tail_actual[-1] if tail_actual else None,
                 "uniqueFrames": unique_frames,
                 "presentationClock": sequence.get("presentationClock"),
                 "samplingMethod": sequence.get("samplingMethod"),

@@ -1743,6 +1743,22 @@ struct DynamicFrameRecord: Codable {
     let savedImage: ImageRecord
 }
 
+struct DynamicTailFrameRecord: Codable {
+    let file: String
+    let sample: Int
+    let actualSeconds: Double
+    let secondsAfterNominalEndpoint: Double
+    let captureDurationSeconds: Double
+    let presentationProgress: Double
+    let fileSha256: String
+    let pixelSha256: String
+    let pixelWidth: Int
+    let pixelHeight: Int
+    let captureBackend: String
+    let sourceImage: ImageRecord
+    let savedImage: ImageRecord
+}
+
 struct DynamicSequenceRecord: Codable {
     let id: String
     let mode: String
@@ -1768,6 +1784,7 @@ struct DynamicSequenceRecord: Codable {
     let cropPixels: CropRecord
     let analysisExclusionPixels: [CropRecord]
     var frames: [DynamicFrameRecord]
+    var tailFrames: [DynamicTailFrameRecord]
     let postSettleDelaySeconds: Double
     var postSettleFrame: SettledFrameRecord?
 }
@@ -1940,8 +1957,15 @@ struct DynamicTimedFrame: @unchecked Sendable {
     let frame: RawCapturedFrame
 }
 
+struct DynamicTailFrame: @unchecked Sendable {
+    let actual: Double
+    let presentationProgress: Double
+    let frame: RawCapturedFrame
+}
+
 struct DynamicCaptureResult: @unchecked Sendable {
     let frames: [DynamicTimedFrame]
+    let tailFrames: [DynamicTailFrame]
     let captureAttempts: Int
     let decodedSamples: Int
     let transientFailures: Int
@@ -1950,6 +1974,8 @@ struct DynamicCaptureResult: @unchecked Sendable {
     let fullFrameCaptures: Int
     let fullFrameClockDecodes: Int
 }
+
+let dynamicTailCaptureSeconds = 0.5
 
 final class WindowStreamCollector:
     NSObject,
@@ -1962,7 +1988,9 @@ final class WindowStreamCollector:
         let duration: Double
         let frameCount: Int
         let backingScale: CGFloat
+        let capturesTail: Bool
         var bestByIndex: [Int: DynamicTimedFrame] = [:]
+        var tailFrames: [DynamicTailFrame] = []
         var captureAttempts = 0
         var decodedSamples = 0
         var transientFailures = 0
@@ -1973,12 +2001,14 @@ final class WindowStreamCollector:
             animationStart: Double,
             duration: Double,
             frameCount: Int,
-            backingScale: CGFloat
+            backingScale: CGFloat,
+            capturesTail: Bool
         ) {
             self.animationStart = animationStart
             self.duration = duration
             self.frameCount = frameCount
             self.backingScale = backingScale
+            self.capturesTail = capturesTail
         }
     }
 
@@ -2082,7 +2112,8 @@ final class WindowStreamCollector:
         animationStart: Double,
         duration: Double,
         frameCount: Int,
-        backingScale: CGFloat
+        backingScale: CGFloat,
+        capturesTail: Bool
     ) throws {
         try outputQueue.sync {
             guard segment == nil else {
@@ -2097,7 +2128,8 @@ final class WindowStreamCollector:
                 animationStart: animationStart,
                 duration: duration,
                 frameCount: frameCount,
-                backingScale: backingScale)
+                backingScale: backingScale,
+                capturesTail: capturesTail)
         }
     }
 
@@ -2125,9 +2157,25 @@ final class WindowStreamCollector:
                     + "received=\(state.captureAttempts), "
                     + "decoded=\(state.decodedSamples)")
             }
+            if state.capturesTail {
+                guard state.tailFrames.count >= 3,
+                      let tailEnd = state.tailFrames.last?.actual,
+                      tailEnd
+                        >= state.duration
+                            + dynamicTailCaptureSeconds * 0.8
+                else {
+                    throw RigError.capture(
+                        "streamed animation tail is incomplete; "
+                        + "samples=\(state.tailFrames.count), "
+                        + "last=\(state.tailFrames.last?.actual ?? 0)")
+                }
+            }
             return DynamicCaptureResult(
                 frames: state.bestByIndex.keys.sorted().compactMap {
                     state.bestByIndex[$0]
+                },
+                tailFrames: state.tailFrames.sorted {
+                    $0.actual < $1.actual
                 },
                 captureAttempts: state.captureAttempts,
                 decodedSamples: state.decodedSamples,
@@ -2257,7 +2305,33 @@ final class WindowStreamCollector:
             } ?? true
         }
 
-        if index > 0, shouldReplace {
+        let callbackUptime =
+            ProcessInfo.processInfo.systemUptime
+        let hostTime = CMClockGetTime(
+            CMClockGetHostTimeClock())
+        let presentationTime =
+            CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        let hostSeconds = CMTimeGetSeconds(hostTime)
+        let presentationSeconds =
+            CMTimeGetSeconds(presentationTime)
+        let frameUptime =
+            hostSeconds.isFinite
+                && presentationSeconds.isFinite
+            ? callbackUptime
+                + presentationSeconds - hostSeconds
+            : callbackUptime
+        let actual = frameUptime - state.animationStart
+        let retainTarget = index > 0 && shouldReplace
+        let retainTail =
+            state.capturesTail
+            && actual >= state.duration
+            && (
+                state.tailFrames.last.map {
+                    actual > $0.actual
+                } ?? true
+            )
+
+        if retainTarget || retainTail {
             let data = Data(
                 bytes: baseAddress,
                 count: bytesPerRow * height)
@@ -2285,36 +2359,29 @@ final class WindowStreamCollector:
                 return
             }
 
-            let callbackUptime =
-                ProcessInfo.processInfo.systemUptime
-            let hostTime = CMClockGetTime(
-                CMClockGetHostTimeClock())
-            let presentationTime =
-                CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            let hostSeconds = CMTimeGetSeconds(hostTime)
-            let presentationSeconds =
-                CMTimeGetSeconds(presentationTime)
-            let frameUptime =
-                hostSeconds.isFinite
-                    && presentationSeconds.isFinite
-                ? callbackUptime
-                    + presentationSeconds - hostSeconds
-                : callbackUptime
-            let target =
-                state.duration * Double(index)
-                / Double(finalIndex)
-            state.bestByIndex[index] = DynamicTimedFrame(
-                index: index,
-                target: target,
-                actual:
-                    frameUptime - state.animationStart,
-                presentationProgress: presented,
-                frame: RawCapturedFrame(
-                    image: image,
-                    backend:
-                        "ScreenCaptureKit-SCStream-BGRA",
-                    midpointUptime: frameUptime,
-                    captureDurationSeconds: 0))
+            let raw = RawCapturedFrame(
+                image: image,
+                backend:
+                    "ScreenCaptureKit-SCStream-BGRA",
+                midpointUptime: frameUptime,
+                captureDurationSeconds: 0)
+            if retainTarget {
+                let target =
+                    state.duration * Double(index)
+                    / Double(finalIndex)
+                state.bestByIndex[index] = DynamicTimedFrame(
+                    index: index,
+                    target: target,
+                    actual: actual,
+                    presentationProgress: presented,
+                    frame: raw)
+            }
+            if retainTail {
+                state.tailFrames.append(DynamicTailFrame(
+                    actual: actual,
+                    presentationProgress: presented,
+                    frame: raw))
+            }
         }
         state.decodedSamples += 1
         state.fullFrameClockDecodes += 1
@@ -2514,10 +2581,18 @@ func capturePresentedAnimation(
 ) throws -> DynamicCaptureResult {
     let endpointDeadline = animationStart + duration + 0.250
     if let streamCollector {
+        let tailDeadline =
+            animationStart + duration
+            + (
+                useDedicatedProbe
+                ? dynamicTailCaptureSeconds
+                : 0.250
+            )
+            + 2 / max(refreshRate, 1)
         let now = ProcessInfo.processInfo.systemUptime
-        if endpointDeadline > now {
+        if tailDeadline > now {
             Thread.sleep(
-                forTimeInterval: endpointDeadline - now)
+                forTimeInterval: tailDeadline - now)
         }
         return try streamCollector.finishSegment()
     }
@@ -2693,6 +2768,7 @@ func capturePresentedAnimation(
     }
     return DynamicCaptureResult(
         frames: bestByIndex.keys.sorted().compactMap { bestByIndex[$0] },
+        tailFrames: [],
         captureAttempts: captureAttempts,
         decodedSamples: decodedSamples,
         transientFailures: transientFailures,
@@ -2783,6 +2859,7 @@ final class CaptureRootView: NSView {
 @MainActor
 final class MaterializeClockView: NSView {
     private var progress: CGFloat = 0
+    private var heartbeat: CGFloat = 0
     private var animationTask: Task<Void, Never>?
 
     override init(frame frameRect: NSRect) {
@@ -2805,15 +2882,23 @@ final class MaterializeClockView: NSView {
         context.setFillColor(NSColor(
             srgbRed: 1, green: 0, blue: 1, alpha: 1
         ).cgColor)
+        let heartbeatHeight = min(1, bounds.height)
+        context.fill(CGRect(
+            x: 0,
+            y: heartbeatHeight,
+            width: bounds.width * progress,
+            height: bounds.height - heartbeatHeight))
         context.fill(CGRect(
             x: 0,
             y: 0,
-            width: bounds.width * progress,
-            height: bounds.height))
+            width: bounds.width * heartbeat,
+            height: heartbeatHeight))
     }
 
-    func present(progress value: Double) {
+    func present(progress value: Double, heartbeat heartbeatValue: Double? = nil) {
         progress = CGFloat(min(1, max(0, value)))
+        heartbeat = CGFloat(min(
+            1, max(0, heartbeatValue ?? value)))
         needsDisplay = true
         displayIfNeeded()
     }
@@ -2828,7 +2913,8 @@ final class MaterializeClockView: NSView {
     func animate(
         startTime: Double,
         duration: Double,
-        refreshRate: Double
+        refreshRate: Double,
+        tailDuration: Double = 0
     ) {
         animationTask?.cancel()
         present(progress: 0)
@@ -2839,8 +2925,18 @@ final class MaterializeClockView: NSView {
                 let elapsed =
                     ProcessInfo.processInfo.systemUptime - startTime
                 let value = min(1, max(0, elapsed / duration))
-                self.present(progress: value)
-                if value >= 1 { return }
+                let heartbeat: Double
+                if tailDuration > 0, elapsed >= duration {
+                    heartbeat = min(
+                        1,
+                        max(0, (elapsed - duration) / tailDuration))
+                } else {
+                    heartbeat = value
+                }
+                self.present(
+                    progress: value,
+                    heartbeat: heartbeat)
+                if elapsed >= duration + tailDuration { return }
                 try? await Task.sleep(
                     nanoseconds: UInt64(updateInterval * 1_000_000_000))
             }
@@ -4112,12 +4208,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 animationStart: animationStart,
                                 duration: config.dynamicDuration,
                                 frameCount: config.dynamicFrames,
-                                backingScale: scale)
+                                backingScale: scale,
+                                capturesTail: mode.usesRasterClock)
                             if mode.usesRasterClock {
                                 materializeClock.animate(
                                     startTime: animationStart,
                                     duration: config.dynamicDuration,
-                                    refreshRate: refresh)
+                                    refreshRate: refresh,
+                                    tailDuration:
+                                        liveStream == nil
+                                        ? 0
+                                        : dynamicTailCaptureSeconds)
                                 if liveStream == nil {
                                     clockProbe.animate(
                                         startTime: animationStart,
@@ -4256,7 +4357,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 samplingMethod:
                                     liveStream == nil
                                     ? "continuous-bounded-clock-full-frame-verified"
-                                    : "continuous-window-stream-full-frame-verified",
+                                    : (
+                                        mode.usesRasterClock
+                                        ? "continuous-window-stream-tail-full-frame-verified"
+                                        : "continuous-window-stream-full-frame-verified"
+                                    ),
                                 captureAttempts: captured.captureAttempts,
                                 decodedSamples: captured.decodedSamples,
                                 transientFailures: captured.transientFailures,
@@ -4271,6 +4376,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                 cropPixels: crop,
                                 analysisExclusionPixels: exclusions,
                                 frames: [],
+                                tailFrames: [],
                                 postSettleDelaySeconds:
                                     config.settleSeconds * 2,
                                 postSettleFrame: nil)
@@ -4299,6 +4405,45 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                     captureBackend: cropped.backend,
                                     sourceImage: cropped.sourceImage,
                                     savedImage: describeImage(cropped.image)))
+                            }
+
+                            for (tailIndex, sample) in
+                                captured.tailFrames.enumerated()
+                            {
+                                let cropped = try croppedFrame(
+                                    sample.frame, crop: crop)
+                                let name = String(
+                                    format: "tail-%04d.png", tailIndex)
+                                let url =
+                                    sequenceDir.appendingPathComponent(name)
+                                try writePNG(cropped.image, to: url)
+                                sequence.tailFrames.append(
+                                    DynamicTailFrameRecord(
+                                        file:
+                                            "dynamic/\(sequenceID)/\(name)",
+                                        sample: tailIndex,
+                                        actualSeconds: sample.actual,
+                                        secondsAfterNominalEndpoint:
+                                            sample.actual - duration,
+                                        captureDurationSeconds:
+                                            sample.frame
+                                                .captureDurationSeconds,
+                                        presentationProgress:
+                                            sample.presentationProgress,
+                                        fileSha256: sha256(of: url),
+                                        pixelSha256:
+                                            cropped.pixelSha256,
+                                        pixelWidth:
+                                            cropped.image.width,
+                                        pixelHeight:
+                                            cropped.image.height,
+                                        captureBackend:
+                                            cropped.backend,
+                                        sourceImage:
+                                            cropped.sourceImage,
+                                        savedImage:
+                                            describeImage(
+                                                cropped.image)))
                             }
 
                             // The live endpoint still contains its encoded
@@ -4351,7 +4496,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             manifest.dynamicSequences.append(sequence)
                             log(
                                 "dynamic complete: \(sequenceID), "
-                                + "\(timed.count)/\(config.dynamicFrames) target frames")
+                                + "\(timed.count)/\(config.dynamicFrames) "
+                                + "target frames, "
+                                + "\(sequence.tailFrames.count) tail frames")
                         } catch {
                             phaseTask?.cancel()
                             liveStream?.cancelSegment()

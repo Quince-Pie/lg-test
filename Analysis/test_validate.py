@@ -1050,7 +1050,12 @@ class ValidatorTests(unittest.TestCase):
             self.assertEqual(findings.errors, [])
             self.assertEqual(
                 summary,
-                {"sequences": 1, "frames": 10, "postSettleFrames": 1},
+                {
+                    "sequences": 1,
+                    "frames": 10,
+                    "tailFrames": 0,
+                    "postSettleFrames": 1,
+                },
             )
             self.assertTrue(timing[0]["initialControlWithinTolerance"])
             self.assertTrue(timing[0]["postSettleControlWithinTolerance"])
@@ -1094,6 +1099,50 @@ class ValidatorTests(unittest.TestCase):
             self.assertTrue(any(
                 "bounded clock/full-frame verification counters" in error
                 for error in invalid_stream.errors
+            ))
+
+            tails = []
+            for sample, actual in enumerate((1.05, 1.25, 1.45)):
+                pixels = bytes((30 + sample, 40 + sample, 50 + sample, 255)) * 10
+                relative = (
+                    f"dynamic/{sequence_id}/tail-{sample:04d}.png"
+                )
+                path = save(relative, pixels)
+                tails.append({
+                    "file": relative,
+                    "sample": sample,
+                    "actualSeconds": actual,
+                    "secondsAfterNominalEndpoint": actual - 1,
+                    "captureDurationSeconds": 0,
+                    "presentationProgress": min(1, 0.99 + sample * 0.01),
+                    "fileSha256":
+                        hashlib.sha256(path.read_bytes()).hexdigest(),
+                    "pixelSha256": hashlib.sha256(pixels).hexdigest(),
+                    "pixelWidth": 2,
+                    "pixelHeight": 5,
+                    "captureBackend": "ScreenCaptureKit-SCStream-BGRA",
+                    "sourceImage": image_metadata,
+                    "savedImage": image_metadata,
+                })
+            sequence.update({
+                "samplingMethod":
+                    "continuous-window-stream-tail-full-frame-verified",
+                "boundedClockProbes": 0,
+                "tailFrames": tails,
+            })
+            tailed = Findings()
+            tailed_summary, _ = validate_dynamic(
+                root, manifest, references, tailed
+            )
+            self.assertEqual(tailed.errors, [])
+            self.assertEqual(tailed_summary["tailFrames"], 3)
+
+            tails[-1]["secondsAfterNominalEndpoint"] = 0.4
+            invalid_tail = Findings()
+            validate_dynamic(root, manifest, references, invalid_tail)
+            self.assertTrue(any(
+                "secondsAfterNominalEndpoint" in error
+                for error in invalid_tail.errors
             ))
 
     def test_schema5_sweeps_measure_repeatability_and_hysteresis(self) -> None:
