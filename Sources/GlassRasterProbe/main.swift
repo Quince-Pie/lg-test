@@ -3343,6 +3343,75 @@ private func run(outputDirectory: URL) throws {
             arithmeticFilename),
         options: .atomic)
 
+    let quotientFineMantissaManifest: [String: Any] = [
+        "role": "prospective-holdout",
+        "widths": quotientFineMantissaWidths,
+        "sampleCountPerWidth":
+            quotientFineMantissaDeltaBits.count,
+        "operandPrecisionBits": 24,
+        "structuredSampleCount": 4_096,
+        "permutedSampleCount": 4_096,
+        "significandGenerator":
+            "16 banks x 256 low-byte phases, then masked LCG",
+        "structuredBankNumerator":
+            "32768 + 2048*bank + ((73*bank+19)&255)",
+        "lcgInitialState": 0x31_41_59,
+        "lcgMultiplier": 0x5b_d1_e9_95,
+        "lcgIncrement": 0x6c_8e_9c_f5,
+        "lcgMask": 0x7f_ff_ff,
+        "significandSha256":
+            "c55831b5269944773952e478ed7f6f0c7ec7c6f9d7b1a54f230ca34a3c8ad0ac",
+        "deltaBitsSha256":
+            "9111298595dd270f0c2142382920a3d0d196044e67ab75054bdcb899736742ab",
+        "height": Int(quotientCorpusHeight),
+        "originX": Int(quotientCorpusOriginX),
+        "originY": Int(quotientCorpusOriginY),
+        "targetWidth": quotientCorpusTargetWidth,
+        "targetHeight": quotientCorpusTargetHeight,
+        "primitiveCount": 2,
+        "tileCount": quotientCorpusTileCount,
+        "uncoveredRecordSentinel": "0xffffffffffffffff",
+        "pullOffsets": [
+            ["x": 0.0, "y": 0.5],
+            ["x": 0.9375, "y": 0.5],
+        ],
+        "file": quotientFineMantissaFilename,
+        "bytes": quotientFineMantissaData.count,
+        "sha256": sha256(quotientFineMantissaData),
+        "components": [
+            "xAt0",
+            "xAt15Over16",
+        ],
+        "ordering":
+            "width-major,sample-major,primitive-major,"
+            + "tile-major,pull-offset-major",
+        "positionsByWidth":
+            quotientFineMantissaWidths.map {
+                width -> [String: Any] in
+                [
+                    "width": width,
+                    "positions":
+                        quotientCorpusPositions(width: width).map {
+                            position -> [String: Any] in
+                            [
+                                "primitive": position.primitive,
+                                "tile": position.tile,
+                                "x": position.x,
+                                "y": position.y,
+                            ]
+                        },
+                ]
+            },
+        "preregisteredPrediction": [
+            "model":
+                "physicalTruncatedRadix2PartialProducts16Bias0x140000",
+            "predictionFile":
+                "Analysis/raster_quotient_fine_mantissa_preregistration.json",
+            "truthTableSha256":
+                "069c044c3b38d0535656c0a6e4d12c07a80a2b9b528ae4eb80c4735381c2469a",
+        ],
+    ]
+
     let manifest: [String: Any] = [
         "schemaVersion": 23,
         "rigVersion": "metal-raster-interpolant-probe-23.0.0",
@@ -3529,74 +3598,8 @@ private func run(outputDirectory: URL) throws {
                     "0ad8899707021f22bc832724a73efa1bd3f7f3dffff7be182ce15885464b6fbb",
             ],
         ],
-        "quotientFineMantissaCorpus": [
-            "role": "prospective-holdout",
-            "widths": quotientFineMantissaWidths,
-            "sampleCountPerWidth":
-                quotientFineMantissaDeltaBits.count,
-            "operandPrecisionBits": 24,
-            "structuredSampleCount": 4_096,
-            "permutedSampleCount": 4_096,
-            "significandGenerator":
-                "16 banks x 256 low-byte phases, then masked LCG",
-            "structuredBankNumerator":
-                "32768 + 2048*bank + ((73*bank+19)&255)",
-            "lcgInitialState": 0x31_41_59,
-            "lcgMultiplier": 0x5b_d1_e9_95,
-            "lcgIncrement": 0x6c_8e_9c_f5,
-            "lcgMask": 0x7f_ff_ff,
-            "significandSha256":
-                "c55831b5269944773952e478ed7f6f0c7ec7c6f9d7b1a54f230ca34a3c8ad0ac",
-            "deltaBitsSha256":
-                "9111298595dd270f0c2142382920a3d0d196044e67ab75054bdcb899736742ab",
-            "height": Int(quotientCorpusHeight),
-            "originX": Int(quotientCorpusOriginX),
-            "originY": Int(quotientCorpusOriginY),
-            "targetWidth": quotientCorpusTargetWidth,
-            "targetHeight": quotientCorpusTargetHeight,
-            "primitiveCount": 2,
-            "tileCount": quotientCorpusTileCount,
-            "uncoveredRecordSentinel": "0xffffffffffffffff",
-            "pullOffsets": [
-                ["x": 0.0, "y": 0.5],
-                ["x": 0.9375, "y": 0.5],
-            ],
-            "file": quotientFineMantissaFilename,
-            "bytes": quotientFineMantissaData.count,
-            "sha256": sha256(quotientFineMantissaData),
-            "components": [
-                "xAt0",
-                "xAt15Over16",
-            ],
-            "ordering":
-                "width-major,sample-major,primitive-major,"
-                + "tile-major,pull-offset-major",
-            "positionsByWidth":
-                quotientFineMantissaWidths.map {
-                    width -> [String: Any] in
-                    [
-                        "width": width,
-                        "positions":
-                            quotientCorpusPositions(width: width).map {
-                                position -> [String: Any] in
-                                [
-                                    "primitive": position.primitive,
-                                    "tile": position.tile,
-                                    "x": position.x,
-                                    "y": position.y,
-                                ]
-                            },
-                    ]
-                },
-            "preregisteredPrediction": [
-                "model":
-                    "physicalTruncatedRadix2PartialProducts16Bias0x140000",
-                "predictionFile":
-                    "Analysis/raster_quotient_fine_mantissa_preregistration.json",
-                "truthTableSha256":
-                    "069c044c3b38d0535656c0a6e4d12c07a80a2b9b528ae4eb80c4735381c2469a",
-            ],
-        ],
+        "quotientFineMantissaCorpus":
+            quotientFineMantissaManifest,
         "quotientArithmeticProbe": [
             "role": "discovery",
             "widths": quotientCorpusDiscoveryWidths,
