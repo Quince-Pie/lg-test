@@ -93,6 +93,53 @@ private let quotientCorpusDiscoveryWidths = Array(32...127).filter {
     !quotientCorpusHoldoutWidths.contains($0)
 }
 
+private let quotientFineMantissaWidths = [
+    33, 37, 43, 44, 49, 52, 55, 59, 61, 67, 73, 79,
+    85, 90, 91, 96, 97, 100, 101, 103, 109, 115, 121, 127,
+]
+
+private func makeQuotientFineMantissaSignificands() -> [UInt32] {
+    var result: [UInt32] = []
+    var seen = Set<UInt32>()
+    for bank in 0..<16 {
+        let numerator =
+            32_768 + 2_048 * bank + ((73 * bank + 19) & 255)
+        for phase in 0..<256 {
+            let significand =
+                (UInt32(numerator) << 8) | UInt32(phase)
+            precondition(seen.insert(significand).inserted)
+            result.append(significand)
+        }
+    }
+    var state: UInt32 = 0x31_41_59
+    while result.count < 8_192 {
+        state =
+            (state &* 0x5b_d1_e9_95 &+ 0x6c_8e_9c_f5)
+            & 0x7f_ff_ff
+        let significand = 0x80_00_00 | state
+        if seen.insert(significand).inserted {
+            result.append(significand)
+        }
+    }
+    precondition(result.count == 8_192)
+    precondition(
+        result.allSatisfy {
+            0x80_00_00 <= $0 && $0 <= 0xff_ff_ff
+        })
+    return result
+}
+
+private let quotientFineMantissaSignificands =
+    makeQuotientFineMantissaSignificands()
+private let quotientFineMantissaDeltaBits =
+    quotientFineMantissaSignificands.map {
+        0x3f_00_00_00 | ($0 & 0x7f_ff_ff)
+    }
+private let quotientCorpusDeltaBits =
+    (quotientCorpusNumeratorLower...quotientCorpusNumeratorUpper).map {
+        (Float($0) * 0x1.0p-16).bitPattern
+    }
+
 private struct QuotientCorpusPosition {
     let primitive: Int
     let tile: Int
@@ -672,11 +719,11 @@ struct QuotientCorpusFragmentInput {
 vertex QuotientCorpusVertexOutput raster_quotient_corpus_vertex(
     constant uint4 &parameters [[buffer(0)]],
     constant float4x4 &mvp [[buffer(1)]],
+    constant uint *delta_bits [[buffer(2)]],
     uint vertex_id [[vertex_id]],
     uint instance_id [[instance_id]])
 {
     const uint width = parameters.x;
-    const uint numerator = parameters.y + instance_id;
     const uint record_index = parameters.z + instance_id;
     const uint output_slot = parameters.w;
     const uint corner = vertex_id % 6;
@@ -689,7 +736,7 @@ vertex QuotientCorpusVertexOutput raster_quotient_corpus_vertex(
     const float y =
         float(\(quotientCorpusOriginY))
         + (is_bottom ? float(\(quotientCorpusHeight)) : 0.0f);
-    const float delta = float(numerator) * 0x1.0p-16f;
+    const float delta = as_type<float>(delta_bits[instance_id]);
 
     QuotientCorpusVertexOutput output;
     output.position = mvp * float4(x, y, 0.0f, 1.0f);
@@ -2411,6 +2458,7 @@ private func renderTomography(
 
 private func measureQuotientCorpus(
     widths: [Int],
+    deltaBits: [UInt32],
     label: String,
     device: MTLDevice,
     queue: MTLCommandQueue,
@@ -2418,13 +2466,11 @@ private func measureQuotientCorpus(
 ) throws -> Data {
     precondition(!widths.isEmpty)
     precondition(Set(widths).count == widths.count)
+    precondition(!deltaBits.isEmpty)
+    precondition(Set(deltaBits).count == deltaBits.count)
 
-    let numeratorsPerWidth = Int(
-        quotientCorpusNumeratorUpper
-            - quotientCorpusNumeratorLower
-            + 1)
-    let sampleCount =
-        widths.count * numeratorsPerWidth
+    let samplesPerWidth = deltaBits.count
+    let sampleCount = widths.count * samplesPerWidth
     let primitiveCount = 2
     let outputBytes =
         sampleCount
@@ -2439,7 +2485,16 @@ private func measureQuotientCorpus(
         mipmapped: false)
     targetDescriptor.storageMode = .private
     targetDescriptor.usage = [.renderTarget]
+    let deltaBuffer = deltaBits.withUnsafeBufferPointer {
+        buffer in
+        device.makeBuffer(
+            bytes: buffer.baseAddress!,
+            length:
+                buffer.count * MemoryLayout<UInt32>.stride,
+            options: .storageModeShared)
+    }
     guard let target = device.makeTexture(descriptor: targetDescriptor),
+          let deltaBuffer,
           let output = device.makeBuffer(
               length: outputBytes,
               options: .storageModeShared)
@@ -2474,8 +2529,8 @@ private func measureQuotientCorpus(
         for position in positions {
             var parameters = SIMD4<UInt32>(
                 UInt32(width),
-                quotientCorpusNumeratorLower,
-                UInt32(widthIndex * numeratorsPerWidth),
+                0,
+                UInt32(widthIndex * samplesPerWidth),
                 UInt32(
                     position.primitive * quotientCorpusTileCount
                         + position.tile))
@@ -2517,12 +2572,16 @@ private func measureQuotientCorpus(
                     length: raw.count,
                     index: 1)
             }
+            encoder.setVertexBuffer(
+                deltaBuffer,
+                offset: 0,
+                index: 2)
             encoder.setFragmentBuffer(output, offset: 0, index: 0)
             encoder.drawPrimitives(
                 type: .triangle,
                 vertexStart: 0,
                 vertexCount: 6,
-                instanceCount: numeratorsPerWidth)
+                instanceCount: samplesPerWidth)
             encoder.endEncoding()
         }
         commandBuffer.commit()
@@ -2550,9 +2609,9 @@ private func measureQuotientCorpus(
             quotientCorpusPositions(width: width).map {
                 $0.primitive * quotientCorpusTileCount + $0.tile
             })
-        for numeratorIndex in 0..<numeratorsPerWidth {
+        for sampleIndex in 0..<samplesPerWidth {
             let sample =
-                widthIndex * numeratorsPerWidth + numeratorIndex
+                widthIndex * samplesPerWidth + sampleIndex
             for slot in 0..<(primitiveCount * quotientCorpusTileCount) {
                 let index =
                     sample * primitiveCount * quotientCorpusTileCount
@@ -3216,6 +3275,7 @@ private func run(outputDirectory: URL) throws {
 
     let quotientCorpusData = try measureQuotientCorpus(
         widths: quotientCorpusDiscoveryWidths,
+        deltaBits: quotientCorpusDeltaBits,
         label: "discovery",
         device: device,
         queue: queue,
@@ -3231,6 +3291,7 @@ private func run(outputDirectory: URL) throws {
         quotientCorpusHoldoutWidths.sorted()
     let quotientHoldoutCorpusData = try measureQuotientCorpus(
         widths: quotientHoldoutWidths,
+        deltaBits: quotientCorpusDeltaBits,
         label: "holdout",
         device: device,
         queue: queue,
@@ -3240,6 +3301,20 @@ private func run(outputDirectory: URL) throws {
     try quotientHoldoutCorpusData.write(
         to: outputDirectory.appendingPathComponent(
             quotientHoldoutCorpusFilename),
+        options: .atomic)
+
+    let quotientFineMantissaData = try measureQuotientCorpus(
+        widths: quotientFineMantissaWidths,
+        deltaBits: quotientFineMantissaDeltaBits,
+        label: "fine-mantissa",
+        device: device,
+        queue: queue,
+        pipeline: quotientCorpusPipeline)
+    let quotientFineMantissaFilename =
+        "raster-quotient-fine-mantissa-pulls.raw"
+    try quotientFineMantissaData.write(
+        to: outputDirectory.appendingPathComponent(
+            quotientFineMantissaFilename),
         options: .atomic)
 
     let quotientArithmeticData = try measureQuotientArithmetic(
@@ -3269,8 +3344,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 22,
-        "rigVersion": "metal-raster-interpolant-probe-22.0.0",
+        "schemaVersion": 23,
+        "rigVersion": "metal-raster-interpolant-probe-23.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -3316,6 +3391,9 @@ private func run(outputDirectory: URL) throws {
             "quotientHoldoutCorpusOutput":
                 "one sealed pull pair per covered primitive/tile for "
                 + "every normalized 16-bit numerator on 16 holdout widths",
+            "quotientFineMantissaOutput":
+                "prospective full-precision float-mantissa pull corpus "
+                + "for the preregistered physical partial-product model",
             "quotientArithmeticOutput":
                 "exhaustive exposed Metal division and reciprocal "
                 + "controls over the quotient discovery domain",
@@ -3449,6 +3527,74 @@ private func run(outputDirectory: URL) throws {
                     "Analysis/raster_quotient_holdout_preregistration.json",
                 "truthTableSha256":
                     "0ad8899707021f22bc832724a73efa1bd3f7f3dffff7be182ce15885464b6fbb",
+            ],
+        ],
+        "quotientFineMantissaCorpus": [
+            "role": "prospective-holdout",
+            "widths": quotientFineMantissaWidths,
+            "sampleCountPerWidth":
+                quotientFineMantissaDeltaBits.count,
+            "operandPrecisionBits": 24,
+            "structuredSampleCount": 4_096,
+            "permutedSampleCount": 4_096,
+            "significandGenerator":
+                "16 banks x 256 low-byte phases, then masked LCG",
+            "structuredBankNumerator":
+                "32768 + 2048*bank + ((73*bank+19)&255)",
+            "lcgInitialState": 0x31_41_59,
+            "lcgMultiplier": 0x5b_d1_e9_95,
+            "lcgIncrement": 0x6c_8e_9c_f5,
+            "lcgMask": 0x7f_ff_ff,
+            "significandSha256":
+                "c55831b5269944773952e478ed7f6f0c7ec7c6f9d7b1a54f230ca34a3c8ad0ac",
+            "deltaBitsSha256":
+                "9111298595dd270f0c2142382920a3d0d196044e67ab75054bdcb899736742ab",
+            "height": Int(quotientCorpusHeight),
+            "originX": Int(quotientCorpusOriginX),
+            "originY": Int(quotientCorpusOriginY),
+            "targetWidth": quotientCorpusTargetWidth,
+            "targetHeight": quotientCorpusTargetHeight,
+            "primitiveCount": 2,
+            "tileCount": quotientCorpusTileCount,
+            "uncoveredRecordSentinel": "0xffffffffffffffff",
+            "pullOffsets": [
+                ["x": 0.0, "y": 0.5],
+                ["x": 0.9375, "y": 0.5],
+            ],
+            "file": quotientFineMantissaFilename,
+            "bytes": quotientFineMantissaData.count,
+            "sha256": sha256(quotientFineMantissaData),
+            "components": [
+                "xAt0",
+                "xAt15Over16",
+            ],
+            "ordering":
+                "width-major,sample-major,primitive-major,"
+                + "tile-major,pull-offset-major",
+            "positionsByWidth":
+                quotientFineMantissaWidths.map {
+                    width -> [String: Any] in
+                    [
+                        "width": width,
+                        "positions":
+                            quotientCorpusPositions(width: width).map {
+                                position -> [String: Any] in
+                                [
+                                    "primitive": position.primitive,
+                                    "tile": position.tile,
+                                    "x": position.x,
+                                    "y": position.y,
+                                ]
+                            },
+                    ]
+                },
+            "preregisteredPrediction": [
+                "model":
+                    "physicalTruncatedRadix2PartialProducts16Bias0x140000",
+                "predictionFile":
+                    "Analysis/raster_quotient_fine_mantissa_preregistration.json",
+                "truthTableSha256":
+                    "069c044c3b38d0535656c0a6e4d12c07a80a2b9b528ae4eb80c4735381c2469a",
             ],
         ],
         "quotientArithmeticProbe": [

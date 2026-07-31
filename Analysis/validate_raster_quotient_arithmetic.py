@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate schema-22 exhaustive Metal quotient arithmetic controls."""
+"""Validate schema-23 exhaustive Metal quotient arithmetic controls."""
 
 import argparse
 import hashlib
@@ -11,8 +11,8 @@ from typing import Any
 
 JsonObject = dict[str, Any]
 
-SCHEMA_VERSION = 22
-RIG_VERSION = "metal-raster-interpolant-probe-22.0.0"
+SCHEMA_VERSION = 23
+RIG_VERSION = "metal-raster-interpolant-probe-23.0.0"
 HOLDOUT_WIDTHS = tuple(range(37, 128, 6))
 DISCOVERY_WIDTHS = tuple(
     width for width in range(32, 128) if width not in HOLDOUT_WIDTHS
@@ -83,7 +83,7 @@ def validate(root: Path) -> None:
         manifest.get("schemaVersion") != SCHEMA_VERSION
         or manifest.get("rigVersion") != RIG_VERSION
     ):
-        raise ValueError("raster quotient arithmetic schema 22 is required")
+        raise ValueError("raster quotient arithmetic schema 23 is required")
 
     probe = manifest.get("quotientArithmeticProbe", {})
     path = root / str(probe.get("file", ""))

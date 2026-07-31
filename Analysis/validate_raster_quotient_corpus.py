@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate schema-22 discovery fixed-function quotient evidence."""
+"""Validate schema-23 discovery fixed-function quotient evidence."""
 
 import argparse
 import hashlib
@@ -8,8 +8,8 @@ import struct
 from pathlib import Path
 
 
-SCHEMA_VERSION = 22
-RIG_VERSION = "metal-raster-interpolant-probe-22.0.0"
+SCHEMA_VERSION = 23
+RIG_VERSION = "metal-raster-interpolant-probe-23.0.0"
 HOLDOUT_WIDTHS = tuple(range(37, 128, 6))
 DISCOVERY_WIDTHS = tuple(
     width for width in range(32, 128) if width not in HOLDOUT_WIDTHS

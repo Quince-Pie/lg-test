@@ -2162,6 +2162,33 @@ hash, and the immutable prediction metadata without adapting the prediction
 to the captured values. Local analysis must report the selector-transfer and
 reciprocal-prediction results separately.
 
+Run 30645334607 opened that frozen schema-22 holdout after commit
+`f914ed22895bd48d9af311a9afced6a02b058950`. Every one of the 524,288
+recovered holdout coefficients was unique and matched the preregistered table;
+all 16 reciprocal predictions and the fixed partial-product selector had zero
+mismatches. The observed table SHA-256 is the preregistered
+`0ad8899707021f22bc832724a73efa1bd3f7f3dffff7be182ce15885464b6fbb`.
+This closes the normalized 16-bit numerator domain for widths 32 through 127.
+It does not silently generalize to float mantissa bits that were zero in that
+domain or to larger widths.
+
+Raster schema 23 is the prospective test of the first unmeasured operand
+bits. It interprets the schema-22 reduced arithmetic as a physical 24-by-25
+bit product: every radix-2 partial product is truncated to a multiple of
+65,536, the sum receives bias `0x140000`, and the result is normalized to 27
+bits before binary32 conversion. The immutable preregistration records the
+complete 24-by-8,192 predicted table and SHA-256
+`069c044c3b38d0535656c0a6e4d12c07a80a2b9b528ae4eb80c4735381c2469a`.
+
+The 8,192 float significands combine 4,096 structured samples—sixteen
+high-range banks crossed with every low-byte phase—and 4,096 unique masked
+LCG samples spanning the remaining mantissa. Twenty-four widths include all
+former schema-22 holdouts, the four observed non-nearest reciprocal cases,
+and independent controls. None of these nonzero low-eight-bit operands was
+used to derive the physical model. The schema-23 validator independently
+regenerates the inputs and the full prediction hash before it accepts the
+captured pull corpus.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

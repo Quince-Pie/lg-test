@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate schema-22 sealed fixed-function quotient evidence."""
+"""Validate schema-23 sealed fixed-function quotient evidence."""
 
 import argparse
 import hashlib

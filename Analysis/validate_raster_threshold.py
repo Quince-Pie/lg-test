@@ -8,8 +8,8 @@ import struct
 from pathlib import Path
 
 
-SCHEMA_VERSION = 22
-RIG_VERSION = "metal-raster-interpolant-probe-22.0.0"
+SCHEMA_VERSION = 23
+RIG_VERSION = "metal-raster-interpolant-probe-23.0.0"
 HOLDOUT_WIDTHS = frozenset(range(37, 128, 6))
 TARGETS_BY_SHIFT = (
     (0, tuple(range(40, 48))),

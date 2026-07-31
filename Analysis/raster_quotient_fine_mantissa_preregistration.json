@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-full-mantissa-prediction",
+  "discoverySource": {
+    "discoveryRunId": 30641403364,
+    "discoveryTruthTableSha256": "0be28a4d7f69afdf4da40863d20bd3d8e8244973c0ae476b1f559bf593759b23",
+    "holdoutRunId": 30645334607,
+    "holdoutTruthTableSha256": "0ad8899707021f22bc832724a73efa1bd3f7f3dffff7be182ce15885464b6fbb",
+    "measuredOperandLowBits": "eight trailing zero bits"
+  },
+  "model": {
+    "name": "physicalTruncatedRadix2PartialProducts16Bias0x140000",
+    "operandPrecisionBits": 24,
+    "reciprocalPrecisionBits": 25,
+    "productPrecisionBits": 27,
+    "partialProductRadix": 2,
+    "partialProductTruncationBits": 16,
+    "roundingBias": 1310720,
+    "roundingBiasHex": "0x140000",
+    "finalConversion": "round-to-nearest-even binary32"
+  },
+  "sampleGenerator": {
+    "sampleCount": 8192,
+    "structuredSampleCount": 4096,
+    "structuredBankCount": 16,
+    "structuredPhaseCount": 256,
+    "structuredBankNumerator": "32768 + 2048*bank + ((73*bank+19)&255)",
+    "permutedSampleCount": 4096,
+    "lcgInitialState": 3227993,
+    "lcgMultiplier": 1540483477,
+    "lcgIncrement": 1821285621,
+    "lcgMask": 8388607,
+    "significandSha256": "c55831b5269944773952e478ed7f6f0c7ec7c6f9d7b1a54f230ca34a3c8ad0ac",
+    "deltaBitsSha256": "9111298595dd270f0c2142382920a3d0d196044e67ab75054bdcb899736742ab"
+  },
+  "domain": {
+    "widths": [
+      33,
+      37,
+      43,
+      44,
+      49,
+      52,
+      55,
+      59,
+      61,
+      67,
+      73,
+      79,
+      85,
+      90,
+      91,
+      96,
+      97,
+      100,
+      101,
+      103,
+      109,
+      115,
+      121,
+      127
+    ],
+    "ordering": "width-major,sample-major"
+  },
+  "reciprocalPredictions": [
+    {
+      "width": 33,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 32537631
+    },
+    {
+      "width": 37,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 29020049
+    },
+    {
+      "width": 43,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 24970740
+    },
+    {
+      "width": 44,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 24403223
+    },
+    {
+      "width": 49,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 21913098
+    },
+    {
+      "width": 52,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 20648881
+    },
+    {
+      "width": 55,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 19522579
+    },
+    {
+      "width": 59,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 18199014
+    },
+    {
+      "width": 61,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 17602325
+    },
+    {
+      "width": 67,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 32051995
+    },
+    {
+      "width": 73,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 29417584
+    },
+    {
+      "width": 79,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 27183337
+    },
+    {
+      "width": 85,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 25264514
+    },
+    {
+      "width": 90,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 23860930
+    },
+    {
+      "width": 91,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 23598721
+    },
+    {
+      "width": 96,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 22369622
+    },
+    {
+      "width": 97,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 22139007
+    },
+    {
+      "width": 100,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 21474837
+    },
+    {
+      "width": 101,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 21262215
+    },
+    {
+      "width": 103,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 20849356
+    },
+    {
+      "width": 109,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 19701685
+    },
+    {
+      "width": 115,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 18673771
+    },
+    {
+      "width": 121,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 17747799
+    },
+    {
+      "width": 127,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 16909320
+    }
+  ],
+  "predictedTruthTable": {
+    "dtype": "little-endian uint32 float bits",
+    "shape": [
+      24,
+      8192
+    ],
+    "bytes": 786432,
+    "sha256": "069c044c3b38d0535656c0a6e4d12c07a80a2b9b528ae4eb80c4735381c2469a"
+  },
+  "fineMantissaObservedAtPreregistration": false
+}
