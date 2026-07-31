@@ -426,6 +426,63 @@ fragment TomographyFragmentOutput raster_tomography_fragment(
         primitive_id);
     return output;
 }
+
+kernel void raster_arithmetic_probe(
+    const device uint2 *dimensions [[buffer(0)]],
+    const device float *deltas [[buffer(1)]],
+    device uint4 *results [[buffer(2)]],
+    uint thread_id [[thread_position_in_grid]])
+{
+    constexpr uint delta_count = 8;
+    constexpr uint vectors_per_sample = 5;
+    const uint case_index = thread_id / delta_count;
+    const uint delta_index = thread_id % delta_count;
+    const float width = float(dimensions[case_index].x);
+    const float height = float(dimensions[case_index].y);
+    const float area = width * height;
+    const float delta = deltas[delta_index];
+    const float numerator_x = delta * height;
+    const float numerator_y = delta * width;
+    const uint base = thread_id * vectors_per_sample;
+
+    results[base + 0] = uint4(
+        as_type<uint>(delta / width),
+        as_type<uint>(delta / height),
+        as_type<uint>(fast::divide(delta, width)),
+        as_type<uint>(fast::divide(delta, height)));
+    results[base + 1] = uint4(
+        as_type<uint>(precise::divide(delta, width)),
+        as_type<uint>(precise::divide(delta, height)),
+        as_type<uint>(
+            delta * fast::divide(1.0f, width)),
+        as_type<uint>(
+            delta * fast::divide(1.0f, height)));
+    results[base + 2] = uint4(
+        as_type<uint>(
+            delta * precise::divide(1.0f, width)),
+        as_type<uint>(
+            delta * precise::divide(1.0f, height)),
+        as_type<uint>(numerator_x / area),
+        as_type<uint>(numerator_y / area));
+    results[base + 3] = uint4(
+        as_type<uint>(
+            fast::divide(numerator_x, area)),
+        as_type<uint>(
+            fast::divide(numerator_y, area)),
+        as_type<uint>(
+            precise::divide(numerator_x, area)),
+        as_type<uint>(
+            precise::divide(numerator_y, area)));
+    results[base + 4] = uint4(
+        as_type<uint>(
+            numerator_x * fast::divide(1.0f, area)),
+        as_type<uint>(
+            numerator_y * fast::divide(1.0f, area)),
+        as_type<uint>(
+            numerator_x * precise::divide(1.0f, area)),
+        as_type<uint>(
+            numerator_y * precise::divide(1.0f, area)));
+}
 """
 
 private enum ProbeError: Error, CustomStringConvertible {
@@ -1451,6 +1508,75 @@ private func renderTomography(
     }
 }
 
+private let arithmeticVectorsPerSample = 5
+
+private func measureArithmetic(
+    _ probes: [TomographyCase],
+    device: MTLDevice,
+    queue: MTLCommandQueue,
+    pipeline: MTLComputePipelineState
+) throws -> Data {
+    let dimensions = probes.map {
+        SIMD2<UInt32>(UInt32($0.width), UInt32($0.height))
+    }
+    let deltas = tomographyDeltaNumerators.map {
+        Float($0) / Float(tomographyDeltaDenominator)
+    }
+    let dimensionsBuffer = dimensions.withUnsafeBufferPointer {
+        buffer in
+        device.makeBuffer(
+            bytes: buffer.baseAddress!,
+            length: buffer.count
+                * MemoryLayout<SIMD2<UInt32>>.stride,
+            options: .storageModeShared)
+    }
+    let deltaBuffer = deltas.withUnsafeBufferPointer { buffer in
+        device.makeBuffer(
+            bytes: buffer.baseAddress!,
+            length: buffer.count * MemoryLayout<Float>.stride,
+            options: .storageModeShared)
+    }
+    let sampleCount = probes.count * deltas.count
+    let outputBytes =
+        sampleCount
+        * arithmeticVectorsPerSample
+        * MemoryLayout<SIMD4<UInt32>>.stride
+    guard let dimensionsBuffer,
+          let deltaBuffer,
+          let outputBuffer = device.makeBuffer(
+              length: outputBytes,
+              options: .storageModeShared),
+          let commandBuffer = queue.makeCommandBuffer(),
+          let encoder = commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource(
+            "arithmetic buffers, command, or encoder")
+    }
+    encoder.setComputePipelineState(pipeline)
+    encoder.setBuffer(dimensionsBuffer, offset: 0, index: 0)
+    encoder.setBuffer(deltaBuffer, offset: 0, index: 1)
+    encoder.setBuffer(outputBuffer, offset: 0, index: 2)
+    encoder.dispatchThreads(
+        MTLSize(width: sampleCount, height: 1, depth: 1),
+        threadsPerThreadgroup: MTLSize(
+            width: min(
+                sampleCount,
+                pipeline.maxTotalThreadsPerThreadgroup),
+            height: 1,
+            depth: 1))
+    encoder.endEncoding()
+    commandBuffer.commit()
+    commandBuffer.waitUntilCompleted()
+    guard commandBuffer.status == .completed else {
+        throw ProbeError.command(
+            commandBuffer.error?.localizedDescription
+                ?? "unknown arithmetic-probe error")
+    }
+    return Data(
+        bytes: outputBuffer.contents(),
+        count: outputBytes)
+}
+
 private func run(outputDirectory: URL) throws {
     try FileManager.default.createDirectory(
         at: outputDirectory,
@@ -1483,6 +1609,8 @@ private func run(outputDirectory: URL) throws {
             name: "raster_tomography_vertex"),
           let tomographyFragment = library.makeFunction(
             name: "raster_tomography_fragment"),
+          let arithmeticFunction = library.makeFunction(
+            name: "raster_arithmetic_probe"),
           let queue = device.makeCommandQueue()
     else {
         throw ProbeError.resource("functions or command queue")
@@ -1509,6 +1637,8 @@ private func run(outputDirectory: URL) throws {
     }
     let tomographyPipeline = try device.makeRenderPipelineState(
         descriptor: tomographyDescriptor)
+    let arithmeticPipeline = try device.makeComputePipelineState(
+        function: arithmeticFunction)
 
     var records: [[String: Any]] = []
     for probe in cases {
@@ -1702,9 +1832,24 @@ private func run(outputDirectory: URL) throws {
         ])
     }
 
+    let arithmeticCases = tomographyCases.filter {
+        $0.role == "discovery"
+    }
+    let arithmeticData = try measureArithmetic(
+        arithmeticCases,
+        device: device,
+        queue: queue,
+        pipeline: arithmeticPipeline)
+    let arithmeticFilename =
+        "raster-arithmetic-candidates-rgba32ui.raw"
+    try arithmeticData.write(
+        to: outputDirectory.appendingPathComponent(
+            arithmeticFilename),
+        options: .atomic)
+
     let manifest: [String: Any] = [
-        "schemaVersion": 10,
-        "rigVersion": "metal-raster-interpolant-probe-10.0.0",
+        "schemaVersion": 11,
+        "rigVersion": "metal-raster-interpolant-probe-11.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -1737,6 +1882,54 @@ private func run(outputDirectory: URL) throws {
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,
+        "arithmeticProbe": [
+            "role": "discovery",
+            "cases": arithmeticCases.map {
+                [
+                    "name": $0.name,
+                    "width": $0.width,
+                    "height": $0.height,
+                ]
+            },
+            "deltaNumerators": tomographyDeltaNumerators.map {
+                Int($0)
+            },
+            "deltaDenominator": Int(
+                tomographyDeltaDenominator),
+            "deltaBits": tomographyDeltaNumerators.map {
+                bits(
+                    Float($0)
+                    / Float(tomographyDeltaDenominator))
+            },
+            "file": arithmeticFilename,
+            "bytes": arithmeticData.count,
+            "sha256": sha256(arithmeticData),
+            "vectorsPerSample": arithmeticVectorsPerSample,
+            "components": [
+                "operatorDivideX",
+                "operatorDivideY",
+                "fastDivideX",
+                "fastDivideY",
+                "preciseDivideX",
+                "preciseDivideY",
+                "fastDimensionReciprocalProductX",
+                "fastDimensionReciprocalProductY",
+                "preciseDimensionReciprocalProductX",
+                "preciseDimensionReciprocalProductY",
+                "operatorAreaDivideX",
+                "operatorAreaDivideY",
+                "fastAreaDivideX",
+                "fastAreaDivideY",
+                "preciseAreaDivideX",
+                "preciseAreaDivideY",
+                "fastAreaReciprocalProductX",
+                "fastAreaReciprocalProductY",
+                "preciseAreaReciprocalProductX",
+                "preciseAreaReciprocalProductY",
+            ],
+            "ordering":
+                "case-major,delta-major,component-major",
+        ],
     ]
     let manifestData = try JSONSerialization.data(
         withJSONObject: manifest,

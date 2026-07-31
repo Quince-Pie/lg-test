@@ -1939,6 +1939,16 @@ sweep is discovery evidence for identifying the reciprocal lookup or
 piecewise-approximation law; it does not authorize opening the four existing
 holdouts.
 
+Raster schema 11 keeps all schema-10 raster surfaces and holdouts unchanged and
+adds a discovery-only Metal compute control. For every discovery geometry and
+ramp, it records raw float bits from plain, `fast::`, and `precise::` division,
+dimension-reciprocal multiplication, shared-area division, and shared-area
+reciprocal multiplication. This directly tests whether the hidden raster setup
+arithmetic is observationally equivalent to an exposed Metal arithmetic path.
+The workflow independently verifies the compact control's case order, layout,
+size, and SHA-256, and now also rehashes every raster surface before accepting
+the artifact. No arithmetic control is emitted for a holdout geometry.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

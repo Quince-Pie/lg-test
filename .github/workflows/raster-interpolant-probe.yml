@@ -57,18 +57,26 @@ jobs:
           test "${{ steps.capture.outcome }}" = success
           test -s raster-interpolant-probe/manifest.json
           python3 - <<'PY'
+          import hashlib
           import json
           from pathlib import Path
+
+          def sha256(path):
+              digest = hashlib.sha256()
+              with path.open("rb") as stream:
+                  while block := stream.read(1024 * 1024):
+                      digest.update(block)
+              return digest.hexdigest()
 
           root = Path("raster-interpolant-probe")
           with (root / "manifest.json").open(
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 10:
+          if manifest.get("schemaVersion") != 11:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-10.0.0"
+              "metal-raster-interpolant-probe-11.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -132,6 +140,17 @@ jobs:
                   raise SystemExit(
                       f"{record['name']} basis file size differs"
                   )
+              if (
+                  sha256(varying_path)
+                  != record["varyingFileSha256"]
+                  or sha256(barycentric_path)
+                  != record["barycentricFileSha256"]
+                  or sha256(basis_path)
+                  != record["basisVaryingFileSha256"]
+              ):
+                  raise SystemExit(
+                      f"{record['name']} base surface hash differs"
+                  )
               for field in extra_fields:
                   if record[f"{field}FileBytes"] != expected:
                       raise SystemExit(
@@ -144,6 +163,12 @@ jobs:
                       raise SystemExit(
                           f"{record['name']} {field} file size "
                           "differs"
+                      )
+                  if sha256(
+                      root / record[f"{field}File"]
+                  ) != record[f"{field}FileSha256"]:
+                      raise SystemExit(
+                          f"{record['name']} {field} hash differs"
                       )
 
           expected_tomography = {
@@ -343,4 +368,72 @@ jobs:
                       raise SystemExit(
                           f"{record['name']} tomography layout differs"
                       )
+                  if sha256(path) != output["sha256"]:
+                      raise SystemExit(
+                          f"{record['name']} tomography hash differs"
+                      )
+
+          arithmetic = manifest.get("arithmeticProbe", {})
+          expected_components = [
+              "operatorDivideX",
+              "operatorDivideY",
+              "fastDivideX",
+              "fastDivideY",
+              "preciseDivideX",
+              "preciseDivideY",
+              "fastDimensionReciprocalProductX",
+              "fastDimensionReciprocalProductY",
+              "preciseDimensionReciprocalProductX",
+              "preciseDimensionReciprocalProductY",
+              "operatorAreaDivideX",
+              "operatorAreaDivideY",
+              "fastAreaDivideX",
+              "fastAreaDivideY",
+              "preciseAreaDivideX",
+              "preciseAreaDivideY",
+              "fastAreaReciprocalProductX",
+              "fastAreaReciprocalProductY",
+              "preciseAreaReciprocalProductX",
+              "preciseAreaReciprocalProductY",
+          ]
+          expected_arithmetic_cases = [
+              {
+                  "name": record["name"],
+                  "width": record["crop"]["width"],
+                  "height": record["crop"]["height"],
+              }
+              for record in tomography
+              if record["role"] == "discovery"
+          ]
+          arithmetic_path = root / arithmetic.get("file", "")
+          expected_arithmetic_bytes = (
+              len(expected_arithmetic_cases)
+              * len(expected_numerators)
+              * len(expected_components)
+              * 4
+          )
+          if (
+              arithmetic.get("role") != "discovery"
+              or arithmetic.get("cases")
+                  != expected_arithmetic_cases
+              or arithmetic.get("deltaNumerators")
+                  != expected_numerators
+              or arithmetic.get("deltaDenominator") != 65536
+              or len(arithmetic.get("deltaBits", [])) != 8
+              or arithmetic.get("vectorsPerSample") != 5
+              or arithmetic.get("components")
+                  != expected_components
+              or arithmetic.get("ordering")
+                  != "case-major,delta-major,component-major"
+              or arithmetic.get("bytes")
+                  != expected_arithmetic_bytes
+              or not arithmetic_path.is_file()
+              or arithmetic_path.stat().st_size
+                  != expected_arithmetic_bytes
+              or sha256(arithmetic_path)
+                  != arithmetic.get("sha256")
+          ):
+              raise SystemExit(
+                  "raster arithmetic evidence differs"
+              )
           PY
