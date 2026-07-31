@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "role": "reciprocal-holdout-opening-as-calibration",
+  "authorized": true,
+  "authorizedAtUtcDate": "2026-07-30",
+  "discoveryEvidence": {
+    "runId": 30649148975,
+    "ciCommit": "ed33fdd09a117e8099d7c95ccad54d6a879d3ebf",
+    "manifestSha256": "283c05c65abe367869c8700c5274ff707bfec8b59be94f2197488107138509ca",
+    "pullsSha256": "bae5020b28bee2d577638200b6600236e3a1a71c0d616ded19f4dccf61426ddb",
+    "analysisSha256": "3db25861c715672161a05bfb25f0969f5d28362b3af8b0626ebcd31ac0a5a74d",
+    "widthCount": 14181,
+    "normalizationClassCount": 7160,
+    "coefficientCount": 198534,
+    "uniqueCandidateCountPerWidth": 1,
+    "physicalProductMismatchCount": 0,
+    "powerOfTwoScaleEquivalenceComparisonCount": 7021,
+    "powerOfTwoScaleEquivalenceMismatchCount": 0,
+    "nearestEvenOffsetDistribution": {
+      "-1": 254,
+      "0": 12699,
+      "1": 1228
+    }
+  },
+  "decision": {
+    "previousRole": "sealed prospective selector validation",
+    "newRole": "finite-domain reciprocal-table completion",
+    "reason": "The discovery sweep uniquely recovers a deterministic 25-bit reciprocal for every opened width and proves exact power-of-two normalization equivalence, while falsifying round-to-nearest-even as a portable selector. The finite normalized input domain contains only 8192 classes. Exact production parity therefore requires measuring the remaining table entries instead of silently substituting an unvalidated selector.",
+    "holdoutWidthCount": 2076,
+    "holdoutWidthsSha256": "ddda2c54ca06291eb8cbfeacacab3767c1358ed4d1cf0b14bfec805ad93c30ea"
+  },
+  "scientificLimits": {
+    "thisOpeningIsNotProspectiveModelValidation": true,
+    "thisOpeningDoesNotEstablishAClosedFormSelector": true,
+    "holdoutResultsMustNotBeReportedAsAConfirmedPreexistingPrediction": true,
+    "discoveryAndHoldoutResultsMustRemainSeparatelyReported": true
+  },
+  "nextProspectiveGate": {
+    "required": true,
+    "description": "After completing the canonical reciprocal table, freeze its hash and predicted raw outputs for unseen power-of-two-scaled and geometry-varied cases before capturing those cases.",
+    "mustRemainUnobservedUntilPredictionsAreFrozen": true
+  }
+}

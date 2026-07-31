@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the preregistered standalone Metal reciprocal discovery sweep."""
+"""Validate a preregistered standalone Metal reciprocal sweep partition."""
 
 import argparse
 import hashlib
@@ -13,7 +13,7 @@ from typing import Any
 type JsonObject = dict[str, Any]
 
 SCHEMA_VERSION = 1
-RIG_VERSION = "metal-raster-reciprocal-sweep-1.0.0"
+RIG_VERSION = "metal-raster-reciprocal-sweep-1.1.0"
 WIDTH_LOWER = 128
 WIDTH_UPPER = 16_384
 TARGET_WIDTH = 160
@@ -31,6 +31,12 @@ SENTINEL = (0xFFFF_FFFF, 0xFFFF_FFFF)
 CANDIDATE_RADIUS = 8
 PREREGISTRATION_PATH = Path(__file__).with_name(
     "raster_reciprocal_sweep_preregistration.json"
+)
+HOLDOUT_OPENING_PATH = Path(__file__).with_name(
+    "raster_reciprocal_holdout_opening.json"
+)
+HOLDOUT_OPENING_SHA256 = (
+    "4f21f366543c0bd0e1c1d8eb5dec6f74045c6861a8c1a6774b3d6f9ae26ebbe4"
 )
 DISCOVERY_WIDTH_COUNT = 14_181
 DISCOVERY_WIDTHS_SHA256 = (
@@ -303,9 +309,47 @@ def load_preregistration() -> JsonObject:
     return preregistration
 
 
-def expected_file_bytes() -> int:
+def load_holdout_opening() -> JsonObject:
+    opening: JsonObject = json.loads(
+        HOLDOUT_OPENING_PATH.read_text(encoding="utf-8")
+    )
+    decision = opening.get("decision", {})
+    limits = opening.get("scientificLimits", {})
+    next_gate = opening.get("nextProspectiveGate", {})
+    if (
+        sha256_path(HOLDOUT_OPENING_PATH) != HOLDOUT_OPENING_SHA256
+        or opening.get("schemaVersion") != 1
+        or opening.get("role")
+        != "reciprocal-holdout-opening-as-calibration"
+        or opening.get("authorized") is not True
+        or decision.get("previousRole")
+        != "sealed prospective selector validation"
+        or decision.get("newRole")
+        != "finite-domain reciprocal-table completion"
+        or decision.get("holdoutWidthCount") != HOLDOUT_WIDTH_COUNT
+        or decision.get("holdoutWidthsSha256")
+        != HOLDOUT_WIDTHS_SHA256
+        or limits.get("thisOpeningIsNotProspectiveModelValidation")
+        is not True
+        or limits.get("thisOpeningDoesNotEstablishAClosedFormSelector")
+        is not True
+        or limits.get(
+            "holdoutResultsMustNotBeReportedAsAConfirmedPreexistingPrediction"
+        )
+        is not True
+        or limits.get("discoveryAndHoldoutResultsMustRemainSeparatelyReported")
+        is not True
+        or next_gate.get("required") is not True
+        or next_gate.get("mustRemainUnobservedUntilPredictionsAreFrozen")
+        is not True
+    ):
+        raise ValueError("reciprocal-sweep holdout opening differs")
+    return opening
+
+
+def expected_file_bytes(width_count: int = DISCOVERY_WIDTH_COUNT) -> int:
     return (
-        DISCOVERY_WIDTH_COUNT
+        width_count
         * len(WITNESS_SIGNIFICANDS)
         * PRIMITIVE_COUNT
         * TILE_COUNT
@@ -315,7 +359,7 @@ def expected_file_bytes() -> int:
 
 def validate_record_layout(path: Path, widths: list[int]) -> str:
     data = path.read_bytes()
-    if len(data) != expected_file_bytes():
+    if len(data) != expected_file_bytes(len(widths)):
         raise ValueError("reciprocal-sweep file size differs")
     records = iter(struct.iter_unpack("<II", data))
     for width in widths:
@@ -347,18 +391,32 @@ def validate(root: Path) -> None:
         (root / "manifest.json").read_text(encoding="utf-8")
     )
     evidence = manifest.get("reciprocalSweep", {})
-    widths = selected_widths(holdout=False)
+    if not isinstance(evidence, dict):
+        raise ValueError("reciprocal-sweep manifest differs")
+    role = evidence.get("role")
+    if role not in {"discovery", "holdout"}:
+        raise ValueError("reciprocal-sweep role differs")
+    holdout = role == "holdout"
+    widths = selected_widths(holdout=holdout)
+    expected_width_count = (
+        HOLDOUT_WIDTH_COUNT if holdout else DISCOVERY_WIDTH_COUNT
+    )
+    expected_widths_sha256 = (
+        HOLDOUT_WIDTHS_SHA256 if holdout else DISCOVERY_WIDTHS_SHA256
+    )
     output_path = root / str(evidence.get("file", ""))
-    expected_bytes = expected_file_bytes()
+    expected_bytes = expected_file_bytes(expected_width_count)
     if (
         manifest.get("schemaVersion") != SCHEMA_VERSION
         or manifest.get("rigVersion") != RIG_VERSION
         or not isinstance(manifest.get("ciCommit"), str)
         or len(manifest.get("ciCommit", "")) != 40
-        or evidence.get("role") != "discovery"
         or evidence.get("widths") != widths
-        or evidence.get("widthCount") != DISCOVERY_WIDTH_COUNT
-        or evidence.get("widthsSha256") != DISCOVERY_WIDTHS_SHA256
+        or evidence.get("widthCount") != expected_width_count
+        or evidence.get("widthsSha256") != expected_widths_sha256
+        or evidence.get("discoveryWidthCount") != DISCOVERY_WIDTH_COUNT
+        or evidence.get("discoveryWidthsSha256")
+        != DISCOVERY_WIDTHS_SHA256
         or evidence.get("holdoutWidthCount") != HOLDOUT_WIDTH_COUNT
         or evidence.get("holdoutWidthsSha256") != HOLDOUT_WIDTHS_SHA256
         or evidence.get("witnessSignificands") != list(WITNESS_SIGNIFICANDS)
@@ -398,6 +456,25 @@ def validate(root: Path) -> None:
         or output_path.stat().st_size != expected_bytes
     ):
         raise ValueError("reciprocal-sweep manifest differs")
+    if holdout:
+        load_holdout_opening()
+        if (
+            evidence.get("holdoutOpeningAuthorized") is not True
+            or evidence.get("holdoutOpeningFile")
+            != "Analysis/raster_reciprocal_holdout_opening.json"
+            or evidence.get("holdoutOpeningSha256")
+            != HOLDOUT_OPENING_SHA256
+        ):
+            raise ValueError("reciprocal-sweep holdout opening differs")
+    elif any(
+        key in evidence
+        for key in (
+            "holdoutOpeningAuthorized",
+            "holdoutOpeningFile",
+            "holdoutOpeningSha256",
+        )
+    ):
+        raise ValueError("discovery manifest contains holdout authorization")
     if validate_record_layout(output_path, widths) != evidence.get("sha256"):
         raise ValueError("reciprocal-sweep file hash differs")
 

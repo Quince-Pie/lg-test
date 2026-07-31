@@ -2,9 +2,19 @@ name: Discover Apple Metal raster reciprocals
 
 on:
   workflow_dispatch:
+    inputs:
+      role:
+        description: Reciprocal-table partition to measure
+        required: true
+        default: discovery
+        type: choice
+        options:
+          - discovery
+          - holdout
   push:
     paths:
       - .github/workflows/raster-reciprocal-sweep.yml
+      - Analysis/raster_reciprocal_holdout_opening.json
       - Analysis/raster_reciprocal_sweep_preregistration.json
       - Analysis/validate_reciprocal_sweep.py
       - Sources/GlassRasterReciprocalSweep/**
@@ -41,15 +51,18 @@ jobs:
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
+        env:
+          RECIPROCAL_SWEEP_ROLE: ${{ inputs.role || 'discovery' }}
         run: |
           ./glass-raster-reciprocal-sweep \
-            raster-reciprocal-sweep
+            raster-reciprocal-sweep \
+            "$RECIPROCAL_SWEEP_ROLE"
 
       - name: Upload Metal reciprocal evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: liquid-glass-raster-reciprocal-sweep-${{ github.run_id }}
+          name: liquid-glass-raster-reciprocal-${{ inputs.role || 'discovery' }}-${{ github.run_id }}
           path: raster-reciprocal-sweep
           if-no-files-found: error
           retention-days: 7

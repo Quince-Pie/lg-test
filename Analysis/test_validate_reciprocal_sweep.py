@@ -17,6 +17,21 @@ class RasterReciprocalSweepTests(unittest.TestCase):
             sweep.HOLDOUT_WIDTH_COUNT,
         )
         self.assertEqual(sweep.expected_file_bytes(), 15_882_720)
+        self.assertEqual(
+            sweep.expected_file_bytes(sweep.HOLDOUT_WIDTH_COUNT),
+            2_325_120,
+        )
+
+    def test_holdout_opening_preserves_the_scientific_boundary(self):
+        opening = sweep.load_holdout_opening()
+
+        self.assertTrue(opening["authorized"])
+        self.assertTrue(
+            opening["scientificLimits"][
+                "thisOpeningIsNotProspectiveModelValidation"
+            ]
+        )
+        self.assertTrue(opening["nextProspectiveGate"]["required"])
 
     def test_holdout_is_closed_under_power_of_two_scaling(self):
         roles_by_class: dict[int, set[bool]] = {}

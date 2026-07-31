@@ -2217,9 +2217,31 @@ partial-product model. For every width in the complete 128-to-16,384 domain,
 the 14-output signature uniquely distinguishes all 17 reciprocal candidates
 from eight internal 25-bit ULPs below correctly rounded through eight above.
 The discovery capture contains 14,181 widths and 198,534 coefficients in a
-15,882,720-byte raw file. The 2,076 excluded widths remain unopened until a
-reciprocal-generation law and the complete holdout prediction hash have been
-committed.
+15,882,720-byte raw file. The original protocol reserved 2,076 widths as a
+sealed selector holdout.
+
+Run 30649148975 measured the discovery partition. Every width selected one
+candidate uniquely, every coefficient matched the physical partial-product
+law, and all 7,021 power-of-two-equivalence comparisons matched. It exposed
+7,160 of the 8,192 finite normalized denominator classes. The results
+falsified correctly rounded reciprocal selection and the subsequently tested
+portable closed-form selectors; they instead support treating the remaining
+selector state as finite calibration data.
+
+`Analysis/raster_reciprocal_holdout_opening.json` records the resulting
+protocol change before the excluded data are observed. A `holdout` capture is
+explicitly a table-completion calibration, not a prospective validation of a
+preexisting selector and not evidence of a closed-form law. Discovery and
+holdout results must remain separately reported. After table completion, a
+new prospective gate must freeze the table hash and predicted raw outputs
+before capturing unseen power-of-two-scaled and geometry-varied cases.
+
+The workflow defaults to the `discovery` partition on push. An authorized
+table-completion run is dispatched with:
+
+```sh
+gh workflow run raster-reciprocal-sweep.yml -f role=holdout
+```
 
 ### Geometry-transfer introspection
 

@@ -211,7 +211,7 @@ private func uint32Data(_ values: [UInt32]) -> Data {
     return result
 }
 
-private func run(outputDirectory: URL) throws {
+private func run(outputDirectory: URL, role: String) throws {
     precondition(discoveryWidths.count == 14_181)
     precondition(holdoutWidths.count == 2_076)
     precondition(
@@ -226,6 +226,16 @@ private func run(outputDirectory: URL) throws {
     precondition(
         sha256(uint32Data(witnessDeltaBits))
             == "4af6fce64ad188beb784cbea16c1d09ca2713825f8becee8ee64cabfd68caf8a")
+    guard role == "discovery" || role == "holdout" else {
+        throw SweepError.resource(
+            "role must be discovery or holdout")
+    }
+    let selectedWidths =
+        role == "discovery" ? discoveryWidths : holdoutWidths
+    let selectedWidthsSha256 =
+        role == "discovery"
+        ? "865bff07b8ca4e440f7d1cc20bb6ec98f1bacee2ee780d85c53e54efcaccabff"
+        : "ddda2c54ca06291eb8cbfeacacab3767c1358ed4d1cf0b14bfec805ad93c30ea"
 
     try FileManager.default.createDirectory(
         at: outputDirectory,
@@ -270,7 +280,7 @@ private func run(outputDirectory: URL) throws {
             options: .storageModeShared)
     }
     let recordCount =
-        discoveryWidths.count
+        selectedWidths.count
         * witnessSignificands.count
         * primitiveCount
         * tileCount
@@ -305,12 +315,12 @@ private func run(outputDirectory: URL) throws {
 
     for batchStart in stride(
         from: 0,
-        to: discoveryWidths.count,
+        to: selectedWidths.count,
         by: batchSize)
     {
         let batchEnd = min(
             batchStart + batchSize,
-            discoveryWidths.count)
+            selectedWidths.count)
         guard let commandBuffer = queue.makeCommandBuffer() else {
             throw SweepError.resource(
                 "reciprocal-sweep command buffer")
@@ -350,7 +360,7 @@ private func run(outputDirectory: URL) throws {
             index: 0)
 
         for widthIndex in batchStart..<batchEnd {
-            let width = discoveryWidths[widthIndex]
+            let width = selectedWidths[widthIndex]
             for position in positions(width: width) {
                 var parameters = SIMD4<UInt32>(
                     UInt32(width),
@@ -386,14 +396,14 @@ private func run(outputDirectory: URL) throws {
                     ?? "unknown reciprocal-sweep render error")
         }
         print(
-            "reciprocal discovery: \(batchEnd)"
-                + "/\(discoveryWidths.count) widths")
+            "reciprocal \(role): \(batchEnd)"
+                + "/\(selectedWidths.count) widths")
     }
 
     let records = output.contents().bindMemory(
         to: SIMD2<UInt32>.self,
         capacity: recordCount)
-    for (widthIndex, width) in discoveryWidths.enumerated() {
+    for (widthIndex, width) in selectedWidths.enumerated() {
         let expectedSlots = Set(positions(width: width).map {
             $0.primitive * tileCount + $0.tile
         })
@@ -431,7 +441,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-sweep-1.0.0"
+        "metal-raster-reciprocal-sweep-1.1.0"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -446,11 +456,13 @@ private func run(outputDirectory: URL) throws {
         "fragmentOutput":
             "two no-perspective pull float bit patterns per record",
     ] as [String: Any]
-    manifest["reciprocalSweep"] = [
-        "role": "discovery",
-        "widths": discoveryWidths,
-        "widthCount": discoveryWidths.count,
-        "widthsSha256":
+    var reciprocalSweep: [String: Any] = [
+        "role": role,
+        "widths": selectedWidths,
+        "widthCount": selectedWidths.count,
+        "widthsSha256": selectedWidthsSha256,
+        "discoveryWidthCount": discoveryWidths.count,
+        "discoveryWidthsSha256":
             "865bff07b8ca4e440f7d1cc20bb6ec98f1bacee2ee780d85c53e54efcaccabff",
         "holdoutWidthCount": holdoutWidths.count,
         "holdoutWidthsSha256":
@@ -496,6 +508,14 @@ private func run(outputDirectory: URL) throws {
         "bytes": outputData.count,
         "sha256": sha256(outputData),
     ] as [String: Any]
+    if role == "holdout" {
+        reciprocalSweep["holdoutOpeningAuthorized"] = true
+        reciprocalSweep["holdoutOpeningFile"] =
+            "Analysis/raster_reciprocal_holdout_opening.json"
+        reciprocalSweep["holdoutOpeningSha256"] =
+            "4f21f366543c0bd0e1c1d8eb5dec6f74045c6861a8c1a6774b3d6f9ae26ebbe4"
+    }
+    manifest["reciprocalSweep"] = reciprocalSweep
 
     let manifestData = try JSONSerialization.data(
         withJSONObject: manifest,
@@ -512,13 +532,14 @@ private func run(outputDirectory: URL) throws {
 private struct GlassRasterReciprocalSweep {
     static func main() {
         do {
-            guard CommandLine.arguments.count == 2 else {
+            guard CommandLine.arguments.count == 3 else {
                 throw SweepError.resource(
-                    "output-directory argument")
+                    "output-directory and role arguments")
             }
             try run(outputDirectory: URL(
                 fileURLWithPath: CommandLine.arguments[1],
-                isDirectory: true))
+                isDirectory: true),
+                role: CommandLine.arguments[2])
         } catch {
             FileHandle.standardError.write(
                 Data("error: \(error)\n".utf8))
