@@ -2109,6 +2109,17 @@ snapping and source-crop selection laws; any resulting law must still replay
 the independent full geometry artifacts byte for byte before it can authorize
 production use.
 
+`geometry-boundary-introspect.yml` is the adaptive follow-up to that first
+matrix. It does not replace or weaken the 35 control captures. Its 58 compact
+jobs bracket the observed small-diameter no-bleed/regular pipeline switch,
+densely sample the 128-to-256 downsample-target transition, move a 256-point
+circle in four-point increments across one crop-allocation boundary, and move
+a 512-point circle through all integer phases that distinguish the measured
+edge-plus-blur expansion rules. These are one-dimensional interventions: only
+the named diameter or center coordinate changes. This lets the analysis
+identify discrete decision boundaries without conflating them with material,
+appearance, accessibility, backing-scale, or source-image changes.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

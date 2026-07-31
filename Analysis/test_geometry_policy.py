@@ -8,12 +8,17 @@ SOURCE = ROOT / "Sources" / "GlassIntrospect" / "main.swift"
 WORKFLOW = (
     ROOT / ".github" / "workflows" / "geometry-policy-introspect.yml"
 )
+BOUNDARY_WORKFLOW = (
+    ROOT
+    / ".github"
+    / "workflows"
+    / "geometry-boundary-introspect.yml"
+)
 
 
 class GeometryPolicyWorkflowTests(unittest.TestCase):
     def test_workflow_geometries_are_preregistered_in_probe(self) -> None:
         source = SOURCE.read_text(encoding="utf-8")
-        workflow = WORKFLOW.read_text(encoding="utf-8")
         specifications = set(
             re.findall(
                 r'^\s*"(?P<name>circle-[^"]+)":\s*$',
@@ -21,15 +26,20 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
                 flags=re.MULTILINE,
             )
         )
-        matrix = set(
-            re.findall(
-                r"^\s+- (?P<name>circle-\S+)\s*$",
-                workflow,
-                flags=re.MULTILINE,
+        for path, expected_count in (
+            (WORKFLOW, 35),
+            (BOUNDARY_WORKFLOW, 58),
+        ):
+            workflow = path.read_text(encoding="utf-8")
+            matrix = set(
+                re.findall(
+                    r"^\s+- (?P<name>circle-\S+)\s*$",
+                    workflow,
+                    flags=re.MULTILINE,
+                )
             )
-        )
-        self.assertEqual(len(matrix), 35)
-        self.assertTrue(matrix <= specifications)
+            self.assertEqual(len(matrix), expected_count)
+            self.assertTrue(matrix <= specifications)
 
     def test_matrix_brackets_snap_and_crop_boundaries(self) -> None:
         workflow = WORKFLOW.read_text(encoding="utf-8")
@@ -58,20 +68,45 @@ class GeometryPolicyWorkflowTests(unittest.TestCase):
 
     def test_capture_is_metadata_only_and_manually_dispatched(self) -> None:
         source = SOURCE.read_text(encoding="utf-8")
-        workflow = WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("workflow_dispatch:", workflow)
-        self.assertNotRegex(workflow, r"(?m)^\s+push:")
-        self.assertIn('LG_GEOMETRY_POLICY: "1"', workflow)
+        workflows = [
+            WORKFLOW.read_text(encoding="utf-8"),
+            BOUNDARY_WORKFLOW.read_text(encoding="utf-8"),
+        ]
+        for workflow in workflows:
+            self.assertIn("workflow_dispatch:", workflow)
+            self.assertNotRegex(workflow, r"(?m)^\s+push:")
+            self.assertIn('LG_GEOMETRY_POLICY: "1"', workflow)
+            self.assertIn(
+                "compact geometry capture emitted raw stage dumps",
+                workflow,
+            )
         self.assertIn("snapshotTextureMetadata", source)
         self.assertIn(
             "metadata-only geometry-policy capture",
             source,
         )
         self.assertIn('"geometry-policy",', source)
-        self.assertIn(
-            "compact geometry capture emitted raw stage dumps",
-            workflow,
-        )
+
+    def test_boundary_matrix_is_adaptive_and_one_dimensional(self) -> None:
+        workflow = BOUNDARY_WORKFLOW.read_text(encoding="utf-8")
+        for width in (
+            65,
+            80,
+            96,
+            112,
+            127,
+            295,
+            299,
+            300,
+            301,
+            305,
+            319,
+        ):
+            self.assertIn(f"- circle-{width:03d}-center", workflow)
+        for center in range(388, 469, 4):
+            self.assertIn(f"- circle-256-pad-{center}", workflow)
+        for center_y in range(416, 424):
+            self.assertIn(f"- circle-512-y{center_y}", workflow)
 
 
 if __name__ == "__main__":
