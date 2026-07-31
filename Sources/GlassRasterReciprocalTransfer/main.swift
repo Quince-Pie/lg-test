@@ -174,7 +174,7 @@ vertex TransferVertexOutput reciprocal_transfer_vertex(
     return output;
 }
 
-fragment uint reciprocal_transfer_fragment(
+fragment float reciprocal_transfer_fragment(
     TransferFragmentInput input [[stage_in]],
     device uint2 *results [[buffer(0)]])
 {
@@ -187,7 +187,7 @@ fragment uint reciprocal_transfer_fragment(
             float2(0.0f, 0.5f))),
         as_type<uint>(input.ramp.interpolate_at_offset(
             float2(0.9375f, 0.5f))));
-    return input.recordIndex;
+    return 1.0f;
 }
 """
 
@@ -282,17 +282,26 @@ private func run(outputDirectory: URL) throws {
     let pipelineDescriptor = MTLRenderPipelineDescriptor()
     pipelineDescriptor.vertexFunction = vertex
     pipelineDescriptor.fragmentFunction = fragment
-    pipelineDescriptor.colorAttachments[0].pixelFormat = .r32Uint
+    let colorAttachment =
+        pipelineDescriptor.colorAttachments[0]!
+    colorAttachment.pixelFormat = .r32Float
+    colorAttachment.isBlendingEnabled = true
+    colorAttachment.rgbBlendOperation = .add
+    colorAttachment.alphaBlendOperation = .add
+    colorAttachment.sourceRGBBlendFactor = .one
+    colorAttachment.sourceAlphaBlendFactor = .one
+    colorAttachment.destinationRGBBlendFactor = .one
+    colorAttachment.destinationAlphaBlendFactor = .one
     let pipeline = try device.makeRenderPipelineState(
         descriptor: pipelineDescriptor)
     diagnostic("Metal pipeline created")
 
     let targetDescriptor = MTLTextureDescriptor.texture2DDescriptor(
-        pixelFormat: .r32Uint,
+        pixelFormat: .r32Float,
         width: targetWidth,
         height: targetHeight,
         mipmapped: false)
-    targetDescriptor.storageMode = .private
+    targetDescriptor.storageMode = .shared
     targetDescriptor.usage = [.renderTarget]
     let deltaBuffer = witnessDeltaBits.withUnsafeBufferPointer {
         buffer in
@@ -351,8 +360,10 @@ private func run(outputDirectory: URL) throws {
         }
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = target
-        pass.colorAttachments[0].loadAction = .dontCare
-        pass.colorAttachments[0].storeAction = .dontCare
+        pass.colorAttachments[0].loadAction = .clear
+        pass.colorAttachments[0].storeAction = .store
+        pass.colorAttachments[0].clearColor =
+            MTLClearColor(red: 0, green: 0, blue: 0, alpha: 0)
         guard let encoder =
             commandBuffer.makeRenderCommandEncoder(
                 descriptor: pass)
@@ -438,6 +449,34 @@ private func run(outputDirectory: URL) throws {
                 commandBuffer.error?.localizedDescription
                     ?? "unknown reciprocal-transfer render error")
         }
+        let expectedCoverage = Float(
+            (batchEnd - batchStart)
+                * witnessSignificands.count)
+        for geometry in geometryCases {
+            for sampleSide in 0..<sampleSideCount {
+                let position = samplePosition(
+                    width: widths[batchStart],
+                    geometry: geometry,
+                    sampleSide: sampleSide)
+                var coverage: Float = 0
+                target.getBytes(
+                    &coverage,
+                    bytesPerRow: MemoryLayout<Float>.stride,
+                    from: MTLRegionMake2D(
+                        position.x,
+                        position.y,
+                        1,
+                        1),
+                    mipmapLevel: 0)
+                guard coverage == expectedCoverage else {
+                    throw TransferError.command(
+                        "reciprocal-scale-transfer coverage"
+                            + " \(geometry.name)/\(sampleSide)"
+                            + " was \(coverage),"
+                            + " expected \(expectedCoverage)")
+                }
+            }
+        }
         print(
             "reciprocal scale transfer: \(batchEnd)"
                 + "/\(widths.count) widths")
@@ -499,7 +538,7 @@ private func run(outputDirectory: URL) throws {
     var manifest: [String: Any] = [:]
     manifest["schemaVersion"] = 1
     manifest["rigVersion"] =
-        "metal-raster-reciprocal-scale-transfer-1.0.0"
+        "metal-raster-reciprocal-scale-transfer-1.0.1"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -513,6 +552,8 @@ private func run(outputDirectory: URL) throws {
         "fastMathEnabled": true,
         "fragmentOutput":
             "two no-perspective pull float bit patterns per record",
+        "coverageAttachment":
+            "R32Float additive one per fragment, cleared, stored, and verified",
     ] as [String: Any]
     manifest["reciprocalScaleTransfer"] = [
         "role": "prospective-unclipped-power2-geometry-scale-transfer",
@@ -520,6 +561,10 @@ private func run(outputDirectory: URL) throws {
             "Analysis/raster_reciprocal_scale_transfer_preregistration.json",
         "preregistrationSha256":
             "bdf385f37e7c4b6c183e2fd550e1abf150ddcc93758855b6ffd8277970b94fd7",
+        "captureAmendmentFile":
+            "Analysis/raster_reciprocal_scale_transfer_capture_amendment.json",
+        "captureAmendmentSha256":
+            "dc6112f98ab038c5ade346a023a241b6def9a54cd0085c4eb18bcf70486d01a5",
         "widthFormula":
             "32768-if-normalized-denominator-8192-else-2x",
         "widthMinimum": widths.min()!,

@@ -2315,6 +2315,20 @@ varying plane. Passing this follow-up establishes reciprocal exponent
 transfer; the failed clipped/general-height result remains a separate open
 modeling problem rather than being fitted away.
 
+The first isolated attempts did not produce a complete pull corpus. Runs
+30654770950 and 30654856562 stopped at a software geometry invariant before
+rendering. After correcting that invariant, runs 30654921808 and 30655096601
+wrote 688,016 of 917,504 records; the latter showed the same 28,686 missing
+records in every geometry/sample slot across the full width range. No pull
+bits, raw corpus, or manifest were serialized. This geometry-independent
+pattern is consistent with overlapping-fragment elimination. The capture-only
+amendment therefore replaces the overwrite-only R32Uint carrier with an
+R32Float attachment cleared to zero and additive one-plus-destination
+blending. The attachment is stored and read back after every batch; its exact
+sum independently verifies that every overlapping fragment ran. This leaves
+geometry, interpolants, pull offsets, widths, witnesses, frozen hashes, and
+acceptance criteria unchanged.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

@@ -15,7 +15,7 @@ import validate_reciprocal_transfer as arithmetic
 type JsonObject = dict[str, Any]
 
 SCHEMA_VERSION = 1
-RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.0"
+RIG_VERSION = "metal-raster-reciprocal-scale-transfer-1.0.1"
 TARGET_WIDTH = 224
 TARGET_HEIGHT = 4_096
 VIEWPORT_WIDTH = 32_768
@@ -30,6 +30,12 @@ PREREGISTRATION_PATH = Path(__file__).with_name(
 )
 PREREGISTRATION_SHA256 = (
     "bdf385f37e7c4b6c183e2fd550e1abf150ddcc93758855b6ffd8277970b94fd7"
+)
+CAPTURE_AMENDMENT_PATH = Path(__file__).with_name(
+    "raster_reciprocal_scale_transfer_capture_amendment.json"
+)
+CAPTURE_AMENDMENT_SHA256 = (
+    "dc6112f98ab038c5ade346a023a241b6def9a54cd0085c4eb18bcf70486d01a5"
 )
 GEOMETRY_CASES = (
     {
@@ -220,6 +226,35 @@ def load_preregistration() -> JsonObject:
         for geometry in GEOMETRY_CASES:
             for sample_side in range(SAMPLE_SIDE_COUNT):
                 sample_position(width, geometry, sample_side)
+    amendment: JsonObject = json.loads(
+        CAPTURE_AMENDMENT_PATH.read_text(encoding="utf-8")
+    )
+    if (
+        sha256_path(CAPTURE_AMENDMENT_PATH)
+        != CAPTURE_AMENDMENT_SHA256
+        or amendment.get("schemaVersion") != 1
+        or amendment.get("role")
+        != (
+            "pre-corpus-reciprocal-scale-transfer-"
+            "capture-infrastructure-amendment"
+        )
+        or amendment.get("preregistrationSha256")
+        != PREREGISTRATION_SHA256
+        or amendment.get("diagnosis", {}).get(
+            "numericalPullBitsObserved"
+        )
+        is not False
+        or amendment.get("frozenNumerics", {}).get("changed") is not False
+        or amendment.get("frozenNumerics", {}).get(
+            "selectedReciprocalTableSha256"
+        )
+        != arithmetic.CANONICAL_RECIPROCAL_SHA256
+        or amendment.get("frozenNumerics", {}).get(
+            "recoveredCoefficientBitsSha256"
+        )
+        != arithmetic.PREDICTED_COEFFICIENT_SHA256
+    ):
+        raise ValueError("reciprocal-scale-transfer amendment differs")
     return preregistration
 
 
@@ -240,6 +275,13 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         != "Analysis/raster_reciprocal_scale_transfer_preregistration.json"
         or evidence.get("preregistrationSha256")
         != PREREGISTRATION_SHA256
+        or evidence.get("captureAmendmentFile")
+        != (
+            "Analysis/"
+            "raster_reciprocal_scale_transfer_capture_amendment.json"
+        )
+        or evidence.get("captureAmendmentSha256")
+        != CAPTURE_AMENDMENT_SHA256
         or evidence.get("widthFormula")
         != "32768-if-normalized-denominator-8192-else-2x"
         or evidence.get("widthMinimum") != arithmetic.WIDTH_MINIMUM

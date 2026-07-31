@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "role": "pre-corpus-reciprocal-scale-transfer-capture-infrastructure-amendment",
+  "preregistrationFile": "Analysis/raster_reciprocal_scale_transfer_preregistration.json",
+  "preregistrationSha256": "bdf385f37e7c4b6c183e2fd550e1abf150ddcc93758855b6ffd8277970b94fd7",
+  "failedRuns": [
+    {
+      "runId": 30654770950,
+      "ciCommit": "b78ba55ea55311409634fb73089cc7cc88363938",
+      "result": "software precondition failed before Metal rendering"
+    },
+    {
+      "runId": 30654856562,
+      "ciCommit": "2852f94a4120d6524be5b08ca4692c80cf1c40a1",
+      "result": "diagnostics localized the same pre-render failure to the geometry invariant"
+    },
+    {
+      "runId": 30654921808,
+      "ciCommit": "d34ba5c785ed401c7d0cdff45114f75272402bc0",
+      "result": "688016 of 917504 records were written; no pull corpus or manifest was serialized"
+    },
+    {
+      "runId": 30655096601,
+      "ciCommit": "8eb13f3a0421fae31629be0fac00309551cbd896",
+      "result": "each of eight geometry/sample slots lost exactly 28686 records across the complete width range; no pull corpus or manifest was serialized"
+    }
+  ],
+  "diagnosis": {
+    "numericalPullBitsObserved": false,
+    "coverageOnlyObserved": true,
+    "geometrySpecificFailureRejected": true,
+    "causeStatus": "capture-infrastructure hypothesis",
+    "workingHypothesis": "overlapping fragments targeted an overwrite-only integer attachment, permitting tile hidden-surface elimination to omit fragments whose visible color result was superseded"
+  },
+  "captureOnlyChange": {
+    "before": "R32Uint overwrite attachment with dont-care load and no blending",
+    "after": "R32Float attachment cleared to zero with additive one-plus-destination blending, stored, and read back after every batch",
+    "reason": "every fragment now changes the stored attachment value; exact readback counts independently verify all invocations that carry device-buffer pull records"
+  },
+  "frozenNumerics": {
+    "widthsSha256": "f22d157b2c0f7f90d4b02997ee78252607edc2991ed75e272c7102519323d2ce",
+    "selectedReciprocalTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "recoveredCoefficientBitsSha256": "7f6b228e8932d0aa66715c47f21889aa8982e53558a636df8bfe8572d5bf6cd0",
+    "changed": false
+  }
+}
