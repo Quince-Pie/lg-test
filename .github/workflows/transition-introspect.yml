@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: transition-introspect-v1-${{ github.ref }}
+  group: transition-introspect-v3-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -69,7 +69,7 @@ jobs:
             -o glass-transition-introspect 2>&1 |
             tee -a transition-introspection/build.log
 
-      - name: Capture paced presentation-tree timeline
+      - name: Capture paced presentation state and real window pixels
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
@@ -103,14 +103,16 @@ jobs:
                   encoding="utf-8"
               )
           )
-          if report.get("schemaVersion") != 2:
-              raise SystemExit("transition timeline schema is not 2")
+          if report.get("schemaVersion") != 3:
+              raise SystemExit("transition timeline schema is not 3")
           if (
               report.get("material") != "${{ matrix.material }}"
               or report.get("appearance") != "${{ matrix.appearance }}"
               or report.get("animationCurve") != "linear"
               or report.get("samplingMethod")
-                  != "real-presentation-tree-paced-by-media-time"
+                  != "real-presentation-state-plus-own-window-pixels"
+              or report.get("captureBackend")
+                  != "CGWindowListCreateImage"
               or report.get("sampleCount") != 33
               or report.get("failedSamples") != 0
           ):
@@ -164,73 +166,205 @@ jobs:
                   "transition presentation sampling drifted: "
                   f"{actual_progress}"
               )
+          expected_pixels = report.get("expectedWindowPixels")
+          if (
+              not isinstance(expected_pixels, list)
+              or len(expected_pixels) != 2
+              or any(
+                  not isinstance(value, int) or value <= 0
+                  for value in expected_pixels
+              )
+          ):
+              raise SystemExit(
+                  "transition window pixel dimensions are invalid: "
+                  f"{expected_pixels}"
+              )
           for index, sample in enumerate(samples):
               if sample.get("executed") is not True:
                   raise SystemExit(
                       f"transition sample {index} did not execute"
                   )
-              output = sample.get("output", {})
-              raw_file = output.get("rawFile")
+              output = sample.get("windowCapture", {})
+              png_file = output.get("pngFile")
               if (
-                  output.get("rawCapture") is not True
-                  or output.get("width") != 1024
-                  or output.get("height") != 1024
-                  or output.get("rawBytes") != 4_194_304
-                  or not isinstance(raw_file, str)
-                  or (root / raw_file).stat().st_size != 4_194_304
+                  output.get("backend")
+                      != "CGWindowListCreateImage"
+                  or [
+                      output.get("width"),
+                      output.get("height"),
+                  ] != expected_pixels
+                  or output.get("pixelBytes")
+                      != expected_pixels[0]
+                          * expected_pixels[1] * 4
+                  or output.get("bytesPerRow")
+                      != expected_pixels[0] * 4
+                  or not isinstance(
+                      output.get("pixelSHA256"), str
+                  )
+                  or len(output["pixelSHA256"]) != 64
+                  or not isinstance(
+                      output.get("pngSHA256"), str
+                  )
+                  or len(output["pngSHA256"]) != 64
+                  or not isinstance(png_file, str)
+                  or not (root / png_file).is_file()
+                  or (root / png_file).stat().st_size
+                      != output.get("pngBytes")
+                  or output.get(
+                      "captureDurationSeconds", 1
+                  ) > 0.25
+                  or sample.get(
+                      "stateBracketSeconds", 1
+                  ) > 0.30
               ):
                   raise SystemExit(
                       f"transition sample {index} output differs: "
                       f"{output}"
                   )
-              if not isinstance(
-                  sample.get("presentationLayerTree"), dict
+              if (
+                  not isinstance(
+                      sample.get(
+                          "presentationStateBeforeCapture"
+                      ),
+                      dict,
+                  )
+                  or not isinstance(
+                      sample.get(
+                          "presentationStateAfterCapture"
+                      ),
+                      dict,
+                  )
               ):
                   raise SystemExit(
                       f"transition sample {index} lacks "
-                      "presentation-layer evidence"
+                      "bracketing presentation-state evidence"
                   )
-          glass_profiles = []
+
+          def state_filters(state):
+              for record in state.get("records", []):
+                  for key in (
+                      "filters",
+                      "backgroundFilters",
+                  ):
+                      for value in record.get(key, []):
+                          yield value
+                  value = record.get("compositingFilter")
+                  if isinstance(value, dict):
+                      yield value
+
+          def is_glass_background(value):
+              serialized = json.dumps(
+                  value,
+                  sort_keys=True,
+                  separators=(",", ":"),
+              ).lower()
+              return (
+                  "glassbackground" in serialized
+                  or "glass_background" in serialized
+              )
+
+          def filter_state(value):
+              known = value.get("knownValues", {})
+              return {
+                  "class": value.get("class"),
+                  "name": known.get("name"),
+                  "type": known.get("type"),
+                  "inputValues": value.get("inputValues"),
+              }
+
+          def physical_state(state):
+              records = []
+              for record in state.get("records", []):
+                  physical = {
+                      key: record.get(key)
+                      for key in (
+                          "path",
+                          "class",
+                          "frame",
+                          "bounds",
+                          "position",
+                          "anchorPoint",
+                          "zPosition",
+                          "opacity",
+                          "cornerRadius",
+                          "transform",
+                          "sublayerTransform",
+                      )
+                  }
+                  for key in (
+                      "filters",
+                      "backgroundFilters",
+                  ):
+                      if key in record:
+                          physical[key] = [
+                              filter_state(value)
+                              for value in record[key]
+                          ]
+                  if "compositingFilter" in record:
+                      physical["compositingFilter"] = (
+                          filter_state(
+                              record["compositingFilter"]
+                          )
+                      )
+                  records.append(physical)
+              return records
+
+          glass_profiles = set()
           glass_profile_samples = 0
           for sample in samples:
-              sample_profiles = []
-              snapshots = sample.get(
-                  "metalBufferSnapshots", {}
-              ).get("snapshots", [])
-              for snapshot in snapshots:
-                  descriptor = snapshot.get(
-                      "pipeline", {}
-                  ).get("creationDescriptor", {})
-                  if (
-                      snapshot.get("stage") == "fragment"
-                      and snapshot.get("index") == 1
-                      and "glass_background" in str(
-                          descriptor.get("fragmentFunction", "")
-                      )
-                      and len(
-                          snapshot.get("payload", {}).get("hex", "")
-                      ) >= 1_664
-                  ):
-                      sample_profiles.append(snapshot)
+              sample_profiles = [
+                  value
+                  for state_key in (
+                      "presentationStateBeforeCapture",
+                      "presentationStateAfterCapture",
+                  )
+                  for value in state_filters(
+                      sample[state_key]
+                  )
+                  if is_glass_background(value)
+              ]
               if sample_profiles:
                   glass_profile_samples += 1
-                  glass_profiles.extend(sample_profiles)
+                  glass_profiles.update(
+                      json.dumps(
+                          filter_state(value),
+                          sort_keys=True,
+                          separators=(",", ":"),
+                      )
+                      for value in sample_profiles
+                  )
           if glass_profile_samples < 16:
               raise SystemExit(
                   "transition timeline captured glass profiles in only "
                   f"{glass_profile_samples}/33 states"
               )
-          profile_payloads = {
-              snapshot["payload"]["hex"]
-              for snapshot in glass_profiles
-          }
-          if len(profile_payloads) < 8:
+          if len(glass_profiles) < 8:
               raise SystemExit(
-                  "transition timeline profile buffers lack state rank: "
-                  f"{len(profile_payloads)} distinct payloads"
+                  "transition private profiles lack state rank: "
+                  f"{len(glass_profiles)} distinct profiles"
+              )
+          state_hashes = {
+              __import__("hashlib").sha256(
+                  json.dumps(
+                      physical_state(
+                          sample[
+                              "presentationStateBeforeCapture"
+                          ]
+                      ),
+                      sort_keys=True,
+                      separators=(",", ":"),
+                  ).encode()
+              ).hexdigest()
+              for sample in samples
+          }
+          if len(state_hashes) < 8:
+              raise SystemExit(
+                  "transition presentation states lack rank: "
+                  f"{len(state_hashes)} distinct states"
               )
           output_hashes = {
-              sample["output"]["fnv1a64"] for sample in samples
+              sample["windowCapture"]["pixelSHA256"]
+              for sample in samples
           }
           if len(output_hashes) < 8:
               raise SystemExit(

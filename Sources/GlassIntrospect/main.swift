@@ -1,4 +1,5 @@
 import AppKit
+import CryptoKit
 import Darwin
 import Foundation
 import Metal
@@ -11572,99 +11573,395 @@ private func transitionAnimationInventory(
     return records
 }
 
-private func transitionTimelineFrameEvidence(
-    rootLayer: CALayer,
-    device: MTLDevice,
+private let transitionLayerRuntimeKeys = [
+    "groupName",
+    "scale",
+    "backdropRect",
+    "marginWidth",
+    "marginHeight",
+    "allowsInPlaceFiltering",
+    "disablesOccludedBackdropBlurs",
+    "ignoresOffscreenGroups",
+    "windowServerAware",
+    "bleedAmount",
+    "captureOnly",
+    "usesGlobalGroupNamespace",
+    "statistics",
+    "sourceLayer",
+    "portal",
+    "shape",
+    "effect",
+    "mode",
+    "allowsFilteredLuma",
+    "smoothness",
+    "gaussianRadius",
+    "effectOffset",
+    "mergeElements",
+    "hitTestsAsFill",
+    "contentsOneValueDistance",
+    "contentsZeroValueDistance",
+    "gradientOvalization",
+    "operation",
+    "distanceRange",
+    "shapeBounds",
+    "ovalization",
+]
+
+private func serializedTransform(
+    _ transform: CATransform3D
+) -> [Double] {
+    [
+        transform.m11, transform.m12, transform.m13, transform.m14,
+        transform.m21, transform.m22, transform.m23, transform.m24,
+        transform.m31, transform.m32, transform.m33, transform.m34,
+        transform.m41, transform.m42, transform.m43, transform.m44,
+    ].map { Double($0) }
+}
+
+private func collectTransitionPresentationState(
+    _ layer: CALayer,
+    path: [Int] = [],
+    into records: inout [[String: Any]]
+) {
+    var record: [String: Any] = [
+        "path": path,
+        "class": String(reflecting: type(of: layer)),
+        "frame": NSStringFromRect(layer.frame),
+        "bounds": NSStringFromRect(layer.bounds),
+        "position": NSStringFromPoint(layer.position),
+        "anchorPoint": NSStringFromPoint(layer.anchorPoint),
+        "zPosition": layer.zPosition,
+        "opacity": layer.opacity,
+        "isHidden": layer.isHidden,
+        "isOpaque": layer.isOpaque,
+        "masksToBounds": layer.masksToBounds,
+        "cornerRadius": layer.cornerRadius,
+        "contentsScale": layer.contentsScale,
+        "contentsRect": NSStringFromRect(layer.contentsRect),
+        "transform": serializedTransform(layer.transform),
+        "sublayerTransform": serializedTransform(
+            layer.sublayerTransform),
+        "knownRuntimeValues": knownRuntimeValues(
+            layer,
+            keys: transitionLayerRuntimeKeys),
+    ]
+    if let name = layer.name {
+        record["name"] = name
+    }
+    if let filters = layer.filters, !filters.isEmpty {
+        record["filters"] = filters.map(filterDescription)
+    }
+    if let filters = layer.backgroundFilters, !filters.isEmpty {
+        record["backgroundFilters"] =
+            filters.map(filterDescription)
+    }
+    if let filter = layer.compositingFilter {
+        record["compositingFilter"] =
+            filterDescription(filter)
+    }
+    records.append(record)
+    for (index, child) in (layer.sublayers ?? []).enumerated() {
+        collectTransitionPresentationState(
+            child,
+            path: path + [index],
+            into: &records)
+    }
+}
+
+private func transitionPresentationState(
+    _ layer: CALayer
+) -> [String: Any] {
+    var records: [[String: Any]] = []
+    collectTransitionPresentationState(
+        layer,
+        into: &records)
+    return [
+        "rootClass": String(reflecting: type(of: layer)),
+        "layerCount": records.count,
+        "records": records,
+    ]
+}
+
+private typealias TransitionWindowImageFunction =
+    @convention(c) (
+        CGRect,
+        UInt32,
+        UInt32,
+        UInt32
+    ) -> Unmanaged<CGImage>?
+
+private struct TransitionLegacyWindowImage: @unchecked Sendable {
+    let function: TransitionWindowImageFunction?
+}
+
+private let transitionLegacyWindowImage:
+    TransitionLegacyWindowImage = {
+        guard let symbol = dlsym(
+            dlopen(nil, RTLD_NOW),
+            "CGWindowListCreateImage")
+        else {
+            return TransitionLegacyWindowImage(function: nil)
+        }
+        return TransitionLegacyWindowImage(
+            function: unsafeBitCast(
+                symbol,
+                to: TransitionWindowImageFunction.self))
+    }()
+
+private struct TransitionCanonicalImage {
+    let image: CGImage
+    let pixels: Data
+}
+
+private func transitionCanonicalRGBA8(
+    _ source: CGImage
+) -> TransitionCanonicalImage? {
+    let bytesPerRow = source.width * 4
+    var pixels = Data(
+        count: bytesPerRow * source.height)
+    let rendered = pixels.withUnsafeMutableBytes {
+        bytes -> Bool in
+        guard let base = bytes.baseAddress,
+              let colorSpace = CGColorSpace(
+                name: CGColorSpace.sRGB),
+              let context = CGContext(
+                data: base,
+                width: source.width,
+                height: source.height,
+                bitsPerComponent: 8,
+                bytesPerRow: bytesPerRow,
+                space: colorSpace,
+                bitmapInfo:
+                    CGImageAlphaInfo.premultipliedLast.rawValue
+                    | CGBitmapInfo.byteOrder32Big.rawValue)
+        else {
+            return false
+        }
+        context.interpolationQuality = .none
+        context.setBlendMode(.copy)
+        context.draw(
+            source,
+            in: CGRect(
+                x: 0,
+                y: 0,
+                width: source.width,
+                height: source.height))
+        return true
+    }
+    guard rendered,
+          let colorSpace = CGColorSpace(
+            name: CGColorSpace.sRGB),
+          let provider = CGDataProvider(
+            data: pixels as CFData),
+          let image = CGImage(
+            width: source.width,
+            height: source.height,
+            bitsPerComponent: 8,
+            bitsPerPixel: 32,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGBitmapInfo(
+                rawValue:
+                    CGImageAlphaInfo.premultipliedLast.rawValue
+                    | CGBitmapInfo.byteOrder32Big.rawValue),
+            provider: provider,
+            decode: nil,
+            shouldInterpolate: false,
+            intent: .defaultIntent)
+    else {
+        return nil
+    }
+    return TransitionCanonicalImage(
+        image: image,
+        pixels: pixels)
+}
+
+private func transitionSHA256(_ data: Data) -> String {
+    SHA256.hash(data: data).map {
+        String(format: "%02x", $0)
+    }.joined()
+}
+
+private struct TransitionRawWindowCapture: @unchecked Sendable {
+    let image: CGImage
+    let startedMediaTime: CFTimeInterval
+    let finishedMediaTime: CFTimeInterval
+}
+
+private func transitionRawWindowCapture(
+    windowNumber: Int
+) throws -> TransitionRawWindowCapture {
+    let startedMediaTime = CACurrentMediaTime()
+    guard let image =
+        transitionLegacyWindowImage.function?(
+            .null,
+            1 << 3,
+            UInt32(windowNumber),
+            (1 << 0) | (1 << 3))?
+        .takeRetainedValue()
+    else {
+        throw NSError(
+            domain: "LiquidGlassTransitionProbe",
+            code: 2,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "own-window CGWindowListCreateImage failed",
+            ])
+    }
+    return TransitionRawWindowCapture(
+        image: image,
+        startedMediaTime: startedMediaTime,
+        finishedMediaTime: CACurrentMediaTime())
+}
+
+private func transitionWindowCaptureEvidence(
+    _ raw: TransitionRawWindowCapture,
     capture: String,
-    frameTime: CFTimeInterval,
+    outputDirectory: URL
+) throws -> [String: Any] {
+    guard let canonical =
+        transitionCanonicalRGBA8(raw.image)
+    else {
+        throw NSError(
+            domain: "LiquidGlassTransitionProbe",
+            code: 3,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "own-window pixels could not be normalized",
+            ])
+    }
+    guard let png = NSBitmapImageRep(
+        cgImage: canonical.image)
+        .representation(
+            using: .png,
+            properties: [:])
+    else {
+        throw NSError(
+            domain: "LiquidGlassTransitionProbe",
+            code: 4,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "canonical own-window PNG encoding failed",
+            ])
+    }
+    let filename = "\(capture)-rgba8.png"
+    try png.write(
+        to: outputDirectory.appendingPathComponent(filename),
+        options: .atomic)
+    return [
+        "backend": "CGWindowListCreateImage",
+        "startedMediaTime": raw.startedMediaTime,
+        "finishedMediaTime": raw.finishedMediaTime,
+        "midpointMediaTime":
+            (
+                raw.startedMediaTime
+                + raw.finishedMediaTime
+            ) / 2,
+        "captureDurationSeconds":
+            raw.finishedMediaTime
+            - raw.startedMediaTime,
+        "width": canonical.image.width,
+        "height": canonical.image.height,
+        "bytesPerRow": canonical.image.width * 4,
+        "pixelFormat":
+            "RGBA8 premultiplied-last sRGB top-left",
+        "pixelBytes": canonical.pixels.count,
+        "pixelFNV1a64":
+            fnv1a64([UInt8](canonical.pixels)),
+        "pixelSHA256":
+            transitionSHA256(canonical.pixels),
+        "pngFile": filename,
+        "pngBytes": png.count,
+        "pngSHA256": transitionSHA256(png),
+        "sourceBitsPerComponent":
+            raw.image.bitsPerComponent,
+        "sourceBitsPerPixel": raw.image.bitsPerPixel,
+        "sourceBytesPerRow": raw.image.bytesPerRow,
+        "sourceColorSpace":
+            raw.image.colorSpace.map {
+                String(describing: $0)
+            }
+                ?? "none",
+        "sourceAlphaInfo": raw.image.alphaInfo.rawValue,
+        "sourceBitmapInfo":
+            raw.image.bitmapInfo.rawValue,
+    ]
+}
+
+private func writeTransitionProbeProgress(
+    outputDirectory: URL,
+    capture: String,
+    phase: String
+) {
+    try? writeJSON(
+        [
+            "schemaVersion": 3,
+            "capture": capture,
+            "phase": phase,
+            "mediaTime": CACurrentMediaTime(),
+        ],
+        to: outputDirectory.appendingPathComponent(
+            "transition-progress.json"))
+}
+
+@MainActor
+private func transitionTimelineSample(
+    window: NSWindow,
+    rootLayer: CALayer,
+    capture: String,
     progress: Double,
     outputDirectory: URL
 ) -> [String: Any] {
-    let bounds = rootLayer.bounds.standardized
-    let width = Int(ceil(bounds.width))
-    let height = Int(ceil(bounds.height))
-    guard width > 0,
-          height > 0,
-          width <= 1_024,
-          height <= 1_024
-    else {
-        return [
-            "executed": false,
-            "reason": "root layer exceeds transition probe bounds",
-            "progress": progress,
-            "frameTime": frameTime,
-        ]
-    }
-    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-        pixelFormat: .bgra8Unorm,
-        width: width,
-        height: height,
-        mipmapped: false)
-    descriptor.storageMode = .private
-    descriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
-    guard let output = device.makeTexture(descriptor: descriptor),
-          let commandQueue = device.makeCommandQueue(),
-          let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
-    else {
-        return [
-            "executed": false,
-            "reason": "transition probe Metal resources unavailable",
-            "progress": progress,
-            "frameTime": frameTime,
-        ]
-    }
-    let renderer = CARenderer(
-        mtlTexture: output,
-        options: [
-            kCARendererColorSpace: colorSpace,
-            kCARendererMetalCommandQueue: commandQueue,
-        ])
-    renderer.layer = rootLayer
-    renderer.bounds = bounds
-
-    MetalUniformProbe.shared.beginCapture(capture)
-    renderer.beginFrame(atTime: frameTime, timeStamp: nil)
-    renderer.addUpdate(bounds)
-    renderer.render()
-    renderer.endFrame()
-    guard let completion = commandQueue.makeCommandBuffer() else {
-        MetalUniformProbe.shared.endCapture()
-        return [
-            "executed": false,
-            "reason": "transition probe completion command unavailable",
-            "progress": progress,
-            "frameTime": frameTime,
-        ]
-    }
-    completion.commit()
-    completion.waitUntilCompleted()
-    MetalUniformProbe.shared.endCapture()
-    guard completion.status == .completed else {
-        return [
-            "executed": false,
-            "reason":
-                completion.error?.localizedDescription
-                    ?? "transition probe render failed",
-            "progress": progress,
-            "frameTime": frameTime,
-        ]
-    }
-    return [
-        "executed": true,
-        "progress": progress,
-        "frameTime": frameTime,
-        "output": carendererOutputSnapshot(
-            output,
-            commandQueue: commandQueue,
+    writeTransitionProbeProgress(
+        outputDirectory: outputDirectory,
+        capture: capture,
+        phase: "before-presentation-state-and-window")
+    let stateBeforeMediaTime = CACurrentMediaTime()
+    let stateBefore = transitionPresentationState(
+        rootLayer.presentation() ?? rootLayer)
+    do {
+        let rawCapture = try transitionRawWindowCapture(
+            windowNumber: window.windowNumber)
+        let stateAfterMediaTime = CACurrentMediaTime()
+        let stateAfter = transitionPresentationState(
+            rootLayer.presentation() ?? rootLayer)
+        writeTransitionProbeProgress(
+            outputDirectory: outputDirectory,
             capture: capture,
-            outputDirectory: outputDirectory),
-        "metalBufferSnapshots":
-            MetalUniformProbe.shared.snapshotBuffers(capture: capture),
-        "metalCommandProvenance":
-            MetalUniformProbe.shared.commandProvenance(capture: capture),
-        "metalUniformProbe":
-            MetalUniformProbe.shared.report(capture: capture),
-    ]
+            phase: "after-window-and-presentation-state")
+        let windowCapture =
+            try transitionWindowCaptureEvidence(
+                rawCapture,
+                capture: capture,
+                outputDirectory: outputDirectory)
+        writeTransitionProbeProgress(
+            outputDirectory: outputDirectory,
+            capture: capture,
+            phase: "complete")
+        return [
+            "executed": true,
+            "progress": progress,
+            "stateBeforeMediaTime": stateBeforeMediaTime,
+            "stateAfterMediaTime": stateAfterMediaTime,
+            "stateBracketSeconds":
+                stateAfterMediaTime - stateBeforeMediaTime,
+            "presentationStateBeforeCapture": stateBefore,
+            "presentationStateAfterCapture": stateAfter,
+            "windowCapture": windowCapture,
+        ]
+    } catch {
+        writeTransitionProbeProgress(
+            outputDirectory: outputDirectory,
+            capture: capture,
+            phase: "failed")
+        return [
+            "executed": false,
+            "progress": progress,
+            "stateBeforeMediaTime": stateBeforeMediaTime,
+            "presentationStateBeforeCapture": stateBefore,
+            "error": error.localizedDescription,
+        ]
+    }
 }
 
 private typealias ObjCBoolGetterFunction =
@@ -11958,38 +12255,29 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         let reportURL = outputDirectory.appendingPathComponent(
             "transition-timeline.json")
         do {
-            guard let rootLayer = window.contentView?.layer,
-                  let device = MTLCreateSystemDefaultDevice()
+            guard let rootLayer = window.contentView?.layer
             else {
                 throw NSError(
                     domain: "LiquidGlassTransitionProbe",
                     code: 1,
                     userInfo: [
                         NSLocalizedDescriptionKey:
-                            "transition model, root layer, or Metal "
-                        + "device unavailable",
+                            "transition root layer unavailable",
                     ])
             }
 
-            let duration = 120.0
+            let duration = 60.0
             let sampleCount = 33
             CATransaction.flush()
             let initialMediaTime = CACurrentMediaTime()
-            let initialPresentation =
-                rootLayer.presentation() ?? rootLayer
-            var initialSample = transitionTimelineFrameEvidence(
-                rootLayer: initialPresentation,
-                device: device,
+            var initialSample = transitionTimelineSample(
+                window: window,
+                rootLayer: rootLayer,
                 capture: "transition-dematerialize-00",
-                frameTime: initialMediaTime,
                 progress: 0,
                 outputDirectory: outputDirectory)
             initialSample["targetMediaTime"] = initialMediaTime
             initialSample["actualProgress"] = 0.0
-            initialSample["presentationLayerTree"] =
-                layerDescription(initialPresentation)
-            initialSample["animationInventory"] =
-                transitionAnimationInventory(initialPresentation)
 
             let triggerBeforeCommit = CACurrentMediaTime()
             withAnimation(.linear(duration: duration)) {
@@ -12016,36 +12304,41 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 window.displayIfNeeded()
                 CATransaction.flush()
                 let actualMediaTime = CACurrentMediaTime()
-                let presentation =
-                    rootLayer.presentation() ?? rootLayer
                 let capture = String(
                     format: "transition-dematerialize-%02d",
                     index)
-                var sample = transitionTimelineFrameEvidence(
-                    rootLayer: presentation,
-                    device: device,
+                var sample = transitionTimelineSample(
+                    window: window,
+                    rootLayer: rootLayer,
                     capture: capture,
-                    frameTime: actualMediaTime,
                     progress: progress,
                     outputDirectory: outputDirectory)
                 sample["targetMediaTime"] = targetMediaTime
+                let captureEvidence =
+                    sample["windowCapture"]
+                        as? [String: Any]
+                let captureMediaTime =
+                    captureEvidence?["midpointMediaTime"]
+                        as? Double
+                    ?? actualMediaTime
                 sample["actualProgress"] =
-                    (actualMediaTime - triggerBeforeCommit)
+                    (captureMediaTime - triggerBeforeCommit)
                     / duration
-                sample["presentationLayerTree"] =
-                    layerDescription(presentation)
-                sample["animationInventory"] =
-                    transitionAnimationInventory(presentation)
                 samples.append(sample)
             }
 
             let failedSamples = samples.filter {
                 $0["executed"] as? Bool != true
             }.count
+            let scale = window.backingScaleFactor
+            let expectedPixelWidth = Int(
+                (window.frame.width * scale).rounded())
+            let expectedPixelHeight = Int(
+                (window.frame.height * scale).rounded())
             let report: [String: Any] = [
-                "schemaVersion": 2,
+                "schemaVersion": 3,
                 "probe":
-                    "paced-presentation-tree-dematerialize-timeline",
+                    "paced-presentation-state-window-timeline",
                 "material": material.rawValue,
                 "appearance": appearance.rawValue,
                 "geometry": geometry.evidence,
@@ -12054,14 +12347,23 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 "sampleCount": sampleCount,
                 "sampleProgressRule": "index/(sampleCount-1)",
                 "samplingMethod":
-                    "real-presentation-tree-paced-by-media-time",
+                    "real-presentation-state-plus-own-window-pixels",
+                "captureBackend":
+                    "CGWindowListCreateImage",
+                "canonicalPixelEncoding":
+                    "RGBA8 premultiplied-last sRGB top-left",
+                "windowBackingScaleFactor": scale,
+                "expectedWindowPixels": [
+                    expectedPixelWidth,
+                    expectedPixelHeight,
+                ],
                 "initialMediaTime": initialMediaTime,
                 "triggerMediaTimeBeforeCommit":
                     triggerBeforeCommit,
                 "triggerMediaTimeAfterCommit":
                     triggerAfterCommit,
-                "modelLayerTreeAfterTrigger":
-                    layerDescription(rootLayer),
+                "modelStateAfterTrigger":
+                    transitionPresentationState(rootLayer),
                 "modelAnimationInventoryAfterTrigger":
                     transitionAnimationInventory(rootLayer),
                 "samples": samples,
@@ -12072,9 +12374,9 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         } catch {
             try? writeJSON(
                 [
-                    "schemaVersion": 2,
+                    "schemaVersion": 3,
                     "probe":
-                        "paced-presentation-tree-dematerialize-timeline",
+                        "paced-presentation-state-window-timeline",
                     "material": material.rawValue,
                     "appearance": appearance.rawValue,
                     "error": error.localizedDescription,

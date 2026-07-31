@@ -1688,16 +1688,20 @@ when their normalized material law is identical. The focused **Introspect
 Liquid Glass transition** workflow removes that ambiguity. Schema 1 proved
 that SwiftUI installs no ordinary model-tree `CAAnimation`: the live
 transition exists only in the presentation tree, whose private filter values
-already expose the actual state. Schema 2 therefore applies a 120-second
-linear dematerialize transaction and samples the real presentation tree at 33
-paced media times. Each state records its actual time, complete private layer
-values, rendered BGRA output, Metal command provenance, and live fragment
-uniform buffers for clear/regular glass in light/dark appearance. It fails
-closed unless all outputs are complete, at least 16 states contain genuine
-`glass_background` profiles, and both the profiles and pixels have at least
-eight distinct states. These samples identify whether Apple changes layer
-opacity, SDF geometry, or glass-profile fields; they do not replace the
-compositor-captured dynamic holdout.
+already expose the actual state. Schema 2 attempted to render paced
+presentation-tree snapshots through `CARenderer`; doing so stalls the hosted
+macOS virtual GPU and therefore cannot produce valid transition evidence.
+Schema 3 instead applies a 60-second linear dematerialize transaction and
+samples 33 real presentation states. Every sample brackets a lossless,
+compositor-produced own-window frame with private layer/filter values taken
+immediately before and after acquisition. It records exact capture timing,
+canonical RGBA8 and PNG SHA-256 hashes, geometry, transforms, and all private
+filter inputs for clear/regular glass in light/dark appearance. The workflow
+fails closed if acquisition exceeds 250 ms, the state bracket exceeds 300 ms,
+fewer than 16 samples expose `glassBackground`, or the profiles, states, or
+pixels contain fewer than eight distinct values. No presentation layer is
+replayed or synthesized. These samples identify Apple's state law; they do
+not replace the compositor-captured dynamic holdout.
 
 ## Run locally on macOS 26
 
