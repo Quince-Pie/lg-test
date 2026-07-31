@@ -8,8 +8,8 @@ import struct
 from pathlib import Path
 
 
-SCHEMA_VERSION = 20
-RIG_VERSION = "metal-raster-interpolant-probe-20.0.0"
+SCHEMA_VERSION = 21
+RIG_VERSION = "metal-raster-interpolant-probe-21.0.0"
 HOLDOUT_WIDTHS = tuple(range(37, 128, 6))
 DISCOVERY_WIDTHS = tuple(
     width for width in range(32, 128) if width not in HOLDOUT_WIDTHS

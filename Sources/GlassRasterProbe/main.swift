@@ -719,6 +719,49 @@ fragment uint raster_quotient_corpus_fragment(
     return input.recordIndex;
 }
 
+kernel void raster_quotient_arithmetic_probe(
+    const device uint *widths [[buffer(0)]],
+    device uint4 *results [[buffer(1)]],
+    uint thread_id [[thread_position_in_grid]])
+{
+    constexpr uint numerator_count =
+        \(quotientCorpusNumeratorUpper - quotientCorpusNumeratorLower + 1);
+    constexpr uint vectors_per_sample = 3;
+    const uint width_index = thread_id / numerator_count;
+    const uint numerator =
+        \(quotientCorpusNumeratorLower)u
+        + thread_id % numerator_count;
+    const float width = float(widths[width_index]);
+    const float delta = float(numerator) * 0x1.0p-16f;
+    const float normalized_denominator = width * 65536.0f;
+    const float fast_reciprocal = fast::divide(1.0f, width);
+    const float precise_reciprocal = precise::divide(1.0f, width);
+    const uint base = thread_id * vectors_per_sample;
+
+    results[base + 0] = uint4(
+        as_type<uint>(delta / width),
+        as_type<uint>(fast::divide(delta, width)),
+        as_type<uint>(precise::divide(delta, width)),
+        as_type<uint>(delta * fast_reciprocal));
+    results[base + 1] = uint4(
+        as_type<uint>(delta * precise_reciprocal),
+        as_type<uint>(
+            float(numerator) / normalized_denominator),
+        as_type<uint>(
+            fast::divide(
+                float(numerator),
+                normalized_denominator)),
+        as_type<uint>(
+            precise::divide(
+                float(numerator),
+                normalized_denominator)));
+    results[base + 2] = uint4(
+        as_type<uint>(fast_reciprocal),
+        as_type<uint>(precise_reciprocal),
+        as_type<uint>(1.0f / width),
+        as_type<uint>(delta));
+}
+
 kernel void raster_arithmetic_probe(
     const device uint2 *dimensions [[buffer(0)]],
     const device float *deltas [[buffer(1)]],
@@ -2534,6 +2577,62 @@ private func measureQuotientCorpus(
 }
 
 private let arithmeticVectorsPerSample = 7
+private let quotientArithmeticVectorsPerSample = 3
+
+private func measureQuotientArithmetic(
+    device: MTLDevice,
+    queue: MTLCommandQueue,
+    pipeline: MTLComputePipelineState
+) throws -> Data {
+    let widths = quotientCorpusDiscoveryWidths.map { UInt32($0) }
+    let widthsBuffer = widths.withUnsafeBufferPointer { buffer in
+        device.makeBuffer(
+            bytes: buffer.baseAddress!,
+            length: buffer.count * MemoryLayout<UInt32>.stride,
+            options: .storageModeShared)
+    }
+    let numeratorsPerWidth = Int(
+        quotientCorpusNumeratorUpper
+            - quotientCorpusNumeratorLower
+            + 1)
+    let sampleCount = widths.count * numeratorsPerWidth
+    let outputBytes =
+        sampleCount
+        * quotientArithmeticVectorsPerSample
+        * MemoryLayout<SIMD4<UInt32>>.stride
+    guard let widthsBuffer,
+          let outputBuffer = device.makeBuffer(
+              length: outputBytes,
+              options: .storageModeShared),
+          let commandBuffer = queue.makeCommandBuffer(),
+          let encoder = commandBuffer.makeComputeCommandEncoder()
+    else {
+        throw ProbeError.resource(
+            "quotient-arithmetic buffers, command, or encoder")
+    }
+    encoder.setComputePipelineState(pipeline)
+    encoder.setBuffer(widthsBuffer, offset: 0, index: 0)
+    encoder.setBuffer(outputBuffer, offset: 0, index: 1)
+    encoder.dispatchThreads(
+        MTLSize(width: sampleCount, height: 1, depth: 1),
+        threadsPerThreadgroup: MTLSize(
+            width: min(
+                sampleCount,
+                pipeline.maxTotalThreadsPerThreadgroup),
+            height: 1,
+            depth: 1))
+    encoder.endEncoding()
+    commandBuffer.commit()
+    commandBuffer.waitUntilCompleted()
+    guard commandBuffer.status == .completed else {
+        throw ProbeError.command(
+            commandBuffer.error?.localizedDescription
+                ?? "unknown quotient-arithmetic error")
+    }
+    return Data(
+        bytes: outputBuffer.contents(),
+        count: outputBytes)
+}
 
 private func measureArithmetic(
     _ probes: [TomographyCase],
@@ -2640,6 +2739,8 @@ private func run(outputDirectory: URL) throws {
               name: "raster_quotient_corpus_vertex"),
           let quotientCorpusFragment = library.makeFunction(
               name: "raster_quotient_corpus_fragment"),
+          let quotientArithmeticFunction = library.makeFunction(
+              name: "raster_quotient_arithmetic_probe"),
           let arithmeticFunction = library.makeFunction(
               name: "raster_arithmetic_probe"),
           let queue = device.makeCommandQueue()
@@ -2688,6 +2789,9 @@ private func run(outputDirectory: URL) throws {
     let quotientCorpusPipeline =
         try device.makeRenderPipelineState(
             descriptor: quotientCorpusDescriptor)
+    let quotientArithmeticPipeline =
+        try device.makeComputePipelineState(
+            function: quotientArithmeticFunction)
     let arithmeticPipeline = try device.makeComputePipelineState(
         function: arithmeticFunction)
 
@@ -3124,6 +3228,17 @@ private func run(outputDirectory: URL) throws {
             quotientCorpusFilename),
         options: .atomic)
 
+    let quotientArithmeticData = try measureQuotientArithmetic(
+        device: device,
+        queue: queue,
+        pipeline: quotientArithmeticPipeline)
+    let quotientArithmeticFilename =
+        "raster-quotient-arithmetic-rgba32ui.raw"
+    try quotientArithmeticData.write(
+        to: outputDirectory.appendingPathComponent(
+            quotientArithmeticFilename),
+        options: .atomic)
+
     let arithmeticCases = tomographyCases.filter {
         $0.role == "discovery"
     }
@@ -3140,8 +3255,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 20,
-        "rigVersion": "metal-raster-interpolant-probe-20.0.0",
+        "schemaVersion": 21,
+        "rigVersion": "metal-raster-interpolant-probe-21.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -3184,6 +3299,9 @@ private func run(outputDirectory: URL) throws {
             "quotientCorpusOutput":
                 "one pull pair per covered primitive/tile for every "
                 + "normalized 16-bit numerator on 80 discovery widths",
+            "quotientArithmeticOutput":
+                "exhaustive exposed Metal division and reciprocal "
+                + "controls over the quotient discovery domain",
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,
@@ -3249,6 +3367,39 @@ private func run(outputDirectory: URL) throws {
                             },
                     ]
                 },
+        ],
+        "quotientArithmeticProbe": [
+            "role": "discovery",
+            "widths": quotientCorpusDiscoveryWidths,
+            "holdoutWidthsExcluded":
+                quotientCorpusHoldoutWidths.sorted(),
+            "numeratorLowerInclusive":
+                Int(quotientCorpusNumeratorLower),
+            "numeratorUpperInclusive":
+                Int(quotientCorpusNumeratorUpper),
+            "deltaDenominator":
+                Int(tomographyDeltaDenominator),
+            "file": quotientArithmeticFilename,
+            "bytes": quotientArithmeticData.count,
+            "sha256": sha256(quotientArithmeticData),
+            "vectorsPerSample":
+                quotientArithmeticVectorsPerSample,
+            "components": [
+                "operatorDivide",
+                "fastDivide",
+                "preciseDivide",
+                "fastReciprocalProduct",
+                "preciseReciprocalProduct",
+                "operatorNormalizedIntegerDivide",
+                "fastNormalizedIntegerDivide",
+                "preciseNormalizedIntegerDivide",
+                "fastReciprocalWidth",
+                "preciseReciprocalWidth",
+                "operatorReciprocalWidth",
+                "deltaControl",
+            ],
+            "ordering":
+                "width-major,numerator-major,component-major",
         ],
         "arithmeticProbe": [
             "role": "discovery",

@@ -74,10 +74,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 20:
+          if manifest.get("schemaVersion") != 21:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-20.0.0"
+              "metal-raster-interpolant-probe-21.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -639,4 +639,10 @@ jobs:
         if: always()
         run: |
           python3 Analysis/validate_raster_quotient_corpus.py \
+            raster-interpolant-probe
+
+      - name: Enforce exhaustive Metal quotient arithmetic
+        if: always()
+        run: |
+          python3 Analysis/validate_raster_quotient_arithmetic.py \
             raster-interpolant-probe

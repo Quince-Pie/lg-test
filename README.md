@@ -2133,6 +2133,17 @@ position to one raw eight-byte pair. Before capture, the fixed position map
 recovered one and only one slope for all 10,112 inherited schema-18 discovery
 samples within the preregistered 64-float search radius, with zero mismatches.
 
+Raster schema 21 retains every schema-20 raster byte and all 16 width holdouts
+unchanged and unopened. It adds an exhaustive compute control over the same
+80 discovery widths and 32,768 normalized numerators per width. For each input
+it preserves raw float32 bits from operator, `fast::`, and `precise::`
+division; multiplication by exposed fast and precise reciprocals; and the
+equivalent normalized-integer division forms. The repeated reciprocal bits and
+exact delta control independently gate width and numerator ordering. This
+tests whether the hidden fixed-function 25-bit reciprocal and 27-bit product
+law is shared with an exposed Metal arithmetic path before fitting any
+low-bit correction and without evaluating an excluded width.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
