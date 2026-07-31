@@ -2502,6 +2502,37 @@ bits remain diagnostic and no numerator, determinant, reciprocal, or product
 model participates in selection. The recovered slope hash is discovery
 output and still requires a later prospective setup-law holdout.
 
+Run 30662476971 captured all 2,752,512 records at commit
+`5923a6c9269762fe64e49b4a49e8ad42afc91a2f`. Its manifest, raw buffer,
+and validation SHA-256 values are
+`9045d7c468956e2467f3787ce9c9eca73747f920508a7e0065fc433024f89ae9`,
+`be36b115fccdbefcc24cee952d295f5e4c9a27d157e23f8b27712359668a0c46`,
+and
+`98250789c588943a3336d7dd5fbf2f37608a7002d7b0fa704d1a8b436208a4aa`.
+The structure and finite-record gates passed, while the preregistered unique
+slope gate correctly failed: 47,028 of 458,752 coefficients were unique,
+411,724 remained ambiguous, none had zero candidates, and multiplicities
+ranged from one through eleven. The three tile constants therefore expose the
+same coarse slope step but do not resolve its adjacent binary32 values. The
+complete accepted-candidate sets are preserved, without fitting later data,
+as a 458,752-entry bit-mask table whose uncompressed SHA-256 is
+`04a36598ae156769b59d22630d8a7279803bb354a66007cfe4ba8742ce1214f8`.
+
+`raster_general_height_top_left_preregistration.json` freezes the next
+instrument-only intervention. It keeps the full width, witness, height,
+viewport, vertex, pull, compiler, and candidate domains, but measures the
+opposite rectangle triangle at local y zero and local x positions 0 and 31 in
+tile zero. The x=0 pull pins the binary32 tile constant while the second pull
+provides the longest same-tile integer baseline at low interpolant magnitude.
+Before observing Apple output, the exact validator was run over all 114,688
+width/witness direct-division controls; every control had one and only one
+candidate in the frozen plus-or-minus-eight-float window. The 14,680,064-byte
+Apple corpus passes only if every top-left coefficient is unique and that
+coefficient belongs to the bottom-right candidate set frozen from run
+30662476971. This is a prospective test of primitive-coefficient equality,
+not a setup-law fit. Center and derivative bits remain excluded from
+selection, and success still cannot establish clipping or end-to-end parity.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

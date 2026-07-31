@@ -12,9 +12,7 @@ private struct GeometryCase {
     let name: String
     let height: Int
     let sampleLocalY: Int
-    let sampleAnchorX: Int
     let originY: Int
-    let sampleMarginX: Int
 }
 
 private struct SamplePosition {
@@ -30,7 +28,7 @@ private let targetWidth = 288
 private let targetHeight = 256
 private let viewportWidth = 32_768
 private let minimumSignedInteriorArea = 1_024
-private let sampleXs = [193, 223, 225, 255, 257, 287]
+private let sampleXs = [0, 31]
 private let samplePositionCount = sampleXs.count
 private let batchSize = 1
 private let candidateRadius = 8
@@ -53,31 +51,23 @@ private let geometryCases = [
     GeometryCase(
         name: "general-height-47",
         height: 47,
-        sampleLocalY: 46,
-        sampleAnchorX: 240,
-        originY: 11,
-        sampleMarginX: 15),
+        sampleLocalY: 0,
+        originY: 11),
     GeometryCase(
         name: "general-height-61",
         height: 61,
-        sampleLocalY: 60,
-        sampleAnchorX: 240,
-        originY: 23,
-        sampleMarginX: 15),
+        sampleLocalY: 0,
+        originY: 23),
     GeometryCase(
         name: "general-height-79",
         height: 79,
-        sampleLocalY: 78,
-        sampleAnchorX: 240,
-        originY: 37,
-        sampleMarginX: 15),
+        sampleLocalY: 0,
+        originY: 37),
     GeometryCase(
         name: "general-height-113",
         height: 113,
-        sampleLocalY: 112,
-        sampleAnchorX: 240,
-        originY: 53,
-        sampleMarginX: 15),
+        sampleLocalY: 0,
+        originY: 53),
 ]
 
 private let witnessSignificands: [UInt32] = [
@@ -115,8 +105,11 @@ private func samplePosition(
     let x = sampleXs[sampleIndex]
     let y = geometry.originY + geometry.sampleLocalY
     let localX = x - originX
-    let signed = geometry.height * (2 * localX + 1) - width
-    let signedInteriorArea = signed
+    let threshold =
+        width
+        * (2 * (geometry.height - geometry.sampleLocalY) - 1)
+    let signed = geometry.height * (2 * localX + 1) - threshold
+    let signedInteriorArea = -signed
     precondition((0..<samplePositionCount).contains(sampleIndex))
     precondition((0..<targetWidth).contains(x))
     precondition((0..<targetHeight).contains(y))
@@ -229,9 +222,7 @@ private func geometryManifest() -> [[String: Any]] {
             "name": $0.name,
             "height": $0.height,
             "sampleLocalY": $0.sampleLocalY,
-            "sampleAnchorX": $0.sampleAnchorX,
             "originY": $0.originY,
-            "sampleMarginX": $0.sampleMarginX,
         ]
     }
 }
@@ -266,7 +257,7 @@ private func run(outputDirectory: URL) throws {
             == "2220ec200ebb378e3d315839e2ef59e4192a41d76d08fffebe84c5a03ad8258a")
     precondition(
         sha256(uint32Data(sampleXs.map { UInt32($0) }))
-            == "4922011fae43558ec8e4fa338f4208e275f32dbc3c80feeb3e2afe6496e90464")
+            == "3786b5685d81fe8c584105b439bc5a4dc7a0af4a76548dc49f5b3f47e2984238")
     precondition(
         sha256(uint32Data(witnessDeltaBits))
             == "4af6fce64ad188beb784cbea16c1d09ca2713825f8becee8ee64cabfd68caf8a")
@@ -507,7 +498,7 @@ private func run(outputDirectory: URL) throws {
                     mipmapLevel: 0)
                 guard coverage == expectedCoverage else {
                     throw TransferError.command(
-                        "reciprocal-scale-transfer coverage"
+                        "general-height-top-left coverage"
                             + " \(geometry.name)/\(sampleIndex)"
                             + " at width \(widths[batchStart])"
                             + " was \(coverage),"
@@ -517,7 +508,7 @@ private func run(outputDirectory: URL) throws {
         }
         if batchEnd % 128 == 0 || batchEnd == widths.count {
             print(
-                "reciprocal scale transfer: \(batchEnd)"
+                "general-height top-left: \(batchEnd)"
                     + "/\(widths.count) widths")
         }
         }
@@ -558,7 +549,7 @@ private func run(outputDirectory: URL) throws {
     }
     if missingRecordCount != 0 {
         throw TransferError.command(
-            "reciprocal-scale-transfer missing \(missingRecordCount)"
+            "general-height-top-left missing \(missingRecordCount)"
             + " records; first \(firstMissingRecords);"
             + " bySlot \(missingBySlot);"
             + " firstWidth \(firstMissingWidthBySlot);"
@@ -568,18 +559,18 @@ private func run(outputDirectory: URL) throws {
     let outputData = Data(
         bytes: output.contents(),
         count: outputBytes)
-    precondition(outputData.count == 44_040_192)
+    precondition(outputData.count == 14_680_064)
     let outputFilename =
-        "raster-general-height-multitile.raw"
+        "raster-general-height-top-left.raw"
     try outputData.write(
         to: outputDirectory.appendingPathComponent(
             outputFilename),
         options: .atomic)
 
     var manifest: [String: Any] = [:]
-    manifest["schemaVersion"] = 3
+    manifest["schemaVersion"] = 4
     manifest["rigVersion"] =
-        "metal-raster-general-height-multitile-3.0.0"
+        "metal-raster-general-height-top-left-4.0.0"
     manifest["ciCommit"] = ProcessInfo.processInfo.environment[
         "GITHUB_SHA"
     ] ?? ""
@@ -596,13 +587,13 @@ private func run(outputDirectory: URL) throws {
         "coverageAttachment":
             "one-width R32Float additive witness count, cleared/stored/verified",
     ] as [String: Any]
-    manifest["rasterGeneralHeightMultitile"] = [
+    manifest["rasterGeneralHeightTopLeft"] = [
         "role":
-            "discovery-with-preregistered-multitile-slope-recovery",
+            "discovery-with-preregistered-top-left-slope-recovery",
         "preregistrationFile":
-            "Analysis/raster_general_height_multitile_preregistration.json",
+            "Analysis/raster_general_height_top_left_preregistration.json",
         "preregistrationSha256":
-            "6e4a7d74c6a92ca00ed683bb64f8446cb0af70983e58afc5480c56b846bf6df0",
+            "5d8ae8d8a215ab6615ba2c2e4a2feacd268bec5da6668fdbc92680d2ea85cd3c",
         "geometryWidthFormula":
             "normalized-denominator",
         "widthMinimum": widths.min()!,
@@ -624,11 +615,11 @@ private func run(outputDirectory: URL) throws {
         "geometryCount": geometryCases.count,
         "sampleXs": sampleXs,
         "sampleXsSha256":
-            "4922011fae43558ec8e4fa338f4208e275f32dbc3c80feeb3e2afe6496e90464",
+            "3786b5685d81fe8c584105b439bc5a4dc7a0af4a76548dc49f5b3f47e2984238",
         "sampleTiles": sampleXs.map { $0 / 32 },
         "sampleTileLocalXs": sampleXs.map { $0 % 32 },
         "samplePositionCount": samplePositionCount,
-        "sharedTileGroups": [[0, 1], [2, 3], [4, 5]],
+        "sharedTileGroups": [[0, 1]],
         "witnessSignificands":
             witnessSignificands.map { Int($0) },
         "witnessCount": witnessSignificands.count,

@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "role": "discovery-with-preregistered-top-left-slope-recovery",
+  "observedAtPreregistration": false,
+  "purpose": "Recover each unclipped non-power-of-two raster slope at low interpolant magnitude and prospectively test whether the top-left and bottom-right rectangle primitives use the same coefficient. The x=0 observation pins the tile-local binary32 plane constant before the 31-pixel baseline is evaluated.",
+  "sourceEvidence": {
+    "multitileRunId": 30662476971,
+    "multitileCommit": "5923a6c9269762fe64e49b4a49e8ad42afc91a2f",
+    "multitileManifestSha256": "9045d7c468956e2467f3787ce9c9eca73747f920508a7e0065fc433024f89ae9",
+    "multitileRawSha256": "be36b115fccdbefcc24cee952d295f5e4c9a27d157e23f8b27712359668a0c46",
+    "multitileValidationSha256": "98250789c588943a3336d7dd5fbf2f37608a7002d7b0fa704d1a8b436208a4aa",
+    "coefficientCount": 458752,
+    "multitileUniqueCoefficientCount": 47028,
+    "multitileAmbiguousCoefficientCount": 411724,
+    "multitileZeroCandidateCount": 0,
+    "multitileCandidateMultiplicityRange": [
+      1,
+      11
+    ],
+    "threeTileRebasingWasInsufficient": true,
+    "productionShaderWasNotChanged": true
+  },
+  "intervention": {
+    "changedVariables": [
+      "the sampled primitive changes from the bottom-right rectangle triangle to the top-left rectangle triangle",
+      "sample local y changes from height minus one to zero",
+      "sample x positions change from local x 1 and 31 in three later tiles to local x 0 and 31 in tile zero",
+      "record count decreases from six to two sample positions per geometry"
+    ],
+    "unchangedVariables": [
+      "8192 geometry widths",
+      "14 frozen witness significands",
+      "four non-power-of-two heights",
+      "scaled vertex deltas",
+      "rectangle vertices and triangle ordering",
+      "256-pixel target and vertical viewport",
+      "32768-pixel horizontal viewport",
+      "pull offsets",
+      "center and derivative diagnostics",
+      "fast-math setting",
+      "candidate center and plus-or-minus-eight-float search window",
+      "binary32 shared-plane acceptance rule"
+    ],
+    "reason": "At the previous x magnitudes, output rounding hid adjacent slope values even after three independent tile constants were intersected. In tile zero, the x=0 pull directly constrains the binary32 plane constant and the x=31 pull supplies the longest same-tile baseline. Sampling the opposite triangle also makes primitive-coefficient equality a prospective, falsifiable test."
+  },
+  "capture": {
+    "targetWidth": 288,
+    "targetHeight": 256,
+    "viewportWidth": 32768,
+    "geometryCases": [
+      {
+        "name": "general-height-47",
+        "height": 47,
+        "sampleLocalY": 0,
+        "originY": 11
+      },
+      {
+        "name": "general-height-61",
+        "height": 61,
+        "sampleLocalY": 0,
+        "originY": 23
+      },
+      {
+        "name": "general-height-79",
+        "height": 79,
+        "sampleLocalY": 0,
+        "originY": 37
+      },
+      {
+        "name": "general-height-113",
+        "height": 113,
+        "sampleLocalY": 0,
+        "originY": 53
+      }
+    ],
+    "sampleXs": [
+      0,
+      31
+    ],
+    "sampleXsSha256": "3786b5685d81fe8c584105b439bc5a4dc7a0af4a76548dc49f5b3f47e2984238",
+    "sampleTiles": [
+      0,
+      0
+    ],
+    "sampleTileLocalXs": [
+      0,
+      31
+    ],
+    "sharedTileGroups": [
+      [
+        0,
+        1
+      ]
+    ],
+    "recordComponents": [
+      "pull@0,0.5",
+      "pull@15/16,0.5",
+      "center",
+      "dfdx(center)"
+    ],
+    "recordBytes": 16,
+    "rawBytes": 14680064
+  },
+  "idealIdentifiabilityControl": {
+    "construction": "For every frozen width and witness, synthesize the four pull observations at positions 0, 15/16, 31, and 31+15/16 from the correctly rounded direct-division slope and a zero binary32 tile constant, then apply the frozen recovery procedure.",
+    "widthWitnessCaseCount": 114688,
+    "geometryReplicationCount": 4,
+    "candidateMultiplicity": {
+      "1": 114688
+    },
+    "zeroCandidateCount": 0,
+    "ambiguousCandidateCount": 0,
+    "candidateRadiusFloatUlps": 8,
+    "observedAppleDataUsed": false
+  },
+  "bottomRightControl": {
+    "sourceRunId": 30662476971,
+    "candidateMaskFile": "Analysis/raster_general_height_multitile_candidate_masks.zlib",
+    "candidateMaskEncoding": "zlib-compressed width-major, witness-major, geometry-major little-endian uint32; bit offset plus 8 represents candidate slope directBits plus offset",
+    "candidateMaskCount": 458752,
+    "candidateMaskRawBytes": 1835008,
+    "candidateMaskRawSha256": "04a36598ae156769b59d22630d8a7279803bb354a66007cfe4ba8742ce1214f8",
+    "candidateMaskCompressedBytes": 175503,
+    "candidateMaskCompressedSha256": "1a9c3bf01109f9c9c3d724215dee623af7275a294536b7618ab7938946c4781c",
+    "candidateMaskDerivationUsesOnlyPriorAppleArtifact": true,
+    "newTopLeftCaptureUsedInMaskDerivation": false
+  },
+  "slopeRecovery": {
+    "candidateCenter": "roundBinary32(scaledVertexDelta / integerGeometryWidth)",
+    "candidateRadiusFloatUlps": 8,
+    "pullEvaluation": "roundNearestEvenBinary32(fma(tileLocalXPlusOffset, candidateSlope, sharedTileConstant))",
+    "constantDomain": "binary32",
+    "constantSharing": "one recovered constant shared by both tile-zero sample positions",
+    "centerAndDerivativeUsedForSelection": false,
+    "numeratorOrReciprocalModelUsedForSelection": false
+  },
+  "acceptance": {
+    "allRecordsWrittenAndFinite": true,
+    "allSamplesSafelyInsideTopLeftPrimitive": true,
+    "samplePositionHashMustMatch": true,
+    "everyCoefficientHasExactlyOneTopLeftPullSlope": true,
+    "everyRecoveredTopLeftSlopeIsInFrozenBottomRightCandidateMask": true,
+    "recoveredSlopeAndCandidateMaskHashesAreDiscoveryOutputs": true,
+    "centerAndDerivativeBitsAreDiagnosticNotFitted": true,
+    "noAdaptiveFitOrTolerance": true
+  },
+  "nonClaims": [
+    "A successful primitive-equality gate does not establish how the recovered slopes were generated.",
+    "Uniquely recovering the discovery slopes does not establish a numerator law.",
+    "Uniquely recovering the discovery slopes does not establish the low-determinant mantissa or reciprocal law.",
+    "The recovered slope table requires a later prospective setup-law holdout before a production implementation is authorized.",
+    "This probe does not establish clip-generated setup.",
+    "No result from this probe establishes end-to-end Liquid Glass parity."
+  ]
+}
