@@ -1936,40 +1936,108 @@ private enum TransitionDirection: String {
     }
 }
 
-private enum ProbeGeometry: String {
-    case circle256Center = "circle-256-center"
-    case circle512Offset = "circle-512-offset"
-    case circle640Fractional = "circle-640-fractional"
-    case circle800Center = "circle-800-center"
-    case circle896Center = "circle-896-center"
-    case circle1536Center = "circle-1536-center"
-
-    var width: CGFloat {
-        switch self {
-        case .circle256Center:
-            256
-        case .circle512Offset:
-            512
-        case .circle640Fractional:
-            640
-        case .circle800Center:
-            800
-        case .circle896Center:
-            896
-        case .circle1536Center:
-            1536
-        }
+private struct ProbeGeometry {
+    private struct Specification {
+        let width: CGFloat
+        let center: CGPoint
     }
 
-    var center: CGPoint {
-        switch self {
-        case .circle512Offset:
-            CGPoint(x: 337, y: 419)
-        case .circle640Fractional:
-            CGPoint(x: 602.25, y: 377.75)
-        default:
-            CGPoint(x: 512, y: 512)
+    private static let specifications: [String: Specification] = [
+        "circle-064-center":
+            Specification(width: 64, center: CGPoint(x: 512, y: 512)),
+        "circle-128-center":
+            Specification(width: 128, center: CGPoint(x: 512, y: 512)),
+        "circle-255-center":
+            Specification(width: 255, center: CGPoint(x: 512, y: 512)),
+        "circle-256-center":
+            Specification(width: 256, center: CGPoint(x: 512, y: 512)),
+        "circle-257-center":
+            Specification(width: 257, center: CGPoint(x: 512, y: 512)),
+        "circle-511-center":
+            Specification(width: 511, center: CGPoint(x: 512, y: 512)),
+        "circle-512-center":
+            Specification(width: 512, center: CGPoint(x: 512, y: 512)),
+        "circle-512-offset":
+            Specification(width: 512, center: CGPoint(x: 337, y: 419)),
+        "circle-513-center":
+            Specification(width: 513, center: CGPoint(x: 512, y: 512)),
+        "circle-640-fractional":
+            Specification(
+                width: 640,
+                center: CGPoint(x: 602.25, y: 377.75)),
+        "circle-640-phase-0499":
+            Specification(
+                width: 640,
+                center: CGPoint(x: 602.499, y: 378.499)),
+        "circle-640-phase-0500-even":
+            Specification(
+                width: 640,
+                center: CGPoint(x: 602.5, y: 378.5)),
+        "circle-640-phase-0501":
+            Specification(
+                width: 640,
+                center: CGPoint(x: 602.501, y: 378.501)),
+        "circle-640-phase-0500-odd":
+            Specification(
+                width: 640,
+                center: CGPoint(x: 601.5, y: 377.5)),
+        "circle-640-phase-0500-signed":
+            Specification(
+                width: 640,
+                center: CGPoint(x: 421.5, y: 646.5)),
+        "circle-767-center":
+            Specification(width: 767, center: CGPoint(x: 512, y: 512)),
+        "circle-768-center":
+            Specification(width: 768, center: CGPoint(x: 512, y: 512)),
+        "circle-769-center":
+            Specification(width: 769, center: CGPoint(x: 512, y: 512)),
+        "circle-800-center":
+            Specification(width: 800, center: CGPoint(x: 512, y: 512)),
+        "circle-896-center":
+            Specification(width: 896, center: CGPoint(x: 512, y: 512)),
+        "circle-1023-center":
+            Specification(width: 1023, center: CGPoint(x: 512, y: 512)),
+        "circle-1024-center":
+            Specification(width: 1024, center: CGPoint(x: 512, y: 512)),
+        "circle-1025-center":
+            Specification(width: 1025, center: CGPoint(x: 512, y: 512)),
+        "circle-1535-center":
+            Specification(width: 1535, center: CGPoint(x: 512, y: 512)),
+        "circle-1536-center":
+            Specification(width: 1536, center: CGPoint(x: 512, y: 512)),
+        "circle-1537-center":
+            Specification(width: 1537, center: CGPoint(x: 512, y: 512)),
+        "circle-2048-center":
+            Specification(width: 2048, center: CGPoint(x: 512, y: 512)),
+        "circle-3072-center":
+            Specification(width: 3072, center: CGPoint(x: 512, y: 512)),
+        "circle-256-crop-a":
+            Specification(width: 256, center: CGPoint(x: 128, y: 255)),
+        "circle-256-crop-b":
+            Specification(width: 256, center: CGPoint(x: 256, y: 257)),
+        "circle-256-crop-c":
+            Specification(width: 256, center: CGPoint(x: 383, y: 384)),
+        "circle-256-crop-d":
+            Specification(width: 256, center: CGPoint(x: 385, y: 639)),
+        "circle-256-crop-e":
+            Specification(width: 256, center: CGPoint(x: 640, y: 641)),
+        "circle-256-crop-f":
+            Specification(width: 256, center: CGPoint(x: 767, y: 768)),
+        "circle-256-crop-g":
+            Specification(width: 256, center: CGPoint(x: 769, y: 896)),
+    ]
+
+    let rawValue: String
+    let width: CGFloat
+    let center: CGPoint
+
+    init?(rawValue: String) {
+        guard let specification = Self.specifications[rawValue] else {
+            return nil
         }
+        self.rawValue = rawValue
+        width = specification.width
+        center = specification.center
     }
 
     var evidence: [String: Any] {
@@ -6524,6 +6592,44 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
         return [
             "bindingCount": bindings.count,
+            "snapshots": snapshots,
+        ]
+    }
+
+    func snapshotTextureMetadata(capture: String) -> [String: Any] {
+        lock.lock()
+        let bindings = textureBindings.filter {
+            $0.capture == capture
+        }
+        lock.unlock()
+
+        var seen: Set<ObjectIdentifier> = []
+        var snapshots: [[String: Any]] = []
+        for binding in bindings {
+            let texture = binding.texture
+            let identifier = ObjectIdentifier(texture as AnyObject)
+            guard seen.insert(identifier).inserted else { continue }
+            snapshots.append([
+                "sequence": binding.sequence,
+                "index": binding.index,
+                "pipeline": binding.pipeline,
+                "width": texture.width,
+                "height": texture.height,
+                "depth": texture.depth,
+                "arrayLength": texture.arrayLength,
+                "mipmapLevelCount": texture.mipmapLevelCount,
+                "sampleCount": texture.sampleCount,
+                "pixelFormat": texture.pixelFormat.rawValue,
+                "textureType": texture.textureType.rawValue,
+                "usage": texture.usage.rawValue,
+                "storageMode": texture.storageMode.rawValue,
+                "rawCapture": false,
+                "reason": "metadata-only geometry-policy capture",
+            ])
+        }
+        return [
+            "bindingCount": bindings.count,
+            "uniqueTextureCount": seen.count,
             "snapshots": snapshots,
         ]
     }
@@ -11983,7 +12089,8 @@ private func carendererEvidence(
 private func carendererUniformEvidence(
     rootLayer: CALayer,
     device: MTLDevice,
-    capture: String
+    capture: String,
+    includeGeometryPolicyEvidence: Bool = false
 ) -> [String: Any] {
     let bounds = rootLayer.bounds.standardized
     guard bounds.width.isFinite,
@@ -12082,7 +12189,7 @@ private func carendererUniformEvidence(
         return fragment.hasPrefix("glass_background")
             || fragment.hasPrefix("glass_foreground")
     }
-    return [
+    var result: [String: Any] = [
         "executed": true,
         "capture": capture,
         "rootLayerClass": String(reflecting: type(of: rootLayer)),
@@ -12098,6 +12205,15 @@ private func carendererUniformEvidence(
             MetalUniformProbe.shared.commandProvenance(
                 capture: capture),
     ]
+    if includeGeometryPolicyEvidence {
+        result["metalBufferSnapshots"] = allBufferEvidence
+        result["metalTextureSnapshots"] =
+            MetalUniformProbe.shared.snapshotTextureMetadata(
+                capture: capture)
+        result["metalUniformProbe"] =
+            MetalUniformProbe.shared.report(capture: capture)
+    }
+    return result
 }
 
 private func transitionAnimationDescription(
@@ -13464,6 +13580,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
     private let appearance: ProbeAppearance
     private let geometry: ProbeGeometry
     private let transitionTimelineEnabled: Bool
+    private let geometryPolicyEnabled: Bool
     private let transitionModel: TransitionProbeModel
     private var window: ProbeWindow!
     private var captureStarted = false
@@ -13486,6 +13603,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             ProcessInfo.processInfo.environment[
                 "LG_TRANSITION_TIMELINE"
             ] == "1"
+        geometryPolicyEnabled =
+            ProcessInfo.processInfo.environment[
+                "LG_GEOMETRY_POLICY"
+            ] == "1"
         transitionModel = TransitionProbeModel()
     }
 
@@ -13496,7 +13617,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 withIntermediateDirectories: true)
 
             _ = MetalUniformProbe.shared.install()
-            if !transitionTimelineEnabled {
+            if !transitionTimelineEnabled && !geometryPolicyEnabled {
                 let manager = MTLCaptureManager.shared()
                 if manager.supportsDestination(.gpuTraceDocument),
                    let device = MTLCreateSystemDefaultDevice() {
@@ -13548,6 +13669,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 try? await Task.sleep(for: .milliseconds(250))
                 if transitionTimelineEnabled {
                     await captureTransitionTimeline()
+                } else if geometryPolicyEnabled {
+                    finishGeometryPolicy()
                 } else {
                     finish()
                 }
@@ -13936,6 +14059,74 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 Data(
                     (
                         "transition timeline capture failed: "
+                        + error.localizedDescription
+                        + "\n"
+                    ).utf8))
+            exit(1)
+        }
+    }
+
+    private func finishGeometryPolicy() {
+        let reportURL = outputDirectory.appendingPathComponent(
+            "geometry-policy.json")
+        guard let device = MTLCreateSystemDefaultDevice(),
+              let rootLayer = window.contentView?.layer
+        else {
+            try? writeJSON(
+                [
+                    "schemaVersion": 1,
+                    "probe": "compact-geometry-policy",
+                    "executed": false,
+                    "reason":
+                        "Metal device or root layer unavailable",
+                ],
+                to: reportURL)
+            exit(1)
+        }
+
+        let capture = "geometry-policy"
+        let render = carendererUniformEvidence(
+            rootLayer: rootLayer,
+            device: device,
+            capture: capture,
+            includeGeometryPolicyEvidence: true)
+        let scale = window.backingScaleFactor
+        let report: [String: Any] = [
+            "schemaVersion": 1,
+            "probe": "compact-geometry-policy",
+            "executed": render["executed"] as? Bool == true,
+            "geometry": geometry.evidence,
+            "materialProfile": [
+                "material": material.rawValue,
+                "requestedAppearance": appearance.rawValue,
+                "nativeAppearanceName":
+                    appearance.nativeName.rawValue,
+                "effectiveAppearanceName":
+                    window.effectiveAppearance.name.rawValue,
+                "effectiveAppearanceMatchesRequest":
+                    window.effectiveAppearance.bestMatch(
+                        from: [.aqua, .darkAqua])
+                    == appearance.nativeName,
+            ],
+            "windowBackingScaleFactor": scale,
+            "expectedWindowPixels": [
+                Int((window.frame.width * scale).rounded()),
+                Int((window.frame.height * scale).rounded()),
+            ],
+            "captureMode":
+                "buffers-and-texture-metadata-without-raw-stage-dumps",
+            "carendererEvidence": render,
+            "osVersion":
+                ProcessInfo.processInfo.operatingSystemVersionString,
+        ]
+        do {
+            try writeJSON(report, to: reportURL)
+            exit(render["executed"] as? Bool == true ? 0 : 1)
+        } catch {
+            FileHandle.standardError.write(
+                Data(
+                    (
+                        "geometry-policy write failed: "
                         + error.localizedDescription
                         + "\n"
                     ).utf8))

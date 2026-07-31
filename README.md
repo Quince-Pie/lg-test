@@ -2090,6 +2090,25 @@ matrix distinguishes size scaling, integer translation, fractional raster
 placement, and the oversized late-transition regime; those effects must not
 be inferred from the one fixed mesh.
 
+`geometry-policy-introspect.yml` is the compact boundary-tomography
+counterpart to those full artifacts. It uses the same live SwiftUI view,
+CARenderer, and Metal interception path, but retains only the real vertex and
+uniform buffer prefixes, command provenance, and bound-texture metadata.
+It deliberately omits raw texture and stage dumps, which makes a 35-geometry
+matrix practical without treating a reduced capture as a pixel-parity gate.
+The matrix brackets circle diameters at 256-, 512-, 768-, 1024-, and
+1536-point boundaries, covers small and 3072-point extremes, pairs fourteen
+independent X/Y crop positions, and samples fractional centers immediately
+below, at, and immediately above one-half for both even and odd integer
+neighbors. Existing full-capture geometries are repeated as controls.
+
+The compact workflow is accepted only when the real `glass_background_sdf`
+draw exposes both main and shadow vertex payloads and exactly one source
+texture binding at index 3. Its artifact is intended to determine center
+snapping and source-crop selection laws; any resulting law must still replay
+the independent full geometry artifacts byte for byte before it can authorize
+production use.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
