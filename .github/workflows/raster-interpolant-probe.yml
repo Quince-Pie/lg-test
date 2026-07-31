@@ -65,15 +65,34 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 5:
+          if manifest.get("schemaVersion") != 6:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-5.0.0"
+              "metal-raster-interpolant-probe-6.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
-          if len(records) != 6:
-              raise SystemExit("raster-interpolant case count differs")
+          expected_names = {
+              "production-offset-800",
+              "origin-zero-800",
+              "power-two-512",
+              "non-power-rectangle",
+              "scaled-640",
+              "near-fullscreen-976",
+              "setup-prime-origin-a",
+              "setup-prime-origin-b",
+              "setup-tile-edge-translation",
+              "setup-nonpower-viewport",
+              "setup-cancellation",
+              "setup-exponent-range",
+              "setup-reversed-slopes",
+              "setup-near-equal-negative",
+          }
+          if (
+              len(records) != len(expected_names)
+              or {record["name"] for record in records} != expected_names
+          ):
+              raise SystemExit("raster-interpolant case set differs")
           for record in records:
               crop = record["crop"]
               expected = crop["width"] * crop["height"] * 16

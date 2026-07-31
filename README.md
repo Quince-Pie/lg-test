@@ -1854,12 +1854,16 @@ identification modes for the private clear-material mip path:
 `raster-interpolant-probe.yml` measures the Apple GPU's real
 center-perspective float interpolation independently of QuartzCore. It renders
 the production two-triangle ordering into RGBA32Uint targets and preserves the
-four raw float32 varying bit patterns for six preregistered cases: the exact
-800-by-800 production geometry, the same geometry at a different origin,
-power-of-two and non-power-of-two dimensions, a non-square arbitrary-endpoint
-case, and a near-fullscreen case. A paired RGBA32Uint attachment records all
-three center-perspective barycentric float bits and the primitive ID for every
-fragment, separating raster weight generation from attribute accumulation.
+four raw float32 varying bit patterns for fourteen preregistered cases. The
+first six cover the exact 800-by-800 production geometry, translation,
+power-of-two and non-power-of-two dimensions, arbitrary endpoints, scaling,
+and a near-fullscreen case. Schema 6 adds eight compact coefficient-setup
+holdouts covering prime dimensions, translation across a 32-pixel tile edge,
+a non-power-of-two viewport, reversed slopes, catastrophic cancellation, and
+widely separated or nearly equal endpoint exponents. A paired RGBA32Uint
+attachment records all three center-perspective barycentric float bits and the
+primitive ID for every fragment, separating raster weight generation from
+attribute accumulation.
 Each raw file is cropped to the covered quad; the manifest retains target and
 crop geometry, endpoint and MVP bits, vertex order, byte size, and SHA-256.
 This probe exists to distinguish a portable raster rule from a correction
@@ -1886,6 +1890,11 @@ preregistered 1/16-pixel offsets. The four samples expose tile-local
 coefficient evaluation directly and separate the perspective iterator from
 the affine coefficient register without relying on finite-difference
 derivatives.
+
+Raster schema 6 retains every schema-5 control and adds only preregistered
+coefficient-setup holdouts. These cases distinguish endpoint-scaling,
+viewport-transform, sign, cancellation, and tile-rebasing arithmetic before a
+portable setup rule can replace a captured coefficient table.
 
 ### Geometry-transfer introspection
 
