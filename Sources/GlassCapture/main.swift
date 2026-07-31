@@ -2885,17 +2885,23 @@ final class CaptureRootView: NSView {
 
 @MainActor
 final class MaterializeClockView: NSView {
+    private let fillLayer = CALayer()
     private var progress: CGFloat = 0
     private var heartbeat: CGFloat = 0
     private var tailActive = false
-    private var animationTask: Task<Void, Never>?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
         layerContentsRedrawPolicy = .onSetNeedsDisplay
         layer?.masksToBounds = true
+        fillLayer.anchorPoint = CGPoint(x: 0, y: 0.5)
+        fillLayer.backgroundColor = NSColor(
+            srgbRed: 1, green: 0, blue: 1, alpha: 1
+        ).cgColor
+        layer?.addSublayer(fillLayer)
         isHidden = true
+        updateFillLayer()
     }
 
     required init?(coder: NSCoder) {
@@ -2904,19 +2910,26 @@ final class MaterializeClockView: NSView {
 
     override var isOpaque: Bool { false }
 
-    override func draw(_ dirtyRect: NSRect) {
-        guard let context = NSGraphicsContext.current?.cgContext else { return }
-        context.clear(bounds)
-        context.setFillColor(NSColor(
-            srgbRed: 1, green: 0, blue: 1, alpha: 1
-        ).cgColor)
-        context.fill(CGRect(
-            x: 0,
-            y: 0,
-            width:
-                bounds.width
-                * (tailActive ? heartbeat : progress),
-            height: bounds.height))
+    override func layout() {
+        super.layout()
+        updateFillLayer()
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        updateFillLayer()
+    }
+
+    private func updateFillLayer() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        fillLayer.bounds = CGRect(
+            x: 0, y: 0, width: bounds.width, height: bounds.height)
+        fillLayer.position = CGPoint(x: 0, y: bounds.midY)
+        fillLayer.contentsScale = window?.backingScaleFactor ?? 1
+        fillLayer.transform = CATransform3DMakeScale(
+            tailActive ? heartbeat : progress, 1, 1)
+        CATransaction.commit()
     }
 
     func present(
@@ -2928,16 +2941,12 @@ final class MaterializeClockView: NSView {
         heartbeat = CGFloat(min(
             1, max(0, heartbeatValue ?? value)))
         tailActive = tailIsActive
-        needsDisplay = true
-        displayIfNeeded()
-        layer?.displayIfNeeded()
-        window?.displayIfNeeded()
+        fillLayer.removeAnimation(forKey: "presentation-clock")
+        updateFillLayer()
         CATransaction.flush()
     }
 
     func prepare() {
-        animationTask?.cancel()
-        animationTask = nil
         isHidden = false
         present(progress: 0)
     }
@@ -2948,38 +2957,51 @@ final class MaterializeClockView: NSView {
         refreshRate: Double,
         tailDuration: Double = 0
     ) {
-        animationTask?.cancel()
         present(progress: 0)
-        let updateInterval = 1 / max(refreshRate * 2, 120)
-        animationTask = Task { @MainActor [weak self] in
-            guard let self else { return }
-            while !Task.isCancelled {
-                let elapsed =
-                    ProcessInfo.processInfo.systemUptime - startTime
-                let value = min(1, max(0, elapsed / duration))
-                let heartbeat: Double
-                if tailDuration > 0, elapsed >= duration {
-                    heartbeat = min(
-                        1,
-                        max(0, (elapsed - duration) / tailDuration))
-                } else {
-                    heartbeat = value
-                }
-                self.present(
-                    progress: value,
-                    heartbeat: heartbeat,
-                    tailActive:
-                        tailDuration > 0 && elapsed >= duration)
-                if elapsed >= duration + tailDuration { return }
-                try? await Task.sleep(
-                    nanoseconds: UInt64(updateInterval * 1_000_000_000))
-            }
+        let frameInterval = 1 / max(refreshRate, 1)
+        let endpointHold = tailDuration > 0 ? frameInterval : 0
+        let resetDuration = tailDuration > 0
+            ? min(0.0005, frameInterval / 4)
+            : 0
+        let totalDuration =
+            duration + endpointHold + resetDuration + tailDuration
+        let animation = CAKeyframeAnimation(
+            keyPath: "transform.scale.x")
+        if tailDuration > 0 {
+            animation.values = [0, 1, 1, 0, 1]
+            animation.keyTimes = [
+                0,
+                NSNumber(value: duration / totalDuration),
+                NSNumber(
+                    value: (duration + endpointHold) / totalDuration),
+                NSNumber(
+                    value:
+                        (duration + endpointHold + resetDuration)
+                        / totalDuration),
+                1,
+            ]
+        } else {
+            animation.values = [0, 1]
+            animation.keyTimes = [0, 1]
         }
+        animation.calculationMode = .linear
+        animation.duration = totalDuration
+        let scheduleDelay = startTime
+            - ProcessInfo.processInfo.systemUptime
+        animation.beginTime = fillLayer.convertTime(
+            CACurrentMediaTime() + scheduleDelay, from: nil)
+        animation.fillMode = .both
+        animation.isRemovedOnCompletion = false
+
+        progress = 1
+        heartbeat = 1
+        tailActive = tailDuration > 0
+        updateFillLayer()
+        fillLayer.add(animation, forKey: "presentation-clock")
+        CATransaction.flush()
     }
 
     func deactivate() {
-        animationTask?.cancel()
-        animationTask = nil
         isHidden = true
         present(progress: 0)
     }
