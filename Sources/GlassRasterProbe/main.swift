@@ -1281,6 +1281,14 @@ private func numeratorTomographyCases()
         "tomography-discovery-reciprocal-bin-224-062x124",
         "tomography-discovery-reciprocal-bin-240-081x098",
         "tomography-discovery-reciprocal-bin-255-088x093",
+        "tomography-discovery-factor-h064-w058",
+        "tomography-discovery-factor-h064-w056",
+        "tomography-discovery-factor-h064-w047",
+        "tomography-discovery-factor-h064-w078",
+        "tomography-discovery-factor-h064-w084",
+        "tomography-discovery-factor-h064-w062",
+        "tomography-discovery-factor-h064-w081",
+        "tomography-discovery-factor-h064-w088",
     ]
     let geometryByName = Dictionary(
         uniqueKeysWithValues: tomographyCases.map {
@@ -1297,9 +1305,13 @@ private func numeratorTomographyCases()
             preconditionFailure(
                 "numerator geometry is absent: \(name)")
         }
-        let suffix = name.replacingOccurrences(
-            of: "tomography-discovery-reciprocal-",
-            with: "")
+        let suffix = name
+            .replacingOccurrences(
+                of: "tomography-discovery-reciprocal-",
+                with: "")
+            .replacingOccurrences(
+                of: "tomography-discovery-factor-",
+                with: "factor-")
         for bankIndex in 0..<32 {
             let lower = bankIndex * 8
             let bankNumerators = Array(
@@ -1316,7 +1328,7 @@ private func numeratorTomographyCases()
                 numerators: bankNumerators))
         }
     }
-    precondition(result.count == 256)
+    precondition(result.count == 512)
     precondition(Set(result.map(\.name)).count == result.count)
     return result
 }
@@ -2130,8 +2142,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 13,
-        "rigVersion": "metal-raster-interpolant-probe-13.0.0",
+        "schemaVersion": 14,
+        "rigVersion": "metal-raster-interpolant-probe-14.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -2164,7 +2176,7 @@ private func run(outputDirectory: URL) throws {
             "factorizedReciprocalOutput":
                 "128 power-of-two-edge determinant controls",
             "numeratorTomographyOutput":
-                "256 normalized numerator mantissas on counterexamples",
+                "256 normalized numerator mantissas on 16 geometries",
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,

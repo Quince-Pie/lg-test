@@ -73,10 +73,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 13:
+          if manifest.get("schemaVersion") != 14:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-13.0.0"
+              "metal-raster-interpolant-probe-14.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -433,6 +433,14 @@ jobs:
               "tomography-discovery-reciprocal-bin-224-062x124",
               "tomography-discovery-reciprocal-bin-240-081x098",
               "tomography-discovery-reciprocal-bin-255-088x093",
+              "tomography-discovery-factor-h064-w058",
+              "tomography-discovery-factor-h064-w056",
+              "tomography-discovery-factor-h064-w047",
+              "tomography-discovery-factor-h064-w078",
+              "tomography-discovery-factor-h064-w084",
+              "tomography-discovery-factor-h064-w062",
+              "tomography-discovery-factor-h064-w081",
+              "tomography-discovery-factor-h064-w088",
           ]
           numerator_values = [
               32832 + 128 * index
@@ -441,9 +449,16 @@ jobs:
           expected_numerator_records = []
           for base_name in numerator_base_names:
               base = tomography_by_name[base_name]
-              suffix = base_name.removeprefix(
+              if base_name.startswith(
                   "tomography-discovery-reciprocal-"
-              )
+              ):
+                  suffix = base_name.removeprefix(
+                      "tomography-discovery-reciprocal-"
+                  )
+              else:
+                  suffix = "factor-" + base_name.removeprefix(
+                      "tomography-discovery-factor-"
+                  )
               for bank_index in range(32):
                   lower = bank_index * 8
                   expected_numerator_records.append({

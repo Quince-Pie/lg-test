@@ -1972,6 +1972,17 @@ any undeclared case, and bit-gates every inherited and added surface. This
 separates reciprocal approximation, factorization, and final product behavior
 without opening or fitting the four existing holdouts.
 
+Raster schema 14 keeps every schema-13 surface and holdout unchanged and adds
+dense numerator tomography for the height-64 counterparts of the eight
+schema-12 counterexamples. Each counterpart shares the original width and all
+256 numerator mantissas while replacing only the opposite edge by a power of
+two. The original 2,048 numerator surfaces retain their names and order; the
+2,048 matched controls are appended. Their x coefficients therefore permit a
+sample-for-sample subtraction of the controlled divider result from the
+non-power factorization result, while their y coefficients provide exact
+power-of-two division controls. CI regenerates all 512 bank records and hashes
+all 4,096 numerator surfaces without authorizing any holdout access.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
