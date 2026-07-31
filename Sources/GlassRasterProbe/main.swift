@@ -68,6 +68,15 @@ private struct NumeratorThresholdCase {
     let numerators: [UInt32]
 }
 
+private struct NumeratorResidueCase {
+    let name: String
+    let role: String
+    let geometry: TomographyCase
+    let normalizationShift: Int
+    let thresholdTargetNumerator: Int
+    let numerators: [UInt32]
+}
+
 private func discoveryTomographyCase(
     _ name: String,
     width: Int,
@@ -1592,6 +1601,248 @@ private func numeratorThresholdCases()
 private let numeratorThreshold =
     numeratorThresholdCases()
 
+private struct ProductResidueCandidate {
+    let numerator: UInt32
+    let remainder: UInt64
+    let modulus: UInt64
+}
+
+private func productFloorResidue(
+    numerator: UInt32,
+    dimension: Int
+) -> Int {
+    let reciprocalBinaryExponent =
+        reciprocalExponent(dimension)
+    let reciprocalSignificand = roundedQuotientNearestEven(
+        UInt64(1) << (24 - reciprocalBinaryExponent),
+        UInt64(dimension))
+    let product =
+        UInt64(numerator) * reciprocalSignificand
+    let productBits =
+        UInt64.bitWidth - product.leadingZeroBitCount
+    let productShift = productBits - 27
+    precondition(productShift > 0)
+    return Int((product >> productShift) & 7)
+}
+
+private func productResidueDistance(
+    _ candidate: ProductResidueCandidate,
+    targetNumerator: Int
+) -> UInt64 {
+    let scaledRemainder = Int64(64 * candidate.remainder)
+    let scaledTarget =
+        Int64(targetNumerator) * Int64(candidate.modulus)
+    return UInt64(abs(scaledRemainder - scaledTarget))
+}
+
+private func residueNumeratorBanks(
+    dimension: Int,
+    normalizationShift: Int,
+    targetNumerators: [Int]
+) -> [[UInt32]]? {
+    precondition(normalizationShift == 0 || normalizationShift == 1)
+    precondition(
+        targetNumerators.count == 8
+            && targetNumerators.allSatisfy {
+                0 <= $0 && $0 < 64
+            })
+    let reciprocalBinaryExponent =
+        reciprocalExponent(dimension)
+    let quotientBinaryExponent =
+        reciprocalBinaryExponent - normalizationShift
+    let reciprocalSignificand = roundedQuotientNearestEven(
+        UInt64(1) << (24 - reciprocalBinaryExponent),
+        UInt64(dimension))
+    var candidates = Array(
+        repeating: [ProductResidueCandidate](),
+        count: 8)
+    for numerator in UInt32(1)..<UInt32(65_536) {
+        guard ratioHasBinaryExponent(
+            numerator: numerator,
+            dimension: dimension,
+            exponent: quotientBinaryExponent)
+        else {
+            continue
+        }
+        let product =
+            UInt64(numerator) * reciprocalSignificand
+        let productBits =
+            UInt64.bitWidth - product.leadingZeroBitCount
+        let productShift = productBits - 27
+        precondition(productShift > 0)
+        let modulus = UInt64(1) << productShift
+        let remainder = product & (modulus - 1)
+        let floorIndex = product >> productShift
+        candidates[Int(floorIndex & 7)].append(
+            ProductResidueCandidate(
+                numerator: numerator,
+                remainder: remainder,
+                modulus: modulus))
+    }
+    let reachableResidues = candidates.indices.filter {
+        !candidates[$0].isEmpty
+    }
+    guard !reachableResidues.isEmpty else {
+        return nil
+    }
+    var usedNumerators = Set<UInt32>()
+    var banks: [[UInt32]] = []
+    banks.reserveCapacity(targetNumerators.count)
+    for targetNumerator in targetNumerators {
+        let availableCandidates = candidates.map { group in
+            group.filter {
+                !usedNumerators.contains($0.numerator)
+            }.sorted {
+                (
+                    productResidueDistance(
+                        $0,
+                        targetNumerator: targetNumerator),
+                    $0.numerator
+                ) < (
+                    productResidueDistance(
+                        $1,
+                        targetNumerator: targetNumerator),
+                    $1.numerator
+                )
+            }
+        }
+        precondition(
+            reachableResidues.allSatisfy {
+                !availableCandidates[$0].isEmpty
+            })
+        var selectedCount = Array(repeating: 0, count: 8)
+        var selected: [UInt32] = []
+        selected.reserveCapacity(8)
+        while selected.count < 8 {
+            let minimumCount = reachableResidues.map {
+                selectedCount[$0]
+            }.min()!
+            let residue = reachableResidues.filter {
+                selectedCount[$0] == minimumCount
+            }.min {
+                let lhs =
+                    availableCandidates[$0][selectedCount[$0]]
+                let rhs =
+                    availableCandidates[$1][selectedCount[$1]]
+                return (
+                    productResidueDistance(
+                        lhs,
+                        targetNumerator: targetNumerator),
+                    lhs.numerator,
+                    $0
+                ) < (
+                    productResidueDistance(
+                        rhs,
+                        targetNumerator: targetNumerator),
+                    rhs.numerator,
+                    $1
+                )
+            }!
+            selected.append(
+                availableCandidates[
+                    residue
+                ][selectedCount[residue]].numerator)
+            selectedCount[residue] += 1
+        }
+        precondition(Set(selected).count == 8)
+        precondition(
+            Set(selected.map {
+                productFloorResidue(
+                    numerator: $0,
+                    dimension: dimension)
+            }) == Set(reachableResidues))
+        usedNumerators.formUnion(selected)
+        banks.append(selected)
+    }
+    precondition(usedNumerators.count == 64)
+    return banks
+}
+
+private func numeratorResidueCases()
+    -> [NumeratorResidueCase]
+{
+    let geometryByName = Dictionary(
+        uniqueKeysWithValues: tomographyCases.map {
+            ($0.name, $0)
+        })
+    let holdoutWidths = Set(
+        stride(from: 37, through: 127, by: 6))
+    precondition(holdoutWidths.count == 16)
+    let targetNumeratorsByShift = [
+        (
+            shift: 0,
+            targets: [0, 40, 42, 44, 46, 48, 50, 63]
+        ),
+        (
+            shift: 1,
+            targets: [0, 20, 22, 24, 26, 28, 30, 63]
+        ),
+    ]
+    var result: [NumeratorResidueCase] = []
+    result.reserveCapacity(1_520)
+    for dimension in 32...127 {
+        let baseName = String(
+            format:
+                "tomography-discovery-factor-h064-w%03d",
+            dimension)
+        guard let geometry = geometryByName[baseName] else {
+            preconditionFailure(
+                "residue geometry is absent: \(baseName)")
+        }
+        let role = holdoutWidths.contains(dimension)
+            ? "holdout"
+            : "discovery"
+        for selection in targetNumeratorsByShift {
+            guard let banks = residueNumeratorBanks(
+                dimension: dimension,
+                normalizationShift: selection.shift,
+                targetNumerators: selection.targets)
+            else {
+                precondition(
+                    selection.shift == 0
+                        && dimension.nonzeroBitCount == 1)
+                continue
+            }
+            precondition(banks.count == selection.targets.count)
+            for (index, targetNumerator)
+                in selection.targets.enumerated()
+            {
+                let numerators = banks[index]
+                result.append(NumeratorResidueCase(
+                    name: String(
+                        format:
+                            "numerator-residue-\(role)-"
+                            + "factor-h064-w%03d-shift-%d-"
+                            + "phase-%02d",
+                        dimension,
+                        selection.shift,
+                        targetNumerator),
+                    role: role,
+                    geometry: geometry,
+                    normalizationShift: selection.shift,
+                    thresholdTargetNumerator:
+                        targetNumerator,
+                    numerators: numerators))
+            }
+        }
+    }
+    precondition(result.count == 1_520)
+    precondition(
+        result.filter { $0.role == "discovery" }.count
+            == 1_264)
+    precondition(
+        result.filter { $0.role == "holdout" }.count == 256)
+    precondition(Set(result.map(\.name)).count == result.count)
+    precondition(result.allSatisfy {
+        $0.numerators.count == 8
+            && Set($0.numerators).count == 8
+    })
+    return result
+}
+
+private let numeratorResidue =
+    numeratorResidueCases()
+
 private func sha256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
         String(format: "%02x", $0)
@@ -2494,6 +2745,70 @@ private func run(outputDirectory: URL) throws {
         ])
     }
 
+    var numeratorResidueRecords: [[String: Any]] = []
+    for probe in numeratorResidue {
+        let geometry = probe.geometry
+        let surfaces = try renderTomography(
+            geometry,
+            device: device,
+            queue: queue,
+            pipeline: numeratorTomographyPipeline,
+            numerators: probe.numerators)
+        var outputs: [[String: Any]] = []
+        for (index, data) in surfaces.enumerated() {
+            let filename =
+                "\(probe.name)-ramp-\(index)-rgba32ui.raw"
+            try data.write(
+                to: outputDirectory.appendingPathComponent(filename),
+                options: .atomic)
+            outputs.append([
+                "deltaIndex": index,
+                "file": filename,
+                "bytes": data.count,
+                "sha256": sha256(data),
+                "components": "x@0,x@15/16,y@0,y@15/16",
+                "primitiveIDPacking": "external-base-case",
+            ])
+        }
+        numeratorResidueRecords.append([
+            "name": probe.name,
+            "role": probe.role,
+            "baseCase": geometry.name,
+            "primitiveMaskCase": geometry.name,
+            "normalizationShift": probe.normalizationShift,
+            "thresholdTargetNumerator":
+                probe.thresholdTargetNumerator,
+            "thresholdTargetDenominator": 64,
+            "productFloorResiduesModulo8":
+                probe.numerators.map {
+                    productFloorResidue(
+                        numerator: $0,
+                        dimension: geometry.width)
+                },
+            "target": [
+                "width": geometry.targetWidth,
+                "height": geometry.targetHeight,
+            ],
+            "crop": [
+                "originX": geometry.originX,
+                "originY": geometry.originY,
+                "width": geometry.width,
+                "height": geometry.height,
+            ],
+            "deltaNumerators": probe.numerators.map {
+                Int($0)
+            },
+            "deltaDenominator": Int(
+                tomographyDeltaDenominator),
+            "deltaBits": probe.numerators.map {
+                bits(
+                    Float($0)
+                    / Float(tomographyDeltaDenominator))
+            },
+            "outputs": outputs,
+        ])
+    }
+
     let arithmeticCases = tomographyCases.filter {
         $0.role == "discovery"
     }
@@ -2510,8 +2825,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 17,
-        "rigVersion": "metal-raster-interpolant-probe-17.0.0",
+        "schemaVersion": 18,
+        "rigVersion": "metal-raster-interpolant-probe-18.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -2549,6 +2864,8 @@ private func run(outputDirectory: URL) throws {
                 "eight low-bit neighbors at 70 schema-15 residuals",
             "numeratorThresholdOutput":
                 "eight product phases at two normalization branches",
+            "numeratorResidueOutput":
+                "64 phase-by-residue product-lattice samples",
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,
@@ -2557,6 +2874,8 @@ private func run(outputDirectory: URL) throws {
             numeratorRefinementRecords,
         "numeratorThresholdCases":
             numeratorThresholdRecords,
+        "numeratorResidueCases":
+            numeratorResidueRecords,
         "arithmeticProbe": [
             "role": "discovery",
             "cases": arithmeticCases.map {

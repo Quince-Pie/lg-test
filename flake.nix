@@ -30,6 +30,7 @@
             # (the captures themselves are produced on GitHub's macos-26
             # runners by .github/workflows/capture.yml).
             packages = with pkgs; [
+              actionlint
               (python314.withPackages (
                 ps: with ps; [
                   numpy
@@ -42,6 +43,7 @@
               ))
               imagemagick
               gh # download artifacts: gh run download -n liquid-glass-captures-<run id>
+              ruff
             ];
           };
         }

@@ -14,7 +14,7 @@ concurrency:
 jobs:
   raster-interpolant-probe:
     runs-on: macos-26
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -73,10 +73,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 17:
+          if manifest.get("schemaVersion") != 18:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-17.0.0"
+              "metal-raster-interpolant-probe-18.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -626,4 +626,10 @@ jobs:
         if: always()
         run: |
           python3 Analysis/validate_raster_threshold.py \
+            raster-interpolant-probe
+
+      - name: Enforce raster lattice-residue evidence
+        if: always()
+        run: |
+          python3 Analysis/validate_raster_residue.py \
             raster-interpolant-probe

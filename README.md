@@ -1800,7 +1800,7 @@ python Analysis/compare_runs.py previous-captures captures \
 ```
 
 The environment includes Python 3.14, NumPy, SciPy, OpenCV, scikit-image,
-Matplotlib, Pillow, ImageMagick, and `gh`.
+Matplotlib, Pillow, ImageMagick, `gh`, `ruff`, and `actionlint`.
 
 The focused `GlassSpatialSweep` target also has two non-destructive
 identification modes for the private clear-material mip path:
@@ -2094,6 +2094,22 @@ widths (`37 + 6k`) are tagged as new holdouts, leaving 158 discovery cases and
 32 unopened holdout cases. A standalone CI validator independently regenerates
 all 190 cases, roles, numerators, float bits, links, sizes, and hashes without
 reading any captured float value.
+
+Raster schema 18 keeps every schema-17 surface, role, and holdout unchanged.
+It adds a 64-sample Cartesian phase/residue matrix for every width and
+reachable normalized quotient branch. Eight preregistered phases include
+zero and `63/64` anchors plus six dense points around the branch's measured
+rounding boundary. At every phase, an exact-integer search groups eligible
+numerators by `floor(product / ulp27) mod 8`, selects the closest unused value
+from every reachable group, and balances the remaining slots across those
+groups. All 64 numerators in a width/branch matrix are unique. This correctly
+handles reciprocal factors with fewer than eight reachable residues while
+preventing float32 masking at one residue from being mistaken for a rounding
+law. The resulting 1,520 cases contain 12,160 new bit-gated surfaces: 1,264
+discovery cases and 256 cases over the same 32 unopened width/branch holdout
+groups. A separate validator independently reconstructs the complete
+selection and verifies metadata, residue coverage, cross-phase uniqueness,
+float bits, sizes, and hashes without interpreting captured holdout values.
 
 ### Geometry-transfer introspection
 
