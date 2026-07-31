@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-exhaustive-fractional-width-reciprocal-selector-calibration",
+  "observedAtPreregistration": false,
+  "objective": "Measure every binary32 mantissa accepted by the fractional-width raster setup, retain bit-exact raw pulls, and test all previously measured selector inputs before treating the remaining finite domain as calibration data.",
+  "sourceEvidence": {
+    "twoStageArithmeticModelFile": "Analysis/model_raster_general_height_arithmetic.py",
+    "twoStageArithmeticModelSha256": "7c8422c940d228eb3c747bc9011abc2b56889865b30d097fdd9d3df1dfd798fb",
+    "twoStageArithmeticEvidence": "zero float-ULP error across 1579640 recovered coefficients",
+    "canonicalSelectorTableSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "generalHeightSelectorRunId": 30670953328,
+    "generalHeightSelectorTableSha256": "0b8ece5b7c2ea05475fd76120987670bf29cf69d16916372af5cf4734fd209af"
+  },
+  "domain": {
+    "caseCount": 8388608,
+    "caseIndex": "binary32 width mantissa",
+    "widthBits": "0x46000000 | caseIndex",
+    "widthRange": "every positive binary32 value in [8192, 16384)",
+    "oppositeEdge": 64,
+    "determinant": "width * 64, exactly representable",
+    "normalizedReciprocalInput": "0x800000 + caseIndex",
+    "reciprocalCandidateNumerator": 281474976710656,
+    "reciprocalCandidates": "exact floor and ceiling of 2^48 / normalizedReciprocalInput, with the all-zero mantissa exponent boundary represented by the exact 2^24 index",
+    "exactPowerBoundaryCount": 1,
+    "unmeasuredGeneralization": "none within the positive normal binary32 mantissa domain"
+  },
+  "witnessSelection": {
+    "builderFile": "Analysis/build_raster_fractional_selector_witness_map.py",
+    "builderSha256": "886646cc7475fb4005adb096d5cc729d53c49a2918153170d136da424435bce1",
+    "reportFile": "Analysis/raster_fractional_selector_witness_map.json",
+    "reportSha256": "da6d9a67b1594df4ca6be304ed5b2a6060c9216555c98d052ceb2c7ecb2d6025",
+    "mapFile": "Analysis/raster_fractional_selector_witness_indices.bin",
+    "mapBytes": 8388608,
+    "mapSha256": "c8562d881275af6178ee239262d047b4fb19d127b4ac7da9ea04648c75e82296",
+    "poolCount": 64,
+    "usedPoolPrefixCount": 41,
+    "poolSha256": "17e0c48b3bc53ae5b66316a81384baf8e39e35a793426f8a7458943df2ca70a2",
+    "selectionRule": "first deterministic pool member whose two candidate coefficient paths differ over the frozen pull positions",
+    "candidateSlopePairSha256": "785738882867b59709bfe125f8e32c1d9fc9d7debec8cef94d848dfe3b08a20f",
+    "distinctCandidateSlopePairCount": 8388607
+  },
+  "sealedControls": {
+    "canonicalIntegerWidthCount": 8192,
+    "canonicalIntegerWidthSelectorSha256": "2c58cdd15e8db020f6a0f22716bf0fbcc4c33edda429724c23094eeb7e87a8fb",
+    "generalHeightPairCount": 32768,
+    "generalHeightPairSha256": "6537e22d40814cfc72e5d0295821f610e77236db8624a67c3e81edc183dfa59c",
+    "generalHeightUniqueMantissaCount": 32215,
+    "crossCorpusOverlapCount": 473,
+    "combinedUniqueControlCount": 39934,
+    "combinedSortedPairSha256": "c24bb5b7ff96924e7c645f2d51291dbb76f45eff4eddb332b8abb685d0f2350c",
+    "discoveryMantissaCount": 8348674,
+    "requiredConflictCount": 0
+  },
+  "captureLayout": {
+    "targetWidth": 64,
+    "targetHeight": 128,
+    "viewportWidth": 32768,
+    "originY": 11,
+    "sampleXs": [
+      0,
+      15,
+      31
+    ],
+    "samplePositionCount": 3,
+    "recordBytes": 8,
+    "recordComponents": [
+      "pull@0,0.5",
+      "pull@15/16,0.5"
+    ],
+    "ordering": "mantissa-major,sample-position-major",
+    "rawBytes": 201326592,
+    "batchCaseCount": 65536,
+    "batchCount": 128
+  },
+  "acceptance": {
+    "allRecordsWrittenFinite": true,
+    "candidateMultiplicityForEveryCase": 1,
+    "canonicalIntegerWidthExactMatchCount": 8192,
+    "generalHeightExactMatchCount": 32768,
+    "crossCorpusConflictCount": 0,
+    "selectorOutput": "one exact floor or ceiling endpoint for every mantissa",
+    "qualityTolerance": "zero bit or selector tolerance"
+  },
+  "limitations": [
+    "The unsealed outputs are an explicitly labeled finite-domain calibration, not a prospective closed-form selector law.",
+    "A successful capture establishes unclipped fractional-width setup with a power-of-two opposite edge; it does not establish clip-generated setup.",
+    "This probe does not establish end-to-end Liquid Glass image parity or authorize any production shader approximation."
+  ]
+}

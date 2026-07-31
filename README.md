@@ -2708,6 +2708,41 @@ Every measured selector is the exact floor or ceiling endpoint of the ideal
 the independently calibrated canonical table. This completes the sampled
 matrix without turning it into an unmeasured portable selector law.
 
+The independently captured run-30556057571 exhaustive Metal fast-reciprocal
+table is not a substitute for that fixed-function raster selector. Doubling
+the exposed binary32 reciprocal significand equals only 16,148 of the 32,768
+resolved raster indices. The raster-minus-doubled-fast distribution is
+`-2: 196`, `-1: 13,628`, `0: 16,148`, and `+1: 2,796`. This rules out silently
+using exposed `fast::divide` while also providing a complete adjacent
+mantissa control for later algorithm analysis.
+
+`raster_fractional_selector_sweep_preregistration.json` freezes the next
+finite-domain experiment before any new Apple output is observed. It encodes
+every one of the 8,388,608 binary32 widths in `[8192, 16384)`, pairs it with
+an exact 64-pixel opposite edge, and therefore sweeps every positive normal
+determinant mantissa without clipping. The only exponent-boundary case is
+recorded explicitly. For each other case, a deterministic offline search
+chooses the first of 64 fixed significands whose exact floor and ceiling
+reciprocal paths are distinguishable at x positions 0, 15, and 31. All
+8,388,607 non-boundary pairs are distinguishable; the 8,388,608-byte witness
+map has SHA-256
+`c8562d881275af6178ee239262d047b4fb19d127b4ac7da9ea04648c75e82296`.
+
+The sweep retains 201,326,592 raw pull bytes rather than uploading only a
+derived selector bit. Its 39,934 unique sealed inputs combine all 8,192
+canonical integer classes with all 32,768 previously resolved general-height
+cases; the remaining 8,348,674 inputs are explicitly labeled calibration.
+The preregistration, witness report, and candidate-slope-pair SHA-256 values
+are
+`942a513d58181b89f857401c0e4341edeca90d07e664cae69e1a6c80679afe0a`,
+`da6d9a67b1594df4ca6be304ed5b2a6060c9216555c98d052ceb2c7ecb2d6025`,
+and
+`785738882867b59709bfe125f8e32c1d9fc9d7debec8cef94d848dfe3b08a20f`.
+A synthetic full-size replay passes every selector and sealed-control gate.
+The real capture can complete the finite mantissa table and fractional-width
+setup; it still cannot establish clipped setup, a compact closed-form law, or
+end-to-end image parity by itself.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
