@@ -3602,10 +3602,17 @@ private func probeDrawIndexedPrimitivesBaseVertex(
         baseInstance: baseInstance)
 }
 
+private let glassBackgroundRenderSymbol =
+    "_ZN2CA3OGL21GlassBackgroundFilter6renderEPKNS_6Render6Filter" +
+    "EPKNS0_5LayerERNS0_7ContextEfPPNS0_7SurfaceEPfS8_" +
+    "PKNS_11ColorMatrixE"
+private let glassBackgroundRenderCodeByteCount = 0x2000
+
 private func glassUniformCallSiteEvidence() -> [String: Any] {
     let returnAddresses =
         Array(Thread.callStackReturnAddresses.prefix(32))
     var quartzCoreCodeWindows = 0
+    var glassBackgroundRenderCodeCaptures = 0
     let frames: [[String: Any]] = returnAddresses.enumerated().map {
         index, number in
         let addressValue = UInt(truncating: number)
@@ -3656,6 +3663,37 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
                     format: "0x%llx",
                     UInt64(addressValue - symbolAddress))
             }
+
+            if imagePath?.contains(
+                    "/QuartzCore.framework/") == true,
+               record["symbol"] as? String
+                    == glassBackgroundRenderSymbol,
+               let imageBasePointer = info.dli_fbase
+            {
+                let imageBase = UInt(bitPattern: imageBasePointer)
+                let bytes = Array(UnsafeRawBufferPointer(
+                    start: UnsafeRawPointer(symbolPointer),
+                    count: glassBackgroundRenderCodeByteCount))
+                record["symbolCode"] = [
+                    "class":
+                        "mapped arm64e QuartzCore symbol prefix",
+                    "symbol": glassBackgroundRenderSymbol,
+                    "startAddress": String(
+                        format: "0x%016llx",
+                        UInt64(symbolAddress)),
+                    "imageOffset": String(
+                        format: "0x%llx",
+                        UInt64(symbolAddress - imageBase)),
+                    "requestedByteCount":
+                        glassBackgroundRenderCodeByteCount,
+                    "lengthBytes": bytes.count,
+                    "hex": Data(bytes).map {
+                        String(format: "%02x", $0)
+                    }.joined(),
+                    "sha256": transitionSHA256(Data(bytes)),
+                ]
+                glassBackgroundRenderCodeCaptures += 1
+            }
         }
 
         guard quartzCoreCodeWindows < 8,
@@ -3695,12 +3733,14 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
         return record
     }
     return [
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "executed": true,
         "capture":
             "transition-matrix-uniform-01-neutral-axes",
         "frameCount": frames.count,
         "quartzCoreCodeWindowCount": quartzCoreCodeWindows,
+        "glassBackgroundRenderCodeCaptureCount":
+            glassBackgroundRenderCodeCaptures,
         "frames": frames,
     ]
 }

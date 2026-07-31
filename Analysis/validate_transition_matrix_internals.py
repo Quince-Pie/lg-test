@@ -11,6 +11,13 @@ class MatrixInternalsValidationError(ValueError):
     """The captured constructor evidence is incomplete or inconsistent."""
 
 
+GLASS_BACKGROUND_RENDER_SYMBOL = (
+    "_ZN2CA3OGL21GlassBackgroundFilter6renderEPKNS_6Render6Filter"
+    "EPKNS0_5LayerERNS0_7ContextEfPPNS0_7SurfaceEPfS8_"
+    "PKNS_11ColorMatrixE"
+)
+
+
 def _fail(message: str) -> Never:
     raise MatrixInternalsValidationError(message)
 
@@ -216,7 +223,7 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
         )
     call_site = _mapping(call_sites[0], "uniformCallSite")
     if (
-        call_site.get("schemaVersion") != 1
+        call_site.get("schemaVersion") != 2
         or call_site.get("executed") is not True
         or call_site.get("capture")
         != "transition-matrix-uniform-01-neutral-axes"
@@ -227,6 +234,7 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
     if call_site.get("frameCount") != len(frames) or not frames:
         _fail("uniformCallSite frame count differs")
     code_window_count = 0
+    render_code_count = 0
     for expected_index, value in enumerate(frames):
         frame = _mapping(value, f"uniformCallSite.frames[{expected_index}]")
         if frame.get("index") != expected_index:
@@ -246,6 +254,67 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
             )
             if return_address != image_base + image_offset:
                 _fail("uniformCallSite image offset is inconsistent")
+
+        symbol_code_value = frame.get("symbolCode")
+        if symbol_code_value is not None:
+            if frame.get("symbol") != GLASS_BACKGROUND_RENDER_SYMBOL:
+                _fail("uniformCallSite symbol-code owner differs")
+            image_path = frame.get("imagePath")
+            if (
+                not isinstance(image_path, str)
+                or "/QuartzCore.framework/" not in image_path
+            ):
+                _fail("uniformCallSite symbol code is not from QuartzCore")
+            image_base = _hex_integer(
+                frame.get("imageBase"),
+                "uniformCallSite symbol-code imageBase",
+            )
+            symbol_address = _hex_integer(
+                frame.get("symbolAddress"),
+                "uniformCallSite symbolAddress",
+            )
+            symbol_offset = _hex_integer(
+                frame.get("symbolOffset"),
+                "uniformCallSite symbolOffset",
+            )
+            if return_address != symbol_address + symbol_offset:
+                _fail("uniformCallSite symbol offset is inconsistent")
+            symbol_code = _mapping(
+                symbol_code_value,
+                "uniformCallSite symbolCode",
+            )
+            if (
+                symbol_code.get("symbol")
+                != GLASS_BACKGROUND_RENDER_SYMBOL
+                or symbol_code.get("requestedByteCount") != 0x2000
+            ):
+                _fail("uniformCallSite symbol-code metadata differs")
+            code = _byte_capture(
+                symbol_code,
+                field="uniformCallSite symbolCode",
+                expected_class=(
+                    "mapped arm64e QuartzCore symbol prefix"
+                ),
+                expected_length=0x2000,
+            )
+            start_address = _hex_integer(
+                symbol_code.get("startAddress"),
+                "uniformCallSite symbol-code startAddress",
+            )
+            image_offset = _hex_integer(
+                symbol_code.get("imageOffset"),
+                "uniformCallSite symbol-code imageOffset",
+            )
+            if (
+                start_address != symbol_address
+                or symbol_address != image_base + image_offset
+            ):
+                _fail(
+                    "uniformCallSite symbol-code address is inconsistent"
+                )
+            if not any(code):
+                _fail("uniformCallSite symbol code is entirely zero")
+            render_code_count += 1
 
         code_value = frame.get("codeWindow")
         if code_value is None:
@@ -290,3 +359,9 @@ def validate_glass_uniform_call_site(matrix_basis: object) -> None:
         != code_window_count
     ):
         _fail("uniformCallSite QuartzCore code-window count differs")
+    if (
+        render_code_count != 1
+        or call_site.get("glassBackgroundRenderCodeCaptureCount")
+        != render_code_count
+    ):
+        _fail("uniformCallSite glass render-code count differs")

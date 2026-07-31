@@ -5,6 +5,7 @@ import hashlib
 import unittest
 
 from validate_transition_matrix_internals import (
+    GLASS_BACKGROUND_RENDER_SYMBOL,
     MatrixInternalsValidationError,
     validate_glass_uniform_call_site,
     validate_vibrant_matrix_internals,
@@ -62,13 +63,16 @@ def _valid_basis() -> dict[str, object]:
 
 def _valid_call_site_basis() -> dict[str, object]:
     return_address = 0x0000_0001_8000_1400
+    symbol_address = 0x0000_0001_8000_0800
     code = bytes.fromhex("1f2003d5") * (0x800 // 4)
+    symbol_code = bytes.fromhex("7f2303d5") * (0x2000 // 4)
     call_site = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "executed": True,
         "capture": "transition-matrix-uniform-01-neutral-axes",
         "frameCount": 1,
         "quartzCoreCodeWindowCount": 1,
+        "glassBackgroundRenderCodeCaptureCount": 1,
         "frames": [
             {
                 "index": 0,
@@ -79,6 +83,19 @@ def _valid_call_site_basis() -> dict[str, object]:
                 ),
                 "imageBase": "0x0000000180000000",
                 "imageOffset": "0x1400",
+                "symbol": GLASS_BACKGROUND_RENDER_SYMBOL,
+                "symbolAddress": f"0x{symbol_address:016x}",
+                "symbolOffset": "0xc00",
+                "symbolCode": {
+                    **_capture(
+                        symbol_code,
+                        "mapped arm64e QuartzCore symbol prefix",
+                    ),
+                    "symbol": GLASS_BACKGROUND_RENDER_SYMBOL,
+                    "startAddress": f"0x{symbol_address:016x}",
+                    "imageOffset": "0x800",
+                    "requestedByteCount": 0x2000,
+                },
                 "codeWindow": {
                     **_capture(
                         code,
@@ -193,6 +210,22 @@ class GlassUniformCallSiteValidatorTests(unittest.TestCase):
         with self.assertRaisesRegex(
             MatrixInternalsValidationError,
             "image offset",
+        ):
+            validate_glass_uniform_call_site(basis)
+
+    def test_rejects_changed_symbol_code_byte(self) -> None:
+        basis = copy.deepcopy(_valid_call_site_basis())
+        records = basis["records"]
+        assert isinstance(records, list)
+        call_site = records[0]["render"][
+            "glassFragmentUniformBindings"
+        ][0]["uniformCallSite"]
+        symbol_code = call_site["frames"][0]["symbolCode"]
+        encoded = str(symbol_code["hex"])
+        symbol_code["hex"] = "00" + encoded[2:]
+        with self.assertRaisesRegex(
+            MatrixInternalsValidationError,
+            "sha256",
         ):
             validate_glass_uniform_call_site(basis)
 
