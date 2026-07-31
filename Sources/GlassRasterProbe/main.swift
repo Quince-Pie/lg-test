@@ -1289,6 +1289,14 @@ private func numeratorTomographyCases()
         "tomography-discovery-factor-h064-w062",
         "tomography-discovery-factor-h064-w081",
         "tomography-discovery-factor-h064-w088",
+        "tomography-discovery-factor-h064-w076",
+        "tomography-discovery-factor-h064-w089",
+        "tomography-discovery-factor-h064-w119",
+        "tomography-discovery-factor-h064-w083",
+        "tomography-discovery-factor-h064-w086",
+        "tomography-discovery-factor-h064-w124",
+        "tomography-discovery-factor-h064-w098",
+        "tomography-discovery-factor-h064-w093",
     ]
     let geometryByName = Dictionary(
         uniqueKeysWithValues: tomographyCases.map {
@@ -1328,7 +1336,7 @@ private func numeratorTomographyCases()
                 numerators: bankNumerators))
         }
     }
-    precondition(result.count == 512)
+    precondition(result.count == 768)
     precondition(Set(result.map(\.name)).count == result.count)
     return result
 }
@@ -2142,8 +2150,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 14,
-        "rigVersion": "metal-raster-interpolant-probe-14.0.0",
+        "schemaVersion": 15,
+        "rigVersion": "metal-raster-interpolant-probe-15.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -2176,7 +2184,7 @@ private func run(outputDirectory: URL) throws {
             "factorizedReciprocalOutput":
                 "128 power-of-two-edge determinant controls",
             "numeratorTomographyOutput":
-                "256 normalized numerator mantissas on 16 geometries",
+                "256 normalized numerator mantissas on 24 geometries",
         ],
         "cases": records,
         "reciprocalTomographyCases": tomographyRecords,

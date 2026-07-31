@@ -1983,6 +1983,15 @@ non-power factorization result, while their y coefficients provide exact
 power-of-two division controls. CI regenerates all 512 bank records and hashes
 all 4,096 numerator surfaces without authorizing any holdout access.
 
+Raster schema 15 keeps every schema-14 surface and holdout unchanged and
+appends the eight height-64 controls whose widths equal the original
+counterexamples' heights. These provide the missing power-of-two-edge
+counterpart for each original y coefficient. The 768 bank records now expose
+6,144 numerator surfaces: 4,096 matched original-versus-control slope samples
+across both axes, plus power-of-two y controls. CI independently regenerates
+the expanded ordered base list and continues to reject every holdout name and
+role from numerator tomography.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate
