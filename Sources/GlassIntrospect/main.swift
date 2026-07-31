@@ -1973,31 +1973,76 @@ private enum ProbeGeometry: String {
     }
 }
 
+@MainActor
+private final class TransitionProbeModel: ObservableObject {
+    @Published var visible = true
+}
+
 private struct ProbeView: View {
     let material: ProbeMaterial
     let geometry: ProbeGeometry
+    let transitionTimelineEnabled: Bool
+    @ObservedObject var transitionModel: TransitionProbeModel
+
+    @ViewBuilder
+    private var staticGlassShape: some View {
+        if material == .regular {
+            Color.clear
+                .frame(
+                    width: geometry.width,
+                    height: geometry.width)
+                .glassEffect(.regular, in: .circle)
+                .offset(
+                    x: geometry.center.x - 512,
+                    y: geometry.center.y - 512)
+        } else {
+            Color.clear
+                .frame(
+                    width: geometry.width,
+                    height: geometry.width)
+                .glassEffect(.clear, in: .circle)
+                .offset(
+                    x: geometry.center.x - 512,
+                    y: geometry.center.y - 512)
+        }
+    }
+
+    @ViewBuilder
+    private var transitionGlassShape: some View {
+        if material == .regular {
+            Color.clear
+                .frame(
+                    width: geometry.width,
+                    height: geometry.width)
+                .glassEffect(.regular, in: .circle)
+                .glassEffectTransition(.materialize)
+                .offset(
+                    x: geometry.center.x - 512,
+                    y: geometry.center.y - 512)
+        } else {
+            Color.clear
+                .frame(
+                    width: geometry.width,
+                    height: geometry.width)
+                .glassEffect(.clear, in: .circle)
+                .glassEffectTransition(.materialize)
+                .offset(
+                    x: geometry.center.x - 512,
+                    y: geometry.center.y - 512)
+        }
+    }
 
     var body: some View {
         ZStack {
             DiagnosticBackground()
-            if material == .regular {
-                Color.clear
-                    .frame(
-                        width: geometry.width,
-                        height: geometry.width)
-                    .glassEffect(.regular, in: .circle)
-                    .offset(
-                        x: geometry.center.x - 512,
-                        y: geometry.center.y - 512)
+            if transitionTimelineEnabled {
+                GlassEffectContainer(spacing: 0) {
+                    if transitionModel.visible {
+                        transitionGlassShape
+                    }
+                }
             } else {
-                Color.clear
-                    .frame(
-                        width: geometry.width,
-                        height: geometry.width)
-                    .glassEffect(.clear, in: .circle)
-                    .offset(
-                        x: geometry.center.x - 512,
-                        y: geometry.center.y - 512)
+                staticGlassShape
             }
         }
         .frame(width: 1024, height: 1024)
@@ -11429,6 +11474,199 @@ private func carendererEvidence(
     ]
 }
 
+private func transitionAnimationDescription(
+    _ animation: CAAnimation
+) -> [String: Any] {
+    var record: [String: Any] = [
+        "class": String(reflecting: type(of: animation)),
+        "beginTime": animation.beginTime,
+        "duration": animation.duration,
+        "speed": animation.speed,
+        "timeOffset": animation.timeOffset,
+        "repeatCount": animation.repeatCount,
+        "repeatDuration": animation.repeatDuration,
+        "autoreverses": animation.autoreverses,
+        "fillMode": animation.fillMode.rawValue,
+        "isRemovedOnCompletion": animation.isRemovedOnCompletion,
+    ]
+    if let timingFunction = animation.timingFunction {
+        record["timingFunction"] = String(describing: timingFunction)
+    }
+    if let property = animation as? CAPropertyAnimation {
+        record["keyPath"] = property.keyPath
+        record["isAdditive"] = property.isAdditive
+        record["isCumulative"] = property.isCumulative
+        record["valueFunction"] = scalarDescription(property.valueFunction)
+    }
+    if let basic = animation as? CABasicAnimation {
+        record["fromValue"] = scalarDescription(basic.fromValue)
+        record["toValue"] = scalarDescription(basic.toValue)
+        record["byValue"] = scalarDescription(basic.byValue)
+    }
+    if let keyframe = animation as? CAKeyframeAnimation {
+        record["values"] = keyframe.values?.map {
+            scalarDescription($0) ?? "nil"
+        }
+        record["keyTimes"] = keyframe.keyTimes
+        record["timingFunctions"] = keyframe.timingFunctions?.map {
+            String(describing: $0)
+        }
+        record["calculationMode"] = keyframe.calculationMode.rawValue
+        record["rotationMode"] = keyframe.rotationMode?.rawValue
+        record["tensionValues"] = keyframe.tensionValues
+        record["continuityValues"] = keyframe.continuityValues
+        record["biasValues"] = keyframe.biasValues
+    }
+    if let spring = animation as? CASpringAnimation {
+        record["mass"] = spring.mass
+        record["stiffness"] = spring.stiffness
+        record["damping"] = spring.damping
+        record["initialVelocity"] = spring.initialVelocity
+        record["settlingDuration"] = spring.settlingDuration
+    }
+    if let group = animation as? CAAnimationGroup {
+        record["animations"] = group.animations?.map {
+            transitionAnimationDescription($0)
+        }
+    }
+    return record
+}
+
+private func transitionAnimationInventory(
+    _ layer: CALayer,
+    path: [Int] = []
+) -> [[String: Any]] {
+    var records: [[String: Any]] = []
+    let keys = layer.animationKeys() ?? []
+    if !keys.isEmpty {
+        var record: [String: Any] = [
+            "path": path,
+            "class": String(reflecting: type(of: layer)),
+            "localMediaTime":
+                layer.convertTime(CACurrentMediaTime(), from: nil),
+            "layerBeginTime": layer.beginTime,
+            "layerDuration": layer.duration,
+            "layerSpeed": layer.speed,
+            "layerTimeOffset": layer.timeOffset,
+            "animations": keys.compactMap { key -> [String: Any]? in
+                guard let animation = layer.animation(forKey: key) else {
+                    return nil
+                }
+                return [
+                    "key": key,
+                    "animation":
+                        transitionAnimationDescription(animation),
+                ]
+            },
+        ]
+        if let name = layer.name {
+            record["name"] = name
+        }
+        records.append(record)
+    }
+    for (index, child) in (layer.sublayers ?? []).enumerated() {
+        records.append(contentsOf: transitionAnimationInventory(
+            child,
+            path: path + [index]))
+    }
+    return records
+}
+
+private func transitionTimelineFrameEvidence(
+    rootLayer: CALayer,
+    device: MTLDevice,
+    capture: String,
+    frameTime: CFTimeInterval,
+    progress: Double,
+    outputDirectory: URL
+) -> [String: Any] {
+    let bounds = rootLayer.bounds.standardized
+    let width = Int(ceil(bounds.width))
+    let height = Int(ceil(bounds.height))
+    guard width > 0,
+          height > 0,
+          width <= 1_024,
+          height <= 1_024
+    else {
+        return [
+            "executed": false,
+            "reason": "root layer exceeds transition probe bounds",
+            "progress": progress,
+            "frameTime": frameTime,
+        ]
+    }
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .bgra8Unorm,
+        width: width,
+        height: height,
+        mipmapped: false)
+    descriptor.storageMode = .private
+    descriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
+    guard let output = device.makeTexture(descriptor: descriptor),
+          let commandQueue = device.makeCommandQueue(),
+          let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
+    else {
+        return [
+            "executed": false,
+            "reason": "transition probe Metal resources unavailable",
+            "progress": progress,
+            "frameTime": frameTime,
+        ]
+    }
+    let renderer = CARenderer(
+        mtlTexture: output,
+        options: [
+            kCARendererColorSpace: colorSpace,
+            kCARendererMetalCommandQueue: commandQueue,
+        ])
+    renderer.layer = rootLayer
+    renderer.bounds = bounds
+
+    MetalUniformProbe.shared.beginCapture(capture)
+    renderer.beginFrame(atTime: frameTime, timeStamp: nil)
+    renderer.addUpdate(bounds)
+    renderer.render()
+    renderer.endFrame()
+    guard let completion = commandQueue.makeCommandBuffer() else {
+        MetalUniformProbe.shared.endCapture()
+        return [
+            "executed": false,
+            "reason": "transition probe completion command unavailable",
+            "progress": progress,
+            "frameTime": frameTime,
+        ]
+    }
+    completion.commit()
+    completion.waitUntilCompleted()
+    MetalUniformProbe.shared.endCapture()
+    guard completion.status == .completed else {
+        return [
+            "executed": false,
+            "reason":
+                completion.error?.localizedDescription
+                    ?? "transition probe render failed",
+            "progress": progress,
+            "frameTime": frameTime,
+        ]
+    }
+    return [
+        "executed": true,
+        "progress": progress,
+        "frameTime": frameTime,
+        "output": carendererOutputSnapshot(
+            output,
+            commandQueue: commandQueue,
+            capture: capture,
+            outputDirectory: outputDirectory),
+        "metalBufferSnapshots":
+            MetalUniformProbe.shared.snapshotBuffers(capture: capture),
+        "metalCommandProvenance":
+            MetalUniformProbe.shared.commandProvenance(capture: capture),
+        "metalUniformProbe":
+            MetalUniformProbe.shared.report(capture: capture),
+    ]
+}
+
 private typealias ObjCBoolGetterFunction =
     @convention(c) (AnyObject, Selector) -> Bool
 private typealias ObjCBoolSetterFunction =
@@ -11620,6 +11858,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
     private let material: ProbeMaterial
     private let appearance: ProbeAppearance
     private let geometry: ProbeGeometry
+    private let transitionTimelineEnabled: Bool
+    private let transitionModel: TransitionProbeModel
     private var window: ProbeWindow!
     private var captureStarted = false
     private var captureError: String?
@@ -11637,6 +11877,11 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         self.material = material
         self.appearance = appearance
         self.geometry = geometry
+        transitionTimelineEnabled =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_TIMELINE"
+            ] == "1"
+        transitionModel = TransitionProbeModel()
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -11646,22 +11891,25 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 withIntermediateDirectories: true)
 
             _ = MetalUniformProbe.shared.install()
-            let manager = MTLCaptureManager.shared()
-            if manager.supportsDestination(.gpuTraceDocument),
-               let device = MTLCreateSystemDefaultDevice() {
-                let descriptor = MTLCaptureDescriptor()
-                descriptor.captureObject = device
-                descriptor.destination = .gpuTraceDocument
-                descriptor.outputURL = traceURL
-                do {
-                    try manager.startCapture(with: descriptor)
-                    captureStarted = true
-                } catch {
-                    captureError = error.localizedDescription
+            if !transitionTimelineEnabled {
+                let manager = MTLCaptureManager.shared()
+                if manager.supportsDestination(.gpuTraceDocument),
+                   let device = MTLCreateSystemDefaultDevice() {
+                    let descriptor = MTLCaptureDescriptor()
+                    descriptor.captureObject = device
+                    descriptor.destination = .gpuTraceDocument
+                    descriptor.outputURL = traceURL
+                    do {
+                        try manager.startCapture(with: descriptor)
+                        captureStarted = true
+                    } catch {
+                        captureError = error.localizedDescription
+                    }
+                } else {
+                    captureError =
+                        "gpuTraceDocument destination or "
+                        + "default device unavailable"
                 }
-            } else {
-                captureError =
-                    "gpuTraceDocument destination or default device unavailable"
             }
 
             window = ProbeWindow(
@@ -11680,7 +11928,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             window.contentView = NSHostingView(
                 rootView: ProbeView(
                     material: material,
-                    geometry: geometry))
+                    geometry: geometry,
+                    transitionTimelineEnabled:
+                        transitionTimelineEnabled,
+                    transitionModel: transitionModel))
             window.setFrameOrigin(.zero)
             NSApplication.shared.activate(ignoringOtherApps: true)
             window.makeKeyAndOrderFront(nil)
@@ -11690,11 +11941,120 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 try? await Task.sleep(for: .seconds(2))
                 window.displayIfNeeded()
                 try? await Task.sleep(for: .milliseconds(250))
-                finish()
+                if transitionTimelineEnabled {
+                    await captureTransitionTimeline()
+                } else {
+                    finish()
+                }
             }
         } catch {
             FileHandle.standardError.write(
                 Data("introspection setup failed: \(error)\n".utf8))
+            exit(1)
+        }
+    }
+
+    private func captureTransitionTimeline() async {
+        let reportURL = outputDirectory.appendingPathComponent(
+            "transition-timeline.json")
+        do {
+            guard let rootLayer = window.contentView?.layer,
+                  let device = MTLCreateSystemDefaultDevice()
+            else {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 1,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "transition model, root layer, or Metal "
+                            + "device unavailable",
+                    ])
+            }
+
+            let duration = 300.0
+            let sampleCount = 33
+            let triggerBeforeCommit = CACurrentMediaTime()
+            withAnimation(.linear(duration: duration)) {
+                transitionModel.visible = false
+            }
+            window.displayIfNeeded()
+            CATransaction.flush()
+            let triggerAfterCommit = CACurrentMediaTime()
+            try? await Task.sleep(for: .milliseconds(100))
+            let observationMediaTime = CACurrentMediaTime()
+            let animationInventory =
+                transitionAnimationInventory(rootLayer)
+            let modelLayerTree = layerDescription(rootLayer)
+            let presentationLayerTree =
+                rootLayer.presentation().map(layerDescription)
+
+            var samples: [[String: Any]] = []
+            samples.reserveCapacity(sampleCount)
+            for index in 0..<sampleCount {
+                let progress =
+                    Double(index) / Double(sampleCount - 1)
+                let capture = String(
+                    format: "transition-dematerialize-%02d",
+                    index)
+                samples.append(transitionTimelineFrameEvidence(
+                    rootLayer: rootLayer,
+                    device: device,
+                    capture: capture,
+                    frameTime:
+                        triggerBeforeCommit + progress * duration,
+                    progress: progress,
+                    outputDirectory: outputDirectory))
+            }
+
+            let failedSamples = samples.filter {
+                $0["executed"] as? Bool != true
+            }.count
+            var report: [String: Any] = [
+                "schemaVersion": 1,
+                "probe":
+                    "deterministic-carenderer-dematerialize-timeline",
+                "material": material.rawValue,
+                "appearance": appearance.rawValue,
+                "geometry": geometry.evidence,
+                "animationCurve": "linear",
+                "animationDurationSeconds": duration,
+                "sampleCount": sampleCount,
+                "sampleProgressRule": "index/(sampleCount-1)",
+                "frameTimeOrigin": triggerBeforeCommit,
+                "triggerMediaTimeBeforeCommit":
+                    triggerBeforeCommit,
+                "triggerMediaTimeAfterCommit":
+                    triggerAfterCommit,
+                "observationMediaTime": observationMediaTime,
+                "animationInventory": animationInventory,
+                "modelLayerTree": modelLayerTree,
+                "samples": samples,
+                "failedSamples": failedSamples,
+            ]
+            if let presentationLayerTree {
+                report["presentationLayerTreeAtObservation"] =
+                    presentationLayerTree
+            }
+            try writeJSON(report, to: reportURL)
+            exit(failedSamples == 0 ? 0 : 1)
+        } catch {
+            try? writeJSON(
+                [
+                    "schemaVersion": 1,
+                    "probe":
+                        "deterministic-carenderer-dematerialize-timeline",
+                    "material": material.rawValue,
+                    "appearance": appearance.rawValue,
+                    "error": error.localizedDescription,
+                ],
+                to: reportURL)
+            FileHandle.standardError.write(
+                Data(
+                    (
+                        "transition timeline capture failed: "
+                        + error.localizedDescription
+                        + "\n"
+                    ).utf8))
             exit(1)
         }
     }

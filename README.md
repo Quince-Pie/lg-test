@@ -1680,6 +1680,21 @@ Return each complete artifact, including `manifest.json` and
 `validation.json`. Do not merge their directories: the manifest duration and
 state history are part of the evidence.
 
+The black-box transition frames also expose a stricter identification
+problem: their monotonic clock measures WindowServer presentation time, not
+the private Core Animation state that drives `GlassEffectTransition`.
+Independent sequences can therefore begin at different clock coordinates even
+when their normalized material law is identical. The focused **Introspect
+Liquid Glass transition** workflow removes that scheduler variable. It applies
+a 300-second linear dematerialize transaction, asks `CARenderer` for the same
+real layer tree at 33 exact virtual times, and records the Core Animation
+objects, rendered BGRA output, Metal command provenance, and live fragment
+uniform buffers for clear/regular glass in light/dark appearance. Transition
+introspection schema 1 fails closed unless all 33 outputs are complete and at
+least one genuine `glass_background` profile buffer is present. These samples
+identify whether Apple changes layer opacity, SDF geometry, or glass-profile
+fields; they do not replace the compositor-captured dynamic holdout.
+
 ## Run locally on macOS 26
 
 ```sh
