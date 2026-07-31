@@ -11996,7 +11996,8 @@ private func transitionVibrantMatrixInternalsEvidence()
         ]
     }
     let dataPage = UInt(signedDataPage)
-    let dataCaptureAddress = dataPage + dataCaptureOffset
+    let dataCaptureAddress =
+        dataPage + UInt(dataCaptureOffset)
     guard let dataPointer = UnsafeRawPointer(
             bitPattern: dataCaptureAddress)
     else {
