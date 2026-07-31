@@ -2174,6 +2174,7 @@ func capturePresentedAnimation(
     var transientFailures = 0
     var boundedClockProbes = 0
     var fullFrameCaptures = 0
+    var lastProbeProgress = 0.0
 
     while ProcessInfo.processInfo.systemUptime < endpointDeadline {
         captureAttempts += 1
@@ -2201,6 +2202,7 @@ func capturePresentedAnimation(
                 1,
                 max(0, try presentationProgress(
                     in: probe, backingScale: backingScale)))
+            lastProbeProgress = presented
             let index = min(
                 finalIndex,
                 max(0, Int((presented * Double(finalIndex)).rounded())))
@@ -2244,6 +2246,23 @@ func capturePresentedAnimation(
         Thread.sleep(forTimeInterval: 0.001)
     }
 
+    // A bounded clock region can become visible one compositor generation
+    // before the same layer appears in a full-window snapshot. Capture the
+    // endpoint at the same two-refresh delay already proven by the clock
+    // preflight. This happens after live sampling, so it cannot open a hole in
+    // the timeline, and its own embedded full-frame clock is still the label.
+    if lastProbeProgress >= 0.995 {
+        let endpointTime =
+            animationStart + duration + 2 / max(refreshRate, 1)
+        let now = ProcessInfo.processInfo.systemUptime
+        if endpointTime > now {
+            Thread.sleep(forTimeInterval: endpointTime - now)
+        }
+        let endpointFrame = try captureRawWindow(windowID)
+        fullFrameCaptures += 1
+        candidates[finalIndex] = (0, endpointFrame)
+    }
+
     // The bounded probe controls only acquisition cadence. Decode the clock
     // embedded in every retained full screenshot after the animation, then
     // bin and timestamp from that full screenshot alone. A probe/full race
@@ -2285,7 +2304,14 @@ func capturePresentedAnimation(
           endpoint.presentationProgress >= 0.995
     else {
         if let lastError { throw lastError }
-        throw RigError.capture("animation endpoint was not presented before deadline")
+        let maximumPresented = bestByIndex.values.map(
+            \.presentationProgress
+        ).max() ?? 0
+        throw RigError.capture(
+            "animation endpoint was not presented before deadline; "
+            + "probe=\(lastProbeProgress), "
+            + "full-frame=\(maximumPresented), "
+            + "surface=\(clockProbeSurface)")
     }
     return DynamicCaptureResult(
         frames: bestByIndex.keys.sorted().compactMap { bestByIndex[$0] },
