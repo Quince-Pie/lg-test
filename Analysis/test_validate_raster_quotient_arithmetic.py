@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the schema-21 quotient arithmetic validator."""
+"""Tests for the schema-22 quotient arithmetic validator."""
 
 import unittest
 

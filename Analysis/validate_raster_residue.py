@@ -8,8 +8,8 @@ import struct
 from pathlib import Path
 
 
-SCHEMA_VERSION = 21
-RIG_VERSION = "metal-raster-interpolant-probe-21.0.0"
+SCHEMA_VERSION = 22
+RIG_VERSION = "metal-raster-interpolant-probe-22.0.0"
 HOLDOUT_WIDTHS = frozenset(range(37, 128, 6))
 TARGET_NUMERATORS_BY_SHIFT = {
     0: (0, 40, 42, 44, 46, 48, 50, 63),
@@ -83,17 +83,13 @@ def residue_candidate_groups(dimension, normalization_shift):
         modulus = 1 << product_shift
         remainder = product & (modulus - 1)
         floor_index = product >> product_shift
-        candidates[floor_index & 7].append(
-            (numerator, remainder, modulus)
-        )
+        candidates[floor_index & 7].append((numerator, remainder, modulus))
     return candidates
 
 
 def residue_numerator_banks(dimension, normalization_shift):
     candidates = residue_candidate_groups(dimension, normalization_shift)
-    reachable_residues = [
-        residue for residue, group in enumerate(candidates) if group
-    ]
+    reachable_residues = [residue for residue, group in enumerate(candidates) if group]
     if not reachable_residues:
         return None
 
@@ -123,8 +119,7 @@ def residue_numerator_banks(dimension, normalization_shift):
         selected = []
         while len(selected) < 8:
             minimum_count = min(
-                selected_count[residue]
-                for residue in reachable_residues
+                selected_count[residue] for residue in reachable_residues
             )
             eligible = [
                 residue
@@ -135,31 +130,21 @@ def residue_numerator_banks(dimension, normalization_shift):
                 eligible,
                 key=lambda item: (
                     abs(
-                        TARGET_DENOMINATOR
-                        * available[item][selected_count[item]][1]
-                        - target_numerator
-                        * available[item][selected_count[item]][2]
+                        TARGET_DENOMINATOR * available[item][selected_count[item]][1]
+                        - target_numerator * available[item][selected_count[item]][2]
                     ),
                     available[item][selected_count[item]][0],
                     item,
                 ),
             )
-            selected.append(
-                available[residue][selected_count[residue]][0]
-            )
+            selected.append(available[residue][selected_count[residue]][0])
             selected_count[residue] += 1
 
         selected_residues = {
-            product_floor_residue(numerator, dimension)
-            for numerator in selected
+            product_floor_residue(numerator, dimension) for numerator in selected
         }
-        if (
-            len(set(selected)) != 8
-            or selected_residues != set(reachable_residues)
-        ):
-            raise ValueError(
-                "residue selection does not cover its reachable lattice"
-            )
+        if len(set(selected)) != 8 or selected_residues != set(reachable_residues):
+            raise ValueError("residue selection does not cover its reachable lattice")
         used_numerators.update(selected)
         banks.append(selected)
     if len(used_numerators) != 64:
@@ -206,8 +191,7 @@ def expected_residue_records():
                         ],
                         "numerators": numerators,
                         "deltaBits": [
-                            float32_bits(numerator / 65_536)
-                            for numerator in numerators
+                            float32_bits(numerator / 65_536) for numerator in numerators
                         ],
                     }
                 )
@@ -243,15 +227,9 @@ def validate(root):
             "role": record.get("role"),
             "baseCase": record.get("baseCase"),
             "normalizationShift": record.get("normalizationShift"),
-            "thresholdTargetNumerator": record.get(
-                "thresholdTargetNumerator"
-            ),
-            "thresholdTargetDenominator": record.get(
-                "thresholdTargetDenominator"
-            ),
-            "productFloorResiduesModulo8": record.get(
-                "productFloorResiduesModulo8"
-            ),
+            "thresholdTargetNumerator": record.get("thresholdTargetNumerator"),
+            "thresholdTargetDenominator": record.get("thresholdTargetDenominator"),
+            "productFloorResiduesModulo8": record.get("productFloorResiduesModulo8"),
             "numerators": record.get("deltaNumerators"),
             "deltaBits": record.get("deltaBits"),
         }
@@ -277,9 +255,8 @@ def validate(root):
             raise ValueError(f"{name} residue metadata differs")
 
         outputs = record.get("outputs", [])
-        if (
-            len(outputs) != 8
-            or {output.get("deltaIndex") for output in outputs} != set(range(8))
+        if len(outputs) != 8 or {output.get("deltaIndex") for output in outputs} != set(
+            range(8)
         ):
             raise ValueError(f"{name} residue outputs differ")
         expected_bytes = crop["width"] * crop["height"] * 16

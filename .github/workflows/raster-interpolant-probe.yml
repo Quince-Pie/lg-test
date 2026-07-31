@@ -74,10 +74,10 @@ jobs:
               encoding="utf-8",
           ) as stream:
               manifest = json.load(stream)
-          if manifest.get("schemaVersion") != 21:
+          if manifest.get("schemaVersion") != 22:
               raise SystemExit("raster-interpolant schema differs")
           if manifest.get("rigVersion") != (
-              "metal-raster-interpolant-probe-21.0.0"
+              "metal-raster-interpolant-probe-22.0.0"
           ):
               raise SystemExit("raster-interpolant rig differs")
           records = manifest.get("cases", [])
@@ -639,6 +639,12 @@ jobs:
         if: always()
         run: |
           python3 Analysis/validate_raster_quotient_corpus.py \
+            raster-interpolant-probe
+
+      - name: Enforce sealed raster quotient holdout evidence
+        if: always()
+        run: |
+          python3 Analysis/validate_raster_quotient_holdout.py \
             raster-interpolant-probe
 
       - name: Enforce exhaustive Metal quotient arithmetic

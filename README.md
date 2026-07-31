@@ -2144,6 +2144,24 @@ tests whether the hidden fixed-function 25-bit reciprocal and 27-bit product
 law is shared with an exposed Metal arithmetic path before fitting any
 low-bit correction and without evaluating an excluded width.
 
+Raster schema 22 freezes the resulting discovery-only selector before opening
+the width holdout. The preregistered integer model represents the recovered
+25-bit reciprocal as radix-2 partial products, truncates each partial product
+to a multiple of 256, sums them, adds `0x1400`, and normalizes the sum to 27
+bits before binary32 conversion. It is bit-identical for all 2,621,440 schema-
+20 discovery coefficients, including all 320,132 samples where the two
+faithful 27-bit product endpoints produce different binary32 values.
+
+`Analysis/raster_quotient_holdout_preregistration.json` records that model,
+the nearest-even 25-bit reciprocal prediction for each of the 16 excluded
+widths, and the SHA-256 of the complete predicted 16-by-32,768 float-bit
+table. Only after that prediction is committed does schema 22 capture the
+same fixed-layout pull corpus on the excluded widths. The holdout validator
+checks isolation, geometry, ordering, sentinels, finite pull pairs, size,
+hash, and the immutable prediction metadata without adapting the prediction
+to the captured values. Local analysis must report the selector-transfer and
+reciprocal-prediction results separately.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

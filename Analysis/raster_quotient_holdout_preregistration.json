@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "role": "sealed-holdout-prediction",
+  "discoverySource": {
+    "runId": 30641403364,
+    "truthTableSha256": "0be28a4d7f69afdf4da40863d20bd3d8e8244973c0ae476b1f559bf593759b23",
+    "sampleCount": 2621440,
+    "mismatchCount": 0
+  },
+  "model": {
+    "name": "truncatedRadix2PartialProducts8Bias0x1400",
+    "partialProductRadix": 2,
+    "partialProductTruncationBits": 8,
+    "roundingBias": 5120,
+    "reciprocalModel": "nearestEven25BitReciprocal"
+  },
+  "domain": {
+    "widths": [
+      37,
+      43,
+      49,
+      55,
+      61,
+      67,
+      73,
+      79,
+      85,
+      91,
+      97,
+      103,
+      109,
+      115,
+      121,
+      127
+    ],
+    "numeratorLowerInclusive": 32768,
+    "numeratorUpperInclusive": 65535,
+    "deltaDenominator": 65536,
+    "ordering": "width-major,numerator-major"
+  },
+  "reciprocalPredictions": [
+    {
+      "width": 37,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 29020049
+    },
+    {
+      "width": 43,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 24970740
+    },
+    {
+      "width": 49,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 21913098
+    },
+    {
+      "width": 55,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 19522579
+    },
+    {
+      "width": 61,
+      "reciprocalExponent": -6,
+      "reciprocal25Index": 17602325
+    },
+    {
+      "width": 67,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 32051995
+    },
+    {
+      "width": 73,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 29417584
+    },
+    {
+      "width": 79,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 27183337
+    },
+    {
+      "width": 85,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 25264514
+    },
+    {
+      "width": 91,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 23598721
+    },
+    {
+      "width": 97,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 22139007
+    },
+    {
+      "width": 103,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 20849356
+    },
+    {
+      "width": 109,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 19701685
+    },
+    {
+      "width": 115,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 18673771
+    },
+    {
+      "width": 121,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 17747799
+    },
+    {
+      "width": 127,
+      "reciprocalExponent": -7,
+      "reciprocal25Index": 16909320
+    }
+  ],
+  "predictedTruthTable": {
+    "dtype": "little-endian uint32 float bits",
+    "shape": [
+      16,
+      32768
+    ],
+    "bytes": 2097152,
+    "sha256": "0ad8899707021f22bc832724a73efa1bd3f7f3dffff7be182ce15885464b6fbb"
+  },
+  "holdoutOpenedAtPreregistration": false
+}

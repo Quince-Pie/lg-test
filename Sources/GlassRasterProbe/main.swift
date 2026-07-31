@@ -2410,22 +2410,21 @@ private func renderTomography(
 }
 
 private func measureQuotientCorpus(
+    widths: [Int],
+    label: String,
     device: MTLDevice,
     queue: MTLCommandQueue,
     pipeline: MTLRenderPipelineState
 ) throws -> Data {
-    precondition(quotientCorpusHoldoutWidths.count == 16)
-    precondition(quotientCorpusDiscoveryWidths.count == 80)
-    precondition(
-        Set(quotientCorpusDiscoveryWidths)
-            .isDisjoint(with: quotientCorpusHoldoutWidths))
+    precondition(!widths.isEmpty)
+    precondition(Set(widths).count == widths.count)
 
     let numeratorsPerWidth = Int(
         quotientCorpusNumeratorUpper
             - quotientCorpusNumeratorLower
             + 1)
     let sampleCount =
-        quotientCorpusDiscoveryWidths.count * numeratorsPerWidth
+        widths.count * numeratorsPerWidth
     let primitiveCount = 2
     let outputBytes =
         sampleCount
@@ -2465,8 +2464,7 @@ private func measureQuotientCorpus(
         SIMD4<Float>(-1, 1, 0, 1)
     ))
 
-    for (widthIndex, width)
-        in quotientCorpusDiscoveryWidths.enumerated()
+    for (widthIndex, width) in widths.enumerated()
     {
         let positions = quotientCorpusPositions(width: width)
         guard let commandBuffer = queue.makeCommandBuffer() else {
@@ -2536,8 +2534,8 @@ private func measureQuotientCorpus(
         }
         if (widthIndex + 1).isMultiple(of: 10) {
             print(
-                "quotient corpus: \(widthIndex + 1)"
-                    + "/\(quotientCorpusDiscoveryWidths.count)"
+                "\(label) quotient corpus: \(widthIndex + 1)"
+                    + "/\(widths.count)"
                     + " widths")
         }
     }
@@ -2546,8 +2544,7 @@ private func measureQuotientCorpus(
         to: SIMD2<UInt32>.self,
         capacity:
             sampleCount * primitiveCount * quotientCorpusTileCount)
-    for (widthIndex, width)
-        in quotientCorpusDiscoveryWidths.enumerated()
+    for (widthIndex, width) in widths.enumerated()
     {
         let expectedSlots = Set(
             quotientCorpusPositions(width: width).map {
@@ -3218,6 +3215,8 @@ private func run(outputDirectory: URL) throws {
     }
 
     let quotientCorpusData = try measureQuotientCorpus(
+        widths: quotientCorpusDiscoveryWidths,
+        label: "discovery",
         device: device,
         queue: queue,
         pipeline: quotientCorpusPipeline)
@@ -3226,6 +3225,21 @@ private func run(outputDirectory: URL) throws {
     try quotientCorpusData.write(
         to: outputDirectory.appendingPathComponent(
             quotientCorpusFilename),
+        options: .atomic)
+
+    let quotientHoldoutWidths =
+        quotientCorpusHoldoutWidths.sorted()
+    let quotientHoldoutCorpusData = try measureQuotientCorpus(
+        widths: quotientHoldoutWidths,
+        label: "holdout",
+        device: device,
+        queue: queue,
+        pipeline: quotientCorpusPipeline)
+    let quotientHoldoutCorpusFilename =
+        "raster-quotient-holdout-corpus-pulls.raw"
+    try quotientHoldoutCorpusData.write(
+        to: outputDirectory.appendingPathComponent(
+            quotientHoldoutCorpusFilename),
         options: .atomic)
 
     let quotientArithmeticData = try measureQuotientArithmetic(
@@ -3255,8 +3269,8 @@ private func run(outputDirectory: URL) throws {
         options: .atomic)
 
     let manifest: [String: Any] = [
-        "schemaVersion": 21,
-        "rigVersion": "metal-raster-interpolant-probe-21.0.0",
+        "schemaVersion": 22,
+        "rigVersion": "metal-raster-interpolant-probe-22.0.0",
         "ciCommit": ProcessInfo.processInfo.environment[
             "GITHUB_SHA"
         ] ?? "",
@@ -3299,6 +3313,9 @@ private func run(outputDirectory: URL) throws {
             "quotientCorpusOutput":
                 "one pull pair per covered primitive/tile for every "
                 + "normalized 16-bit numerator on 80 discovery widths",
+            "quotientHoldoutCorpusOutput":
+                "one sealed pull pair per covered primitive/tile for "
+                + "every normalized 16-bit numerator on 16 holdout widths",
             "quotientArithmeticOutput":
                 "exhaustive exposed Metal division and reciprocal "
                 + "controls over the quotient discovery domain",
@@ -3367,6 +3384,72 @@ private func run(outputDirectory: URL) throws {
                             },
                     ]
                 },
+        ],
+        "quotientHoldoutCorpus": [
+            "role": "holdout",
+            "widths": quotientHoldoutWidths,
+            "discoveryWidthsExcluded":
+                quotientCorpusDiscoveryWidths,
+            "height": Int(quotientCorpusHeight),
+            "originX": Int(quotientCorpusOriginX),
+            "originY": Int(quotientCorpusOriginY),
+            "targetWidth": quotientCorpusTargetWidth,
+            "targetHeight": quotientCorpusTargetHeight,
+            "instanceCount":
+                Int(
+                    quotientCorpusNumeratorUpper
+                        - quotientCorpusNumeratorLower
+                        + 1),
+            "numeratorLowerInclusive":
+                Int(quotientCorpusNumeratorLower),
+            "numeratorUpperInclusive":
+                Int(quotientCorpusNumeratorUpper),
+            "deltaDenominator":
+                Int(tomographyDeltaDenominator),
+            "primitiveCount": 2,
+            "tileCount": quotientCorpusTileCount,
+            "uncoveredRecordSentinel": "0xffffffffffffffff",
+            "pullOffsets": [
+                ["x": 0.0, "y": 0.5],
+                ["x": 0.9375, "y": 0.5],
+            ],
+            "file": quotientHoldoutCorpusFilename,
+            "bytes": quotientHoldoutCorpusData.count,
+            "sha256": sha256(quotientHoldoutCorpusData),
+            "components": [
+                "xAt0",
+                "xAt15Over16",
+            ],
+            "ordering":
+                "width-major,numerator-major,primitive-major,"
+                + "tile-major,pull-offset-major",
+            "positionsByWidth":
+                quotientHoldoutWidths.map {
+                    width -> [String: Any] in
+                    [
+                        "width": width,
+                        "positions":
+                            quotientCorpusPositions(width: width).map {
+                                position -> [String: Any] in
+                                [
+                                    "primitive": position.primitive,
+                                    "tile": position.tile,
+                                    "x": position.x,
+                                    "y": position.y,
+                                ]
+                            },
+                    ]
+                },
+            "preregisteredPrediction": [
+                "model":
+                    "truncatedRadix2PartialProducts8Bias0x1400",
+                "reciprocalModel":
+                    "nearestEven25BitReciprocal",
+                "predictionFile":
+                    "Analysis/raster_quotient_holdout_preregistration.json",
+                "truthTableSha256":
+                    "0ad8899707021f22bc832724a73efa1bd3f7f3dffff7be182ce15885464b6fbb",
+            ],
         ],
         "quotientArithmeticProbe": [
             "role": "discovery",
