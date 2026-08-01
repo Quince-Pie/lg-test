@@ -3314,6 +3314,42 @@ the selector table, every per-case prediction hash, and the archive itself.
 This discovery fit is not a holdout result and does not authorize a production
 shader change.
 
+Opening run `30696459882` rejected that v3 prediction: 4,757 of 4,233,600
+words differed across 622 records, and 19 of the 24 sealed cases were not
+exact. Run `30697733307` repeated the experiment from the same commit. Its
+29,933,568-byte raw stream has the same SHA-256 as the first run, and its
+opening report is identical after removing run provenance. The failure is
+therefore deterministic evidence, not a runner or extraction fault.
+
+Post-opening analysis isolates two arithmetic effects. Zero-origin constants
+are composed through the measured physical primitive-anchor path, rounded to
+a 28-bit significand with nearest-even, then rounded again to binary32 with
+nearest-even. That double rounding corrects all 60 formerly unexplained
+constant groups. Translated positive ramps can select independent pull and
+center coefficients; the center path steps toward zero below phase `1/8`,
+while the pull path takes that step only for a native endpoint span of at
+least eight. The signed reverse selector remains an input-only function of
+phase, span, and lower-endpoint mantissa. The combined v4 model reproduces all
+235,200 opened records and all 4,233,600 component words exactly. This is a
+retrospective calibration result, not prospective parity.
+
+Schema 6 freezes that v4 executable model and 23,846,400 prediction bytes
+before Apple produces any corresponding output. One control plus 20 sealed
+geometries transpose ten fresh determinants across both axes; 138 endpoint
+pairs cross the double-rounding, forward center/pull split, signed reverse,
+mantissa-residue, span, and exponent-transfer boundaries. The sealed matrix
+contains 331,200 records and 5,961,600 words. Its committed prediction stream
+has SHA-256
+`14b52a038113e7dfa3c404beaaf81702674a4bcad3fc3a537d236e8b0cd580d5`;
+the 1,801,884-byte archive has SHA-256
+`3b583f133a822bdfeed9e643bbef3543ad6b7b11d2fceae8aeb94b8823313144`.
+Preflight ablations prove the holdout distinguishes the new laws: replacing
+the separate center coefficient changes 128 words, removing the zero-constant
+double rounding changes 2,891 words, and the determinant-only coefficient
+ablation differs on 1,580 words in total. Zero mismatch on the first run and
+an unchanged repeat are mandatory before integrating this arithmetic into
+Walle.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

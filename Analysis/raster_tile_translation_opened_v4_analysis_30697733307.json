@@ -1,0 +1,40 @@
+{
+  "centerSlopeSetupSelectorCounts": {
+    "determinant-rounded-f32": 2986,
+    "translated-forward-center-toward-zero": 192,
+    "translated-reverse-away": 70
+  },
+  "componentMismatchCounts": {},
+  "constantGroupCount": 119616,
+  "constantGroupSelectorCounts": {
+    "translated-exact-p28-nearest-double-round": 102528,
+    "zero-physical-p28-nearest-double-round": 17088
+  },
+  "exact": true,
+  "mismatchExamples": [],
+  "nextGate": "Commit the v4 model and every schema-6 prediction byte before capturing the fresh double-rounding and center-path holdout.",
+  "productionShaderAuthorized": false,
+  "prospectiveEvidence": false,
+  "pullCenterSplitSetupCount": 44,
+  "pullSlopeSetupSelectorCounts": {
+    "determinant-rounded-f32": 3030,
+    "translated-forward-pull-toward-zero": 148,
+    "translated-reverse-away": 70
+  },
+  "rasterTileTranslationOpenedV4AnalysisSchemaVersion": 1,
+  "recordCount": 235200,
+  "recordMismatchCount": 0,
+  "recordsByCaseRole": {
+    "discovery": 35168,
+    "prospective-control": 3360,
+    "sealed-holdout": 196672
+  },
+  "sealedHoldoutWasAlreadyOpenedBeforeV4Fit": true,
+  "slopeSetupCount": 3248,
+  "source": "artifacts/gh-run-30697733307/liquid-glass-raster-tile-translation-30697733307",
+  "sourceRawSha256": "3cd6a35830a3d71af0252b87bce94e97917fdd68234805216d432b0bedbc1cc3",
+  "wordCount": 4233600,
+  "wordMismatchCount": 0,
+  "wordMismatchesByCaseRole": {},
+  "zeroConstantGroupsChangedByP28DoubleRounding": 60
+}

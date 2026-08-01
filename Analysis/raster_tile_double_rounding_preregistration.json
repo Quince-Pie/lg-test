@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-double-rounding-and-center-path-holdout",
+  "createdAt": "2026-08-01T00:00:00Z",
+  "sealedHoldoutOpenedAtPreregistration": false,
+  "scientificQuestion": "Does the post-opening schema-5 v4 law transfer bit-exactly to fresh determinants, transposed axes, native spans, mantissa residues, and endpoint exponent regions?",
+  "derivationEvidence": {
+    "sourceRun": 30697733307,
+    "sourceRawSha256": "3cd6a35830a3d71af0252b87bce94e97917fdd68234805216d432b0bedbc1cc3",
+    "sourceWordCount": 4233600,
+    "sourceV4WordMismatchCount": 0,
+    "sourceWasAlreadyOpened": true,
+    "prospectiveEvidence": false
+  },
+  "capture": {"caseCount":21,"caseWordsSha256":"a763461f47e92a321f23651d67cd651932082451d6f1ecfa6a2cd257e5aff4a1","endpointCount":138,"endpointWordsSha256":"0c973d020f842a2dac63cf0c0d240332f2072081205580f615e13f1353286c00","layout":{"axisCount":2,"caseCount":21,"caseWordsSha256":"a763461f47e92a321f23651d67cd651932082451d6f1ecfa6a2cd257e5aff4a1","edgeCount":2,"endpointCount":138,"endpointWordsSha256":"0c973d020f842a2dac63cf0c0d240332f2072081205580f615e13f1353286c00","expectedRecordCount":339480,"primitiveCount":2,"pullCount":16,"rawBytes":53415936,"recordBytes":72,"recordComponentCount":18,"recordCount":741888,"sampleWordsSha256":"a759e8e87d22679ea09cdfda1972913beda75c2cbb18c428a30d13ce12ad3526","samplesPerCase":[60,106,106,110,110,118,118,122,122,128,128,144,144,144,144,54,54,134,134,140,140],"slotCount":256,"tileCount":32},"primaryTranslatedBase":{"bits":"0x3f000000","name":"b2","nativeSpans":[3,4,5,6,7,8,29,30,31],"residues":[0,1,7,31]},"pullOffsetsByAxis":{"x":[[0.0,0.5],[0.0625,0.5],[0.125,0.5],[0.1875,0.5],[0.25,0.5],[0.3125,0.5],[0.375,0.5],[0.4375,0.5],[0.5,0.5],[0.5625,0.5],[0.625,0.5],[0.6875,0.5],[0.75,0.5],[0.8125,0.5],[0.875,0.5],[0.9375,0.5]],"y":[[0.5,0.0],[0.5,0.0625],[0.5,0.125],[0.5,0.1875],[0.5,0.25],[0.5,0.3125],[0.5,0.375],[0.5,0.4375],[0.5,0.5],[0.5,0.5625],[0.5,0.625],[0.5,0.6875],[0.5,0.75],[0.5,0.8125],[0.5,0.875],[0.5,0.9375]]},"recordComponents":["axis-pull@0/16","axis-pull@1/16","axis-pull@2/16","axis-pull@3/16","axis-pull@4/16","axis-pull@5/16","axis-pull@6/16","axis-pull@7/16","axis-pull@8/16","axis-pull@9/16","axis-pull@10/16","axis-pull@11/16","axis-pull@12/16","axis-pull@13/16","axis-pull@14/16","axis-pull@15/16","center","axis-derivative(center)"],"rigVersion":"metal-raster-tile-selector-6.0.0","role":"prospective-tile-double-rounding-center-path-holdout","sampleWordsSha256":"a759e8e87d22679ea09cdfda1972913beda75c2cbb18c428a30d13ce12ad3526","schemaVersion":6,"sealedCases":["sealed-center198-x","sealed-center198-y","sealed-center204-x","sealed-center204-y","sealed-center231-x","sealed-center231-y","sealed-center255-x","sealed-center255-y","sealed-center315-x","sealed-center315-y","sealed-center378-x","sealed-center378-y","sealed-center441-x","sealed-center441-y","sealed-reverse220-x","sealed-reverse220-y","sealed-reverse350-x","sealed-reverse350-y","sealed-reverse351-x","sealed-reverse351-y"],"transferNativeSpans":[4,7,8,30],"transferTranslatedBases":[{"bits":"0x3e000000","name":"b0"},{"bits":"0x3e800000","name":"b1"},{"bits":"0x3f800000","name":"b3"}],"transferTranslatedResidues":[0,7],"zeroDeltaUnitsAtBinary32ExponentMinus25":[5,8,12,16,23,24,30,31]},
+  "model": {
+    "file": "Analysis/raster_tile_selector_model_v4.py",
+    "sourceSha256": "f1918f51974f486510ce5d68724cff015bb2e7f618a1153016d464cd9240a103",
+    "baseFile": "Analysis/raster_tile_selector_model.py",
+    "baseSourceSha256": "1874d8c452dce244bd8ae2cb7fbf05d0d454a815c0c37c285e1c377524c9369d",
+    "v2File": "Analysis/raster_tile_selector_model_v2.py",
+    "v2SourceSha256": "114f6aa52693307521b04a9b231541bda60ee88f8b33a60bfd4d52e45e208dd5",
+    "selectorTableSha256": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+    "constantLaw": "physical two-stage primitive-anchor composite, 28-bit significand nearest-even, then binary32 nearest-even",
+    "translatedConstantLaw": "exact tile-origin value, 28-bit significand nearest-even, then binary32 nearest-even",
+    "forwardCenterSelector": "translated positive delta and exact p27 phase in [0,1/8): one binary32 coefficient toward zero",
+    "forwardPullSelector": "forward-center selector plus native endpoint span >= 8",
+    "reverseSelector": "translated negative delta, exact p27 phase in [15/32,1/2), and native span >= 30 or lower mantissa == 0: one binary32 coefficient away from zero",
+    "centerAndPullMayUseDistinctCoefficients": true
+  },
+  "preflightDiscrimination": {"constantGroupCount":169740,"determinantOnlyAblationWordDifferencesBySelectedPath":{"pull=determinant-rounded-f32,center=determinant-rounded-f32":0,"pull=determinant-rounded-f32,center=translated-forward-center-toward-zero":128,"pull=translated-forward-pull-toward-zero,center=translated-forward-center-toward-zero":1380,"pull=translated-reverse-away,center=translated-reverse-away":72},"sealedRecordCount":331200,"sealedWordCount":5961600,"sharedPullCenterSlopeAblation":{"recordDifferenceCount":64,"wordDifferenceCount":128},"singleRoundedZeroConstantAblation":{"recordDifferenceCount":170,"wordDifferenceCount":2891},"slopeSetupCount":5520},
+  "predictedTruthStream": {
+    "ordering": "sealed-case-major,all-endpoint-major,sample-position-major,record-component-major",
+    "caseRole": "sealed-holdout",
+    "endpointRole": "all",
+    "endpointCount": 138,
+    "recordComponentCount": 18,
+    "recordBytes": 72,
+    "recordCount": 331200,
+    "bytes": 23846400,
+    "sha256": "14b52a038113e7dfa3c404beaaf81702674a4bcad3fc3a537d236e8b0cd580d5",
+    "cases": [
+      {"bytes":1053216,"name":"sealed-center198-x","recordCount":14628,"sha256":"cc7c7f2eddf3b9d4526a103f547c862bd1f500c682c445e69c42eec30c8a34a7"},
+      {"bytes":1053216,"name":"sealed-center198-y","recordCount":14628,"sha256":"2accbea4f60f7eba34925d221af3984e34c83b7adcb5c79b5abe4f7017bc24ae"},
+      {"bytes":1092960,"name":"sealed-center204-x","recordCount":15180,"sha256":"1b6f53cc7ad7accaa201d39f927398c1fbca4100326f5ec597c0b6b2ee0690bd"},
+      {"bytes":1092960,"name":"sealed-center204-y","recordCount":15180,"sha256":"1f0d313820049ec389baa44085ae686047078ff4f16b9ec326a9885f8c1d21f8"},
+      {"bytes":1172448,"name":"sealed-center231-x","recordCount":16284,"sha256":"e3fc6f526a2b69642aa1233c86b3fa2053dbbfb61e3153ee015ec0fe8ab8aac4"},
+      {"bytes":1172448,"name":"sealed-center231-y","recordCount":16284,"sha256":"e77d14096cde488b5cf8874eabcd4364ff5b8cd839db9321a6902171126c977b"},
+      {"bytes":1212192,"name":"sealed-center255-x","recordCount":16836,"sha256":"bf75e06e38be6e18c80b01940fce134306c83682723e348467904a1103a817ec"},
+      {"bytes":1212192,"name":"sealed-center255-y","recordCount":16836,"sha256":"150726dbb107ef8338ecec270c3bbcdb8c13056508361f0f434c6a548e9fee5d"},
+      {"bytes":1271808,"name":"sealed-center315-x","recordCount":17664,"sha256":"c5caab74a1ae2e255ac9b0ebe7226ecdfcd67e089d21dcd2982a09d29ee9dd86"},
+      {"bytes":1271808,"name":"sealed-center315-y","recordCount":17664,"sha256":"f53c10b0dae4856150d8df3822ce35126176b56459a178da1c2a924b3f17cd7d"},
+      {"bytes":1430784,"name":"sealed-center378-x","recordCount":19872,"sha256":"273f921bd9d5a80537954d9b3da15a43dba5ea4a9b41f9c0249c8be749da0402"},
+      {"bytes":1430784,"name":"sealed-center378-y","recordCount":19872,"sha256":"67c8d670a2d734eef7ca637b330543fd96d26083b8e98403cb9871bc88e0a514"},
+      {"bytes":1430784,"name":"sealed-center441-x","recordCount":19872,"sha256":"d347f0c2d9aa87a18b1facc69aa5cde57e398da95d1155599bc930f0a374a82e"},
+      {"bytes":1430784,"name":"sealed-center441-y","recordCount":19872,"sha256":"1e8571478ec3e600952837d350d0d040aaa35d4725d8b6f6d5bbf0f8a99b968b"},
+      {"bytes":536544,"name":"sealed-reverse220-x","recordCount":7452,"sha256":"61d919755cb70a7f5638c84b1d3ee79ce744e017344b0b9dabad9d7609c1dba5"},
+      {"bytes":536544,"name":"sealed-reverse220-y","recordCount":7452,"sha256":"d6a518b94db00566ebccdc5cd8ce2cfbe7dc483c4bdc003e18427c456a5e15b5"},
+      {"bytes":1331424,"name":"sealed-reverse350-x","recordCount":18492,"sha256":"8def0ef56aeae4158e0772f192b3c3a052a59d87fe8c7fd9b465902e4e3b316f"},
+      {"bytes":1331424,"name":"sealed-reverse350-y","recordCount":18492,"sha256":"28138c1a0c66d64dd3b9ff3898f4c04499c053432bb79eeb202021f64bf1d2c4"},
+      {"bytes":1391040,"name":"sealed-reverse351-x","recordCount":19320,"sha256":"f1cec4443ea4dfb1013650054f53e7b94dec4835245e2bfda1d0b50167b5a25d"},
+      {"bytes":1391040,"name":"sealed-reverse351-y","recordCount":19320,"sha256":"e0c5c907f074b403fa6d983d49a6a48b5c8cdb4d56c9683e34c6185056b6fbd1"}
+    ],
+    "archive": {
+      "file": "raster_tile_v4_sealed_predictions.zlib",
+      "bytes": 1801884,
+      "sha256": "3b583f133a822bdfeed9e643bbef3543ad6b7b11d2fceae8aeb94b8823313144",
+      "rawSha256": "14b52a038113e7dfa3c404beaaf81702674a4bcad3fc3a537d236e8b0cd580d5"
+    }
+  },
+  "acceptance": {
+    "recordMismatchCount": 0,
+    "wordMismatchCount": 0,
+    "tolerance": 0,
+    "allSealedCasesExact": true,
+    "productionShaderAuthorizedByThisGateAlone": false
+  },
+  "nextGate": "Open every schema-6 sealed word only after this preregistration, executable model, and compressed prediction stream are committed; require zero mismatched words, then repeat unchanged before any Walle shader integration."
+}

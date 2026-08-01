@@ -1,0 +1,101 @@
+name: Test Apple Metal tile double rounding
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-tile-double-rounding-holdout.yml
+      - Analysis/open_raster_tile_double_rounding_holdout.py
+      - Analysis/raster_tile_double_rounding_preregistration.json
+      - Analysis/raster_tile_selector_model.py
+      - Analysis/raster_tile_selector_model_v2.py
+      - Analysis/raster_tile_selector_model_v4.py
+      - Analysis/raster_tile_v4_sealed_predictions.zlib
+      - Analysis/test_validate_raster_tile_double_rounding_holdout.py
+      - Analysis/validate_raster_tile_double_rounding_holdout.py
+      - Sources/GlassRasterTileNumerator/**
+
+concurrency:
+  group: raster-tile-double-rounding-holdout-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-tile-double-rounding-holdout:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Test frozen double-rounding contract
+        run: |
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_raster_tile_double_rounding_holdout.py' -v
+
+      - name: Build double-rounding probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-tile-double-rounding
+          set -o pipefail
+          swiftc -D TILE_DOUBLE_ROUNDING_HOLDOUT -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterTileNumerator/main.swift \
+            -o glass-raster-tile-double-rounding 2>&1 |
+            tee raster-tile-double-rounding/build.log
+
+      - name: Capture unseen double-rounding records
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-tile-double-rounding raster-tile-double-rounding
+
+      - name: Validate capture without opening sealed words
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_raster_tile_double_rounding_holdout.py \
+            raster-tile-double-rounding \
+            --output raster-tile-double-rounding/validation.json
+
+      - name: Open committed sealed predictions
+        id: opening
+        if: steps.validate.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/open_raster_tile_double_rounding_holdout.py \
+            raster-tile-double-rounding \
+            --output raster-tile-double-rounding/holdout-opening.json
+
+      - name: Upload double-rounding evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-tile-double-rounding-${{ github.run_id }}
+          path: raster-tile-double-rounding
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce double-rounding evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test "${{ steps.opening.outcome }}" = success
+          test -s raster-tile-double-rounding/manifest.json
+          test -s raster-tile-double-rounding/validation.json
+          test -s raster-tile-double-rounding/holdout-opening.json
+          test -s raster-tile-double-rounding/raster-tile-numerator.raw

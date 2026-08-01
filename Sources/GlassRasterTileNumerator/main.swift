@@ -59,7 +59,15 @@ private struct SamplePosition {
     }
 }
 
-#if TILE_TRANSLATION_HOLDOUT
+#if TILE_DOUBLE_ROUNDING_HOLDOUT
+private let schemaVersion = 6
+private let rigVersion = "metal-raster-tile-selector-6.0.0"
+private let role = "prospective-tile-double-rounding-center-path-holdout"
+private let preregistrationFile =
+    "Analysis/raster_tile_double_rounding_preregistration.json"
+private let preregistrationSha256 =
+    "0058337191daccdb565e4004f2b519096095b0694f37aa8e4f108f1b77ae7dbe"
+#elseif TILE_TRANSLATION_HOLDOUT
 private let schemaVersion = 5
 private let rigVersion = "metal-raster-tile-selector-5.0.0"
 private let role = "prospective-zero-based-translated-matched-delta-discriminator"
@@ -97,7 +105,34 @@ private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
 private let pullCount = 16
 private let recordComponentCount = pullCount + 2
 private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
-#if TILE_TRANSLATION_HOLDOUT
+#if TILE_DOUBLE_ROUNDING_HOLDOUT
+private let cases = [
+    CaptureCase(
+        name: "control-square-256", role: "prospective-control",
+        width: 256, height: 256, originX: 384, originY: 384
+    ),
+    CaptureCase(name: "sealed-center198-x", role: "sealed-holdout", width: 198, height: 607, originX: 16, originY: 208),
+    CaptureCase(name: "sealed-center198-y", role: "sealed-holdout", width: 607, height: 198, originX: 208, originY: 16),
+    CaptureCase(name: "sealed-center204-x", role: "sealed-holdout", width: 204, height: 613, originX: 25, originY: 205),
+    CaptureCase(name: "sealed-center204-y", role: "sealed-holdout", width: 613, height: 204, originX: 205, originY: 25),
+    CaptureCase(name: "sealed-center231-x", role: "sealed-holdout", width: 231, height: 683, originX: 16, originY: 170),
+    CaptureCase(name: "sealed-center231-y", role: "sealed-holdout", width: 683, height: 231, originX: 170, originY: 16),
+    CaptureCase(name: "sealed-center255-x", role: "sealed-holdout", width: 255, height: 647, originX: 25, originY: 188),
+    CaptureCase(name: "sealed-center255-y", role: "sealed-holdout", width: 647, height: 255, originX: 188, originY: 25),
+    CaptureCase(name: "sealed-center315-x", role: "sealed-holdout", width: 315, height: 673, originX: 31, originY: 175),
+    CaptureCase(name: "sealed-center315-y", role: "sealed-holdout", width: 673, height: 315, originX: 175, originY: 31),
+    CaptureCase(name: "sealed-center378-x", role: "sealed-holdout", width: 378, height: 719, originX: 31, originY: 152),
+    CaptureCase(name: "sealed-center378-y", role: "sealed-holdout", width: 719, height: 378, originX: 152, originY: 31),
+    CaptureCase(name: "sealed-center441-x", role: "sealed-holdout", width: 441, height: 661, originX: 31, originY: 181),
+    CaptureCase(name: "sealed-center441-y", role: "sealed-holdout", width: 661, height: 441, originX: 181, originY: 31),
+    CaptureCase(name: "sealed-reverse220-x", role: "sealed-holdout", width: 220, height: 193, originX: 31, originY: 415),
+    CaptureCase(name: "sealed-reverse220-y", role: "sealed-holdout", width: 193, height: 220, originX: 415, originY: 31),
+    CaptureCase(name: "sealed-reverse350-x", role: "sealed-holdout", width: 350, height: 701, originX: 83, originY: 161),
+    CaptureCase(name: "sealed-reverse350-y", role: "sealed-holdout", width: 701, height: 350, originX: 161, originY: 83),
+    CaptureCase(name: "sealed-reverse351-x", role: "sealed-holdout", width: 351, height: 719, originX: 31, originY: 152),
+    CaptureCase(name: "sealed-reverse351-y", role: "sealed-holdout", width: 719, height: 351, originX: 152, originY: 31),
+]
+#elseif TILE_TRANSLATION_HOLDOUT
 private let cases = [
     CaptureCase(
         name: "control-square-256", role: "prospective-control",
@@ -423,7 +458,101 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
-#if TILE_TRANSLATION_HOLDOUT
+#if TILE_DOUBLE_ROUNDING_HOLDOUT
+private let doubleRoundingZeroDeltas: [(units: UInt32, bits: UInt32)] = [
+    (5, 0x3420_0000),
+    (8, 0x3480_0000),
+    (12, 0x34c0_0000),
+    (16, 0x3500_0000),
+    (23, 0x3538_0000),
+    (24, 0x3540_0000),
+    (30, 0x3570_0000),
+    (31, 0x3578_0000),
+]
+private let doubleRoundingPrimaryBase = (name: "b2", bits: UInt32(0x3f00_0000))
+private let doubleRoundingPrimaryResidues: [UInt32] = [0, 1, 7, 31]
+private let doubleRoundingPrimarySpans: [UInt32] = [3, 4, 5, 6, 7, 8, 29, 30, 31]
+private let doubleRoundingTransferBases: [(name: String, bits: UInt32)] = [
+    ("b0", 0x3e00_0000),
+    ("b1", 0x3e80_0000),
+    ("b3", 0x3f80_0000),
+]
+private let doubleRoundingTransferResidues: [UInt32] = [0, 7]
+private let doubleRoundingTransferSpans: [UInt32] = [4, 7, 8, 30]
+
+private func appendDoubleRoundingEndpointPair(
+    _ result: inout [EndpointCase],
+    baseName: String,
+    baseBits: UInt32,
+    residue: UInt32,
+    span: UInt32
+) {
+    let low = baseBits + residue
+    let high = low + span
+    let stem = String(
+        format: "translated-%@-r%02d-s%02d",
+        baseName,
+        residue,
+        span
+    )
+    result.append(EndpointCase(
+        name: "\(stem)-forward", role: "arithmetic-holdout",
+        lowBits: low, highBits: high
+    ))
+    result.append(EndpointCase(
+        name: "\(stem)-reverse", role: "arithmetic-holdout",
+        lowBits: high, highBits: low
+    ))
+}
+
+private func doubleRoundingEndpoints() -> [EndpointCase] {
+    var result = [
+        EndpointCase(
+            name: "zero-to-one", role: "prospective-control",
+            lowBits: 0, highBits: 0x3f80_0000
+        ),
+        EndpointCase(
+            name: "one-to-zero", role: "prospective-control",
+            lowBits: 0x3f80_0000, highBits: 0
+        ),
+    ]
+    for delta in doubleRoundingZeroDeltas {
+        result.append(EndpointCase(
+            name: String(format: "zero-u%02d-forward", delta.units),
+            role: "arithmetic-holdout", lowBits: 0, highBits: delta.bits
+        ))
+        result.append(EndpointCase(
+            name: String(format: "zero-u%02d-reverse", delta.units),
+            role: "arithmetic-holdout", lowBits: delta.bits, highBits: 0
+        ))
+    }
+    for residue in doubleRoundingPrimaryResidues {
+        for span in doubleRoundingPrimarySpans {
+            appendDoubleRoundingEndpointPair(
+                &result,
+                baseName: doubleRoundingPrimaryBase.name,
+                baseBits: doubleRoundingPrimaryBase.bits,
+                residue: residue,
+                span: span
+            )
+        }
+    }
+    for base in doubleRoundingTransferBases {
+        for residue in doubleRoundingTransferResidues {
+            for span in doubleRoundingTransferSpans {
+                appendDoubleRoundingEndpointPair(
+                    &result,
+                    baseName: base.name,
+                    baseBits: base.bits,
+                    residue: residue,
+                    span: span
+                )
+            }
+        }
+    }
+    return result
+}
+#elseif TILE_TRANSLATION_HOLDOUT
 private let discriminatorDeltas: [(units: UInt32, bits: UInt32)] = [
     (8, 0x3480_0000), (16, 0x3500_0000), (30, 0x3570_0000),
 ]
@@ -479,7 +608,9 @@ private func discriminatorEndpoints() -> [EndpointCase] {
 }
 #endif
 
-#if TILE_TRANSLATION_HOLDOUT
+#if TILE_DOUBLE_ROUNDING_HOLDOUT
+private let endpoints = doubleRoundingEndpoints()
+#elseif TILE_TRANSLATION_HOLDOUT
 private let endpoints = discriminatorEndpoints()
 #else
 private let endpoints = fixedEndpoints + selectorEndpoints()
@@ -710,7 +841,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_TRANSLATION_HOLDOUT
+#if TILE_DOUBLE_ROUNDING_HOLDOUT
+    precondition(cases.count == 21)
+    precondition(endpoints.count == 138)
+    precondition(layout["recordCount"] as? Int == 741_888)
+    precondition(layout["rawBytes"] as? Int == 53_415_936)
+    precondition(layout["expectedRecordCount"] as? Int == 339_480)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "a763461f47e92a321f23651d67cd651932082451d6f1ecfa6a2cd257e5aff4a1"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "0c973d020f842a2dac63cf0c0d240332f2072081205580f615e13f1353286c00"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "a759e8e87d22679ea09cdfda1972913beda75c2cbb18c428a30d13ce12ad3526"
+    )
+#elseif TILE_TRANSLATION_HOLDOUT
     precondition(cases.count == 29)
     precondition(endpoints.count == 56)
     precondition(layout["recordCount"] as? Int == 415_744)
