@@ -1,0 +1,131 @@
+name: Trace Apple Metal key/fill highlight arithmetic
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/highlight-arithmetic-probe.yml
+      - Sources/GlassHighlightArithmeticProbe/**
+
+concurrency:
+  group: highlight-arithmetic-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  highlight-arithmetic-probe:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Build key/fill arithmetic probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p highlight-arithmetic
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassHighlightArithmeticProbe/main.swift \
+            -o glass-highlight-arithmetic-probe 2>&1 | \
+            tee highlight-arithmetic/build.log
+
+      - name: Capture Apple Metal arithmetic
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-highlight-arithmetic-probe highlight-arithmetic
+
+      - name: Validate capture contract
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import pathlib
+
+          root = pathlib.Path("highlight-arithmetic")
+          manifest = json.loads(
+              (root / "manifest.json").read_text(encoding="utf-8")
+          )
+          if (
+              manifest.get("schemaVersion") != 1
+              or manifest.get("probe")
+                  != "apple-metal-key-fill-vibrant-arithmetic"
+              or manifest.get("width") != 1024
+              or manifest.get("height") != 1024
+              or manifest.get("metalFastMathEnabled") is not True
+          ):
+              raise SystemExit(f"manifest contract differs: {manifest}")
+          expected = {
+              "destination-bgra8.raw": 1024 * 1024 * 4,
+              "highlight-final-bgra8.raw": 1024 * 1024 * 4,
+              **{
+                  f"highlight-{name}-rgba32ui.raw": 1024 * 1024 * 16
+                  for name in (
+                      "geometry",
+                      "key-a",
+                      "key-b",
+                      "fill-a",
+                      "fill-b",
+                      "half-stages",
+                  )
+              },
+          }
+          records = {
+              record["file"]: record
+              for record in manifest.get("files", [])
+          }
+          validation = {"schemaVersion": 1, "files": []}
+          for name, size in expected.items():
+              path = root / name
+              data = path.read_bytes()
+              if len(data) != size:
+                  raise SystemExit(
+                      f"{name} has {len(data)} bytes; expected {size}"
+                  )
+              if records.get(name, {}).get("bytes") != size:
+                  raise SystemExit(f"manifest size differs for {name}")
+              validation["files"].append({
+                  "file": name,
+                  "bytes": size,
+                  "sha256": hashlib.sha256(data).hexdigest(),
+              })
+          validation["exactContract"] = True
+          (root / "validation.json").write_text(
+              json.dumps(validation, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload key/fill arithmetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-highlight-arithmetic-${{ github.run_id }}
+          path: highlight-arithmetic
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce key/fill arithmetic evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s highlight-arithmetic/manifest.json
+          test -s highlight-arithmetic/validation.json
