@@ -9192,8 +9192,168 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return [
                 "executed": false,
                 "reason":
-                    "glass source texture binding is unavailable",
+                "glass source texture binding is unavailable",
             ]
+        }
+
+        let usesEdgeBleed = pass.commands.contains { command in
+            guard case .pipeline(let pipeline) = command else {
+                return false
+            }
+            return pipeline.label?.contains("_Tghs") == true
+        }
+        let oraclePatterns: Set<HeldOutGlassSourcePattern> = [
+            .opaqueCoordinateHash,
+            .samplerBasisLevelZero,
+            .samplerBasisLevelOne,
+            .prospectiveOpaqueSeeded,
+        ]
+
+        func halfBytes(_ bits: UInt16) -> Data {
+            var littleEndian = bits.littleEndian
+            return Swift.withUnsafeBytes(of: &littleEndian) {
+                Data($0)
+            }
+        }
+        func floatBytes(_ bits: UInt32) -> Data {
+            var littleEndian = bits.littleEndian
+            return Swift.withUnsafeBytes(of: &littleEndian) {
+                Data($0)
+            }
+        }
+        func halfVectorBytes(_ bits: [UInt16]) -> Data {
+            var data = Data(capacity: bits.count * 2)
+            for value in bits {
+                data.append(halfBytes(value))
+            }
+            return data
+        }
+        func edit(
+            _ field: String,
+            _ offset: Int,
+            _ bytes: Data
+        ) -> GlassUniformEdit {
+            GlassUniformEdit(
+                field: field,
+                recordOffset: offset,
+                bytes: bytes)
+        }
+
+        let zeroHalf = halfBytes(0x0000)
+        let oneHalf = halfBytes(0x3c00)
+        let twoHalf = halfBytes(0x4000)
+        let zeroFloat = floatBytes(0x0000_0000)
+        let oneFloat = floatBytes(0x3f80_0000)
+        let zeroHalf4 = halfVectorBytes([
+            0x0000, 0x0000, 0x0000, 0x0000,
+        ])
+        let identityHalfRows = [
+            halfVectorBytes([0x3c00, 0x0000, 0x0000, 0x0000]),
+            halfVectorBytes([0x0000, 0x3c00, 0x0000, 0x0000]),
+            halfVectorBytes([0x0000, 0x0000, 0x3c00, 0x0000]),
+        ]
+        let commonOracleEdits = [
+            edit("face_matrix_0", 128, zeroHalf4),
+            edit("face_matrix_1", 136, zeroHalf4),
+            edit("face_matrix_2", 144, zeroHalf4),
+            edit("face_opacity", 230, oneHalf),
+            edit("holding_tone_opacity", 242, zeroHalf),
+            edit("clamp_limit", 248, zeroHalf),
+        ]
+        let oracleInterventions = [
+            GlassUniformIntervention(
+                name: "production-edge-sample",
+                edits: commonOracleEdits + [
+                    edit(
+                        "bleed_matrix_0",
+                        152,
+                        identityHalfRows[0]),
+                    edit(
+                        "bleed_matrix_1",
+                        160,
+                        identityHalfRows[1]),
+                    edit(
+                        "bleed_matrix_2",
+                        168,
+                        identityHalfRows[2]),
+                    edit(
+                        "edge_bleed_distance",
+                        224,
+                        halfVectorBytes([0xfbff, 0xfbfe])),
+                    edit("edge_bleed_opacity", 228, oneHalf),
+                    edit(
+                        "bleed_darken",
+                        232,
+                        halfVectorBytes([0x0000, 0x3c00])),
+                    edit("shadow_opacity", 238, zeroHalf),
+                ]),
+            GlassUniformIntervention(
+                name: "production-shadow-sample",
+                edits: commonOracleEdits + [
+                    edit("shadow_inverse_radius", 124, zeroFloat),
+                    edit(
+                        "shadow_matrix_0",
+                        176,
+                        identityHalfRows[0]),
+                    edit(
+                        "shadow_matrix_1",
+                        184,
+                        identityHalfRows[1]),
+                    edit(
+                        "shadow_matrix_2",
+                        192,
+                        identityHalfRows[2]),
+                    edit("shadow_contribution", 200, oneFloat),
+                    edit("shadow_face_opacity", 204, oneFloat),
+                    edit("edge_bleed_opacity", 228, zeroHalf),
+                    edit("shadow_opacity", 238, twoHalf),
+                ]),
+        ]
+        let oracleBinding = usesEdgeBleed
+            ? glassUniformBinding(in: pass.commands)
+            : nil
+
+        func oracleCommands(
+            _ intervention: GlassUniformIntervention
+        ) -> [ReplayCommand]? {
+            guard let binding = oracleBinding,
+                  binding.buffer.storageMode != .private,
+                  let clone = binding.buffer.device.makeBuffer(
+                    length: binding.buffer.length,
+                    options: .storageModeShared)
+            else {
+                return nil
+            }
+            memcpy(
+                clone.contents(),
+                binding.buffer.contents(),
+                binding.buffer.length)
+            for recordOffset in binding.recordOffsets {
+                for uniformEdit in intervention.edits {
+                    let destinationOffset =
+                        recordOffset + uniformEdit.recordOffset
+                    guard destinationOffset >= 0,
+                          destinationOffset
+                            + uniformEdit.bytes.count
+                            <= clone.length
+                    else {
+                        return nil
+                    }
+                    uniformEdit.bytes.withUnsafeBytes { bytes in
+                        if let source = bytes.baseAddress {
+                            memcpy(
+                                clone.contents().advanced(
+                                    by: destinationOffset),
+                                source,
+                                bytes.count)
+                        }
+                    }
+                }
+            }
+            return replacingFragmentBuffer(
+                in: pass.commands,
+                original: binding.buffer,
+                replacement: clone)
         }
 
         var records: [[String: Any]] = []
@@ -9298,13 +9458,73 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         outputDirectory: outputDirectory)
                 }
             }
+            if usesEdgeBleed && oraclePatterns.contains(pattern) {
+                var oracles: [[String: Any]] = []
+                for intervention in oracleInterventions {
+                    guard let commands = oracleCommands(intervention) else {
+                        oracles.append([
+                            "name": intervention.name,
+                            "executed": false,
+                            "reason":
+                                "production sampler oracle uniform "
+                                + "override failed",
+                        ])
+                        continue
+                    }
+                    let suffix =
+                        "source-\(pattern.rawValue)-oracle-"
+                        + intervention.name
+                    let oracleReference = replayGlassPrefix(
+                        pass: pass,
+                        preColor0: preColor0,
+                        queue: queue,
+                        commands: commands,
+                        replacingGlassPipeline: nil,
+                        glassFragmentTextureOverrides: overrides,
+                        capture: capture,
+                        suffix: "\(suffix)-apple",
+                        outputDirectory: outputDirectory)
+                    let oracleCandidate = replayGlassPrefix(
+                        pass: pass,
+                        preColor0: preColor0,
+                        queue: queue,
+                        commands: commands,
+                        replacingGlassPipeline: customPipeline,
+                        glassFragmentTextureOverrides: overrides,
+                        capture: capture,
+                        suffix: "\(suffix)-custom",
+                        outputDirectory: outputDirectory)
+                    oracles.append([
+                        "name": intervention.name,
+                        "executed":
+                            oracleReference["executed"] as? Bool == true
+                            && oracleCandidate["executed"] as? Bool == true,
+                        "edits": intervention.edits.map {
+                            [
+                                "field": $0.field,
+                                "recordOffset": $0.recordOffset,
+                                "hex": $0.bytes.map {
+                                    String(format: "%02x", $0)
+                                }.joined(),
+                            ]
+                        },
+                        "reference": oracleReference,
+                        "candidate": oracleCandidate,
+                        "comparison": compareReplaySnapshots(
+                            reference: oracleReference,
+                            candidate: oracleCandidate,
+                            outputDirectory: outputDirectory),
+                    ])
+                }
+                record["productionSamplerOracles"] = oracles
+            }
             records.append(record)
             if candidate["executed"] as? Bool != true {
                 break
             }
         }
         return [
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "executed": true,
             "fragmentTextureIndex": 3,
             "prospectiveHoldout": [
@@ -9326,6 +9546,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "color-stages-b",
                     "final-color",
                 ],
+                "regularProductionSamplerOraclePatterns":
+                    oraclePatterns.map(\.rawValue).sorted(),
+                "regularProductionSamplerOracles":
+                    oracleInterventions.map(\.name),
             ],
             "source": [
                 "pixelFormat": source.pixelFormat.rawValue,

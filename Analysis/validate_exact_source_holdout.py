@@ -24,6 +24,45 @@ PROSPECTIVE_PATTERNS = {
     "prospective-opaque-seeded-v1",
     "prospective-premultiplied-seeded-v1",
 }
+PRODUCTION_ORACLE_PATTERNS = {
+    "opaque-coordinate-hash",
+    "sampler-basis-level-zero",
+    "sampler-basis-level-one",
+    "prospective-opaque-seeded-v1",
+}
+PRODUCTION_ORACLE_EDITS = {
+    "production-edge-sample": {
+        "face_matrix_0": (128, "0000000000000000"),
+        "face_matrix_1": (136, "0000000000000000"),
+        "face_matrix_2": (144, "0000000000000000"),
+        "bleed_matrix_0": (152, "003c000000000000"),
+        "bleed_matrix_1": (160, "0000003c00000000"),
+        "bleed_matrix_2": (168, "00000000003c0000"),
+        "edge_bleed_distance": (224, "fffbfefb"),
+        "edge_bleed_opacity": (228, "003c"),
+        "face_opacity": (230, "003c"),
+        "bleed_darken": (232, "0000003c"),
+        "shadow_opacity": (238, "0000"),
+        "holding_tone_opacity": (242, "0000"),
+        "clamp_limit": (248, "0000"),
+    },
+    "production-shadow-sample": {
+        "shadow_inverse_radius": (124, "00000000"),
+        "face_matrix_0": (128, "0000000000000000"),
+        "face_matrix_1": (136, "0000000000000000"),
+        "face_matrix_2": (144, "0000000000000000"),
+        "shadow_matrix_0": (176, "003c000000000000"),
+        "shadow_matrix_1": (184, "0000003c00000000"),
+        "shadow_matrix_2": (192, "00000000003c0000"),
+        "shadow_contribution": (200, "0000803f"),
+        "shadow_face_opacity": (204, "0000803f"),
+        "edge_bleed_opacity": (228, "0000"),
+        "face_opacity": (230, "003c"),
+        "shadow_opacity": (238, "0040"),
+        "holding_tone_opacity": (242, "0000"),
+        "clamp_limit": (248, "0000"),
+    },
+}
 REGULAR_DIAGNOSTIC_TRACES = {
     "edgeSampleTrace": ("edge-sample", 115, 8),
     "shadowSampleTrace": ("shadow-sample", 115, 8),
@@ -123,6 +162,73 @@ def validate_exact_comparison(
     )
 
 
+def validate_production_oracle(
+    root: Path,
+    oracle: dict[str, Any],
+    *,
+    pattern: str,
+) -> dict[str, str]:
+    name = oracle.get("name")
+    require(
+        isinstance(name, str) and name in PRODUCTION_ORACLE_EDITS,
+        f"{pattern} production sampler oracle name differs",
+    )
+    require(
+        oracle.get("executed") is True,
+        f"{pattern} {name} oracle did not execute",
+    )
+    edits = oracle.get("edits", [])
+    actual_edits = {
+        edit.get("field"): (edit.get("recordOffset"), edit.get("hex"))
+        for edit in edits
+        if isinstance(edit, dict)
+    }
+    require(
+        len(actual_edits) == len(edits)
+        and actual_edits == PRODUCTION_ORACLE_EDITS[name],
+        f"{pattern} {name} oracle uniform edits differ",
+    )
+    comparison = oracle.get("comparison", {})
+    require(
+        comparison.get("compared") is True
+        and comparison.get("exactByteMatch") is True
+        and comparison.get("mismatchedByteCount") == 0
+        and comparison.get("mismatchedPixelCount") == 0
+        and comparison.get("maximumChannelDelta") == 0,
+        f"{pattern} {name} Apple/independent output is not byte-exact",
+    )
+    hashes: dict[str, str] = {}
+    for implementation in ("reference", "candidate"):
+        replay = oracle.get(implementation, {})
+        require(
+            replay.get("executed") is True,
+            f"{pattern} {name} {implementation} replay failed",
+        )
+        output = replay.get("output", {})
+        width = output.get("width")
+        height = output.get("height")
+        require(
+            isinstance(width, int)
+            and width > 0
+            and isinstance(height, int)
+            and height > 0
+            and output.get("pixelFormat") == 80
+            and output.get("rawBytes") == width * height * 4,
+            f"{pattern} {name} {implementation} output metadata differs",
+        )
+        path = validate_record_file(
+            root,
+            output,
+            description=f"{pattern} {name} {implementation} output",
+        )
+        hashes[implementation] = sha256_file(path)
+    require(
+        hashes["reference"] == hashes["candidate"],
+        f"{pattern} {name} output SHA-256 differs",
+    )
+    return hashes
+
+
 def validate(
     capture_root: Path,
     preregistration_path: Path,
@@ -172,7 +278,7 @@ def validate(
         if isinstance(record, dict)
     }
     prospective = source_differential.get("prospectiveHoldout", {})
-    require(source_differential.get("schemaVersion") == 3, "schema differs")
+    require(source_differential.get("schemaVersion") == 4, "schema differs")
     require(source_differential.get("executed") is True, "probe did not execute")
     require(
         source_differential.get("fragmentTextureIndex") == 3,
@@ -195,8 +301,19 @@ def validate(
         },
         "runtime regular diagnostic inventory differs",
     )
+    require(
+        set(prospective.get("regularProductionSamplerOraclePatterns", []))
+        == PRODUCTION_ORACLE_PATTERNS,
+        "runtime production sampler oracle pattern inventory differs",
+    )
+    require(
+        set(prospective.get("regularProductionSamplerOracles", []))
+        == set(PRODUCTION_ORACLE_EDITS),
+        "runtime production sampler oracle inventory differs",
+    )
 
     diagnostic_hashes: dict[str, dict[str, str]] = {}
+    production_oracle_hashes: dict[str, dict[str, dict[str, str]]] = {}
     for pattern, record in records.items():
         validate_exact_comparison(record, pattern=pattern)
         construction = record["construction"]
@@ -249,6 +366,26 @@ def validate(
                     description=f"{pattern} {trace_name} diagnostic",
                 )
                 diagnostic_hashes[pattern][trace_name] = sha256_file(path)
+        if material == "regular" and pattern in PRODUCTION_ORACLE_PATTERNS:
+            oracle_records = record.get("productionSamplerOracles", [])
+            oracles = {
+                oracle.get("name"): oracle
+                for oracle in oracle_records
+                if isinstance(oracle, dict)
+            }
+            require(
+                len(oracles) == len(oracle_records)
+                and set(oracles) == set(PRODUCTION_ORACLE_EDITS),
+                f"{pattern} production sampler oracle inventory differs",
+            )
+            production_oracle_hashes[pattern] = {
+                name: validate_production_oracle(
+                    capture_root,
+                    oracles[name],
+                    pattern=pattern,
+                )
+                for name in sorted(oracles)
+            }
 
     profile_name = f"{material}-{appearance}"
     prospective_results: dict[str, Any] = {}
@@ -309,6 +446,9 @@ def validate(
             "regularDiagnosticTraceSha256": diagnostic_hashes.get(
                 pattern, {}
             ),
+            "productionSamplerOracleSha256": production_oracle_hashes.get(
+                pattern, {}
+            ),
             "exact": True,
         }
 
@@ -320,6 +460,7 @@ def validate(
         "preregistrationSha256": sha256_file(preregistration_path),
         "runtimeSha256": sha256_file(runtime_path),
         "prospective": prospective_results,
+        "productionSamplerOracleSha256": production_oracle_hashes,
         "allAppleMetalAndFrozenGlslOutputsExact": True,
     }
 

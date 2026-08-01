@@ -93,7 +93,7 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
             },
             "carendererEvidence": {"exactPassReplay": {
                 "independentGlassReplay": {"sourceTextureDifferential": {
-                    "schemaVersion": 3,
+                    "schemaVersion": 4,
                     "executed": True,
                     "fragmentTextureIndex": 3,
                     "prospectiveHoldout": {
@@ -104,6 +104,12 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
                             for specification in (
                                 validator.REGULAR_DIAGNOSTIC_TRACES.values()
                             )
+                        ),
+                        "regularProductionSamplerOraclePatterns": sorted(
+                            validator.PRODUCTION_ORACLE_PATTERNS
+                        ),
+                        "regularProductionSamplerOracles": sorted(
+                            validator.PRODUCTION_ORACLE_EDITS
                         ),
                     },
                     "records": records,
@@ -129,24 +135,68 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
             "independentGlassReplay"
         ]["sourceTextureDifferential"]["records"]
         for record in records:
-            if record["name"] not in validator.PROSPECTIVE_PATTERNS:
-                continue
-            for field, (
-                trace_name,
-                pixel_format,
-                bytes_per_pixel,
-            ) in validator.REGULAR_DIAGNOSTIC_TRACES.items():
-                value = bytes(range(bytes_per_pixel))
-                output = self._file_record(
-                    f"{record['name']}-{trace_name}.raw",
-                    value,
-                )
-                output.update({
-                    "width": 1,
-                    "height": 1,
-                    "pixelFormat": pixel_format,
-                })
-                record[field] = {"executed": True, "output": output}
+            if record["name"] in validator.PROSPECTIVE_PATTERNS:
+                for field, (
+                    trace_name,
+                    pixel_format,
+                    bytes_per_pixel,
+                ) in validator.REGULAR_DIAGNOSTIC_TRACES.items():
+                    value = bytes(range(bytes_per_pixel))
+                    output = self._file_record(
+                        f"{record['name']}-{trace_name}.raw",
+                        value,
+                    )
+                    output.update({
+                        "width": 1,
+                        "height": 1,
+                        "pixelFormat": pixel_format,
+                    })
+                    record[field] = {"executed": True, "output": output}
+            if record["name"] in validator.PRODUCTION_ORACLE_PATTERNS:
+                oracles = []
+                for oracle_name, expected_edits in (
+                    validator.PRODUCTION_ORACLE_EDITS.items()
+                ):
+                    value = bytes((29, 53, 71, 255))
+                    output = self._file_record(
+                        f"{record['name']}-{oracle_name}.raw",
+                        value,
+                    )
+                    output.update({
+                        "width": 1,
+                        "height": 1,
+                        "pixelFormat": 80,
+                    })
+                    oracles.append({
+                        "name": oracle_name,
+                        "executed": True,
+                        "edits": [
+                            {
+                                "field": field,
+                                "recordOffset": offset,
+                                "hex": encoded,
+                            }
+                            for field, (offset, encoded) in (
+                                expected_edits.items()
+                            )
+                        ],
+                        "reference": {
+                            "executed": True,
+                            "output": output,
+                        },
+                        "candidate": {
+                            "executed": True,
+                            "output": dict(output),
+                        },
+                        "comparison": {
+                            "compared": True,
+                            "exactByteMatch": True,
+                            "mismatchedByteCount": 0,
+                            "mismatchedPixelCount": 0,
+                            "maximumChannelDelta": 0,
+                        },
+                    })
+                record["productionSamplerOracles"] = oracles
         runtime_path.write_text(json.dumps(runtime), encoding="utf-8")
 
         preregistration = json.loads(
@@ -236,6 +286,58 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(
             ValueError,
             "shadow-sample diagnostic did not execute",
+        ):
+            validator.validate(
+                self.capture,
+                self.preregistration,
+                material="regular",
+                appearance="light",
+            )
+
+    def test_rejects_missing_production_sampler_oracle(self) -> None:
+        self._convert_fixture_to_regular()
+        runtime_path = self.capture / "runtime.json"
+        runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
+        records = runtime["carendererEvidence"]["exactPassReplay"][
+            "independentGlassReplay"
+        ]["sourceTextureDifferential"]["records"]
+        oracle_record = next(
+            record
+            for record in records
+            if record["name"] == "opaque-coordinate-hash"
+        )
+        oracle_record["productionSamplerOracles"].pop()
+        runtime_path.write_text(json.dumps(runtime), encoding="utf-8")
+        with self.assertRaisesRegex(
+            ValueError,
+            "production sampler oracle inventory differs",
+        ):
+            validator.validate(
+                self.capture,
+                self.preregistration,
+                material="regular",
+                appearance="light",
+            )
+
+    def test_rejects_changed_production_sampler_oracle_edit(self) -> None:
+        self._convert_fixture_to_regular()
+        runtime_path = self.capture / "runtime.json"
+        runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
+        records = runtime["carendererEvidence"]["exactPassReplay"][
+            "independentGlassReplay"
+        ]["sourceTextureDifferential"]["records"]
+        oracle_record = next(
+            record
+            for record in records
+            if record["name"] == "opaque-coordinate-hash"
+        )
+        oracle_record["productionSamplerOracles"][0]["edits"][0][
+            "hex"
+        ] = "ff"
+        runtime_path.write_text(json.dumps(runtime), encoding="utf-8")
+        with self.assertRaisesRegex(
+            ValueError,
+            "oracle uniform edits differ",
         ):
             validator.validate(
                 self.capture,

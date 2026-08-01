@@ -3073,6 +3073,33 @@ output comparison remains red; it is not weakened or silently rebased. A
 corrected portable model must freeze new source fields before Apple renders
 them, pass that fresh holdout, and then pass an unchanged repeat.
 
+Run `30682971981` returned every schema-3 diagnostic and retained the expected
+red frozen-output gate for regular light and dark. The primary sample, source
+color, and face stages are exact for both opened fields. The diagnostic edge
+sample selects the half-materialized coordinate expression exactly, and the
+diagnostic shadow sample becomes exact except for 20 boundary pixels when it
+uses Apple's archived interpolants. Neither observation may be substituted
+into the production replay: compiling the same shared stage function for an
+RGBA16Float trace target changes Metal's optimizer boundary. On regular-light
+opaque input, using the trace-selected forms increases the real BGRA8 mismatch
+from 5,658 to 85,487 bytes. The trace target is therefore a localization
+oracle, not a production-value oracle.
+
+Source-differential schema 4 measures that optimizer boundary without a new
+fragment function or trace render target. For coordinate-hash, two independent
+corner-basis fields, and the opened opaque seeded field, it replays Apple's
+real private fragment and the independently compiled full profile fragment to
+the captured BGRA8Unorm target under two byte-recorded uniform interventions.
+The edge intervention zeros the primary face and shadow, makes the bleed color
+matrix identity, and forces the bleed amount to one. Fully covered main pixels
+then expose the production edge sample directly. The shadow intervention makes
+the shadow matrix identity, disables face/bleed color, and sets the measured
+shadow polynomial to exact alpha one. Pixels in the signed perimeter draw then
+expose the production shadow sample directly. CI fails closed unless every
+uniform byte, output size, FNV-1a, and Apple/custom byte comparison is exact.
+These are opened calibration oracles; they cannot replace the still-required
+fresh preregistered source holdout and unchanged repeat.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
