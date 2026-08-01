@@ -53,13 +53,25 @@ private struct SamplePosition {
     let y: Int
 
     var slot: Int {
+#if TILE_CENTER_TOMOGRAPHY
+        primitive * edgeCount + edge
+#else
         (
             axis * primitiveCount * tileCount + primitive * tileCount + tile
         ) * edgeCount + edge
+#endif
     }
 }
 
-#if TILE_CENTER_BOUNDARY_HOLDOUT
+#if TILE_CENTER_TOMOGRAPHY
+private let schemaVersion = 11
+private let rigVersion = "metal-raster-tile-selector-11.0.0"
+private let role = "preregistered-dense-tile-center-tomography"
+private let preregistrationFile =
+    "Analysis/raster_tile_center_tomography_preregistration.json"
+private let preregistrationSha256 =
+    "cce4332c8aa1f04faefedf20b327aae2fb78c2aecbe232f3b458c582a757b53d"
+#elseif TILE_CENTER_BOUNDARY_HOLDOUT
 private let schemaVersion = 10
 private let rigVersion = "metal-raster-tile-selector-10.0.0"
 private let role = "prospective-tile-center-directional-boundary-holdout"
@@ -132,11 +144,39 @@ private let tileSize = 32
 private let tileCount = targetWidth / tileSize
 private let axisCount = 2
 private let primitiveCount = 2
+#if TILE_CENTER_TOMOGRAPHY
+private let edgeCount = 252
+private let slotCount = primitiveCount * edgeCount
+#else
 private let edgeCount = 2
 private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
+#endif
 private let pullCount = 16
 private let recordComponentCount = pullCount + 2
 private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
+#if TILE_CENTER_TOMOGRAPHY
+private let recordOrdering =
+    "case-major,endpoint-major,effective-axis-primitive-coordinate-slot-major,component-minor"
+#else
+private let recordOrdering =
+    "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor"
+#endif
+#if TILE_CENTER_TOMOGRAPHY
+private let cases = [
+    CaptureCase(name: "tomography-e252-d509-o89-x", role: "preregistered-discovery", width: 252, height: 509, originX: 89, originY: 341),
+    CaptureCase(name: "tomography-e252-d509-o89-y", role: "preregistered-discovery", width: 509, height: 252, originX: 341, originY: 89),
+    CaptureCase(name: "tomography-e252-d509-o96-x", role: "preregistered-discovery", width: 252, height: 509, originX: 96, originY: 341),
+    CaptureCase(name: "tomography-e252-d509-o96-y", role: "preregistered-discovery", width: 509, height: 252, originX: 341, originY: 96),
+    CaptureCase(name: "tomography-e252-d647-o143-x", role: "preregistered-discovery", width: 252, height: 647, originX: 143, originY: 290),
+    CaptureCase(name: "tomography-e252-d647-o143-y", role: "preregistered-discovery", width: 647, height: 252, originX: 290, originY: 143),
+    CaptureCase(name: "tomography-e252-d647-o150-x", role: "preregistered-discovery", width: 252, height: 647, originX: 150, originY: 290),
+    CaptureCase(name: "tomography-e252-d647-o150-y", role: "preregistered-discovery", width: 647, height: 252, originX: 290, originY: 150),
+    CaptureCase(name: "tomography-e252-d751-o192-x", role: "preregistered-discovery", width: 252, height: 751, originX: 192, originY: 212),
+    CaptureCase(name: "tomography-e252-d751-o192-y", role: "preregistered-discovery", width: 751, height: 252, originX: 212, originY: 192),
+    CaptureCase(name: "tomography-e252-d751-o199-x", role: "preregistered-discovery", width: 252, height: 751, originX: 199, originY: 212),
+    CaptureCase(name: "tomography-e252-d751-o199-y", role: "preregistered-discovery", width: 751, height: 252, originX: 212, originY: 199),
+]
+#else
 #if TILE_CENTER_BOUNDARY_HOLDOUT
 private let cases = [
     CaptureCase(name: "control-square-256", role: "prospective-control", width: 256, height: 256, originX: 384, originY: 384),
@@ -504,6 +544,7 @@ private let cases = [
     ),
 ]
 #endif
+#endif
 
 private let fixedEndpoints = [
     EndpointCase(name: "zero-to-one", role: "prospective-control", lowBits: 0x0000_0000, highBits: 0x3f80_0000),
@@ -560,7 +601,67 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
-#if TILE_CENTER_BOUNDARY_HOLDOUT
+#if TILE_CENTER_TOMOGRAPHY
+private let centerTomographyBases: [(name: String, bits: UInt32)] = [
+    ("quarter", 0x3e80_0000),
+    ("one", 0x3f80_0000),
+]
+private let centerTomographyFamilies: [
+    (name: String, nativeSignificand: UInt32, residue: UInt32)
+] = [
+    ("n01", 1, 79),
+    ("n15", 15, 43),
+]
+private let centerTomographyDepths = [
+    20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+]
+private let centerTomographyTransferDepths: Set<Int> = [17, 13, 9, 7]
+
+private func centerTomographyEndpoints() -> [EndpointCase] {
+    var result = [
+        EndpointCase(
+            name: "zero-to-one", role: "prospective-control",
+            lowBits: 0, highBits: 0x3f80_0000
+        ),
+        EndpointCase(
+            name: "one-to-zero", role: "prospective-control",
+            lowBits: 0x3f80_0000, highBits: 0
+        ),
+    ]
+    for base in centerTomographyBases {
+        for family in centerTomographyFamilies {
+            let significandLog2 = 31 - family.nativeSignificand.leadingZeroBitCount
+            for depth in centerTomographyDepths {
+                if base.name != "quarter"
+                    && !centerTomographyTransferDepths.contains(depth)
+                {
+                    continue
+                }
+                let power = 23 - significandLog2 - depth
+                precondition(power >= 0)
+                let nativeSpan = family.nativeSignificand << UInt32(power)
+                let low = base.bits + family.residue
+                let high = low + nativeSpan
+                let stem = String(
+                    format: "translated-dense-%@-%@-d%02d",
+                    base.name,
+                    family.name,
+                    depth
+                )
+                result.append(EndpointCase(
+                    name: "\(stem)-forward", role: "tomography-discovery",
+                    lowBits: low, highBits: high
+                ))
+                result.append(EndpointCase(
+                    name: "\(stem)-reverse", role: "tomography-discovery",
+                    lowBits: high, highBits: low
+                ))
+            }
+        }
+    }
+    return result
+}
+#elseif TILE_CENTER_BOUNDARY_HOLDOUT
 private let centerBoundaryBases: [(name: String, bits: UInt32)] = [
     ("quarter", 0x3e80_0000),
     ("half", 0x3f00_0000),
@@ -974,7 +1075,9 @@ private func discriminatorEndpoints() -> [EndpointCase] {
 }
 #endif
 
-#if TILE_CENTER_BOUNDARY_HOLDOUT
+#if TILE_CENTER_TOMOGRAPHY
+private let endpoints = centerTomographyEndpoints()
+#elseif TILE_CENTER_BOUNDARY_HOLDOUT
 private let endpoints = centerBoundaryEndpoints()
 #elseif TILE_CENTER_SCALE_HOLDOUT
 private let endpoints = centerScaleEndpoints()
@@ -992,6 +1095,48 @@ private let endpoints = fixedEndpoints + selectorEndpoints()
 
 private func samplePositions(captureCase: CaptureCase) -> [SamplePosition] {
     var result: [SamplePosition] = []
+#if TILE_CENTER_TOMOGRAPHY
+    let axis: Int
+    let origin: Int
+    let oppositeOrigin: Int
+    let oppositeExtent: Int
+    if captureCase.width == edgeCount {
+        axis = 0
+        origin = captureCase.originX
+        oppositeOrigin = captureCase.originY
+        oppositeExtent = captureCase.height
+    } else {
+        precondition(captureCase.height == edgeCount)
+        axis = 1
+        origin = captureCase.originY
+        oppositeOrigin = captureCase.originX
+        oppositeExtent = captureCase.width
+    }
+    for primitive in 0..<primitiveCount {
+        for local in 0..<edgeCount {
+            let coordinate = origin + local
+            let covered = primitive == 0
+                ? oppositeExtent * (2 * local + 1) > edgeCount
+                : oppositeExtent * (2 * local + 1)
+                    < (2 * oppositeExtent - 1) * edgeCount
+            precondition(covered)
+            result.append(SamplePosition(
+                axis: axis,
+                primitive: primitive,
+                tile: coordinate / tileSize,
+                edge: local,
+                x: axis == 0
+                    ? coordinate
+                    : (primitive == 0
+                        ? oppositeOrigin + oppositeExtent - 1 : oppositeOrigin),
+                y: axis == 0
+                    ? (primitive == 0
+                        ? oppositeOrigin + oppositeExtent - 1 : oppositeOrigin)
+                    : coordinate
+            ))
+        }
+    }
+#else
     for axis in 0..<axisCount {
         let origin = axis == 0 ? captureCase.originX : captureCase.originY
         let extent = axis == 0 ? captureCase.width : captureCase.height
@@ -1039,6 +1184,7 @@ private func samplePositions(captureCase: CaptureCase) -> [SamplePosition] {
             }
         }
     }
+#endif
     precondition(!result.isEmpty)
     precondition(Set(result.map(\.slot)).count == result.count)
     for sample in result {
@@ -1215,7 +1361,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_CENTER_BOUNDARY_HOLDOUT
+#if TILE_CENTER_TOMOGRAPHY
+    precondition(cases.count == 12)
+    precondition(endpoints.count == 78)
+    precondition(layout["recordCount"] as? Int == 471_744)
+    precondition(layout["rawBytes"] as? Int == 33_965_568)
+    precondition(layout["expectedRecordCount"] as? Int == 471_744)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "0e69bd8ba8f9f0a9fd09783830549ba92c99ff3a0d43622c97155d6db8e5680f"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "eb2f94ef3d830bafba4122f60e3211489a06a3e41bcf5c4f9b92441817a69d3a"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "96a6fd4e885f4ddebb95fbe67e9adf494d0e9469c69baa0b707ad80fd6daa9e5"
+    )
+#elseif TILE_CENTER_BOUNDARY_HOLDOUT
     precondition(cases.count == 7)
     precondition(endpoints.count == 158)
     precondition(layout["recordCount"] as? Int == 283_136)
@@ -1588,7 +1752,7 @@ private func run(outputDirectory: URL) throws {
             "x": xOffsets,
             "y": yOffsets,
         ],
-        "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor",
+        "ordering": recordOrdering,
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

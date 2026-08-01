@@ -3495,6 +3495,46 @@ The preregistration has SHA-256
 Zero mismatch on the blind run and a bit-identical unchanged repeat are
 mandatory before v8 is treated as prospective arithmetic evidence.
 
+Run `30706923035` prospectively rejected v8 at commit `d9ac507`. The build,
+capture, structural validation, opening, and artifact upload all completed;
+the workflow remained red because the frozen equality gate correctly found
+6,036 mismatched words across 3,288 of 120,080 records. The control contributes
+540 center words and the six sealed cases contribute 5,496 center or derivative
+words. The 20,385,792-byte raw stream has SHA-256
+`9d08f9ab5b9660ab7870213a532c952adb389125cca69071af4a8bd9125379c5`.
+This is a scientific rejection, not an infrastructure failure, and no repeat
+was dispatched.
+
+Input-only post-opening recovery removes 5,820 of those 6,036 mismatches.
+Forward native-significand-one endpoints use the determinant path; reverse
+native-significand-one endpoints expose the signed-p27 floor through depth 10;
+forward native-significand-fifteen endpoints expose the signed-p27 floor down
+through depth 7; reverse native-significand-fifteen endpoints use the
+determinant path. The resulting replay leaves exactly 216 words across 108
+records, all center/derivative pairs in the effective-252, opposite-647,
+forward-n15 matrix. Both primitives and both transposed axes have identical
+residuals, ruling out the earlier primitive-branch suspicion. The reproducible
+report is `Analysis/raster_tile_center_boundary_recovery.json`. This is still
+retrospective evidence and does not authorize a shader change.
+
+Schema 11 is a preregistered discovery capture for that residual rather than
+another claimed parity holdout. Twelve native/transposed geometries cross
+opposite extents 509, 647, and 751 with two tile alignments. For each geometry
+it records every integer pixel on the 252-pixel effective axis for both
+triangle primitives. Seventy-eight endpoints add the previously missing
+cancellation depths 14 and 13, both n01/n15 directions, and an independent
+binary32 exponent transfer. The matrix contains 471,744 records and 8,491,392
+component words in a 33,965,568-byte stream. Its case, endpoint, and sample
+hashes are frozen in
+`raster_tile_center_tomography_preregistration.json` before Apple output is
+observed; that preregistration has SHA-256
+`cce4332c8aa1f04faefedf20b327aae2fb78c2aecbe232f3b458c582a757b53d`.
+Because schema 11 is explicitly discovery evidence, a green run
+means only that every declared word was captured and the zero-endpoint pull
+controls were exact. The next prospective claim requires one input-only law
+to replay every opened schema-5 through schema-11 word exactly, followed by a
+fresh frozen holdout and unchanged repeat.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

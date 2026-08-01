@@ -1,0 +1,796 @@
+{
+  "caseWordMismatchCounts": {
+    "sealed-boundary-e252-d647-x": 108,
+    "sealed-boundary-e252-d647-y": 108
+  },
+  "componentMismatchCounts": {
+    "axis-derivative(center)": 108,
+    "center": 108
+  },
+  "endpointWordMismatchCounts": {
+    "translated-confirm-half-n15-d07-forward": 8,
+    "translated-confirm-half-n15-d08-forward": 8,
+    "translated-confirm-half-n15-d09-forward": 8,
+    "translated-confirm-half-n15-d10-forward": 8,
+    "translated-confirm-half-n15-d11-forward": 8,
+    "translated-confirm-half-n15-d12-forward": 8,
+    "translated-confirm-half-n15-d15-forward": 8,
+    "translated-confirm-half-n15-d16-forward": 8,
+    "translated-confirm-half-n15-d17-forward": 8,
+    "translated-confirm-one-n15-d07-forward": 8,
+    "translated-confirm-one-n15-d08-forward": 8,
+    "translated-confirm-one-n15-d09-forward": 8,
+    "translated-confirm-one-n15-d10-forward": 8,
+    "translated-confirm-one-n15-d11-forward": 8,
+    "translated-confirm-one-n15-d12-forward": 8,
+    "translated-confirm-one-n15-d15-forward": 8,
+    "translated-confirm-one-n15-d16-forward": 8,
+    "translated-confirm-one-n15-d17-forward": 8,
+    "translated-confirm-quarter-n15-d07-forward": 8,
+    "translated-confirm-quarter-n15-d08-forward": 8,
+    "translated-confirm-quarter-n15-d09-forward": 8,
+    "translated-confirm-quarter-n15-d10-forward": 8,
+    "translated-confirm-quarter-n15-d11-forward": 8,
+    "translated-confirm-quarter-n15-d12-forward": 8,
+    "translated-confirm-quarter-n15-d15-forward": 8,
+    "translated-confirm-quarter-n15-d16-forward": 8,
+    "translated-confirm-quarter-n15-d17-forward": 8
+  },
+  "exact": false,
+  "inference": "The frozen phase/depth selector is rejected. Input-derived family and direction rules remove 5,820 of its 6,036 word mismatches. The 216 remaining words are a dense-tomography target, not evidence for a geometry-name branch.",
+  "mismatchExamples": [
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e8000a3",
+          "name": "center",
+          "predictedBits": "0x3e8000a2"
+        },
+        {
+          "actualBits": "0x00000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33000000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d17-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e8000a3",
+          "name": "center",
+          "predictedBits": "0x3e8000a2"
+        },
+        {
+          "actualBits": "0x00000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33000000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d17-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e80011a",
+          "name": "center",
+          "predictedBits": "0x3e800119"
+        },
+        {
+          "actualBits": "0x00000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33000000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d16-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e80011a",
+          "name": "center",
+          "predictedBits": "0x3e800119"
+        },
+        {
+          "actualBits": "0x00000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33000000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d16-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e80020a",
+          "name": "center",
+          "predictedBits": "0x3e800209"
+        },
+        {
+          "actualBits": "0x33000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33800000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d15-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e80020a",
+          "name": "center",
+          "predictedBits": "0x3e800209"
+        },
+        {
+          "actualBits": "0x33000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33800000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d15-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e800f23",
+          "name": "center",
+          "predictedBits": "0x3e800f22"
+        },
+        {
+          "actualBits": "0x34f00000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35000000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d12-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e800f23",
+          "name": "center",
+          "predictedBits": "0x3e800f22"
+        },
+        {
+          "actualBits": "0x34f00000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35000000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d12-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e801e1c",
+          "name": "center",
+          "predictedBits": "0x3e801e1b"
+        },
+        {
+          "actualBits": "0x35700000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35780000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d11-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e801e1c",
+          "name": "center",
+          "predictedBits": "0x3e801e1b"
+        },
+        {
+          "actualBits": "0x35700000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35780000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d11-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e803c0c",
+          "name": "center",
+          "predictedBits": "0x3e803c0b"
+        },
+        {
+          "actualBits": "0x35f00000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35f40000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d10-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e803c0c",
+          "name": "center",
+          "predictedBits": "0x3e803c0b"
+        },
+        {
+          "actualBits": "0x35f00000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35f40000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d10-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e8077ee",
+          "name": "center",
+          "predictedBits": "0x3e8077ed"
+        },
+        {
+          "actualBits": "0x36720000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x36740000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d09-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e8077ee",
+          "name": "center",
+          "predictedBits": "0x3e8077ed"
+        },
+        {
+          "actualBits": "0x36720000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x36740000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d09-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e80efb1",
+          "name": "center",
+          "predictedBits": "0x3e80efb0"
+        },
+        {
+          "actualBits": "0x36f30000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x36f40000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d08-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e80efb1",
+          "name": "center",
+          "predictedBits": "0x3e80efb0"
+        },
+        {
+          "actualBits": "0x36f30000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x36f40000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d08-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e81df37",
+          "name": "center",
+          "predictedBits": "0x3e81df36"
+        },
+        {
+          "actualBits": "0x37738000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x37740000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d07-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3e81df37",
+          "name": "center",
+          "predictedBits": "0x3e81df36"
+        },
+        {
+          "actualBits": "0x37738000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x37740000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-quarter-n15-d07-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f0000a3",
+          "name": "center",
+          "predictedBits": "0x3f0000a2"
+        },
+        {
+          "actualBits": "0x00000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33800000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d17-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f0000a3",
+          "name": "center",
+          "predictedBits": "0x3f0000a2"
+        },
+        {
+          "actualBits": "0x00000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33800000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d17-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f00011a",
+          "name": "center",
+          "predictedBits": "0x3f000119"
+        },
+        {
+          "actualBits": "0x00000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33800000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d16-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f00011a",
+          "name": "center",
+          "predictedBits": "0x3f000119"
+        },
+        {
+          "actualBits": "0x00000000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x33800000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d16-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f00020a",
+          "name": "center",
+          "predictedBits": "0x3f000209"
+        },
+        {
+          "actualBits": "0x33800000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x34000000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d15-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f00020a",
+          "name": "center",
+          "predictedBits": "0x3f000209"
+        },
+        {
+          "actualBits": "0x33800000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x34000000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d15-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f000f23",
+          "name": "center",
+          "predictedBits": "0x3f000f22"
+        },
+        {
+          "actualBits": "0x35700000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35800000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d12-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f000f23",
+          "name": "center",
+          "predictedBits": "0x3f000f22"
+        },
+        {
+          "actualBits": "0x35700000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35800000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d12-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f001e1c",
+          "name": "center",
+          "predictedBits": "0x3f001e1b"
+        },
+        {
+          "actualBits": "0x35f00000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35f80000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d11-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f001e1c",
+          "name": "center",
+          "predictedBits": "0x3f001e1b"
+        },
+        {
+          "actualBits": "0x35f00000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x35f80000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d11-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f003c0c",
+          "name": "center",
+          "predictedBits": "0x3f003c0b"
+        },
+        {
+          "actualBits": "0x36700000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x36740000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d10-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f003c0c",
+          "name": "center",
+          "predictedBits": "0x3f003c0b"
+        },
+        {
+          "actualBits": "0x36700000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x36740000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d10-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f0077ee",
+          "name": "center",
+          "predictedBits": "0x3f0077ed"
+        },
+        {
+          "actualBits": "0x36f20000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x36f40000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d09-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 0,
+      "tile": 12,
+      "x": 394,
+      "y": 936
+    },
+    {
+      "axis": "x",
+      "case": "sealed-boundary-e252-d647-x",
+      "components": [
+        {
+          "actualBits": "0x3f0077ee",
+          "name": "center",
+          "predictedBits": "0x3f0077ed"
+        },
+        {
+          "actualBits": "0x36f20000",
+          "name": "axis-derivative(center)",
+          "predictedBits": "0x36f40000"
+        }
+      ],
+      "edge": 1,
+      "endpoint": "translated-confirm-half-n15-d09-forward",
+      "law": "n15-forward-signed-p27-floor",
+      "primitive": 1,
+      "tile": 12,
+      "x": 394,
+      "y": 290
+    }
+  ],
+  "productionShaderAuthorized": false,
+  "rasterTileCenterBoundaryRecoverySchemaVersion": 1,
+  "recordCount": 120080,
+  "recordMismatchCount": 108,
+  "remainingGate": "Resolve the sub-p27 center coefficient, tile constant, and evaluator using the preregistered schema-11 dense capture; then replay all opened schemas exactly before freezing a new holdout.",
+  "selectedLawRecordCounts": {
+    "determinant-rounded-f32": 70680,
+    "n01-reverse-signed-p27-floor": 20520,
+    "n15-forward-signed-p27-floor": 27360,
+    "zero-endpoint-determinant": 1520
+  },
+  "source": "../artifacts/gh-run-30706923035/liquid-glass-raster-tile-center-boundary-30706923035",
+  "sourceCiCommit": "d9ac507478e2a35430d735b127fd647ffe03eb93",
+  "sourceManifestSha256": "c768d6c2b275e4fb6db55462e9dc993bbd62b34c31a8e65674e1a9abce0a18ba",
+  "sourceRawSha256": "9d08f9ab5b9660ab7870213a532c952adb389125cca69071af4a8bd9125379c5",
+  "wordCount": 2161440,
+  "wordMismatchCount": 216
+}

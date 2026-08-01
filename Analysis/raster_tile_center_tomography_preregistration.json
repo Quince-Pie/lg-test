@@ -1,0 +1,377 @@
+{
+  "acceptance": {
+    "allDeclaredRecordsFinite": true,
+    "discoveryCapture": true,
+    "productionShaderAuthorizedByThisCapture": false,
+    "prospectiveParityClaim": false,
+    "structuralValidationRequired": true,
+    "tolerance": 0,
+    "zeroEndpointPullControlsExact": true
+  },
+  "appleOutputsObservedAtPreregistration": false,
+  "capture": {
+    "cancellationDepths": [
+      20,
+      19,
+      18,
+      17,
+      16,
+      15,
+      14,
+      13,
+      12,
+      11,
+      10,
+      9,
+      8,
+      7,
+      6
+    ],
+    "caseCount": 12,
+    "caseWordsSha256": "0e69bd8ba8f9f0a9fd09783830549ba92c99ff3a0d43622c97155d6db8e5680f",
+    "cases": [
+      {
+        "height": 509,
+        "name": "tomography-e252-d509-o89-x",
+        "originX": 89,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 252
+      },
+      {
+        "height": 252,
+        "name": "tomography-e252-d509-o89-y",
+        "originX": 341,
+        "originY": 89,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 509,
+        "name": "tomography-e252-d509-o96-x",
+        "originX": 96,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 252
+      },
+      {
+        "height": 252,
+        "name": "tomography-e252-d509-o96-y",
+        "originX": 341,
+        "originY": 96,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 647,
+        "name": "tomography-e252-d647-o143-x",
+        "originX": 143,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 252
+      },
+      {
+        "height": 252,
+        "name": "tomography-e252-d647-o143-y",
+        "originX": 290,
+        "originY": 143,
+        "role": "preregistered-discovery",
+        "width": 647
+      },
+      {
+        "height": 647,
+        "name": "tomography-e252-d647-o150-x",
+        "originX": 150,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 252
+      },
+      {
+        "height": 252,
+        "name": "tomography-e252-d647-o150-y",
+        "originX": 290,
+        "originY": 150,
+        "role": "preregistered-discovery",
+        "width": 647
+      },
+      {
+        "height": 751,
+        "name": "tomography-e252-d751-o192-x",
+        "originX": 192,
+        "originY": 212,
+        "role": "preregistered-discovery",
+        "width": 252
+      },
+      {
+        "height": 252,
+        "name": "tomography-e252-d751-o192-y",
+        "originX": 212,
+        "originY": 192,
+        "role": "preregistered-discovery",
+        "width": 751
+      },
+      {
+        "height": 751,
+        "name": "tomography-e252-d751-o199-x",
+        "originX": 199,
+        "originY": 212,
+        "role": "preregistered-discovery",
+        "width": 252
+      },
+      {
+        "height": 252,
+        "name": "tomography-e252-d751-o199-y",
+        "originX": 212,
+        "originY": 199,
+        "role": "preregistered-discovery",
+        "width": 751
+      }
+    ],
+    "endpointCount": 78,
+    "endpointWordsSha256": "eb2f94ef3d830bafba4122f60e3211489a06a3e41bcf5c4f9b92441817a69d3a",
+    "exponentTransferDepths": [
+      17,
+      13,
+      9,
+      7
+    ],
+    "layout": {
+      "axisCount": 2,
+      "caseCount": 12,
+      "caseWordsSha256": "0e69bd8ba8f9f0a9fd09783830549ba92c99ff3a0d43622c97155d6db8e5680f",
+      "edgeCount": 252,
+      "endpointCount": 78,
+      "endpointWordsSha256": "eb2f94ef3d830bafba4122f60e3211489a06a3e41bcf5c4f9b92441817a69d3a",
+      "expectedRecordCount": 471744,
+      "primitiveCount": 2,
+      "pullCount": 16,
+      "rawBytes": 33965568,
+      "recordBytes": 72,
+      "recordComponentCount": 18,
+      "recordCount": 471744,
+      "sampleWordsSha256": "96a6fd4e885f4ddebb95fbe67e9adf494d0e9469c69baa0b707ad80fd6daa9e5",
+      "samplesPerCase": [
+        504,
+        504,
+        504,
+        504,
+        504,
+        504,
+        504,
+        504,
+        504,
+        504,
+        504,
+        504
+      ],
+      "slotCount": 504,
+      "tileCount": 32
+    },
+    "ordering": "case-major,endpoint-major,effective-axis-primitive-coordinate-slot-major,component-minor",
+    "pullOffsetsByAxis": {
+      "x": [
+        [
+          0.0,
+          0.5
+        ],
+        [
+          0.0625,
+          0.5
+        ],
+        [
+          0.125,
+          0.5
+        ],
+        [
+          0.1875,
+          0.5
+        ],
+        [
+          0.25,
+          0.5
+        ],
+        [
+          0.3125,
+          0.5
+        ],
+        [
+          0.375,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5625,
+          0.5
+        ],
+        [
+          0.625,
+          0.5
+        ],
+        [
+          0.6875,
+          0.5
+        ],
+        [
+          0.75,
+          0.5
+        ],
+        [
+          0.8125,
+          0.5
+        ],
+        [
+          0.875,
+          0.5
+        ],
+        [
+          0.9375,
+          0.5
+        ]
+      ],
+      "y": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.0625
+        ],
+        [
+          0.5,
+          0.125
+        ],
+        [
+          0.5,
+          0.1875
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.5,
+          0.3125
+        ],
+        [
+          0.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.4375
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.5625
+        ],
+        [
+          0.5,
+          0.625
+        ],
+        [
+          0.5,
+          0.6875
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.5,
+          0.8125
+        ],
+        [
+          0.5,
+          0.875
+        ],
+        [
+          0.5,
+          0.9375
+        ]
+      ]
+    },
+    "recordComponents": [
+      "axis-pull@0/16",
+      "axis-pull@1/16",
+      "axis-pull@2/16",
+      "axis-pull@3/16",
+      "axis-pull@4/16",
+      "axis-pull@5/16",
+      "axis-pull@6/16",
+      "axis-pull@7/16",
+      "axis-pull@8/16",
+      "axis-pull@9/16",
+      "axis-pull@10/16",
+      "axis-pull@11/16",
+      "axis-pull@12/16",
+      "axis-pull@13/16",
+      "axis-pull@14/16",
+      "axis-pull@15/16",
+      "center",
+      "axis-derivative(center)"
+    ],
+    "rigVersion": "metal-raster-tile-selector-11.0.0",
+    "role": "preregistered-dense-tile-center-tomography",
+    "samplePolicy": "every integer pixel on the 252-pixel effective axis, both triangle primitives, native and transposed geometry",
+    "sampleWordsSha256": "96a6fd4e885f4ddebb95fbe67e9adf494d0e9469c69baa0b707ad80fd6daa9e5",
+    "schemaVersion": 11,
+    "slopeFamilies": [
+      {
+        "baseResidue": 79,
+        "name": "n01",
+        "nativeSignificand": 1
+      },
+      {
+        "baseResidue": 43,
+        "name": "n15",
+        "nativeSignificand": 15
+      }
+    ],
+    "translatedBases": [
+      {
+        "bits": "0x3e800000",
+        "name": "quarter"
+      },
+      {
+        "bits": "0x3f800000",
+        "name": "one"
+      }
+    ]
+  },
+  "createdAt": "2026-08-01T22:00:00Z",
+  "derivationEvidence": {
+    "prospectiveEvidenceForRecoveredSubP27Law": false,
+    "schema10CiCommit": "d9ac507478e2a35430d735b127fd647ffe03eb93",
+    "schema10CiRun": 30706923035,
+    "schema10FrozenRecordMismatchCount": 3288,
+    "schema10FrozenWordMismatchCount": 6036,
+    "schema10PostOpeningResidualRecordCount": 108,
+    "schema10PostOpeningResidualWordCount": 216,
+    "schema10RawSha256": "9d08f9ab5b9660ab7870213a532c952adb389125cca69071af4a8bd9125379c5",
+    "schema10ResidualScope": "center and axis derivative only, effective extent 252, opposite extent 647, n15 forward family, final partial tile"
+  },
+  "designRationale": "Every integer pixel on the effective axis is recorded for both triangle primitives, both axis orientations, three determinant classes, and two tile alignments. This turns the previous 108 boundary-only residual records into a dense bit sequence capable of separating coefficient, constant, primitive, tile, and evaluator laws.",
+  "hypotheses": [
+    "one global center coefficient plus one tile constant per setup",
+    "independent center and explicit-offset pull setup paths",
+    "determinant-dependent sub-p27 coefficient residue",
+    "sub-binary32 tile-constant residue",
+    "center evaluation precision or double-rounding boundary"
+  ],
+  "nextGate": "Recover one input-only arithmetic law from this preregistered discovery matrix, replay it with zero mismatches over every opened schema-5 through schema-11 word, then freeze its complete prediction bytes for a fresh prospective holdout and unchanged repeat.",
+  "role": "preregistered-center-dense-tomography",
+  "schemaVersion": 1,
+  "scientificQuestion": "Which input-derived coefficient, tile-constant, and evaluation law reproduces Apple's interpolate_at_center path below the formerly observable p27 lattice, without geometry-name or captured-value selectors?"
+}
