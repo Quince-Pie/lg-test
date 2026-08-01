@@ -1,0 +1,85 @@
+name: Measure Apple Metal per-tile plane numerator
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-tile-numerator.yml
+      - Analysis/raster_tile_numerator_preregistration.json
+      - Analysis/test_validate_raster_tile_numerator.py
+      - Analysis/validate_raster_tile_numerator.py
+      - Sources/GlassRasterTileNumerator/**
+
+concurrency:
+  group: raster-tile-numerator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-tile-numerator:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Test frozen per-tile numerator contract
+        run: |
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_raster_tile_numerator.py' -v
+
+      - name: Build per-tile numerator probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-tile-numerator
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterTileNumerator/main.swift \
+            -o glass-raster-tile-numerator 2>&1 |
+            tee raster-tile-numerator/build.log
+
+      - name: Capture per-tile numerator records
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-tile-numerator raster-tile-numerator
+
+      - name: Validate prospective controls and raw discovery integrity
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_raster_tile_numerator.py \
+            raster-tile-numerator \
+            --output raster-tile-numerator/validation.json
+
+      - name: Upload per-tile numerator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-tile-numerator-${{ github.run_id }}
+          path: raster-tile-numerator
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce per-tile numerator evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-tile-numerator/manifest.json
+          test -s raster-tile-numerator/validation.json
+          test -s raster-tile-numerator/raster-tile-numerator.raw

@@ -3141,6 +3141,42 @@ fields against the frozen predictions. Passing the v2 run followed by an
 unchanged repeat is required before this fixed 1x endpoint scope is called
 reproducible.
 
+Runs `30685084902` and `30685461769` passed that prospective gate and its
+unchanged repeat. In each run the two unseen source fields matched Apple byte
+for byte for clear/regular glass in light/dark appearance: 33,554,432 checked
+output bytes with zero mismatches. The repeats retained the same 340 raw files
+and 1,143,091,456 raw bytes with identical content hashes. This closes only
+the centered 800-point, 1x, sRGB SDR endpoint scope. It does not establish
+other geometry, dynamic materialization, or physical 2x Retina parity.
+
+### Per-tile endpoint-composition numerator probe
+
+The five opened geometry captures are exact under the current portable replay
+for 256-, 512-, 640-, and clipped 1536-point circles. The 896-point circle has
+one remaining green-channel byte mismatch at one pixel. All 424 source-plane
+tile constants used by those captures are uniquely recoverable from Apple's
+archived interpolants. The factorized plane-numerator law independently
+matches 698,317 of 698,317 sampled positive-primitive records, which localizes
+the residual to signed endpoint translation and primitive-specific constant
+composition rather than the glass optics.
+
+`raster-tile-numerator.yml` is the preregistered discovery probe for that
+remaining arithmetic. Its 24 geometries cross width, height, origin, tile
+phase, large displacement, and near-boundary dimensions with 16 endpoint
+pairs: forward, reversed, signed, near-equal, constant, and the exact opened
+Apple source-coordinate endpoints. For both triangle primitives it records
+pull-0, pull-15/16, center, and derivative bits at every safely covered
+32-pixel tile independently on the X and Y axes. The frozen layout contains
+32,144 required records in a 786,432-byte sentinel-filled stream.
+
+The centered 256-square with zero-to-one and one-to-zero ramps is a
+prospective power-of-two control; its pull bits must match the frozen fused
+prediction exactly. All other records remain discovery evidence and are
+uploaded even when a future arithmetic candidate fails. The capture cannot
+authorize a production shader change: a recovered law must first pass a new
+unseen Walle geometry/scale image holdout, an unchanged repeat, and separate
+dynamic-transition gates without regressing any protected output byte.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

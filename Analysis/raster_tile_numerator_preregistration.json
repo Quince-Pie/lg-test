@@ -1,0 +1,392 @@
+{
+  "acceptance": {
+    "allExpectedRecordsWrittenAndFinite": true,
+    "allUndeclaredSlotsRemainSentinel": true,
+    "layoutHashesMustMatch": true,
+    "noAdaptiveFitOrTolerance": true,
+    "prospectivePowerTwoPullControlsExact": true,
+    "rawDiscoveryRecordsAlwaysRetained": true
+  },
+  "capture": {
+    "cases": [
+      {
+        "height": 256,
+        "name": "control-square-256",
+        "originX": 384,
+        "originY": 384,
+        "role": "prospective-control",
+        "width": 256
+      },
+      {
+        "height": 512,
+        "name": "opened-square-512",
+        "originX": 81,
+        "originY": 349,
+        "role": "opened-calibration",
+        "width": 512
+      },
+      {
+        "height": 640,
+        "name": "opened-square-640",
+        "originX": 282,
+        "originY": 326,
+        "role": "opened-calibration",
+        "width": 640
+      },
+      {
+        "height": 800,
+        "name": "opened-square-800",
+        "originX": 112,
+        "originY": 112,
+        "role": "opened-calibration",
+        "width": 800
+      },
+      {
+        "height": 896,
+        "name": "opened-square-896",
+        "originX": 64,
+        "originY": 64,
+        "role": "opened-calibration",
+        "width": 896
+      },
+      {
+        "height": 377,
+        "name": "opened-rectangle-503x377",
+        "originX": 37,
+        "originY": 73,
+        "role": "opened-calibration",
+        "width": 503
+      },
+      {
+        "height": 47,
+        "name": "wide-896x47",
+        "originX": 64,
+        "originY": 211,
+        "role": "discovery",
+        "width": 896
+      },
+      {
+        "height": 61,
+        "name": "wide-896x61",
+        "originX": 64,
+        "originY": 227,
+        "role": "discovery",
+        "width": 896
+      },
+      {
+        "height": 79,
+        "name": "wide-896x79",
+        "originX": 64,
+        "originY": 239,
+        "role": "discovery",
+        "width": 896
+      },
+      {
+        "height": 113,
+        "name": "wide-896x113",
+        "originX": 64,
+        "originY": 251,
+        "role": "discovery",
+        "width": 896
+      },
+      {
+        "height": 257,
+        "name": "wide-896x257",
+        "originX": 64,
+        "originY": 293,
+        "role": "discovery",
+        "width": 896
+      },
+      {
+        "height": 511,
+        "name": "wide-896x511",
+        "originX": 64,
+        "originY": 129,
+        "role": "discovery",
+        "width": 896
+      },
+      {
+        "height": 640,
+        "name": "wide-896x640",
+        "originX": 64,
+        "originY": 192,
+        "role": "discovery",
+        "width": 896
+      },
+      {
+        "height": 613,
+        "name": "prime-887x613",
+        "originX": 73,
+        "originY": 107,
+        "role": "discovery",
+        "width": 887
+      },
+      {
+        "height": 251,
+        "name": "phase-769x251",
+        "originX": 127,
+        "originY": 311,
+        "role": "discovery",
+        "width": 769
+      },
+      {
+        "height": 896,
+        "name": "tall-641x896",
+        "originX": 191,
+        "originY": 64,
+        "role": "discovery",
+        "width": 641
+      },
+      {
+        "height": 896,
+        "name": "tall-639x896",
+        "originX": 193,
+        "originY": 64,
+        "role": "discovery",
+        "width": 639
+      },
+      {
+        "height": 896,
+        "name": "tall-513x896",
+        "originX": 255,
+        "originY": 64,
+        "role": "discovery",
+        "width": 513
+      },
+      {
+        "height": 896,
+        "name": "tall-511x896",
+        "originX": 257,
+        "originY": 64,
+        "role": "discovery",
+        "width": 511
+      },
+      {
+        "height": 896,
+        "name": "near-800-plus",
+        "originX": 111,
+        "originY": 64,
+        "role": "discovery",
+        "width": 801
+      },
+      {
+        "height": 896,
+        "name": "near-800-minus",
+        "originX": 113,
+        "originY": 64,
+        "role": "discovery",
+        "width": 799
+      },
+      {
+        "height": 895,
+        "name": "near-896-plus",
+        "originX": 63,
+        "originY": 65,
+        "role": "discovery",
+        "width": 897
+      },
+      {
+        "height": 897,
+        "name": "near-896-minus",
+        "originX": 65,
+        "originY": 63,
+        "role": "discovery",
+        "width": 895
+      },
+      {
+        "height": 43,
+        "name": "near-fullscreen-prime",
+        "originX": 23,
+        "originY": 401,
+        "role": "discovery",
+        "width": 977
+      }
+    ],
+    "endpoints": [
+      {
+        "highBits": "0x3f800000",
+        "lowBits": "0x00000000",
+        "name": "zero-to-one"
+      },
+      {
+        "highBits": "0x00000000",
+        "lowBits": "0x3f800000",
+        "name": "one-to-zero"
+      },
+      {
+        "highBits": "0x3f000000",
+        "lowBits": "0xbf000000",
+        "name": "negative-half-to-half"
+      },
+      {
+        "highBits": "0xbf000000",
+        "lowBits": "0x3f000000",
+        "name": "half-to-negative-half"
+      },
+      {
+        "highBits": "0x3f200000",
+        "lowBits": "0x3ec00000",
+        "name": "opened-256"
+      },
+      {
+        "highBits": "0x3f29cccd",
+        "lowBits": "0x3e86cccd",
+        "name": "opened-512-x"
+      },
+      {
+        "highBits": "0x3f3a2aab",
+        "lowBits": "0x3ec9aaab",
+        "name": "opened-512-y"
+      },
+      {
+        "highBits": "0x3f445556",
+        "lowBits": "0x3eb35556",
+        "name": "opened-640-x"
+      },
+      {
+        "highBits": "0x3f4baaab",
+        "lowBits": "0x3ec20000",
+        "name": "opened-640-y"
+      },
+      {
+        "highBits": "0x3f4aaaab",
+        "lowBits": "0x3e555556",
+        "name": "opened-896-x"
+      },
+      {
+        "highBits": "0x3f4aaaac",
+        "lowBits": "0x3e555556",
+        "name": "opened-896-y"
+      },
+      {
+        "highBits": "0x3f000009",
+        "lowBits": "0x3f000001",
+        "name": "near-equal-positive"
+      },
+      {
+        "highBits": "0x3e800000",
+        "lowBits": "0xbf400000",
+        "name": "negative-to-positive"
+      },
+      {
+        "highBits": "0xbf400000",
+        "lowBits": "0x3e800000",
+        "name": "positive-to-negative"
+      },
+      {
+        "highBits": "0x3e800000",
+        "lowBits": "0x3e800000",
+        "name": "constant-quarter"
+      },
+      {
+        "highBits": "0x3a800000",
+        "lowBits": "0x39800000",
+        "name": "small-normal-ramp"
+      }
+    ],
+    "layout": {
+      "axisCount": 2,
+      "caseCount": 24,
+      "caseWordsSha256": "966c0bf7ec9e7e611feb29468163009eba67bc5b12cadc18ba4c59e1260c9008",
+      "endpointCount": 16,
+      "endpointWordsSha256": "ba0e93cdee2a5f19b63f7a01560da3fa431911dbf37e6775f3950802d4c10bf7",
+      "expectedRecordCount": 32144,
+      "primitiveCount": 2,
+      "rawBytes": 786432,
+      "recordBytes": 16,
+      "recordCount": 49152,
+      "sampleWordsSha256": "36f12f51ccb2ba9f0c7d7739a213532ad7b6baa70898e00195264096b7d39c09",
+      "samplesPerCase": [
+        32,
+        68,
+        84,
+        104,
+        112,
+        58,
+        62,
+        60,
+        62,
+        66,
+        74,
+        88,
+        96,
+        96,
+        67,
+        98,
+        96,
+        90,
+        88,
+        108,
+        108,
+        113,
+        113,
+        66
+      ],
+      "slotCount": 128,
+      "tileCount": 32
+    },
+    "ordering": "case-major,endpoint-major,axis-primitive-tile-slot-major",
+    "pullOffsetsByAxis": {
+      "x": [
+        [
+          0.0,
+          0.5
+        ],
+        [
+          0.9375,
+          0.5
+        ]
+      ],
+      "y": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.9375
+        ]
+      ]
+    },
+    "recordComponents": [
+      "axis-pull@0",
+      "axis-pull@15/16",
+      "center",
+      "axis-derivative(center)"
+    ],
+    "samplePositionLaw": "For each covered 32-pixel tile on each axis, primitive 0 uses the tile's upper axis coordinate at the opposite bottom/right edge and primitive 1 uses the lower axis coordinate at the opposite top/left edge; diagonal-edge pixels are excluded by exact doubled-area inequalities.",
+    "targetHeight": 1024,
+    "targetWidth": 1024,
+    "tileSize": 32,
+    "viewportHeight": 1024,
+    "viewportWidth": 1024
+  },
+  "nonClaims": [
+    "Discovery records do not certify a replacement arithmetic law.",
+    "Opened calibration geometries are not a blind image holdout.",
+    "A passing control does not establish arbitrary geometry parity.",
+    "No result authorizes changing the production shader before a fresh holdout."
+  ],
+  "observedAtPreregistration": false,
+  "prospectiveControl": {
+    "case": "control-square-256",
+    "centerAndDerivativeAreDiagnostic": true,
+    "endpoints": [
+      "zero-to-one",
+      "one-to-zero"
+    ],
+    "prediction": "exact power-of-two affine plane; pull samples are fused round-to-nearest",
+    "pullComponentsMustMatchExactly": true
+  },
+  "purpose": "Separate AGX per-tile plane-numerator formation from endpoint translation and primitive-specific composition at large tile displacements.",
+  "role": "discovery-with-prospective-power-two-tile-controls",
+  "schemaVersion": 1,
+  "sourceEvidence": {
+    "openedBestImageResidualBytes": 1,
+    "openedGeometryRunId": 30589303022,
+    "openedTileConstantCount": 424,
+    "positivePrimitiveFactorizedNumeratorMismatches": 0,
+    "positivePrimitiveSampledRecords": 698317,
+    "productionShaderChanged": false
+  }
+}
