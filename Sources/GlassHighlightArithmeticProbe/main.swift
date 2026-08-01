@@ -161,10 +161,8 @@ fragment FragmentOutput highlight_fragment(
         normal,
         float(params_2.z));
     const half highlight_alpha = key.alpha + fill.alpha;
-    if (highlight_alpha < replay_epsilon()) {
-        discard_fragment();
-        return output;
-    }
+    const bool highlight_active =
+        highlight_alpha >= replay_epsilon();
 
     const uint2 pixel = uint2(input.position.xy);
     const half4 destination = destination_texture.read(pixel);
@@ -213,6 +211,9 @@ fragment FragmentOutput highlight_fragment(
     half4 final_color =
         (half(1.0) - source.a) * destination + source;
     final_color.a = saturate(final_color.a);
+    if (!highlight_active) {
+        final_color = destination;
+    }
 
     output.final_color = final_color;
     output.geometry = uint4(
@@ -488,7 +489,7 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
         ])
     }
     return [
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "probe": "apple-metal-key-fill-vibrant-arithmetic",
         "width": captureWidth,
         "height": captureHeight,
@@ -532,6 +533,12 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
                 "source-final.rg",
                 "source-final.ba",
             ],
+        ],
+        "traceCoverage": [
+            "discardSuppressedForTraceAttachments": true,
+            "inactiveFinalColorRestoredFromDestination": true,
+            "activePredicate":
+                "highlight_alpha >= binary16(0x068e)",
         ],
         "files": records,
         "interpretation": [

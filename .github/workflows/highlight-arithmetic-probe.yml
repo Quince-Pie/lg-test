@@ -63,7 +63,7 @@ jobs:
               (root / "manifest.json").read_text(encoding="utf-8")
           )
           if (
-              manifest.get("schemaVersion") != 2
+              manifest.get("schemaVersion") != 3
               or manifest.get("probe")
                   != "apple-metal-key-fill-vibrant-arithmetic"
               or manifest.get("width") != 1024
