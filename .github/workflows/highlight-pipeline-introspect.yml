@@ -89,6 +89,33 @@ jobs:
               )
           PY
 
+      - name: Interrogate captured GPU trace
+        id: gpudebug
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          mkdir -p introspection/gpudebug
+          trace="introspection/liquid-glass.gputrace"
+          test -d "$trace"
+
+          if tool="$(xcrun --find gpudebug 2>/dev/null)"; then
+            printf '%s\n' "$tool" > introspection/gpudebug/tool-path.txt
+          elif tool="$(command -v gpudebug 2>/dev/null)"; then
+            printf '%s\n' "$tool" > introspection/gpudebug/tool-path.txt
+          else
+            printf '%s\n' \
+              "gpudebug is unavailable in the selected Xcode" \
+              > introspection/gpudebug/unavailable.txt
+            exit 1
+          fi
+
+          "$tool" --help \
+            > introspection/gpudebug/help.txt 2>&1 || true
+          MANWIDTH=200 man gpudebug 2>&1 | col -bx \
+            > introspection/gpudebug/manual.txt || true
+          "$tool" --oneshot -t "$trace" -c "list --all" \
+            > introspection/gpudebug/root.txt 2>&1
+
       - name: Validate captured Apple attachment sweep
         id: validate
         if: steps.capture.outcome == 'success'
@@ -262,6 +289,8 @@ jobs:
             introspection/runtime-stderr.log
             introspection/runtime.json
             introspection/highlight-pipeline-validation.json
+            introspection/liquid-glass.gputrace
+            introspection/gpudebug/**
             introspection/carenderer-local-backdrop-post-glass-*
             introspection/carenderer-local-backdrop-final-highlight-alpha-*
           if-no-files-found: error
