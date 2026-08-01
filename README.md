@@ -2797,6 +2797,46 @@ slope table in every centered variant, with no post-capture fit or tolerance.
 It establishes clipped coefficient transfer only for the measured finite
 matrix; the independent end-to-end Walle image gate remains required.
 
+Run 30674647960 (`a9dd81713ffcdaf21f3447d0efd15a44d329447d`)
+captured all 9,175,040 records and passed both unclipped controls. The
+zero-origin control accepted the frozen slope for all 458,752 coefficients,
+and the translated centered control recovered every coefficient uniquely with
+the original slope-table SHA-256
+`14f89787b189e382b313ae5406dd1a8519e536b96783f74fb29e7959926b3f8f`.
+The clipped prediction was then prospectively falsified: X, Y, and combined
+XY clipping accepted only 94,788, 114,754, and 40,685 frozen coefficients,
+respectively. Their failure counts were 363,964, 343,998, and 418,067. The
+manifest, raw buffer, and validation SHA-256 values are
+`ed317bd8992b3359f0b25fa2c9d1d7f9e6ce05511837f21a1569a7e874c0113d`,
+`c89b0d39d1c022fad863007e996e701ffa3b2e1c128b2b08fe7d28511fa4f590`,
+and
+`204057a4e1287b24a2ba6faf642b82d020220ba917a871e41a0ee9e8202db768`.
+The red workflow is therefore a scientific rejection, not a capture failure.
+
+`analyze_raster_clipped_setup_transfer.py` independently pins and replays that
+artifact without fitting a replacement law. The height-47 Y variant has a
+376-pixel extent from -60.5 through 315.5 and is byte-identical to the
+unclipped centered control for all 114,688 coefficients at that height. At
+the next measured extent, 488 pixels from -116.5 through 371.5, every one of
+the 114,688 coefficients changes. This brackets a hidden guard/clip boundary
+but does not assume its exact location or generated topology.
+
+`raster-clip-boundary-tomography.yml` is the preregistered discriminator for
+that remaining stage. It independently sweeps left, right, top, and bottom
+edges over half a viewport and includes every 1/256-pixel phase within one
+pixel of the NDC +/-1.5 candidate. The complete experiment is repeated at
+power-of-two 256- and 512-pixel viewports, separating a normalized clip plane
+from a fixed screen-space margin without non-power-of-two transform rounding.
+Two same-tile baselines and eight fresh centered ramps test every edge.
+
+The same artifact contains 37 dense generated-topology cases. Each sampled
+fragment records its original primitive ID, builtin barycentrics, a one-hot
+no-perspective basis at center and four pull positions, and eight independent
+X/Y ramp pairs. The 122,644 fixed records retain 29,803,200 raw bytes. This is
+discovery evidence: a clip arithmetic law derived from it cannot authorize a
+production shader change until the separately frozen end-to-end holdout gate
+passes bit for bit.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

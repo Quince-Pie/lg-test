@@ -49,8 +49,16 @@ on:
         type: boolean
   push:
     paths:
-      - Analysis/**
+      - Analysis/measure.py
+      - Analysis/probe_catalog.py
+      - Analysis/requirements.txt
+      - Analysis/test_measure.py
+      - Analysis/test_transition_matrix_internals.py
+      - Analysis/test_validate.py
+      - Analysis/validate.py
+      - Analysis/validate_transition_matrix_internals.py
       - Sources/GlassCapture/**
+      - Sources/GlassIntrospect/**
 
 concurrency:
   group: capture-${{ github.ref }}

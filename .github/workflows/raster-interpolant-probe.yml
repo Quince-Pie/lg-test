@@ -4,8 +4,13 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - .github/workflows/raster-interpolant-probe.yml
-      - Analysis/validate_raster_*.py
+      - Analysis/validate_raster_quotient_arithmetic.py
+      - Analysis/validate_raster_quotient_corpus.py
+      - Analysis/validate_raster_quotient_fine_mantissa.py
+      - Analysis/validate_raster_quotient_holdout.py
+      - Analysis/validate_raster_refinement.py
+      - Analysis/validate_raster_residue.py
+      - Analysis/validate_raster_threshold.py
       - Sources/GlassRasterProbe/**
 
 concurrency:

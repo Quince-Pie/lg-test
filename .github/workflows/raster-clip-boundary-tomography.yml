@@ -1,0 +1,86 @@
+name: Map Apple Metal clip boundary and generated topology
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-clip-boundary-tomography.yml
+      - Analysis/raster_clip_boundary_tomography_preregistration.json
+      - Analysis/test_validate_raster_clip_boundary_tomography.py
+      - Analysis/validate_raster_clip_boundary_tomography.py
+      - Sources/GlassRasterClipBoundaryTomography/**
+
+concurrency:
+  group: raster-clip-boundary-tomography-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-clip-boundary-tomography:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Set up exact-analysis Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Test frozen clip-boundary layout
+        run: |
+          python -m unittest discover -s Analysis \
+            -p 'test_validate_raster_clip_boundary_tomography.py' -v
+
+      - name: Build clip-boundary tomography probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-clip-boundary-tomography
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterClipBoundaryTomography/main.swift \
+            -o glass-raster-clip-boundary-tomography 2>&1 |
+            tee raster-clip-boundary-tomography/build.log
+
+      - name: Capture boundary and generated topology
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-clip-boundary-tomography \
+            raster-clip-boundary-tomography
+
+      - name: Validate frozen boundary candidate
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python Analysis/validate_raster_clip_boundary_tomography.py \
+            raster-clip-boundary-tomography \
+            --output raster-clip-boundary-tomography/validation.json
+
+      - name: Upload clip-boundary evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-clip-boundary-tomography-${{ github.run_id }}
+          path: raster-clip-boundary-tomography
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce clip-boundary gate
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-clip-boundary-tomography/manifest.json
+          test -s raster-clip-boundary-tomography/validation.json

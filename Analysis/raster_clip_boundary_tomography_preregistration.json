@@ -1,0 +1,72 @@
+{
+  "acceptance": {
+    "boundaryGate": "For every viewport and clip plane, all eight independently selected ramp slopes must equal the same-size safe translation if and only if the tested outer edge is inclusively inside the frozen NDC +/-1.5 candidate.",
+    "integrityGate": "Every preregistered record must be written exactly at its expected case and pixel index, primitive IDs must be 0 or 1, and every captured floating-point word must be finite.",
+    "topologyGate": "Every grid sample must retain builtin barycentrics, one-hot no-perspective basis center and pull values, eight X/Y ramp pull pairs, and its source primitive ID. Topology observations are discovery evidence and cannot validate a fitted model in this run.",
+    "tolerance": "bit-exact binary32 only"
+  },
+  "candidate": {
+    "clipCoordinateInterval": [
+      -1.5,
+      1.5
+    ],
+    "inclusive": true,
+    "screenEdgesByViewport": {
+      "256": {
+        "bottomOrRight": 320,
+        "topOrLeft": -64
+      },
+      "512": {
+        "bottomOrRight": 640,
+        "topOrLeft": -128
+      }
+    }
+  },
+  "frozenLayout": {
+    "boundaryCandidateNDC": 1.5,
+    "boundaryCaseCount": 5624,
+    "boundaryFineRadiusPixels": 1,
+    "boundaryFineStepPixels": 0.00390625,
+    "boundaryGroupCount": 8,
+    "caseCatalogSha256": "a80ba39620cecd17d6e1927ae71fa9cc067a076786ee6e49dafbe3867a28f57e",
+    "caseCount": 5661,
+    "caseLayoutSha256": "9e4e9f3fa8feffa7e24374a066dc75b069f6090223d1c41fff95dcb3f5bca5e8",
+    "deltaBitsSha256": "2bb3df60410823153bf5316a9d3ee06f3d5b62132263f9ec7d3879a3ceee02f9",
+    "fixedGeometrySha256": "db6cf9417d201361a17717549d540a964a401dedef1472f79dd6969b23df606c",
+    "rawBytes": 29803200,
+    "recordBytes": 240,
+    "recordCount": 124180,
+    "recordVectorCount": 15,
+    "recordWords": 60,
+    "sourceClippedSetupRawSha256": "c89b0d39d1c022fad863007e996e701ffa3b2e1c128b2b08fe7d28511fa4f590",
+    "topologyCaseCount": 37,
+    "topologyGridStepPixels": 4,
+    "viewportCaseCounts": {
+      "256": 2588,
+      "320": 5,
+      "512": 3068
+    }
+  },
+  "interventions": {
+    "boundary": "Each left, right, top, and bottom outer edge is translated independently over half a viewport at one-pixel spacing, with every 1/256-pixel phase included within one pixel of the candidate. Geometry span and all varying endpoint bits remain fixed within a group.",
+    "boundaryControls": "Each group includes a same-size safe translation one eighth of a viewport outside the API viewport but inside the candidate guard region. Two independent same-tile 30-pixel baselines recover each slope without sharing a plane constant across tiles or source triangles.",
+    "topology": "Thirty-seven rectangles cross isolated X, isolated Y, combined XY, coordinate-phase, size, and viewport-scale conditions. A four-pixel interior grid records original primitive identity, builtin barycentrics, one-hot basis planes, and eight fresh centered X/Y ramps.",
+    "viewportScale": "The complete four-plane experiment is independently repeated at power-of-two 256- and 512-pixel viewports so a normalized clip boundary is distinguishable from a fixed screen-space margin without introducing non-power-of-two viewport-transform rounding."
+  },
+  "limitations": {
+    "compactClipArithmeticEstablished": false,
+    "endToEndLiquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "reason": "This discovery run can establish the clip boundary and expose generated topology. Any arithmetic law derived from those observations requires a later frozen held-out image gate."
+  },
+  "observedAtPreregistration": false,
+  "role": "prospective-clip-boundary-and-generated-topology-tomography",
+  "schemaVersion": 1,
+  "sourceEvidence": {
+    "analysisFile": "Analysis/raster_clipped_setup_transfer_analysis.json",
+    "analysisSha256": "f1a2e3c6005677d62f654eb7a3dab705462b2facbcdf28a96e9bfe67f7434296",
+    "ciCommit": "a9dd81713ffcdaf21f3447d0efd15a44d329447d",
+    "rawSha256": "c89b0d39d1c022fad863007e996e701ffa3b2e1c128b2b08fe7d28511fa4f590",
+    "runId": 30674647960
+  }
+}
