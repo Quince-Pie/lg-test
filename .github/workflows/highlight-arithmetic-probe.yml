@@ -63,7 +63,7 @@ jobs:
               (root / "manifest.json").read_text(encoding="utf-8")
           )
           if (
-              manifest.get("schemaVersion") != 3
+              manifest.get("schemaVersion") != 4
               or manifest.get("probe")
                   != "apple-metal-key-fill-vibrant-arithmetic"
               or manifest.get("width") != 1024
@@ -74,6 +74,8 @@ jobs:
           expected = {
               "destination-bgra8.raw": 1024 * 1024 * 4,
               "highlight-final-bgra8.raw": 1024 * 1024 * 4,
+              "highlight-compositor-diagnostic-final-bgra8.raw":
+                  1024 * 1024 * 4,
               **{
                   f"highlight-{name}-rgba32ui.raw": 1024 * 1024 * 16
                   for name in (
@@ -84,6 +86,19 @@ jobs:
                       "fill-b",
                       "half-stages",
                       "compositor-b",
+                  )
+              },
+              **{
+                  "highlight-compositor-diagnostic-"
+                  f"{name}-rgba32ui.raw": 1024 * 1024 * 16
+                  for name in (
+                      "input",
+                      "matrix-a",
+                      "matrix-b",
+                      "matrix-c",
+                      "source-a",
+                      "source-b",
+                      "final-stages",
                   )
               },
           }
@@ -106,6 +121,17 @@ jobs:
                   "bytes": size,
                   "sha256": hashlib.sha256(data).hexdigest(),
               })
+          primary = (root / "highlight-final-bgra8.raw").read_bytes()
+          diagnostic = (
+              root / "highlight-compositor-diagnostic-final-bgra8.raw"
+          ).read_bytes()
+          validation["instrumentedFinalMatchesPrimary"] = (
+              diagnostic == primary
+          )
+          if diagnostic != primary:
+              raise SystemExit(
+                  "instrumented compositor changed the final image"
+              )
           validation["exactContract"] = True
           (root / "validation.json").write_text(
               json.dumps(validation, indent=2, sort_keys=True) + "\n",

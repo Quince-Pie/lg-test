@@ -42,6 +42,17 @@ struct FragmentOutput {
     uint4 compositor_b [[color(7)]];
 };
 
+struct CompositorTraceOutput {
+    half4 final_color [[color(0)]];
+    uint4 input [[color(1)]];
+    uint4 matrix_a [[color(2)]];
+    uint4 matrix_b [[color(3)]];
+    uint4 matrix_c [[color(4)]];
+    uint4 source_a [[color(5)]];
+    uint4 source_b [[color(6)]];
+    uint4 final_stages [[color(7)]];
+};
+
 inline uint pack_half_pair(half first, half second)
 {
     return uint(as_type<ushort>(first))
@@ -253,6 +264,123 @@ fragment FragmentOutput highlight_fragment(
         pack_half_pair(source.b, source.a));
     return output;
 }
+
+fragment CompositorTraceOutput highlight_compositor_fragment(
+    VertexOutput input [[stage_in]],
+    texture2d<half, access::read> destination_texture [[texture(0)]],
+    texture2d<uint, access::read> half_stage_texture [[texture(1)]])
+{
+    CompositorTraceOutput output = {};
+    const uint2 pixel = uint2(input.position.xy);
+    const half4 destination = destination_texture.read(pixel);
+    const uint packed_alpha = half_stage_texture.read(pixel).y;
+    const half highlight_alpha =
+        as_type<half>(ushort(packed_alpha & 0xffffu));
+    const bool highlight_active =
+        highlight_alpha >= replay_epsilon();
+
+    const half4 matrix_0 = half4(
+        as_type<half>(ushort(0x3ccf)),
+        as_type<half>(ushort(0xb4c3)),
+        as_type<half>(ushort(0xb4c3)),
+        half(0.0));
+    const half4 matrix_1 = half4(
+        as_type<half>(ushort(0xbc01)),
+        as_type<half>(ushort(0x37fb)),
+        as_type<half>(ushort(0xbc01)),
+        half(0.0));
+    const half4 matrix_2 = half4(
+        as_type<half>(ushort(0xae77)),
+        as_type<half>(ushort(0xae78)),
+        as_type<half>(ushort(0x3d98)),
+        half(0.0));
+    const half4 matrix_3 = half4(0.0, 0.0, 0.0, 1.0);
+    const half4 matrix_4 = half4(
+        as_type<half>(ushort(0x3b33)),
+        as_type<half>(ushort(0x3b33)),
+        as_type<half>(ushort(0x3b33)),
+        half(0.0));
+
+    const half3 straight = destination.rgb
+        / max(destination.a, replay_epsilon());
+    half4 mapped = straight.r * matrix_0;
+    const half4 mapped_r = mapped;
+    mapped = mapped + straight.g * matrix_1;
+    const half4 mapped_g = mapped;
+    mapped = mapped + straight.b * matrix_2;
+    const half4 mapped_b = mapped;
+    mapped = mapped + destination.a * matrix_3;
+    const half4 mapped_alpha = mapped;
+    mapped = mapped + matrix_4;
+    const half4 mapped_bias = mapped;
+    mapped.a = saturate(mapped.a);
+    mapped.rgb = mapped.rgb * mapped.a;
+    const half4 mapped_final = mapped;
+
+    half4 source = mapped * highlight_alpha;
+    const half4 source_initial = source;
+    half3 source_straight = source.rgb
+        / max(source.a, replay_epsilon());
+    source_straight = clamp(
+        source_straight,
+        half3(-0.75),
+        half3(1.0));
+    const half3 source_straight_stage = source_straight;
+    source.rgb = source_straight * source.a;
+    const half4 source_final = source;
+    const half destination_factor = half(1.0) - source.a;
+    const half4 destination_product = destination_factor * destination;
+    half4 final_color = destination_factor * destination + source;
+    const half4 final_before_saturate = final_color;
+    final_color.a = saturate(final_color.a);
+    if (!highlight_active) {
+        final_color = destination;
+    }
+
+    output.final_color = final_color;
+    output.input = uint4(
+        pack_half_pair(destination.r, destination.g),
+        pack_half_pair(destination.b, destination.a),
+        pack_half_pair(straight.r, straight.g),
+        pack_half_pair(straight.b, half(0.0)));
+    output.matrix_a = uint4(
+        pack_half_pair(mapped_r.r, mapped_r.g),
+        pack_half_pair(mapped_r.b, mapped_r.a),
+        pack_half_pair(mapped_g.r, mapped_g.g),
+        pack_half_pair(mapped_g.b, mapped_g.a));
+    output.matrix_b = uint4(
+        pack_half_pair(mapped_b.r, mapped_b.g),
+        pack_half_pair(mapped_b.b, mapped_b.a),
+        pack_half_pair(mapped_alpha.r, mapped_alpha.g),
+        pack_half_pair(mapped_alpha.b, mapped_alpha.a));
+    output.matrix_c = uint4(
+        pack_half_pair(mapped_bias.r, mapped_bias.g),
+        pack_half_pair(mapped_bias.b, mapped_bias.a),
+        pack_half_pair(mapped_final.r, mapped_final.g),
+        pack_half_pair(mapped_final.b, mapped_final.a));
+    output.source_a = uint4(
+        pack_half_pair(source_initial.r, source_initial.g),
+        pack_half_pair(source_initial.b, source_initial.a),
+        pack_half_pair(
+            source_straight_stage.r,
+            source_straight_stage.g),
+        pack_half_pair(source_straight_stage.b, half(0.0)));
+    output.source_b = uint4(
+        pack_half_pair(source_final.r, source_final.g),
+        pack_half_pair(source_final.b, source_final.a),
+        pack_half_pair(destination_factor, highlight_alpha),
+        pack_half_pair(source.a, half(0.0)));
+    output.final_stages = uint4(
+        pack_half_pair(destination_product.r, destination_product.g),
+        pack_half_pair(destination_product.b, destination_product.a),
+        pack_half_pair(
+            final_before_saturate.r,
+            final_before_saturate.g),
+        pack_half_pair(
+            final_before_saturate.b,
+            final_before_saturate.a));
+    return output;
+}
 """
 
 private struct CaptureFile {
@@ -353,7 +481,9 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
     options.fastMathEnabled = true
     let library = try device.makeLibrary(source: metalSource, options: options)
     guard let vertex = library.makeFunction(name: "highlight_vertex"),
-          let fragment = library.makeFunction(name: "highlight_fragment")
+          let fragment = library.makeFunction(name: "highlight_fragment"),
+          let compositorFragment = library.makeFunction(
+              name: "highlight_compositor_fragment")
     else {
         throw NSError(
             domain: "GlassHighlightArithmeticProbe",
@@ -371,6 +501,9 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
         descriptor.colorAttachments[index]!.pixelFormat = .rgba32Uint
     }
     let pipeline = try device.makeRenderPipelineState(descriptor: descriptor)
+    descriptor.fragmentFunction = compositorFragment
+    let compositorPipeline = try device.makeRenderPipelineState(
+        descriptor: descriptor)
 
     let destination = try texture(
         device: device,
@@ -399,6 +532,25 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
     var traces: [MTLTexture] = []
     for _ in 1...7 {
         traces.append(try texture(
+            device: device,
+            pixelFormat: .rgba32Uint,
+            usage: [.renderTarget, .shaderRead]))
+    }
+
+    let compositorFinalTexture = try texture(
+        device: device,
+        pixelFormat: .bgra8Unorm,
+        usage: [.renderTarget])
+    destinationBytes.withUnsafeBytes { bytes in
+        compositorFinalTexture.replace(
+            region: MTLRegionMake2D(0, 0, captureWidth, captureHeight),
+            mipmapLevel: 0,
+            withBytes: bytes.baseAddress!,
+            bytesPerRow: captureWidth * 4)
+    }
+    var compositorTraces: [MTLTexture] = []
+    for _ in 1...7 {
+        compositorTraces.append(try texture(
             device: device,
             pixelFormat: .rgba32Uint,
             usage: [.renderTarget]))
@@ -449,6 +601,57 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
             ])
     }
 
+
+    let compositorPass = MTLRenderPassDescriptor()
+    compositorPass.colorAttachments[0].texture = compositorFinalTexture
+    compositorPass.colorAttachments[0].loadAction = .load
+    compositorPass.colorAttachments[0].storeAction = .store
+    for (offset, trace) in compositorTraces.enumerated() {
+        let attachment = compositorPass.colorAttachments[offset + 1]!
+        attachment.texture = trace
+        attachment.loadAction = .clear
+        attachment.storeAction = .store
+        attachment.clearColor = MTLClearColorMake(0, 0, 0, 0)
+    }
+    guard let compositorCommand = queue.makeCommandBuffer(),
+          let compositorEncoder = compositorCommand.makeRenderCommandEncoder(
+              descriptor: compositorPass)
+    else {
+        throw NSError(
+            domain: "GlassHighlightArithmeticProbe",
+            code: 6,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "failed to create compositor trace command",
+            ])
+    }
+    compositorEncoder.setRenderPipelineState(compositorPipeline)
+    compositorEncoder.setFragmentTexture(destination, index: 0)
+    compositorEncoder.setFragmentTexture(traces[5], index: 1)
+    compositorEncoder.setViewport(MTLViewport(
+        originX: 0,
+        originY: 0,
+        width: Double(captureWidth),
+        height: Double(captureHeight),
+        znear: 0,
+        zfar: 1))
+    compositorEncoder.drawPrimitives(
+        type: .triangle,
+        vertexStart: 0,
+        vertexCount: 6)
+    compositorEncoder.endEncoding()
+    compositorCommand.commit()
+    compositorCommand.waitUntilCompleted()
+    guard compositorCommand.status == .completed else {
+        throw compositorCommand.error ?? NSError(
+            domain: "GlassHighlightArithmeticProbe",
+            code: 7,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "compositor trace command did not complete",
+            ])
+    }
+
     let names = [
         "geometry",
         "key-a",
@@ -472,6 +675,25 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
             data: textureData(trace, bytesPerPixel: 16),
             componentType: "little-endian RGBA32Uint"))
     }
+    files.append(CaptureFile(
+        name: "highlight-compositor-diagnostic-final-bgra8.raw",
+        data: textureData(compositorFinalTexture, bytesPerPixel: 4),
+        componentType: "BGRA8Unorm"))
+    let compositorTraceNames = [
+        "input",
+        "matrix-a",
+        "matrix-b",
+        "matrix-c",
+        "source-a",
+        "source-b",
+        "final-stages",
+    ]
+    for (name, trace) in zip(compositorTraceNames, compositorTraces) {
+        files.append(CaptureFile(
+            name: "highlight-compositor-diagnostic-\(name)-rgba32ui.raw",
+            data: textureData(trace, bytesPerPixel: 16),
+            componentType: "little-endian RGBA32Uint"))
+    }
 
     try FileManager.default.createDirectory(
         at: outputDirectory,
@@ -489,7 +711,7 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
         ])
     }
     return [
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "probe": "apple-metal-key-fill-vibrant-arithmetic",
         "width": captureWidth,
         "height": captureHeight,
@@ -532,6 +754,24 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
                 "source-straight.b+zero",
                 "source-final.rg",
                 "source-final.ba",
+            ],
+        ],
+        "compositorDiagnosticTraceLayout": [
+            "input": ["destination", "destination-straight"],
+            "matrix-a": ["mapped-after-r", "mapped-after-g"],
+            "matrix-b": [
+                "mapped-after-b",
+                "mapped-after-destination-alpha",
+            ],
+            "matrix-c": ["mapped-after-bias", "mapped-final"],
+            "source-a": ["source-initial", "source-straight"],
+            "source-b": [
+                "source-final",
+                "destination-factor+highlight-alpha+source-alpha",
+            ],
+            "final-stages": [
+                "destination-product",
+                "final-before-alpha-saturate",
             ],
         ],
         "traceCoverage": [
