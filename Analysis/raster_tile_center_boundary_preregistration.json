@@ -1,0 +1,413 @@
+{
+  "acceptance": {
+    "failureIsEvidence": true,
+    "productionShaderAuthorizedByThisCapture": false,
+    "sealedWordMismatchCount": 0,
+    "tolerance": 0,
+    "unchangedRepeatRequired": true
+  },
+  "capture": {
+    "cancellationDepths": [
+      20,
+      19,
+      18,
+      17,
+      16,
+      15,
+      12,
+      11,
+      10,
+      9,
+      8,
+      7,
+      6
+    ],
+    "candidateBoundaries": {
+      "forwardFloorMinimumDepth": 8,
+      "forwardPhaseMinimumDepth": 11,
+      "reverseP27MinimumDepth": 16
+    },
+    "caseCount": 7,
+    "caseWordsSha256": "f0222b0b673d7ef9ca721500545890e750e00ebeb1f0854a6af4cea47052f516",
+    "endpointCount": 158,
+    "endpointWordsSha256": "69c94cb2395f2374549291f07bf28ad37161ee61206c90d1b493536a9e3dbbfa",
+    "layout": {
+      "axisCount": 2,
+      "caseCount": 7,
+      "caseWordsSha256": "f0222b0b673d7ef9ca721500545890e750e00ebeb1f0854a6af4cea47052f516",
+      "edgeCount": 2,
+      "endpointCount": 158,
+      "endpointWordsSha256": "69c94cb2395f2374549291f07bf28ad37161ee61206c90d1b493536a9e3dbbfa",
+      "expectedRecordCount": 120080,
+      "primitiveCount": 2,
+      "pullCount": 16,
+      "rawBytes": 20385792,
+      "recordBytes": 72,
+      "recordComponentCount": 18,
+      "recordCount": 283136,
+      "sampleWordsSha256": "dac4a1d9ead2c8c83366aa79d2e8afa5d46731b89661c1bc54d52b80056267c7",
+      "samplesPerCase": [
+        60,
+        102,
+        102,
+        118,
+        118,
+        130,
+        130
+      ],
+      "slotCount": 256,
+      "tileCount": 32
+    },
+    "pullOffsetsByAxis": {
+      "x": [
+        [
+          0.0,
+          0.5
+        ],
+        [
+          0.0625,
+          0.5
+        ],
+        [
+          0.125,
+          0.5
+        ],
+        [
+          0.1875,
+          0.5
+        ],
+        [
+          0.25,
+          0.5
+        ],
+        [
+          0.3125,
+          0.5
+        ],
+        [
+          0.375,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5625,
+          0.5
+        ],
+        [
+          0.625,
+          0.5
+        ],
+        [
+          0.6875,
+          0.5
+        ],
+        [
+          0.75,
+          0.5
+        ],
+        [
+          0.8125,
+          0.5
+        ],
+        [
+          0.875,
+          0.5
+        ],
+        [
+          0.9375,
+          0.5
+        ]
+      ],
+      "y": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.0625
+        ],
+        [
+          0.5,
+          0.125
+        ],
+        [
+          0.5,
+          0.1875
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.5,
+          0.3125
+        ],
+        [
+          0.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.4375
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.5625
+        ],
+        [
+          0.5,
+          0.625
+        ],
+        [
+          0.5,
+          0.6875
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.5,
+          0.8125
+        ],
+        [
+          0.5,
+          0.875
+        ],
+        [
+          0.5,
+          0.9375
+        ]
+      ]
+    },
+    "recordComponents": [
+      "axis-pull@0/16",
+      "axis-pull@1/16",
+      "axis-pull@2/16",
+      "axis-pull@3/16",
+      "axis-pull@4/16",
+      "axis-pull@5/16",
+      "axis-pull@6/16",
+      "axis-pull@7/16",
+      "axis-pull@8/16",
+      "axis-pull@9/16",
+      "axis-pull@10/16",
+      "axis-pull@11/16",
+      "axis-pull@12/16",
+      "axis-pull@13/16",
+      "axis-pull@14/16",
+      "axis-pull@15/16",
+      "center",
+      "axis-derivative(center)"
+    ],
+    "rigVersion": "metal-raster-tile-selector-10.0.0",
+    "role": "prospective-tile-center-directional-boundary-holdout",
+    "sampleWordsSha256": "dac4a1d9ead2c8c83366aa79d2e8afa5d46731b89661c1bc54d52b80056267c7",
+    "schemaVersion": 10,
+    "sealedCases": [
+      "sealed-boundary-e252-d509-x",
+      "sealed-boundary-e252-d509-y",
+      "sealed-boundary-e252-d647-x",
+      "sealed-boundary-e252-d647-y",
+      "sealed-boundary-e252-d751-x",
+      "sealed-boundary-e252-d751-y"
+    ],
+    "slopeFamilies": [
+      {
+        "baseResidue": 79,
+        "name": "n01",
+        "nativeSignificand": 1
+      },
+      {
+        "baseResidue": 43,
+        "name": "n15",
+        "nativeSignificand": 15
+      }
+    ],
+    "translatedBases": [
+      {
+        "bits": "0x3e800000",
+        "name": "quarter"
+      },
+      {
+        "bits": "0x3f000000",
+        "name": "half"
+      },
+      {
+        "bits": "0x3f800000",
+        "name": "one"
+      }
+    ]
+  },
+  "createdAt": "2026-08-01T15:50:00Z",
+  "derivationEvidence": {
+    "openedSchema5Through9RecordCount": 1214000,
+    "openedSchema5Through9WordCount": 21852000,
+    "openedV8RecordMismatchCount": 0,
+    "openedV8WordMismatchCount": 0,
+    "prospectiveEvidenceForV8": false,
+    "schema5RawSha256": "3cd6a35830a3d71af0252b87bce94e97917fdd68234805216d432b0bedbc1cc3",
+    "schema6RawSha256": "3b84d1376edc4d354672ff6367a9a66437ba23425342218f3c87952537e92665",
+    "schema7RawSha256": "0e20ff958ea6ce7326adb8dc0f9d3945bfb984dea010a0ff23a707a16c4d826c",
+    "schema8RawSha256": "7550032284d1570684efa2201de8a8bfabfb0254a8d130774b6e781ddde7d395",
+    "schema9FailureRestrictedToForwardDepths": [
+      15,
+      14,
+      13,
+      12,
+      11,
+      10,
+      9,
+      8
+    ],
+    "schema9FrozenV7RecordMismatchCount": 3948,
+    "schema9FrozenV7WordMismatchCount": 7860,
+    "schema9RawSha256": "61b63ec92eec0ce4d203ea366825652513973b9e2ef7d7fc3b22e3552acae5a0"
+  },
+  "model": {
+    "baseFile": "Analysis/raster_tile_selector_model.py",
+    "baseSourceSha256": "1874d8c452dce244bd8ae2cb7fbf05d0d454a815c0c37c285e1c377524c9369d",
+    "capturedValuesParticipateInSelection": false,
+    "centerScaleFeature": "maximum endpoint exponent minus exact endpoint-delta exponent",
+    "constantLaw": "physical primitive-anchor composite, 28-bit nearest-even then binary32 nearest-even",
+    "file": "Analysis/raster_tile_selector_model_v8.py",
+    "forwardHighCancellationLaw": "signed-p27 phase selector at cancellation depth 11 or greater",
+    "forwardMiddleCancellationLaw": "signed-p27 numerical floor at cancellation depths 10 through 8",
+    "forwardOrdinaryLaw": "determinant coefficient below cancellation depth 8",
+    "pullCoefficientLaw": "two-stage determinant coefficient rounded to binary32 nearest-even",
+    "reverseHighCancellationLaw": "signed-p27 numerical floor at cancellation depth 16 or greater",
+    "reverseOrdinaryLaw": "determinant coefficient below cancellation depth 16",
+    "selectorTableSha256": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+    "sourceSha256": "2fe483b51c2c48cc599ea06b69a61cddd207c9191d8daee152cb59ea5cec5915",
+    "v2File": "Analysis/raster_tile_selector_model_v2.py",
+    "v2SourceSha256": "114f6aa52693307521b04a9b231541bda60ee88f8b33a60bfd4d52e45e208dd5",
+    "v4File": "Analysis/raster_tile_selector_model_v4.py",
+    "v4SourceSha256": "f1918f51974f486510ce5d68724cff015bb2e7f618a1153016d464cd9240a103",
+    "v6File": "Analysis/raster_tile_selector_model_v6.py",
+    "v6SourceSha256": "3c5bdc263ea97f56c6cb8f0c7eedff22e13cb9eca02eb7895c458b0370553420",
+    "v7File": "Analysis/raster_tile_selector_model_v7.py",
+    "v7SourceSha256": "2393fc0f190c2fa9daa3b19e2ecacde61815b1ce10432a0336e34303a2d29d25"
+  },
+  "nextGate": "Open every schema-10 sealed word only after this preregistration, executable model, compressed prediction stream, and byte-discriminating boundary matrix are committed; require zero mismatched words and an unchanged bit-identical repeat before using this arithmetic in a fresh Walle image holdout.",
+  "predictedTruthStream": {
+    "archive": {
+      "bytes": 1015522,
+      "file": "raster_tile_v8_sealed_predictions.zlib",
+      "rawSha256": "eab3abd0345367892343bed3eb13fe017facf423f16d45886dde85cd6090bf44",
+      "sha256": "f9ab4416dc74faf6b0cbf409e311896e7082ab900b86229d05610f6f248bc879"
+    },
+    "bytes": 7963200,
+    "caseRole": "sealed-holdout",
+    "cases": [
+      {
+        "bytes": 1160352,
+        "name": "sealed-boundary-e252-d509-x",
+        "recordCount": 16116,
+        "sha256": "659fa951b40befca4ede79cb2a9eb69a5ee958f8bee18d3471fdfac3cc814388"
+      },
+      {
+        "bytes": 1160352,
+        "name": "sealed-boundary-e252-d509-y",
+        "recordCount": 16116,
+        "sha256": "533017f54a380eae7e97421a7635a0294a8e52ffc7a6a88cf592a7de951c482e"
+      },
+      {
+        "bytes": 1342368,
+        "name": "sealed-boundary-e252-d647-x",
+        "recordCount": 18644,
+        "sha256": "c331a99a8a3034b43e2c87218b9500f08e2a0eb579dda8540b6c7f6ab8c9e1f8"
+      },
+      {
+        "bytes": 1342368,
+        "name": "sealed-boundary-e252-d647-y",
+        "recordCount": 18644,
+        "sha256": "de0640e371627abecff0ac166ae8061779a4706f52f77c6269b4cd7570be8fbf"
+      },
+      {
+        "bytes": 1478880,
+        "name": "sealed-boundary-e252-d751-x",
+        "recordCount": 20540,
+        "sha256": "7577827b8b25ea41477cf9b0c084041bb1cd1cc500c236e9fd56a783f8440329"
+      },
+      {
+        "bytes": 1478880,
+        "name": "sealed-boundary-e252-d751-y",
+        "recordCount": 20540,
+        "sha256": "dea71b7e0b20a62d4db677a7eb9e9ddd0e312379fb2cac546f361de1a1a76de1"
+      }
+    ],
+    "endpointCount": 158,
+    "endpointRole": "all",
+    "ordering": "sealed-case-major,all-endpoint-major,sample-position-major,record-component-major",
+    "recordBytes": 72,
+    "recordComponentCount": 18,
+    "recordCount": 110600,
+    "sha256": "eab3abd0345367892343bed3eb13fe017facf423f16d45886dde85cd6090bf44"
+  },
+  "preflightDiscrimination": {
+    "ablationDifferences": {
+      "determinant-all": {
+        "records": 2208,
+        "words": 4416
+      },
+      "forward-floor-min-7": {
+        "records": 264,
+        "words": 528
+      },
+      "forward-floor-min-9": {
+        "records": 288,
+        "words": 576
+      },
+      "forward-phase-min-10": {
+        "records": 276,
+        "words": 552
+      },
+      "forward-phase-min-12": {
+        "records": 288,
+        "words": 576
+      },
+      "p27-floor-all": {
+        "records": 4440,
+        "words": 8880
+      },
+      "p27-phase-all": {
+        "records": 3036,
+        "words": 6072
+      },
+      "reverse-p27-min-15": {
+        "records": 276,
+        "words": 552
+      },
+      "reverse-p27-min-17": {
+        "records": 276,
+        "words": 552
+      },
+      "symmetric-forward-boundaries": {
+        "records": 1656,
+        "words": 3312
+      },
+      "translated-exact-constant": {
+        "records": 276,
+        "words": 276
+      }
+    },
+    "sealedRecordCount": 110600,
+    "sealedWordCount": 1990800
+  },
+  "role": "prospective-center-directional-boundary-holdout",
+  "schemaVersion": 1,
+  "scientificQuestion": "Does Apple's translated center path use the recovered signed-p27 phase selector for forward cancellation depth 11 or greater, the signed-p27 numerical floor for forward depths 10 through 8, the reverse signed-p27 floor from depth 16 upward, and the determinant coefficient in the remaining regimes?",
+  "sealedHoldoutOpenedAtPreregistration": false
+}

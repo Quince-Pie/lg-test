@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the frozen schema-9 tile-center scale-switch holdout."""
+"""Tests for the frozen schema-10 tile-center boundary holdout."""
 
 import hashlib
 import json
@@ -10,16 +10,17 @@ import zlib
 from dataclasses import asdict
 from pathlib import Path
 
-import open_raster_tile_center_scale_holdout as opening
+import open_raster_tile_center_boundary_holdout as opening
 import raster_tile_selector_model as v1
 import raster_tile_selector_model_v2 as v2
 import raster_tile_selector_model_v4 as v4
 import raster_tile_selector_model_v6 as v6
-import raster_tile_selector_model_v7 as model
-import validate_raster_tile_center_scale_holdout as capture
+import raster_tile_selector_model_v7 as v7
+import raster_tile_selector_model_v8 as model
+import validate_raster_tile_center_boundary_holdout as capture
 
 
-class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
+class RasterTileCenterBoundaryHoldoutTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.preregistration = capture.load_preregistration()
@@ -28,42 +29,51 @@ class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
 
     def test_layout_is_frozen_before_capture(self) -> None:
         layout = capture.layout_metadata()
-        self.assertEqual(layout["caseCount"], 5)
-        self.assertEqual(layout["endpointCount"], 116)
-        self.assertEqual(layout["recordCount"], 148_480)
-        self.assertEqual(layout["rawBytes"], 10_690_560)
-        self.assertEqual(layout["expectedRecordCount"], 69_136)
+        self.assertEqual(layout["caseCount"], 7)
+        self.assertEqual(layout["endpointCount"], 158)
+        self.assertEqual(layout["recordCount"], 283_136)
+        self.assertEqual(layout["rawBytes"], 20_385_792)
+        self.assertEqual(layout["expectedRecordCount"], 120_080)
+        self.assertEqual(layout["samplesPerCase"], [60, 102, 102, 118, 118, 130, 130])
         self.assertEqual(
             layout["caseWordsSha256"],
-            "a958c42f9b5e498249d33d968596a7874ecd2faf63ec6a7faf565684df1ac3e0",
+            "f0222b0b673d7ef9ca721500545890e750e00ebeb1f0854a6af4cea47052f516",
         )
         self.assertEqual(
             layout["endpointWordsSha256"],
-            "c6bdc64b32679a5f20b4a4c494186fc1195017351707ef398566d40c03ed17d3",
+            "69c94cb2395f2374549291f07bf28ad37161ee61206c90d1b493536a9e3dbbfa",
         )
         self.assertEqual(
             layout["sampleWordsSha256"],
-            "7cd6f0a23c24d26af3f8b0b2e17c905ae86e2a442228401a2e0b2048825d10f4",
+            "dac4a1d9ead2c8c83366aa79d2e8afa5d46731b89661c1bc54d52b80056267c7",
         )
         self.assertFalse(self.preregistration["sealedHoldoutOpenedAtPreregistration"])
 
-    def test_scale_sweep_changes_only_cancellation_depth(self) -> None:
-        grouped: dict[str, list[tuple[int, int]]] = {
-            name: [] for name, _ in capture.SCALE_TRANSLATED_BASES
-        }
-        for endpoint in capture.ENDPOINTS:
-            if not endpoint.name.endswith("-forward"):
-                continue
-            match = re.fullmatch(
-                r"translated-scale-(quarter|half|one)-k(\d\d)-forward",
+    def test_endpoint_names_bits_and_depths_are_regenerated(self) -> None:
+        expected: list[tuple[str, int, int, int]] = []
+        for base_name, base_bits in capture.TRANSLATED_BASES:
+            for family_name, significand, residue in capture.SLOPE_FAMILIES:
+                for depth in capture.CANCELLATION_DEPTHS:
+                    power = 23 - (significand.bit_length() - 1) - depth
+                    low = base_bits + residue
+                    high = low + (significand << power)
+                    stem = f"translated-confirm-{base_name}-{family_name}-d{depth:02d}"
+                    expected.extend(
+                        (
+                            (f"{stem}-forward", low, high, depth),
+                            (f"{stem}-reverse", high, low, depth),
+                        )
+                    )
+        actual = [
+            (
                 endpoint.name,
+                endpoint.lowBits,
+                endpoint.highBits,
+                model.cancellation_depth(endpoint),
             )
-            self.assertIsNotNone(match)
-            grouped[match.group(1)].append(
-                (int(match.group(2)), model.cancellation_depth(endpoint))
-            )
-        expected = [(power, 19 - power) for power in capture.SCALE_POWERS]
-        self.assertEqual(grouped, {name: expected for name in grouped})
+            for endpoint in capture.ENDPOINTS[2:]
+        ]
+        self.assertEqual(actual, expected)
 
     def test_model_and_every_prediction_byte_are_frozen(self) -> None:
         frozen = self.preregistration["model"]
@@ -73,6 +83,7 @@ class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
             ("v2SourceSha256", v2),
             ("v4SourceSha256", v4),
             ("v6SourceSha256", v6),
+            ("v7SourceSha256", v7),
         ):
             self.assertEqual(frozen[key], capture.sha256_path(Path(module.__file__)))
         expected = self.preregistration["predictedTruthStream"]
@@ -89,11 +100,11 @@ class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
             "cases",
         ):
             self.assertEqual(expected[key], self.prediction[key])
-        self.assertEqual(self.prediction["recordCount"], 62_176)
-        self.assertEqual(self.prediction["bytes"], 4_476_672)
+        self.assertEqual(self.prediction["recordCount"], 110_600)
+        self.assertEqual(self.prediction["bytes"], 7_963_200)
         self.assertEqual(self.prediction["sha256"], model.PREDICTION_RAW_SHA256)
         archive = model.PREDICTION_ARCHIVE_PATH.read_bytes()
-        self.assertEqual(len(archive), 863_076)
+        self.assertEqual(len(archive), 1_015_522)
         self.assertEqual(
             hashlib.sha256(archive).hexdigest(), model.PREDICTION_ARCHIVE_SHA256
         )
@@ -101,25 +112,36 @@ class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
             hashlib.sha256(zlib.decompress(archive)).hexdigest(), expected["sha256"]
         )
 
-    def test_holdout_discriminates_cutoff_and_arithmetic_rivals(self) -> None:
-        self.assertEqual(self.preflight, self.preregistration["preflightDiscrimination"])
-        self.assertEqual(self.preflight["sealedRecordCount"], 62_176)
-        self.assertEqual(self.preflight["sealedWordCount"], 1_119_168)
+    def test_holdout_discriminates_every_boundary_and_arithmetic_rival(self) -> None:
+        self.assertEqual(
+            self.preflight, self.preregistration["preflightDiscrimination"]
+        )
+        self.assertEqual(self.preflight["sealedRecordCount"], 110_600)
+        self.assertEqual(self.preflight["sealedWordCount"], 1_990_800)
         self.assertEqual(
             self.preflight["ablationDifferences"],
             {
-                "absolute-delta-exp-minus16": {"records": 504, "words": 1_000},
-                "cancellation-14": {"records": 996, "words": 1_980},
-                "cancellation-15": {"records": 516, "words": 1_020},
-                "cancellation-17": {"records": 480, "words": 960},
-                "cancellation-18": {"records": 960, "words": 1_920},
-                "determinant-all": {"records": 1_512, "words": 3_000},
-                "p27-all": {"records": 7_392, "words": 14_724},
-                "translated-exact-constant": {
-                    "records": 1_095,
-                    "words": 10_032,
+                "determinant-all": {"records": 2_208, "words": 4_416},
+                "forward-floor-min-7": {"records": 264, "words": 528},
+                "forward-floor-min-9": {"records": 288, "words": 576},
+                "forward-phase-min-10": {"records": 276, "words": 552},
+                "forward-phase-min-12": {"records": 288, "words": 576},
+                "p27-floor-all": {"records": 4_440, "words": 8_880},
+                "p27-phase-all": {"records": 3_036, "words": 6_072},
+                "reverse-p27-min-15": {"records": 276, "words": 552},
+                "reverse-p27-min-17": {"records": 276, "words": 552},
+                "symmetric-forward-boundaries": {
+                    "records": 1_656,
+                    "words": 3_312,
                 },
+                "translated-exact-constant": {"records": 276, "words": 276},
             },
+        )
+        self.assertTrue(
+            all(
+                difference["words"] > 0
+                for difference in self.preflight["ablationDifferences"].values()
+            )
         )
 
     def test_model_contains_no_geometry_or_endpoint_name_selector(self) -> None:
@@ -137,9 +159,9 @@ class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
             / "main.swift"
         ).read_text(encoding="utf-8")
         case_block = source.split(
-            "#elseif TILE_CENTER_SCALE_HOLDOUT\nprivate let cases = [",
+            "#if TILE_CENTER_BOUNDARY_HOLDOUT\nprivate let cases = [",
             maxsplit=1,
-        )[1].split("\n]\n#elseif TILE_CENTER_LATTICE_HOLDOUT", maxsplit=1)[0]
+        )[1].split("\n]\n#elseif TILE_CENTER_SCALE_HOLDOUT", maxsplit=1)[0]
         swift_cases = [
             (
                 match.group("name"),
@@ -176,8 +198,8 @@ class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
             str(capture.layout_metadata()["caseWordsSha256"]),
             str(capture.layout_metadata()["endpointWordsSha256"]),
             str(capture.layout_metadata()["sampleWordsSha256"]),
-            'layout["rawBytes"] as? Int == 10_690_560',
-            'layout["expectedRecordCount"] as? Int == 69_136',
+            'layout["rawBytes"] as? Int == 20_385_792',
+            'layout["expectedRecordCount"] as? Int == 120_080',
         ):
             self.assertIn(value, source)
 
@@ -212,7 +234,7 @@ class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
                     "file": raw_path.name,
                     "role": capture.ROLE,
                     "preregistrationFile": (
-                        "Analysis/raster_tile_center_scale_preregistration.json"
+                        "Analysis/raster_tile_center_boundary_preregistration.json"
                     ),
                     "preregistrationSha256": capture.PREREGISTRATION_SHA256,
                     "layout": capture.layout_metadata(),
@@ -233,7 +255,7 @@ class RasterTileCenterScaleHoldoutTests(unittest.TestCase):
                 encoding="utf-8",
             )
             report = opening.open_holdout(root)
-        self.assertEqual(report["recordCount"], 69_136)
+        self.assertEqual(report["recordCount"], 120_080)
         self.assertEqual(report["wordMismatchCount"], 0)
         self.assertTrue(report["sealedPredictionHashExact"])
         self.assertTrue(report["exact"])

@@ -3454,6 +3454,47 @@ The preregistration has SHA-256
 Zero mismatch and a bit-identical unchanged repeat are mandatory before the
 scale switch is treated as prospective evidence.
 
+Run `30704990975` prospectively rejected the single cutoff at cancellation
+depth 16. The control, every pull word, every reverse endpoint, and both fresh
+determinants were exact, but 3,948 records contained 7,860 center or derivative
+word mismatches. Every mismatch belonged to a forward endpoint at depth 15
+through 8. The captured 10,690,560-byte raw stream has SHA-256
+`61b63ec92eec0ce4d203ea366825652513973b9e2ef7d7fc3b22e3552acae5a0`.
+Because the frozen contract failed, no unchanged schema-9 repeat was
+dispatched.
+
+Opening the complete scale sweep supports a three-regime forward candidate.
+At depth 11 or greater it retains the schema-8 signed-p27 phase selector.
+Depths 10 through 8 use the signed-p27 numerical floor, and depth 7 or less
+uses the determinant coefficient rounded to binary32. The schema-9 reverse
+sweep does not distinguish its p27 floor from determinant rounding, so v8
+retains the previously frozen reverse cutoff at depth 16 as a prospective
+hypothesis rather than reporting it as measured fact. Pulls remain
+determinant-rounded and constants remain the physical primitive-anchor
+composite rounded first to 28 significant bits and then to binary32. One v8
+replay is exact for every expected schema-5 through schema-9 record: zero
+mismatches across 1,214,000 records and 21,852,000 component words. That replay
+is retrospective evidence only.
+
+Schema 10 freezes v8 against a matrix selected for differences in emitted
+float32 words, not merely differences in hidden coefficient values. Three
+fresh 252-pixel effective extents with opposite dimensions 509, 647, and 751
+are transposed across both axes. Two normalized numerator families exercise
+the lower and upper p27 phase branches, three binary32 exponent regions, and
+cancellation depths 20 through 6 around every candidate boundary. Each of the
+forward 11/10 and 8/7 alternatives and the reverse 16/15 alternatives changes
+528 to 576 sealed words. Determinant-only changes 4,416 words, p27-only rivals
+change 6,072 to 8,880 words, and the translated-constant rival changes 276
+words. The six sealed cases contain 110,600 records and 1,990,800 words. Their
+committed 7,963,200-byte prediction stream has SHA-256
+`eab3abd0345367892343bed3eb13fe017facf423f16d45886dde85cd6090bf44`;
+the 1,015,522-byte zlib archive has SHA-256
+`f9ab4416dc74faf6b0cbf409e311896e7082ab900b86229d05610f6f248bc879`.
+The preregistration has SHA-256
+`a31fe0e4b4d6db5b8133a20584751ff7e79bb1ef214bf98d877694829e72f3c8`.
+Zero mismatch on the blind run and a bit-identical unchanged repeat are
+mandatory before v8 is treated as prospective arithmetic evidence.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

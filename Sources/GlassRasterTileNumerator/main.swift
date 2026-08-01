@@ -59,7 +59,15 @@ private struct SamplePosition {
     }
 }
 
-#if TILE_CENTER_SCALE_HOLDOUT
+#if TILE_CENTER_BOUNDARY_HOLDOUT
+private let schemaVersion = 10
+private let rigVersion = "metal-raster-tile-selector-10.0.0"
+private let role = "prospective-tile-center-directional-boundary-holdout"
+private let preregistrationFile =
+    "Analysis/raster_tile_center_boundary_preregistration.json"
+private let preregistrationSha256 =
+    "a31fe0e4b4d6db5b8133a20584751ff7e79bb1ef214bf98d877694829e72f3c8"
+#elseif TILE_CENTER_SCALE_HOLDOUT
 private let schemaVersion = 9
 private let rigVersion = "metal-raster-tile-selector-9.0.0"
 private let role = "prospective-tile-center-scale-switch-holdout"
@@ -129,7 +137,17 @@ private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
 private let pullCount = 16
 private let recordComponentCount = pullCount + 2
 private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
-#if TILE_CENTER_SCALE_HOLDOUT
+#if TILE_CENTER_BOUNDARY_HOLDOUT
+private let cases = [
+    CaptureCase(name: "control-square-256", role: "prospective-control", width: 256, height: 256, originX: 384, originY: 384),
+    CaptureCase(name: "sealed-boundary-e252-d509-x", role: "sealed-holdout", width: 252, height: 509, originX: 89, originY: 341),
+    CaptureCase(name: "sealed-boundary-e252-d509-y", role: "sealed-holdout", width: 509, height: 252, originX: 341, originY: 89),
+    CaptureCase(name: "sealed-boundary-e252-d647-x", role: "sealed-holdout", width: 252, height: 647, originX: 143, originY: 290),
+    CaptureCase(name: "sealed-boundary-e252-d647-y", role: "sealed-holdout", width: 647, height: 252, originX: 290, originY: 143),
+    CaptureCase(name: "sealed-boundary-e252-d751-x", role: "sealed-holdout", width: 252, height: 751, originX: 192, originY: 212),
+    CaptureCase(name: "sealed-boundary-e252-d751-y", role: "sealed-holdout", width: 751, height: 252, originX: 212, originY: 192),
+]
+#elseif TILE_CENTER_SCALE_HOLDOUT
 private let cases = [
     CaptureCase(name: "control-square-256", role: "prospective-control", width: 256, height: 256, originX: 384, originY: 384),
     CaptureCase(name: "sealed-scale-e651-d349-x", role: "sealed-holdout", width: 651, height: 349, originX: 94, originY: 211),
@@ -542,7 +560,64 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
-#if TILE_CENTER_SCALE_HOLDOUT
+#if TILE_CENTER_BOUNDARY_HOLDOUT
+private let centerBoundaryBases: [(name: String, bits: UInt32)] = [
+    ("quarter", 0x3e80_0000),
+    ("half", 0x3f00_0000),
+    ("one", 0x3f80_0000),
+]
+private let centerBoundaryFamilies: [
+    (name: String, nativeSignificand: UInt32, residue: UInt32)
+] = [
+    ("n01", 1, 79),
+    ("n15", 15, 43),
+]
+private let centerBoundaryDepths = [20, 19, 18, 17, 16, 15, 12, 11, 10, 9, 8, 7, 6]
+
+private func centerBoundaryEndpoints() -> [EndpointCase] {
+    var result = [
+        EndpointCase(
+            name: "zero-to-one", role: "prospective-control",
+            lowBits: 0, highBits: 0x3f80_0000
+        ),
+        EndpointCase(
+            name: "one-to-zero", role: "prospective-control",
+            lowBits: 0x3f80_0000, highBits: 0
+        ),
+    ]
+    for base in centerBoundaryBases {
+        for family in centerBoundaryFamilies {
+            let significandLog2 = 31 - family.nativeSignificand.leadingZeroBitCount
+            for depth in centerBoundaryDepths {
+                let power = 23 - significandLog2 - depth
+                precondition(power >= 0)
+                let nativeSpan = family.nativeSignificand << UInt32(power)
+                let low = base.bits + family.residue
+                let high = low + nativeSpan
+                let stem = String(
+                    format: "translated-confirm-%@-%@-d%02d",
+                    base.name,
+                    family.name,
+                    depth
+                )
+                result.append(EndpointCase(
+                    name: "\(stem)-forward",
+                    role: "boundary-confirmation-holdout",
+                    lowBits: low,
+                    highBits: high
+                ))
+                result.append(EndpointCase(
+                    name: "\(stem)-reverse",
+                    role: "boundary-confirmation-holdout",
+                    lowBits: high,
+                    highBits: low
+                ))
+            }
+        }
+    }
+    return result
+}
+#elseif TILE_CENTER_SCALE_HOLDOUT
 private let centerScaleBases: [(name: String, bits: UInt32)] = [
     ("quarter", 0x3e80_0000),
     ("half", 0x3f00_0000),
@@ -899,7 +974,9 @@ private func discriminatorEndpoints() -> [EndpointCase] {
 }
 #endif
 
-#if TILE_CENTER_SCALE_HOLDOUT
+#if TILE_CENTER_BOUNDARY_HOLDOUT
+private let endpoints = centerBoundaryEndpoints()
+#elseif TILE_CENTER_SCALE_HOLDOUT
 private let endpoints = centerScaleEndpoints()
 #elseif TILE_CENTER_LATTICE_HOLDOUT
 private let endpoints = centerLatticeEndpoints()
@@ -1138,7 +1215,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_CENTER_SCALE_HOLDOUT
+#if TILE_CENTER_BOUNDARY_HOLDOUT
+    precondition(cases.count == 7)
+    precondition(endpoints.count == 158)
+    precondition(layout["recordCount"] as? Int == 283_136)
+    precondition(layout["rawBytes"] as? Int == 20_385_792)
+    precondition(layout["expectedRecordCount"] as? Int == 120_080)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "f0222b0b673d7ef9ca721500545890e750e00ebeb1f0854a6af4cea47052f516"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "69c94cb2395f2374549291f07bf28ad37161ee61206c90d1b493536a9e3dbbfa"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "dac4a1d9ead2c8c83366aa79d2e8afa5d46731b89661c1bc54d52b80056267c7"
+    )
+#elseif TILE_CENTER_SCALE_HOLDOUT
     precondition(cases.count == 5)
     precondition(endpoints.count == 116)
     precondition(layout["recordCount"] as? Int == 148_480)
