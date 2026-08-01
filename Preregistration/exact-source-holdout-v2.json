@@ -1,0 +1,409 @@
+{
+  "acceptance": "Every source mip must match its preregistered hash, and the Apple private fragment, independent Metal reconstruction, and frozen AMD GLSL prediction must have identical BGRA8 bytes.",
+  "generatedAt": "2026-08-01T04:55:50.436415+00:00",
+  "generator": {
+    "algorithm": "SplitMix64(seed XOR ((level << 56) XOR (y << 28) XOR x)); BGRA bytes 0..23; optional alpha byte 24..31; RGB uses integer (channel * alpha + 127) / 255 premultiplication",
+    "file": "analysis/liquid_glass_unseen_holdout.py",
+    "seeds": {
+      "prospective-opaque-seeded-v2": "0x3c6ef372fe94f82b",
+      "prospective-premultiplied-seeded-v2": "0xa54ff53a5f1d36f1"
+    }
+  },
+  "host": {
+    "deviceIndex": null,
+    "platform": "Linux-6.18.38-x86_64-with-glibc2.42",
+    "python": "3.14.4"
+  },
+  "intrinsicTables": {
+    "rsqrt": {
+      "bytes": 2097152,
+      "sha256": "01dc07b5fbdd4b05bad8cba39331c324cd32b94cc1331e9af3096dce58e20fa3"
+    },
+    "source": {
+      "bytes": 8388608,
+      "sha256": "fff71cc0d4428677ca5bc58b91212a7166b701e4efe504c3d71cab70846d0449"
+    },
+    "sqrt": {
+      "bytes": 4194304,
+      "sha256": "dcd882a8af21ac9f2c0f82a3239d6d5f247e2eb5b3535348f6931b65c41f23b1"
+    }
+  },
+  "liquidGlassUnseenSourceHoldoutSchemaVersion": 1,
+  "predictions": {
+    "clear-dark": {
+      "prospective-opaque-seeded-v2": {
+        "capture": "artifacts/liquid-glass-introspection-30575220842/liquid-glass-introspection-clear-dark-30575220842",
+        "captureRuntimeSha256": "5c9adec255fb3e5af16ab00619ca8d0705f1e43c5edba590aebd7f32f2c3bf8c",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 67694,
+          "fragmentShaderSha256": "0a42fee5c7471d606d1464c0136330b0c74be39d28691934944a4c702b51c358",
+          "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "clear",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "701f0389b31fb7a8",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "0fea1e0ebf19ce2b95f77f79dbf8c2cc8b2f5ff78f346ab174b505bd83dbb011",
+          "width": 1024
+        },
+        "pattern": "prospective-opaque-seeded-v2",
+        "rasterCoefficientTableSha256": "bbbc2e8391487cfad89e26f0a79ff2dd508e6548a0f1e8a56dab70b288df86b0"
+      },
+      "prospective-premultiplied-seeded-v2": {
+        "capture": "artifacts/liquid-glass-introspection-30575220842/liquid-glass-introspection-clear-dark-30575220842",
+        "captureRuntimeSha256": "5c9adec255fb3e5af16ab00619ca8d0705f1e43c5edba590aebd7f32f2c3bf8c",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 67694,
+          "fragmentShaderSha256": "0a42fee5c7471d606d1464c0136330b0c74be39d28691934944a4c702b51c358",
+          "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "clear",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "dbe29f2bd6d9bd9b",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "83e42533d5470ad68eeb12b364972dee8b5e532397161dfb3a2802b3d3722487",
+          "width": 1024
+        },
+        "pattern": "prospective-premultiplied-seeded-v2",
+        "rasterCoefficientTableSha256": "bbbc2e8391487cfad89e26f0a79ff2dd508e6548a0f1e8a56dab70b288df86b0"
+      }
+    },
+    "clear-light": {
+      "prospective-opaque-seeded-v2": {
+        "capture": "artifacts/liquid-glass-introspection-30575220842/liquid-glass-introspection-clear-light-30575220842",
+        "captureRuntimeSha256": "677b139239e89bd4a86950642f9c3c5d6665d289b32f608fc2051f2ccaf07799",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 67694,
+          "fragmentShaderSha256": "0a42fee5c7471d606d1464c0136330b0c74be39d28691934944a4c702b51c358",
+          "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "clear",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "701f0389b31fb7a8",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "0fea1e0ebf19ce2b95f77f79dbf8c2cc8b2f5ff78f346ab174b505bd83dbb011",
+          "width": 1024
+        },
+        "pattern": "prospective-opaque-seeded-v2",
+        "rasterCoefficientTableSha256": "bbbc2e8391487cfad89e26f0a79ff2dd508e6548a0f1e8a56dab70b288df86b0"
+      },
+      "prospective-premultiplied-seeded-v2": {
+        "capture": "artifacts/liquid-glass-introspection-30575220842/liquid-glass-introspection-clear-light-30575220842",
+        "captureRuntimeSha256": "677b139239e89bd4a86950642f9c3c5d6665d289b32f608fc2051f2ccaf07799",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 67694,
+          "fragmentShaderSha256": "0a42fee5c7471d606d1464c0136330b0c74be39d28691934944a4c702b51c358",
+          "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "clear",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "dbe29f2bd6d9bd9b",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "83e42533d5470ad68eeb12b364972dee8b5e532397161dfb3a2802b3d3722487",
+          "width": 1024
+        },
+        "pattern": "prospective-premultiplied-seeded-v2",
+        "rasterCoefficientTableSha256": "bbbc2e8391487cfad89e26f0a79ff2dd508e6548a0f1e8a56dab70b288df86b0"
+      }
+    },
+    "regular-dark": {
+      "prospective-opaque-seeded-v2": {
+        "capture": "artifacts/liquid-glass-introspection-30581698599/liquid-glass-introspection-regular-dark-30581698599",
+        "captureRuntimeSha256": "74fed4a8be257cb79456b8389221297fcd64764f3cbd498bfaefc4362c38fbfd",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 67678,
+          "fragmentShaderSha256": "b483269813cb0800d5a41236eb866a8ce457ccea1a7752f113d04fb0d449a497",
+          "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "regular",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "42ad9c22b9478b86",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "14b0417af17ecd57a130172fc1e0a6ce9a733f766a1556c26cc42a1a6fb38177",
+          "width": 1024
+        },
+        "pattern": "prospective-opaque-seeded-v2",
+        "rasterCoefficientTableSha256": "95c77d54dd2eec8e9dcb77902d3f2dbdfd6ea71c0b0020964b8a5261eca6dfc8"
+      },
+      "prospective-premultiplied-seeded-v2": {
+        "capture": "artifacts/liquid-glass-introspection-30581698599/liquid-glass-introspection-regular-dark-30581698599",
+        "captureRuntimeSha256": "74fed4a8be257cb79456b8389221297fcd64764f3cbd498bfaefc4362c38fbfd",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 67678,
+          "fragmentShaderSha256": "b483269813cb0800d5a41236eb866a8ce457ccea1a7752f113d04fb0d449a497",
+          "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "regular",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "b3ce0122b2d92dca",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "1e78165e58623d57ebc501038354c1497d59a51de1ab3a1fefe7d57203963c69",
+          "width": 1024
+        },
+        "pattern": "prospective-premultiplied-seeded-v2",
+        "rasterCoefficientTableSha256": "95c77d54dd2eec8e9dcb77902d3f2dbdfd6ea71c0b0020964b8a5261eca6dfc8"
+      }
+    },
+    "regular-light": {
+      "prospective-opaque-seeded-v2": {
+        "capture": "artifacts/liquid-glass-introspection-30581698599/liquid-glass-introspection-regular-light-30581698599",
+        "captureRuntimeSha256": "8dd182a0097b1c3520ec19505c328b6257b14aa5bb5c24bd9a655309e8aa43c0",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 67678,
+          "fragmentShaderSha256": "b483269813cb0800d5a41236eb866a8ce457ccea1a7752f113d04fb0d449a497",
+          "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "regular",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "571bd815b54cfa1c",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "01a1829019a711a7fca9ea58c879bda8716c3201f9da8267997807a4ed6f4707",
+          "width": 1024
+        },
+        "pattern": "prospective-opaque-seeded-v2",
+        "rasterCoefficientTableSha256": "95c77d54dd2eec8e9dcb77902d3f2dbdfd6ea71c0b0020964b8a5261eca6dfc8"
+      },
+      "prospective-premultiplied-seeded-v2": {
+        "capture": "artifacts/liquid-glass-introspection-30581698599/liquid-glass-introspection-regular-light-30581698599",
+        "captureRuntimeSha256": "8dd182a0097b1c3520ec19505c328b6257b14aa5bb5c24bd9a655309e8aa43c0",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 67678,
+          "fragmentShaderSha256": "b483269813cb0800d5a41236eb866a8ce457ccea1a7752f113d04fb0d449a497",
+          "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "regular",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "c005d262544feb5e",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "72eca8021c97cf240c9d18749b9b0f0df070075f4f46cde16211d10e22595ddc",
+          "width": 1024
+        },
+        "pattern": "prospective-premultiplied-seeded-v2",
+        "rasterCoefficientTableSha256": "95c77d54dd2eec8e9dcb77902d3f2dbdfd6ea71c0b0020964b8a5261eca6dfc8"
+      }
+    }
+  },
+  "scope": {
+    "appearances": [
+      "light",
+      "dark"
+    ],
+    "appleOutputAvailableDuringPrediction": false,
+    "geometry": "circle-800-center",
+    "materials": [
+      "clear",
+      "regular"
+    ],
+    "patterns": [
+      "prospective-opaque-seeded-v2",
+      "prospective-premultiplied-seeded-v2"
+    ]
+  },
+  "sources": {
+    "prospective-opaque-seeded-v2": {
+      "clear": [
+        {
+          "bytes": 802816,
+          "fnv1a64": "cf9414e0d20334bf",
+          "height": 448,
+          "level": 0,
+          "sha256": "b0221d008eaca8f0c491f249cd429d0b97f634892f0f752bde10902b1157d186",
+          "width": 448
+        },
+        {
+          "bytes": 200704,
+          "fnv1a64": "272a30bd6c6e73bc",
+          "height": 224,
+          "level": 1,
+          "sha256": "c96bf3cf6f37da758904f65bfbc628733c54933e9006fcc62a4782b977062fde",
+          "width": 224
+        }
+      ],
+      "regular": [
+        {
+          "bytes": 589824,
+          "fnv1a64": "ea83dd4b28b63e26",
+          "height": 384,
+          "level": 0,
+          "sha256": "40b5cacd8ceca0afbba8caf326ab1cbd5c729094d2ed0bf036b3b33e3e2930e6",
+          "width": 384
+        },
+        {
+          "bytes": 147456,
+          "fnv1a64": "841576f444c7634c",
+          "height": 192,
+          "level": 1,
+          "sha256": "432a19f34be653304dcb9621e4f6d6511ce07ce400a8b046ff4b0ee9ca9a4f4d",
+          "width": 192
+        },
+        {
+          "bytes": 36864,
+          "fnv1a64": "e58ecbc02a9a9d29",
+          "height": 96,
+          "level": 2,
+          "sha256": "4fdc79ae29967fa621bbf426f042224de861317ff4585289023252df4d998108",
+          "width": 96
+        },
+        {
+          "bytes": 9216,
+          "fnv1a64": "9bbc22b38ed10779",
+          "height": 48,
+          "level": 3,
+          "sha256": "578f737f187accfe17b12b1a83498e90da1a27cea1c584e664c62c606f14ae4f",
+          "width": 48
+        },
+        {
+          "bytes": 2304,
+          "fnv1a64": "acf1b486b1be605a",
+          "height": 24,
+          "level": 4,
+          "sha256": "a0e0d00bb187f34db07517b3ca46bdc6ceb46770ec25a35e160c8184b644b89e",
+          "width": 24
+        },
+        {
+          "bytes": 576,
+          "fnv1a64": "a3f7d0c38d13e134",
+          "height": 12,
+          "level": 5,
+          "sha256": "71d44df21a1b2440d14acbc85580e72c5063590fc04bac96bf55b9e852c628b3",
+          "width": 12
+        }
+      ]
+    },
+    "prospective-premultiplied-seeded-v2": {
+      "clear": [
+        {
+          "bytes": 802816,
+          "fnv1a64": "d190ab00cee54168",
+          "height": 448,
+          "level": 0,
+          "sha256": "b7b83234352c80337e815dbb8ad7574c57bf67e0c5542f61b5b6381d53a0bfe1",
+          "width": 448
+        },
+        {
+          "bytes": 200704,
+          "fnv1a64": "091e0bf35aafe704",
+          "height": 224,
+          "level": 1,
+          "sha256": "27661c58ed42dc1fb3ce29ae1f72b5bdbd14033ce30902f76009e40707b203ff",
+          "width": 224
+        }
+      ],
+      "regular": [
+        {
+          "bytes": 589824,
+          "fnv1a64": "2caeb84df39c1f14",
+          "height": 384,
+          "level": 0,
+          "sha256": "b86b95d6a3e4dbb0b577fc060018035bb085742d2366f75dd7fd10d6dfd7f9cd",
+          "width": 384
+        },
+        {
+          "bytes": 147456,
+          "fnv1a64": "bfd27c35a4e4341a",
+          "height": 192,
+          "level": 1,
+          "sha256": "3b4266ffbed67c16c31a4360912bd5f93842b695f3066fdf6405b01745a1f6a3",
+          "width": 192
+        },
+        {
+          "bytes": 36864,
+          "fnv1a64": "a3b657896ab0592f",
+          "height": 96,
+          "level": 2,
+          "sha256": "6a521704cbf5c37c7b1d0858e79ea4fedb5ab216f78b8374a89b528f556a3962",
+          "width": 96
+        },
+        {
+          "bytes": 9216,
+          "fnv1a64": "2cca26426c519abb",
+          "height": 48,
+          "level": 3,
+          "sha256": "0c033f8a18755a1b12fb5d982756ab60d738e69bdc4b07defc2751861d1a74d8",
+          "width": 48
+        },
+        {
+          "bytes": 2304,
+          "fnv1a64": "c59ddbe17622e0fb",
+          "height": 24,
+          "level": 4,
+          "sha256": "36ab1f5bb6df5a5cd24fd0d0e85b11fc6907f0cfd78b2ea2973d892c35c5cbdd",
+          "width": 24
+        },
+        {
+          "bytes": 576,
+          "fnv1a64": "3a1b51c4cc3f3233",
+          "height": 12,
+          "level": 5,
+          "sha256": "6ef83fa24c77c22024f8d0937ed1d9481fa297a9b2665c85a21b489631a3c260",
+          "width": 12
+        }
+      ]
+    }
+  },
+  "status": "preregistered-before-apple-capture"
+}

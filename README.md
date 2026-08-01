@@ -3037,17 +3037,18 @@ for clear/regular glass in light/dark appearance. The file is committed before
 the corresponding Apple capture and explicitly records that Apple output was
 unavailable during prediction.
 
-`Analysis/validate_exact_source_holdout.py` fails closed unless all eight
-source interventions execute, all archived bytes match their reported hashes,
-the two prospective inputs match the preregistration, and Apple's private
-fragment, the independently compiled Metal fragment, and the frozen GLSL
-prediction are byte-identical for both prospective fields. CI archives both
-the preregistration and its validation report with each profile artifact.
+The schema-4 `Analysis/validate_exact_source_holdout.py` gate failed closed
+unless all eight source interventions executed, all archived bytes matched
+their reported hashes, the two prospective inputs matched the preregistration,
+and Apple's private fragment, the independently compiled Metal fragment, and
+the frozen GLSL prediction were byte-identical for both prospective fields.
+CI archives both the preregistration and its validation report with each
+profile artifact.
 
-Passing this gate establishes an unseen source/color/sampler holdout at the
-centered 800-point, 1x, sRGB SDR scope. It does not replace the independent
-repeat, transition evidence, production Walle integration, or a physical 2x
-Retina capture.
+A passing v1 gate would have established an unseen source/color/sampler
+holdout at the centered 800-point, 1x, sRGB SDR scope. It would not have
+replaced the independent repeat, transition evidence, production Walle
+integration, or a physical 2x Retina capture.
 
 ### Opened regular-source calibration
 
@@ -3099,6 +3100,46 @@ expose the production shadow sample directly. CI fails closed unless every
 uniform byte, output size, FNV-1a, and Apple/custom byte comparison is exact.
 These are opened calibration oracles; they cannot replace the still-required
 fresh preregistered source holdout and unchanged repeat.
+
+Run `30683725080` returned all eight production-target sampler oracles with
+Apple's private fragment and the independent Metal fragment byte-identical.
+The shadow oracle proves the recovered shadow coordinate path across every
+perimeter output byte. The two nonconstant edge oracles reduce the remaining
+portable discrepancy to nine one-code pixels. Replaying the complete opened
+source corpus then exposed the dominant error: BGRA8Unorm clamps a negative
+fragment-source channel before fixed-function blending. Clamping only after
+the blend had allowed the regular shadow matrix's negative blue component to
+darken the destination. Modeling the attachment clamp removes every error in
+five source fields and leaves seven one-code output bytes across the other
+three.
+
+The production edge oracles localize those seven bytes to a single symmetric
+corner state. It is identified by binary16 shift word `0x57c9` and the
+unordered displacement-magnitude words `0x0f7b`/`0x0f9b`; no screen coordinate
+or source value is part of the rule. At that state the full BGRA8 production
+fragment observes the sample phases produced by moving the diagnostic shift
+two binary16 values downward. This measured production-target rule makes both
+nonconstant edge oracles exact over 8,388,608 bytes and makes all eight opened
+source outputs exact over 33,554,432 bytes on the independent AMD replay. The
+four historical clear/regular light/dark endpoint fixtures remain byte-exact.
+These opened results calibrate the model; they are not prospective proof.
+
+Source-differential schema 5 therefore retains the two v1 fields under an
+explicit `openedCalibration` record and freezes two new inputs before Apple
+renders them:
+
+- `prospective-opaque-seeded-v2`, SplitMix64 seed
+  `0x3c6ef372fe94f82b`; and
+- `prospective-premultiplied-seeded-v2`, SplitMix64 seed
+  `0xa54ff53a5f1d36f1` with the same integer premultiplication law.
+
+`Preregistration/exact-source-holdout-v2.json` seals every source-mip hash and
+all eight clear/regular, light/dark AMD output hashes. The schema-5 validator
+requires all ten source interventions, keeps the v1 diagnostics and
+production oracles as opened calibration evidence, and compares only the v2
+fields against the frozen predictions. Passing the v2 run followed by an
+unchanged repeat is required before this fixed 1x endpoint scope is called
+reproducible.
 
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.

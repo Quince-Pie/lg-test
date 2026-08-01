@@ -6,7 +6,7 @@ on:
     paths:
       - .github/workflows/introspect.yml
       - Analysis/validate_exact_source_holdout.py
-      - Preregistration/exact-source-holdout-v1.json
+      - Preregistration/exact-source-holdout-v2.json
       - Sources/GlassIntrospect/**
 
 concurrency:
@@ -655,14 +655,14 @@ jobs:
         if: always()
         run: |
           cp \
-            Preregistration/exact-source-holdout-v1.json \
+            Preregistration/exact-source-holdout-v2.json \
             introspection/exact-source-holdout-preregistration.json
           cmp \
-            Preregistration/exact-source-holdout-v1.json \
+            Preregistration/exact-source-holdout-v2.json \
             introspection/exact-source-holdout-preregistration.json
           python3 Analysis/validate_exact_source_holdout.py \
             introspection \
-            Preregistration/exact-source-holdout-v1.json \
+            Preregistration/exact-source-holdout-v2.json \
             --material '${{ matrix.material }}' \
             --appearance '${{ matrix.appearance }}' \
             --output introspection/exact-source-holdout-validation.json

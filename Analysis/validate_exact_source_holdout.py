@@ -19,10 +19,20 @@ REQUIRED_PATTERNS = {
     "sampler-basis-level-one",
     "prospective-opaque-seeded-v1",
     "prospective-premultiplied-seeded-v1",
+    "prospective-opaque-seeded-v2",
+    "prospective-premultiplied-seeded-v2",
 }
-PROSPECTIVE_PATTERNS = {
+OPENED_CALIBRATION_PATTERNS = {
     "prospective-opaque-seeded-v1",
     "prospective-premultiplied-seeded-v1",
+}
+PROSPECTIVE_PATTERNS = {
+    "prospective-opaque-seeded-v2",
+    "prospective-premultiplied-seeded-v2",
+}
+PROSPECTIVE_SEEDS = {
+    "prospective-opaque-seeded-v2": "0x3c6ef372fe94f82b",
+    "prospective-premultiplied-seeded-v2": "0xa54ff53a5f1d36f1",
 }
 PRODUCTION_ORACLE_PATTERNS = {
     "opaque-coordinate-hash",
@@ -265,6 +275,16 @@ def validate(
         is False,
         "preregistration does not exclude Apple output",
     )
+    require(
+        set(preregistration.get("scope", {}).get("patterns", []))
+        == PROSPECTIVE_PATTERNS,
+        "preregistration prospective inventory differs",
+    )
+    require(
+        preregistration.get("generator", {}).get("seeds")
+        == PROSPECTIVE_SEEDS,
+        "preregistration prospective seeds differ",
+    )
 
     source_differential = (
         runtime.get("carendererEvidence", {})
@@ -277,14 +297,20 @@ def validate(
         for record in source_differential.get("records", [])
         if isinstance(record, dict)
     }
+    calibration = source_differential.get("openedCalibration", {})
     prospective = source_differential.get("prospectiveHoldout", {})
-    require(source_differential.get("schemaVersion") == 4, "schema differs")
+    require(source_differential.get("schemaVersion") == 5, "schema differs")
     require(source_differential.get("executed") is True, "probe did not execute")
     require(
         source_differential.get("fragmentTextureIndex") == 3,
         "source texture index differs",
     )
     require(set(records) == REQUIRED_PATTERNS, "source inventory differs")
+    require(
+        set(calibration.get("patterns", []))
+        == OPENED_CALIBRATION_PATTERNS,
+        "runtime opened calibration inventory differs",
+    )
     require(
         prospective.get("status") == "preregistered-before-apple-capture",
         "runtime holdout status differs",
@@ -294,7 +320,16 @@ def validate(
         "runtime prospective inventory differs",
     )
     require(
-        set(prospective.get("regularDiagnosticTraces", []))
+        prospective.get("opaqueSeed")
+        == PROSPECTIVE_SEEDS["prospective-opaque-seeded-v2"]
+        and prospective.get("premultipliedSeed")
+        == PROSPECTIVE_SEEDS[
+            "prospective-premultiplied-seeded-v2"
+        ],
+        "runtime prospective seeds differ",
+    )
+    require(
+        set(calibration.get("regularDiagnosticTraces", []))
         == {
             specification[0]
             for specification in REGULAR_DIAGNOSTIC_TRACES.values()
@@ -302,12 +337,12 @@ def validate(
         "runtime regular diagnostic inventory differs",
     )
     require(
-        set(prospective.get("regularProductionSamplerOraclePatterns", []))
+        set(calibration.get("regularProductionSamplerOraclePatterns", []))
         == PRODUCTION_ORACLE_PATTERNS,
         "runtime production sampler oracle pattern inventory differs",
     )
     require(
-        set(prospective.get("regularProductionSamplerOracles", []))
+        set(calibration.get("regularProductionSamplerOracles", []))
         == set(PRODUCTION_ORACLE_EDITS),
         "runtime production sampler oracle inventory differs",
     )
@@ -335,7 +370,7 @@ def validate(
                 record[implementation]["output"],
                 description=f"{pattern} {implementation} output",
             )
-        if material == "regular" and pattern in PROSPECTIVE_PATTERNS:
+        if material == "regular" and pattern in OPENED_CALIBRATION_PATTERNS:
             diagnostic_hashes[pattern] = {}
             for field, (
                 trace_name,
@@ -460,6 +495,7 @@ def validate(
         "preregistrationSha256": sha256_file(preregistration_path),
         "runtimeSha256": sha256_file(runtime_path),
         "prospective": prospective_results,
+        "openedCalibrationDiagnosticTraceSha256": diagnostic_hashes,
         "productionSamplerOracleSha256": production_oracle_hashes,
         "allAppleMetalAndFrozenGlslOutputsExact": True,
     }

@@ -93,12 +93,13 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
             },
             "carendererEvidence": {"exactPassReplay": {
                 "independentGlassReplay": {"sourceTextureDifferential": {
-                    "schemaVersion": 4,
+                    "schemaVersion": 5,
                     "executed": True,
                     "fragmentTextureIndex": 3,
-                    "prospectiveHoldout": {
-                        "status": "preregistered-before-apple-capture",
-                        "patterns": sorted(validator.PROSPECTIVE_PATTERNS),
+                    "openedCalibration": {
+                        "patterns": sorted(
+                            validator.OPENED_CALIBRATION_PATTERNS
+                        ),
                         "regularDiagnosticTraces": sorted(
                             specification[0]
                             for specification in (
@@ -112,6 +113,16 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
                             validator.PRODUCTION_ORACLE_EDITS
                         ),
                     },
+                    "prospectiveHoldout": {
+                        "status": "preregistered-before-apple-capture",
+                        "patterns": sorted(validator.PROSPECTIVE_PATTERNS),
+                        "opaqueSeed": validator.PROSPECTIVE_SEEDS[
+                            "prospective-opaque-seeded-v2"
+                        ],
+                        "premultipliedSeed": validator.PROSPECTIVE_SEEDS[
+                            "prospective-premultiplied-seeded-v2"
+                        ],
+                    },
                     "records": records,
                 }}
             }},
@@ -122,7 +133,11 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
         self.preregistration.write_text(json.dumps({
             "liquidGlassUnseenSourceHoldoutSchemaVersion": 1,
             "status": "preregistered-before-apple-capture",
-            "scope": {"appleOutputAvailableDuringPrediction": False},
+            "scope": {
+                "appleOutputAvailableDuringPrediction": False,
+                "patterns": sorted(validator.PROSPECTIVE_PATTERNS),
+            },
+            "generator": {"seeds": validator.PROSPECTIVE_SEEDS},
             "sources": preregistered_sources,
             "predictions": preregistered_predictions,
         }), encoding="utf-8")
@@ -135,7 +150,7 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
             "independentGlassReplay"
         ]["sourceTextureDifferential"]["records"]
         for record in records:
-            if record["name"] in validator.PROSPECTIVE_PATTERNS:
+            if record["name"] in validator.OPENED_CALIBRATION_PATTERNS:
                 for field, (
                     trace_name,
                     pixel_format,
@@ -219,12 +234,52 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
             appearance="light",
         )
         self.assertTrue(report["allAppleMetalAndFrozenGlslOutputsExact"])
-        self.assertEqual(report["patternCount"], 8)
+        self.assertEqual(report["patternCount"], 10)
 
     def test_rejects_tampered_prospective_output(self) -> None:
-        path = self.capture / "prospective-opaque-seeded-v1-output.raw"
+        path = self.capture / "prospective-opaque-seeded-v2-output.raw"
         path.write_bytes(b"tampered")
         with self.assertRaisesRegex(ValueError, "byte count differs"):
+            validator.validate(
+                self.capture,
+                self.preregistration,
+                material="clear",
+                appearance="light",
+            )
+
+    def test_rejects_changed_preregistered_seed(self) -> None:
+        preregistration = json.loads(
+            self.preregistration.read_text(encoding="utf-8")
+        )
+        preregistration["generator"]["seeds"][
+            "prospective-opaque-seeded-v2"
+        ] = "0x0000000000000000"
+        self.preregistration.write_text(
+            json.dumps(preregistration), encoding="utf-8"
+        )
+        with self.assertRaisesRegex(
+            ValueError,
+            "preregistration prospective seeds differ",
+        ):
+            validator.validate(
+                self.capture,
+                self.preregistration,
+                material="clear",
+                appearance="light",
+            )
+
+    def test_rejects_changed_runtime_seed(self) -> None:
+        runtime_path = self.capture / "runtime.json"
+        runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
+        prospective = runtime["carendererEvidence"]["exactPassReplay"][
+            "independentGlassReplay"
+        ]["sourceTextureDifferential"]["prospectiveHoldout"]
+        prospective["opaqueSeed"] = "0x0000000000000000"
+        runtime_path.write_text(json.dumps(runtime), encoding="utf-8")
+        with self.assertRaisesRegex(
+            ValueError,
+            "runtime prospective seeds differ",
+        ):
             validator.validate(
                 self.capture,
                 self.preregistration,
@@ -256,9 +311,9 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
             material="regular",
             appearance="light",
         )
-        diagnostics = report["prospective"][
+        diagnostics = report["openedCalibrationDiagnosticTraceSha256"][
             "prospective-opaque-seeded-v1"
-        ]["regularDiagnosticTraceSha256"]
+        ]
         self.assertEqual(
             set(diagnostics),
             {

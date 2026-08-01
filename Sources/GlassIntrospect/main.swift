@@ -8879,6 +8879,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "prospective-opaque-seeded-v1"
         case prospectivePremultipliedSeeded =
             "prospective-premultiplied-seeded-v1"
+        case prospectiveOpaqueSeededV2 =
+            "prospective-opaque-seeded-v2"
+        case prospectivePremultipliedSeededV2 =
+            "prospective-premultiplied-seeded-v2"
     }
 
     private struct GlassSDFModeIntervention {
@@ -9048,6 +9052,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
         case .prospectivePremultipliedSeeded:
             return seededTexel(
                 seed: 0xbb67ae8584caa73b,
+                premultiplied: true)
+        case .prospectiveOpaqueSeededV2:
+            return seededTexel(
+                seed: 0x3c6ef372fe94f82b,
+                premultiplied: false)
+        case .prospectivePremultipliedSeededV2:
+            return seededTexel(
+                seed: 0xa54ff53a5f1d36f1,
                 premultiplied: true)
         }
     }
@@ -9419,10 +9431,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             "source-\(pattern.rawValue)-sample",
                         outputDirectory: outputDirectory)
             }
-            let isProspective =
+            let needsCalibrationTraces =
                 pattern == .prospectiveOpaqueSeeded
                 || pattern == .prospectivePremultipliedSeeded
-            if isProspective && source.mipmapLevelCount > 2 {
+            if needsCalibrationTraces && source.mipmapLevelCount > 2 {
                 let detailedTraces = [
                     ("edgeSampleTrace", "edge-sample"),
                     ("shadowSampleTrace", "shadow-sample"),
@@ -9524,19 +9536,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
         }
         return [
-            "schemaVersion": 4,
+            "schemaVersion": 5,
             "executed": true,
             "fragmentTextureIndex": 3,
-            "prospectiveHoldout": [
-                "status": "preregistered-before-apple-capture",
+            "openedCalibration": [
                 "patterns": [
                     HeldOutGlassSourcePattern
                         .prospectiveOpaqueSeeded.rawValue,
                     HeldOutGlassSourcePattern
                         .prospectivePremultipliedSeeded.rawValue,
                 ],
-                "opaqueSeed": "0x6a09e667f3bcc909",
-                "premultipliedSeed": "0xbb67ae8584caa73b",
                 "regularDiagnosticTraces": [
                     "edge-sample",
                     "shadow-sample",
@@ -9550,6 +9559,17 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     oraclePatterns.map(\.rawValue).sorted(),
                 "regularProductionSamplerOracles":
                     oracleInterventions.map(\.name),
+            ],
+            "prospectiveHoldout": [
+                "status": "preregistered-before-apple-capture",
+                "patterns": [
+                    HeldOutGlassSourcePattern
+                        .prospectiveOpaqueSeededV2.rawValue,
+                    HeldOutGlassSourcePattern
+                        .prospectivePremultipliedSeededV2.rawValue,
+                ],
+                "opaqueSeed": "0x3c6ef372fe94f82b",
+                "premultipliedSeed": "0xa54ff53a5f1d36f1",
             ],
             "source": [
                 "pixelFormat": source.pixelFormat.rawValue,
