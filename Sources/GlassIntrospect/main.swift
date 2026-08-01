@@ -9111,6 +9111,419 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
     }
 
+    private func isFinalHighlightPipeline(
+        _ state: MTLRenderPipelineState
+    ) -> Bool {
+        state.label?.contains("_A2Xghfc") == true
+    }
+
+    private struct FinalHighlightSelection {
+        let drawIndex: Int
+        let pipeline: MTLRenderPipelineState
+        let uniformBuffer: MTLBuffer
+        let uniformOffset: Int
+    }
+
+    private func finalHighlightSelection(
+        in commands: [ReplayCommand]
+    ) -> FinalHighlightSelection? {
+        var currentPipeline: MTLRenderPipelineState?
+        var activeUniformBuffer: MTLBuffer?
+        var activeUniformOffset = 0
+        var selection: FinalHighlightSelection?
+
+        for (index, command) in commands.enumerated() {
+            switch command {
+            case .pipeline(let pipeline):
+                currentPipeline = pipeline
+            case .fragmentBuffer(
+                let buffer,
+                let offset,
+                let bufferIndex
+            ):
+                if bufferIndex == 1 {
+                    activeUniformBuffer = buffer
+                    activeUniformOffset = offset
+                }
+            case .fragmentBufferOffset(let offset, let bufferIndex):
+                if bufferIndex == 1 {
+                    activeUniformOffset = offset
+                }
+            default:
+                break
+            }
+
+            guard replayCommandIsDraw(command),
+                  let currentPipeline,
+                  isFinalHighlightPipeline(currentPipeline),
+                  let activeUniformBuffer
+            else {
+                continue
+            }
+            selection = FinalHighlightSelection(
+                drawIndex: index,
+                pipeline: currentPipeline,
+                uniformBuffer: activeUniformBuffer,
+                uniformOffset: activeUniformOffset)
+        }
+        return selection
+    }
+
+    private func isolatedFinalHighlightCommands(
+        _ commands: [ReplayCommand],
+        selection: FinalHighlightSelection,
+        pipeline: MTLRenderPipelineState,
+        uniformBuffer: MTLBuffer
+    ) -> [ReplayCommand] {
+        var result: [ReplayCommand] = []
+        for command in commands[...selection.drawIndex] {
+            if replayCommandIsDraw(command) {
+                continue
+            }
+            if case .pipeline = command {
+                continue
+            }
+            guard case .fragmentBuffer(
+                    let buffer,
+                    let offset,
+                    let index
+                  ) = command,
+                  let buffer,
+                  ObjectIdentifier(buffer)
+                    == ObjectIdentifier(selection.uniformBuffer)
+            else {
+                result.append(command)
+                continue
+            }
+            result.append(.fragmentBuffer(
+                uniformBuffer,
+                offset,
+                index))
+        }
+        result.append(.pipeline(pipeline))
+        result.append(commands[selection.drawIndex])
+        return result
+    }
+
+    private func replayFinalHighlightAlphaTrace(
+        pass: ReplayPass,
+        queue: MTLCommandQueue,
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let selection = finalHighlightSelection(
+                in: pass.commands)
+        else {
+            return [
+                "executed": false,
+                "reason": "final Apple highlight draw is unavailable",
+            ]
+        }
+        guard selection.uniformBuffer.storageMode != .private else {
+            return [
+                "executed": false,
+                "reason": "final highlight uniform buffer is private",
+            ]
+        }
+        lock.lock()
+        let capturedDescriptor = pipelineDescriptors[
+            ObjectIdentifier(selection.pipeline)
+        ]?.copy() as? MTLRenderPipelineDescriptor
+        lock.unlock()
+        guard let capturedDescriptor,
+              capturedDescriptor.colorAttachments[0]?.pixelFormat
+                == .bgra8Unorm,
+              capturedDescriptor.colorAttachments[1]?.pixelFormat
+                == .rgba16Float,
+              let originalTarget =
+                pass.descriptor.colorAttachments[0]?.texture
+        else {
+            return [
+                "executed": false,
+                "reason":
+                    "captured final highlight descriptor differs",
+            ]
+        }
+
+        let device = originalTarget.device
+        guard let uniformClone = device.makeBuffer(
+                length: selection.uniformBuffer.length,
+                options: .storageModeShared)
+        else {
+            return [
+                "executed": false,
+                "reason": "final highlight uniform clone failed",
+            ]
+        }
+        memcpy(
+            uniformClone.contents(),
+            selection.uniformBuffer.contents(),
+            selection.uniformBuffer.length)
+
+        let matrixOffset = selection.uniformOffset + 0x60
+        let matrixEnd = matrixOffset + 6 * 4 * MemoryLayout<UInt16>.size
+        guard matrixOffset >= 0,
+              matrixEnd <= uniformClone.length
+        else {
+            return [
+                "executed": false,
+                "reason": "final highlight matrix edit exceeds buffer",
+            ]
+        }
+        let originalMatrix = Data(
+            bytes: selection.uniformBuffer.contents().advanced(
+                by: matrixOffset),
+            count: matrixEnd - matrixOffset)
+        let alphaOracleWords: [UInt16] = [
+            0x0000, 0x0000, 0x0000, 0x0000,
+            0x0000, 0x0000, 0x0000, 0x0000,
+            0x0000, 0x0000, 0x0000, 0x0000,
+            0x0000, 0x0000, 0x0000, 0x3c00,
+            0x3c00, 0x3c00, 0x3c00, 0x0000,
+            0x0000, 0x0000, 0x0000, 0x0000,
+        ].map(\.littleEndian)
+        alphaOracleWords.withUnsafeBytes { bytes in
+            if let source = bytes.baseAddress {
+                memcpy(
+                    uniformClone.contents().advanced(
+                        by: matrixOffset),
+                    source,
+                    bytes.count)
+            }
+        }
+
+        let rebuiltDescriptor = capturedDescriptor.copy()
+            as? MTLRenderPipelineDescriptor
+        let floatDescriptor = capturedDescriptor.copy()
+            as? MTLRenderPipelineDescriptor
+        guard let rebuiltDescriptor,
+              let floatDescriptor
+        else {
+            return [
+                "executed": false,
+                "reason": "final highlight descriptor copy failed",
+            ]
+        }
+        floatDescriptor.label =
+            "lg.apple-final-highlight-alpha-rgba16float"
+        floatDescriptor.colorAttachments[0]?.pixelFormat = .rgba16Float
+
+        let rebuiltPipeline: MTLRenderPipelineState
+        let floatPipeline: MTLRenderPipelineState
+        do {
+            rebuiltPipeline = try device.makeRenderPipelineState(
+                descriptor: rebuiltDescriptor)
+            floatPipeline = try device.makeRenderPipelineState(
+                descriptor: floatDescriptor)
+        } catch {
+            return [
+                "executed": false,
+                "reason": error.localizedDescription,
+                "capturedDescriptor":
+                    pipelineDescriptorRecord(capturedDescriptor),
+                "floatDescriptor":
+                    pipelineDescriptorRecord(floatDescriptor),
+            ]
+        }
+
+        func render(
+            name: String,
+            pipeline: MTLRenderPipelineState,
+            pixelFormat: MTLPixelFormat
+        ) -> [String: Any] {
+            let targetDescriptor = MTLTextureDescriptor
+                .texture2DDescriptor(
+                    pixelFormat: pixelFormat,
+                    width: originalTarget.width,
+                    height: originalTarget.height,
+                    mipmapped: false)
+            targetDescriptor.storageMode = .shared
+            targetDescriptor.usage = [.renderTarget, .shaderRead]
+            let auxiliaryDescriptor = MTLTextureDescriptor
+                .texture2DDescriptor(
+                    pixelFormat: .rgba16Float,
+                    width: originalTarget.width,
+                    height: originalTarget.height,
+                    mipmapped: false)
+            auxiliaryDescriptor.storageMode = .shared
+            auxiliaryDescriptor.usage = [.renderTarget, .shaderRead]
+            guard let target = device.makeTexture(
+                    descriptor: targetDescriptor),
+                  let auxiliary = device.makeTexture(
+                    descriptor: auxiliaryDescriptor),
+                  let commandBuffer = queue.makeCommandBuffer()
+            else {
+                return [
+                    "executed": false,
+                    "reason": "final highlight trace allocation failed",
+                ]
+            }
+
+            if pixelFormat == .bgra8Unorm {
+                var pixels = [UInt8](
+                    repeating: 0,
+                    count:
+                        originalTarget.width
+                        * originalTarget.height * 4)
+                for offset in stride(
+                    from: 3,
+                    to: pixels.count,
+                    by: 4)
+                {
+                    pixels[offset] = 255
+                }
+                pixels.withUnsafeBytes { bytes in
+                    target.replace(
+                        region: MTLRegionMake2D(
+                            0,
+                            0,
+                            originalTarget.width,
+                            originalTarget.height),
+                        mipmapLevel: 0,
+                        withBytes: bytes.baseAddress!,
+                        bytesPerRow: originalTarget.width * 4)
+                }
+            } else {
+                var pixels = [UInt16](
+                    repeating: 0,
+                    count:
+                        originalTarget.width
+                        * originalTarget.height * 4)
+                for offset in stride(
+                    from: 3,
+                    to: pixels.count,
+                    by: 4)
+                {
+                    pixels[offset] = UInt16(0x3c00).littleEndian
+                }
+                pixels.withUnsafeBytes { bytes in
+                    target.replace(
+                        region: MTLRegionMake2D(
+                            0,
+                            0,
+                            originalTarget.width,
+                            originalTarget.height),
+                        mipmapLevel: 0,
+                        withBytes: bytes.baseAddress!,
+                        bytesPerRow: originalTarget.width * 8)
+                }
+            }
+
+            let descriptor = MTLRenderPassDescriptor()
+            descriptor.colorAttachments[0]?.texture = target
+            descriptor.colorAttachments[0]?.loadAction = .load
+            descriptor.colorAttachments[0]?.storeAction = .store
+            descriptor.colorAttachments[1]?.texture = auxiliary
+            descriptor.colorAttachments[1]?.loadAction = .clear
+            descriptor.colorAttachments[1]?.storeAction = .store
+            descriptor.colorAttachments[1]?.clearColor =
+                MTLClearColorMake(0.0, 0.0, 0.0, 0.0)
+            descriptor.renderTargetArrayLength =
+                pass.descriptor.renderTargetArrayLength
+            descriptor.defaultRasterSampleCount =
+                pass.descriptor.defaultRasterSampleCount
+            guard let encoder = commandBuffer.makeRenderCommandEncoder(
+                    descriptor: descriptor)
+            else {
+                return [
+                    "executed": false,
+                    "reason": "final highlight trace encoder failed",
+                ]
+            }
+            let commands = isolatedFinalHighlightCommands(
+                pass.commands,
+                selection: selection,
+                pipeline: pipeline,
+                uniformBuffer: uniformClone)
+            let summary = encodeReplayCommands(
+                commands,
+                with: encoder)
+            encoder.endEncoding()
+            commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
+            guard commandBuffer.status == .completed else {
+                return [
+                    "executed": false,
+                    "reason":
+                        commandBuffer.error?.localizedDescription
+                            ?? "final highlight trace replay failed",
+                    "commandBufferStatus":
+                        commandBuffer.status.rawValue,
+                ]
+            }
+            return [
+                "executed": true,
+                "encodedCommandCount": summary.encodedCommandCount,
+                "output": carendererOutputSnapshot(
+                    target,
+                    commandQueue: queue,
+                    capture:
+                        "\(capture)-final-highlight-alpha-\(name)",
+                    outputDirectory: outputDirectory),
+                "auxiliaryOutput": carendererOutputSnapshot(
+                    auxiliary,
+                    commandQueue: queue,
+                    capture:
+                        "\(capture)-final-highlight-alpha-\(name)"
+                        + "-auxiliary",
+                    outputDirectory: outputDirectory),
+            ]
+        }
+
+        let capturedBGRA = render(
+            name: "captured-bgra8",
+            pipeline: selection.pipeline,
+            pixelFormat: .bgra8Unorm)
+        let rebuiltBGRA = render(
+            name: "rebuilt-bgra8",
+            pipeline: rebuiltPipeline,
+            pixelFormat: .bgra8Unorm)
+        let exactHalf = render(
+            name: "rebuilt-rgba16float",
+            pipeline: floatPipeline,
+            pixelFormat: .rgba16Float)
+        let comparison = compareReplaySnapshots(
+            reference: capturedBGRA,
+            candidate: rebuiltBGRA,
+            outputDirectory: outputDirectory)
+        return [
+            "schemaVersion": 1,
+            "executed":
+                capturedBGRA["executed"] as? Bool == true
+                && rebuiltBGRA["executed"] as? Bool == true
+                && exactHalf["executed"] as? Bool == true,
+            "capturedAppleFunctionUnmodified": true,
+            "selectedLastA2XghfcDraw": true,
+            "drawIndex": selection.drawIndex,
+            "uniformBufferLength": selection.uniformBuffer.length,
+            "uniformOffset": selection.uniformOffset,
+            "uniformIntervention": [
+                "purpose":
+                    "map Apple highlight alpha directly to RGB",
+                "recordOffset": 0x60,
+                "byteCount": alphaOracleWords.count
+                    * MemoryLayout<UInt16>.size,
+                "originalHex": originalMatrix.map {
+                    String(format: "%02x", $0)
+                }.joined(),
+                "replacementHalfWords": alphaOracleWords.map {
+                    String(
+                        format:
+                            "0x%04x",
+                        UInt16(littleEndian: $0))
+                },
+            ],
+            "capturedDescriptor":
+                pipelineDescriptorRecord(capturedDescriptor),
+            "floatDescriptor":
+                pipelineDescriptorRecord(floatDescriptor),
+            "capturedBGRA8": capturedBGRA,
+            "rebuiltBGRA8": rebuiltBGRA,
+            "capturedVsRebuiltBGRA8": comparison,
+            "exactHalfAlpha": exactHalf,
+        ]
+    }
+
     private func glassUniformBinding(
         in commands: [ReplayCommand]
     ) -> (buffer: MTLBuffer, recordOffsets: [Int])? {
@@ -10654,6 +11067,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
         if capture == "carenderer-local-backdrop" {
             result["postGlassDestinationSweep"] =
                 replayPostGlassDestinationSweep(
+                    pass: pass,
+                    queue: queue,
+                    capture: capture,
+                    outputDirectory: outputDirectory)
+            result["finalHighlightAlphaTrace"] =
+                replayFinalHighlightAlphaTrace(
                     pass: pass,
                     queue: queue,
                     capture: capture,

@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - .github/workflows/highlight-pipeline-introspect.yml
+      - Sources/GlassIntrospect/**
 
 concurrency:
   group: highlight-pipeline-introspect-${{ github.ref }}
@@ -94,8 +95,10 @@ jobs:
         continue-on-error: true
         run: |
           python3 - <<'PY'
+          import hashlib
           import json
           import pathlib
+          import struct
 
           root = pathlib.Path("introspection")
           runtime = json.loads(
@@ -105,6 +108,11 @@ jobs:
               "carendererLocalBackdropEvidence"
           ]["render"]["exactPassReplay"][
               "postGlassDestinationSweep"
+          ]
+          alpha_trace = runtime[
+              "carendererLocalBackdropEvidence"
+          ]["render"]["exactPassReplay"][
+              "finalHighlightAlphaTrace"
           ]
           if (
               sweep.get("executed") is not True
@@ -135,14 +143,81 @@ jobs:
                       raise SystemExit(
                           f"{path} size differs: {path.stat().st_size}"
                       )
+          if (
+              alpha_trace.get("executed") is not True
+              or alpha_trace.get("capturedAppleFunctionUnmodified")
+                  is not True
+              or alpha_trace.get("selectedLastA2XghfcDraw") is not True
+          ):
+              raise SystemExit(
+                  f"alpha-trace contract differs: {alpha_trace}"
+              )
+          comparison = alpha_trace["capturedVsRebuiltBGRA8"]
+          if (
+              comparison.get("compared") is not True
+              or comparison.get("mismatchedByteCount") != 0
+              or comparison.get("maximumChannelDelta") != 0
+          ):
+              raise SystemExit(
+                  "same-format Apple pipeline rebuild is not exact: "
+                  f"{comparison}"
+              )
+          alpha_records = (
+              (alpha_trace["capturedBGRA8"], 1024 * 1024 * 4),
+              (alpha_trace["rebuiltBGRA8"], 1024 * 1024 * 4),
+              (alpha_trace["exactHalfAlpha"], 1024 * 1024 * 8),
+          )
+          for replay, expected in alpha_records:
+              if replay.get("executed") is not True:
+                  raise SystemExit(f"alpha replay failed: {replay}")
+              output = replay["output"]
+              path = root / output["rawFile"]
+              if path.stat().st_size != expected:
+                  raise SystemExit(
+                      f"{path} size differs: {path.stat().st_size}"
+                  )
+          alpha_output = alpha_trace["exactHalfAlpha"]["output"]
+          if alpha_output.get("pixelFormat") != 115:
+              raise SystemExit(
+                  f"alpha output format differs: {alpha_output}"
+              )
+          alpha_path = root / alpha_output["rawFile"]
+          alpha_bytes = alpha_path.read_bytes()
+          alpha_words = []
+          alpha_channel_words = set()
+          for red, green, blue, _alpha in struct.iter_unpack(
+              "<4H", alpha_bytes
+          ):
+              if red != green or red != blue:
+                  raise SystemExit(
+                      "RGBA16F alpha trace does not have equal RGB words"
+                  )
+              if red:
+                  alpha_words.append(red)
+                  alpha_channel_words.add(red)
+          if len(alpha_words) < 1000 or len(alpha_channel_words) < 100:
+              raise SystemExit(
+                  "RGBA16F alpha trace lacks the expected active field: "
+                  f"pixels={len(alpha_words)} "
+                  f"values={len(alpha_channel_words)}"
+              )
           (root / "highlight-pipeline-validation.json").write_text(
               json.dumps(
                   {
-                      "schemaVersion": 1,
+                      "schemaVersion": 2,
                       "exactContract": True,
                       "caseCount": 8,
                       "capturedApplePipelinesUnmodified": True,
                       "auxiliaryPixelFormat": 115,
+                      "capturedVsRebuiltBGRA8MismatchedBytes": 0,
+                      "exactHalfAlphaPixelFormat": 115,
+                      "exactHalfAlphaActivePixelCount": len(alpha_words),
+                      "exactHalfAlphaUniqueWordCount":
+                          len(alpha_channel_words),
+                      "exactHalfAlphaMinimumWord": min(alpha_words),
+                      "exactHalfAlphaMaximumWord": max(alpha_words),
+                      "exactHalfAlphaSHA256":
+                          hashlib.sha256(alpha_bytes).hexdigest(),
                   },
                   indent=2,
                   sort_keys=True,
@@ -164,6 +239,7 @@ jobs:
             introspection/runtime.json
             introspection/highlight-pipeline-validation.json
             introspection/carenderer-local-backdrop-post-glass-*
+            introspection/carenderer-local-backdrop-final-highlight-alpha-*
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
