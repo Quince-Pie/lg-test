@@ -554,6 +554,90 @@ def accepted_baseline_slopes(
     )
 
 
+def tile_local_position(case: ProbeCase, record_index: int, axis: str) -> float:
+    x, y = case.sample(record_index)
+    coordinate = x if axis == "x" else y
+    return float(coordinate % 32)
+
+
+def accepted_case_baseline_slopes(
+    records: RecordSequence,
+    case: ProbeCase,
+    *,
+    witness_index: int,
+    span_pixels: int,
+    axis: str,
+) -> tuple[int, ...]:
+    """Recover a safe slope from the one valid same-tile sample pair.
+
+    The frozen line layout intended two pairs, but its arithmetic progression
+    emits tile-local positions 0, 30, 28, and 26 in three tiles.  Only records
+    zero and one therefore share a tile and a primitive.  Keeping this audit in
+    the validator prevents that post-capture layout defect from being hidden by
+    a fitted constant.
+    """
+
+    if len(records) != LINE_SAMPLE_COUNT:
+        raise ValueError("boundary record count differs")
+    first_pair = records[:2]
+    positions = tuple(
+        tile_local_position(case, index, axis) for index in range(2)
+    )
+    if positions != (0.0, 30.0) or first_pair[0][2] != first_pair[1][2]:
+        raise ValueError(f"{case.name} has no valid baseline pair")
+    direct = float32_bits(float32_value(DELTA_BITS[witness_index]) / span_pixels)
+    row = (7 + witness_index) * 4
+    components = (0, 1) if axis == "x" else (2, 3)
+    observations = [
+        observation
+        for record_index, record in enumerate(first_pair)
+        for observation in (
+            (
+                positions[record_index],
+                int(record[row + components[0]]),
+            ),
+            (
+                positions[record_index] + PULL_OFFSET,
+                int(record[row + components[1]]),
+            ),
+        )
+    ]
+    return tuple(
+        candidate
+        for candidate in range(
+            direct - CANDIDATE_RADIUS_FLOAT_ULPS,
+            direct + CANDIDATE_RADIUS_FLOAT_ULPS + 1,
+        )
+        if factorization.top_left.factorized.shared_plane_accepts_slope(
+            candidate,
+            observations=observations,
+        )
+    )
+
+
+def record_matches_slope(
+    record: Sequence[int],
+    case: ProbeCase,
+    record_index: int,
+    *,
+    witness_index: int,
+    axis: str,
+    slope_bits: int,
+) -> bool:
+    """Test one pull pair with its actual independent tile constant."""
+
+    row = (7 + witness_index) * 4
+    components = (0, 1) if axis == "x" else (2, 3)
+    position = tile_local_position(case, record_index, axis)
+    return factorization.top_left.factorized.shared_plane_accepts_slope(
+        slope_bits,
+        observations=[
+            (position, int(record[row + components[0]])),
+            (position + PULL_OFFSET, int(record[row + components[1]])),
+        ],
+    )
+
+
 def slope_matches(
     records: RecordSequence, *, witness_index: int, axis: str, slope_bits: int
 ) -> bool:
@@ -614,19 +698,30 @@ def validate_boundaries(data: bytes) -> tuple[JsonObject, bool]:
         axis = "x" if group.plane in {"left", "right"} else "y"
         span = group.viewport + group.viewport // 4
         safe = cases[group.safe_case]
+        safe_records = case_records(data, safe)
+        sample_positions = [
+            tile_local_position(safe, index, axis)
+            for index in range(LINE_SAMPLE_COUNT)
+        ]
+        sample_tiles = [
+            (safe.sample(index)[0] if axis == "x" else safe.sample(index)[1])
+            // 32
+            for index in range(LINE_SAMPLE_COUNT)
+        ]
         baseline_slopes: list[int] = []
+        baseline_multiplicities: list[int] = []
         for witness_index in range(WITNESS_COUNT):
-            accepted = accepted_baseline_slopes(
-                case_records(data, safe),
+            accepted = accepted_case_baseline_slopes(
+                safe_records,
+                safe,
                 witness_index=witness_index,
                 span_pixels=span,
                 axis=axis,
             )
-            if len(accepted) != 1:
-                raise ValueError(
-                    f"{group.name} witness {witness_index} baseline is not unique"
-                )
-            baseline_slopes.append(accepted[0])
+            baseline_multiplicities.append(len(accepted))
+            baseline_slopes.append(
+                accepted[0] if len(accepted) == 1 else 0xFFFF_FFFF
+            )
         match_counts: list[int] = []
         edge_values: list[int] = []
         for case_index in range(
@@ -641,13 +736,17 @@ def validate_boundaries(data: bytes) -> tuple[JsonObject, bool]:
             observed = case_records(data, case)
             match_counts.append(
                 sum(
-                    slope_matches(
-                        observed,
+                    baseline_slopes[witness_index] != 0xFFFF_FFFF
+                    and record_matches_slope(
+                        record,
+                        case,
+                        record_index,
                         witness_index=witness_index,
                         axis=axis,
                         slope_bits=baseline_slopes[witness_index],
                     )
                     for witness_index in range(WITNESS_COUNT)
+                    for record_index, record in enumerate(observed)
                 )
             )
         lower_plane = group.plane in {"left", "top"}
@@ -657,8 +756,12 @@ def validate_boundaries(data: bytes) -> tuple[JsonObject, bool]:
             else edge <= group.candidate_edge_fixed
             for edge in edge_values
         ]
-        observed_matches = [count == WITNESS_COUNT for count in match_counts]
-        candidate_gate = observed_matches == expected_matches
+        expected_count = WITNESS_COUNT * LINE_SAMPLE_COUNT
+        observed_matches = [count == expected_count for count in match_counts]
+        candidate_gate = (
+            baseline_multiplicities == [1] * WITNESS_COUNT
+            and observed_matches == expected_matches
+        )
         all_groups_match &= candidate_gate
         changed_edges = [
             edge for edge, matches in zip(edge_values, observed_matches) if not matches
@@ -666,6 +769,27 @@ def validate_boundaries(data: bytes) -> tuple[JsonObject, bool]:
         unchanged_edges = [
             edge for edge, matches in zip(edge_values, observed_matches) if matches
         ]
+        inside_failures = sum(
+            expected and not observed
+            for expected, observed in zip(expected_matches, observed_matches)
+        )
+        outside_collisions = sum(
+            not expected and observed
+            for expected, observed in zip(expected_matches, observed_matches)
+        )
+        candidate_index = edge_values.index(group.candidate_edge_fixed)
+        outward_step = -1 if lower_plane else 1
+        outward_observations = []
+        for distance in (1, 2):
+            edge = group.candidate_edge_fixed + outward_step * distance
+            index = edge_values.index(edge)
+            outward_observations.append(
+                {
+                    "distanceFixed": distance,
+                    "matchingPullPairs": match_counts[index],
+                    "allBaselineSlopesAccepted": observed_matches[index],
+                }
+            )
         reports[group.name] = {
             "axis": axis,
             "plane": group.plane,
@@ -673,11 +797,24 @@ def validate_boundaries(data: bytes) -> tuple[JsonObject, bool]:
             "candidateEdgeFixed": group.candidate_edge_fixed,
             "candidateEdgePixels": group.candidate_edge_fixed / UNITS_PER_PIXEL,
             "baselineSlopeBits": baseline_slopes,
+            "baselineCandidateMultiplicities": baseline_multiplicities,
+            "safeSampleTileLocalPositions": sample_positions,
+            "safeSampleTiles": sample_tiles,
+            "sameTilePairCount": 1,
+            "preregisteredSameTilePairCount": 2,
+            "samplingLayoutMatchesPreregisteredDescription": False,
             "allWitnessMatchCaseCount": sum(observed_matches),
             "partiallyMatchingCaseCount": sum(
-                0 < count < WITNESS_COUNT for count in match_counts
+                0 < count < expected_count for count in match_counts
             ),
             "zeroWitnessMatchCaseCount": sum(count == 0 for count in match_counts),
+            "matchingPullPairCountAtCandidate": match_counts[candidate_index],
+            "expectedMatchingPullPairCount": expected_count,
+            "insideCaseCount": sum(expected_matches),
+            "insideFailureCount": inside_failures,
+            "outsideCaseCount": len(expected_matches) - sum(expected_matches),
+            "outsideObservationalCollisionCount": outside_collisions,
+            "firstTwoOutwardSteps": outward_observations,
             "nearestChangedEdgeFixed": (
                 max(changed_edges) if lower_plane else min(changed_edges)
             ),
@@ -711,6 +848,8 @@ def validate(root: Path) -> JsonObject:
         },
         "conclusions": {
             "normalizedGuardBoundaryEstablished": boundary_gate,
+            "preregisteredTwoBaselineDescriptionFalsified": True,
+            "captureIntegrityEstablishedIndependentlyOfBoundaryHypothesis": True,
             "generatedTopologyCaptured": True,
             "clipArithmeticEstablished": False,
             "endToEndLiquidGlassParityEstablished": False,

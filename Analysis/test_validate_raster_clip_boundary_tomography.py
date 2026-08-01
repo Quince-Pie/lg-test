@@ -61,6 +61,29 @@ class RasterClipBoundaryTomographyTests(unittest.TestCase):
                 self.assertLess(top, y * boundary.UNITS_PER_PIXEL + 128)
                 self.assertLess(y * boundary.UNITS_PER_PIXEL + 128, bottom)
 
+    def test_frozen_boundary_sampler_has_one_same_tile_pair(self) -> None:
+        cases, groups = boundary.case_catalog()
+        for group in groups:
+            case = cases[group.safe_case]
+            axis = "x" if group.plane in {"left", "right"} else "y"
+            coordinates = [
+                case.sample(index)[0 if axis == "x" else 1]
+                for index in range(boundary.LINE_SAMPLE_COUNT)
+            ]
+            self.assertEqual(
+                [coordinate % 32 for coordinate in coordinates],
+                [0, 30, 28, 26],
+            )
+            self.assertEqual(
+                [coordinate // 32 for coordinate in coordinates],
+                [
+                    coordinates[0] // 32,
+                    coordinates[0] // 32,
+                    coordinates[0] // 32 + 1,
+                    coordinates[0] // 32 + 2,
+                ],
+            )
+
     def test_synthetic_safe_planes_uniquely_recover_each_witness(self) -> None:
         arithmetic = boundary.factorization.top_left.arithmetic
         for span in (320, 640):

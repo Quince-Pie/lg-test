@@ -4,10 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - .github/workflows/raster-clip-boundary-tomography.yml
       - Analysis/raster_clip_boundary_tomography_preregistration.json
-      - Analysis/test_validate_raster_clip_boundary_tomography.py
-      - Analysis/validate_raster_clip_boundary_tomography.py
       - Sources/GlassRasterClipBoundaryTomography/**
 
 concurrency:

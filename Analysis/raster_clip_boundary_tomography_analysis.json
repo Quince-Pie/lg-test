@@ -1,0 +1,697 @@
+{
+  "boundaryDiscovery": {
+    "allGroupsRejectWithinTwoFixedSteps": true,
+    "fixedStepPixels": 0.00390625,
+    "groups": {
+      "v256-bottom": {
+        "allWitnessMatchCaseCount": 342,
+        "axis": "y",
+        "baselineCandidateMultiplicities": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "baselineSlopeBits": [
+          984965179,
+          979063747,
+          980609709,
+          982349465,
+          983660507,
+          984433488,
+          985480461,
+          986405013
+        ],
+        "candidateEdgeFixed": 81920,
+        "candidateEdgePixels": 320.0,
+        "candidateNDCOnePointFiveGate": false,
+        "caseCount": 639,
+        "expectedMatchingPullPairCount": 32,
+        "firstTwoOutwardSteps": [
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 1,
+            "matchingPullPairs": 20
+          },
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 2,
+            "matchingPullPairs": 30
+          }
+        ],
+        "insideCaseCount": 320,
+        "insideFailureCount": 0,
+        "matchingPullPairCountAtCandidate": 32,
+        "nearestChangedEdgeFixed": 81921,
+        "nearestUnchangedEdgeFixed": 98304,
+        "outsideCaseCount": 319,
+        "outsideObservationalCollisionCount": 22,
+        "partiallyMatchingCaseCount": 297,
+        "plane": "bottom",
+        "preregisteredSameTilePairCount": 2,
+        "safeSampleTileLocalPositions": [
+          0.0,
+          30.0,
+          28.0,
+          26.0
+        ],
+        "safeSampleTiles": [
+          3,
+          3,
+          4,
+          5
+        ],
+        "sameTilePairCount": 1,
+        "samplingLayoutMatchesPreregisteredDescription": false,
+        "zeroWitnessMatchCaseCount": 0
+      },
+      "v256-left": {
+        "allWitnessMatchCaseCount": 333,
+        "axis": "x",
+        "baselineCandidateMultiplicities": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "baselineSlopeBits": [
+          984965180,
+          979063748,
+          980609709,
+          982349465,
+          983660508,
+          984433488,
+          985480461,
+          986405013
+        ],
+        "candidateEdgeFixed": -16384,
+        "candidateEdgePixels": -64.0,
+        "candidateNDCOnePointFiveGate": false,
+        "caseCount": 639,
+        "expectedMatchingPullPairCount": 32,
+        "firstTwoOutwardSteps": [
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 1,
+            "matchingPullPairs": 25
+          },
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 2,
+            "matchingPullPairs": 27
+          }
+        ],
+        "insideCaseCount": 320,
+        "insideFailureCount": 0,
+        "matchingPullPairCountAtCandidate": 32,
+        "nearestChangedEdgeFixed": -16385,
+        "nearestUnchangedEdgeFixed": -28672,
+        "outsideCaseCount": 319,
+        "outsideObservationalCollisionCount": 13,
+        "partiallyMatchingCaseCount": 306,
+        "plane": "left",
+        "preregisteredSameTilePairCount": 2,
+        "safeSampleTileLocalPositions": [
+          0.0,
+          30.0,
+          28.0,
+          26.0
+        ],
+        "safeSampleTiles": [
+          3,
+          3,
+          4,
+          5
+        ],
+        "sameTilePairCount": 1,
+        "samplingLayoutMatchesPreregisteredDescription": false,
+        "zeroWitnessMatchCaseCount": 0
+      },
+      "v256-right": {
+        "allWitnessMatchCaseCount": 327,
+        "axis": "x",
+        "baselineCandidateMultiplicities": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "baselineSlopeBits": [
+          984965180,
+          979063748,
+          980609709,
+          982349465,
+          983660508,
+          984433488,
+          985480461,
+          986405013
+        ],
+        "candidateEdgeFixed": 81920,
+        "candidateEdgePixels": 320.0,
+        "candidateNDCOnePointFiveGate": false,
+        "caseCount": 639,
+        "expectedMatchingPullPairCount": 32,
+        "firstTwoOutwardSteps": [
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 1,
+            "matchingPullPairs": 20
+          },
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 2,
+            "matchingPullPairs": 26
+          }
+        ],
+        "insideCaseCount": 320,
+        "insideFailureCount": 0,
+        "matchingPullPairCountAtCandidate": 32,
+        "nearestChangedEdgeFixed": 81921,
+        "nearestUnchangedEdgeFixed": 94208,
+        "outsideCaseCount": 319,
+        "outsideObservationalCollisionCount": 7,
+        "partiallyMatchingCaseCount": 312,
+        "plane": "right",
+        "preregisteredSameTilePairCount": 2,
+        "safeSampleTileLocalPositions": [
+          0.0,
+          30.0,
+          28.0,
+          26.0
+        ],
+        "safeSampleTiles": [
+          3,
+          3,
+          4,
+          5
+        ],
+        "sameTilePairCount": 1,
+        "samplingLayoutMatchesPreregisteredDescription": false,
+        "zeroWitnessMatchCaseCount": 0
+      },
+      "v256-top": {
+        "allWitnessMatchCaseCount": 370,
+        "axis": "y",
+        "baselineCandidateMultiplicities": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "baselineSlopeBits": [
+          984965179,
+          979063747,
+          980609709,
+          982349465,
+          983660507,
+          984433488,
+          985480461,
+          986405013
+        ],
+        "candidateEdgeFixed": -16384,
+        "candidateEdgePixels": -64.0,
+        "candidateNDCOnePointFiveGate": false,
+        "caseCount": 639,
+        "expectedMatchingPullPairCount": 32,
+        "firstTwoOutwardSteps": [
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 1,
+            "matchingPullPairs": 26
+          },
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 2,
+            "matchingPullPairs": 30
+          }
+        ],
+        "insideCaseCount": 320,
+        "insideFailureCount": 0,
+        "matchingPullPairCountAtCandidate": 32,
+        "nearestChangedEdgeFixed": -16385,
+        "nearestUnchangedEdgeFixed": -32768,
+        "outsideCaseCount": 319,
+        "outsideObservationalCollisionCount": 50,
+        "partiallyMatchingCaseCount": 269,
+        "plane": "top",
+        "preregisteredSameTilePairCount": 2,
+        "safeSampleTileLocalPositions": [
+          0.0,
+          30.0,
+          28.0,
+          26.0
+        ],
+        "safeSampleTiles": [
+          3,
+          3,
+          4,
+          5
+        ],
+        "sameTilePairCount": 1,
+        "samplingLayoutMatchesPreregisteredDescription": false,
+        "zeroWitnessMatchCaseCount": 0
+      },
+      "v512-bottom": {
+        "allWitnessMatchCaseCount": 411,
+        "axis": "y",
+        "baselineCandidateMultiplicities": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "baselineSlopeBits": [
+          976576571,
+          970675139,
+          972221101,
+          973960857,
+          975271899,
+          976044880,
+          977091853,
+          978016405
+        ],
+        "candidateEdgeFixed": 163840,
+        "candidateEdgePixels": 640.0,
+        "candidateNDCOnePointFiveGate": false,
+        "caseCount": 767,
+        "expectedMatchingPullPairCount": 32,
+        "firstTwoOutwardSteps": [
+          {
+            "allBaselineSlopesAccepted": true,
+            "distanceFixed": 1,
+            "matchingPullPairs": 32
+          },
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 2,
+            "matchingPullPairs": 18
+          }
+        ],
+        "insideCaseCount": 384,
+        "insideFailureCount": 0,
+        "matchingPullPairCountAtCandidate": 32,
+        "nearestChangedEdgeFixed": 163842,
+        "nearestUnchangedEdgeFixed": 196608,
+        "outsideCaseCount": 383,
+        "outsideObservationalCollisionCount": 27,
+        "partiallyMatchingCaseCount": 356,
+        "plane": "bottom",
+        "preregisteredSameTilePairCount": 2,
+        "safeSampleTileLocalPositions": [
+          0.0,
+          30.0,
+          28.0,
+          26.0
+        ],
+        "safeSampleTiles": [
+          7,
+          7,
+          8,
+          9
+        ],
+        "sameTilePairCount": 1,
+        "samplingLayoutMatchesPreregisteredDescription": false,
+        "zeroWitnessMatchCaseCount": 0
+      },
+      "v512-left": {
+        "allWitnessMatchCaseCount": 405,
+        "axis": "x",
+        "baselineCandidateMultiplicities": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "baselineSlopeBits": [
+          976576572,
+          970675140,
+          972221101,
+          973960857,
+          975271900,
+          976044880,
+          977091853,
+          978016405
+        ],
+        "candidateEdgeFixed": -32768,
+        "candidateEdgePixels": -128.0,
+        "candidateNDCOnePointFiveGate": false,
+        "caseCount": 767,
+        "expectedMatchingPullPairCount": 32,
+        "firstTwoOutwardSteps": [
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 1,
+            "matchingPullPairs": 28
+          },
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 2,
+            "matchingPullPairs": 29
+          }
+        ],
+        "insideCaseCount": 384,
+        "insideFailureCount": 0,
+        "matchingPullPairCountAtCandidate": 32,
+        "nearestChangedEdgeFixed": -32769,
+        "nearestUnchangedEdgeFixed": -60160,
+        "outsideCaseCount": 383,
+        "outsideObservationalCollisionCount": 21,
+        "partiallyMatchingCaseCount": 362,
+        "plane": "left",
+        "preregisteredSameTilePairCount": 2,
+        "safeSampleTileLocalPositions": [
+          0.0,
+          30.0,
+          28.0,
+          26.0
+        ],
+        "safeSampleTiles": [
+          7,
+          7,
+          8,
+          9
+        ],
+        "sameTilePairCount": 1,
+        "samplingLayoutMatchesPreregisteredDescription": false,
+        "zeroWitnessMatchCaseCount": 0
+      },
+      "v512-right": {
+        "allWitnessMatchCaseCount": 390,
+        "axis": "x",
+        "baselineCandidateMultiplicities": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "baselineSlopeBits": [
+          976576572,
+          970675140,
+          972221101,
+          973960857,
+          975271900,
+          976044880,
+          977091853,
+          978016405
+        ],
+        "candidateEdgeFixed": 163840,
+        "candidateEdgePixels": 640.0,
+        "candidateNDCOnePointFiveGate": false,
+        "caseCount": 767,
+        "expectedMatchingPullPairCount": 32,
+        "firstTwoOutwardSteps": [
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 1,
+            "matchingPullPairs": 16
+          },
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 2,
+            "matchingPullPairs": 19
+          }
+        ],
+        "insideCaseCount": 384,
+        "insideFailureCount": 0,
+        "matchingPullPairCountAtCandidate": 32,
+        "nearestChangedEdgeFixed": 163841,
+        "nearestUnchangedEdgeFixed": 188416,
+        "outsideCaseCount": 383,
+        "outsideObservationalCollisionCount": 6,
+        "partiallyMatchingCaseCount": 377,
+        "plane": "right",
+        "preregisteredSameTilePairCount": 2,
+        "safeSampleTileLocalPositions": [
+          0.0,
+          30.0,
+          28.0,
+          26.0
+        ],
+        "safeSampleTiles": [
+          7,
+          7,
+          8,
+          9
+        ],
+        "sameTilePairCount": 1,
+        "samplingLayoutMatchesPreregisteredDescription": false,
+        "zeroWitnessMatchCaseCount": 0
+      },
+      "v512-top": {
+        "allWitnessMatchCaseCount": 527,
+        "axis": "y",
+        "baselineCandidateMultiplicities": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "baselineSlopeBits": [
+          976576571,
+          970675139,
+          972221101,
+          973960857,
+          975271899,
+          976044880,
+          977091853,
+          978016405
+        ],
+        "candidateEdgeFixed": -32768,
+        "candidateEdgePixels": -128.0,
+        "candidateNDCOnePointFiveGate": false,
+        "caseCount": 767,
+        "expectedMatchingPullPairCount": 32,
+        "firstTwoOutwardSteps": [
+          {
+            "allBaselineSlopesAccepted": true,
+            "distanceFixed": 1,
+            "matchingPullPairs": 32
+          },
+          {
+            "allBaselineSlopesAccepted": false,
+            "distanceFixed": 2,
+            "matchingPullPairs": 31
+          }
+        ],
+        "insideCaseCount": 384,
+        "insideFailureCount": 0,
+        "matchingPullPairCountAtCandidate": 32,
+        "nearestChangedEdgeFixed": -32770,
+        "nearestUnchangedEdgeFixed": -65536,
+        "outsideCaseCount": 383,
+        "outsideObservationalCollisionCount": 143,
+        "partiallyMatchingCaseCount": 240,
+        "plane": "top",
+        "preregisteredSameTilePairCount": 2,
+        "safeSampleTileLocalPositions": [
+          0.0,
+          30.0,
+          28.0,
+          26.0
+        ],
+        "safeSampleTiles": [
+          7,
+          7,
+          8,
+          9
+        ],
+        "sameTilePairCount": 1,
+        "samplingLayoutMatchesPreregisteredDescription": false,
+        "zeroWitnessMatchCaseCount": 0
+      }
+    },
+    "insideFailureCount": 0,
+    "insideOrOnCandidateCaseCount": 2816,
+    "normalizedNDCOnePointFiveCandidateConsistent": true,
+    "outsideCaseCount": 2808,
+    "outsideObservationalCollisionCount": 289,
+    "outsideRejectedCaseCount": 2519,
+    "prospectivelyEstablished": false
+  },
+  "classification": "post-capture-clip-boundary-and-topology-discovery",
+  "clippedArithmeticCandidateModels": {
+    "bestSimpleCandidate": "guard27BitDown",
+    "bestSimpleCandidateMismatchCount": 164,
+    "exactModelSelected": false,
+    "mirroredLeftRightSlopeMismatchCount": 0,
+    "mirroredV256FineCoefficientCount": 2056,
+    "models": {
+      "guard27BitDown": {
+        "coefficientCount": 2056,
+        "exact": false,
+        "exactDistanceCount": 144,
+        "floatUlpErrorDistribution": {
+          "-1": 67,
+          "-2": 20,
+          "0": 1892,
+          "1": 74,
+          "2": 3
+        },
+        "matchCount": 1892,
+        "mismatchCount": 164
+      },
+      "guardBinary32ClipCancellation": {
+        "coefficientCount": 2056,
+        "exact": false,
+        "exactDistanceCount": 68,
+        "floatUlpErrorDistribution": {
+          "-1": 175,
+          "-2": 39,
+          "0": 1738,
+          "1": 88,
+          "2": 16
+        },
+        "matchCount": 1738,
+        "mismatchCount": 318
+      },
+      "guardExactRatioBinary32": {
+        "coefficientCount": 2056,
+        "exact": false,
+        "exactDistanceCount": 124,
+        "floatUlpErrorDistribution": {
+          "-1": 125,
+          "-2": 36,
+          "0": 1852,
+          "1": 42,
+          "2": 1
+        },
+        "matchCount": 1852,
+        "mismatchCount": 204
+      },
+      "viewportExactRatioBinary32": {
+        "coefficientCount": 2056,
+        "exact": false,
+        "exactDistanceCount": 8,
+        "floatUlpErrorDistribution": {
+          "-1": 446,
+          "-2": 27,
+          "0": 1274,
+          "1": 293,
+          "2": 16
+        },
+        "matchCount": 1274,
+        "mismatchCount": 782
+      }
+    }
+  },
+  "conclusions": {
+    "captureValidForAnalysis": true,
+    "clipArithmeticEstablished": false,
+    "endToEndLiquidGlassParityEstablished": false,
+    "generatedTopologyCorpusComplete": true,
+    "normalizedGuardCandidateStronglySupportedAsDiscovery": true,
+    "productionShaderChangeAuthorized": false,
+    "simpleClipArithmeticCandidatesFalsified": true,
+    "targetedClipArithmeticDiscriminatorRequired": true
+  },
+  "duplicateGeometryControl": {
+    "bitExactIgnoringIntentionalCaseIndex": true,
+    "comparedPayloadWordCount": 91568,
+    "differingPayloadWordCount": 0,
+    "geometryPairCount": 388,
+    "pairs": [
+      {
+        "differingPayloadWordCount": 0,
+        "geometryPairCount": 65,
+        "planes": [
+          "left",
+          "right"
+        ],
+        "recordPairCount": 260,
+        "viewport": 256
+      },
+      {
+        "differingPayloadWordCount": 0,
+        "geometryPairCount": 65,
+        "planes": [
+          "top",
+          "bottom"
+        ],
+        "recordPairCount": 260,
+        "viewport": 256
+      },
+      {
+        "differingPayloadWordCount": 0,
+        "geometryPairCount": 129,
+        "planes": [
+          "left",
+          "right"
+        ],
+        "recordPairCount": 516,
+        "viewport": 512
+      },
+      {
+        "differingPayloadWordCount": 0,
+        "geometryPairCount": 129,
+        "planes": [
+          "top",
+          "bottom"
+        ],
+        "recordPairCount": 516,
+        "viewport": 512
+      }
+    ],
+    "recordPairCount": 1552
+  },
+  "integrity": {
+    "basisCenterSumExactlyOneCount": 60676,
+    "builtinBarycentricSumExactlyOneCount": 124180,
+    "finiteFloatWordCount": 6954080,
+    "primitiveIdCounts": {
+      "0": 63502,
+      "1": 60678
+    }
+  },
+  "rasterClipBoundaryTomographyAnalysisSchemaVersion": 1,
+  "samplingAudit": {
+    "actualSameTilePairCount": 1,
+    "captureInvalidated": false,
+    "descriptionGateFalsified": true,
+    "preregisteredSameTilePairCount": 2,
+    "tileLocalPositions": [
+      0,
+      30,
+      28,
+      26
+    ]
+  },
+  "source": {
+    "ciCommit": "51636e834750e1346e3fb044e6874a89afb1dc16",
+    "ciRunId": 30676628218,
+    "manifestSha256": "5e13bf5e6c89732d339365e6415b14f6b9e1faed4e64ce888acfa94ac7e9abf9",
+    "preregistrationSha256": "0e0d03c0ee94aa4a23a84cd104211b3a53c69e2a900c7343d364aca863fa9b48",
+    "rawSha256": "486d227a49ab90a5744cf2dff827253b9e25effcaf3b7adaf5b0176d1e0527c8"
+  }
+}

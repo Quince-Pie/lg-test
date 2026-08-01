@@ -2832,10 +2832,44 @@ Two same-tile baselines and eight fresh centered ramps test every edge.
 The same artifact contains 37 dense generated-topology cases. Each sampled
 fragment records its original primitive ID, builtin barycentrics, a one-hot
 no-perspective basis at center and four pull positions, and eight independent
-X/Y ramp pairs. The 122,644 fixed records retain 29,803,200 raw bytes. This is
+X/Y ramp pairs. The 124,180 fixed records retain 29,803,200 raw bytes. This is
 discovery evidence: a clip arithmetic law derived from it cannot authorize a
 production shader change until the separately frozen end-to-end holdout gate
 passes bit for bit.
+
+Run 30676628218 (`51636e834750e1346e3fb044e6874a89afb1dc16`)
+completed that capture on the Apple Paravirtual device. Its manifest and raw
+SHA-256 values are
+`5e13bf5e6c89732d339365e6415b14f6b9e1faed4e64ce888acfa94ac7e9abf9`
+and
+`486d227a49ab90a5744cf2dff827253b9e25effcaf3b7adaf5b0176d1e0527c8`.
+All 124,180 headers, primitive IDs, and 6,954,080 floating-point words pass
+the independent integrity gate. The workflow was red because the validator
+aborted after an invalid sampling assumption, not because capture or build
+failed: the frozen arithmetic progression emitted tile-local positions
+`[0, 30, 28, 26]` in three tiles, so only the first pair—not both declared
+pairs—shares a 32-pixel tile. The repaired validator preserves that
+preregistered-description failure instead of weakening it after observation.
+
+`analyze_raster_clip_boundary_tomography.py` pins and replays the artifact.
+Across 388 geometries duplicated through opposing plane sweeps, all 91,568
+payload words are bit-identical after excluding only the intentional case-ID
+header. The one valid safe pair uniquely recovers all eight slopes in every
+group. All 2,816 cases inside or exactly on the NDC +/-1.5 candidate accept
+those slopes, with zero failures. Of 2,808 outside cases, 2,519 reject at least
+one slope; all eight groups reject within two 1/256-pixel steps. The 289
+outside collisions are expected observational ambiguity from the short pull
+baseline and prevent the original strict if-and-only-if gate from passing.
+
+The same report compares four explicit clipped-arithmetic candidates against
+2,056 uniquely recovered, mirrored 256-pixel X coefficients. The best simple
+candidate—guard-plane clipping with a downward 27-bit generated varying—still
+misses 164 coefficients. Exact-ratio binary32, binary32 cancellation, and
+viewport-plane variants miss 204, 318, and 782. Thus the capture strongly
+localizes the normalized guard decision and generated topology but does not
+identify the remaining clip-intersection/setup rounding law. A targeted probe
+must hold the post-clip geometry fixed while varying only the outside vertex;
+the final unseen image gate remains separate.
 
 ### Geometry-transfer introspection
 
