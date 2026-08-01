@@ -9281,7 +9281,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             0x0000, 0x0000, 0x0000, 0x3c00,
             0x3c00, 0x3c00, 0x3c00, 0x0000,
             0x0000, 0x0000, 0x0000, 0x0000,
-        ].map(\.littleEndian)
+        ].map { UInt16($0).littleEndian }
         alphaOracleWords.withUnsafeBytes { bytes in
             if let source = bytes.baseAddress {
                 memcpy(
