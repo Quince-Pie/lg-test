@@ -36,9 +36,10 @@ struct FragmentOutput {
     uint4 geometry [[color(1)]];
     uint4 key_a [[color(2)]];
     uint4 key_b [[color(3)]];
-    uint4 fill_a [[color(4)]];
+    uint4 compositor_a [[color(4)]];
     uint4 fill_b [[color(5)]];
     uint4 half_stages [[color(6)]];
+    uint4 compositor_b [[color(7)]];
 };
 
 inline uint pack_half_pair(half first, half second)
@@ -198,13 +199,16 @@ fragment FragmentOutput highlight_fragment(
     mapped = mapped + matrix_4;
     mapped.a = saturate(mapped.a);
     mapped.rgb = mapped.rgb * mapped.a;
+    const half4 mapped_stage = mapped;
     half4 source = mapped * highlight_alpha;
+    const half4 source_initial = source;
     half3 source_straight = source.rgb
         / max(source.a, replay_epsilon());
     source_straight = clamp(
         source_straight,
         half3(-0.75),
         half3(1.0));
+    const half3 source_straight_stage = source_straight;
     source.rgb = source_straight * source.a;
     half4 final_color =
         (half(1.0) - source.a) * destination + source;
@@ -226,11 +230,11 @@ fragment FragmentOutput highlight_fragment(
         as_type<uint>(key.directional_numerator),
         as_type<uint>(key.directional),
         as_type<uint>(key.alpha_float));
-    output.fill_a = uint4(
-        as_type<uint>(fill.normalized_distance),
-        as_type<uint>(fill.fade),
-        as_type<uint>(fill.leading_coverage),
-        as_type<uint>(fill.faded_coverage));
+    output.compositor_a = uint4(
+        pack_half_pair(mapped_stage.r, mapped_stage.g),
+        pack_half_pair(mapped_stage.b, mapped_stage.a),
+        pack_half_pair(source_initial.r, source_initial.g),
+        pack_half_pair(source_initial.b, source_initial.a));
     output.fill_b = uint4(
         as_type<uint>(fill.trailing_coverage),
         as_type<uint>(fill.directional_numerator),
@@ -241,6 +245,11 @@ fragment FragmentOutput highlight_fragment(
         pack_half_pair(highlight_alpha, source.a),
         pack_half_pair(final_color.r, final_color.g),
         pack_half_pair(final_color.b, final_color.a));
+    output.compositor_b = uint4(
+        pack_half_pair(source_straight_stage.r, source_straight_stage.g),
+        pack_half_pair(source_straight_stage.b, half(0.0)),
+        pack_half_pair(source.r, source.g),
+        pack_half_pair(source.b, source.a));
     return output;
 }
 """
@@ -357,7 +366,7 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
     descriptor.vertexFunction = vertex
     descriptor.fragmentFunction = fragment
     descriptor.colorAttachments[0]!.pixelFormat = .bgra8Unorm
-    for index in 1...6 {
+    for index in 1...7 {
         descriptor.colorAttachments[index]!.pixelFormat = .rgba32Uint
     }
     let pipeline = try device.makeRenderPipelineState(descriptor: descriptor)
@@ -387,7 +396,7 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
             bytesPerRow: captureWidth * 4)
     }
     var traces: [MTLTexture] = []
-    for _ in 1...6 {
+    for _ in 1...7 {
         traces.append(try texture(
             device: device,
             pixelFormat: .rgba32Uint,
@@ -443,9 +452,10 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
         "geometry",
         "key-a",
         "key-b",
-        "fill-a",
+        "compositor-a",
         "fill-b",
         "half-stages",
+        "compositor-b",
     ]
     var files = [CaptureFile(
         name: "destination-bgra8.raw",
@@ -478,7 +488,7 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
         ])
     }
     return [
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "probe": "apple-metal-key-fill-vibrant-arithmetic",
         "width": captureWidth,
         "height": captureHeight,
@@ -508,6 +518,20 @@ private func capture(outputDirectory: URL) throws -> [String: Any] {
         "destination": [
             "pattern": "three independent hash32 channels; alpha 255",
             "hashConstants": ["243f6a88", "85a308d3", "13198a2e"],
+        ],
+        "compositorTraceLayout": [
+            "compositor-a": [
+                "mapped.rg",
+                "mapped.ba",
+                "source-initial.rg",
+                "source-initial.ba",
+            ],
+            "compositor-b": [
+                "source-straight.rg",
+                "source-straight.b+zero",
+                "source-final.rg",
+                "source-final.ba",
+            ],
         ],
         "files": records,
         "interpretation": [
