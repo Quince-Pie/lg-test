@@ -18,7 +18,7 @@ class RasterTileNumeratorTests(unittest.TestCase):
             preregistration["capture"]["layout"],
             numerator.layout_metadata(),
         )
-        self.assertEqual(numerator.raw_bytes(), 786_432)
+        self.assertEqual(numerator.raw_bytes(), 1_572_864)
         self.assertEqual(
             numerator.layout_metadata(),
             {
@@ -26,12 +26,13 @@ class RasterTileNumeratorTests(unittest.TestCase):
                 "endpointCount": 16,
                 "axisCount": 2,
                 "primitiveCount": 2,
+                "edgeCount": 2,
                 "tileCount": 32,
-                "slotCount": 128,
+                "slotCount": 256,
                 "recordBytes": 16,
-                "recordCount": 49_152,
-                "rawBytes": 786_432,
-                "expectedRecordCount": 32_144,
+                "recordCount": 98_304,
+                "rawBytes": 1_572_864,
+                "expectedRecordCount": 63_280,
                 "caseWordsSha256": (
                     "966c0bf7ec9e7e611feb29468163009eba67bc5b12cadc18ba4c59e1260c9008"
                 ),
@@ -39,33 +40,33 @@ class RasterTileNumeratorTests(unittest.TestCase):
                     "ba0e93cdee2a5f19b63f7a01560da3fa431911dbf37e6775f3950802d4c10bf7"
                 ),
                 "sampleWordsSha256": (
-                    "36f12f51ccb2ba9f0c7d7739a213532ad7b6baa70898e00195264096b7d39c09"
+                    "04c82be1775ee7b77652360e9e0e49f6b191a3f40ef8e0b8e989ab32661f3ec3"
                 ),
                 "samplesPerCase": [
-                    32,
-                    68,
-                    84,
-                    104,
-                    112,
-                    58,
-                    62,
                     60,
-                    62,
-                    66,
-                    74,
-                    88,
-                    96,
-                    96,
-                    67,
-                    98,
-                    96,
-                    90,
-                    88,
-                    108,
-                    108,
-                    113,
-                    113,
-                    66,
+                    132,
+                    164,
+                    204,
+                    220,
+                    114,
+                    122,
+                    118,
+                    122,
+                    130,
+                    146,
+                    174,
+                    190,
+                    190,
+                    131,
+                    192,
+                    190,
+                    176,
+                    174,
+                    214,
+                    214,
+                    224,
+                    224,
+                    130,
                 ],
             },
         )
@@ -80,6 +81,7 @@ class RasterTileNumeratorTests(unittest.TestCase):
                 self.assertEqual(coordinate // numerator.TILE_SIZE, sample.tile)
                 self.assertIn(sample.axis, range(numerator.AXIS_COUNT))
                 self.assertIn(sample.primitive, range(numerator.PRIMITIVE_COUNT))
+                self.assertIn(sample.edge, range(numerator.EDGE_COUNT))
                 local = coordinate - (
                     capture_case.originX if sample.axis == 0 else capture_case.originY
                 )
@@ -113,7 +115,7 @@ class RasterTileNumeratorTests(unittest.TestCase):
                 )
         self.assertEqual(
             prediction_digest.hexdigest(),
-            "886de06237d6c028d0e96ae1585723655de0e98a190ff72fa22223c7dd9ec954",
+            "d6191ad0f3e8c5c17d4f3dffb4c31204e080ce719e9848d0f38e57a4fbcb883f",
         )
 
     def test_synthetic_complete_capture_passes_and_undeclared_write_fails(self) -> None:
@@ -199,8 +201,8 @@ class RasterTileNumeratorTests(unittest.TestCase):
             write_manifest()
             report = numerator.validate(root)
             self.assertTrue(report["prospectiveControlExact"])
-            self.assertEqual(report["expectedRecords"], 32_144)
-            self.assertEqual(report["discoveryRecords"], 32_080)
+            self.assertEqual(report["expectedRecords"], 63_280)
+            self.assertEqual(report["discoveryRecords"], 63_160)
 
             numerator.RECORD.pack_into(raw, 0, 0, 0, 0, 0)
             raw_path.write_bytes(raw)
@@ -222,8 +224,8 @@ class RasterTileNumeratorTests(unittest.TestCase):
             str(numerator.layout_metadata()["sampleWordsSha256"]),
         ):
             self.assertIn(value, source)
-        self.assertIn('layout["rawBytes"] as? Int == 786_432', source)
-        self.assertIn('layout["expectedRecordCount"] as? Int == 32_144', source)
+        self.assertIn('layout["rawBytes"] as? Int == 1_572_864', source)
+        self.assertIn('layout["expectedRecordCount"] as? Int == 63_280', source)
         self.assertIn(
             r"results[\(slotCount)u * input.recordIndex + input.outputSlot]",
             source,

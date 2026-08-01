@@ -1,4 +1,4 @@
-name: Measure Apple Metal per-tile plane numerator
+name: Measure Apple Metal paired-edge tile numerator
 
 on:
   workflow_dispatch:
@@ -30,12 +30,12 @@ jobs:
         with:
           python-version: "3.14"
 
-      - name: Test frozen per-tile numerator contract
+      - name: Test frozen paired-edge numerator contract
         run: |
           python3 -m unittest discover -s Analysis \
             -p 'test_validate_raster_tile_numerator.py' -v
 
-      - name: Build per-tile numerator probe
+      - name: Build paired-edge numerator probe
         id: build
         continue-on-error: true
         run: |
@@ -47,7 +47,7 @@ jobs:
             -o glass-raster-tile-numerator 2>&1 |
             tee raster-tile-numerator/build.log
 
-      - name: Capture per-tile numerator records
+      - name: Capture paired-edge numerator records
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true

@@ -3160,19 +3160,28 @@ matches 698,317 of 698,317 sampled positive-primitive records, which localizes
 the residual to signed endpoint translation and primitive-specific constant
 composition rather than the glass optics.
 
-`raster-tile-numerator.yml` is the preregistered discovery probe for that
-remaining arithmetic. Its 24 geometries cross width, height, origin, tile
-phase, large displacement, and near-boundary dimensions with 16 endpoint
-pairs: forward, reversed, signed, near-equal, constant, and the exact opened
-Apple source-coordinate endpoints. For both triangle primitives it records
-pull-0, pull-15/16, center, and derivative bits at every safely covered
-32-pixel tile independently on the X and Y axes. The frozen layout contains
-32,144 required records in a 786,432-byte sentinel-filled stream.
+Run `30689521255` passed the schema-1 probe and retained all 32,144 required
+records. The formerly unresolved 896-point Y-plane record directly identifies
+tile constant `0x3f400000` (`0.75`) and rejects the previous one-ULP-higher
+candidate `0x3f400001`. Applying only that evidence correction makes the five
+opened geometry image captures exact. Modeling center interpolation with its
+directed iterator rounding and a 28-bit centered numerator explains all 6,816
+opened calibration records and 32,138 of 32,144 records overall. The six
+remaining discovery records occur only in 47- and 79-pixel thin geometries.
+
+`raster-tile-numerator.yml` schema 2 is the preregistered paired-edge follow-up.
+It preserves the same 24 geometries and 16 endpoint pairs, but records both the
+lower and upper safely covered pixel in each 32-pixel tile for both axes and
+triangle primitives. The approximately 31-pixel separation identifies local
+pull slope independently from the centered numerator; schema 1's single pixel
+provided only a 15/16-pixel pull span. The frozen schema-2 layout contains
+63,280 required records in a 1,572,864-byte sentinel-filled stream.
 
 The centered 256-square with zero-to-one and one-to-zero ramps is a
-prospective power-of-two control; its pull bits must match the frozen fused
-prediction exactly. All other records remain discovery evidence and are
-uploaded even when a future arithmetic candidate fails. The capture cannot
+prospective power-of-two control at both retained tile edges; its pull bits
+must match the frozen fused prediction exactly. All other records remain
+discovery evidence and are uploaded even when a future arithmetic candidate
+fails. The capture cannot
 authorize a production shader change: a recovered law must first pass a new
 unseen Walle geometry/scale image holdout, an unchanged repeat, and separate
 dynamic-transition gates without regressing any protected output byte.

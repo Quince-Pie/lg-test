@@ -46,17 +46,20 @@ private struct SamplePosition {
     let axis: Int
     let primitive: Int
     let tile: Int
+    let edge: Int
     let x: Int
     let y: Int
 
     var slot: Int {
-        axis * primitiveCount * tileCount + primitive * tileCount + tile
+        (
+            axis * primitiveCount * tileCount + primitive * tileCount + tile
+        ) * edgeCount + edge
     }
 }
 
-private let schemaVersion = 1
-private let rigVersion = "metal-raster-tile-numerator-1.0.0"
-private let role = "discovery-with-prospective-power-two-tile-controls"
+private let schemaVersion = 2
+private let rigVersion = "metal-raster-tile-numerator-2.0.0"
+private let role = "paired-edge-discovery-with-prospective-power-two-controls"
 private let targetWidth = 1_024
 private let targetHeight = 1_024
 private let viewportWidth = 1_024
@@ -65,10 +68,11 @@ private let tileSize = 32
 private let tileCount = targetWidth / tileSize
 private let axisCount = 2
 private let primitiveCount = 2
-private let slotCount = axisCount * primitiveCount * tileCount
+private let edgeCount = 2
+private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
 private let recordBytes = 16
 private let preregistrationSha256 =
-    "d04daad3b297e65d5076b07ab5466189b47f58f793a5e6e24cbd4769044d8271"
+    "150dd157b90ff6798ac087e47d39f78cc4e68dbd016b3aff3a096d1db31dbae1"
 
 private let cases = [
     CaptureCase(
@@ -199,37 +203,41 @@ private func samplePositions(captureCase: CaptureCase) -> [SamplePosition] {
             for tile in firstTile...lastTile {
                 let lower = max(origin, tile * tileSize)
                 let upper = min(origin + extent - 1, tile * tileSize + tileSize - 1)
-                let local = primitive == 0 ? upper - origin : lower - origin
-                let covered: Bool
-                let x: Int
-                let y: Int
-                if axis == 0 {
-                    covered = primitive == 0
-                        ? captureCase.height * (2 * local + 1) > captureCase.width
-                        : captureCase.height * (2 * local + 1)
-                            < (2 * captureCase.height - 1) * captureCase.width
-                    x = captureCase.originX + local
-                    y = primitive == 0
-                        ? captureCase.originY + captureCase.height - 1
-                        : captureCase.originY
-                } else {
-                    covered = primitive == 0
-                        ? captureCase.width * (2 * local + 1) > captureCase.height
-                        : captureCase.width * (2 * local + 1)
-                            < (2 * captureCase.width - 1) * captureCase.height
-                    x = primitive == 0
-                        ? captureCase.originX + captureCase.width - 1
-                        : captureCase.originX
-                    y = captureCase.originY + local
+                for (edge, coordinate) in [lower, upper].enumerated() {
+                    if edge == 1 && upper == lower { continue }
+                    let local = coordinate - origin
+                    let covered: Bool
+                    let x: Int
+                    let y: Int
+                    if axis == 0 {
+                        covered = primitive == 0
+                            ? captureCase.height * (2 * local + 1) > captureCase.width
+                            : captureCase.height * (2 * local + 1)
+                                < (2 * captureCase.height - 1) * captureCase.width
+                        x = coordinate
+                        y = primitive == 0
+                            ? captureCase.originY + captureCase.height - 1
+                            : captureCase.originY
+                    } else {
+                        covered = primitive == 0
+                            ? captureCase.width * (2 * local + 1) > captureCase.height
+                            : captureCase.width * (2 * local + 1)
+                                < (2 * captureCase.width - 1) * captureCase.height
+                        x = primitive == 0
+                            ? captureCase.originX + captureCase.width - 1
+                            : captureCase.originX
+                        y = coordinate
+                    }
+                    if !covered { continue }
+                    result.append(SamplePosition(
+                        axis: axis,
+                        primitive: primitive,
+                        tile: tile,
+                        edge: edge,
+                        x: x,
+                        y: y
+                    ))
                 }
-                if !covered { continue }
-                result.append(SamplePosition(
-                    axis: axis,
-                    primitive: primitive,
-                    tile: tile,
-                    x: x,
-                    y: y
-                ))
             }
         }
     }
@@ -349,6 +357,7 @@ private func sampleWords() -> [UInt32] {
         samplePositions(captureCase: captureCase).flatMap {
             [
                 UInt32(caseIndex), UInt32($0.axis), UInt32($0.primitive), UInt32($0.tile),
+                UInt32($0.edge),
                 UInt32($0.x), UInt32($0.y), UInt32($0.slot),
             ]
         }
@@ -362,6 +371,7 @@ private func layoutManifest() -> [String: Any] {
         "endpointCount": endpoints.count,
         "axisCount": axisCount,
         "primitiveCount": primitiveCount,
+        "edgeCount": edgeCount,
         "tileCount": tileCount,
         "slotCount": slotCount,
         "recordBytes": recordBytes,
@@ -379,9 +389,9 @@ private func verifyFrozenLayout() {
     let layout = layoutManifest()
     precondition(cases.count == 24)
     precondition(endpoints.count == 16)
-    precondition(layout["recordCount"] as? Int == 49_152)
-    precondition(layout["rawBytes"] as? Int == 786_432)
-    precondition(layout["expectedRecordCount"] as? Int == 32_144)
+    precondition(layout["recordCount"] as? Int == 98_304)
+    precondition(layout["rawBytes"] as? Int == 1_572_864)
+    precondition(layout["expectedRecordCount"] as? Int == 63_280)
     precondition(
         layout["caseWordsSha256"] as? String
             == "966c0bf7ec9e7e611feb29468163009eba67bc5b12cadc18ba4c59e1260c9008"
@@ -392,7 +402,7 @@ private func verifyFrozenLayout() {
     )
     precondition(
         layout["sampleWordsSha256"] as? String
-            == "36f12f51ccb2ba9f0c7d7739a213532ad7b6baa70898e00195264096b7d39c09"
+            == "04c82be1775ee7b77652360e9e0e49f6b191a3f40ef8e0b8e989ab32661f3ec3"
     )
 }
 
@@ -620,7 +630,7 @@ private func run(outputDirectory: URL) throws {
             "x": [[0.0, 0.5], [0.9375, 0.5]],
             "y": [[0.5, 0.0], [0.5, 0.9375]],
         ],
-        "ordering": "case-major,endpoint-major,axis-primitive-tile-slot-major",
+        "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major",
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

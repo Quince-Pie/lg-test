@@ -13,9 +13,9 @@ from typing import Any
 
 type JsonObject = dict[str, Any]
 
-SCHEMA_VERSION = 1
-RIG_VERSION = "metal-raster-tile-numerator-1.0.0"
-ROLE = "discovery-with-prospective-power-two-tile-controls"
+SCHEMA_VERSION = 2
+RIG_VERSION = "metal-raster-tile-numerator-2.0.0"
+ROLE = "paired-edge-discovery-with-prospective-power-two-controls"
 TARGET_WIDTH = 1_024
 TARGET_HEIGHT = 1_024
 VIEWPORT_WIDTH = 1_024
@@ -24,14 +24,15 @@ TILE_SIZE = 32
 TILE_COUNT = TARGET_WIDTH // TILE_SIZE
 AXIS_COUNT = 2
 PRIMITIVE_COUNT = 2
-SLOT_COUNT = AXIS_COUNT * PRIMITIVE_COUNT * TILE_COUNT
+EDGE_COUNT = 2
+SLOT_COUNT = AXIS_COUNT * PRIMITIVE_COUNT * TILE_COUNT * EDGE_COUNT
 RECORD = struct.Struct("<4I")
 SENTINEL = (0xFFFF_FFFF,) * 4
 PREREGISTRATION_PATH = Path(__file__).with_name(
     "raster_tile_numerator_preregistration.json"
 )
 PREREGISTRATION_SHA256 = (
-    "d04daad3b297e65d5076b07ab5466189b47f58f793a5e6e24cbd4769044d8271"
+    "150dd157b90ff6798ac087e47d39f78cc4e68dbd016b3aff3a096d1db31dbae1"
 )
 
 
@@ -57,6 +58,7 @@ class SamplePosition:
     axis: int
     primitive: int
     tile: int
+    edge: int
     x: int
     y: int
 
@@ -66,7 +68,7 @@ class SamplePosition:
             self.axis * PRIMITIVE_COUNT * TILE_COUNT
             + self.primitive * TILE_COUNT
             + self.tile
-        )
+        ) * EDGE_COUNT + self.edge
 
 
 CASES = (
@@ -158,43 +160,47 @@ def sample_positions(capture_case: CaptureCase) -> tuple[SamplePosition, ...]:
             for tile in range(first_tile, last_tile + 1):
                 lower = max(origin, tile * TILE_SIZE)
                 upper = min(origin + extent - 1, tile * TILE_SIZE + TILE_SIZE - 1)
-                local = upper - origin if primitive == 0 else lower - origin
-                if axis == 0:
-                    covered = (
-                        capture_case.height * (2 * local + 1) > capture_case.width
-                        if primitive == 0
-                        else capture_case.height * (2 * local + 1)
-                        < (2 * capture_case.height - 1) * capture_case.width
-                    )
-                    x = capture_case.originX + local
-                    y = (
-                        capture_case.originY + capture_case.height - 1
-                        if primitive == 0
-                        else capture_case.originY
-                    )
-                else:
-                    covered = (
-                        capture_case.width * (2 * local + 1) > capture_case.height
-                        if primitive == 0
-                        else capture_case.width * (2 * local + 1)
-                        < (2 * capture_case.width - 1) * capture_case.height
-                    )
-                    x = (
-                        capture_case.originX + capture_case.width - 1
-                        if primitive == 0
-                        else capture_case.originX
-                    )
-                    y = capture_case.originY + local
-                if covered:
-                    result.append(
-                        SamplePosition(
-                            axis=axis,
-                            primitive=primitive,
-                            tile=tile,
-                            x=x,
-                            y=y,
+                for edge, coordinate in enumerate((lower, upper)):
+                    if edge == 1 and upper == lower:
+                        continue
+                    local = coordinate - origin
+                    if axis == 0:
+                        covered = (
+                            capture_case.height * (2 * local + 1) > capture_case.width
+                            if primitive == 0
+                            else capture_case.height * (2 * local + 1)
+                            < (2 * capture_case.height - 1) * capture_case.width
                         )
-                    )
+                        x = coordinate
+                        y = (
+                            capture_case.originY + capture_case.height - 1
+                            if primitive == 0
+                            else capture_case.originY
+                        )
+                    else:
+                        covered = (
+                            capture_case.width * (2 * local + 1) > capture_case.height
+                            if primitive == 0
+                            else capture_case.width * (2 * local + 1)
+                            < (2 * capture_case.width - 1) * capture_case.height
+                        )
+                        x = (
+                            capture_case.originX + capture_case.width - 1
+                            if primitive == 0
+                            else capture_case.originX
+                        )
+                        y = coordinate
+                    if covered:
+                        result.append(
+                            SamplePosition(
+                                axis=axis,
+                                primitive=primitive,
+                                tile=tile,
+                                edge=edge,
+                                x=x,
+                                y=y,
+                            )
+                        )
     slots = [sample.slot for sample in result]
     if (
         not result
@@ -243,6 +249,7 @@ def sample_words() -> list[int]:
             sample.axis,
             sample.primitive,
             sample.tile,
+            sample.edge,
             sample.x,
             sample.y,
             sample.slot,
@@ -261,6 +268,7 @@ def layout_metadata() -> JsonObject:
         "endpointCount": len(ENDPOINTS),
         "axisCount": AXIS_COUNT,
         "primitiveCount": PRIMITIVE_COUNT,
+        "edgeCount": EDGE_COUNT,
         "tileCount": TILE_COUNT,
         "slotCount": SLOT_COUNT,
         "recordBytes": RECORD.size,
@@ -276,20 +284,21 @@ def layout_metadata() -> JsonObject:
 
 def preregistration_payload() -> JsonObject:
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "role": ROLE,
         "observedAtPreregistration": False,
         "purpose": (
-            "Separate AGX per-tile plane-numerator formation from endpoint "
-            "translation and primitive-specific composition at large tile "
-            "displacements."
+            "Identify AGX per-tile slope and centered numerator independently "
+            "by observing both covered axis edges of each tile."
         ),
         "sourceEvidence": {
-            "openedGeometryRunId": 30_589_303_022,
-            "openedTileConstantCount": 424,
-            "openedBestImageResidualBytes": 1,
-            "positivePrimitiveSampledRecords": 698_317,
-            "positivePrimitiveFactorizedNumeratorMismatches": 0,
+            "sourceTileNumeratorRunId": 30_689_521_255,
+            "sourceExpectedRecords": 32_144,
+            "sourceCenteredModelMatchedRecords": 32_138,
+            "sourceOpenedCalibrationMatchedRecords": 6_816,
+            "sourceOpenedCalibrationTotalRecords": 6_816,
+            "sourceUnresolvedThinGeometryRecords": 6,
+            "sourceBestImageResidualBytesAfterEvidenceCorrection": 0,
             "productionShaderChanged": False,
         },
         "capture": {
@@ -298,6 +307,7 @@ def preregistration_payload() -> JsonObject:
             "viewportWidth": VIEWPORT_WIDTH,
             "viewportHeight": VIEWPORT_HEIGHT,
             "tileSize": TILE_SIZE,
+            "edgeCount": EDGE_COUNT,
             "cases": [asdict(value) for value in CASES],
             "endpoints": [
                 {
@@ -308,10 +318,9 @@ def preregistration_payload() -> JsonObject:
                 for value in ENDPOINTS
             ],
             "samplePositionLaw": (
-                "For each covered 32-pixel tile on each axis, primitive 0 "
-                "uses the tile's upper axis coordinate at the opposite "
-                "bottom/right edge and primitive 1 uses the lower axis "
-                "coordinate at the opposite top/left edge; diagonal-edge "
+                "For each 32-pixel tile, axis, and primitive, retain both "
+                "the lower and upper in-geometry axis coordinates whenever "
+                "the fixed opposite-edge pixel is covered. Diagonal-edge "
                 "pixels are excluded by exact doubled-area inequalities."
             ),
             "recordComponents": [
@@ -324,15 +333,17 @@ def preregistration_payload() -> JsonObject:
                 "x": [[0.0, 0.5], [0.9375, 0.5]],
                 "y": [[0.5, 0.0], [0.5, 0.9375]],
             },
-            "ordering": ("case-major,endpoint-major,axis-primitive-tile-slot-major"),
+            "ordering": (
+                "case-major,endpoint-major,axis-primitive-tile-edge-slot-major"
+            ),
             "layout": layout_metadata(),
         },
         "prospectiveControl": {
             "case": "control-square-256",
             "endpoints": ["zero-to-one", "one-to-zero"],
             "prediction": (
-                "exact power-of-two affine plane; pull samples are fused "
-                "round-to-nearest"
+                "exact power-of-two affine plane at both retained tile "
+                "edges; pull samples are fused round-to-nearest"
             ),
             "pullComponentsMustMatchExactly": True,
             "centerAndDerivativeAreDiagnostic": True,
@@ -473,7 +484,7 @@ def validate(root: Path) -> JsonObject:
     ):
         raise ValueError("tile-numerator prospective control differs")
     return {
-        "rasterTileNumeratorValidationSchemaVersion": 1,
+        "rasterTileNumeratorValidationSchemaVersion": 2,
         "manifestSha256": sha256_path(root / "manifest.json"),
         "rawSha256": sha256_path(raw_path),
         "expectedRecords": expected_records,
