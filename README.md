@@ -2891,6 +2891,41 @@ selected offline only if it explains every bit without fitted exceptions, and
 still cannot authorize production changes until the separate unseen
 end-to-end image gate passes bit for bit.
 
+Run 30678295250 (`b8116cdc9e2fd239b04f86f1c8167031f530b9e8`)
+completed the fixed-post-clip capture. Its manifest and 113,260,032-byte raw
+stream have SHA-256 values
+`f41407aea23c6e2b1e7d1b80dea94f8f135892613e55d161e30bfb1d43e4cae2`
+and
+`2bb66f13e77c57bcd8ea376046aadd37aac5855f98dcbb729e101639d752646a`.
+All 393,264 records and 26,741,952 floating-point payload words pass the
+independent integrity gate.
+
+`analyze_raster_clip_arithmetic_discriminator.py` composes the already
+prospectively validated raster setup model with the new raw pulls. It pairs
+equal normalized distances at the 256- and 512-pixel viewports and searches
+only the five binary32 generated-delta values centered on the correctly
+rounded result. Of 65,552 matched-scale coefficients, 63,735 have one and only
+one effective binary32 value, 1,634 have two, and 183 have three. The unique
+values lie exactly one ULP below, at, or one ULP above correctly rounded with
+counts 9,135, 51,778, and 2,822. Their sentinel-filled stream has SHA-256
+`cc696508044b82ad83216bbd93ca1e02837a2bf0370e2d4d2ea1c8a9416ab2eb`.
+"Effective" is deliberate: the experiment constrains the hidden state passed
+from clipping into raster setup; it does not prove that the clipper first
+materializes a binary32 vertex attribute.
+
+The best fixed directed quantizer in the preregistered 24-through-30-bit
+family is 26-significant-bit downward rounding, but it matches only 53,316 of
+the 63,735 unique effective values. Replaying that candidate over the entire
+artifact accepts 1,904,398 of 2,097,408 group/witness coefficient checks and
+rejects 193,010. It fully accepts only 226,268 of 262,176 viewport/distance/
+witness inputs. Correctly rounded binary32 and every other fixed quantizer are
+also rejected. The result therefore rules out the tempting 26-bit-down
+approximation and localizes the remaining state to clipping precision or a
+data-dependent selector; it does not establish clip arithmetic or authorize a
+production shader change. The complete reproducible analysis report has
+SHA-256
+`6312fba2bd5c829daefc68289ddf3a8fae9fa1a020fc6de23e3b1be43a472f88`.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

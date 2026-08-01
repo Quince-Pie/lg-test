@@ -1,0 +1,530 @@
+{
+  "classification": "post-capture-fixed-post-clip-arithmetic-discovery",
+  "conclusions": {
+    "captureValidForAnalysis": true,
+    "clipArithmeticEstablished": false,
+    "correctlyRoundedGeneratedDeltaFalsified": true,
+    "effectiveGeneratedDeltaMostlyUniquelyLocalized": true,
+    "endToEndLiquidGlassParityEstablished": false,
+    "fixedDown26GeneratedDeltaFalsified": true,
+    "fixedPostClipGeometryConfirmedByConstruction": true,
+    "hiddenClipStateOrPrecisionRemains": true,
+    "productionShaderChangeAuthorized": false
+  },
+  "fullDown26Gate": {
+    "acceptedGroupCoefficientCount": 1904398,
+    "byViewport": {
+      "256": {
+        "acceptedGroupCoefficientCount": 929058,
+        "fullyAcceptedInputCount": 109145,
+        "groupCoefficientCount": 1048704,
+        "inputCount": 131088,
+        "rejectedGroupCoefficientCount": 119646
+      },
+      "512": {
+        "acceptedGroupCoefficientCount": 975340,
+        "fullyAcceptedInputCount": 117123,
+        "groupCoefficientCount": 1048704,
+        "inputCount": 131088,
+        "rejectedGroupCoefficientCount": 73364
+      }
+    },
+    "exact": false,
+    "fullyAcceptedInputCount": 226268,
+    "groupCoefficientCount": 2097408,
+    "inputCount": 262176,
+    "model": "26-significant-bit-directed-down-generated-delta",
+    "notFullyAcceptedInputCount": 35908,
+    "rejectedGroupCoefficientCount": 193010
+  },
+  "integrity": {
+    "allExpectedRecordsPresent": true,
+    "finiteFloatingPointWordCount": 26741952,
+    "primitiveIdCounts": {
+      "0": 196632,
+      "1": 196632
+    },
+    "recordCount": 393264
+  },
+  "matchedPowerOfTwoScaleRecovery": {
+    "candidateMultiplicity": {
+      "1": 63735,
+      "2": 1634,
+      "3": 183
+    },
+    "coefficientCount": 65552,
+    "effectiveDeltaIsHiddenClipState": true,
+    "effectiveDeltaStreamSha256": "cc696508044b82ad83216bbd93ca1e02837a2bf0370e2d4d2ea1c8a9416ab2eb",
+    "firstAmbiguous": [
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3eb0d324",
+        "distanceFixed": 2,
+        "witnessIndex": 6
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0,
+          1
+        ],
+        "centerBits": "0x3ec9d34c",
+        "distanceFixed": 4,
+        "witnessIndex": 8
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3ea97270",
+        "distanceFixed": 5,
+        "witnessIndex": 5
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1,
+          2
+        ],
+        "centerBits": "0x3ec9d2ab",
+        "distanceFixed": 5,
+        "witnessIndex": 8
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3eb82ff4",
+        "distanceFixed": 6,
+        "witnessIndex": 7
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3ed89014",
+        "distanceFixed": 6,
+        "witnessIndex": 10
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3ef1700c",
+        "distanceFixed": 6,
+        "witnessIndex": 13
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3eb0ceb9",
+        "distanceFixed": 10,
+        "witnessIndex": 6
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3ee525fe",
+        "distanceFixed": 10,
+        "witnessIndex": 11
+      },
+      {
+        "acceptedOffsets": [
+          1,
+          2
+        ],
+        "centerBits": "0x3efe25fd",
+        "distanceFixed": 11,
+        "witnessIndex": 15
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3ecc23ec",
+        "distanceFixed": 12,
+        "witnessIndex": 9
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3ee523d8",
+        "distanceFixed": 13,
+        "witnessIndex": 11
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3ecc22a6",
+        "distanceFixed": 14,
+        "witnessIndex": 9
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3ef16a03",
+        "distanceFixed": 14,
+        "witnessIndex": 13
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3eb0cbf5",
+        "distanceFixed": 15,
+        "witnessIndex": 6
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3ecc2202",
+        "distanceFixed": 15,
+        "witnessIndex": 9
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3eb82a33",
+        "distanceFixed": 16,
+        "witnessIndex": 7
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3ee2a5e0",
+        "distanceFixed": 26,
+        "witnessIndex": 0
+      },
+      {
+        "acceptedOffsets": [
+          -2,
+          -1,
+          0
+        ],
+        "centerBits": "0x3ea96752",
+        "distanceFixed": 26,
+        "witnessIndex": 5
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3eb8234b",
+        "distanceFixed": 28,
+        "witnessIndex": 7
+      },
+      {
+        "acceptedOffsets": [
+          -2,
+          -1
+        ],
+        "centerBits": "0x3eb0c3ad",
+        "distanceFixed": 30,
+        "witnessIndex": 6
+      },
+      {
+        "acceptedOffsets": [
+          -2,
+          -1
+        ],
+        "centerBits": "0x3eb81f45",
+        "distanceFixed": 35,
+        "witnessIndex": 7
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3eb81d8b",
+        "distanceFixed": 38,
+        "witnessIndex": 7
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3ecc1358",
+        "distanceFixed": 38,
+        "witnessIndex": 9
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1,
+          2
+        ],
+        "centerBits": "0x3eb0beb5",
+        "distanceFixed": 39,
+        "witnessIndex": 6
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3ec9bb58",
+        "distanceFixed": 42,
+        "witnessIndex": 8
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3eb81aab",
+        "distanceFixed": 43,
+        "witnessIndex": 7
+      },
+      {
+        "acceptedOffsets": [
+          0,
+          1
+        ],
+        "centerBits": "0x3ecc1028",
+        "distanceFixed": 43,
+        "witnessIndex": 9
+      },
+      {
+        "acceptedOffsets": [
+          -2,
+          -1
+        ],
+        "centerBits": "0x3eb0bb65",
+        "distanceFixed": 45,
+        "witnessIndex": 6
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3efe0b00",
+        "distanceFixed": 45,
+        "witnessIndex": 15
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3eec6760",
+        "distanceFixed": 50,
+        "witnessIndex": 12
+      },
+      {
+        "acceptedOffsets": [
+          -1,
+          0
+        ],
+        "centerBits": "0x3eb0b815",
+        "distanceFixed": 51,
+        "witnessIndex": 6
+      }
+    ],
+    "powerOfTwoScaleTransferUsed": true,
+    "uniqueCoefficientCount": 63735,
+    "uniqueOffsetFromCorrectlyRoundedDistribution": {
+      "-1": 9135,
+      "0": 51778,
+      "1": 2822
+    }
+  },
+  "rasterClipArithmeticDiscriminatorAnalysisSchemaVersion": 1,
+  "simpleGeneratedDeltaQuantizers": {
+    "bestSimpleCandidate": "26-bit-down",
+    "exactModelSelected": false,
+    "models": {
+      "24-bit-down": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 35396,
+        "mismatchCount": 28339
+      },
+      "24-bit-nearest-even": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 51778,
+        "mismatchCount": 11957
+      },
+      "24-bit-up": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 26691,
+        "mismatchCount": 37044
+      },
+      "25-bit-down": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 50851,
+        "mismatchCount": 12884
+      },
+      "25-bit-nearest-even": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 49439,
+        "mismatchCount": 14296
+      },
+      "25-bit-up": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 42209,
+        "mismatchCount": 21526
+      },
+      "26-bit-down": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 53316,
+        "mismatchCount": 10419
+      },
+      "26-bit-nearest-even": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 51737,
+        "mismatchCount": 11998
+      },
+      "26-bit-up": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 47901,
+        "mismatchCount": 15834
+      },
+      "27-bit-down": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 53098,
+        "mismatchCount": 10637
+      },
+      "27-bit-nearest-even": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 52175,
+        "mismatchCount": 11560
+      },
+      "27-bit-up": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 50417,
+        "mismatchCount": 13318
+      },
+      "28-bit-down": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 52539,
+        "mismatchCount": 11196
+      },
+      "28-bit-nearest-even": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 52213,
+        "mismatchCount": 11522
+      },
+      "28-bit-up": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 51414,
+        "mismatchCount": 12321
+      },
+      "29-bit-down": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 52195,
+        "mismatchCount": 11540
+      },
+      "29-bit-nearest-even": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 52102,
+        "mismatchCount": 11633
+      },
+      "29-bit-up": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 51796,
+        "mismatchCount": 11939
+      },
+      "30-bit-down": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 52006,
+        "mismatchCount": 11729
+      },
+      "30-bit-nearest-even": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 51966,
+        "mismatchCount": 11769
+      },
+      "30-bit-up": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 51874,
+        "mismatchCount": 11861
+      },
+      "correctly-rounded-binary32": {
+        "coefficientCount": 63735,
+        "exact": false,
+        "matchCount": 51778,
+        "mismatchCount": 11957
+      }
+    },
+    "ranking": [
+      "26-bit-down",
+      "27-bit-down",
+      "28-bit-down",
+      "28-bit-nearest-even",
+      "29-bit-down",
+      "27-bit-nearest-even",
+      "29-bit-nearest-even",
+      "30-bit-down",
+      "30-bit-nearest-even",
+      "30-bit-up",
+      "29-bit-up",
+      "24-bit-nearest-even",
+      "correctly-rounded-binary32",
+      "26-bit-nearest-even",
+      "28-bit-up",
+      "25-bit-down",
+      "27-bit-up",
+      "25-bit-nearest-even",
+      "26-bit-up",
+      "25-bit-up",
+      "24-bit-down",
+      "24-bit-up"
+    ]
+  },
+  "source": {
+    "ciCommit": "b8116cdc9e2fd239b04f86f1c8167031f530b9e8",
+    "ciRunId": 30678295250,
+    "manifestSha256": "f41407aea23c6e2b1e7d1b80dea94f8f135892613e55d161e30bfb1d43e4cae2",
+    "preregistrationSha256": "505d589c969e142e81bed76982fc81ab7a01b2b2b84ddf4d46ed78650c8ff718",
+    "rawSha256": "2bb66f13e77c57bcd8ea376046aadd37aac5855f98dcbb729e101639d752646a"
+  }
+}
