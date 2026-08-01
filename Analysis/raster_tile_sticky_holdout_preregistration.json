@@ -1,0 +1,1110 @@
+{
+  "acceptance": {
+    "allDeclaredRecordsFinite": true,
+    "failureIsEvidence": true,
+    "productionShaderAuthorizedByThisCapture": false,
+    "recordMismatchCount": 0,
+    "tolerance": 0,
+    "unchangedBitIdenticalRepeatRequired": true,
+    "wordMismatchCount": 0
+  },
+  "appleOutputsObservedAtPreregistration": false,
+  "capture": {
+    "caseCount": 12,
+    "caseWordsSha256": "c68826a95949092fdf046acb12952ed9974f2a793c3902428cddd3f55ffffd27",
+    "cases": [
+      {
+        "height": 871,
+        "name": "sealed-sticky-a",
+        "originX": 69,
+        "originY": 129,
+        "role": "sealed-holdout",
+        "width": 680
+      },
+      {
+        "height": 676,
+        "name": "sealed-sticky-b",
+        "originX": 308,
+        "originY": 293,
+        "role": "sealed-holdout",
+        "width": 703
+      },
+      {
+        "height": 718,
+        "name": "sealed-sticky-c",
+        "originX": 113,
+        "originY": 279,
+        "role": "sealed-holdout",
+        "width": 811
+      },
+      {
+        "height": 952,
+        "name": "sealed-sticky-d",
+        "originX": 301,
+        "originY": 1,
+        "role": "sealed-holdout",
+        "width": 714
+      },
+      {
+        "height": 918,
+        "name": "sealed-sticky-e",
+        "originX": 76,
+        "originY": 41,
+        "role": "sealed-holdout",
+        "width": 755
+      },
+      {
+        "height": 495,
+        "name": "sealed-sticky-f",
+        "originX": 143,
+        "originY": 289,
+        "role": "sealed-holdout",
+        "width": 431
+      },
+      {
+        "height": 185,
+        "name": "sealed-sticky-g",
+        "originX": 193,
+        "originY": 615,
+        "role": "sealed-holdout",
+        "width": 728
+      },
+      {
+        "height": 889,
+        "name": "sealed-sticky-h",
+        "originX": 34,
+        "originY": 57,
+        "role": "sealed-holdout",
+        "width": 934
+      },
+      {
+        "height": 857,
+        "name": "sealed-sticky-i",
+        "originX": 64,
+        "originY": 137,
+        "role": "sealed-holdout",
+        "width": 814
+      },
+      {
+        "height": 883,
+        "name": "sealed-sticky-j",
+        "originX": 339,
+        "originY": 41,
+        "role": "sealed-holdout",
+        "width": 571
+      },
+      {
+        "height": 580,
+        "name": "sealed-sticky-k",
+        "originX": 45,
+        "originY": 288,
+        "role": "sealed-holdout",
+        "width": 944
+      },
+      {
+        "height": 747,
+        "name": "sealed-sticky-l",
+        "originX": 8,
+        "originY": 129,
+        "role": "sealed-holdout",
+        "width": 947
+      }
+    ],
+    "endpointCount": 36,
+    "endpointWordsSha256": "72f88000946ea0736fd2423faa36b48e4060eebc2ce0ee71b7c87f27d99cbdc9",
+    "endpoints": [
+      {
+        "highBits": "0x3f70000d",
+        "lowBits": "0x37800005",
+        "name": "tiny-near-one-b-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x37800005",
+        "lowBits": "0x3f70000d",
+        "name": "tiny-near-one-b-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f123457",
+        "lowBits": "0x39012345",
+        "name": "small-wide-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x39012345",
+        "lowBits": "0x3f123457",
+        "name": "small-wide-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f60001d",
+        "lowBits": "0x3d800011",
+        "name": "sixteenth-seven-eighths-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3d800011",
+        "lowBits": "0x3f60001d",
+        "name": "sixteenth-seven-eighths-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f000025",
+        "lowBits": "0x3e000013",
+        "name": "eighth-half-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3e000013",
+        "lowBits": "0x3f000025",
+        "name": "eighth-half-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f30002b",
+        "lowBits": "0x3e400017",
+        "name": "three-sixteenths-eleven-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3e400017",
+        "lowBits": "0x3f30002b",
+        "name": "three-sixteenths-eleven-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f000031",
+        "lowBits": "0x3e7fffdd",
+        "name": "quarter-half-cross-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3e7fffdd",
+        "lowBits": "0x3f000031",
+        "name": "quarter-half-cross-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f40003b",
+        "lowBits": "0x3effffcd",
+        "name": "half-three-quarter-cross-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3effffcd",
+        "lowBits": "0x3f40003b",
+        "name": "half-three-quarter-cross-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f20002d",
+        "lowBits": "0x00000000",
+        "name": "zero-five-eighths-forward",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0x00000000",
+        "lowBits": "0x3f20002d",
+        "name": "zero-five-eighths-reverse",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0x3f100033",
+        "lowBits": "0xbe800019",
+        "name": "negative-quarter-positive-forward",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0xbe800019",
+        "lowBits": "0x3f100033",
+        "name": "negative-quarter-positive-reverse",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0x3f600000",
+        "lowBits": "0x3e000000",
+        "name": "exact-eighth-seven-eighths-forward",
+        "role": "arithmetic-control"
+      },
+      {
+        "highBits": "0x3e000000",
+        "lowBits": "0x3f600000",
+        "name": "exact-eighth-seven-eighths-reverse",
+        "role": "arithmetic-control"
+      },
+      {
+        "highBits": "0x3f70002f",
+        "lowBits": "0x3f000015",
+        "name": "same-binade-wide-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f000015",
+        "lowBits": "0x3f70002f",
+        "name": "same-binade-wide-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f2000b7",
+        "lowBits": "0x3f200011",
+        "name": "close-positive-forward",
+        "role": "center-control"
+      },
+      {
+        "highBits": "0x3f200011",
+        "lowBits": "0x3f2000b7",
+        "name": "close-positive-reverse",
+        "role": "center-control"
+      },
+      {
+        "highBits": "0x3e800037",
+        "lowBits": "0xbd00001b",
+        "name": "negative-small-positive-forward",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0xbd00001b",
+        "lowBits": "0x3e800037",
+        "name": "negative-small-positive-reverse",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0x40000029",
+        "lowBits": "0x3f7fffc1",
+        "name": "one-two-cross-forward",
+        "role": "binade-control"
+      },
+      {
+        "highBits": "0x3f7fffc1",
+        "lowBits": "0x40000029",
+        "name": "one-two-cross-reverse",
+        "role": "binade-control"
+      },
+      {
+        "highBits": "0x3f000043",
+        "lowBits": "0x3800000f",
+        "name": "tiny-half-b-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3800000f",
+        "lowBits": "0x3f000043",
+        "name": "tiny-half-b-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3f40004d",
+        "lowBits": "0x3e800029",
+        "name": "quarter-three-quarter-b-forward",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3e800029",
+        "lowBits": "0x3f40004d",
+        "name": "quarter-three-quarter-b-reverse",
+        "role": "sticky-carry-target"
+      },
+      {
+        "highBits": "0x3fadcf98",
+        "lowBits": "0x3e1d681a",
+        "name": "slope-bias-wide-forward",
+        "role": "slope-bias-target"
+      },
+      {
+        "highBits": "0x3e1d681a",
+        "lowBits": "0x3fadcf98",
+        "name": "slope-bias-wide-reverse",
+        "role": "slope-bias-target"
+      },
+      {
+        "highBits": "0x3cdc11bd",
+        "lowBits": "0x3b788c19",
+        "name": "slope-bias-small-forward",
+        "role": "slope-bias-target"
+      },
+      {
+        "highBits": "0x3b788c19",
+        "lowBits": "0x3cdc11bd",
+        "name": "slope-bias-small-reverse",
+        "role": "slope-bias-target"
+      }
+    ],
+    "layout": {
+      "axisCount": 2,
+      "caseCount": 12,
+      "caseWordsSha256": "c68826a95949092fdf046acb12952ed9974f2a793c3902428cddd3f55ffffd27",
+      "edgeCount": 2,
+      "endpointCount": 36,
+      "endpointWordsSha256": "72f88000946ea0736fd2423faa36b48e4060eebc2ce0ee71b7c87f27d99cbdc9",
+      "expectedRecordCount": 81648,
+      "primitiveCount": 2,
+      "pullCount": 16,
+      "rawBytes": 7962624,
+      "recordBytes": 72,
+      "recordComponentCount": 18,
+      "recordCount": 110592,
+      "sampleWordsSha256": "6cf9594e97aa3050c45e3c645281646e8bbd9397f4d99f4fb789be9cfcf43889",
+      "samplesPerCase": [
+        198,
+        178,
+        198,
+        210,
+        210,
+        118,
+        114,
+        234,
+        214,
+        186,
+        194,
+        214
+      ],
+      "slotCount": 256,
+      "tileCount": 32
+    },
+    "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor",
+    "pullOffsetsByAxis": {
+      "x": [
+        [
+          0.0,
+          0.5
+        ],
+        [
+          0.0625,
+          0.5
+        ],
+        [
+          0.125,
+          0.5
+        ],
+        [
+          0.1875,
+          0.5
+        ],
+        [
+          0.25,
+          0.5
+        ],
+        [
+          0.3125,
+          0.5
+        ],
+        [
+          0.375,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5625,
+          0.5
+        ],
+        [
+          0.625,
+          0.5
+        ],
+        [
+          0.6875,
+          0.5
+        ],
+        [
+          0.75,
+          0.5
+        ],
+        [
+          0.8125,
+          0.5
+        ],
+        [
+          0.875,
+          0.5
+        ],
+        [
+          0.9375,
+          0.5
+        ]
+      ],
+      "y": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.0625
+        ],
+        [
+          0.5,
+          0.125
+        ],
+        [
+          0.5,
+          0.1875
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.5,
+          0.3125
+        ],
+        [
+          0.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.4375
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.5625
+        ],
+        [
+          0.5,
+          0.625
+        ],
+        [
+          0.5,
+          0.6875
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.5,
+          0.8125
+        ],
+        [
+          0.5,
+          0.875
+        ],
+        [
+          0.5,
+          0.9375
+        ]
+      ]
+    },
+    "recordComponents": [
+      "axis-pull@0/16",
+      "axis-pull@1/16",
+      "axis-pull@2/16",
+      "axis-pull@3/16",
+      "axis-pull@4/16",
+      "axis-pull@5/16",
+      "axis-pull@6/16",
+      "axis-pull@7/16",
+      "axis-pull@8/16",
+      "axis-pull@9/16",
+      "axis-pull@10/16",
+      "axis-pull@11/16",
+      "axis-pull@12/16",
+      "axis-pull@13/16",
+      "axis-pull@14/16",
+      "axis-pull@15/16",
+      "center",
+      "axis-derivative(center)"
+    ],
+    "rigVersion": "metal-raster-tile-selector-14.0.0",
+    "role": "prospective-sticky-carry-raster-coefficient-holdout",
+    "sampleWordsSha256": "6cf9594e97aa3050c45e3c645281646e8bbd9397f4d99f4fb789be9cfcf43889",
+    "schemaVersion": 14
+  },
+  "createdAt": "2026-08-01T20:38:17Z",
+  "derivationEvidence": {
+    "openedSchemas": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "prospectiveAtDerivation": false,
+    "recordCount": 4938472,
+    "retrospectiveExactAfterSchema13Calibration": true,
+    "schema13CalibratedPredictionWordMismatchCount": 0,
+    "schema13OriginalPredictionWordMismatchCount": 6411,
+    "schema13RawSha256": "2551aa03106d055322f810b3cc68b9106aec13784dbb85de180891da1cd9e6c8",
+    "schema13WasFailedProspectiveEvidence": true,
+    "wordCount": 88892496,
+    "wordMismatchCount": 0
+  },
+  "model": {
+    "baseSourceSha256": "1874d8c452dce244bd8ae2cb7fbf05d0d454a815c0c37c285e1c377524c9369d",
+    "centerPrecisionBits": 36,
+    "coefficientBaseSourceSha256": "69b8546e26dbd17009260621b1a72610e9c25efee21e68022b07c9f00c599248",
+    "coefficientSourceSha256": "006fec926f3b0724adf9639b1d0edadcc52b62fcf5230b5af70efb64b1c91903",
+    "constantPath": "universal factorized coefficient setup",
+    "iteratorBaseSourceSha256": "bf0b926e759f9234d924ccd82654abc07ad8bb9ff10c9058ba5a284886dd2429",
+    "iteratorSourceSha256": "d8a2e8d82665e1771916d6c49bb9c1f315d51d2eff51a52f2b2dec71a0f6947b",
+    "parameters": {
+      "constant_first_bias": 15,
+      "reciprocal_bias": 20,
+      "reciprocal_truncation_bits": 19,
+      "slope_first_bias": 15,
+      "tile_bias": 10,
+      "tile_discarded_carry_limit": 1,
+      "tile_truncation_bits": 19
+    },
+    "selectorTableSha256": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+    "sourceSha256": "2ebf034f65328f8ea0aa4cb8ae2784e51a14f560afdd802c278b02611b34e709",
+    "tileProduct": "truncated binary partial products plus at most one carry unit when any discarded column contributes",
+    "v2SourceSha256": "114f6aa52693307521b04a9b231541bda60ee88f8b33a60bfd4d52e45e208dd5",
+    "v4SourceSha256": "f1918f51974f486510ce5d68724cff015bb2e7f618a1153016d464cd9240a103",
+    "v6SourceSha256": "3c5bdc263ea97f56c6cb8f0c7eedff22e13cb9eca02eb7895c458b0370553420",
+    "v7SourceSha256": "2393fc0f190c2fa9daa3b19e2ecacde61815b1ce10432a0336e34303a2d29d25",
+    "v8SourceSha256": "2fe483b51c2c48cc599ea06b69a61cddd207c9191d8daee152cb59ea5cec5915"
+  },
+  "nextGate": "Require zero mismatched words on this first unseen schema-14 capture, then require an unchanged independent capture with the same raw SHA-256 before treating the raster-coefficient domain as prospectively validated.",
+  "predictedTruthStream": {
+    "archive": {
+      "bytes": 2823187,
+      "file": "raster_tile_sticky_holdout_predictions.zlib",
+      "rawSha256": "7debfcbeec6904cdb14ce499da2818114334e4f0cb02590c386987c0cf04c0f1",
+      "sha256": "a794ac2a8b3ce3cc9d4d41d18973fe3b925a51f22d61c6876d8b09afa748bf0d"
+    },
+    "bytes": 5878656,
+    "caseRole": "sealed-holdout",
+    "cases": [
+      {
+        "bytes": 513216,
+        "name": "sealed-sticky-a",
+        "recordCount": 7128,
+        "sha256": "08a670fad90377d075102a1d4c3bb20a939b8072d96ede4c2bb02200a2abba1c"
+      },
+      {
+        "bytes": 461376,
+        "name": "sealed-sticky-b",
+        "recordCount": 6408,
+        "sha256": "3ade5ff8a1d3b4d55e5814c7463721b0d903ff13c96a5557d27700801119dbad"
+      },
+      {
+        "bytes": 513216,
+        "name": "sealed-sticky-c",
+        "recordCount": 7128,
+        "sha256": "d883b8bdb336a1582b368c5a7693f1cba94f9756eeb15fa02b823b7c3794b612"
+      },
+      {
+        "bytes": 544320,
+        "name": "sealed-sticky-d",
+        "recordCount": 7560,
+        "sha256": "036613c19785b082183d822c7ffcc76c585242aa4e541ebc7fefecc52b864e47"
+      },
+      {
+        "bytes": 544320,
+        "name": "sealed-sticky-e",
+        "recordCount": 7560,
+        "sha256": "87de32b62aae3fb25aff489ed2499d96c8b60b771a55d6e812a6d40c4623296f"
+      },
+      {
+        "bytes": 305856,
+        "name": "sealed-sticky-f",
+        "recordCount": 4248,
+        "sha256": "df8cde573c1d5aec8c1a400fd0a5224bf616d225b9156905085edb84d5fdedaa"
+      },
+      {
+        "bytes": 295488,
+        "name": "sealed-sticky-g",
+        "recordCount": 4104,
+        "sha256": "b8d4a6702b1edec3cbff64d02b8f7d905cbb80662f457198459e08ba871dac8e"
+      },
+      {
+        "bytes": 606528,
+        "name": "sealed-sticky-h",
+        "recordCount": 8424,
+        "sha256": "d07d5919dc6a7961b58e8768bc51346bfe9442154dc95da5dab5ed7eb1305f35"
+      },
+      {
+        "bytes": 554688,
+        "name": "sealed-sticky-i",
+        "recordCount": 7704,
+        "sha256": "490f86635c0d5bebcde3ebb5be081d391297b03842603f98df008faae2377601"
+      },
+      {
+        "bytes": 482112,
+        "name": "sealed-sticky-j",
+        "recordCount": 6696,
+        "sha256": "772b57e290dceac0ead2a238c3aa62c70996f2ed83a533812cf650aeee9cdb2b"
+      },
+      {
+        "bytes": 502848,
+        "name": "sealed-sticky-k",
+        "recordCount": 6984,
+        "sha256": "b0e7327907e2e3946f39aec575bd110eaa29cae230fb557b68f29334a6baeb04"
+      },
+      {
+        "bytes": 554688,
+        "name": "sealed-sticky-l",
+        "recordCount": 7704,
+        "sha256": "6ddab316390fe757d6d706956b4d56bc8de23091d4fd27046a6bc8e34b0ab275"
+      }
+    ],
+    "endpointCount": 36,
+    "endpointRole": "all",
+    "ordering": "case-major,endpoint-major,sample-position-major,record-component-major",
+    "recordBytes": 72,
+    "recordComponentCount": 18,
+    "recordCount": 81648,
+    "sha256": "7debfcbeec6904cdb14ce499da2818114334e4f0cb02590c386987c0cf04c0f1"
+  },
+  "preflightDiscrimination": {
+    "ablationDifferences": {
+      "aggregate-tile-product": {
+        "records": 181,
+        "words": 3035
+      },
+      "constant-first-bias-14": {
+        "records": 440,
+        "words": 7392
+      },
+      "legacy-combined-product": {
+        "records": 3141,
+        "words": 52146
+      },
+      "partial-tile-product": {
+        "records": 277,
+        "words": 4627
+      },
+      "reciprocal-bias-19": {
+        "records": 316,
+        "words": 4117
+      },
+      "reciprocal-bias-21": {
+        "records": 409,
+        "words": 4262
+      },
+      "reciprocal-truncation-18": {
+        "records": 2388,
+        "words": 31942
+      },
+      "reciprocal-truncation-20": {
+        "records": 5179,
+        "words": 63240
+      },
+      "slope-first-bias-14": {
+        "records": 331,
+        "words": 685
+      },
+      "tile-bias-11": {
+        "records": 402,
+        "words": 6671
+      },
+      "tile-bias-9": {
+        "records": 450,
+        "words": 7519
+      },
+      "tile-truncation-18": {
+        "records": 2138,
+        "words": 35545
+      },
+      "tile-truncation-20": {
+        "records": 4558,
+        "words": 75296
+      }
+    },
+    "ablationEndpointWordDifferences": {
+      "aggregate-tile-product": {
+        "eighth-half-forward": 34,
+        "eighth-half-reverse": 170,
+        "negative-quarter-positive-forward": 194,
+        "negative-quarter-positive-reverse": 258,
+        "negative-small-positive-forward": 153,
+        "negative-small-positive-reverse": 204,
+        "one-two-cross-forward": 68,
+        "one-two-cross-reverse": 34,
+        "same-binade-wide-forward": 34,
+        "same-binade-wide-reverse": 34,
+        "sixteenth-seven-eighths-forward": 135,
+        "sixteenth-seven-eighths-reverse": 170,
+        "slope-bias-small-reverse": 68,
+        "slope-bias-wide-reverse": 170,
+        "small-wide-forward": 68,
+        "small-wide-reverse": 204,
+        "tiny-half-b-forward": 68,
+        "tiny-half-b-reverse": 119,
+        "tiny-near-one-b-forward": 34,
+        "tiny-near-one-b-reverse": 170,
+        "zero-five-eighths-forward": 187,
+        "zero-five-eighths-reverse": 459
+      },
+      "constant-first-bias-14": {
+        "half-three-quarter-cross-forward": 136,
+        "half-three-quarter-cross-reverse": 170,
+        "negative-small-positive-forward": 644,
+        "negative-small-positive-reverse": 1003,
+        "one-two-cross-forward": 136,
+        "one-two-cross-reverse": 68,
+        "sixteenth-seven-eighths-forward": 364,
+        "sixteenth-seven-eighths-reverse": 255,
+        "slope-bias-small-forward": 340,
+        "slope-bias-small-reverse": 595,
+        "slope-bias-wide-forward": 297,
+        "slope-bias-wide-reverse": 731,
+        "small-wide-forward": 322,
+        "small-wide-reverse": 391,
+        "three-sixteenths-eleven-forward": 289,
+        "three-sixteenths-eleven-reverse": 323,
+        "tiny-near-one-b-forward": 207,
+        "tiny-near-one-b-reverse": 221,
+        "zero-five-eighths-forward": 441,
+        "zero-five-eighths-reverse": 459
+      },
+      "legacy-combined-product": {
+        "eighth-half-forward": 1168,
+        "eighth-half-reverse": 1496,
+        "half-three-quarter-cross-forward": 68,
+        "half-three-quarter-cross-reverse": 340,
+        "negative-quarter-positive-forward": 4268,
+        "negative-quarter-positive-reverse": 4281,
+        "negative-small-positive-forward": 2834,
+        "negative-small-positive-reverse": 3589,
+        "one-two-cross-forward": 409,
+        "one-two-cross-reverse": 544,
+        "quarter-half-cross-forward": 493,
+        "quarter-half-cross-reverse": 612,
+        "quarter-three-quarter-b-forward": 682,
+        "quarter-three-quarter-b-reverse": 918,
+        "same-binade-wide-forward": 691,
+        "same-binade-wide-reverse": 680,
+        "sixteenth-seven-eighths-forward": 1402,
+        "sixteenth-seven-eighths-reverse": 2363,
+        "slope-bias-small-forward": 1401,
+        "slope-bias-small-reverse": 2142,
+        "slope-bias-wide-forward": 1165,
+        "slope-bias-wide-reverse": 2040,
+        "small-wide-forward": 1872,
+        "small-wide-reverse": 2924,
+        "three-sixteenths-eleven-forward": 880,
+        "three-sixteenths-eleven-reverse": 1020,
+        "tiny-half-b-forward": 1339,
+        "tiny-half-b-reverse": 2584,
+        "tiny-near-one-b-forward": 1587,
+        "tiny-near-one-b-reverse": 2329,
+        "zero-five-eighths-forward": 1577,
+        "zero-five-eighths-reverse": 2448
+      },
+      "partial-tile-product": {
+        "eighth-half-forward": 136,
+        "eighth-half-reverse": 136,
+        "half-three-quarter-cross-forward": 34,
+        "negative-quarter-positive-forward": 254,
+        "negative-quarter-positive-reverse": 430,
+        "negative-small-positive-forward": 326,
+        "negative-small-positive-reverse": 578,
+        "one-two-cross-forward": 136,
+        "one-two-cross-reverse": 34,
+        "quarter-half-cross-forward": 68,
+        "quarter-three-quarter-b-reverse": 34,
+        "sixteenth-seven-eighths-forward": 306,
+        "sixteenth-seven-eighths-reverse": 340,
+        "slope-bias-small-forward": 26,
+        "slope-bias-small-reverse": 68,
+        "slope-bias-wide-forward": 68,
+        "slope-bias-wide-reverse": 68,
+        "small-wide-forward": 67,
+        "three-sixteenths-eleven-forward": 88,
+        "three-sixteenths-eleven-reverse": 136,
+        "tiny-half-b-forward": 102,
+        "tiny-half-b-reverse": 68,
+        "tiny-near-one-b-forward": 281,
+        "tiny-near-one-b-reverse": 272,
+        "zero-five-eighths-forward": 299,
+        "zero-five-eighths-reverse": 272
+      },
+      "reciprocal-bias-19": {
+        "eighth-half-reverse": 68,
+        "exact-eighth-seven-eighths-forward": 68,
+        "exact-eighth-seven-eighths-reverse": 34,
+        "half-three-quarter-cross-forward": 68,
+        "half-three-quarter-cross-reverse": 34,
+        "negative-quarter-positive-forward": 170,
+        "negative-quarter-positive-reverse": 248,
+        "negative-small-positive-forward": 191,
+        "negative-small-positive-reverse": 374,
+        "quarter-half-cross-forward": 34,
+        "quarter-three-quarter-b-reverse": 68,
+        "same-binade-wide-forward": 34,
+        "same-binade-wide-reverse": 34,
+        "sixteenth-seven-eighths-forward": 34,
+        "sixteenth-seven-eighths-reverse": 187,
+        "slope-bias-small-forward": 170,
+        "slope-bias-small-reverse": 170,
+        "slope-bias-wide-forward": 26,
+        "slope-bias-wide-reverse": 68,
+        "small-wide-forward": 192,
+        "small-wide-reverse": 136,
+        "three-sixteenths-eleven-forward": 112,
+        "three-sixteenths-eleven-reverse": 199,
+        "tiny-half-b-forward": 230,
+        "tiny-half-b-reverse": 255,
+        "tiny-near-one-b-forward": 165,
+        "tiny-near-one-b-reverse": 425,
+        "zero-five-eighths-forward": 136,
+        "zero-five-eighths-reverse": 187
+      },
+      "reciprocal-bias-21": {
+        "eighth-half-forward": 68,
+        "eighth-half-reverse": 136,
+        "exact-eighth-seven-eighths-forward": 136,
+        "exact-eighth-seven-eighths-reverse": 34,
+        "half-three-quarter-cross-reverse": 68,
+        "negative-quarter-positive-forward": 354,
+        "negative-quarter-positive-reverse": 231,
+        "negative-small-positive-forward": 238,
+        "negative-small-positive-reverse": 238,
+        "one-two-cross-forward": 34,
+        "quarter-half-cross-forward": 34,
+        "quarter-three-quarter-b-forward": 68,
+        "quarter-three-quarter-b-reverse": 34,
+        "sixteenth-seven-eighths-forward": 136,
+        "sixteenth-seven-eighths-reverse": 153,
+        "slope-bias-small-forward": 127,
+        "slope-bias-small-reverse": 103,
+        "slope-bias-wide-forward": 170,
+        "slope-bias-wide-reverse": 136,
+        "small-wide-forward": 238,
+        "small-wide-reverse": 306,
+        "three-sixteenths-eleven-forward": 95,
+        "three-sixteenths-eleven-reverse": 68,
+        "tiny-half-b-forward": 68,
+        "tiny-half-b-reverse": 102,
+        "tiny-near-one-b-forward": 194,
+        "tiny-near-one-b-reverse": 204,
+        "zero-five-eighths-forward": 261,
+        "zero-five-eighths-reverse": 228
+      },
+      "reciprocal-truncation-18": {
+        "eighth-half-forward": 302,
+        "eighth-half-reverse": 555,
+        "exact-eighth-seven-eighths-forward": 916,
+        "exact-eighth-seven-eighths-reverse": 1139,
+        "half-three-quarter-cross-forward": 68,
+        "half-three-quarter-cross-reverse": 85,
+        "negative-quarter-positive-forward": 1650,
+        "negative-quarter-positive-reverse": 2200,
+        "negative-small-positive-forward": 1459,
+        "negative-small-positive-reverse": 2057,
+        "one-two-cross-forward": 78,
+        "one-two-cross-reverse": 204,
+        "quarter-half-cross-forward": 374,
+        "quarter-half-cross-reverse": 136,
+        "quarter-three-quarter-b-forward": 451,
+        "quarter-three-quarter-b-reverse": 476,
+        "same-binade-wide-forward": 340,
+        "same-binade-wide-reverse": 340,
+        "sixteenth-seven-eighths-forward": 633,
+        "sixteenth-seven-eighths-reverse": 1122,
+        "slope-bias-small-forward": 763,
+        "slope-bias-small-reverse": 1599,
+        "slope-bias-wide-forward": 978,
+        "slope-bias-wide-reverse": 1200,
+        "small-wide-forward": 1255,
+        "small-wide-reverse": 1683,
+        "three-sixteenths-eleven-forward": 746,
+        "three-sixteenths-eleven-reverse": 571,
+        "tiny-half-b-forward": 1165,
+        "tiny-half-b-reverse": 1904,
+        "tiny-near-one-b-forward": 1027,
+        "tiny-near-one-b-reverse": 1660,
+        "zero-five-eighths-forward": 1344,
+        "zero-five-eighths-reverse": 1462
+      },
+      "reciprocal-truncation-20": {
+        "eighth-half-forward": 818,
+        "eighth-half-reverse": 1443,
+        "exact-eighth-seven-eighths-forward": 1596,
+        "exact-eighth-seven-eighths-reverse": 1805,
+        "half-three-quarter-cross-forward": 374,
+        "half-three-quarter-cross-reverse": 595,
+        "negative-quarter-positive-forward": 4263,
+        "negative-quarter-positive-reverse": 4535,
+        "negative-small-positive-forward": 2982,
+        "negative-small-positive-reverse": 4436,
+        "one-two-cross-forward": 590,
+        "one-two-cross-reverse": 492,
+        "quarter-half-cross-forward": 767,
+        "quarter-half-cross-reverse": 446,
+        "quarter-three-quarter-b-forward": 601,
+        "quarter-three-quarter-b-reverse": 1463,
+        "same-binade-wide-forward": 313,
+        "same-binade-wide-reverse": 344,
+        "sixteenth-seven-eighths-forward": 1965,
+        "sixteenth-seven-eighths-reverse": 2795,
+        "slope-bias-small-forward": 1664,
+        "slope-bias-small-reverse": 1494,
+        "slope-bias-wide-forward": 1399,
+        "slope-bias-wide-reverse": 2014,
+        "small-wide-forward": 1958,
+        "small-wide-reverse": 2956,
+        "three-sixteenths-eleven-forward": 1032,
+        "three-sixteenths-eleven-reverse": 975,
+        "tiny-half-b-forward": 2309,
+        "tiny-half-b-reverse": 2907,
+        "tiny-near-one-b-forward": 2363,
+        "tiny-near-one-b-reverse": 3571,
+        "zero-five-eighths-forward": 2475,
+        "zero-five-eighths-reverse": 3500
+      },
+      "slope-first-bias-14": {
+        "slope-bias-small-forward": 143,
+        "slope-bias-small-reverse": 156,
+        "slope-bias-wide-forward": 195,
+        "slope-bias-wide-reverse": 191
+      },
+      "tile-bias-11": {
+        "eighth-half-forward": 68,
+        "eighth-half-reverse": 102,
+        "half-three-quarter-cross-reverse": 34,
+        "negative-quarter-positive-forward": 612,
+        "negative-quarter-positive-reverse": 598,
+        "negative-small-positive-forward": 323,
+        "negative-small-positive-reverse": 329,
+        "one-two-cross-forward": 204,
+        "quarter-half-cross-forward": 85,
+        "quarter-three-quarter-b-forward": 34,
+        "quarter-three-quarter-b-reverse": 68,
+        "same-binade-wide-forward": 68,
+        "same-binade-wide-reverse": 68,
+        "sixteenth-seven-eighths-forward": 369,
+        "sixteenth-seven-eighths-reverse": 323,
+        "slope-bias-small-forward": 195,
+        "slope-bias-small-reverse": 306,
+        "slope-bias-wide-forward": 131,
+        "slope-bias-wide-reverse": 408,
+        "small-wide-forward": 220,
+        "small-wide-reverse": 476,
+        "three-sixteenths-eleven-forward": 34,
+        "three-sixteenths-eleven-reverse": 17,
+        "tiny-half-b-forward": 121,
+        "tiny-half-b-reverse": 221,
+        "tiny-near-one-b-forward": 194,
+        "tiny-near-one-b-reverse": 442,
+        "zero-five-eighths-forward": 162,
+        "zero-five-eighths-reverse": 459
+      },
+      "tile-bias-9": {
+        "eighth-half-forward": 238,
+        "eighth-half-reverse": 170,
+        "half-three-quarter-cross-forward": 34,
+        "half-three-quarter-cross-reverse": 34,
+        "negative-quarter-positive-forward": 349,
+        "negative-quarter-positive-reverse": 854,
+        "negative-small-positive-forward": 590,
+        "negative-small-positive-reverse": 714,
+        "one-two-cross-forward": 272,
+        "one-two-cross-reverse": 68,
+        "quarter-half-cross-forward": 170,
+        "quarter-three-quarter-b-reverse": 102,
+        "sixteenth-seven-eighths-forward": 392,
+        "sixteenth-seven-eighths-reverse": 374,
+        "slope-bias-small-forward": 26,
+        "slope-bias-small-reverse": 136,
+        "slope-bias-wide-forward": 204,
+        "slope-bias-wide-reverse": 306,
+        "small-wide-forward": 67,
+        "small-wide-reverse": 170,
+        "three-sixteenths-eleven-forward": 139,
+        "three-sixteenths-eleven-reverse": 136,
+        "tiny-half-b-forward": 170,
+        "tiny-half-b-reverse": 170,
+        "tiny-near-one-b-forward": 315,
+        "tiny-near-one-b-reverse": 510,
+        "zero-five-eighths-forward": 401,
+        "zero-five-eighths-reverse": 408
+      },
+      "tile-truncation-18": {
+        "eighth-half-forward": 782,
+        "eighth-half-reverse": 850,
+        "half-three-quarter-cross-forward": 170,
+        "half-three-quarter-cross-reverse": 187,
+        "negative-quarter-positive-forward": 2140,
+        "negative-quarter-positive-reverse": 3175,
+        "negative-small-positive-forward": 2041,
+        "negative-small-positive-reverse": 2720,
+        "one-two-cross-forward": 408,
+        "one-two-cross-reverse": 408,
+        "quarter-half-cross-forward": 588,
+        "quarter-half-cross-reverse": 289,
+        "quarter-three-quarter-b-forward": 351,
+        "quarter-three-quarter-b-reverse": 646,
+        "same-binade-wide-forward": 272,
+        "same-binade-wide-reverse": 272,
+        "sixteenth-seven-eighths-forward": 1008,
+        "sixteenth-seven-eighths-reverse": 1598,
+        "slope-bias-small-forward": 460,
+        "slope-bias-small-reverse": 1258,
+        "slope-bias-wide-forward": 837,
+        "slope-bias-wide-reverse": 1258,
+        "small-wide-forward": 1284,
+        "small-wide-reverse": 1632,
+        "three-sixteenths-eleven-forward": 895,
+        "three-sixteenths-eleven-reverse": 697,
+        "tiny-half-b-forward": 1124,
+        "tiny-half-b-reverse": 1649,
+        "tiny-near-one-b-forward": 1581,
+        "tiny-near-one-b-reverse": 1955,
+        "zero-five-eighths-forward": 1345,
+        "zero-five-eighths-reverse": 1665
+      },
+      "tile-truncation-20": {
+        "eighth-half-forward": 1328,
+        "eighth-half-reverse": 1496,
+        "exact-eighth-seven-eighths-forward": 2259,
+        "exact-eighth-seven-eighths-reverse": 2448,
+        "half-three-quarter-cross-forward": 204,
+        "half-three-quarter-cross-reverse": 646,
+        "negative-quarter-positive-forward": 5378,
+        "negative-quarter-positive-reverse": 5348,
+        "negative-small-positive-forward": 3720,
+        "negative-small-positive-reverse": 3900,
+        "one-two-cross-forward": 851,
+        "one-two-cross-reverse": 748,
+        "quarter-half-cross-forward": 969,
+        "quarter-half-cross-reverse": 544,
+        "quarter-three-quarter-b-forward": 879,
+        "quarter-three-quarter-b-reverse": 1428,
+        "same-binade-wide-forward": 929,
+        "same-binade-wide-reverse": 918,
+        "sixteenth-seven-eighths-forward": 2263,
+        "sixteenth-seven-eighths-reverse": 3009,
+        "slope-bias-small-forward": 1880,
+        "slope-bias-small-reverse": 2346,
+        "slope-bias-wide-forward": 1859,
+        "slope-bias-wide-reverse": 2516,
+        "small-wide-forward": 2263,
+        "small-wide-reverse": 3298,
+        "three-sixteenths-eleven-forward": 1243,
+        "three-sixteenths-eleven-reverse": 1258,
+        "tiny-half-b-forward": 2892,
+        "tiny-half-b-reverse": 2754,
+        "tiny-near-one-b-forward": 3065,
+        "tiny-near-one-b-reverse": 3961,
+        "zero-five-eighths-forward": 2956,
+        "zero-five-eighths-reverse": 3740
+      }
+    },
+    "recordCount": 81648,
+    "wordCount": 1469664
+  },
+  "role": "prospective-sticky-carry-raster-coefficient-holdout",
+  "schemaVersion": 1,
+  "scientificQuestion": "Does the calibrated AGX tile multiplier retain exactly one discarded-column carry, use the factorized coefficient path for every endpoint domain, and predict every pull, center, and derivative word for wholly novel geometry and endpoint bits?"
+}

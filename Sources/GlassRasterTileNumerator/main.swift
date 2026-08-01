@@ -63,7 +63,15 @@ private struct SamplePosition {
     }
 }
 
-#if TILE_COEFFICIENT_HOLDOUT
+#if TILE_STICKY_COEFFICIENT_HOLDOUT
+private let schemaVersion = 14
+private let rigVersion = "metal-raster-tile-selector-14.0.0"
+private let role = "prospective-sticky-carry-raster-coefficient-holdout"
+private let preregistrationFile =
+    "Analysis/raster_tile_sticky_holdout_preregistration.json"
+private let preregistrationSha256 =
+    "9e083792501da88dae838ee3d1d69b163b7adfe38e96cf78477afd34754af4a1"
+#elseif TILE_COEFFICIENT_HOLDOUT
 private let schemaVersion = 13
 private let rigVersion = "metal-raster-tile-selector-13.0.0"
 private let role = "prospective-complete-raster-coefficient-holdout"
@@ -180,7 +188,22 @@ private let recordOrdering =
 private let recordOrdering =
     "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor"
 #endif
-#if TILE_COEFFICIENT_HOLDOUT
+#if TILE_STICKY_COEFFICIENT_HOLDOUT
+private let cases = [
+    CaptureCase(name: "sealed-sticky-a", role: "sealed-holdout", width: 680, height: 871, originX: 69, originY: 129),
+    CaptureCase(name: "sealed-sticky-b", role: "sealed-holdout", width: 703, height: 676, originX: 308, originY: 293),
+    CaptureCase(name: "sealed-sticky-c", role: "sealed-holdout", width: 811, height: 718, originX: 113, originY: 279),
+    CaptureCase(name: "sealed-sticky-d", role: "sealed-holdout", width: 714, height: 952, originX: 301, originY: 1),
+    CaptureCase(name: "sealed-sticky-e", role: "sealed-holdout", width: 755, height: 918, originX: 76, originY: 41),
+    CaptureCase(name: "sealed-sticky-f", role: "sealed-holdout", width: 431, height: 495, originX: 143, originY: 289),
+    CaptureCase(name: "sealed-sticky-g", role: "sealed-holdout", width: 728, height: 185, originX: 193, originY: 615),
+    CaptureCase(name: "sealed-sticky-h", role: "sealed-holdout", width: 934, height: 889, originX: 34, originY: 57),
+    CaptureCase(name: "sealed-sticky-i", role: "sealed-holdout", width: 814, height: 857, originX: 64, originY: 137),
+    CaptureCase(name: "sealed-sticky-j", role: "sealed-holdout", width: 571, height: 883, originX: 339, originY: 41),
+    CaptureCase(name: "sealed-sticky-k", role: "sealed-holdout", width: 944, height: 580, originX: 45, originY: 288),
+    CaptureCase(name: "sealed-sticky-l", role: "sealed-holdout", width: 947, height: 747, originX: 8, originY: 129),
+]
+#elseif TILE_COEFFICIENT_HOLDOUT
 private let cases = [
     CaptureCase(name: "sealed-control-square", role: "sealed-holdout", width: 256, height: 256, originX: 384, originY: 384),
     CaptureCase(name: "sealed-prime-a", role: "sealed-holdout", width: 487, height: 641, originX: 13, originY: 79),
@@ -678,7 +701,45 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
-#if TILE_COEFFICIENT_HOLDOUT
+#if TILE_STICKY_COEFFICIENT_HOLDOUT
+private let stickyHoldoutEndpointSpecs: [
+    (name: String, role: String, lowBits: UInt32, highBits: UInt32)
+] = [
+    ("tiny-near-one-b", "sticky-carry-target", 0x3780_0005, 0x3f70_000d),
+    ("small-wide", "sticky-carry-target", 0x3901_2345, 0x3f12_3457),
+    ("sixteenth-seven-eighths", "sticky-carry-target", 0x3d80_0011, 0x3f60_001d),
+    ("eighth-half", "sticky-carry-target", 0x3e00_0013, 0x3f00_0025),
+    ("three-sixteenths-eleven", "sticky-carry-target", 0x3e40_0017, 0x3f30_002b),
+    ("quarter-half-cross", "sticky-carry-target", 0x3e7f_ffdd, 0x3f00_0031),
+    ("half-three-quarter-cross", "sticky-carry-target", 0x3eff_ffcd, 0x3f40_003b),
+    ("zero-five-eighths", "sign-domain", 0x0000_0000, 0x3f20_002d),
+    ("negative-quarter-positive", "sign-domain", 0xbe80_0019, 0x3f10_0033),
+    ("exact-eighth-seven-eighths", "arithmetic-control", 0x3e00_0000, 0x3f60_0000),
+    ("same-binade-wide", "sticky-carry-target", 0x3f00_0015, 0x3f70_002f),
+    ("close-positive", "center-control", 0x3f20_0011, 0x3f20_00b7),
+    ("negative-small-positive", "sign-domain", 0xbd00_001b, 0x3e80_0037),
+    ("one-two-cross", "binade-control", 0x3f7f_ffc1, 0x4000_0029),
+    ("tiny-half-b", "sticky-carry-target", 0x3800_000f, 0x3f00_0043),
+    ("quarter-three-quarter-b", "sticky-carry-target", 0x3e80_0029, 0x3f40_004d),
+    ("slope-bias-wide", "slope-bias-target", 0x3e1d_681a, 0x3fad_cf98),
+    ("slope-bias-small", "slope-bias-target", 0x3b78_8c19, 0x3cdc_11bd),
+]
+
+private func stickyHoldoutEndpoints() -> [EndpointCase] {
+    stickyHoldoutEndpointSpecs.flatMap { endpoint in
+        [
+            EndpointCase(
+                name: "\(endpoint.name)-forward", role: endpoint.role,
+                lowBits: endpoint.lowBits, highBits: endpoint.highBits
+            ),
+            EndpointCase(
+                name: "\(endpoint.name)-reverse", role: endpoint.role,
+                lowBits: endpoint.highBits, highBits: endpoint.lowBits
+            ),
+        ]
+    }
+}
+#elseif TILE_COEFFICIENT_HOLDOUT
 private let coefficientHoldoutEndpointSpecs: [
     (name: String, role: String, lowBits: UInt32, highBits: UInt32)
 ] = [
@@ -1268,7 +1329,9 @@ private func discriminatorEndpoints() -> [EndpointCase] {
 }
 #endif
 
-#if TILE_COEFFICIENT_HOLDOUT
+#if TILE_STICKY_COEFFICIENT_HOLDOUT
+private let endpoints = stickyHoldoutEndpoints()
+#elseif TILE_COEFFICIENT_HOLDOUT
 private let endpoints = coefficientHoldoutEndpoints()
 #elseif TILE_CENTER_EXTENT_TOMOGRAPHY
 private let endpoints = centerExtentTomographyEndpoints()
@@ -1581,7 +1644,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_COEFFICIENT_HOLDOUT
+#if TILE_STICKY_COEFFICIENT_HOLDOUT
+    precondition(cases.count == 12)
+    precondition(endpoints.count == 36)
+    precondition(layout["recordCount"] as? Int == 110_592)
+    precondition(layout["rawBytes"] as? Int == 7_962_624)
+    precondition(layout["expectedRecordCount"] as? Int == 81_648)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "c68826a95949092fdf046acb12952ed9974f2a793c3902428cddd3f55ffffd27"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "72f88000946ea0736fd2423faa36b48e4060eebc2ce0ee71b7c87f27d99cbdc9"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "6cf9594e97aa3050c45e3c645281646e8bbd9397f4d99f4fb789be9cfcf43889"
+    )
+#elseif TILE_COEFFICIENT_HOLDOUT
     precondition(cases.count == 8)
     precondition(endpoints.count == 24)
     precondition(layout["recordCount"] as? Int == 49_152)

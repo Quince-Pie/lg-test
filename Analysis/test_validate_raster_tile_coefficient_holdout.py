@@ -164,7 +164,7 @@ class RasterTileCoefficientHoldoutTests(unittest.TestCase):
             / "main.swift"
         ).read_text(encoding="utf-8")
         case_block = source.split(
-            "#if TILE_COEFFICIENT_HOLDOUT\nprivate let cases = [",
+            "#elseif TILE_COEFFICIENT_HOLDOUT\nprivate let cases = [",
             maxsplit=1,
         )[1].split("\n]\n#elseif TILE_CENTER_EXTENT_TOMOGRAPHY", maxsplit=1)[0]
         swift_cases = [

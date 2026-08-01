@@ -3613,6 +3613,43 @@ mismatched words on the unseen capture followed by an unchanged independent
 capture with the same raw SHA-256. A failure is evidence and must not be
 relabelled parity or hidden behind a tolerance.
 
+Run `30716149845` opened schema 13 at commit `05e4ece`. Its structure was
+complete: 23,928 declared records, 430,704 finite words, and a 3,538,944-byte
+raw stream with SHA-256
+`2551aa03106d055322f810b3cc68b9106aec13784dbb85de180891da1cd9e6c8`.
+The frozen prediction was rejected on 6,411 words across 398 records. The
+endpoint-dependent constant-path selector caused 6,358 of those errors.
+Applying the factorized path universally left 53 words across four records,
+all two directions and two edge samples of one tile setup. This is a failed
+prospective result; the red workflow is correct and has not been relabelled.
+
+Post-opening arithmetic recovery found one input-only rule with no case or
+endpoint names. The tile product sums the individually low-19-bit-truncated
+binary partial products, retains one carry unit if any discarded column
+contributes, adds bias 10, and normalizes to 27 bits. Keeping every discarded
+carry reproduces the earlier aggregate model; keeping none reproduces the
+earlier partial-product ablation. The one-carry model explains both sides of
+the schema-13 discriminator and replays schemas 3 through 13 exactly:
+4,938,472 records and 88,892,496 of 88,892,496 words. Because schema 13 was
+used to recover the rule, this zero is retrospective calibration evidence.
+
+Schema 14 freezes a new prospective test of that rule before observing any
+Apple output. Twelve novel geometries and 36 novel directed endpoints declare
+81,648 records and 1,469,664 exact component words inside a 7,962,624-byte
+sparse raw buffer. The prediction stream has SHA-256
+`7debfcbeec6904cdb14ce499da2818114334e4f0cb02590c386987c0cf04c0f1`;
+its 2,823,187-byte zlib archive has SHA-256
+`a794ac2a8b3ce3cc9d4d41d18973fe3b925a51f22d61c6876d8b09afa748bf0d`;
+the preregistration has SHA-256
+`9e083792501da88dae838ee3d1d69b163b7adfe38e96cf78477afd34754af4a1`.
+Before opening, the matrix differs from the full-carry model on 3,035 words,
+the no-carry model on 4,627, the old combined-product path on 52,146, and every
+declared precision or bias ablation on at least 685 words. Acceptance remains
+zero mismatched words, followed by an unchanged bit-identical repeat. Even a
+passing repeat validates only this raster-coefficient domain; it does not by
+itself authorize a production shader change or establish complete Liquid
+Glass image parity.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
