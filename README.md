@@ -3251,6 +3251,45 @@ on both sides of the inferred boundaries. Its preregistered sealed stream has
 The Apple values did not exist when that hash was committed; zero mismatched
 words and an unchanged repeat are mandatory.
 
+Run `30695687953` opened schema 4 after commit `828a747`. Capture, structural
+validation, and every opened control passed. Of 11,973,420 compared words,
+11,972,660 are exact (99.993652607%); 24 of 26 cases, including every opened
+calibration case, are completely exact. All 760 one-ULP residuals occur in
+two sealed cases. The 506-by-859 case contributes 750 `pull@10/16` words for
+the matched eight-ULP deltas at phase `71/253`. The 825-by-391 case contributes
+five center and five derivative words, only for reverse span 30 at phase
+`26/55`. The raw 98,721,792-byte stream has SHA-256
+`d54e93e834012de02e5d5aa7dee96c8dd6b48664de74f2b1b4a0703b9c52d6b0`.
+This rejects the phase-only v2 law without authorizing any shader change.
+
+An exhaustive replay against neighboring exact coefficients shows that every
+record remains explainable; no tolerance or new optical term is required.
+Separately rounded endpoint products are falsified—the best of 798 tested
+fixed-precision endpoint-composition candidates explains only 8,539 of 9,880
+axis setups. Direct 28-bit nearest-even slope quantization makes all 750 words
+in the 506-by-859 case exact but leaves the reverse-span residual unchanged.
+The evidence therefore separates a precision/half-step branch from a signed
+reverse-delta branch.
+The complete 798-candidate report and direct 28-bit report have SHA-256
+`fbaaceb1756930f784ec5c9f6524bf8b48475c5f806287bc50276fa74eb9fcb7`
+and
+`fe8b23a203a1f886f6ff040d2a8eda2291656afae77a705e607169db9fdae37f`,
+respectively.
+
+Schema 5 is the preregistered matched-delta discriminator. Four discovery
+geometries repeat the localized extents with entirely new zero-based and
+translated endpoint pairs. Every absolute delta—8, 16, or 30 units of
+`2^-25`—is repeated forward and reverse at zero and at two translated
+binary32 exponent regions across four low residues. Twenty-four sealed
+geometries then transfer the same ratios to extents 253, 1012, 440, and 880,
+their transposes, adjacent extents, and new opposite-edge determinants. The
+29-case, 56-endpoint layout contains 235,200 expected records in a
+29,933,568-byte stream. Its case, endpoint, and sample hashes are frozen in
+`raster_tile_translation_discriminator_preregistration.json`. Analysis may
+read only the four discovery cases; one executable input-only model and every
+sealed prediction byte must be committed before any sealed record is opened.
+An unchanged repeat remains mandatory.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

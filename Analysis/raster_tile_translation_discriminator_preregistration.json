@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "role": "matched-delta-discovery-with-sealed-geometry-holdout",
+  "sealedHoldoutOpenedAtPreregistration": false,
+  "sourceEvidence": {
+    "schema4RunId": 30695687953,
+    "schema4RawSha256": "d54e93e834012de02e5d5aa7dee96c8dd6b48664de74f2b1b4a0703b9c52d6b0",
+    "schema4RecordCount": 665190,
+    "schema4WordCount": 11973420,
+    "schema4RecordMismatchCount": 755,
+    "schema4WordMismatchCount": 760,
+    "schema4ExactCaseCount": 24,
+    "schema4CaseCount": 26,
+    "schema4P28NearestFixesResidual506x859": true,
+    "schema4P28NearestResidual506x859WordMismatchCount": 0,
+    "schema4P28NearestResidual825x391WordMismatchCount": 10,
+    "productionShaderChanged": false
+  },
+  "hypotheses": [
+    {
+      "name": "precision-branch",
+      "observation": "The frozen v2 27-bit predictor misses 750 pull@10/16 words at 506x859; direct 28-bit nearest-even slope quantization makes that entire case exact.",
+      "discriminator": "Matched absolute deltas at extents 253, 506, and 1012 separate a normalized half-step precision branch from a geometry-name correction."
+    },
+    {
+      "name": "signed-reverse-delta",
+      "observation": "Five reverse-span-30 setups at 825x391 require a larger slope candidate while forward span 15 at the same normalized phase remains exact.",
+      "discriminator": "Zero-based and translated forward/reverse pairs with identical absolute deltas separate sign, magnitude exponent, endpoint translation, and quotient phase."
+    }
+  ],
+  "capture": {
+    "schemaVersion": 5,
+    "rigVersion": "metal-raster-tile-selector-5.0.0",
+    "role": "prospective-zero-based-translated-matched-delta-discriminator",
+    "caseCount": 29,
+    "endpointCount": 56,
+    "caseWordsSha256": "13c1e6caf108baf46887dc8ab2545cca5fc7b58f069c49c60983d2cb0e9c94e4",
+    "endpointWordsSha256": "d601be7d61acc7ea3a96c12ba7e4519d12b0f4684761e662500b9df9c3253976",
+    "sampleWordsSha256": "887eb7020dbc052b39dd7c3281ec7983f60abdcda2959c0f446979b8c3f61334",
+    "discoveryCases": ["opened-residual-506x859", "opened-reverse-825x391", "opened-lower-503x377", "opened-middle-509x907"],
+    "sealedCases": ["sealed-ratio253-x", "sealed-ratio253-y", "sealed-ratio1012-x", "sealed-ratio1012-y", "sealed-ratio55-440-x", "sealed-ratio55-440-y", "sealed-ratio55-880-x", "sealed-ratio55-880-y", "sealed-neighbor252-x", "sealed-neighbor252-y", "sealed-neighbor254-x", "sealed-neighbor254-y", "sealed-neighbor439-x", "sealed-neighbor439-y", "sealed-neighbor441-x", "sealed-neighbor441-y", "sealed-neighbor879-x", "sealed-neighbor879-y", "sealed-neighbor881-x", "sealed-neighbor881-y", "sealed-opposite506-x", "sealed-opposite506-y", "sealed-opposite825-x", "sealed-opposite825-y"],
+    "deltaUnitsAtBinary32ExponentMinus25": [8, 16, 30],
+    "translatedBaseBits": ["0x3e800000", "0x3f000000"],
+    "translatedResidues": [0, 1, 7, 31],
+    "recordComponents": ["axis-pull@0/16", "axis-pull@1/16", "axis-pull@2/16", "axis-pull@3/16", "axis-pull@4/16", "axis-pull@5/16", "axis-pull@6/16", "axis-pull@7/16", "axis-pull@8/16", "axis-pull@9/16", "axis-pull@10/16", "axis-pull@11/16", "axis-pull@12/16", "axis-pull@13/16", "axis-pull@14/16", "axis-pull@15/16", "center", "axis-derivative(center)"],
+    "pullOffsetsByAxis": {
+      "x": [[0.0, 0.5], [0.0625, 0.5], [0.125, 0.5], [0.1875, 0.5], [0.25, 0.5], [0.3125, 0.5], [0.375, 0.5], [0.4375, 0.5], [0.5, 0.5], [0.5625, 0.5], [0.625, 0.5], [0.6875, 0.5], [0.75, 0.5], [0.8125, 0.5], [0.875, 0.5], [0.9375, 0.5]],
+      "y": [[0.5, 0.0], [0.5, 0.0625], [0.5, 0.125], [0.5, 0.1875], [0.5, 0.25], [0.5, 0.3125], [0.5, 0.375], [0.5, 0.4375], [0.5, 0.5], [0.5, 0.5625], [0.5, 0.625], [0.5, 0.6875], [0.5, 0.75], [0.5, 0.8125], [0.5, 0.875], [0.5, 0.9375]]
+    },
+    "layout": {
+      "caseCount": 29,
+      "endpointCount": 56,
+      "axisCount": 2,
+      "primitiveCount": 2,
+      "edgeCount": 2,
+      "tileCount": 32,
+      "slotCount": 256,
+      "pullCount": 16,
+      "recordComponentCount": 18,
+      "recordBytes": 72,
+      "recordCount": 415744,
+      "rawBytes": 29933568,
+      "expectedRecordCount": 235200,
+      "caseWordsSha256": "13c1e6caf108baf46887dc8ab2545cca5fc7b58f069c49c60983d2cb0e9c94e4",
+      "endpointWordsSha256": "d601be7d61acc7ea3a96c12ba7e4519d12b0f4684761e662500b9df9c3253976",
+      "sampleWordsSha256": "887eb7020dbc052b39dd7c3281ec7983f60abdcda2959c0f446979b8c3f61334",
+      "samplesPerCase": [60, 174, 158, 114, 182, 118, 118, 160, 160, 148, 148, 158, 158, 116, 116, 116, 116, 146, 146, 146, 146, 158, 158, 158, 158, 174, 174, 158, 158]
+    }
+  },
+  "blinding": {
+    "discoveryCaseRole": "discovery",
+    "sealedCaseRole": "sealed-holdout",
+    "discoveryAnalysisMayReadSealedRecords": false,
+    "sealedPredictionsMustBeCommittedBeforeOpening": true,
+    "unchangedCaptureRepeatRequired": true,
+    "noTolerance": true
+  },
+  "nextGate": "Analyze only the four discovery cases, freeze one input-only executable model and all sealed prediction bytes in git, then open all 24 sealed geometries with zero word tolerance and repeat the unchanged capture.",
+  "nonClaims": [
+    "This instrument-only capture does not establish end-to-end Liquid Glass image parity.",
+    "A later sealed pass still does not authorize a production shader change before fresh Walle geometry, scale, and dynamic-transition image gates pass bit for bit.",
+    "No result may weaken an existing protected image-quality gate."
+  ]
+}

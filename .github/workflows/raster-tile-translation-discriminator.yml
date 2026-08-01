@@ -1,0 +1,86 @@
+name: Measure Apple Metal matched-delta tile setup
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-tile-translation-discriminator.yml
+      - Analysis/raster_tile_translation_discriminator_preregistration.json
+      - Analysis/test_validate_raster_tile_translation_discriminator.py
+      - Analysis/validate_raster_tile_numerator.py
+      - Analysis/validate_raster_tile_translation_discriminator.py
+      - Sources/GlassRasterTileNumerator/**
+
+concurrency:
+  group: raster-tile-translation-discriminator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-tile-translation-discriminator:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Test frozen matched-delta contract
+        run: |
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_raster_tile_translation_discriminator.py' -v
+
+      - name: Build matched-delta probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-tile-translation
+          set -o pipefail
+          swiftc -D TILE_TRANSLATION_HOLDOUT -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterTileNumerator/main.swift \
+            -o glass-raster-tile-translation 2>&1 |
+            tee raster-tile-translation/build.log
+
+      - name: Capture matched-delta records
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-tile-translation raster-tile-translation
+
+      - name: Validate frozen matched-delta capture
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_raster_tile_translation_discriminator.py \
+            raster-tile-translation \
+            --output raster-tile-translation/validation.json
+
+      - name: Upload matched-delta evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-tile-translation-${{ github.run_id }}
+          path: raster-tile-translation
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce matched-delta evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-tile-translation/manifest.json
+          test -s raster-tile-translation/validation.json
+          test -s raster-tile-translation/raster-tile-numerator.raw

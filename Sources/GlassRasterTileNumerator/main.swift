@@ -59,7 +59,15 @@ private struct SamplePosition {
     }
 }
 
-#if TILE_PHASE_HOLDOUT
+#if TILE_TRANSLATION_HOLDOUT
+private let schemaVersion = 5
+private let rigVersion = "metal-raster-tile-selector-5.0.0"
+private let role = "prospective-zero-based-translated-matched-delta-discriminator"
+private let preregistrationFile =
+    "Analysis/raster_tile_translation_discriminator_preregistration.json"
+private let preregistrationSha256 =
+    "46c4eb90a2aa3bc7630cedf36ab935f5937e3262cdfa408c4b4d904b2fc5eabd"
+#elseif TILE_PHASE_HOLDOUT
 private let schemaVersion = 4
 private let rigVersion = "metal-raster-tile-selector-4.0.0"
 private let role = "prospective-dense-tile-selector-phase-holdout"
@@ -89,7 +97,54 @@ private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
 private let pullCount = 16
 private let recordComponentCount = pullCount + 2
 private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
-#if TILE_PHASE_HOLDOUT
+#if TILE_TRANSLATION_HOLDOUT
+private let cases = [
+    CaptureCase(
+        name: "control-square-256", role: "prospective-control",
+        width: 256, height: 256, originX: 384, originY: 384
+    ),
+    CaptureCase(
+        name: "opened-residual-506x859", role: "discovery",
+        width: 506, height: 859, originX: 259, originY: 82
+    ),
+    CaptureCase(
+        name: "opened-reverse-825x391", role: "discovery",
+        width: 825, height: 391, originX: 99, originY: 316
+    ),
+    CaptureCase(
+        name: "opened-lower-503x377", role: "discovery",
+        width: 503, height: 377, originX: 37, originY: 73
+    ),
+    CaptureCase(
+        name: "opened-middle-509x907", role: "discovery",
+        width: 509, height: 907, originX: 309, originY: 49
+    ),
+    CaptureCase(name: "sealed-ratio253-x", role: "sealed-holdout", width: 253, height: 647, originX: 17, originY: 211),
+    CaptureCase(name: "sealed-ratio253-y", role: "sealed-holdout", width: 647, height: 253, originX: 211, originY: 17),
+    CaptureCase(name: "sealed-ratio1012-x", role: "sealed-holdout", width: 1012, height: 257, originX: 6, originY: 383),
+    CaptureCase(name: "sealed-ratio1012-y", role: "sealed-holdout", width: 257, height: 1012, originX: 383, originY: 6),
+    CaptureCase(name: "sealed-ratio55-440-x", role: "sealed-holdout", width: 440, height: 683, originX: 73, originY: 121),
+    CaptureCase(name: "sealed-ratio55-440-y", role: "sealed-holdout", width: 683, height: 440, originX: 121, originY: 73),
+    CaptureCase(name: "sealed-ratio55-880-x", role: "sealed-holdout", width: 880, height: 347, originX: 79, originY: 251),
+    CaptureCase(name: "sealed-ratio55-880-y", role: "sealed-holdout", width: 347, height: 880, originX: 251, originY: 79),
+    CaptureCase(name: "sealed-neighbor252-x", role: "sealed-holdout", width: 252, height: 653, originX: 31, originY: 199),
+    CaptureCase(name: "sealed-neighbor252-y", role: "sealed-holdout", width: 653, height: 252, originX: 199, originY: 31),
+    CaptureCase(name: "sealed-neighbor254-x", role: "sealed-holdout", width: 254, height: 641, originX: 47, originY: 223),
+    CaptureCase(name: "sealed-neighbor254-y", role: "sealed-holdout", width: 641, height: 254, originX: 223, originY: 47),
+    CaptureCase(name: "sealed-neighbor439-x", role: "sealed-holdout", width: 439, height: 677, originX: 83, originY: 139),
+    CaptureCase(name: "sealed-neighbor439-y", role: "sealed-holdout", width: 677, height: 439, originX: 139, originY: 83),
+    CaptureCase(name: "sealed-neighbor441-x", role: "sealed-holdout", width: 441, height: 691, originX: 101, originY: 117),
+    CaptureCase(name: "sealed-neighbor441-y", role: "sealed-holdout", width: 691, height: 441, originX: 117, originY: 101),
+    CaptureCase(name: "sealed-neighbor879-x", role: "sealed-holdout", width: 879, height: 353, originX: 67, originY: 271),
+    CaptureCase(name: "sealed-neighbor879-y", role: "sealed-holdout", width: 353, height: 879, originX: 271, originY: 67),
+    CaptureCase(name: "sealed-neighbor881-x", role: "sealed-holdout", width: 881, height: 349, originX: 71, originY: 263),
+    CaptureCase(name: "sealed-neighbor881-y", role: "sealed-holdout", width: 349, height: 881, originX: 263, originY: 71),
+    CaptureCase(name: "sealed-opposite506-x", role: "sealed-holdout", width: 506, height: 853, originX: 259, originY: 91),
+    CaptureCase(name: "sealed-opposite506-y", role: "sealed-holdout", width: 853, height: 506, originX: 91, originY: 259),
+    CaptureCase(name: "sealed-opposite825-x", role: "sealed-holdout", width: 825, height: 397, originX: 99, originY: 311),
+    CaptureCase(name: "sealed-opposite825-y", role: "sealed-holdout", width: 397, height: 825, originX: 311, originY: 99),
+]
+#elseif TILE_PHASE_HOLDOUT
 private let cases = [
     CaptureCase(
         name: "control-square-256", role: "prospective-control",
@@ -368,7 +423,67 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
+#if TILE_TRANSLATION_HOLDOUT
+private let discriminatorDeltas: [(units: UInt32, bits: UInt32)] = [
+    (8, 0x3480_0000), (16, 0x3500_0000), (30, 0x3570_0000),
+]
+private let translatedBases: [(name: String, bits: UInt32, unitScale: UInt32)] = [
+    ("b0", 0x3e80_0000, 1), ("b2", 0x3f00_0000, 2),
+]
+private let translatedResidues: [UInt32] = [0, 1, 7, 31]
+
+private func discriminatorEndpoints() -> [EndpointCase] {
+    var result = [
+        EndpointCase(
+            name: "zero-to-one", role: "prospective-control",
+            lowBits: 0, highBits: 0x3f80_0000
+        ),
+        EndpointCase(
+            name: "one-to-zero", role: "prospective-control",
+            lowBits: 0x3f80_0000, highBits: 0
+        ),
+    ]
+    for delta in discriminatorDeltas {
+        result.append(EndpointCase(
+            name: String(format: "zero-u%02d-forward", delta.units),
+            role: "arithmetic-discovery", lowBits: 0, highBits: delta.bits
+        ))
+        result.append(EndpointCase(
+            name: String(format: "zero-u%02d-reverse", delta.units),
+            role: "arithmetic-discovery", lowBits: delta.bits, highBits: 0
+        ))
+        for base in translatedBases {
+            let span = delta.units / base.unitScale
+            precondition(span * base.unitScale == delta.units)
+            for residue in translatedResidues {
+                let low = base.bits + residue
+                let high = low + span
+                result.append(EndpointCase(
+                    name: String(
+                        format: "translated-%@-r%02d-u%02d-forward",
+                        base.name, residue, delta.units
+                    ),
+                    role: "arithmetic-discovery", lowBits: low, highBits: high
+                ))
+                result.append(EndpointCase(
+                    name: String(
+                        format: "translated-%@-r%02d-u%02d-reverse",
+                        base.name, residue, delta.units
+                    ),
+                    role: "arithmetic-discovery", lowBits: high, highBits: low
+                ))
+            }
+        }
+    }
+    return result
+}
+#endif
+
+#if TILE_TRANSLATION_HOLDOUT
+private let endpoints = discriminatorEndpoints()
+#else
 private let endpoints = fixedEndpoints + selectorEndpoints()
+#endif
 
 private func samplePositions(captureCase: CaptureCase) -> [SamplePosition] {
     var result: [SamplePosition] = []
@@ -595,7 +710,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_PHASE_HOLDOUT
+#if TILE_TRANSLATION_HOLDOUT
+    precondition(cases.count == 29)
+    precondition(endpoints.count == 56)
+    precondition(layout["recordCount"] as? Int == 415_744)
+    precondition(layout["rawBytes"] as? Int == 29_933_568)
+    precondition(layout["expectedRecordCount"] as? Int == 235_200)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "13c1e6caf108baf46887dc8ab2545cca5fc7b58f069c49c60983d2cb0e9c94e4"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "d601be7d61acc7ea3a96c12ba7e4519d12b0f4684761e662500b9df9c3253976"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "887eb7020dbc052b39dd7c3281ec7983f60abdcda2959c0f446979b8c3f61334"
+    )
+#elseif TILE_PHASE_HOLDOUT
     precondition(cases.count == 26)
     precondition(endpoints.count == 206)
     precondition(layout["recordCount"] as? Int == 1_371_136)

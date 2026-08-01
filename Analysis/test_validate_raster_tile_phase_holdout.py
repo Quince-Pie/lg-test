@@ -61,7 +61,7 @@ class RasterTilePhaseHoldoutTests(unittest.TestCase):
             / "main.swift"
         ).read_text(encoding="utf-8")
         for value in (
-            "#if TILE_PHASE_HOLDOUT",
+            "TILE_PHASE_HOLDOUT",
             capture.PREREGISTRATION_SHA256,
             str(capture.layout_metadata()["caseWordsSha256"]),
             str(capture.layout_metadata()["endpointWordsSha256"]),
