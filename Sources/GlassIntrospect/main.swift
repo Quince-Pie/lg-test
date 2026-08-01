@@ -9292,6 +9292,41 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
         }
 
+        func makeBandUniform(
+            zeroingColorAt recordOffset: Int
+        ) -> MTLBuffer? {
+            let destinationOffset =
+                selection.uniformOffset + recordOffset
+            guard destinationOffset >= 0,
+                  destinationOffset + 4 * MemoryLayout<UInt16>.size
+                    <= uniformClone.length,
+                  let clone = device.makeBuffer(
+                    length: uniformClone.length,
+                    options: .storageModeShared)
+            else {
+                return nil
+            }
+            memcpy(
+                clone.contents(),
+                uniformClone.contents(),
+                uniformClone.length)
+            memset(
+                clone.contents().advanced(by: destinationOffset),
+                0,
+                4 * MemoryLayout<UInt16>.size)
+            return clone
+        }
+        guard let keyUniform = makeBandUniform(
+                zeroingColorAt: 0xF0),
+              let fillUniform = makeBandUniform(
+                zeroingColorAt: 0xE8)
+        else {
+            return [
+                "executed": false,
+                "reason": "final highlight band uniform clone failed",
+            ]
+        }
+
         let rebuiltDescriptor = capturedDescriptor.copy()
             as? MTLRenderPipelineDescriptor
         let floatDescriptor = capturedDescriptor.copy()
@@ -9329,7 +9364,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         func render(
             name: String,
             pipeline: MTLRenderPipelineState,
-            pixelFormat: MTLPixelFormat
+            pixelFormat: MTLPixelFormat,
+            uniformBuffer: MTLBuffer
         ) -> [String: Any] {
             let targetDescriptor = MTLTextureDescriptor
                 .texture2DDescriptor(
@@ -9434,7 +9470,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pass.commands,
                 selection: selection,
                 pipeline: pipeline,
-                uniformBuffer: uniformClone)
+                uniformBuffer: uniformBuffer)
             let summary = encodeReplayCommands(
                 commands,
                 with: encoder)
@@ -9473,15 +9509,28 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let capturedBGRA = render(
             name: "captured-bgra8",
             pipeline: selection.pipeline,
-            pixelFormat: .bgra8Unorm)
+            pixelFormat: .bgra8Unorm,
+            uniformBuffer: uniformClone)
         let rebuiltBGRA = render(
             name: "rebuilt-bgra8",
             pipeline: rebuiltPipeline,
-            pixelFormat: .bgra8Unorm)
+            pixelFormat: .bgra8Unorm,
+            uniformBuffer: uniformClone)
         let exactHalf = render(
             name: "rebuilt-rgba16float",
             pipeline: floatPipeline,
-            pixelFormat: .rgba16Float)
+            pixelFormat: .rgba16Float,
+            uniformBuffer: uniformClone)
+        let exactKeyHalf = render(
+            name: "key-rgba16float",
+            pipeline: floatPipeline,
+            pixelFormat: .rgba16Float,
+            uniformBuffer: keyUniform)
+        let exactFillHalf = render(
+            name: "fill-rgba16float",
+            pipeline: floatPipeline,
+            pixelFormat: .rgba16Float,
+            uniformBuffer: fillUniform)
         let comparison = compareReplaySnapshots(
             reference: capturedBGRA,
             candidate: rebuiltBGRA,
@@ -9491,7 +9540,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "executed":
                 capturedBGRA["executed"] as? Bool == true
                 && rebuiltBGRA["executed"] as? Bool == true
-                && exactHalf["executed"] as? Bool == true,
+                && exactHalf["executed"] as? Bool == true
+                && exactKeyHalf["executed"] as? Bool == true
+                && exactFillHalf["executed"] as? Bool == true,
             "capturedAppleFunctionUnmodified": true,
             "selectedLastA2XghfcDraw": true,
             "drawIndex": selection.drawIndex,
@@ -9521,6 +9572,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "rebuiltBGRA8": rebuiltBGRA,
             "capturedVsRebuiltBGRA8": comparison,
             "exactHalfAlpha": exactHalf,
+            "exactKeyHalfAlpha": exactKeyHalf,
+            "exactFillHalfAlpha": exactFillHalf,
         ]
     }
 

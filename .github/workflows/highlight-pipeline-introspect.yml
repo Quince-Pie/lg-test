@@ -166,6 +166,8 @@ jobs:
               (alpha_trace["capturedBGRA8"], 1024 * 1024 * 4),
               (alpha_trace["rebuiltBGRA8"], 1024 * 1024 * 4),
               (alpha_trace["exactHalfAlpha"], 1024 * 1024 * 8),
+              (alpha_trace["exactKeyHalfAlpha"], 1024 * 1024 * 8),
+              (alpha_trace["exactFillHalfAlpha"], 1024 * 1024 * 8),
           )
           for replay, expected in alpha_records:
               if replay.get("executed") is not True:
@@ -176,48 +178,70 @@ jobs:
                   raise SystemExit(
                       f"{path} size differs: {path.stat().st_size}"
                   )
-          alpha_output = alpha_trace["exactHalfAlpha"]["output"]
-          if alpha_output.get("pixelFormat") != 115:
-              raise SystemExit(
-                  f"alpha output format differs: {alpha_output}"
-              )
-          alpha_path = root / alpha_output["rawFile"]
-          alpha_bytes = alpha_path.read_bytes()
-          alpha_words = []
-          alpha_channel_words = set()
-          for red, green, blue, _alpha in struct.iter_unpack(
-              "<4H", alpha_bytes
+          alpha_statistics = {}
+          for name, key in (
+              ("combined", "exactHalfAlpha"),
+              ("key", "exactKeyHalfAlpha"),
+              ("fill", "exactFillHalfAlpha"),
           ):
-              if red != green or red != blue:
+              alpha_output = alpha_trace[key]["output"]
+              if alpha_output.get("pixelFormat") != 115:
                   raise SystemExit(
-                      "RGBA16F alpha trace does not have equal RGB words"
+                      f"{name} alpha output format differs: "
+                      f"{alpha_output}"
                   )
-              if red:
-                  alpha_words.append(red)
-                  alpha_channel_words.add(red)
-          if len(alpha_words) < 1000 or len(alpha_channel_words) < 100:
-              raise SystemExit(
-                  "RGBA16F alpha trace lacks the expected active field: "
-                  f"pixels={len(alpha_words)} "
-                  f"values={len(alpha_channel_words)}"
-              )
+              alpha_path = root / alpha_output["rawFile"]
+              alpha_bytes = alpha_path.read_bytes()
+              alpha_words = []
+              alpha_channel_words = set()
+              for red, green, blue, _alpha in struct.iter_unpack(
+                  "<4H", alpha_bytes
+              ):
+                  if red != green or red != blue:
+                      raise SystemExit(
+                          f"RGBA16F {name} alpha trace does not have "
+                          "equal RGB words"
+                      )
+                  if red:
+                      alpha_words.append(red)
+                      alpha_channel_words.add(red)
+              if (
+                  len(alpha_words) < 1000
+                  or len(alpha_channel_words) < 100
+              ):
+                  raise SystemExit(
+                      f"RGBA16F {name} alpha trace lacks the expected "
+                      f"active field: pixels={len(alpha_words)} "
+                      f"values={len(alpha_channel_words)}"
+                  )
+              alpha_statistics[name] = {
+                  "activePixelCount": len(alpha_words),
+                  "uniqueWordCount": len(alpha_channel_words),
+                  "minimumWord": min(alpha_words),
+                  "maximumWord": max(alpha_words),
+                  "sha256": hashlib.sha256(alpha_bytes).hexdigest(),
+              }
+          combined = alpha_statistics["combined"]
           (root / "highlight-pipeline-validation.json").write_text(
               json.dumps(
                   {
-                      "schemaVersion": 2,
+                      "schemaVersion": 3,
                       "exactContract": True,
                       "caseCount": 8,
                       "capturedApplePipelinesUnmodified": True,
                       "auxiliaryPixelFormat": 115,
                       "capturedVsRebuiltBGRA8MismatchedBytes": 0,
                       "exactHalfAlphaPixelFormat": 115,
-                      "exactHalfAlphaActivePixelCount": len(alpha_words),
+                      "exactHalfAlphaActivePixelCount":
+                          combined["activePixelCount"],
                       "exactHalfAlphaUniqueWordCount":
-                          len(alpha_channel_words),
-                      "exactHalfAlphaMinimumWord": min(alpha_words),
-                      "exactHalfAlphaMaximumWord": max(alpha_words),
-                      "exactHalfAlphaSHA256":
-                          hashlib.sha256(alpha_bytes).hexdigest(),
+                          combined["uniqueWordCount"],
+                      "exactHalfAlphaMinimumWord":
+                          combined["minimumWord"],
+                      "exactHalfAlphaMaximumWord":
+                          combined["maximumWord"],
+                      "exactHalfAlphaSHA256": combined["sha256"],
+                      "bandStatistics": alpha_statistics,
                   },
                   indent=2,
                   sort_keys=True,
