@@ -3186,6 +3186,25 @@ authorize a production shader change: a recovered law must first pass a new
 unseen Walle geometry/scale image holdout, an unchanged repeat, and separate
 dynamic-transition gates without regressing any protected output byte.
 
+Run `30690759665` passed schema 2 with 63,280 finite records. Exhaustive local
+recovery, including the odd-minus-even 2x2-quad derivative rule, uniquely
+recovers 29,048 of 29,190 paired tile constants. It leaves as many as 257
+observational slope candidates for tiny endpoint deltas, so denser derivative
+sampling alone cannot establish the numerator selector. A normalized
+binary32 edge-weight product with a 25-bit first stage explains every
+previously hard near-equal endpoint residual, but the captured matrix does not
+select that path predictively and therefore does not authorize a shader edit.
+
+Schema 3 turns the workflow into a dense selector discriminator. It freezes
+28 geometries, 206 endpoint pairs spanning five binary32 exponent/mantissa
+regions, and all sixteen 1/16-axis pull phases. Its 106,315,776-byte
+sentinel-filled stream contains 954,810 required records and 17,186,580 finite
+words. Four new geometries are marked `sealed-holdout`; validation may check
+their integrity but analysis must not inspect or aggregate their values until
+one selector algorithm and every parameter are frozen in git. The historical
+schema-2 contract and preregistration remain versioned alongside schema 3 so
+the prior artifact stays independently reproducible.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

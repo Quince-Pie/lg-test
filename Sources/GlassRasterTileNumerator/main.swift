@@ -30,12 +30,14 @@ private struct CaptureCase {
 
 private struct EndpointCase {
     let name: String
+    let role: String
     let lowBits: UInt32
     let highBits: UInt32
 
     var manifest: [String: Any] {
         [
             "name": name,
+            "role": role,
             "lowBits": String(format: "0x%08x", lowBits),
             "highBits": String(format: "0x%08x", highBits),
         ]
@@ -57,9 +59,9 @@ private struct SamplePosition {
     }
 }
 
-private let schemaVersion = 2
-private let rigVersion = "metal-raster-tile-numerator-2.0.0"
-private let role = "paired-edge-discovery-with-prospective-power-two-controls"
+private let schemaVersion = 3
+private let rigVersion = "metal-raster-tile-selector-3.0.0"
+private let role = "dense-tile-selector-discovery-with-sealed-holdouts"
 private let targetWidth = 1_024
 private let targetHeight = 1_024
 private let viewportWidth = 1_024
@@ -70,9 +72,11 @@ private let axisCount = 2
 private let primitiveCount = 2
 private let edgeCount = 2
 private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
-private let recordBytes = 16
+private let pullCount = 16
+private let recordComponentCount = pullCount + 2
+private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
 private let preregistrationSha256 =
-    "150dd157b90ff6798ac087e47d39f78cc4e68dbd016b3aff3a096d1db31dbae1"
+    "d8a4b9f0c6464a144c61b258654b7feb8be884f43b4df1e546d4cd50442eab9c"
 
 private let cases = [
     CaptureCase(
@@ -171,26 +175,80 @@ private let cases = [
         name: "near-fullscreen-prime", role: "discovery",
         width: 977, height: 43, originX: 23, originY: 401
     ),
+    CaptureCase(
+        name: "sealed-prime-677x419", role: "sealed-holdout",
+        width: 677, height: 419, originX: 53, originY: 149
+    ),
+    CaptureCase(
+        name: "sealed-prime-823x557", role: "sealed-holdout",
+        width: 823, height: 557, originX: 101, originY: 211
+    ),
+    CaptureCase(
+        name: "sealed-tall-509x907", role: "sealed-holdout",
+        width: 509, height: 907, originX: 309, originY: 49
+    ),
+    CaptureCase(
+        name: "sealed-wide-911x509", role: "sealed-holdout",
+        width: 911, height: 509, originX: 41, originY: 271
+    ),
 ]
 
-private let endpoints = [
-    EndpointCase(name: "zero-to-one", lowBits: 0x0000_0000, highBits: 0x3f80_0000),
-    EndpointCase(name: "one-to-zero", lowBits: 0x3f80_0000, highBits: 0x0000_0000),
-    EndpointCase(name: "negative-half-to-half", lowBits: 0xbf00_0000, highBits: 0x3f00_0000),
-    EndpointCase(name: "half-to-negative-half", lowBits: 0x3f00_0000, highBits: 0xbf00_0000),
-    EndpointCase(name: "opened-256", lowBits: 0x3ec0_0000, highBits: 0x3f20_0000),
-    EndpointCase(name: "opened-512-x", lowBits: 0x3e86_cccd, highBits: 0x3f29_cccd),
-    EndpointCase(name: "opened-512-y", lowBits: 0x3ec9_aaab, highBits: 0x3f3a_2aab),
-    EndpointCase(name: "opened-640-x", lowBits: 0x3eb3_5556, highBits: 0x3f44_5556),
-    EndpointCase(name: "opened-640-y", lowBits: 0x3ec2_0000, highBits: 0x3f4b_aaab),
-    EndpointCase(name: "opened-896-x", lowBits: 0x3e55_5556, highBits: 0x3f4a_aaab),
-    EndpointCase(name: "opened-896-y", lowBits: 0x3e55_5556, highBits: 0x3f4a_aaac),
-    EndpointCase(name: "near-equal-positive", lowBits: 0x3f00_0001, highBits: 0x3f00_0009),
-    EndpointCase(name: "negative-to-positive", lowBits: 0xbf40_0000, highBits: 0x3e80_0000),
-    EndpointCase(name: "positive-to-negative", lowBits: 0x3e80_0000, highBits: 0xbf40_0000),
-    EndpointCase(name: "constant-quarter", lowBits: 0x3e80_0000, highBits: 0x3e80_0000),
-    EndpointCase(name: "small-normal-ramp", lowBits: 0x3980_0000, highBits: 0x3a80_0000),
+private let fixedEndpoints = [
+    EndpointCase(name: "zero-to-one", role: "prospective-control", lowBits: 0x0000_0000, highBits: 0x3f80_0000),
+    EndpointCase(name: "one-to-zero", role: "prospective-control", lowBits: 0x3f80_0000, highBits: 0x0000_0000),
+    EndpointCase(name: "negative-half-to-half", role: "calibration", lowBits: 0xbf00_0000, highBits: 0x3f00_0000),
+    EndpointCase(name: "half-to-negative-half", role: "calibration", lowBits: 0x3f00_0000, highBits: 0xbf00_0000),
+    EndpointCase(name: "opened-256", role: "calibration", lowBits: 0x3ec0_0000, highBits: 0x3f20_0000),
+    EndpointCase(name: "opened-512-x", role: "calibration", lowBits: 0x3e86_cccd, highBits: 0x3f29_cccd),
+    EndpointCase(name: "opened-512-y", role: "calibration", lowBits: 0x3ec9_aaab, highBits: 0x3f3a_2aab),
+    EndpointCase(name: "opened-640-x", role: "calibration", lowBits: 0x3eb3_5556, highBits: 0x3f44_5556),
+    EndpointCase(name: "opened-640-y", role: "calibration", lowBits: 0x3ec2_0000, highBits: 0x3f4b_aaab),
+    EndpointCase(name: "opened-896-x", role: "calibration", lowBits: 0x3e55_5556, highBits: 0x3f4a_aaab),
+    EndpointCase(name: "opened-896-y", role: "calibration", lowBits: 0x3e55_5556, highBits: 0x3f4a_aaac),
+    EndpointCase(name: "near-equal-positive", role: "calibration", lowBits: 0x3f00_0001, highBits: 0x3f00_0009),
+    EndpointCase(name: "negative-to-positive", role: "calibration", lowBits: 0xbf40_0000, highBits: 0x3e80_0000),
+    EndpointCase(name: "positive-to-negative", role: "calibration", lowBits: 0x3e80_0000, highBits: 0xbf40_0000),
+    EndpointCase(name: "constant-quarter", role: "calibration", lowBits: 0x3e80_0000, highBits: 0x3e80_0000),
+    EndpointCase(name: "small-normal-ramp", role: "calibration", lowBits: 0x3980_0000, highBits: 0x3a80_0000),
 ]
+
+private let mantissaBaseBits: [UInt32] = [
+    0x3e80_0000, 0x3eff_fe00, 0x3f00_0000, 0x3f40_0000, 0x3f7f_fe00,
+]
+private let mantissaLowResidues: [UInt32] = [0, 1, 7, 31]
+private let mantissaUlpSpans: [UInt32] = [1, 2, 3, 4, 7, 8, 15, 16, 31]
+
+private func selectorEndpoints() -> [EndpointCase] {
+    var result: [EndpointCase] = []
+    for (baseIndex, baseBits) in mantissaBaseBits.enumerated() {
+        for residue in mantissaLowResidues {
+            let lowBits = baseBits + residue
+            for span in mantissaUlpSpans {
+                result.append(EndpointCase(
+                    name: String(format: "mantissa-b%d-r%02d-s%02d", baseIndex, residue, span),
+                    role: "selector-discovery",
+                    lowBits: lowBits,
+                    highBits: lowBits + span
+                ))
+            }
+        }
+        result.append(EndpointCase(
+            name: String(format: "mantissa-b%d-reverse-31-to-01", baseIndex),
+            role: "selector-discovery",
+            lowBits: baseBits + 31,
+            highBits: baseBits + 1
+        ))
+        result.append(EndpointCase(
+            name: String(format: "mantissa-b%d-reverse-17-to-09", baseIndex),
+            role: "selector-discovery",
+            lowBits: baseBits + 17,
+            highBits: baseBits + 9
+        ))
+    }
+    return result
+}
+
+private let endpoints = fixedEndpoints + selectorEndpoints()
 
 private func samplePositions(captureCase: CaptureCase) -> [SamplePosition] {
     var result: [SamplePosition] = []
@@ -307,22 +365,50 @@ vertex CaptureVertexOutput tile_numerator_vertex(
 
 fragment float tile_numerator_fragment(
     CaptureFragmentInput input [[stage_in]],
-    device uint4 *results [[buffer(0)]])
+    device uint *results [[buffer(0)]])
 {
     if (input.primitive != input.expectedPrimitive) {
         discard_fragment();
     }
     const float center = input.ramp.interpolate_at_center();
     const bool horizontal = input.axis == 0u;
-    const float2 pull0 = horizontal ? float2(0.0f, 0.5f) : float2(0.5f, 0.0f);
-    const float2 pull15 = horizontal
-        ? float2(0.9375f, 0.5f)
-        : float2(0.5f, 0.9375f);
-    results[\(slotCount)u * input.recordIndex + input.outputSlot] = uint4(
-        as_type<uint>(input.ramp.interpolate_at_offset(pull0)),
-        as_type<uint>(input.ramp.interpolate_at_offset(pull15)),
-        as_type<uint>(center),
-        as_type<uint>(horizontal ? dfdx(center) : dfdy(center)));
+    const uint record = \(slotCount)u * input.recordIndex + input.outputSlot;
+    const uint base = \(recordComponentCount)u * record;
+    results[base + 0u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.0000f, 0.5f) : float2(0.5f, 0.0000f)));
+    results[base + 1u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.0625f, 0.5f) : float2(0.5f, 0.0625f)));
+    results[base + 2u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.1250f, 0.5f) : float2(0.5f, 0.1250f)));
+    results[base + 3u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.1875f, 0.5f) : float2(0.5f, 0.1875f)));
+    results[base + 4u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.2500f, 0.5f) : float2(0.5f, 0.2500f)));
+    results[base + 5u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.3125f, 0.5f) : float2(0.5f, 0.3125f)));
+    results[base + 6u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.3750f, 0.5f) : float2(0.5f, 0.3750f)));
+    results[base + 7u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.4375f, 0.5f) : float2(0.5f, 0.4375f)));
+    results[base + 8u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.5000f, 0.5f) : float2(0.5f, 0.5000f)));
+    results[base + 9u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.5625f, 0.5f) : float2(0.5f, 0.5625f)));
+    results[base + 10u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.6250f, 0.5f) : float2(0.5f, 0.6250f)));
+    results[base + 11u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.6875f, 0.5f) : float2(0.5f, 0.6875f)));
+    results[base + 12u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.7500f, 0.5f) : float2(0.5f, 0.7500f)));
+    results[base + 13u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.8125f, 0.5f) : float2(0.5f, 0.8125f)));
+    results[base + 14u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.8750f, 0.5f) : float2(0.5f, 0.8750f)));
+    results[base + 15u] = as_type<uint>(input.ramp.interpolate_at_offset(
+        horizontal ? float2(0.9375f, 0.5f) : float2(0.5f, 0.9375f)));
+    results[base + \(pullCount)u] = as_type<uint>(center);
+    results[base + \(pullCount + 1)u] =
+        as_type<uint>(horizontal ? dfdx(center) : dfdy(center));
     return 1.0f;
 }
 """
@@ -374,6 +460,8 @@ private func layoutManifest() -> [String: Any] {
         "edgeCount": edgeCount,
         "tileCount": tileCount,
         "slotCount": slotCount,
+        "pullCount": pullCount,
+        "recordComponentCount": recordComponentCount,
         "recordBytes": recordBytes,
         "recordCount": cases.count * endpoints.count * slotCount,
         "rawBytes": cases.count * endpoints.count * slotCount * recordBytes,
@@ -387,22 +475,22 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-    precondition(cases.count == 24)
-    precondition(endpoints.count == 16)
-    precondition(layout["recordCount"] as? Int == 98_304)
-    precondition(layout["rawBytes"] as? Int == 1_572_864)
-    precondition(layout["expectedRecordCount"] as? Int == 63_280)
+    precondition(cases.count == 28)
+    precondition(endpoints.count == 206)
+    precondition(layout["recordCount"] as? Int == 1_476_608)
+    precondition(layout["rawBytes"] as? Int == 106_315_776)
+    precondition(layout["expectedRecordCount"] as? Int == 954_810)
     precondition(
         layout["caseWordsSha256"] as? String
-            == "966c0bf7ec9e7e611feb29468163009eba67bc5b12cadc18ba4c59e1260c9008"
+            == "8f2069d587aaec75d7dff254eca16c669de70c04f53807db54bb50ba44889c38"
     )
     precondition(
         layout["endpointWordsSha256"] as? String
-            == "ba0e93cdee2a5f19b63f7a01560da3fa431911dbf37e6775f3950802d4c10bf7"
+            == "d377fad43418c2996f2bf91e82764a8beeec18394126a6b991dccaa324692dcf"
     )
     precondition(
         layout["sampleWordsSha256"] as? String
-            == "04c82be1775ee7b77652360e9e0e49f6b191a3f40ef8e0b8e989ab32661f3ec3"
+            == "a07d1f865062df687abf954c6633b6b79e0b36e4ed0ef1ec92b366b20e3557da"
     )
 }
 
@@ -497,23 +585,21 @@ private func renderCase(
     }
 }
 
-private func isSentinel(_ value: SIMD4<UInt32>) -> Bool {
-    value.x == UInt32.max && value.y == UInt32.max
-        && value.z == UInt32.max && value.w == UInt32.max
-}
-
 private func verifyWrittenRecords(_ outputBuffer: MTLBuffer) throws {
     let recordCount = cases.count * endpoints.count * slotCount
     let records = outputBuffer.contents().bindMemory(
-        to: SIMD4<UInt32>.self,
-        capacity: recordCount
+        to: UInt32.self,
+        capacity: recordCount * recordComponentCount
     )
     for (caseIndex, captureCase) in cases.enumerated() {
         let expectedSlots = Set(samplePositions(captureCase: captureCase).map(\.slot))
         for endpointIndex in endpoints.indices {
             for slot in 0..<slotCount {
                 let index = (caseIndex * endpoints.count + endpointIndex) * slotCount + slot
-                let sentinel = isSentinel(records[index])
+                let base = index * recordComponentCount
+                let sentinel = (0..<recordComponentCount).allSatisfy {
+                    records[base + $0] == UInt32.max
+                }
                 guard sentinel == !expectedSlots.contains(slot) else {
                     throw CaptureError.command(
                         "tile-numerator record \(index) write coverage differs"
@@ -599,6 +685,14 @@ private func run(outputDirectory: URL) throws {
         to: outputDirectory.appendingPathComponent(outputFilename),
         options: .atomic
     )
+    let recordComponents = (0..<pullCount).map { "axis-pull@\($0)/16" }
+        + ["center", "axis-derivative(center)"]
+    let xOffsets = (0..<pullCount).map {
+        [Double($0) / 16.0, 0.5]
+    }
+    let yOffsets = (0..<pullCount).map {
+        [0.5, Double($0) / 16.0]
+    }
     var manifest: [String: Any] = [
         "schemaVersion": schemaVersion,
         "rigVersion": rigVersion,
@@ -611,7 +705,7 @@ private func run(outputDirectory: URL) throws {
         "compile": [
             "fastMathEnabled": true,
             "coverageAttachment": "R32Float; output sentinels gate every instance",
-            "fragmentRecord": "uint4 written directly to shared memory",
+            "fragmentRecord": "18 uint words written directly to shared memory",
         ],
     ]
     manifest["rasterTileNumerator"] = [
@@ -622,15 +716,12 @@ private func run(outputDirectory: URL) throws {
         "layout": layoutManifest(),
         "cases": cases.map(\.manifest),
         "endpoints": endpoints.map(\.manifest),
-        "recordComponents": [
-            "axis-pull@0", "axis-pull@15/16", "center",
-            "axis-derivative(center)",
-        ],
+        "recordComponents": recordComponents,
         "pullOffsetsByAxis": [
-            "x": [[0.0, 0.5], [0.9375, 0.5]],
-            "y": [[0.5, 0.0], [0.5, 0.9375]],
+            "x": xOffsets,
+            "y": yOffsets,
         ],
-        "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major",
+        "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor",
         "file": outputFilename,
         "bytes": outputData.count,
         "sha256": sha256(outputData),

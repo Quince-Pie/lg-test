@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the preregistered per-tile plane-numerator discovery capture."""
+"""Frozen schema-2 contract for historical paired tile-numerator evidence."""
 
 import argparse
 import hashlib
@@ -13,9 +13,9 @@ from typing import Any
 
 type JsonObject = dict[str, Any]
 
-SCHEMA_VERSION = 3
-RIG_VERSION = "metal-raster-tile-selector-3.0.0"
-ROLE = "dense-tile-selector-discovery-with-sealed-holdouts"
+SCHEMA_VERSION = 2
+RIG_VERSION = "metal-raster-tile-numerator-2.0.0"
+ROLE = "paired-edge-discovery-with-prospective-power-two-controls"
 TARGET_WIDTH = 1_024
 TARGET_HEIGHT = 1_024
 VIEWPORT_WIDTH = 1_024
@@ -26,16 +26,13 @@ AXIS_COUNT = 2
 PRIMITIVE_COUNT = 2
 EDGE_COUNT = 2
 SLOT_COUNT = AXIS_COUNT * PRIMITIVE_COUNT * TILE_COUNT * EDGE_COUNT
-PULL_NUMERATORS = tuple(range(16))
-PULL_COUNT = len(PULL_NUMERATORS)
-RECORD_COMPONENT_COUNT = PULL_COUNT + 2
-RECORD = struct.Struct(f"<{RECORD_COMPONENT_COUNT}I")
-SENTINEL = (0xFFFF_FFFF,) * RECORD_COMPONENT_COUNT
+RECORD = struct.Struct("<4I")
+SENTINEL = (0xFFFF_FFFF,) * 4
 PREREGISTRATION_PATH = Path(__file__).with_name(
-    "raster_tile_numerator_preregistration.json"
+    "raster_tile_numerator_v2_preregistration.json"
 )
 PREREGISTRATION_SHA256 = (
-    "d8a4b9f0c6464a144c61b258654b7feb8be884f43b4df1e546d4cd50442eab9c"
+    "150dd157b90ff6798ac087e47d39f78cc4e68dbd016b3aff3a096d1db31dbae1"
 )
 
 
@@ -52,7 +49,6 @@ class CaptureCase:
 @dataclass(frozen=True, slots=True)
 class EndpointCase:
     name: str
-    role: str
     lowBits: int
     highBits: int
 
@@ -100,70 +96,26 @@ CASES = (
     CaptureCase("near-896-plus", "discovery", 897, 895, 63, 65),
     CaptureCase("near-896-minus", "discovery", 895, 897, 65, 63),
     CaptureCase("near-fullscreen-prime", "discovery", 977, 43, 23, 401),
-    CaptureCase("sealed-prime-677x419", "sealed-holdout", 677, 419, 53, 149),
-    CaptureCase("sealed-prime-823x557", "sealed-holdout", 823, 557, 101, 211),
-    CaptureCase("sealed-tall-509x907", "sealed-holdout", 509, 907, 309, 49),
-    CaptureCase("sealed-wide-911x509", "sealed-holdout", 911, 509, 41, 271),
 )
 
-FIXED_ENDPOINTS = (
-    EndpointCase("zero-to-one", "prospective-control", 0x0000_0000, 0x3F80_0000),
-    EndpointCase("one-to-zero", "prospective-control", 0x3F80_0000, 0x0000_0000),
-    EndpointCase("negative-half-to-half", "calibration", 0xBF00_0000, 0x3F00_0000),
-    EndpointCase("half-to-negative-half", "calibration", 0x3F00_0000, 0xBF00_0000),
-    EndpointCase("opened-256", "calibration", 0x3EC0_0000, 0x3F20_0000),
-    EndpointCase("opened-512-x", "calibration", 0x3E86_CCCD, 0x3F29_CCCD),
-    EndpointCase("opened-512-y", "calibration", 0x3EC9_AAAB, 0x3F3A_2AAB),
-    EndpointCase("opened-640-x", "calibration", 0x3EB3_5556, 0x3F44_5556),
-    EndpointCase("opened-640-y", "calibration", 0x3EC2_0000, 0x3F4B_AAAB),
-    EndpointCase("opened-896-x", "calibration", 0x3E55_5556, 0x3F4A_AAAB),
-    EndpointCase("opened-896-y", "calibration", 0x3E55_5556, 0x3F4A_AAAC),
-    EndpointCase("near-equal-positive", "calibration", 0x3F00_0001, 0x3F00_0009),
-    EndpointCase("negative-to-positive", "calibration", 0xBF40_0000, 0x3E80_0000),
-    EndpointCase("positive-to-negative", "calibration", 0x3E80_0000, 0xBF40_0000),
-    EndpointCase("constant-quarter", "calibration", 0x3E80_0000, 0x3E80_0000),
-    EndpointCase("small-normal-ramp", "calibration", 0x3980_0000, 0x3A80_0000),
+ENDPOINTS = (
+    EndpointCase("zero-to-one", 0x0000_0000, 0x3F80_0000),
+    EndpointCase("one-to-zero", 0x3F80_0000, 0x0000_0000),
+    EndpointCase("negative-half-to-half", 0xBF00_0000, 0x3F00_0000),
+    EndpointCase("half-to-negative-half", 0x3F00_0000, 0xBF00_0000),
+    EndpointCase("opened-256", 0x3EC0_0000, 0x3F20_0000),
+    EndpointCase("opened-512-x", 0x3E86_CCCD, 0x3F29_CCCD),
+    EndpointCase("opened-512-y", 0x3EC9_AAAB, 0x3F3A_2AAB),
+    EndpointCase("opened-640-x", 0x3EB3_5556, 0x3F44_5556),
+    EndpointCase("opened-640-y", 0x3EC2_0000, 0x3F4B_AAAB),
+    EndpointCase("opened-896-x", 0x3E55_5556, 0x3F4A_AAAB),
+    EndpointCase("opened-896-y", 0x3E55_5556, 0x3F4A_AAAC),
+    EndpointCase("near-equal-positive", 0x3F00_0001, 0x3F00_0009),
+    EndpointCase("negative-to-positive", 0xBF40_0000, 0x3E80_0000),
+    EndpointCase("positive-to-negative", 0x3E80_0000, 0xBF40_0000),
+    EndpointCase("constant-quarter", 0x3E80_0000, 0x3E80_0000),
+    EndpointCase("small-normal-ramp", 0x3980_0000, 0x3A80_0000),
 )
-
-MANTISSA_BASE_BITS = (0x3E80_0000, 0x3EFF_FE00, 0x3F00_0000, 0x3F40_0000, 0x3F7F_FE00)
-MANTISSA_LOW_RESIDUES = (0, 1, 7, 31)
-MANTISSA_ULP_SPANS = (1, 2, 3, 4, 7, 8, 15, 16, 31)
-
-
-def selector_endpoints() -> tuple[EndpointCase, ...]:
-    result: list[EndpointCase] = []
-    for base_index, base_bits in enumerate(MANTISSA_BASE_BITS):
-        for residue in MANTISSA_LOW_RESIDUES:
-            low_bits = base_bits + residue
-            for span in MANTISSA_ULP_SPANS:
-                result.append(
-                    EndpointCase(
-                        f"mantissa-b{base_index}-r{residue:02d}-s{span:02d}",
-                        "selector-discovery",
-                        low_bits,
-                        low_bits + span,
-                    )
-                )
-        result.extend(
-            (
-                EndpointCase(
-                    f"mantissa-b{base_index}-reverse-31-to-01",
-                    "selector-discovery",
-                    base_bits + 31,
-                    base_bits + 1,
-                ),
-                EndpointCase(
-                    f"mantissa-b{base_index}-reverse-17-to-09",
-                    "selector-discovery",
-                    base_bits + 17,
-                    base_bits + 9,
-                ),
-            )
-        )
-    return tuple(result)
-
-
-ENDPOINTS = FIXED_ENDPOINTS + selector_endpoints()
 
 
 def sha256_path(path: Path) -> str:
@@ -319,8 +271,6 @@ def layout_metadata() -> JsonObject:
         "edgeCount": EDGE_COUNT,
         "tileCount": TILE_COUNT,
         "slotCount": SLOT_COUNT,
-        "pullCount": PULL_COUNT,
-        "recordComponentCount": RECORD_COMPONENT_COUNT,
         "recordBytes": RECORD.size,
         "recordCount": len(CASES) * len(ENDPOINTS) * SLOT_COUNT,
         "rawBytes": raw_bytes(),
@@ -334,21 +284,21 @@ def layout_metadata() -> JsonObject:
 
 def preregistration_payload() -> JsonObject:
     return {
-        "schemaVersion": SCHEMA_VERSION,
+        "schemaVersion": 2,
         "role": ROLE,
         "observedAtPreregistration": False,
         "purpose": (
-            "Discriminate AGX endpoint-mantissa, numerator carry, and tile-plane "
-            "selector laws with dense subpixel pulls."
+            "Identify AGX per-tile slope and centered numerator independently "
+            "by observing both covered axis edges of each tile."
         ),
         "sourceEvidence": {
-            "sourcePairedTileNumeratorRunId": 30_690_759_665,
-            "sourcePairedGroupCount": 29_190,
-            "sourceDerivativeConstrainedUniqueConstants": 29_048,
-            "sourceDerivativeConstrainedUniqueConstantRate": 29_048 / 29_190,
-            "sourceMaximumPerEndpointSlopeCandidateCount": 257,
-            "sourceNormalizedWeightCandidateCoversAllNearEqualHardResiduals": True,
-            "sourceSelectorLawEstablished": False,
+            "sourceTileNumeratorRunId": 30_689_521_255,
+            "sourceExpectedRecords": 32_144,
+            "sourceCenteredModelMatchedRecords": 32_138,
+            "sourceOpenedCalibrationMatchedRecords": 6_816,
+            "sourceOpenedCalibrationTotalRecords": 6_816,
+            "sourceUnresolvedThinGeometryRecords": 6,
+            "sourceBestImageResidualBytesAfterEvidenceCorrection": 0,
             "productionShaderChanged": False,
         },
         "capture": {
@@ -359,27 +309,14 @@ def preregistration_payload() -> JsonObject:
             "tileSize": TILE_SIZE,
             "edgeCount": EDGE_COUNT,
             "cases": [asdict(value) for value in CASES],
-            "endpointMatrix": {
-                "fixed": [
-                    {
-                        "name": value.name,
-                        "role": value.role,
-                        "lowBits": f"0x{value.lowBits:08x}",
-                        "highBits": f"0x{value.highBits:08x}",
-                    }
-                    for value in FIXED_ENDPOINTS
-                ],
-                "mantissaBaseBits": [f"0x{value:08x}" for value in MANTISSA_BASE_BITS],
-                "mantissaLowResidues": list(MANTISSA_LOW_RESIDUES),
-                "mantissaUlpSpans": list(MANTISSA_ULP_SPANS),
-                "reversePairsPerBase": [[31, 1], [17, 9]],
-                "ordering": (
-                    "fixed,then base-major/residue-major/span-major,then two "
-                    "reverse pairs per base"
-                ),
-                "endpointCount": len(ENDPOINTS),
-                "endpointWordsSha256": uint32_sha256(endpoint_words()),
-            },
+            "endpoints": [
+                {
+                    "name": value.name,
+                    "lowBits": f"0x{value.lowBits:08x}",
+                    "highBits": f"0x{value.highBits:08x}",
+                }
+                for value in ENDPOINTS
+            ],
             "samplePositionLaw": (
                 "For each 32-pixel tile, axis, and primitive, retain both "
                 "the lower and upper in-geometry axis coordinates whenever "
@@ -387,33 +324,26 @@ def preregistration_payload() -> JsonObject:
                 "pixels are excluded by exact doubled-area inequalities."
             ),
             "recordComponents": [
-                *(f"axis-pull@{value}/16" for value in PULL_NUMERATORS),
+                "axis-pull@0",
+                "axis-pull@15/16",
                 "center",
                 "axis-derivative(center)",
             ],
             "pullOffsetsByAxis": {
-                "x": [[value / 16, 0.5] for value in PULL_NUMERATORS],
-                "y": [[0.5, value / 16] for value in PULL_NUMERATORS],
+                "x": [[0.0, 0.5], [0.9375, 0.5]],
+                "y": [[0.5, 0.0], [0.5, 0.9375]],
             },
             "ordering": (
-                "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,"
-                "component-minor"
+                "case-major,endpoint-major,axis-primitive-tile-edge-slot-major"
             ),
             "layout": layout_metadata(),
-        },
-        "sealedHoldout": {
-            "cases": [value.name for value in CASES if value.role == "sealed-holdout"],
-            "discipline": (
-                "Do not inspect, aggregate, or fit these records until one "
-                "selector algorithm and its exact parameters are frozen in git."
-            ),
         },
         "prospectiveControl": {
             "case": "control-square-256",
             "endpoints": ["zero-to-one", "one-to-zero"],
             "prediction": (
                 "exact power-of-two affine plane at both retained tile "
-                "edges; all sixteen pull samples are fused round-to-nearest"
+                "edges; pull samples are fused round-to-nearest"
             ),
             "pullComponentsMustMatchExactly": True,
             "centerAndDerivativeAreDiagnostic": True,
@@ -428,8 +358,7 @@ def preregistration_payload() -> JsonObject:
         },
         "nonClaims": [
             "Discovery records do not certify a replacement arithmetic law.",
-            "Discovery and opened calibration geometries are not a blind holdout.",
-            "Sealed holdout records cannot be opened before the selector is frozen.",
+            "Opened calibration geometries are not a blind image holdout.",
             "A passing control does not establish arbitrary geometry parity.",
             "No result authorizes changing the production shader before a fresh holdout.",
         ],
@@ -456,7 +385,7 @@ def control_pull_prediction(
     capture_case: CaptureCase,
     endpoint: EndpointCase,
     sample: SamplePosition,
-) -> tuple[int, ...]:
+) -> tuple[int, int]:
     low = bits_float32(endpoint.lowBits)
     high = bits_float32(endpoint.highBits)
     extent = capture_case.width if sample.axis == 0 else capture_case.height
@@ -466,9 +395,9 @@ def control_pull_prediction(
     tile_origin = sample.tile * TILE_SIZE
     constant = float32(low + (tile_origin - origin) * slope)
     position = float(coordinate % TILE_SIZE)
-    return tuple(
-        pull_bits(position + numerator / 16, slope, constant)
-        for numerator in PULL_NUMERATORS
+    return (
+        pull_bits(position, slope, constant),
+        pull_bits(position + 0.9375, slope, constant),
     )
 
 
@@ -494,7 +423,6 @@ def validate(root: Path) -> JsonObject:
         != [
             {
                 "name": value.name,
-                "role": value.role,
                 "lowBits": f"0x{value.lowBits:08x}",
                 "highBits": f"0x{value.highBits:08x}",
             }
@@ -545,9 +473,9 @@ def validate(root: Path) -> JsonObject:
                     "one-to-zero",
                 }:
                     control_records += 1
-                    control_pull_mismatches += record[
-                        :PULL_COUNT
-                    ] != control_pull_prediction(capture_case, endpoint, sample)
+                    control_pull_mismatches += record[:2] != control_pull_prediction(
+                        capture_case, endpoint, sample
+                    )
 
     if (
         expected_records != layout_metadata()["expectedRecordCount"]
@@ -555,13 +483,8 @@ def validate(root: Path) -> JsonObject:
         or control_pull_mismatches != 0
     ):
         raise ValueError("tile-numerator prospective control differs")
-    sealed_holdout_records = sum(
-        len(sample_positions(capture_case)) * len(ENDPOINTS)
-        for capture_case in CASES
-        if capture_case.role == "sealed-holdout"
-    )
     return {
-        "rasterTileNumeratorValidationSchemaVersion": SCHEMA_VERSION,
+        "rasterTileNumeratorValidationSchemaVersion": 2,
         "manifestSha256": sha256_path(root / "manifest.json"),
         "rawSha256": sha256_path(raw_path),
         "expectedRecords": expected_records,
@@ -569,9 +492,7 @@ def validate(root: Path) -> JsonObject:
         "prospectiveControlRecords": control_records,
         "prospectiveControlPullMismatches": control_pull_mismatches,
         "prospectiveControlExact": True,
-        "discoveryRecords": expected_records - control_records - sealed_holdout_records,
-        "sealedHoldoutRecords": sealed_holdout_records,
-        "sealedHoldoutOpened": False,
+        "discoveryRecords": expected_records - control_records,
         "discoveryOutcomeInterpreted": False,
         "productionShaderAuthorized": False,
     }

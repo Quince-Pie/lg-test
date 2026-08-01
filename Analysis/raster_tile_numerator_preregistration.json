@@ -200,103 +200,193 @@
         "originY": 401,
         "role": "discovery",
         "width": 977
+      },
+      {
+        "height": 419,
+        "name": "sealed-prime-677x419",
+        "originX": 53,
+        "originY": 149,
+        "role": "sealed-holdout",
+        "width": 677
+      },
+      {
+        "height": 557,
+        "name": "sealed-prime-823x557",
+        "originX": 101,
+        "originY": 211,
+        "role": "sealed-holdout",
+        "width": 823
+      },
+      {
+        "height": 907,
+        "name": "sealed-tall-509x907",
+        "originX": 309,
+        "originY": 49,
+        "role": "sealed-holdout",
+        "width": 509
+      },
+      {
+        "height": 509,
+        "name": "sealed-wide-911x509",
+        "originX": 41,
+        "originY": 271,
+        "role": "sealed-holdout",
+        "width": 911
       }
     ],
-    "endpoints": [
-      {
-        "highBits": "0x3f800000",
-        "lowBits": "0x00000000",
-        "name": "zero-to-one"
-      },
-      {
-        "highBits": "0x00000000",
-        "lowBits": "0x3f800000",
-        "name": "one-to-zero"
-      },
-      {
-        "highBits": "0x3f000000",
-        "lowBits": "0xbf000000",
-        "name": "negative-half-to-half"
-      },
-      {
-        "highBits": "0xbf000000",
-        "lowBits": "0x3f000000",
-        "name": "half-to-negative-half"
-      },
-      {
-        "highBits": "0x3f200000",
-        "lowBits": "0x3ec00000",
-        "name": "opened-256"
-      },
-      {
-        "highBits": "0x3f29cccd",
-        "lowBits": "0x3e86cccd",
-        "name": "opened-512-x"
-      },
-      {
-        "highBits": "0x3f3a2aab",
-        "lowBits": "0x3ec9aaab",
-        "name": "opened-512-y"
-      },
-      {
-        "highBits": "0x3f445556",
-        "lowBits": "0x3eb35556",
-        "name": "opened-640-x"
-      },
-      {
-        "highBits": "0x3f4baaab",
-        "lowBits": "0x3ec20000",
-        "name": "opened-640-y"
-      },
-      {
-        "highBits": "0x3f4aaaab",
-        "lowBits": "0x3e555556",
-        "name": "opened-896-x"
-      },
-      {
-        "highBits": "0x3f4aaaac",
-        "lowBits": "0x3e555556",
-        "name": "opened-896-y"
-      },
-      {
-        "highBits": "0x3f000009",
-        "lowBits": "0x3f000001",
-        "name": "near-equal-positive"
-      },
-      {
-        "highBits": "0x3e800000",
-        "lowBits": "0xbf400000",
-        "name": "negative-to-positive"
-      },
-      {
-        "highBits": "0xbf400000",
-        "lowBits": "0x3e800000",
-        "name": "positive-to-negative"
-      },
-      {
-        "highBits": "0x3e800000",
-        "lowBits": "0x3e800000",
-        "name": "constant-quarter"
-      },
-      {
-        "highBits": "0x3a800000",
-        "lowBits": "0x39800000",
-        "name": "small-normal-ramp"
-      }
-    ],
+    "edgeCount": 2,
+    "endpointMatrix": {
+      "endpointCount": 206,
+      "endpointWordsSha256": "d377fad43418c2996f2bf91e82764a8beeec18394126a6b991dccaa324692dcf",
+      "fixed": [
+        {
+          "highBits": "0x3f800000",
+          "lowBits": "0x00000000",
+          "name": "zero-to-one",
+          "role": "prospective-control"
+        },
+        {
+          "highBits": "0x00000000",
+          "lowBits": "0x3f800000",
+          "name": "one-to-zero",
+          "role": "prospective-control"
+        },
+        {
+          "highBits": "0x3f000000",
+          "lowBits": "0xbf000000",
+          "name": "negative-half-to-half",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0xbf000000",
+          "lowBits": "0x3f000000",
+          "name": "half-to-negative-half",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3f200000",
+          "lowBits": "0x3ec00000",
+          "name": "opened-256",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3f29cccd",
+          "lowBits": "0x3e86cccd",
+          "name": "opened-512-x",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3f3a2aab",
+          "lowBits": "0x3ec9aaab",
+          "name": "opened-512-y",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3f445556",
+          "lowBits": "0x3eb35556",
+          "name": "opened-640-x",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3f4baaab",
+          "lowBits": "0x3ec20000",
+          "name": "opened-640-y",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3f4aaaab",
+          "lowBits": "0x3e555556",
+          "name": "opened-896-x",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3f4aaaac",
+          "lowBits": "0x3e555556",
+          "name": "opened-896-y",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3f000009",
+          "lowBits": "0x3f000001",
+          "name": "near-equal-positive",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3e800000",
+          "lowBits": "0xbf400000",
+          "name": "negative-to-positive",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0xbf400000",
+          "lowBits": "0x3e800000",
+          "name": "positive-to-negative",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3e800000",
+          "lowBits": "0x3e800000",
+          "name": "constant-quarter",
+          "role": "calibration"
+        },
+        {
+          "highBits": "0x3a800000",
+          "lowBits": "0x39800000",
+          "name": "small-normal-ramp",
+          "role": "calibration"
+        }
+      ],
+      "mantissaBaseBits": [
+        "0x3e800000",
+        "0x3efffe00",
+        "0x3f000000",
+        "0x3f400000",
+        "0x3f7ffe00"
+      ],
+      "mantissaLowResidues": [
+        0,
+        1,
+        7,
+        31
+      ],
+      "mantissaUlpSpans": [
+        1,
+        2,
+        3,
+        4,
+        7,
+        8,
+        15,
+        16,
+        31
+      ],
+      "ordering": "fixed,then base-major/residue-major/span-major,then two reverse pairs per base",
+      "reversePairsPerBase": [
+        [
+          31,
+          1
+        ],
+        [
+          17,
+          9
+        ]
+      ]
+    },
     "layout": {
       "axisCount": 2,
-      "caseCount": 24,
-      "caseWordsSha256": "966c0bf7ec9e7e611feb29468163009eba67bc5b12cadc18ba4c59e1260c9008",
+      "caseCount": 28,
+      "caseWordsSha256": "8f2069d587aaec75d7dff254eca16c669de70c04f53807db54bb50ba44889c38",
       "edgeCount": 2,
-      "endpointCount": 16,
-      "endpointWordsSha256": "ba0e93cdee2a5f19b63f7a01560da3fa431911dbf37e6775f3950802d4c10bf7",
-      "expectedRecordCount": 63280,
+      "endpointCount": 206,
+      "endpointWordsSha256": "d377fad43418c2996f2bf91e82764a8beeec18394126a6b991dccaa324692dcf",
+      "expectedRecordCount": 954810,
       "primitiveCount": 2,
-      "rawBytes": 1572864,
-      "recordBytes": 16,
-      "recordCount": 98304,
-      "sampleWordsSha256": "04c82be1775ee7b77652360e9e0e49f6b191a3f40ef8e0b8e989ab32661f3ec3",
+      "pullCount": 16,
+      "rawBytes": 106315776,
+      "recordBytes": 72,
+      "recordComponentCount": 18,
+      "recordCount": 1476608,
+      "sampleWordsSha256": "a07d1f865062df687abf954c6633b6b79e0b36e4ed0ef1ec92b366b20e3557da",
       "samplesPerCase": [
         60,
         132,
@@ -321,16 +411,76 @@
         214,
         224,
         224,
-        130
+        130,
+        142,
+        174,
+        182,
+        182
       ],
       "slotCount": 256,
       "tileCount": 32
     },
-    "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major",
+    "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor",
     "pullOffsetsByAxis": {
       "x": [
         [
           0.0,
+          0.5
+        ],
+        [
+          0.0625,
+          0.5
+        ],
+        [
+          0.125,
+          0.5
+        ],
+        [
+          0.1875,
+          0.5
+        ],
+        [
+          0.25,
+          0.5
+        ],
+        [
+          0.3125,
+          0.5
+        ],
+        [
+          0.375,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5625,
+          0.5
+        ],
+        [
+          0.625,
+          0.5
+        ],
+        [
+          0.6875,
+          0.5
+        ],
+        [
+          0.75,
+          0.5
+        ],
+        [
+          0.8125,
+          0.5
+        ],
+        [
+          0.875,
           0.5
         ],
         [
@@ -345,12 +495,82 @@
         ],
         [
           0.5,
+          0.0625
+        ],
+        [
+          0.5,
+          0.125
+        ],
+        [
+          0.5,
+          0.1875
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.5,
+          0.3125
+        ],
+        [
+          0.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.4375
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.5625
+        ],
+        [
+          0.5,
+          0.625
+        ],
+        [
+          0.5,
+          0.6875
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.5,
+          0.8125
+        ],
+        [
+          0.5,
+          0.875
+        ],
+        [
+          0.5,
           0.9375
         ]
       ]
     },
     "recordComponents": [
-      "axis-pull@0",
+      "axis-pull@0/16",
+      "axis-pull@1/16",
+      "axis-pull@2/16",
+      "axis-pull@3/16",
+      "axis-pull@4/16",
+      "axis-pull@5/16",
+      "axis-pull@6/16",
+      "axis-pull@7/16",
+      "axis-pull@8/16",
+      "axis-pull@9/16",
+      "axis-pull@10/16",
+      "axis-pull@11/16",
+      "axis-pull@12/16",
+      "axis-pull@13/16",
+      "axis-pull@14/16",
       "axis-pull@15/16",
       "center",
       "axis-derivative(center)"
@@ -359,13 +579,13 @@
     "targetHeight": 1024,
     "targetWidth": 1024,
     "tileSize": 32,
-    "edgeCount": 2,
     "viewportHeight": 1024,
     "viewportWidth": 1024
   },
   "nonClaims": [
     "Discovery records do not certify a replacement arithmetic law.",
-    "Opened calibration geometries are not a blind image holdout.",
+    "Discovery and opened calibration geometries are not a blind holdout.",
+    "Sealed holdout records cannot be opened before the selector is frozen.",
     "A passing control does not establish arbitrary geometry parity.",
     "No result authorizes changing the production shader before a fresh holdout."
   ],
@@ -377,20 +597,29 @@
       "zero-to-one",
       "one-to-zero"
     ],
-    "prediction": "exact power-of-two affine plane at both retained tile edges; pull samples are fused round-to-nearest",
+    "prediction": "exact power-of-two affine plane at both retained tile edges; all sixteen pull samples are fused round-to-nearest",
     "pullComponentsMustMatchExactly": true
   },
-  "purpose": "Identify AGX per-tile slope and centered numerator independently by observing both covered axis edges of each tile.",
-  "role": "paired-edge-discovery-with-prospective-power-two-controls",
-  "schemaVersion": 2,
+  "purpose": "Discriminate AGX endpoint-mantissa, numerator carry, and tile-plane selector laws with dense subpixel pulls.",
+  "role": "dense-tile-selector-discovery-with-sealed-holdouts",
+  "schemaVersion": 3,
+  "sealedHoldout": {
+    "cases": [
+      "sealed-prime-677x419",
+      "sealed-prime-823x557",
+      "sealed-tall-509x907",
+      "sealed-wide-911x509"
+    ],
+    "discipline": "Do not inspect, aggregate, or fit these records until one selector algorithm and its exact parameters are frozen in git."
+  },
   "sourceEvidence": {
-    "sourceBestImageResidualBytesAfterEvidenceCorrection": 0,
-    "sourceCenteredModelMatchedRecords": 32138,
-    "sourceExpectedRecords": 32144,
-    "sourceOpenedCalibrationMatchedRecords": 6816,
-    "sourceOpenedCalibrationTotalRecords": 6816,
-    "sourceTileNumeratorRunId": 30689521255,
-    "sourceUnresolvedThinGeometryRecords": 6,
-    "productionShaderChanged": false
+    "productionShaderChanged": false,
+    "sourceDerivativeConstrainedUniqueConstantRate": 0.9951353203151764,
+    "sourceDerivativeConstrainedUniqueConstants": 29048,
+    "sourceMaximumPerEndpointSlopeCandidateCount": 257,
+    "sourceNormalizedWeightCandidateCoversAllNearEqualHardResiduals": true,
+    "sourcePairedGroupCount": 29190,
+    "sourcePairedTileNumeratorRunId": 30690759665,
+    "sourceSelectorLawEstablished": false
   }
 }

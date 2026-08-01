@@ -18,29 +18,31 @@ class RasterTileNumeratorTests(unittest.TestCase):
             preregistration["capture"]["layout"],
             numerator.layout_metadata(),
         )
-        self.assertEqual(numerator.raw_bytes(), 1_572_864)
+        self.assertEqual(numerator.raw_bytes(), 106_315_776)
         self.assertEqual(
             numerator.layout_metadata(),
             {
-                "caseCount": 24,
-                "endpointCount": 16,
+                "caseCount": 28,
+                "endpointCount": 206,
                 "axisCount": 2,
                 "primitiveCount": 2,
                 "edgeCount": 2,
                 "tileCount": 32,
                 "slotCount": 256,
-                "recordBytes": 16,
-                "recordCount": 98_304,
-                "rawBytes": 1_572_864,
-                "expectedRecordCount": 63_280,
+                "pullCount": 16,
+                "recordComponentCount": 18,
+                "recordBytes": 72,
+                "recordCount": 1_476_608,
+                "rawBytes": 106_315_776,
+                "expectedRecordCount": 954_810,
                 "caseWordsSha256": (
-                    "966c0bf7ec9e7e611feb29468163009eba67bc5b12cadc18ba4c59e1260c9008"
+                    "8f2069d587aaec75d7dff254eca16c669de70c04f53807db54bb50ba44889c38"
                 ),
                 "endpointWordsSha256": (
-                    "ba0e93cdee2a5f19b63f7a01560da3fa431911dbf37e6775f3950802d4c10bf7"
+                    "d377fad43418c2996f2bf91e82764a8beeec18394126a6b991dccaa324692dcf"
                 ),
                 "sampleWordsSha256": (
-                    "04c82be1775ee7b77652360e9e0e49f6b191a3f40ef8e0b8e989ab32661f3ec3"
+                    "a07d1f865062df687abf954c6633b6b79e0b36e4ed0ef1ec92b366b20e3557da"
                 ),
                 "samplesPerCase": [
                     60,
@@ -67,6 +69,10 @@ class RasterTileNumeratorTests(unittest.TestCase):
                     224,
                     224,
                     130,
+                    142,
+                    174,
+                    182,
+                    182,
                 ],
             },
         )
@@ -107,7 +113,7 @@ class RasterTileNumeratorTests(unittest.TestCase):
             for sample in numerator.sample_positions(numerator.CASES[0]):
                 prediction_digest.update(
                     struct.pack(
-                        "<2I",
+                        "<16I",
                         *numerator.control_pull_prediction(
                             numerator.CASES[0], endpoint, sample
                         ),
@@ -115,7 +121,7 @@ class RasterTileNumeratorTests(unittest.TestCase):
                 )
         self.assertEqual(
             prediction_digest.hexdigest(),
-            "d6191ad0f3e8c5c17d4f3dffb4c31204e080ce719e9848d0f38e57a4fbcb883f",
+            "46e539cec2b884e432a32ffebb52ac6267bebf754c2b982bdec2643818230cf1",
         )
 
     def test_synthetic_complete_capture_passes_and_undeclared_write_fails(self) -> None:
@@ -127,7 +133,7 @@ class RasterTileNumeratorTests(unittest.TestCase):
                 samples = numerator.sample_positions(capture_case)
                 for endpoint_index, endpoint in enumerate(numerator.ENDPOINTS):
                     for sample in samples:
-                        record = (0, 0, 0, 0)
+                        record = (0,) * numerator.RECORD_COMPONENT_COUNT
                         if (
                             capture_case.name == "control-square-256"
                             and endpoint.name in {"zero-to-one", "one-to-zero"}
@@ -136,8 +142,7 @@ class RasterTileNumeratorTests(unittest.TestCase):
                                 *numerator.control_pull_prediction(
                                     capture_case, endpoint, sample
                                 ),
-                                0,
-                                0,
+                                *(0 for _ in range(2)),
                             )
                         record_index = (
                             case_index * len(numerator.ENDPOINTS) + endpoint_index
@@ -169,6 +174,7 @@ class RasterTileNumeratorTests(unittest.TestCase):
                     "endpoints": [
                         {
                             "name": value.name,
+                            "role": value.role,
                             "lowBits": f"0x{value.lowBits:08x}",
                             "highBits": f"0x{value.highBits:08x}",
                         }
@@ -201,10 +207,16 @@ class RasterTileNumeratorTests(unittest.TestCase):
             write_manifest()
             report = numerator.validate(root)
             self.assertTrue(report["prospectiveControlExact"])
-            self.assertEqual(report["expectedRecords"], 63_280)
-            self.assertEqual(report["discoveryRecords"], 63_160)
+            self.assertEqual(report["expectedRecords"], 954_810)
+            self.assertEqual(report["discoveryRecords"], 814_610)
+            self.assertEqual(report["sealedHoldoutRecords"], 140_080)
+            self.assertFalse(report["sealedHoldoutOpened"])
 
-            numerator.RECORD.pack_into(raw, 0, 0, 0, 0, 0)
+            numerator.RECORD.pack_into(
+                raw,
+                0,
+                *((0,) * numerator.RECORD_COMPONENT_COUNT),
+            )
             raw_path.write_bytes(raw)
             write_manifest()
             with self.assertRaisesRegex(ValueError, "undeclared"):
@@ -224,10 +236,10 @@ class RasterTileNumeratorTests(unittest.TestCase):
             str(numerator.layout_metadata()["sampleWordsSha256"]),
         ):
             self.assertIn(value, source)
-        self.assertIn('layout["rawBytes"] as? Int == 1_572_864', source)
-        self.assertIn('layout["expectedRecordCount"] as? Int == 63_280', source)
+        self.assertIn('layout["rawBytes"] as? Int == 106_315_776', source)
+        self.assertIn('layout["expectedRecordCount"] as? Int == 954_810', source)
         self.assertIn(
-            r"results[\(slotCount)u * input.recordIndex + input.outputSlot]",
+            r"const uint base = \(recordComponentCount)u * record;",
             source,
         )
 
