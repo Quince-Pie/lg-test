@@ -59,7 +59,15 @@ private struct SamplePosition {
     }
 }
 
-#if TILE_CENTER_ORIGIN_HOLDOUT
+#if TILE_CENTER_LATTICE_HOLDOUT
+private let schemaVersion = 8
+private let rigVersion = "metal-raster-tile-selector-8.0.0"
+private let role = "prospective-tile-center-p27-lattice-holdout"
+private let preregistrationFile =
+    "Analysis/raster_tile_center_lattice_preregistration.json"
+private let preregistrationSha256 =
+    "b923f0bc6169b00705366e8278f2495408a0699bd52366a7380f3ded2548c5ba"
+#elseif TILE_CENTER_ORIGIN_HOLDOUT
 private let schemaVersion = 7
 private let rigVersion = "metal-raster-tile-selector-7.0.0"
 private let role = "prospective-tile-center-origin-quotient-holdout"
@@ -113,7 +121,25 @@ private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
 private let pullCount = 16
 private let recordComponentCount = pullCount + 2
 private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
-#if TILE_CENTER_ORIGIN_HOLDOUT
+#if TILE_CENTER_LATTICE_HOLDOUT
+private let cases = [
+    CaptureCase(name: "control-square-256", role: "prospective-control", width: 256, height: 256, originX: 384, originY: 384),
+    CaptureCase(name: "sealed-lower-below-e331-x", role: "sealed-holdout", width: 331, height: 587, originX: 45, originY: 211),
+    CaptureCase(name: "sealed-lower-below-e331-y", role: "sealed-holdout", width: 587, height: 331, originX: 211, originY: 45),
+    CaptureCase(name: "sealed-lower-above-e341-x", role: "sealed-holdout", width: 341, height: 593, originX: 18, originY: 203),
+    CaptureCase(name: "sealed-lower-above-e341-y", role: "sealed-holdout", width: 593, height: 341, originX: 203, originY: 18),
+    CaptureCase(name: "sealed-lower-below-e651-x", role: "sealed-holdout", width: 651, height: 269, originX: 61, originY: 307),
+    CaptureCase(name: "sealed-lower-below-e651-y", role: "sealed-holdout", width: 269, height: 651, originX: 307, originY: 61),
+    CaptureCase(name: "sealed-upper-below-e537-x", role: "sealed-holdout", width: 537, height: 449, originX: 29, originY: 191),
+    CaptureCase(name: "sealed-upper-below-e537-y", role: "sealed-holdout", width: 449, height: 537, originX: 191, originY: 29),
+    CaptureCase(name: "sealed-upper-above-e615-x", role: "sealed-holdout", width: 615, height: 457, originX: 37, originY: 183),
+    CaptureCase(name: "sealed-upper-above-e615-y", role: "sealed-holdout", width: 457, height: 615, originX: 183, originY: 37),
+    CaptureCase(name: "sealed-upper-above-e775-x", role: "sealed-holdout", width: 775, height: 191, originX: 14, originY: 401),
+    CaptureCase(name: "sealed-upper-above-e775-y", role: "sealed-holdout", width: 191, height: 775, originX: 401, originY: 14),
+    CaptureCase(name: "sealed-upper-below-e841-x", role: "sealed-holdout", width: 841, height: 157, originX: 79, originY: 433),
+    CaptureCase(name: "sealed-upper-below-e841-y", role: "sealed-holdout", width: 157, height: 841, originX: 433, originY: 79),
+]
+#elseif TILE_CENTER_ORIGIN_HOLDOUT
 private let cases = [
     CaptureCase(name: "control-square-256", role: "prospective-control", width: 256, height: 256, originX: 384, originY: 384),
     CaptureCase(name: "sealed-d33-e198-o15-x", role: "sealed-holdout", width: 198, height: 607, originX: 15, originY: 208),
@@ -500,7 +526,101 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
-#if TILE_CENTER_ORIGIN_HOLDOUT
+#if TILE_CENTER_LATTICE_HOLDOUT
+private let centerLatticePrimaryBase = (name: "b2", bits: UInt32(0x3f00_0000))
+private let centerLatticePrimaryResidues: [UInt32] = [0, 1, 7, 31]
+private let centerLatticePrimarySpans: [UInt32] = [
+    3, 4, 5, 18, 19, 20, 30, 31, 32, 33, 52, 53, 54, 60, 61, 62,
+]
+private let centerLatticeTransferBases: [(name: String, bits: UInt32)] = [
+    ("b0", 0x3e00_0000),
+    ("b1", 0x3e80_0000),
+    ("b3", 0x3f80_0000),
+]
+private let centerLatticeTransferSpans: [UInt32] = [4, 19, 31, 32, 53, 61]
+private let centerLatticeBroadEndpoints: [
+    (name: String, lowBits: UInt32, highBits: UInt32)
+] = [
+    ("d31-over-32", 0x3580_0000, 0x3f78_0010),
+    ("d1", 0x3580_0000, 0x3f80_0008),
+    ("d61-over-64", 0x3580_0000, 0x3f74_0010),
+    ("d19-over-32", 0x3580_0000, 0x3f18_0010),
+    ("d1-over-2", 0x3580_0000, 0x3f00_0010),
+    ("d53-over-64", 0x3580_0000, 0x3f54_0010),
+]
+
+private func appendCenterLatticeEndpointPair(
+    _ result: inout [EndpointCase],
+    baseName: String,
+    baseBits: UInt32,
+    residue: UInt32,
+    span: UInt32
+) {
+    let low = baseBits + residue
+    let high = low + span
+    let stem = String(
+        format: "translated-%@-r%02d-s%02d",
+        baseName,
+        residue,
+        span
+    )
+    result.append(EndpointCase(
+        name: "\(stem)-forward", role: "arithmetic-holdout",
+        lowBits: low, highBits: high
+    ))
+    result.append(EndpointCase(
+        name: "\(stem)-reverse", role: "arithmetic-holdout",
+        lowBits: high, highBits: low
+    ))
+}
+
+private func centerLatticeEndpoints() -> [EndpointCase] {
+    var result = [
+        EndpointCase(
+            name: "zero-to-one", role: "prospective-control",
+            lowBits: 0, highBits: 0x3f80_0000
+        ),
+        EndpointCase(
+            name: "one-to-zero", role: "prospective-control",
+            lowBits: 0x3f80_0000, highBits: 0
+        ),
+    ]
+    for residue in centerLatticePrimaryResidues {
+        for span in centerLatticePrimarySpans {
+            appendCenterLatticeEndpointPair(
+                &result,
+                baseName: centerLatticePrimaryBase.name,
+                baseBits: centerLatticePrimaryBase.bits,
+                residue: residue,
+                span: span
+            )
+        }
+    }
+    for base in centerLatticeTransferBases {
+        for span in centerLatticeTransferSpans {
+            appendCenterLatticeEndpointPair(
+                &result,
+                baseName: base.name,
+                baseBits: base.bits,
+                residue: 0,
+                span: span
+            )
+        }
+    }
+    for endpoint in centerLatticeBroadEndpoints {
+        let stem = "translated-broad-\(endpoint.name)"
+        result.append(EndpointCase(
+            name: "\(stem)-forward", role: "boundary-amplifier-holdout",
+            lowBits: endpoint.lowBits, highBits: endpoint.highBits
+        ))
+        result.append(EndpointCase(
+            name: "\(stem)-reverse", role: "boundary-amplifier-holdout",
+            lowBits: endpoint.highBits, highBits: endpoint.lowBits
+        ))
+    }
+    return result
+}
+#elseif TILE_CENTER_ORIGIN_HOLDOUT
 private let centerOriginPrimaryBase = (name: "b2", bits: UInt32(0x3f00_0000))
 private let centerOriginPrimaryResidues: [UInt32] = [0, 1, 7, 31]
 private let centerOriginPrimarySpans: [UInt32] = [4, 5, 6, 7, 8, 30]
@@ -721,7 +841,9 @@ private func discriminatorEndpoints() -> [EndpointCase] {
 }
 #endif
 
-#if TILE_CENTER_ORIGIN_HOLDOUT
+#if TILE_CENTER_LATTICE_HOLDOUT
+private let endpoints = centerLatticeEndpoints()
+#elseif TILE_CENTER_ORIGIN_HOLDOUT
 private let endpoints = centerOriginEndpoints()
 #elseif TILE_DOUBLE_ROUNDING_HOLDOUT
 private let endpoints = doubleRoundingEndpoints()
@@ -956,7 +1078,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_CENTER_ORIGIN_HOLDOUT
+#if TILE_CENTER_LATTICE_HOLDOUT
+    precondition(cases.count == 15)
+    precondition(endpoints.count == 178)
+    precondition(layout["recordCount"] as? Int == 683_520)
+    precondition(layout["rawBytes"] as? Int == 49_213_440)
+    precondition(layout["expectedRecordCount"] as? Int == 325_384)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "86b9f5492b84429a140cf865a04aa988275f6b8c1fcbce21329692586aaa5a1c"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "4e26aeca71331957f368f709c47ffff1c6c972c7db6ca67b4ecff9b56f577b22"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "f6ed71bb4fefa0444082fddfac0ba1a15a11ce10b199b018ed33fd795ce892cf"
+    )
+#elseif TILE_CENTER_ORIGIN_HOLDOUT
     precondition(cases.count == 31)
     precondition(endpoints.count == 68)
     precondition(layout["recordCount"] as? Int == 539_648)

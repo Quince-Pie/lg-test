@@ -3378,6 +3378,44 @@ and determinant-only alternatives by 1,264, 1,140, 432, and 52 words,
 respectively. The first run and an unchanged repeat must both have zero
 mismatched words before the center-origin law is treated as prospective.
 
+Run `30701694089` prospectively rejected v5. The control and every pull word
+were exact, but 1,084 of 4,406,400 total words differed across 568 records:
+516 center words and 568 center-derivative words. Twenty of the 30 sealed
+geometries were exact. The captured 38,854,656-byte raw stream has SHA-256
+`0e20ff958ea6ce7326adb8dc0f9d3945bfb984dea010a0ff23a707a16c4d826c`.
+That failure disproves the origin-residue selector; it is not evidence for
+production parity.
+
+Post-opening recovery places translated center coefficients on a signed
+27-bit significand lattice. Reverse ramps use the signed numerical floor.
+Forward ramps use one step below that floor for phase below `3/32`, the floor
+from `3/32` through `9/16`, and one step above it at or above `9/16`. Pulls
+retain the determinant coefficient rounded to binary32; zero-endpoint centers
+also retain that coefficient; constants retain the schema-6 28-bit-nearest
+then binary32-nearest composition. One executable v6 replay is exact for all
+819,480 opened schema-5/6/7 records and all 14,750,640 component words. This
+is still retrospective calibration, not a holdout pass.
+
+Schema 8 freezes v6 before observing another Apple word. Seven new effective
+extents are transposed across both axes and bracket both recovered phase cuts:
+331 and 651 below `3/32`, 341 above `3/32`, 537 and 841 below `9/16`, and 615
+and 775 above `9/16`. The 178 endpoints include near-equal exponent transfers
+and six nonzero broad translations that make adjacent p27 lattice steps
+observable instead of allowing them to alias after output rounding. Its 14
+sealed geometries contain 314,704 records and 5,664,672 words. The committed
+prediction stream has SHA-256
+`08ceb5ccab6fde6d1c880c0e8059f88ed98350fdd467d1772002dc66171b6277`;
+the 1,177,305-byte zlib archive has SHA-256
+`835e33732c9084c285215b0c52b369eff861a91f29938a81b851bc666e3fdd79`.
+The preregistration has SHA-256
+`b923f0bc6169b00705366e8278f2495408a0699bd52366a7380f3ded2548c5ba`.
+Preflight distinguishes determinant rounding, binary32 exact-down, p27 floor,
+p27 nearest-even, symmetric signed selection, removed branches, and nearby
+phase boundaries. The closest rivals still differ by 30 to 46 sealed words;
+binary32 exact-down and determinant rounding differ by 3,162 and 3,302 words.
+Zero mismatch on a blind schema-8 run and a bit-identical unchanged repeat are
+mandatory before this arithmetic is treated as prospective evidence.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

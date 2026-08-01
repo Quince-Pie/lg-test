@@ -22,6 +22,7 @@ import validate_raster_tile_translation_discriminator as capture5
 
 type JsonObject = dict[str, Any]
 type SlopeModel = Callable[[object, object, int, tuple[int, ...]], Fraction]
+type OffsetProvider = Callable[[object, object, int, int], Iterable[int]]
 
 SEARCH_OFFSETS = tuple(range(-8, 9))
 ROUNDING_MODES = ("nearest-even", "down", "up", "toward-zero", "away-zero")
@@ -72,7 +73,13 @@ def center_matches(
     )
 
 
-def recover_corpus(corpus: Corpus) -> list[Setup]:
+def recover_corpus(
+    corpus: Corpus,
+    *,
+    additional_offsets: OffsetProvider | None = None,
+    fallback_offsets: Iterable[int] = (),
+    require_match: bool = True,
+) -> list[Setup]:
     _, streams = corpus.opening.actual_case_streams(corpus.root)
     selector_table = v1.load_selector_table()
     setups: list[Setup] = []
@@ -113,9 +120,19 @@ def recover_corpus(corpus: Corpus) -> list[Setup]:
                     axis=axis,
                     selector_table=selector_table,
                 )[0]
+                search_offsets = set(SEARCH_OFFSETS)
+                if additional_offsets is not None:
+                    search_offsets.update(
+                        additional_offsets(
+                            capture_case,
+                            endpoint,
+                            axis,
+                            base_bits,
+                        )
+                    )
                 accepted_offsets = tuple(
                     candidate
-                    for candidate in SEARCH_OFFSETS
+                    for candidate in sorted(search_offsets)
                     if center_matches(
                         axis_samples,
                         axis_records,
@@ -124,6 +141,18 @@ def recover_corpus(corpus: Corpus) -> list[Setup]:
                     )
                 )
                 if not accepted_offsets:
+                    accepted_offsets = tuple(
+                        candidate
+                        for candidate in fallback_offsets
+                        if candidate not in search_offsets
+                        and center_matches(
+                            axis_samples,
+                            axis_records,
+                            constants,
+                            slope_bits=base_bits + candidate,
+                        )
+                    )
+                if not accepted_offsets and require_match:
                     raise ValueError(
                         f"{corpus.name}:{capture_case.name}:{endpoint.name}:"
                         f"{axis} has no center coefficient in the search window"

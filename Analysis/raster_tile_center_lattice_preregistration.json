@@ -1,0 +1,519 @@
+{
+  "acceptance": {
+    "failureIsEvidence": true,
+    "productionShaderAuthorizedByThisCapture": false,
+    "sealedWordMismatchCount": 0,
+    "tolerance": 0,
+    "unchangedRepeatRequired": true
+  },
+  "capture": {
+    "boundaryBrackets": {
+      "lowerAbove": [
+        "e341-s32"
+      ],
+      "lowerBelow": [
+        "e331-s31",
+        "e651-s61"
+      ],
+      "upperAbove": [
+        "e615-s4",
+        "e775-s4"
+      ],
+      "upperBelow": [
+        "e537-s19",
+        "e841-s53"
+      ]
+    },
+    "broadTranslatedEndpoints": [
+      {
+        "highBits": "0x3f780010",
+        "lowBits": "0x35800000",
+        "name": "d31-over-32"
+      },
+      {
+        "highBits": "0x3f800008",
+        "lowBits": "0x35800000",
+        "name": "d1"
+      },
+      {
+        "highBits": "0x3f740010",
+        "lowBits": "0x35800000",
+        "name": "d61-over-64"
+      },
+      {
+        "highBits": "0x3f180010",
+        "lowBits": "0x35800000",
+        "name": "d19-over-32"
+      },
+      {
+        "highBits": "0x3f000010",
+        "lowBits": "0x35800000",
+        "name": "d1-over-2"
+      },
+      {
+        "highBits": "0x3f540010",
+        "lowBits": "0x35800000",
+        "name": "d53-over-64"
+      }
+    ],
+    "caseCount": 15,
+    "caseWordsSha256": "86b9f5492b84429a140cf865a04aa988275f6b8c1fcbce21329692586aaa5a1c",
+    "endpointCount": 178,
+    "endpointWordsSha256": "4e26aeca71331957f368f709c47ffff1c6c972c7db6ca67b4ecff9b56f577b22",
+    "layout": {
+      "axisCount": 2,
+      "caseCount": 15,
+      "caseWordsSha256": "86b9f5492b84429a140cf865a04aa988275f6b8c1fcbce21329692586aaa5a1c",
+      "edgeCount": 2,
+      "endpointCount": 178,
+      "endpointWordsSha256": "4e26aeca71331957f368f709c47ffff1c6c972c7db6ca67b4ecff9b56f577b22",
+      "expectedRecordCount": 325384,
+      "primitiveCount": 2,
+      "pullCount": 16,
+      "rawBytes": 49213440,
+      "recordBytes": 72,
+      "recordComponentCount": 18,
+      "recordCount": 683520,
+      "sampleWordsSha256": "f6ed71bb4fefa0444082fddfac0ba1a15a11ce10b199b018ed33fd795ce892cf",
+      "samplesPerCase": [
+        60,
+        118,
+        118,
+        122,
+        122,
+        122,
+        122,
+        128,
+        128,
+        138,
+        138,
+        126,
+        126,
+        130,
+        130
+      ],
+      "slotCount": 256,
+      "tileCount": 32
+    },
+    "primaryTranslatedBase": {
+      "bits": "0x3f000000",
+      "name": "b2",
+      "nativeSpans": [
+        3,
+        4,
+        5,
+        18,
+        19,
+        20,
+        30,
+        31,
+        32,
+        33,
+        52,
+        53,
+        54,
+        60,
+        61,
+        62
+      ],
+      "residues": [
+        0,
+        1,
+        7,
+        31
+      ]
+    },
+    "pullOffsetsByAxis": {
+      "x": [
+        [
+          0.0,
+          0.5
+        ],
+        [
+          0.0625,
+          0.5
+        ],
+        [
+          0.125,
+          0.5
+        ],
+        [
+          0.1875,
+          0.5
+        ],
+        [
+          0.25,
+          0.5
+        ],
+        [
+          0.3125,
+          0.5
+        ],
+        [
+          0.375,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5625,
+          0.5
+        ],
+        [
+          0.625,
+          0.5
+        ],
+        [
+          0.6875,
+          0.5
+        ],
+        [
+          0.75,
+          0.5
+        ],
+        [
+          0.8125,
+          0.5
+        ],
+        [
+          0.875,
+          0.5
+        ],
+        [
+          0.9375,
+          0.5
+        ]
+      ],
+      "y": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.0625
+        ],
+        [
+          0.5,
+          0.125
+        ],
+        [
+          0.5,
+          0.1875
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.5,
+          0.3125
+        ],
+        [
+          0.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.4375
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.5625
+        ],
+        [
+          0.5,
+          0.625
+        ],
+        [
+          0.5,
+          0.6875
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.5,
+          0.8125
+        ],
+        [
+          0.5,
+          0.875
+        ],
+        [
+          0.5,
+          0.9375
+        ]
+      ]
+    },
+    "recordComponents": [
+      "axis-pull@0/16",
+      "axis-pull@1/16",
+      "axis-pull@2/16",
+      "axis-pull@3/16",
+      "axis-pull@4/16",
+      "axis-pull@5/16",
+      "axis-pull@6/16",
+      "axis-pull@7/16",
+      "axis-pull@8/16",
+      "axis-pull@9/16",
+      "axis-pull@10/16",
+      "axis-pull@11/16",
+      "axis-pull@12/16",
+      "axis-pull@13/16",
+      "axis-pull@14/16",
+      "axis-pull@15/16",
+      "center",
+      "axis-derivative(center)"
+    ],
+    "recoveredP27PhaseBoundaries": {
+      "lowerInclusive": "3/32",
+      "upperInclusive": "9/16"
+    },
+    "rigVersion": "metal-raster-tile-selector-8.0.0",
+    "role": "prospective-tile-center-p27-lattice-holdout",
+    "sampleWordsSha256": "f6ed71bb4fefa0444082fddfac0ba1a15a11ce10b199b018ed33fd795ce892cf",
+    "schemaVersion": 8,
+    "sealedCases": [
+      "sealed-lower-below-e331-x",
+      "sealed-lower-below-e331-y",
+      "sealed-lower-above-e341-x",
+      "sealed-lower-above-e341-y",
+      "sealed-lower-below-e651-x",
+      "sealed-lower-below-e651-y",
+      "sealed-upper-below-e537-x",
+      "sealed-upper-below-e537-y",
+      "sealed-upper-above-e615-x",
+      "sealed-upper-above-e615-y",
+      "sealed-upper-above-e775-x",
+      "sealed-upper-above-e775-y",
+      "sealed-upper-below-e841-x",
+      "sealed-upper-below-e841-y"
+    ],
+    "transferNativeSpans": [
+      4,
+      19,
+      31,
+      32,
+      53,
+      61
+    ],
+    "transferTranslatedBases": [
+      {
+        "bits": "0x3e000000",
+        "name": "b0"
+      },
+      {
+        "bits": "0x3e800000",
+        "name": "b1"
+      },
+      {
+        "bits": "0x3f800000",
+        "name": "b3"
+      }
+    ]
+  },
+  "createdAt": "2026-08-01T15:00:00Z",
+  "derivationEvidence": {
+    "openedRecordCount": 819480,
+    "openedV6MismatchCount": 0,
+    "openedWordCount": 14750640,
+    "prospectiveEvidenceForV6": false,
+    "schema5RawSha256": "3cd6a35830a3d71af0252b87bce94e97917fdd68234805216d432b0bedbc1cc3",
+    "schema6RawSha256": "3b84d1376edc4d354672ff6367a9a66437ba23425342218f3c87952537e92665",
+    "schema7RawSha256": "0e20ff958ea6ce7326adb8dc0f9d3945bfb984dea010a0ff23a707a16c4d826c"
+  },
+  "model": {
+    "baseFile": "Analysis/raster_tile_selector_model.py",
+    "baseSourceSha256": "1874d8c452dce244bd8ae2cb7fbf05d0d454a815c0c37c285e1c377524c9369d",
+    "capturedValuesParticipateInSelection": false,
+    "constantLaw": "schema-6 physical/exact composite, 28-bit nearest-even then binary32 nearest-even",
+    "file": "Analysis/raster_tile_selector_model_v6.py",
+    "pullCoefficientLaw": "two-stage determinant coefficient rounded to binary32 nearest-even",
+    "selectorTableSha256": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+    "sourceSha256": "3c5bdc263ea97f56c6cb8f0c7eedff22e13cb9eca02eb7895c458b0370553420",
+    "translatedCenterLattice": "exact endpoint delta divided by axis extent on a signed p27 lattice",
+    "translatedForwardPhaseLaw": "signed floor - 1 step below 3/32; signed floor through 9/16; signed floor + 1 step at or above 9/16",
+    "translatedReversePhaseLaw": "signed numerical p27 floor",
+    "v2File": "Analysis/raster_tile_selector_model_v2.py",
+    "v2SourceSha256": "114f6aa52693307521b04a9b231541bda60ee88f8b33a60bfd4d52e45e208dd5",
+    "v4File": "Analysis/raster_tile_selector_model_v4.py",
+    "v4SourceSha256": "f1918f51974f486510ce5d68724cff015bb2e7f618a1153016d464cd9240a103",
+    "v5File": "Analysis/raster_tile_selector_model_v5.py",
+    "v5SourceSha256": "76723aa8f139b81f784b91a11e68e3e4b23d646031e10254fe4e8488244291e7",
+    "zeroEndpointCenterLaw": "use the determinant-rounded binary32 coefficient"
+  },
+  "nextGate": "Open every schema-8 sealed word only after this preregistration, executable model, compressed prediction stream, and probe layout are committed; require zero mismatched words and an unchanged bit-identical repeat before using this arithmetic in a fresh Walle image holdout.",
+  "predictedTruthStream": {
+    "archive": {
+      "bytes": 1177305,
+      "file": "raster_tile_v6_sealed_predictions.zlib",
+      "rawSha256": "08ceb5ccab6fde6d1c880c0e8059f88ed98350fdd467d1772002dc66171b6277",
+      "sha256": "835e33732c9084c285215b0c52b369eff861a91f29938a81b851bc666e3fdd79"
+    },
+    "bytes": 22658688,
+    "caseRole": "sealed-holdout",
+    "cases": [
+      {
+        "bytes": 1512288,
+        "name": "sealed-lower-below-e331-x",
+        "recordCount": 21004,
+        "sha256": "e9375224082d253058fe904c32f9324a8cab2802fa29b35efe949e787c4bcf0f"
+      },
+      {
+        "bytes": 1512288,
+        "name": "sealed-lower-below-e331-y",
+        "recordCount": 21004,
+        "sha256": "53c1928ccda2bc2a3459e3db1415043b625f89de07e26d423db01450da64d925"
+      },
+      {
+        "bytes": 1563552,
+        "name": "sealed-lower-above-e341-x",
+        "recordCount": 21716,
+        "sha256": "0cd4167887aae8d9b50e6c7279762dcd93df699b7dbc93411dc4f516e0c07ef7"
+      },
+      {
+        "bytes": 1563552,
+        "name": "sealed-lower-above-e341-y",
+        "recordCount": 21716,
+        "sha256": "a456d540ced6a9cd53a551f93a3cd3818465319bf489589169986c00b49d5d6e"
+      },
+      {
+        "bytes": 1563552,
+        "name": "sealed-lower-below-e651-x",
+        "recordCount": 21716,
+        "sha256": "65fe3b1700620c890454825b97c5a784d4ae4f0519737df122c3cb9251f8d922"
+      },
+      {
+        "bytes": 1563552,
+        "name": "sealed-lower-below-e651-y",
+        "recordCount": 21716,
+        "sha256": "fd483142670c467310337720c21440233a70c159730855e7a5907954a1ff9f64"
+      },
+      {
+        "bytes": 1640448,
+        "name": "sealed-upper-below-e537-x",
+        "recordCount": 22784,
+        "sha256": "1f3fe7cd9449b4564ecc22c3c54c27d61bd76bf89278c98021b815f917e283e7"
+      },
+      {
+        "bytes": 1640448,
+        "name": "sealed-upper-below-e537-y",
+        "recordCount": 22784,
+        "sha256": "ba10395f8dc5c8246daa22554552e445b1d9d5f2bf2705251fcda61829f1c87e"
+      },
+      {
+        "bytes": 1768608,
+        "name": "sealed-upper-above-e615-x",
+        "recordCount": 24564,
+        "sha256": "c9c2bfcb32e236b687e29304be12adb373302ead7e91dda3366422f42e00d973"
+      },
+      {
+        "bytes": 1768608,
+        "name": "sealed-upper-above-e615-y",
+        "recordCount": 24564,
+        "sha256": "98812a2af1e0bab7b6fd8f6bcfcdc824076ef26070f9e835fc72ae3db0954848"
+      },
+      {
+        "bytes": 1614816,
+        "name": "sealed-upper-above-e775-x",
+        "recordCount": 22428,
+        "sha256": "8ae3fc0449f864a4a130f5f1a85a1b8eb9bb87c627e3b13eee5377133cdf987e"
+      },
+      {
+        "bytes": 1614816,
+        "name": "sealed-upper-above-e775-y",
+        "recordCount": 22428,
+        "sha256": "0520d73f7bb9e5bfc2ae88996d1d9a173ce221f7c5ebd52de756150591160183"
+      },
+      {
+        "bytes": 1666080,
+        "name": "sealed-upper-below-e841-x",
+        "recordCount": 23140,
+        "sha256": "307e92420c7996e52d2040144445f05352ee4b6e9a0055b829b5d9579b02494f"
+      },
+      {
+        "bytes": 1666080,
+        "name": "sealed-upper-below-e841-y",
+        "recordCount": 23140,
+        "sha256": "580d8e8390d516b713a4589e4dde3541548510507e1ea9b15118aef6611d96e2"
+      }
+    ],
+    "endpointCount": 178,
+    "endpointRole": "all",
+    "ordering": "sealed-case-major,all-endpoint-major,sample-position-major,record-component-major",
+    "recordBytes": 72,
+    "recordComponentCount": 18,
+    "recordCount": 314704,
+    "sha256": "08ceb5ccab6fde6d1c880c0e8059f88ed98350fdd467d1772002dc66171b6277"
+  },
+  "preflightDiscrimination": {
+    "centerAblationDifferences": {
+      "binary32-exact-down": {
+        "records": 2282,
+        "words": 3162
+      },
+      "determinant-rounded-f32": {
+        "records": 2198,
+        "words": 3302
+      },
+      "direction-symmetric": {
+        "records": 220,
+        "words": 296
+      },
+      "lower-boundary-5/64": {
+        "records": 36,
+        "words": 46
+      },
+      "lower-boundary-7/64": {
+        "records": 58,
+        "words": 66
+      },
+      "lower-branch-removed": {
+        "records": 74,
+        "words": 102
+      },
+      "p27-nearest-even": {
+        "records": 780,
+        "words": 1346
+      },
+      "p27-signed-floor": {
+        "records": 260,
+        "words": 344
+      },
+      "upper-boundary-1/2": {
+        "records": 26,
+        "words": 30
+      },
+      "upper-boundary-17/32": {
+        "records": 26,
+        "words": 30
+      },
+      "upper-boundary-19/32": {
+        "records": 60,
+        "words": 80
+      },
+      "upper-branch-removed": {
+        "records": 186,
+        "words": 242
+      }
+    },
+    "sealedRecordCount": 314704,
+    "sealedWordCount": 5664672
+  },
+  "role": "prospective-center-p27-lattice-holdout",
+  "schemaVersion": 1,
+  "scientificQuestion": "Does Apple's translated tile-center path use a signed 27-bit coefficient lattice with forward phase actions -1 below 3/32, 0 from 3/32 through 9/16, and +1 at or above 9/16, while reverse ramps use the signed numerical floor?",
+  "sealedHoldoutOpenedAtPreregistration": false
+}
