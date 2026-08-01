@@ -63,7 +63,15 @@ private struct SamplePosition {
     }
 }
 
-#if TILE_CENTER_EXTENT_TOMOGRAPHY
+#if TILE_COEFFICIENT_HOLDOUT
+private let schemaVersion = 13
+private let rigVersion = "metal-raster-tile-selector-13.0.0"
+private let role = "prospective-complete-raster-coefficient-holdout"
+private let preregistrationFile =
+    "Analysis/raster_tile_coefficient_holdout_preregistration.json"
+private let preregistrationSha256 =
+    "d36880366fad1b20a7d1fa0909e2f86b83a46f11bc4a775431dcea6d66b728ac"
+#elseif TILE_CENTER_EXTENT_TOMOGRAPHY
 private let schemaVersion = 12
 private let rigVersion = "metal-raster-tile-selector-12.0.0"
 private let role = "preregistered-dense-center-extent-tomography"
@@ -172,7 +180,18 @@ private let recordOrdering =
 private let recordOrdering =
     "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor"
 #endif
-#if TILE_CENTER_EXTENT_TOMOGRAPHY
+#if TILE_COEFFICIENT_HOLDOUT
+private let cases = [
+    CaptureCase(name: "sealed-control-square", role: "sealed-holdout", width: 256, height: 256, originX: 384, originY: 384),
+    CaptureCase(name: "sealed-prime-a", role: "sealed-holdout", width: 487, height: 641, originX: 13, originY: 79),
+    CaptureCase(name: "sealed-prime-b", role: "sealed-holdout", width: 739, height: 283, originX: 109, originY: 503),
+    CaptureCase(name: "sealed-prime-c", role: "sealed-holdout", width: 623, height: 397, originX: 257, originY: 71),
+    CaptureCase(name: "sealed-phase-a", role: "sealed-holdout", width: 341, height: 733, originX: 511, originY: 41),
+    CaptureCase(name: "sealed-thin-x", role: "sealed-holdout", width: 997, height: 47, originX: 11, originY: 401),
+    CaptureCase(name: "sealed-thin-y", role: "sealed-holdout", width: 53, height: 953, originX: 417, originY: 31),
+    CaptureCase(name: "sealed-composite", role: "sealed-holdout", width: 686, height: 318, originX: 173, originY: 289),
+]
+#elseif TILE_CENTER_EXTENT_TOMOGRAPHY
 private let centerExtentSet: Set<Int> = [
     191, 193, 197, 198, 199, 203, 204, 211, 220,
     231, 251, 252, 253, 255, 256, 257, 315,
@@ -659,7 +678,39 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
-#if TILE_CENTER_EXTENT_TOMOGRAPHY
+#if TILE_COEFFICIENT_HOLDOUT
+private let coefficientHoldoutEndpointSpecs: [
+    (name: String, role: String, lowBits: UInt32, highBits: UInt32)
+] = [
+    ("quarter-to-three-quarter", "factorized-target", 0x3e80_0003, 0x3f40_0007),
+    ("below-half-to-five-eighth", "factorized-target", 0x3eff_fff1, 0x3f20_000b),
+    ("half-cross-narrow", "factorized-target", 0x3eff_fff7, 0x3f00_000d),
+    ("tiny-to-near-one", "factorized-target", 0x3780_0003, 0x3f70_000b),
+    ("three-eighth-to-nine-sixteenth", "factorized-target", 0x3ec0_0005, 0x3f10_0009),
+    ("quarter-binade-cross", "branch-boundary-control", 0x3e7f_fff7, 0x3e80_000d),
+    ("one-binade-cross", "branch-boundary-control", 0x3f7f_fff7, 0x3f80_000d),
+    ("zero-to-three-quarter", "branch-boundary-control", 0x0000_0000, 0x3f40_0007),
+    ("negative-to-three-quarter", "branch-boundary-control", 0xbe80_0003, 0x3f40_0007),
+    ("quarter-to-three-quarter-exact", "branch-boundary-control", 0x3e80_0000, 0x3f40_0000),
+    ("tiny-to-half", "factorized-target", 0x3780_0003, 0x3f00_0000),
+    ("half-to-three-quarter", "branch-boundary-control", 0x3f00_0000, 0x3f40_0007),
+]
+
+private func coefficientHoldoutEndpoints() -> [EndpointCase] {
+    coefficientHoldoutEndpointSpecs.flatMap { endpoint in
+        [
+            EndpointCase(
+                name: "\(endpoint.name)-forward", role: endpoint.role,
+                lowBits: endpoint.lowBits, highBits: endpoint.highBits
+            ),
+            EndpointCase(
+                name: "\(endpoint.name)-reverse", role: endpoint.role,
+                lowBits: endpoint.highBits, highBits: endpoint.lowBits
+            ),
+        ]
+    }
+}
+#elseif TILE_CENTER_EXTENT_TOMOGRAPHY
 private let centerExtentBases: [(name: String, bits: UInt32)] = [
     ("quarter", 0x3e80_0000),
     ("one", 0x3f80_0000),
@@ -1217,7 +1268,9 @@ private func discriminatorEndpoints() -> [EndpointCase] {
 }
 #endif
 
-#if TILE_CENTER_EXTENT_TOMOGRAPHY
+#if TILE_COEFFICIENT_HOLDOUT
+private let endpoints = coefficientHoldoutEndpoints()
+#elseif TILE_CENTER_EXTENT_TOMOGRAPHY
 private let endpoints = centerExtentTomographyEndpoints()
 #elseif TILE_CENTER_TOMOGRAPHY
 private let endpoints = centerTomographyEndpoints()
@@ -1528,7 +1581,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_CENTER_EXTENT_TOMOGRAPHY
+#if TILE_COEFFICIENT_HOLDOUT
+    precondition(cases.count == 8)
+    precondition(endpoints.count == 24)
+    precondition(layout["recordCount"] as? Int == 49_152)
+    precondition(layout["rawBytes"] as? Int == 3_538_944)
+    precondition(layout["expectedRecordCount"] as? Int == 23_928)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "3ecb4d358bb723c713843473db68706d87b0ab6ebceeec67f226a0c68501f7f5"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "16151b2e692e5d7f6f80802ec07cb9e9e7275a70b1cf3900b5a767b9fed9466b"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "63b50ccd0807cba2c7d43ae42da084f5c83ba1a1c67abb8cde31530632b5f262"
+    )
+#elseif TILE_CENTER_EXTENT_TOMOGRAPHY
     precondition(cases.count == 40)
     precondition(endpoints.count == 78)
     precondition(layout["recordCount"] as? Int == 1_965_600)

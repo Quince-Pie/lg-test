@@ -1,0 +1,711 @@
+{
+  "acceptance": {
+    "allDeclaredRecordsFinite": true,
+    "failureIsEvidence": true,
+    "productionShaderAuthorizedByThisCapture": false,
+    "recordMismatchCount": 0,
+    "tolerance": 0,
+    "unchangedBitIdenticalRepeatRequired": true,
+    "wordMismatchCount": 0
+  },
+  "appleOutputsObservedAtPreregistration": false,
+  "capture": {
+    "caseCount": 8,
+    "caseWordsSha256": "3ecb4d358bb723c713843473db68706d87b0ab6ebceeec67f226a0c68501f7f5",
+    "cases": [
+      {
+        "height": 256,
+        "name": "sealed-control-square",
+        "originX": 384,
+        "originY": 384,
+        "role": "sealed-holdout",
+        "width": 256
+      },
+      {
+        "height": 641,
+        "name": "sealed-prime-a",
+        "originX": 13,
+        "originY": 79,
+        "role": "sealed-holdout",
+        "width": 487
+      },
+      {
+        "height": 283,
+        "name": "sealed-prime-b",
+        "originX": 109,
+        "originY": 503,
+        "role": "sealed-holdout",
+        "width": 739
+      },
+      {
+        "height": 397,
+        "name": "sealed-prime-c",
+        "originX": 257,
+        "originY": 71,
+        "role": "sealed-holdout",
+        "width": 623
+      },
+      {
+        "height": 733,
+        "name": "sealed-phase-a",
+        "originX": 511,
+        "originY": 41,
+        "role": "sealed-holdout",
+        "width": 341
+      },
+      {
+        "height": 47,
+        "name": "sealed-thin-x",
+        "originX": 11,
+        "originY": 401,
+        "role": "sealed-holdout",
+        "width": 997
+      },
+      {
+        "height": 953,
+        "name": "sealed-thin-y",
+        "originX": 417,
+        "originY": 31,
+        "role": "sealed-holdout",
+        "width": 53
+      },
+      {
+        "height": 318,
+        "name": "sealed-composite",
+        "originX": 173,
+        "originY": 289,
+        "role": "sealed-holdout",
+        "width": 686
+      }
+    ],
+    "endpointCount": 24,
+    "endpointWordsSha256": "16151b2e692e5d7f6f80802ec07cb9e9e7275a70b1cf3900b5a767b9fed9466b",
+    "endpoints": [
+      {
+        "highBits": "0x3f400007",
+        "lowBits": "0x3e800003",
+        "name": "quarter-to-three-quarter-forward",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3e800003",
+        "lowBits": "0x3f400007",
+        "name": "quarter-to-three-quarter-reverse",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3f20000b",
+        "lowBits": "0x3efffff1",
+        "name": "below-half-to-five-eighth-forward",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3efffff1",
+        "lowBits": "0x3f20000b",
+        "name": "below-half-to-five-eighth-reverse",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3f00000d",
+        "lowBits": "0x3efffff7",
+        "name": "half-cross-narrow-forward",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3efffff7",
+        "lowBits": "0x3f00000d",
+        "name": "half-cross-narrow-reverse",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3f70000b",
+        "lowBits": "0x37800003",
+        "name": "tiny-to-near-one-forward",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x37800003",
+        "lowBits": "0x3f70000b",
+        "name": "tiny-to-near-one-reverse",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3f100009",
+        "lowBits": "0x3ec00005",
+        "name": "three-eighth-to-nine-sixteenth-forward",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3ec00005",
+        "lowBits": "0x3f100009",
+        "name": "three-eighth-to-nine-sixteenth-reverse",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3e80000d",
+        "lowBits": "0x3e7ffff7",
+        "name": "quarter-binade-cross-forward",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3e7ffff7",
+        "lowBits": "0x3e80000d",
+        "name": "quarter-binade-cross-reverse",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3f80000d",
+        "lowBits": "0x3f7ffff7",
+        "name": "one-binade-cross-forward",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3f7ffff7",
+        "lowBits": "0x3f80000d",
+        "name": "one-binade-cross-reverse",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3f400007",
+        "lowBits": "0x00000000",
+        "name": "zero-to-three-quarter-forward",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x00000000",
+        "lowBits": "0x3f400007",
+        "name": "zero-to-three-quarter-reverse",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3f400007",
+        "lowBits": "0xbe800003",
+        "name": "negative-to-three-quarter-forward",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0xbe800003",
+        "lowBits": "0x3f400007",
+        "name": "negative-to-three-quarter-reverse",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3f400000",
+        "lowBits": "0x3e800000",
+        "name": "quarter-to-three-quarter-exact-forward",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3e800000",
+        "lowBits": "0x3f400000",
+        "name": "quarter-to-three-quarter-exact-reverse",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3f000000",
+        "lowBits": "0x37800003",
+        "name": "tiny-to-half-forward",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x37800003",
+        "lowBits": "0x3f000000",
+        "name": "tiny-to-half-reverse",
+        "role": "factorized-target"
+      },
+      {
+        "highBits": "0x3f400007",
+        "lowBits": "0x3f000000",
+        "name": "half-to-three-quarter-forward",
+        "role": "branch-boundary-control"
+      },
+      {
+        "highBits": "0x3f000000",
+        "lowBits": "0x3f400007",
+        "name": "half-to-three-quarter-reverse",
+        "role": "branch-boundary-control"
+      }
+    ],
+    "layout": {
+      "axisCount": 2,
+      "caseCount": 8,
+      "caseWordsSha256": "3ecb4d358bb723c713843473db68706d87b0ab6ebceeec67f226a0c68501f7f5",
+      "edgeCount": 2,
+      "endpointCount": 24,
+      "endpointWordsSha256": "16151b2e692e5d7f6f80802ec07cb9e9e7275a70b1cf3900b5a767b9fed9466b",
+      "expectedRecordCount": 23928,
+      "primitiveCount": 2,
+      "pullCount": 16,
+      "rawBytes": 3538944,
+      "recordBytes": 72,
+      "recordComponentCount": 18,
+      "recordCount": 49152,
+      "sampleWordsSha256": "63b50ccd0807cba2c7d43ae42da084f5c83ba1a1c67abb8cde31530632b5f262",
+      "samplesPerCase": [
+        60,
+        146,
+        134,
+        130,
+        140,
+        134,
+        127,
+        126
+      ],
+      "slotCount": 256,
+      "tileCount": 32
+    },
+    "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor",
+    "pullOffsetsByAxis": {
+      "x": [
+        [
+          0.0,
+          0.5
+        ],
+        [
+          0.0625,
+          0.5
+        ],
+        [
+          0.125,
+          0.5
+        ],
+        [
+          0.1875,
+          0.5
+        ],
+        [
+          0.25,
+          0.5
+        ],
+        [
+          0.3125,
+          0.5
+        ],
+        [
+          0.375,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5625,
+          0.5
+        ],
+        [
+          0.625,
+          0.5
+        ],
+        [
+          0.6875,
+          0.5
+        ],
+        [
+          0.75,
+          0.5
+        ],
+        [
+          0.8125,
+          0.5
+        ],
+        [
+          0.875,
+          0.5
+        ],
+        [
+          0.9375,
+          0.5
+        ]
+      ],
+      "y": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.0625
+        ],
+        [
+          0.5,
+          0.125
+        ],
+        [
+          0.5,
+          0.1875
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.5,
+          0.3125
+        ],
+        [
+          0.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.4375
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.5625
+        ],
+        [
+          0.5,
+          0.625
+        ],
+        [
+          0.5,
+          0.6875
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.5,
+          0.8125
+        ],
+        [
+          0.5,
+          0.875
+        ],
+        [
+          0.5,
+          0.9375
+        ]
+      ]
+    },
+    "recordComponents": [
+      "axis-pull@0/16",
+      "axis-pull@1/16",
+      "axis-pull@2/16",
+      "axis-pull@3/16",
+      "axis-pull@4/16",
+      "axis-pull@5/16",
+      "axis-pull@6/16",
+      "axis-pull@7/16",
+      "axis-pull@8/16",
+      "axis-pull@9/16",
+      "axis-pull@10/16",
+      "axis-pull@11/16",
+      "axis-pull@12/16",
+      "axis-pull@13/16",
+      "axis-pull@14/16",
+      "axis-pull@15/16",
+      "center",
+      "axis-derivative(center)"
+    ],
+    "rigVersion": "metal-raster-tile-selector-13.0.0",
+    "role": "prospective-complete-raster-coefficient-holdout",
+    "sampleWordsSha256": "63b50ccd0807cba2c7d43ae42da084f5c83ba1a1c67abb8cde31530632b5f262",
+    "schemaVersion": 13
+  },
+  "createdAt": "2026-08-01T23:30:00Z",
+  "derivationEvidence": {
+    "openedSchemas": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "prospectiveAtDerivation": false,
+    "recordCount": 4914544,
+    "retrospectiveExact": true,
+    "schema12RawSha256": "dde09692cb490155cd2100552043115c4dce59f9244e22127e6857b2ca5f7477",
+    "schema3RawSha256": "c260075c6865c8d95749a6b6db51e441a37f9e2448ca4a4c1cfea8baac78c99b",
+    "wordCount": 88461792,
+    "wordMismatchCount": 0
+  },
+  "model": {
+    "baseSourceSha256": "1874d8c452dce244bd8ae2cb7fbf05d0d454a815c0c37c285e1c377524c9369d",
+    "centerPrecisionBits": 36,
+    "coefficientSourceSha256": "69b8546e26dbd17009260621b1a72610e9c25efee21e68022b07c9f00c599248",
+    "constantPathSelector": "positive lower endpoint below 0.5, upper endpoint at least 0.5, and non-power-of-two exact endpoint delta",
+    "iteratorSourceSha256": "bf0b926e759f9234d924ccd82654abc07ad8bb9ff10c9058ba5a284886dd2429",
+    "parameters": {
+      "aggregate_tile_product": true,
+      "constant_first_bias": 15,
+      "reciprocal_bias": 20,
+      "reciprocal_truncation_bits": 19,
+      "slope_first_bias": 15,
+      "tile_bias": 10,
+      "tile_truncation_bits": 19
+    },
+    "selectorTableSha256": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+    "sourceSha256": "fb282111945039a8b7ef17842399b1725f9d7103d4891b816c56842e6017e296",
+    "v2SourceSha256": "114f6aa52693307521b04a9b231541bda60ee88f8b33a60bfd4d52e45e208dd5",
+    "v4SourceSha256": "f1918f51974f486510ce5d68724cff015bb2e7f618a1153016d464cd9240a103",
+    "v6SourceSha256": "3c5bdc263ea97f56c6cb8f0c7eedff22e13cb9eca02eb7895c458b0370553420",
+    "v7SourceSha256": "2393fc0f190c2fa9daa3b19e2ecacde61815b1ce10432a0336e34303a2d29d25",
+    "v8SourceSha256": "2fe483b51c2c48cc599ea06b69a61cddd207c9191d8daee152cb59ea5cec5915"
+  },
+  "nextGate": "Require zero mismatched words on the first unseen Apple capture, then require an unchanged independent capture with the same raw SHA-256 before treating this raster-coefficient domain as prospectively validated.",
+  "predictedTruthStream": {
+    "archive": {
+      "bytes": 600348,
+      "file": "raster_tile_coefficient_holdout_predictions.zlib",
+      "rawSha256": "267e6b4aa6fc51cdf4af5bc2f594fecc75db7c3bf764a18bb472044e3ac755d7",
+      "sha256": "8aadb17f8982f5f8dcf6ebcb2a1671e9af6f948e205a1484a5e9efed3a2d7c1c"
+    },
+    "bytes": 1722816,
+    "caseRole": "sealed-holdout",
+    "cases": [
+      {
+        "bytes": 103680,
+        "name": "sealed-control-square",
+        "recordCount": 1440,
+        "sha256": "f85ceeb2d6ae62e06017083bd091260a30d5897f541a3bba76d54cd69b8b4691"
+      },
+      {
+        "bytes": 252288,
+        "name": "sealed-prime-a",
+        "recordCount": 3504,
+        "sha256": "d5b48bb005e54c9a716d51511c2d104170714b464b5d6654fb0d040989fff9c9"
+      },
+      {
+        "bytes": 231552,
+        "name": "sealed-prime-b",
+        "recordCount": 3216,
+        "sha256": "cd681947b062de5c43e33fb42def69fc7dcbeb55e26190d937df07a03b5f127b"
+      },
+      {
+        "bytes": 224640,
+        "name": "sealed-prime-c",
+        "recordCount": 3120,
+        "sha256": "c62699260a40eb7ce3e10174f3e163a1e154e53dca7c3c7bcbca542499a13620"
+      },
+      {
+        "bytes": 241920,
+        "name": "sealed-phase-a",
+        "recordCount": 3360,
+        "sha256": "641990d23f4dcd46bc6783ceff488544fa77dacd2ea41a5c5fd71fbdbcdfe5eb"
+      },
+      {
+        "bytes": 231552,
+        "name": "sealed-thin-x",
+        "recordCount": 3216,
+        "sha256": "74413d46684cee82a0e2d12e56cfc78eef7ef2fa4f02617800b0f581e14a923e"
+      },
+      {
+        "bytes": 219456,
+        "name": "sealed-thin-y",
+        "recordCount": 3048,
+        "sha256": "ca7fb11dea9625c2f49d6fa4db63f91c4b4515964d6ee788b85ef8846a743fd3"
+      },
+      {
+        "bytes": 217728,
+        "name": "sealed-composite",
+        "recordCount": 3024,
+        "sha256": "c1a97d4f295a4316f313d1e1ee3c803ea10b0d605d4c5667cb950610ee0f6810"
+      }
+    ],
+    "endpointCount": 24,
+    "endpointRole": "all",
+    "ordering": "case-major,endpoint-major,sample-position-major,record-component-major",
+    "recordBytes": 72,
+    "recordComponentCount": 18,
+    "recordCount": 23928,
+    "sha256": "267e6b4aa6fc51cdf4af5bc2f594fecc75db7c3bf764a18bb472044e3ac755d7"
+  },
+  "preflightDiscrimination": {
+    "ablationDifferences": {
+      "constant-first-bias-14": {
+        "records": 40,
+        "words": 672
+      },
+      "factorized-constant-all-positive": {
+        "records": 10,
+        "words": 170
+      },
+      "legacy-constant-all": {
+        "records": 232,
+        "words": 3823
+      },
+      "partial-tile-product": {
+        "records": 15,
+        "words": 225
+      },
+      "reciprocal-bias-19": {
+        "records": 99,
+        "words": 764
+      },
+      "reciprocal-bias-21": {
+        "records": 15,
+        "words": 255
+      },
+      "reciprocal-truncation-18": {
+        "records": 381,
+        "words": 3891
+      },
+      "reciprocal-truncation-20": {
+        "records": 895,
+        "words": 9521
+      },
+      "slope-first-bias-14": {
+        "records": 84,
+        "words": 84
+      },
+      "tile-bias-11": {
+        "records": 20,
+        "words": 340
+      },
+      "tile-bias-9": {
+        "records": 61,
+        "words": 991
+      },
+      "tile-truncation-18": {
+        "records": 247,
+        "words": 4090
+      },
+      "tile-truncation-20": {
+        "records": 455,
+        "words": 7467
+      }
+    },
+    "ablationEndpointWordDifferences": {
+      "constant-first-bias-14": {
+        "quarter-to-three-quarter-forward": 230,
+        "quarter-to-three-quarter-reverse": 255,
+        "three-eighth-to-nine-sixteenth-forward": 51,
+        "three-eighth-to-nine-sixteenth-reverse": 136
+      },
+      "factorized-constant-all-positive": {
+        "half-to-three-quarter-forward": 102,
+        "half-to-three-quarter-reverse": 68
+      },
+      "legacy-constant-all": {
+        "below-half-to-five-eighth-forward": 68,
+        "below-half-to-five-eighth-reverse": 68,
+        "quarter-to-three-quarter-forward": 170,
+        "quarter-to-three-quarter-reverse": 357,
+        "three-eighth-to-nine-sixteenth-forward": 86,
+        "three-eighth-to-nine-sixteenth-reverse": 136,
+        "tiny-to-half-forward": 285,
+        "tiny-to-half-reverse": 663,
+        "tiny-to-near-one-forward": 835,
+        "tiny-to-near-one-reverse": 1155
+      },
+      "partial-tile-product": {
+        "quarter-to-three-quarter-forward": 68,
+        "three-eighth-to-nine-sixteenth-forward": 34,
+        "tiny-to-near-one-forward": 55,
+        "tiny-to-near-one-reverse": 68
+      },
+      "reciprocal-bias-19": {
+        "quarter-to-three-quarter-reverse": 68,
+        "tiny-to-half-forward": 34,
+        "tiny-to-half-reverse": 204,
+        "tiny-to-near-one-forward": 242,
+        "tiny-to-near-one-reverse": 216
+      },
+      "reciprocal-bias-21": {
+        "quarter-to-three-quarter-forward": 34,
+        "tiny-to-half-reverse": 85,
+        "tiny-to-near-one-forward": 17,
+        "tiny-to-near-one-reverse": 119
+      },
+      "reciprocal-truncation-18": {
+        "below-half-to-five-eighth-forward": 34,
+        "below-half-to-five-eighth-reverse": 102,
+        "quarter-to-three-quarter-exact-forward": 72,
+        "quarter-to-three-quarter-exact-reverse": 72,
+        "quarter-to-three-quarter-forward": 238,
+        "quarter-to-three-quarter-reverse": 204,
+        "three-eighth-to-nine-sixteenth-forward": 86,
+        "three-eighth-to-nine-sixteenth-reverse": 170,
+        "tiny-to-half-forward": 452,
+        "tiny-to-half-reverse": 782,
+        "tiny-to-near-one-forward": 670,
+        "tiny-to-near-one-reverse": 1009
+      },
+      "reciprocal-truncation-20": {
+        "below-half-to-five-eighth-forward": 51,
+        "negative-to-three-quarter-forward": 448,
+        "negative-to-three-quarter-reverse": 432,
+        "quarter-to-three-quarter-exact-forward": 22,
+        "quarter-to-three-quarter-exact-reverse": 21,
+        "quarter-to-three-quarter-forward": 739,
+        "quarter-to-three-quarter-reverse": 731,
+        "three-eighth-to-nine-sixteenth-forward": 56,
+        "three-eighth-to-nine-sixteenth-reverse": 121,
+        "tiny-to-half-forward": 1489,
+        "tiny-to-half-reverse": 1674,
+        "tiny-to-near-one-forward": 1146,
+        "tiny-to-near-one-reverse": 2289,
+        "zero-to-three-quarter-forward": 156,
+        "zero-to-three-quarter-reverse": 146
+      },
+      "slope-first-bias-14": {
+        "half-to-three-quarter-forward": 42,
+        "half-to-three-quarter-reverse": 42
+      },
+      "tile-bias-11": {
+        "below-half-to-five-eighth-forward": 51,
+        "quarter-to-three-quarter-reverse": 34,
+        "three-eighth-to-nine-sixteenth-reverse": 34,
+        "tiny-to-half-forward": 68,
+        "tiny-to-near-one-forward": 119,
+        "tiny-to-near-one-reverse": 34
+      },
+      "tile-bias-9": {
+        "below-half-to-five-eighth-forward": 34,
+        "quarter-to-three-quarter-forward": 68,
+        "three-eighth-to-nine-sixteenth-forward": 34,
+        "three-eighth-to-nine-sixteenth-reverse": 34,
+        "tiny-to-half-forward": 170,
+        "tiny-to-half-reverse": 459,
+        "tiny-to-near-one-forward": 91,
+        "tiny-to-near-one-reverse": 101
+      },
+      "tile-truncation-18": {
+        "below-half-to-five-eighth-forward": 68,
+        "below-half-to-five-eighth-reverse": 68,
+        "quarter-to-three-quarter-forward": 224,
+        "quarter-to-three-quarter-reverse": 272,
+        "three-eighth-to-nine-sixteenth-forward": 188,
+        "three-eighth-to-nine-sixteenth-reverse": 204,
+        "tiny-to-half-forward": 545,
+        "tiny-to-half-reverse": 1292,
+        "tiny-to-near-one-forward": 449,
+        "tiny-to-near-one-reverse": 780
+      },
+      "tile-truncation-20": {
+        "below-half-to-five-eighth-forward": 204,
+        "below-half-to-five-eighth-reverse": 102,
+        "quarter-to-three-quarter-forward": 639,
+        "quarter-to-three-quarter-reverse": 578,
+        "three-eighth-to-nine-sixteenth-forward": 154,
+        "three-eighth-to-nine-sixteenth-reverse": 119,
+        "tiny-to-half-forward": 1200,
+        "tiny-to-half-reverse": 1207,
+        "tiny-to-near-one-forward": 1518,
+        "tiny-to-near-one-reverse": 1746
+      }
+    },
+    "recordCount": 23928,
+    "wordCount": 430704
+  },
+  "role": "prospective-complete-raster-coefficient-holdout",
+  "schemaVersion": 1,
+  "scientificQuestion": "Does one input-only AGX model predict every pull, center, and derivative word for novel geometry and endpoints that distinguish aggregate tile-product truncation, all measured stage biases, and the broad-endpoint constant path?"
+}

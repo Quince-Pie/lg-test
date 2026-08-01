@@ -3574,6 +3574,45 @@ This remains discovery evidence. A prospective claim still requires a single
 input-only selector to replay all opened schemas exactly, followed by a novel
 frozen holdout and unchanged bit-identical repeat.
 
+Run `30709783598` captured all 1,432,704 declared schema-12 records at commit
+`6017a5f`. Every one of its 25,788,672 component words is finite, and the
+141,523,200-byte raw stream has SHA-256
+`dde09692cb490155cd2100552043115c4dce59f9244e22127e6857b2ca5f7477`.
+Post-opening recovery identifies one fixed-function coefficient pipeline. The
+endpoint delta and opposite extent first enter a 27-bit partial-product stage
+with 16 truncated low bits and bias 15. Tile displacement multiplies that
+result through one aggregate-product truncation at 19 low bits with bias 10;
+the reciprocal partial-product stage is 27-bit, truncates 19 low bits, and
+uses bias 20. The primitive-anchor sum is rounded to 28 significand bits and
+then to binary32. Centers use the independently recovered normalized 36-bit
+quad accumulator, binary32 toward-zero output, and odd-minus-even derivative.
+
+That single input-only implementation replays every declared pull, center, and
+derivative in schemas 3 through 12 exactly: 4,914,544 records and
+88,461,792 of 88,461,792 compared words, with zero tolerance. This is the
+first complete retrospective bit replay of the opened raster-coefficient
+corpus. It remains calibration evidence because the last arithmetic details
+were recovered after schema 12 was opened.
+
+Schema 13 freezes the complete predictor before Apple produces any new word.
+Eight novel geometries combine prime, composite, long-thin, tile-phase, and
+transposed-axis determinants. Twenty-four directed endpoints target the
+broad constant path and its zero, sign, exact-power delta, half boundary, and
+neighboring-binade controls. The sealed layout contains 23,928 records and
+430,704 component words. Its complete prediction stream has SHA-256
+`267e6b4aa6fc51cdf4af5bc2f594fecc75db7c3bf764a18bb472044e3ac755d7`;
+the 600,348-byte zlib archive has SHA-256
+`8aadb17f8982f5f8dcf6ebcb2a1671e9af6f948e205a1484a5e9efed3a2d7c1c`;
+the preregistration has SHA-256
+`d36880366fad1b20a7d1fa0909e2f86b83a46f11bc4a775431dcea6d66b728ac`.
+Preflight proves the matrix distinguishes every declared neighboring model.
+The legacy constant path differs on 3,823 words, separate partial-product
+truncation in the tile stage differs on 225, and the remaining precision and
+bias ablations differ on 84 through 9,521 words. Acceptance is exactly zero
+mismatched words on the unseen capture followed by an unchanged independent
+capture with the same raw SHA-256. A failure is evidence and must not be
+relabelled parity or hidden behind a tolerance.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
