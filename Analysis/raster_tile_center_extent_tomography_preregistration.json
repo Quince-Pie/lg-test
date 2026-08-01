@@ -1,0 +1,812 @@
+{
+  "acceptance": {
+    "allDeclaredRecordsFinite": true,
+    "determinantZeroEndpointPullControlsExact": true,
+    "discoveryCapture": true,
+    "productionShaderAuthorizedByThisCapture": false,
+    "prospectiveParityClaim": false,
+    "structuralValidationRequired": true,
+    "tolerance": 0
+  },
+  "appleOutputsObservedAtPreregistration": false,
+  "capture": {
+    "caseCount": 40,
+    "caseSpecifications": [
+      {
+        "extent": 191,
+        "opposite": 509,
+        "opposite_origin": 341,
+        "origin": 65,
+        "stem": "e191-o65-d509"
+      },
+      {
+        "extent": 193,
+        "opposite": 647,
+        "opposite_origin": 290,
+        "origin": 78,
+        "stem": "e193-o78-d647"
+      },
+      {
+        "extent": 197,
+        "opposite": 751,
+        "opposite_origin": 212,
+        "origin": 95,
+        "stem": "e197-o95-d751"
+      },
+      {
+        "extent": 198,
+        "opposite": 509,
+        "opposite_origin": 341,
+        "origin": 112,
+        "stem": "e198-o112-d509"
+      },
+      {
+        "extent": 198,
+        "opposite": 751,
+        "opposite_origin": 212,
+        "origin": 145,
+        "stem": "e198-o145-d751"
+      },
+      {
+        "extent": 199,
+        "opposite": 647,
+        "opposite_origin": 290,
+        "origin": 127,
+        "stem": "e199-o127-d647"
+      },
+      {
+        "extent": 203,
+        "opposite": 751,
+        "opposite_origin": 212,
+        "origin": 144,
+        "stem": "e203-o144-d751"
+      },
+      {
+        "extent": 204,
+        "opposite": 509,
+        "opposite_origin": 341,
+        "origin": 161,
+        "stem": "e204-o161-d509"
+      },
+      {
+        "extent": 211,
+        "opposite": 647,
+        "opposite_origin": 290,
+        "origin": 176,
+        "stem": "e211-o176-d647"
+      },
+      {
+        "extent": 220,
+        "opposite": 751,
+        "opposite_origin": 212,
+        "origin": 191,
+        "stem": "e220-o191-d751"
+      },
+      {
+        "extent": 231,
+        "opposite": 509,
+        "opposite_origin": 341,
+        "origin": 208,
+        "stem": "e231-o208-d509"
+      },
+      {
+        "extent": 251,
+        "opposite": 647,
+        "opposite_origin": 290,
+        "origin": 225,
+        "stem": "e251-o225-d647"
+      },
+      {
+        "extent": 252,
+        "opposite": 751,
+        "opposite_origin": 212,
+        "origin": 240,
+        "stem": "e252-o240-d751"
+      },
+      {
+        "extent": 252,
+        "opposite": 509,
+        "opposite_origin": 341,
+        "origin": 271,
+        "stem": "e252-o271-d509"
+      },
+      {
+        "extent": 253,
+        "opposite": 509,
+        "opposite_origin": 341,
+        "origin": 257,
+        "stem": "e253-o257-d509"
+      },
+      {
+        "extent": 255,
+        "opposite": 647,
+        "opposite_origin": 290,
+        "origin": 272,
+        "stem": "e255-o272-d647"
+      },
+      {
+        "extent": 256,
+        "opposite": 751,
+        "opposite_origin": 212,
+        "origin": 287,
+        "stem": "e256-o287-d751"
+      },
+      {
+        "extent": 256,
+        "opposite": 647,
+        "opposite_origin": 290,
+        "origin": 320,
+        "stem": "e256-o320-d647"
+      },
+      {
+        "extent": 257,
+        "opposite": 509,
+        "opposite_origin": 341,
+        "origin": 304,
+        "stem": "e257-o304-d509"
+      },
+      {
+        "extent": 315,
+        "opposite": 647,
+        "opposite_origin": 290,
+        "origin": 321,
+        "stem": "e315-o321-d647"
+      }
+    ],
+    "caseWordsSha256": "bcec9916cd8095303f3df9c2c2c32bf96f6eec5fedf006410a8e5a8beb4859b5",
+    "cases": [
+      {
+        "height": 509,
+        "name": "extent-e191-o65-d509-x",
+        "originX": 65,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 191
+      },
+      {
+        "height": 191,
+        "name": "extent-e191-o65-d509-y",
+        "originX": 341,
+        "originY": 65,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 647,
+        "name": "extent-e193-o78-d647-x",
+        "originX": 78,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 193
+      },
+      {
+        "height": 193,
+        "name": "extent-e193-o78-d647-y",
+        "originX": 290,
+        "originY": 78,
+        "role": "preregistered-discovery",
+        "width": 647
+      },
+      {
+        "height": 751,
+        "name": "extent-e197-o95-d751-x",
+        "originX": 95,
+        "originY": 212,
+        "role": "preregistered-discovery",
+        "width": 197
+      },
+      {
+        "height": 197,
+        "name": "extent-e197-o95-d751-y",
+        "originX": 212,
+        "originY": 95,
+        "role": "preregistered-discovery",
+        "width": 751
+      },
+      {
+        "height": 509,
+        "name": "extent-e198-o112-d509-x",
+        "originX": 112,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 198
+      },
+      {
+        "height": 198,
+        "name": "extent-e198-o112-d509-y",
+        "originX": 341,
+        "originY": 112,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 751,
+        "name": "extent-e198-o145-d751-x",
+        "originX": 145,
+        "originY": 212,
+        "role": "preregistered-discovery",
+        "width": 198
+      },
+      {
+        "height": 198,
+        "name": "extent-e198-o145-d751-y",
+        "originX": 212,
+        "originY": 145,
+        "role": "preregistered-discovery",
+        "width": 751
+      },
+      {
+        "height": 647,
+        "name": "extent-e199-o127-d647-x",
+        "originX": 127,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 199
+      },
+      {
+        "height": 199,
+        "name": "extent-e199-o127-d647-y",
+        "originX": 290,
+        "originY": 127,
+        "role": "preregistered-discovery",
+        "width": 647
+      },
+      {
+        "height": 751,
+        "name": "extent-e203-o144-d751-x",
+        "originX": 144,
+        "originY": 212,
+        "role": "preregistered-discovery",
+        "width": 203
+      },
+      {
+        "height": 203,
+        "name": "extent-e203-o144-d751-y",
+        "originX": 212,
+        "originY": 144,
+        "role": "preregistered-discovery",
+        "width": 751
+      },
+      {
+        "height": 509,
+        "name": "extent-e204-o161-d509-x",
+        "originX": 161,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 204
+      },
+      {
+        "height": 204,
+        "name": "extent-e204-o161-d509-y",
+        "originX": 341,
+        "originY": 161,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 647,
+        "name": "extent-e211-o176-d647-x",
+        "originX": 176,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 211
+      },
+      {
+        "height": 211,
+        "name": "extent-e211-o176-d647-y",
+        "originX": 290,
+        "originY": 176,
+        "role": "preregistered-discovery",
+        "width": 647
+      },
+      {
+        "height": 751,
+        "name": "extent-e220-o191-d751-x",
+        "originX": 191,
+        "originY": 212,
+        "role": "preregistered-discovery",
+        "width": 220
+      },
+      {
+        "height": 220,
+        "name": "extent-e220-o191-d751-y",
+        "originX": 212,
+        "originY": 191,
+        "role": "preregistered-discovery",
+        "width": 751
+      },
+      {
+        "height": 509,
+        "name": "extent-e231-o208-d509-x",
+        "originX": 208,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 231
+      },
+      {
+        "height": 231,
+        "name": "extent-e231-o208-d509-y",
+        "originX": 341,
+        "originY": 208,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 647,
+        "name": "extent-e251-o225-d647-x",
+        "originX": 225,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 251
+      },
+      {
+        "height": 251,
+        "name": "extent-e251-o225-d647-y",
+        "originX": 290,
+        "originY": 225,
+        "role": "preregistered-discovery",
+        "width": 647
+      },
+      {
+        "height": 751,
+        "name": "extent-e252-o240-d751-x",
+        "originX": 240,
+        "originY": 212,
+        "role": "preregistered-discovery",
+        "width": 252
+      },
+      {
+        "height": 252,
+        "name": "extent-e252-o240-d751-y",
+        "originX": 212,
+        "originY": 240,
+        "role": "preregistered-discovery",
+        "width": 751
+      },
+      {
+        "height": 509,
+        "name": "extent-e252-o271-d509-x",
+        "originX": 271,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 252
+      },
+      {
+        "height": 252,
+        "name": "extent-e252-o271-d509-y",
+        "originX": 341,
+        "originY": 271,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 509,
+        "name": "extent-e253-o257-d509-x",
+        "originX": 257,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 253
+      },
+      {
+        "height": 253,
+        "name": "extent-e253-o257-d509-y",
+        "originX": 341,
+        "originY": 257,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 647,
+        "name": "extent-e255-o272-d647-x",
+        "originX": 272,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 255
+      },
+      {
+        "height": 255,
+        "name": "extent-e255-o272-d647-y",
+        "originX": 290,
+        "originY": 272,
+        "role": "preregistered-discovery",
+        "width": 647
+      },
+      {
+        "height": 751,
+        "name": "extent-e256-o287-d751-x",
+        "originX": 287,
+        "originY": 212,
+        "role": "preregistered-discovery",
+        "width": 256
+      },
+      {
+        "height": 256,
+        "name": "extent-e256-o287-d751-y",
+        "originX": 212,
+        "originY": 287,
+        "role": "preregistered-discovery",
+        "width": 751
+      },
+      {
+        "height": 647,
+        "name": "extent-e256-o320-d647-x",
+        "originX": 320,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 256
+      },
+      {
+        "height": 256,
+        "name": "extent-e256-o320-d647-y",
+        "originX": 290,
+        "originY": 320,
+        "role": "preregistered-discovery",
+        "width": 647
+      },
+      {
+        "height": 509,
+        "name": "extent-e257-o304-d509-x",
+        "originX": 304,
+        "originY": 341,
+        "role": "preregistered-discovery",
+        "width": 257
+      },
+      {
+        "height": 257,
+        "name": "extent-e257-o304-d509-y",
+        "originX": 341,
+        "originY": 304,
+        "role": "preregistered-discovery",
+        "width": 509
+      },
+      {
+        "height": 647,
+        "name": "extent-e315-o321-d647-x",
+        "originX": 321,
+        "originY": 290,
+        "role": "preregistered-discovery",
+        "width": 315
+      },
+      {
+        "height": 315,
+        "name": "extent-e315-o321-d647-y",
+        "originX": 290,
+        "originY": 321,
+        "role": "preregistered-discovery",
+        "width": 647
+      }
+    ],
+    "effectiveExtents": [
+      191,
+      193,
+      197,
+      198,
+      199,
+      203,
+      204,
+      211,
+      220,
+      231,
+      251,
+      252,
+      253,
+      255,
+      256,
+      257,
+      315
+    ],
+    "endpointCount": 78,
+    "endpointWordsSha256": "dbf456fa22c3b4c1d184826ace207ee544fa51cc94762ceddcdcc195731de5f6",
+    "familyResidues": {
+      "n01": {
+        "baseResidue": 79,
+        "nativeSignificand": 1
+      },
+      "n03": {
+        "baseResidue": 17,
+        "nativeSignificand": 3
+      },
+      "n05": {
+        "baseResidue": 29,
+        "nativeSignificand": 5
+      },
+      "n07": {
+        "baseResidue": 37,
+        "nativeSignificand": 7
+      },
+      "n15": {
+        "baseResidue": 43,
+        "nativeSignificand": 15
+      },
+      "n31": {
+        "baseResidue": 53,
+        "nativeSignificand": 31
+      }
+    },
+    "layout": {
+      "axisCount": 2,
+      "caseCount": 40,
+      "caseWordsSha256": "bcec9916cd8095303f3df9c2c2c32bf96f6eec5fedf006410a8e5a8beb4859b5",
+      "edgeCount": 315,
+      "endpointCount": 78,
+      "endpointWordsSha256": "dbf456fa22c3b4c1d184826ace207ee544fa51cc94762ceddcdcc195731de5f6",
+      "expectedRecordCount": 1432704,
+      "primitiveCount": 2,
+      "pullCount": 16,
+      "rawBytes": 141523200,
+      "recordBytes": 72,
+      "recordComponentCount": 18,
+      "recordCount": 1965600,
+      "sampleWordsSha256": "20d3bb5316478835289c61c80dbe7a1049deb03d4c08a99de9e4fc40dd084b86",
+      "samplesPerCase": [
+        382,
+        382,
+        386,
+        386,
+        394,
+        394,
+        396,
+        396,
+        396,
+        396,
+        398,
+        398,
+        406,
+        406,
+        408,
+        408,
+        422,
+        422,
+        440,
+        440,
+        462,
+        462,
+        502,
+        502,
+        504,
+        504,
+        504,
+        504,
+        506,
+        506,
+        510,
+        510,
+        512,
+        512,
+        512,
+        512,
+        514,
+        514,
+        630,
+        630
+      ],
+      "slotCount": 630,
+      "tileCount": 32
+    },
+    "n01Depths": [
+      17,
+      13,
+      9,
+      7
+    ],
+    "n15Depths": [
+      17,
+      16,
+      15,
+      14,
+      13,
+      12,
+      11,
+      10,
+      9,
+      8,
+      7
+    ],
+    "ordering": "case-major,endpoint-major,effective-axis-primitive-coordinate-slot-major,component-minor",
+    "pullOffsetsByAxis": {
+      "x": [
+        [
+          0.0,
+          0.5
+        ],
+        [
+          0.0625,
+          0.5
+        ],
+        [
+          0.125,
+          0.5
+        ],
+        [
+          0.1875,
+          0.5
+        ],
+        [
+          0.25,
+          0.5
+        ],
+        [
+          0.3125,
+          0.5
+        ],
+        [
+          0.375,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5625,
+          0.5
+        ],
+        [
+          0.625,
+          0.5
+        ],
+        [
+          0.6875,
+          0.5
+        ],
+        [
+          0.75,
+          0.5
+        ],
+        [
+          0.8125,
+          0.5
+        ],
+        [
+          0.875,
+          0.5
+        ],
+        [
+          0.9375,
+          0.5
+        ]
+      ],
+      "y": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.0625
+        ],
+        [
+          0.5,
+          0.125
+        ],
+        [
+          0.5,
+          0.1875
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.5,
+          0.3125
+        ],
+        [
+          0.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.4375
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.5625
+        ],
+        [
+          0.5,
+          0.625
+        ],
+        [
+          0.5,
+          0.6875
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.5,
+          0.8125
+        ],
+        [
+          0.5,
+          0.875
+        ],
+        [
+          0.5,
+          0.9375
+        ]
+      ]
+    },
+    "recordComponents": [
+      "axis-pull@0/16",
+      "axis-pull@1/16",
+      "axis-pull@2/16",
+      "axis-pull@3/16",
+      "axis-pull@4/16",
+      "axis-pull@5/16",
+      "axis-pull@6/16",
+      "axis-pull@7/16",
+      "axis-pull@8/16",
+      "axis-pull@9/16",
+      "axis-pull@10/16",
+      "axis-pull@11/16",
+      "axis-pull@12/16",
+      "axis-pull@13/16",
+      "axis-pull@14/16",
+      "axis-pull@15/16",
+      "center",
+      "axis-derivative(center)"
+    ],
+    "rigVersion": "metal-raster-tile-selector-12.0.0",
+    "role": "preregistered-dense-center-extent-tomography",
+    "samplePolicy": "every integer pixel on each declared effective axis, both triangle primitives, native and transposed geometry",
+    "sampleWordsSha256": "20d3bb5316478835289c61c80dbe7a1049deb03d4c08a99de9e4fc40dd084b86",
+    "schemaVersion": 12,
+    "transferDepths": [
+      13,
+      9
+    ],
+    "translatedBases": [
+      {
+        "bits": "0x3e800000",
+        "name": "quarter"
+      },
+      {
+        "bits": "0x3f800000",
+        "name": "one"
+      }
+    ]
+  },
+  "createdAt": "2026-08-01T17:05:00Z",
+  "derivationEvidence": {
+    "decisiveOpenedExtentClasses": {
+      "198": "sparse samples do not identify a unique coefficient",
+      "252": "scale-relative p58 candidate only",
+      "256": "older coefficient path only"
+    },
+    "schema11AllDeclaredWordsFinite": true,
+    "schema11CiCommit": "1c826a37bf53ca70105b041d669c3f87dd8ecaa8",
+    "schema11CiRun": 30708595385,
+    "schema11FrozenModelWordMismatchCount": 8460,
+    "schema11PreregisteredControlRecordMismatchCount": 9915,
+    "schema11PreregisteredControlWordMismatchCount": 141339,
+    "schema11RawSha256": "024e4092886280e74856eda245cdf5cc862947afb5bbdadca9d2159562964ee1",
+    "schema11RecordCount": 471744,
+    "schema11RetrospectiveScaleCandidateProspective": false,
+    "schema11RetrospectiveScaleCandidateWordMismatchCount": 0,
+    "schema11WordCount": 8491392
+  },
+  "designRationale": "Seventeen effective extents include primes, composites, neighboring values, the decisive 252/256 pair, and legacy 198. Three decisive extents receive a second tile phase and opposite determinant. Every integer effective-axis pixel is recorded for both primitives and both axis orientations. Endpoint families cross two scales, both directions, cancellation depths 7 through 17, and six odd native significands.",
+  "hypotheses": [
+    "determinant-rounded binary32 coefficient",
+    "signed-p27 coefficient selector",
+    "scale-relative p58 nearest-minus-one coefficient",
+    "extent denominator or factorization selector",
+    "native-significand and cancellation-depth selector",
+    "tile-origin or opposite-extent selector"
+  ],
+  "nextGate": "Recover one input-only selector from this preregistered discovery matrix, replay every opened schema-5 through schema-12 word exactly, then freeze complete prediction bytes for a novel prospective holdout and require an unchanged bit-identical repeat.",
+  "role": "preregistered-center-varied-extent-tomography",
+  "schemaVersion": 1,
+  "scientificQuestion": "Which input-derived selector chooses determinant, p27, or scale-relative p58 center coefficients across varied extents, endpoint scales, native significands, directions, and tile phases?"
+}

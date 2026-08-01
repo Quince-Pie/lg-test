@@ -1,0 +1,86 @@
+name: Capture Apple Metal varied-extent center tomography
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-tile-center-extent-tomography.yml
+      - Analysis/raster_tile_center_extent_tomography_preregistration.json
+      - Analysis/test_validate_raster_tile_center_extent_tomography.py
+      - Analysis/validate_raster_tile_center_extent_tomography.py
+      - Sources/GlassRasterTileNumerator/**
+
+concurrency:
+  group: raster-tile-center-extent-tomography-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-tile-center-extent-tomography:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Test frozen varied-extent contract
+        run: |
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_raster_tile_center_extent_tomography.py' -v
+
+      - name: Build varied-extent tomography probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-tile-center-extent-tomography
+          set -o pipefail
+          swiftc -D TILE_CENTER_EXTENT_TOMOGRAPHY -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterTileNumerator/main.swift \
+            -o glass-raster-tile-center-extent-tomography 2>&1 |
+            tee raster-tile-center-extent-tomography/build.log
+
+      - name: Capture preregistered varied-extent center records
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-tile-center-extent-tomography \
+            raster-tile-center-extent-tomography
+
+      - name: Validate varied-extent tomography evidence
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_raster_tile_center_extent_tomography.py \
+            raster-tile-center-extent-tomography \
+            --output raster-tile-center-extent-tomography/validation.json
+
+      - name: Upload varied-extent tomography evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-tile-center-extent-tomography-${{ github.run_id }}
+          path: raster-tile-center-extent-tomography
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce varied-extent tomography evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-tile-center-extent-tomography/manifest.json
+          test -s raster-tile-center-extent-tomography/validation.json
+          test -s raster-tile-center-extent-tomography/raster-tile-numerator.raw

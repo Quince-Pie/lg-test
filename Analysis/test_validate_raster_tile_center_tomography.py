@@ -103,7 +103,7 @@ class RasterTileCenterTomographyTests(unittest.TestCase):
             / "main.swift"
         ).read_text(encoding="utf-8")
         case_block = source.split(
-            "#if TILE_CENTER_TOMOGRAPHY\nprivate let cases = [",
+            "#elseif TILE_CENTER_TOMOGRAPHY\nprivate let cases = [",
             maxsplit=1,
         )[1].split("\n]\n#else\n#if TILE_CENTER_BOUNDARY_HOLDOUT", maxsplit=1)[0]
         swift_cases = [

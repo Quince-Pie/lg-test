@@ -1,0 +1,61 @@
+{
+  "allDeclaredWordsFinite": true,
+  "inference": "The dense matrix rejects the p27-floor explanation and identifies a scale-relative p58 center coefficient for the extent-252 forward-n15 path. The candidate replays every schema-11 word exactly, but its extent selector is retrospective and requires a varied-extent discovery matrix before a blind parity holdout.",
+  "preregisteredControl": {
+    "exact": false,
+    "inference": "The preregistered simple-binary32 pull predictor is rejected; this is a control-model failure, while every captured record is present and finite.",
+    "recordCount": 12096,
+    "recordMismatchCount": 9915,
+    "wordMismatchCount": 141339
+  },
+  "productionShaderAuthorized": false,
+  "prospectiveParityClaim": false,
+  "rasterTileCenterTomographyOpeningSchemaVersion": 1,
+  "recordCount": 471744,
+  "retrospectiveScaleLatticeCandidate": {
+    "coefficient": "round_nearest_even((high-low)/extent, step=2^(floor_log2(max_abs_endpoint)-57)) - step",
+    "exact": true,
+    "prospectiveEvidence": false,
+    "recordMismatchCount": 0,
+    "scaleLatticeFractionBits": 57,
+    "selectedLawRecordCounts": {
+      "determinant-rounded-f32": 272160,
+      "forward-n15-scale-p58-nearest-minus-one": 108864,
+      "n01-reverse-signed-p27-floor": 78624,
+      "zero-endpoint-determinant": 12096
+    },
+    "selection": "positive odd-native-span 15, cancellation depth >= 7, effective extent 252",
+    "wordMismatchCount": 0
+  },
+  "schema10PostOpeningModel": {
+    "componentMismatchCounts": {
+      "axis-derivative(center)": 5620,
+      "center": 2840
+    },
+    "endpointWordMismatchCounts": {
+      "translated-dense-one-n15-d07-forward": 560,
+      "translated-dense-one-n15-d09-forward": 560,
+      "translated-dense-one-n15-d13-forward": 560,
+      "translated-dense-one-n15-d17-forward": 572,
+      "translated-dense-quarter-n15-d07-forward": 560,
+      "translated-dense-quarter-n15-d08-forward": 560,
+      "translated-dense-quarter-n15-d09-forward": 560,
+      "translated-dense-quarter-n15-d10-forward": 560,
+      "translated-dense-quarter-n15-d11-forward": 560,
+      "translated-dense-quarter-n15-d12-forward": 560,
+      "translated-dense-quarter-n15-d13-forward": 560,
+      "translated-dense-quarter-n15-d14-forward": 572,
+      "translated-dense-quarter-n15-d15-forward": 572,
+      "translated-dense-quarter-n15-d16-forward": 572,
+      "translated-dense-quarter-n15-d17-forward": 572
+    },
+    "exact": false,
+    "recordMismatchCount": 5620,
+    "wordMismatchCount": 8460
+  },
+  "source": "../artifacts/gh-run-30708595385/liquid-glass-raster-tile-center-tomography-30708595385",
+  "sourceCiCommit": "1c826a37bf53ca70105b041d669c3f87dd8ecaa8",
+  "sourceManifestSha256": "307bcd089da787b543961404c49891d429e27c7a112eb21015d2f8f9c5160908",
+  "sourceRawSha256": "024e4092886280e74856eda245cdf5cc862947afb5bbdadca9d2159562964ee1",
+  "wordCount": 8491392
+}

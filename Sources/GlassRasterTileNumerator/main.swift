@@ -53,7 +53,7 @@ private struct SamplePosition {
     let y: Int
 
     var slot: Int {
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY || TILE_CENTER_TOMOGRAPHY
         primitive * edgeCount + edge
 #else
         (
@@ -63,7 +63,15 @@ private struct SamplePosition {
     }
 }
 
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY
+private let schemaVersion = 12
+private let rigVersion = "metal-raster-tile-selector-12.0.0"
+private let role = "preregistered-dense-center-extent-tomography"
+private let preregistrationFile =
+    "Analysis/raster_tile_center_extent_tomography_preregistration.json"
+private let preregistrationSha256 =
+    "b4bf93d43b17d3d1488ca740d30a8c413354537411f541c480fa0026ce2a068b"
+#elseif TILE_CENTER_TOMOGRAPHY
 private let schemaVersion = 11
 private let rigVersion = "metal-raster-tile-selector-11.0.0"
 private let role = "preregistered-dense-tile-center-tomography"
@@ -144,7 +152,10 @@ private let tileSize = 32
 private let tileCount = targetWidth / tileSize
 private let axisCount = 2
 private let primitiveCount = 2
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY
+private let edgeCount = 315
+private let slotCount = primitiveCount * edgeCount
+#elseif TILE_CENTER_TOMOGRAPHY
 private let edgeCount = 252
 private let slotCount = primitiveCount * edgeCount
 #else
@@ -154,14 +165,61 @@ private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
 private let pullCount = 16
 private let recordComponentCount = pullCount + 2
 private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY || TILE_CENTER_TOMOGRAPHY
 private let recordOrdering =
     "case-major,endpoint-major,effective-axis-primitive-coordinate-slot-major,component-minor"
 #else
 private let recordOrdering =
     "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor"
 #endif
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY
+private let centerExtentSet: Set<Int> = [
+    191, 193, 197, 198, 199, 203, 204, 211, 220,
+    231, 251, 252, 253, 255, 256, 257, 315,
+]
+private let cases = [
+    CaptureCase(name: "extent-e191-o65-d509-x", role: "preregistered-discovery", width: 191, height: 509, originX: 65, originY: 341),
+    CaptureCase(name: "extent-e191-o65-d509-y", role: "preregistered-discovery", width: 509, height: 191, originX: 341, originY: 65),
+    CaptureCase(name: "extent-e193-o78-d647-x", role: "preregistered-discovery", width: 193, height: 647, originX: 78, originY: 290),
+    CaptureCase(name: "extent-e193-o78-d647-y", role: "preregistered-discovery", width: 647, height: 193, originX: 290, originY: 78),
+    CaptureCase(name: "extent-e197-o95-d751-x", role: "preregistered-discovery", width: 197, height: 751, originX: 95, originY: 212),
+    CaptureCase(name: "extent-e197-o95-d751-y", role: "preregistered-discovery", width: 751, height: 197, originX: 212, originY: 95),
+    CaptureCase(name: "extent-e198-o112-d509-x", role: "preregistered-discovery", width: 198, height: 509, originX: 112, originY: 341),
+    CaptureCase(name: "extent-e198-o112-d509-y", role: "preregistered-discovery", width: 509, height: 198, originX: 341, originY: 112),
+    CaptureCase(name: "extent-e198-o145-d751-x", role: "preregistered-discovery", width: 198, height: 751, originX: 145, originY: 212),
+    CaptureCase(name: "extent-e198-o145-d751-y", role: "preregistered-discovery", width: 751, height: 198, originX: 212, originY: 145),
+    CaptureCase(name: "extent-e199-o127-d647-x", role: "preregistered-discovery", width: 199, height: 647, originX: 127, originY: 290),
+    CaptureCase(name: "extent-e199-o127-d647-y", role: "preregistered-discovery", width: 647, height: 199, originX: 290, originY: 127),
+    CaptureCase(name: "extent-e203-o144-d751-x", role: "preregistered-discovery", width: 203, height: 751, originX: 144, originY: 212),
+    CaptureCase(name: "extent-e203-o144-d751-y", role: "preregistered-discovery", width: 751, height: 203, originX: 212, originY: 144),
+    CaptureCase(name: "extent-e204-o161-d509-x", role: "preregistered-discovery", width: 204, height: 509, originX: 161, originY: 341),
+    CaptureCase(name: "extent-e204-o161-d509-y", role: "preregistered-discovery", width: 509, height: 204, originX: 341, originY: 161),
+    CaptureCase(name: "extent-e211-o176-d647-x", role: "preregistered-discovery", width: 211, height: 647, originX: 176, originY: 290),
+    CaptureCase(name: "extent-e211-o176-d647-y", role: "preregistered-discovery", width: 647, height: 211, originX: 290, originY: 176),
+    CaptureCase(name: "extent-e220-o191-d751-x", role: "preregistered-discovery", width: 220, height: 751, originX: 191, originY: 212),
+    CaptureCase(name: "extent-e220-o191-d751-y", role: "preregistered-discovery", width: 751, height: 220, originX: 212, originY: 191),
+    CaptureCase(name: "extent-e231-o208-d509-x", role: "preregistered-discovery", width: 231, height: 509, originX: 208, originY: 341),
+    CaptureCase(name: "extent-e231-o208-d509-y", role: "preregistered-discovery", width: 509, height: 231, originX: 341, originY: 208),
+    CaptureCase(name: "extent-e251-o225-d647-x", role: "preregistered-discovery", width: 251, height: 647, originX: 225, originY: 290),
+    CaptureCase(name: "extent-e251-o225-d647-y", role: "preregistered-discovery", width: 647, height: 251, originX: 290, originY: 225),
+    CaptureCase(name: "extent-e252-o240-d751-x", role: "preregistered-discovery", width: 252, height: 751, originX: 240, originY: 212),
+    CaptureCase(name: "extent-e252-o240-d751-y", role: "preregistered-discovery", width: 751, height: 252, originX: 212, originY: 240),
+    CaptureCase(name: "extent-e252-o271-d509-x", role: "preregistered-discovery", width: 252, height: 509, originX: 271, originY: 341),
+    CaptureCase(name: "extent-e252-o271-d509-y", role: "preregistered-discovery", width: 509, height: 252, originX: 341, originY: 271),
+    CaptureCase(name: "extent-e253-o257-d509-x", role: "preregistered-discovery", width: 253, height: 509, originX: 257, originY: 341),
+    CaptureCase(name: "extent-e253-o257-d509-y", role: "preregistered-discovery", width: 509, height: 253, originX: 341, originY: 257),
+    CaptureCase(name: "extent-e255-o272-d647-x", role: "preregistered-discovery", width: 255, height: 647, originX: 272, originY: 290),
+    CaptureCase(name: "extent-e255-o272-d647-y", role: "preregistered-discovery", width: 647, height: 255, originX: 290, originY: 272),
+    CaptureCase(name: "extent-e256-o287-d751-x", role: "preregistered-discovery", width: 256, height: 751, originX: 287, originY: 212),
+    CaptureCase(name: "extent-e256-o287-d751-y", role: "preregistered-discovery", width: 751, height: 256, originX: 212, originY: 287),
+    CaptureCase(name: "extent-e256-o320-d647-x", role: "preregistered-discovery", width: 256, height: 647, originX: 320, originY: 290),
+    CaptureCase(name: "extent-e256-o320-d647-y", role: "preregistered-discovery", width: 647, height: 256, originX: 290, originY: 320),
+    CaptureCase(name: "extent-e257-o304-d509-x", role: "preregistered-discovery", width: 257, height: 509, originX: 304, originY: 341),
+    CaptureCase(name: "extent-e257-o304-d509-y", role: "preregistered-discovery", width: 509, height: 257, originX: 341, originY: 304),
+    CaptureCase(name: "extent-e315-o321-d647-x", role: "preregistered-discovery", width: 315, height: 647, originX: 321, originY: 290),
+    CaptureCase(name: "extent-e315-o321-d647-y", role: "preregistered-discovery", width: 647, height: 315, originX: 290, originY: 321),
+]
+#elseif TILE_CENTER_TOMOGRAPHY
 private let cases = [
     CaptureCase(name: "tomography-e252-d509-o89-x", role: "preregistered-discovery", width: 252, height: 509, originX: 89, originY: 341),
     CaptureCase(name: "tomography-e252-d509-o89-y", role: "preregistered-discovery", width: 509, height: 252, originX: 341, originY: 89),
@@ -601,7 +659,91 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY
+private let centerExtentBases: [(name: String, bits: UInt32)] = [
+    ("quarter", 0x3e80_0000),
+    ("one", 0x3f80_0000),
+]
+private let centerExtentN15 = (
+    name: "n15", nativeSignificand: UInt32(15), residue: UInt32(43)
+)
+private let centerExtentN01 = (
+    name: "n01", nativeSignificand: UInt32(1), residue: UInt32(79)
+)
+private let centerExtentTransfers: [
+    (name: String, nativeSignificand: UInt32, residue: UInt32)
+] = [
+    ("n03", 3, 17),
+    ("n05", 5, 29),
+    ("n07", 7, 37),
+    ("n31", 31, 53),
+]
+private let centerExtentN15Depths = [
+    17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7,
+]
+private let centerExtentN01Depths = [17, 13, 9, 7]
+private let centerExtentTransferDepths = [13, 9]
+
+private func appendCenterExtentPairs(
+    _ result: inout [EndpointCase],
+    base: (name: String, bits: UInt32),
+    family: (name: String, nativeSignificand: UInt32, residue: UInt32),
+    depths: [Int]
+) {
+    let significandLog2 = 31 - family.nativeSignificand.leadingZeroBitCount
+    for depth in depths {
+        let power = 23 - significandLog2 - depth
+        precondition(power >= 0)
+        let low = base.bits + family.residue
+        let high = low + (family.nativeSignificand << UInt32(power))
+        let stem = String(
+            format: "extent-%@-%@-d%02d",
+            base.name,
+            family.name,
+            depth
+        )
+        result.append(EndpointCase(
+            name: "\(stem)-forward", role: "tomography-discovery",
+            lowBits: low, highBits: high
+        ))
+        result.append(EndpointCase(
+            name: "\(stem)-reverse", role: "tomography-discovery",
+            lowBits: high, highBits: low
+        ))
+    }
+}
+
+private func centerExtentTomographyEndpoints() -> [EndpointCase] {
+    var result = [
+        EndpointCase(
+            name: "zero-to-one", role: "prospective-control",
+            lowBits: 0, highBits: 0x3f80_0000
+        ),
+        EndpointCase(
+            name: "one-to-zero", role: "prospective-control",
+            lowBits: 0x3f80_0000, highBits: 0
+        ),
+    ]
+    for base in centerExtentBases {
+        appendCenterExtentPairs(
+            &result, base: base, family: centerExtentN15,
+            depths: centerExtentN15Depths
+        )
+        appendCenterExtentPairs(
+            &result, base: base, family: centerExtentN01,
+            depths: centerExtentN01Depths
+        )
+    }
+    let quarter = centerExtentBases[0]
+    for family in centerExtentTransfers {
+        appendCenterExtentPairs(
+            &result, base: quarter, family: family,
+            depths: centerExtentTransferDepths
+        )
+    }
+    return result
+}
+#elseif TILE_CENTER_TOMOGRAPHY
 private let centerTomographyBases: [(name: String, bits: UInt32)] = [
     ("quarter", 0x3e80_0000),
     ("one", 0x3f80_0000),
@@ -1075,7 +1217,9 @@ private func discriminatorEndpoints() -> [EndpointCase] {
 }
 #endif
 
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY
+private let endpoints = centerExtentTomographyEndpoints()
+#elseif TILE_CENTER_TOMOGRAPHY
 private let endpoints = centerTomographyEndpoints()
 #elseif TILE_CENTER_BOUNDARY_HOLDOUT
 private let endpoints = centerBoundaryEndpoints()
@@ -1095,30 +1239,53 @@ private let endpoints = fixedEndpoints + selectorEndpoints()
 
 private func samplePositions(captureCase: CaptureCase) -> [SamplePosition] {
     var result: [SamplePosition] = []
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY || TILE_CENTER_TOMOGRAPHY
     let axis: Int
+    let effectiveExtent: Int
     let origin: Int
     let oppositeOrigin: Int
     let oppositeExtent: Int
+#if TILE_CENTER_EXTENT_TOMOGRAPHY
+    precondition(
+        centerExtentSet.contains(captureCase.width)
+            != centerExtentSet.contains(captureCase.height)
+    )
+    if centerExtentSet.contains(captureCase.width) {
+        axis = 0
+        effectiveExtent = captureCase.width
+        origin = captureCase.originX
+        oppositeOrigin = captureCase.originY
+        oppositeExtent = captureCase.height
+    } else {
+        axis = 1
+        effectiveExtent = captureCase.height
+        origin = captureCase.originY
+        oppositeOrigin = captureCase.originX
+        oppositeExtent = captureCase.width
+    }
+#else
     if captureCase.width == edgeCount {
         axis = 0
+        effectiveExtent = captureCase.width
         origin = captureCase.originX
         oppositeOrigin = captureCase.originY
         oppositeExtent = captureCase.height
     } else {
         precondition(captureCase.height == edgeCount)
         axis = 1
+        effectiveExtent = captureCase.height
         origin = captureCase.originY
         oppositeOrigin = captureCase.originX
         oppositeExtent = captureCase.width
     }
+#endif
     for primitive in 0..<primitiveCount {
-        for local in 0..<edgeCount {
+        for local in 0..<effectiveExtent {
             let coordinate = origin + local
             let covered = primitive == 0
-                ? oppositeExtent * (2 * local + 1) > edgeCount
+                ? oppositeExtent * (2 * local + 1) > effectiveExtent
                 : oppositeExtent * (2 * local + 1)
-                    < (2 * oppositeExtent - 1) * edgeCount
+                    < (2 * oppositeExtent - 1) * effectiveExtent
             precondition(covered)
             result.append(SamplePosition(
                 axis: axis,
@@ -1361,7 +1528,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_CENTER_TOMOGRAPHY
+#if TILE_CENTER_EXTENT_TOMOGRAPHY
+    precondition(cases.count == 40)
+    precondition(endpoints.count == 78)
+    precondition(layout["recordCount"] as? Int == 1_965_600)
+    precondition(layout["rawBytes"] as? Int == 141_523_200)
+    precondition(layout["expectedRecordCount"] as? Int == 1_432_704)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "bcec9916cd8095303f3df9c2c2c32bf96f6eec5fedf006410a8e5a8beb4859b5"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "dbf456fa22c3b4c1d184826ace207ee544fa51cc94762ceddcdcc195731de5f6"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "20d3bb5316478835289c61c80dbe7a1049deb03d4c08a99de9e4fc40dd084b86"
+    )
+#elseif TILE_CENTER_TOMOGRAPHY
     precondition(cases.count == 12)
     precondition(endpoints.count == 78)
     precondition(layout["recordCount"] as? Int == 471_744)

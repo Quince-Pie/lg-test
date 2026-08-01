@@ -3535,6 +3535,45 @@ controls were exact. The next prospective claim requires one input-only law
 to replay every opened schema-5 through schema-11 word exactly, followed by a
 fresh frozen holdout and unchanged repeat.
 
+Run `30708595385` captured all 471,744 declared records at commit `1c826a3`.
+Every one of its 8,491,392 words is finite, and the 33,965,568-byte stream has
+SHA-256
+`024e4092886280e74856eda245cdf5cc862947afb5bbdadca9d2159562964ee1`.
+The workflow is red because its preregistered simple-binary32 control predictor
+was rejected on 141,339 pull words across 9,915 of 12,096 control records. That
+is a failed control model, not missing capture data, and it remains recorded as
+a failure. The post-schema-10 model misses 8,460 discovery words: 2,840 centers
+and 5,620 derivatives, all in forward native-significand-fifteen endpoints at
+cancellation depths 7 through 17.
+
+Dense opening identifies a scale-relative coefficient lattice for the
+effective-252 path. Its step is
+`2^(floor(log2(max(abs(low), abs(high)))) - 57)`, and the observed coefficient
+is one step below the exact quotient rounded to the nearest lattice point. This
+candidate reproduces all 8,491,392 schema-11 words exactly, including the
+previously anomalous depths 15 and 9 and the quarter-to-one scale transfer.
+That zero is retrospective. Earlier opened data decisively select this path at
+extent 252, select an older path at extent 256, and leave the sparse extent-198
+coefficient underdetermined. Consequently neither schema 11 nor the exact
+replay authorizes a parity claim or production shader change. The reproducible
+opening is `Analysis/raster_tile_center_tomography_opening.json`.
+
+Schema 12 preregisters one varied-extent discovery matrix before observing any
+new Apple output. Seventeen effective extents cover primes, composites,
+neighbors around 198 and 252-257, and prior cases through 315. Extents 198,
+252, and 256 each receive a second tile phase and opposite determinant. Every
+integer effective-axis pixel is captured for both primitives and transposed
+axes. Seventy-eight endpoints cross quarter/one scales, both directions,
+cancellation depths 7-17, and odd native significands 1, 3, 5, 7, 15, and 31.
+The frozen layout contains 1,965,600 slots, 1,432,704 declared records, and a
+141,523,200-byte raw buffer. Its case, endpoint, and sample hashes are
+preregistered in
+`raster_tile_center_extent_tomography_preregistration.json`, whose SHA-256 is
+`b4bf93d43b17d3d1488ca740d30a8c413354537411f541c480fa0026ce2a068b`.
+This remains discovery evidence. A prospective claim still requires a single
+input-only selector to replay all opened schemas exactly, followed by a novel
+frozen holdout and unchanged bit-identical repeat.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
