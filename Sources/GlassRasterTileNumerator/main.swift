@@ -59,9 +59,23 @@ private struct SamplePosition {
     }
 }
 
+#if TILE_PHASE_HOLDOUT
+private let schemaVersion = 4
+private let rigVersion = "metal-raster-tile-selector-4.0.0"
+private let role = "prospective-dense-tile-selector-phase-holdout"
+private let preregistrationFile =
+    "Analysis/raster_tile_phase_holdout_preregistration.json"
+private let preregistrationSha256 =
+    "099ef9c83f6667bb6c89d9fabe560186017b4ed57b10cb1824d7c7c7d7fc07e1"
+#else
 private let schemaVersion = 3
 private let rigVersion = "metal-raster-tile-selector-3.0.0"
 private let role = "dense-tile-selector-discovery-with-sealed-holdouts"
+private let preregistrationFile =
+    "Analysis/raster_tile_numerator_preregistration.json"
+private let preregistrationSha256 =
+    "d8a4b9f0c6464a144c61b258654b7feb8be884f43b4df1e546d4cd50442eab9c"
+#endif
 private let targetWidth = 1_024
 private let targetHeight = 1_024
 private let viewportWidth = 1_024
@@ -75,9 +89,114 @@ private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
 private let pullCount = 16
 private let recordComponentCount = pullCount + 2
 private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
-private let preregistrationSha256 =
-    "d8a4b9f0c6464a144c61b258654b7feb8be884f43b4df1e546d4cd50442eab9c"
-
+#if TILE_PHASE_HOLDOUT
+private let cases = [
+    CaptureCase(
+        name: "control-square-256", role: "prospective-control",
+        width: 256, height: 256, originX: 384, originY: 384
+    ),
+    CaptureCase(
+        name: "opened-rectangle-503x377", role: "opened-calibration",
+        width: 503, height: 377, originX: 37, originY: 73
+    ),
+    CaptureCase(
+        name: "opened-wide-896x61", role: "opened-calibration",
+        width: 896, height: 61, originX: 64, originY: 227
+    ),
+    CaptureCase(
+        name: "opened-wide-896x511", role: "opened-calibration",
+        width: 896, height: 511, originX: 64, originY: 129
+    ),
+    CaptureCase(
+        name: "opened-phase-769x251", role: "opened-calibration",
+        width: 769, height: 251, originX: 127, originY: 311
+    ),
+    CaptureCase(
+        name: "opened-tall-511x896", role: "opened-calibration",
+        width: 511, height: 896, originX: 257, originY: 64
+    ),
+    CaptureCase(
+        name: "opened-prime-677x419", role: "opened-calibration",
+        width: 677, height: 419, originX: 53, originY: 149
+    ),
+    CaptureCase(
+        name: "opened-prime-823x557", role: "opened-calibration",
+        width: 823, height: 557, originX: 101, originY: 211
+    ),
+    CaptureCase(
+        name: "opened-tall-509x907", role: "opened-calibration",
+        width: 509, height: 907, originX: 309, originY: 49
+    ),
+    CaptureCase(
+        name: "opened-wide-911x509", role: "opened-calibration",
+        width: 911, height: 509, originX: 41, originY: 271
+    ),
+    CaptureCase(
+        name: "sealed-phase-01-31", role: "sealed-holdout",
+        width: 514, height: 809, originX: 255, originY: 107
+    ),
+    CaptureCase(
+        name: "sealed-phase-02-30", role: "sealed-holdout",
+        width: 527, height: 561, originX: 248, originY: 231
+    ),
+    CaptureCase(
+        name: "sealed-phase-03-29", role: "sealed-holdout",
+        width: 341, height: 299, originX: 341, originY: 362
+    ),
+    CaptureCase(
+        name: "sealed-phase-05-29", role: "sealed-holdout",
+        width: 275, height: 423, originX: 374, originY: 300
+    ),
+    CaptureCase(
+        name: "sealed-phase-07-28", role: "sealed-holdout",
+        width: 425, height: 553, originX: 299, originY: 235
+    ),
+    CaptureCase(
+        name: "sealed-phase-09-27", role: "sealed-holdout",
+        width: 506, height: 859, originX: 259, originY: 82
+    ),
+    CaptureCase(
+        name: "sealed-phase-11-26", role: "sealed-holdout",
+        width: 563, height: 458, originX: 230, originY: 283
+    ),
+    CaptureCase(
+        name: "sealed-boundary-3over8-low", role: "sealed-holdout",
+        width: 547, height: 277, originX: 238, originY: 373
+    ),
+    CaptureCase(
+        name: "sealed-boundary-3over8-high", role: "sealed-holdout",
+        width: 468, height: 378, originX: 278, originY: 323
+    ),
+    CaptureCase(
+        name: "sealed-phase-13-23", role: "sealed-holdout",
+        width: 432, height: 287, originX: 296, originY: 368
+    ),
+    CaptureCase(
+        name: "sealed-phase-14-22", role: "sealed-holdout",
+        width: 825, height: 391, originX: 99, originY: 316
+    ),
+    CaptureCase(
+        name: "sealed-phase-15-21", role: "sealed-holdout",
+        width: 465, height: 360, originX: 279, originY: 332
+    ),
+    CaptureCase(
+        name: "sealed-boundary-half-low", role: "sealed-holdout",
+        width: 433, height: 451, originX: 295, originY: 286
+    ),
+    CaptureCase(
+        name: "sealed-boundary-half-high", role: "sealed-holdout",
+        width: 481, height: 519, originX: 271, originY: 252
+    ),
+    CaptureCase(
+        name: "sealed-boundary-9over16-low", role: "sealed-holdout",
+        width: 272, height: 521, originX: 376, originY: 251
+    ),
+    CaptureCase(
+        name: "sealed-boundary-9over16-high", role: "sealed-holdout",
+        width: 487, height: 935, originX: 268, originY: 44
+    ),
+]
+#else
 private let cases = [
     CaptureCase(
         name: "control-square-256", role: "prospective-control",
@@ -192,6 +311,7 @@ private let cases = [
         width: 911, height: 509, originX: 41, originY: 271
     ),
 ]
+#endif
 
 private let fixedEndpoints = [
     EndpointCase(name: "zero-to-one", role: "prospective-control", lowBits: 0x0000_0000, highBits: 0x3f80_0000),
@@ -475,6 +595,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
+#if TILE_PHASE_HOLDOUT
+    precondition(cases.count == 26)
+    precondition(endpoints.count == 206)
+    precondition(layout["recordCount"] as? Int == 1_371_136)
+    precondition(layout["rawBytes"] as? Int == 98_721_792)
+    precondition(layout["expectedRecordCount"] as? Int == 721_206)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "8a02f012c3c1f8eb7efb206b81128816258ede1a25bdffac3edfb4213b072d66"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "d377fad43418c2996f2bf91e82764a8beeec18394126a6b991dccaa324692dcf"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "efd49bbd680d95655b2b299f0ae06071b6e9054defcd8482f9b966b90c4d4cee"
+    )
+#else
     precondition(cases.count == 28)
     precondition(endpoints.count == 206)
     precondition(layout["recordCount"] as? Int == 1_476_608)
@@ -492,6 +631,7 @@ private func verifyFrozenLayout() {
         layout["sampleWordsSha256"] as? String
             == "a07d1f865062df687abf954c6633b6b79e0b36e4ed0ef1ec92b366b20e3557da"
     )
+#endif
 }
 
 private func matrix() -> simd_float4x4 {
@@ -710,8 +850,7 @@ private func run(outputDirectory: URL) throws {
     ]
     manifest["rasterTileNumerator"] = [
         "role": role,
-        "preregistrationFile":
-            "Analysis/raster_tile_numerator_preregistration.json",
+        "preregistrationFile": preregistrationFile,
         "preregistrationSha256": preregistrationSha256,
         "layout": layoutManifest(),
         "cases": cases.map(\.manifest),

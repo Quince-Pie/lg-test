@@ -1,0 +1,101 @@
+name: Test Apple Metal tile-selector phase holdout
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-tile-phase-holdout.yml
+      - Analysis/open_raster_tile_phase_holdout.py
+      - Analysis/raster_fractional_subpixel_resolved_selectors.zlib
+      - Analysis/raster_tile_phase_holdout_preregistration.json
+      - Analysis/raster_tile_selector_model.py
+      - Analysis/raster_tile_selector_model_v2.py
+      - Analysis/test_validate_raster_tile_phase_holdout.py
+      - Analysis/validate_raster_tile_numerator.py
+      - Analysis/validate_raster_tile_phase_holdout.py
+      - Sources/GlassRasterTileNumerator/**
+
+concurrency:
+  group: raster-tile-phase-holdout-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-tile-phase-holdout:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Test frozen phase-holdout contract and prediction
+        run: |
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_raster_tile_phase_holdout.py' -v
+
+      - name: Build phase-boundary probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-tile-phase
+          set -o pipefail
+          swiftc -D TILE_PHASE_HOLDOUT -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterTileNumerator/main.swift \
+            -o glass-raster-tile-phase 2>&1 |
+            tee raster-tile-phase/build.log
+
+      - name: Capture phase-boundary records
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-tile-phase raster-tile-phase
+
+      - name: Validate frozen phase-boundary capture
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_raster_tile_phase_holdout.py \
+            raster-tile-phase \
+            --output raster-tile-phase/validation.json
+
+      - name: Open frozen phase-boundary holdout
+        id: holdout
+        if: steps.validate.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/open_raster_tile_phase_holdout.py \
+            raster-tile-phase \
+            --output raster-tile-phase/phase-holdout-opening.json
+
+      - name: Upload phase-boundary evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-tile-phase-${{ github.run_id }}
+          path: raster-tile-phase
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce phase-boundary evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test "${{ steps.holdout.outcome }}" = success
+          test -s raster-tile-phase/manifest.json
+          test -s raster-tile-phase/validation.json
+          test -s raster-tile-phase/phase-holdout-opening.json
+          test -s raster-tile-phase/raster-tile-numerator.raw

@@ -3229,6 +3229,28 @@ pass proves only this near-equal tile-selector domain; it does not authorize a
 production shader change before an unchanged repeat and fresh Walle image,
 scale, and dynamic-transition holdouts.
 
+The frozen v1 gate was then opened locally and independently rerun by CI as
+run `30694953224`. The complete 106,315,776-byte raw stream was bit-identical
+to run `30693002613`, with SHA-256
+`c260075c6865c8d95749a6b6db51e441a37f9e2448ca4a4c1cfea8baac78c99b`.
+The gate correctly remained red: both prime geometries were exact, while the
+509-by-907 and 911-by-509 cases contained 1,604 one-ULP mismatches among
+2,325,600 held-out words. Every mismatch was confined to pull `13/16`, exact
+quotient-lattice phase `295/509`; every center, derivative, and other pull
+phase matched. This repeat rules out stale extraction and CI nondeterminism.
+
+Opening those failures adds one nearest-even 27-bit slope interval,
+`[9/16,3/4)`, while preserving the two fixed-product intervals and the
+strict-below-floor remainder. That revised input-only model reproduces all
+880,650 now-accessible schema-3 records and all 15,851,700 words exactly. The
+result is calibration, not proof. Schema 4 therefore freezes 16 entirely new
+geometries whose 32 independent axes sample the phase range and concentrate
+on both sides of the inferred boundaries. Its preregistered sealed stream has
+389,500 records, 28,044,000 bytes, and SHA-256
+`e50b06d43600090e66f969aab46cc1d2ce8a790f40ce2934876021b1730d78d5`.
+The Apple values did not exist when that hash was committed; zero mismatched
+words and an unchanged repeat are mandatory.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
