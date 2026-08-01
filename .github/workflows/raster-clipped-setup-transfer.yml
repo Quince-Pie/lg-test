@@ -1,0 +1,80 @@
+name: Validate Apple Metal clipped setup transfer
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-clipped-setup-transfer.yml
+      - Analysis/model_raster_general_height_arithmetic.py
+      - Analysis/raster_clipped_setup_transfer_preregistration.json
+      - Analysis/raster_general_height_resolved_selectors.zlib
+      - Analysis/test_validate_raster_clipped_setup_transfer.py
+      - Analysis/validate_raster_clipped_setup_transfer.py
+      - Analysis/validate_raster_general_height_factorization.py
+      - Analysis/validate_raster_general_height_selector_transfer.py
+      - Sources/GlassRasterClippedSetupTransfer/**
+
+concurrency:
+  group: raster-clipped-setup-transfer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-clipped-setup-transfer:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Build clipped-setup probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-clipped-setup-transfer
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterClippedSetupTransfer/main.swift \
+            -o glass-raster-clipped-setup-transfer 2>&1 |
+            tee raster-clipped-setup-transfer/build.log
+
+      - name: Measure axis-isolated clipped setup
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-clipped-setup-transfer \
+            raster-clipped-setup-transfer
+
+      - name: Validate frozen clipped coefficients
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_raster_clipped_setup_transfer.py \
+            raster-clipped-setup-transfer \
+            --output raster-clipped-setup-transfer/validation.json
+
+      - name: Upload clipped-setup evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-clipped-setup-transfer-${{ github.run_id }}
+          path: raster-clipped-setup-transfer
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce clipped-setup gate
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-clipped-setup-transfer/manifest.json
+          test -s raster-clipped-setup-transfer/validation.json

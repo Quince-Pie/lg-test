@@ -2771,6 +2771,32 @@ This closes the observed positive-normal fractional input domain, while
 clipped setup, a compact selector law, and end-to-end parity remain separate
 prospective gates.
 
+`raster-clipped-setup-transfer.yml` is the preregistered saturation-free
+clipping discriminator. It power-scales every one of the 32,768 measured
+width/height determinants into a 256-by-256 viewport and crosses all fourteen
+fresh witnesses with five variants: an unclipped zero-origin control, an
+unclipped centered-varying control, and centered X-only, Y-only, and combined
+clipped geometries. Scaling each X extent and endpoint difference by the same
+power of two, and optionally scaling height by eight, preserves the frozen
+numerator and determinant significands. All vertices remain on the exhaustively
+measured 1/256-pixel grid. Their complete coordinate range is only
+`[-895.9375, 1151.9375]` by `[-324.5, 579.5]`, avoiding the fixed wide-primitive
+saturation exposed by run 30654181785.
+
+The centered varying is a measurement intervention, not a fitted correction:
+its endpoints are exactly `-delta/2` and `+delta/2`, whose binary32 difference
+is the original power-scaled delta. The paired unclipped control must first
+prove that this common translation preserves every frozen coefficient. It
+keeps visible plane values close enough to zero that two 30-pixel same-tile
+baselines uniquely distinguish all 458,752 expected coefficient bit patterns
+in the frozen offline preflight. The capture retains 73,400,320 raw bytes and
+uses a separately checked additive coverage carrier. A pass requires exact
+recovery of the frozen
+`14f89787b189e382b313ae5406dd1a8519e536b96783f74fb29e7959926b3f8f`
+slope table in every centered variant, with no post-capture fit or tolerance.
+It establishes clipped coefficient transfer only for the measured finite
+matrix; the independent end-to-end Walle image gate remains required.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

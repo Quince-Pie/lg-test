@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "role": "prospective-power-scaled-axis-isolated-clipped-setup-transfer",
+  "observedAtPreregistration": false,
+  "purpose": "Test the recovered Apple raster coefficient model through X-only, Y-only, and combined viewport clipping without the wide-primitive saturation that confounded run 30654181785.",
+  "sourceEvidence": {
+    "generalHeightSelectorRunId": 30670953328,
+    "generalHeightSelectorCommit": "569dfb9c3a5e7e6ea7b80d5cfccf5650ad225439",
+    "generalHeightSelectorAnalysisSha256": "e7cd12115a71a3ddeac5e71a48c747f2c9fe9f78f3ed5399443be7746d6c2e0a",
+    "resolvedGeneralHeightSelectorTableSha256": "0b8ece5b7c2ea05475fd76120987670bf29cf69d16916372af5cf4734fd209af",
+    "resolvedGeneralHeightSelectorCompressedSha256": "ae266b7bc78ccf28549d376627e73819eefa0596135fca4709a85d1070e00eee",
+    "recoveredGeneralHeightSlopeTableSha256": "14f89787b189e382b313ae5406dd1a8519e536b96783f74fb29e7959926b3f8f",
+    "twoStageArithmeticScriptSha256": "7c8422c940d228eb3c747bc9011abc2b56889865b30d097fdd9d3df1dfd798fb",
+    "fractionalSelectorRunId": 30672604597,
+    "fractionalSelectorCommit": "0bee7c342ad3c3ab85a0d9ccb98df7f3867de0af",
+    "fractionalRawSha256": "254b4d81c29a462c19193bee6491566ecb0662f747269003d28adc1faaea283e",
+    "fractionalAnalysisSha256": "639502bc293e749d770f5e70d318b1589a23628d0b490b19e5b6aebe8002279f",
+    "fractionalQuantizer": "((coordinateMantissa + 2) // 4) * 4, i.e. 1/256 pixel with positive half-step ties upward",
+    "historicalCombinedClipRunId": 30654181785,
+    "historicalCombinedClipRawSha256": "c0e5a5e139170775042079cf3689411750db52791cc650e4d3839d80ceb4415c",
+    "historicalCombinedClipInterpretation": "The 16386-to-32768-pixel geometry crossed a fixed wide-primitive saturation boundary, so it is retained as saturation evidence and is not reused as a clean clipping gate."
+  },
+  "hypothesis": {
+    "statement": "After exact power-of-two scaling, viewport clipping preserves the frozen two-stage X coefficient bit pattern for every measured width, height, and fresh varying witness.",
+    "powerScalingInvariant": "For each variant, the X extent and endpoint difference are divided by the same power of two. Multiplying height by eight changes numerator and determinant by the same exact power. The delta, opposite-edge, and determinant significands presented to the frozen two-stage model therefore remain unchanged.",
+    "selectorInvariant": "Each scaled determinant differs from its measured determinant only by an exact power of two, so its normalized 25-bit selector index is the frozen resolved value.",
+    "fractionalGridInvariant": "Every generated vertex coordinate is an exact multiple of 1/256 pixel, the exhaustive measured Apple setup grid, so no unmeasured coordinate rounding policy is introduced.",
+    "falsification": "A centered clipped variant rejects the frozen coefficient if no exact binary32 plane constant can reproduce its two same-tile 30-pixel pull baselines. No post-capture coefficient fit or tolerance is permitted."
+  },
+  "capture": {
+    "target": [256, 256],
+    "viewport": [256, 256],
+    "center": [128.0, 127.5],
+    "sampleY": 127,
+    "sampleXs": [96, 126, 128, 158],
+    "sampleTileLocalXs": [0, 30, 0, 30],
+    "pullOffsets": [0.0, 0.9375],
+    "widthLowerInclusive": 8192,
+    "widthUpperInclusive": 16383,
+    "heights": [47, 61, 79, 113],
+    "witnessCount": 14,
+    "batchWidthCount": 128,
+    "ordering": "width-major,height-major,witness-major,variant-major,sample-position-major",
+    "variants": [
+      {
+        "name": "unclipped-zero-origin-control",
+        "xExponentShift": 6,
+        "heightScale": 1,
+        "centeredVarying": false,
+        "xClipped": false,
+        "yClipped": false
+      },
+      {
+        "name": "unclipped-centered-control",
+        "xExponentShift": 6,
+        "heightScale": 1,
+        "centeredVarying": true,
+        "xClipped": false,
+        "yClipped": false
+      },
+      {
+        "name": "x-clipped-centered",
+        "xExponentShift": 3,
+        "heightScale": 1,
+        "centeredVarying": true,
+        "xClipped": true,
+        "yClipped": false
+      },
+      {
+        "name": "y-clipped-centered",
+        "xExponentShift": 6,
+        "heightScale": 8,
+        "centeredVarying": true,
+        "xClipped": false,
+        "yClipped": true
+      },
+      {
+        "name": "xy-clipped-centered",
+        "xExponentShift": 3,
+        "heightScale": 8,
+        "centeredVarying": true,
+        "xClipped": true,
+        "yClipped": true
+      }
+    ],
+    "zeroOriginControlPurpose": "Separates exact power scaling from the centered-varying precision intervention.",
+    "centeredControlPurpose": "Proves that translating both endpoint varyings by negative one-half of their exact difference preserves the frozen coefficient before any clipping result is interpreted.",
+    "centeredVaryingPurpose": "Keeps the visible plane close to zero so adjacent binary32 coefficient candidates are observationally distinguishable after the original endpoints are clipped away.",
+    "coverageCarrier": "R32Float additive one-per-instance count, cleared and verified independently for every width batch and variant"
+  },
+  "offlinePreflight": {
+    "candidateRadiusFloatUlps": 8,
+    "sameTileBaselinePixels": 30,
+    "pullSeparationPixels": 0.9375,
+    "centeredCoefficientCount": 458752,
+    "centeredCoefficientsWithUniqueFrozenCandidate": 458752,
+    "fixedCoordinateMinimumPixels": [-895.9375, -324.5],
+    "fixedCoordinateMaximumPixels": [1151.9375, 579.5],
+    "historicalSaturationAvoided": true,
+    "minimumSampleBoundaryMarginPixels": 23.5
+  },
+  "frozenLayout": {
+    "baseSlopeTableSha256": "14f89787b189e382b313ae5406dd1a8519e536b96783f74fb29e7959926b3f8f",
+    "caseCount": 32768,
+    "clipClassification": {
+      "x0y0": 65536,
+      "x0y1": 32768,
+      "x1y0": 32768,
+      "x1y1": 32768
+    },
+    "coefficientCount": 458752,
+    "coefficientVariantCount": 2293760,
+    "coefficientVariantPredictionSha256": "ee002b240e5ffe297ed02f931090339d8f0d297421d72d1907f173de63881b4f",
+    "endpointBitsSha256": "064e9b535c799f1efadf5a1bbb829610f25a3019f2fc4eff9239c22600695ff9",
+    "expectedSlopeOffsetFromDirectDistribution": {
+      "-1": 33862,
+      "0": 389809,
+      "1": 35081
+    },
+    "fixedCoordinateExtent": {
+      "maximumX": 294896,
+      "maximumY": 148352,
+      "minimumX": -229360,
+      "minimumY": -83072,
+      "unitsPerPixel": 256
+    },
+    "fixedGeometrySha256": "bad6ed2a60c63828e05d1b1e1a23c1c56e822067b54387159c5b4b30143e643c",
+    "heightCount": 4,
+    "heightsSha256": "c39ea8780170fc6b7a5695867313e931bd2b5326716c9d3c674c37634bdad450",
+    "minimumSampleBoundaryMarginFixed": 6016,
+    "rawBytes": 73400320,
+    "recordCount": 9175040,
+    "resolvedSelectorTableSha256": "0b8ece5b7c2ea05475fd76120987670bf29cf69d16916372af5cf4734fd209af",
+    "sampleCoordinatesSha256": "b1dbd463a176b953eeba5139d721899654b9365363aa9e07eaba976601519e90",
+    "samplePositionCount": 4,
+    "syntheticCenteredUniqueCoefficientCount": 458752,
+    "variantCount": 5,
+    "variantWordsSha256": "5ec010018d887732432dfffbc8224a3632c425ff84dc1acefefbe14018f5286a",
+    "widthCount": 8192,
+    "widthsSha256": "51543aa53b298402f96f65830302af8f0e4e3aafe49d4ee29c5a6f14f70205d9",
+    "witnessCount": 14,
+    "witnessSignificandsSha256": "c6aa0a1d8d751850a0b81ec7bc447d00abb144b4a40dc86019c7eecd348b1dbd"
+  },
+  "acceptance": {
+    "all9175040RecordsWrittenAndFinite": true,
+    "everyVariantHasExactAdditiveCoverage": true,
+    "zeroOriginUnclippedControlAcceptsEveryFrozenCoefficient": true,
+    "centeredUnclippedControlUniquelyRecoversEveryFrozenCoefficient": true,
+    "xClippedCenteredUniquelyRecoversEveryFrozenCoefficient": true,
+    "yClippedCenteredUniquelyRecoversEveryFrozenCoefficient": true,
+    "xyClippedCenteredUniquelyRecoversEveryFrozenCoefficient": true,
+    "eachCenteredRecoveredSlopeTableSha256": "14f89787b189e382b313ae5406dd1a8519e536b96783f74fb29e7959926b3f8f",
+    "noAdaptiveFitOrTolerance": true,
+    "failureArtifactAlwaysUploaded": true
+  },
+  "claimBoundary": {
+    "passEstablishes": "Exact coefficient transfer through axis-isolated clipping for the complete measured 8192-by-4 determinant matrix, fourteen fresh varying witnesses, and the frozen 1/256 setup grid at saturation-free coordinates.",
+    "passDoesNotEstablish": [
+      "a compact selector law outside the measured finite tables",
+      "Retina 2x parity on GitHub's 1x virtual display",
+      "end-to-end Liquid Glass image parity before independent held-out Walle replay"
+    ]
+  }
+}
