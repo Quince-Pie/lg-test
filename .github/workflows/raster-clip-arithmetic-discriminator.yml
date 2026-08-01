@@ -1,0 +1,83 @@
+name: Isolate Apple Metal clip arithmetic
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - Analysis/raster_clip_arithmetic_discriminator_preregistration.json
+      - Sources/GlassRasterClipArithmeticDiscriminator/**
+
+concurrency:
+  group: raster-clip-arithmetic-discriminator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-clip-arithmetic-discriminator:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Set up exact-analysis Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Test frozen fixed-post-clip layout
+        run: |
+          python -m unittest discover -s Analysis \
+            -p 'test_validate_raster_clip_arithmetic_discriminator.py' -v
+
+      - name: Build clip arithmetic discriminator
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-clip-arithmetic-discriminator
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterClipArithmeticDiscriminator/main.swift \
+            -o glass-raster-clip-arithmetic-discriminator 2>&1 |
+            tee raster-clip-arithmetic-discriminator/build.log
+
+      - name: Capture fixed-post-clip arithmetic
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-clip-arithmetic-discriminator \
+            raster-clip-arithmetic-discriminator
+
+      - name: Validate capture integrity
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python Analysis/validate_raster_clip_arithmetic_discriminator.py \
+            raster-clip-arithmetic-discriminator \
+            --output raster-clip-arithmetic-discriminator/validation.json
+
+      - name: Upload clip arithmetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-clip-arithmetic-discriminator-${{ github.run_id }}
+          path: raster-clip-arithmetic-discriminator
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce capture gate
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-clip-arithmetic-discriminator/manifest.json
+          test -s raster-clip-arithmetic-discriminator/validation.json

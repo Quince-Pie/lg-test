@@ -2871,6 +2871,26 @@ identify the remaining clip-intersection/setup rounding law. A targeted probe
 must hold the post-clip geometry fixed while varying only the outside vertex;
 the final unseen image gate remains separate.
 
+### Fixed-post-clip arithmetic discriminator
+
+`raster-clip-arithmetic-discriminator.yml` is that final targeted discovery
+probe. It fixes the accepted opposite edge at the API viewport boundary and
+moves only the rejected outer edge over 8,193 consecutive 1/256-pixel
+distances. After guard clipping, every positive-distance case in a group must
+therefore present the identical rectangle to raster setup; only the generated
+varying value is allowed to change. This removes the determinant and geometry
+change that made the boundary capture underdetermined.
+
+The preregistered 16-group factorial repeats left, right, top, and bottom
+clipping at 256- and 512-pixel viewports with 47- and 61-pixel orthogonal
+spans. Three points at tile-local positions 0, 15, and 31 record builtin
+barycentrics and center, pull-0, pull-15/16, and axis derivative bits for 16
+fresh centered ramps. The fixed 393,264 records retain 113,260,032 raw bytes.
+The workflow gate establishes capture integrity only. An exact clipping law is
+selected offline only if it explains every bit without fitted exceptions, and
+still cannot authorize production changes until the separate unseen
+end-to-end image gate passes bit for bit.
+
 ### Geometry-transfer introspection
 
 `geometry-introspect.yml` reuses the exact CARenderer/Metal interception gate

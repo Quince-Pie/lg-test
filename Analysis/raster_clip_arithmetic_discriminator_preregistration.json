@@ -1,0 +1,54 @@
+{
+  "acceptance": {
+    "captureGate": "Every one of the 393264 preregistered records must be present at its exact case and pixel index, every primitive ID must remain an original source primitive ID, and all 26741952 captured floating-point words must be finite.",
+    "discoveryRule": "Candidate clip-intersection laws are compared only after capture. A law must explain every captured center, pull, and derivative bit across all signs, axes, viewport scales, cross spans, distances, and witnesses; no fitted exception or tolerance is allowed.",
+    "heldoutRule": "A selected arithmetic law cannot authorize a production change. It must first predict a separately preregistered, unseen end-to-end Liquid Glass image corpus bit for bit.",
+    "tolerance": "bit-exact binary32 only"
+  },
+  "frozenLayout": {
+    "caseCatalogSha256": "a2d130f1e810604796fc9c7ac1d18bfa1a7f6e20c47fe567018cdbfe67bce613",
+    "caseCount": 131088,
+    "casesPerGroup": 8193,
+    "crossSpanCount": 2,
+    "deltaBitsSha256": "561fd104431e00595b91a2c8313d31b87e00d939efa05a31fc69a4df8dc1e78c",
+    "distanceFixedMaximum": 8192,
+    "distanceFixedSha256": "5c845b11839aa2ae5f6c2e819231447ce775a9e9ea09aac4b750513d56a64d95",
+    "distanceStepPixels": 0.00390625,
+    "fixedGeometrySha256": "2357be10e1dcadaa92e0867ebe1ea82e38bedef068aa64f0ea78d1f1056a284f",
+    "groupCount": 16,
+    "planeCount": 4,
+    "rawBytes": 113260032,
+    "recordBytes": 288,
+    "recordCount": 393264,
+    "recordVectorCount": 18,
+    "recordWords": 72,
+    "sampleCoordinatesSha256": "2a5ad1c8783fcf8d0447a3d113b51eb92a51ae162e43748ab1118f8e4aab1d36",
+    "sampleCountPerCase": 3,
+    "viewportCount": 2,
+    "witnessCount": 16
+  },
+  "interventions": {
+    "axesAndSigns": "Left, right, top, and bottom guard clipping are measured independently at 256- and 512-pixel viewports.",
+    "distance": "Only the rejected outer edge moves: from the normalized NDC +/-1.5 guard through 8192 consecutive 1/256-pixel outward steps. The opposite edge is fixed at the API viewport boundary.",
+    "fixedPostClipGeometry": "For every positive distance the clipper must present the same guard-to-viewport rectangle to raster setup within a group. This removes the changing determinant and opposite-edge geometry that confounded the source capture.",
+    "orthogonalTransfer": "The complete experiment uses independent 47- and 61-pixel cross spans so clip interpolation can be separated from determinant/setup factorization.",
+    "samples": "Three samples occupy local positions 0, 15, and 31 of one 32-pixel tile, safely within the fixed large generated triangle. Each record retains builtin barycentrics and, for sixteen fresh centered ramps, center, 0, 15/16, and axis-derivative observations.",
+    "viewportTransfer": "Power-of-two 256- and 512-pixel viewports distinguish normalized clip arithmetic from screen-fixed arithmetic without adding non-power-of-two viewport transform rounding."
+  },
+  "limitations": {
+    "clipArithmeticEstablishedAtPreregistration": false,
+    "endToEndLiquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "reason": "This is the final targeted discovery experiment. Exact arithmetic selected from it remains subject to one separately frozen unseen end-to-end image gate."
+  },
+  "observedAtPreregistration": false,
+  "role": "prospective-fixed-post-clip-arithmetic-discriminator",
+  "schemaVersion": 1,
+  "sourceEvidence": {
+    "analysisFile": "Analysis/raster_clip_boundary_tomography_analysis.json",
+    "analysisSha256": "780d17c0faa01e996129429d30a58bc9ed46fc6c8a3a2d7bedda5448468eb751",
+    "ciCommit": "51636e834750e1346e3fb044e6874a89afb1dc16",
+    "rawSha256": "486d227a49ab90a5744cf2dff827253b9e25effcaf3b7adaf5b0176d1e0527c8",
+    "runId": 30676628218
+  }
+}
