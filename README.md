@@ -3416,6 +3416,44 @@ binary32 exact-down and determinant rounding differ by 3,162 and 3,302 words.
 Zero mismatch on a blind schema-8 run and a bit-identical unchanged repeat are
 mandatory before this arithmetic is treated as prospective evidence.
 
+Run `30703997243` prospectively validates the near-equal part of v6 and rejects
+its broad-delta extrapolation. All 166 near-equal endpoints are exact across
+303,448 records and 5,462,064 words, including the fresh geometries on both
+sides of both phase cuts. Every one of the run's 81,961 mismatches belongs to
+the 12 broad translated endpoints; no control or near-equal endpoint
+contributes a mismatched word. The 49,213,440-byte raw stream has SHA-256
+`7550032284d1570684efa2201de8a8bfabfb0254a8d130774b6e781ddde7d395`.
+Because the complete frozen contract failed, an unchanged schema-8 repeat was
+not dispatched.
+
+Opening those 21,936 broad records identifies a second arithmetic regime
+exactly. Pull, center, and derivative all use the determinant coefficient
+rounded to binary32, while the tile constant uses the physical
+primitive-anchor composite rounded to a 28-bit significand and then to
+binary32. That model reproduces all 394,848 broad words. The same physical
+constant combined with v6's p27 center path remains exact for every opened
+schema-5/schema-6/schema-7 record, eliminating the apparent translated versus
+physical constant split. A v7 model with the candidate center switch at 16
+bits of endpoint cancellation reproduces all 1,144,864 opened schema-5 through
+schema-8 records and all 20,607,552 words, but the cutoff itself remains a
+retrospective hypothesis.
+
+Schema 9 freezes that cutoff hypothesis in a scale-preserving discriminator.
+For each of three binary32 exponent regions it holds the normalized p27 phase
+at `31/651` while sweeping cancellation depth from 19 bits down to one, in
+both directions, across two fresh determinants and both axes. Every rung is
+observable. Moving the cutoff from 16 to 15 or 17 changes 1,020 or 960 sealed
+words; determinant-only and p27-only differ by 3,000 and 14,724 words. The
+four sealed cases contain 62,176 records and 1,119,168 words. Their committed
+prediction stream has SHA-256
+`d2adc8c4a99860e38c3c00260894e48627a00d64416ddaffcc5a47ba442f11de`;
+the 863,076-byte zlib archive has SHA-256
+`77aa9fe3f48f0d704660d54d7748d0df0365e6b427d17e15b74ac57344f27efa`.
+The preregistration has SHA-256
+`6d938ba0a6dcfd2c0f5e382cbe19c046472965be28cb956d1370ab484fab58e2`.
+Zero mismatch and a bit-identical unchanged repeat are mandatory before the
+scale switch is treated as prospective evidence.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
