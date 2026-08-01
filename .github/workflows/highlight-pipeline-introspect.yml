@@ -1,0 +1,178 @@
+name: Inspect captured Apple highlight pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/highlight-pipeline-introspect.yml
+
+concurrency:
+  group: highlight-pipeline-introspect-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  highlight-pipeline-introspect:
+    runs-on: macos-26
+    timeout-minutes: 15
+    env:
+      LG_GLASS_MATERIAL: clear
+      LG_GLASS_APPEARANCE: light
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Build Liquid Glass introspection probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p introspection
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o introspection/MatrixBridge.o 2>&1 |
+            tee introspection/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            introspection/MatrixBridge.o \
+            -o glassintrospect 2>&1 |
+            tee -a introspection/build.log
+
+      - name: Capture Apple post-glass attachments
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          MTL_CAPTURE_ENABLED: "1"
+          LG_EXECUTE_INDEPENDENT_GLASS: "0"
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          import subprocess
+
+          root = pathlib.Path("introspection")
+          with (root / "runtime-stdout.log").open("wb") as stdout, \
+               (root / "runtime-stderr.log").open("wb") as stderr:
+              result = subprocess.run(
+                  ["./glassintrospect", str(root)],
+                  check=False,
+                  timeout=240,
+                  stdout=stdout,
+                  stderr=stderr,
+              )
+          if result.returncode:
+              raise SystemExit(
+                  f"glassintrospect exited {result.returncode}"
+              )
+          PY
+
+      - name: Validate captured Apple attachment sweep
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+
+          root = pathlib.Path("introspection")
+          runtime = json.loads(
+              (root / "runtime.json").read_text(encoding="utf-8")
+          )
+          sweep = runtime[
+              "carendererLocalBackdropEvidence"
+          ]["render"]["exactPassReplay"][
+              "postGlassDestinationSweep"
+          ]
+          if (
+              sweep.get("executed") is not True
+              or sweep.get("capturedApplePipelinesUnmodified") is not True
+              or sweep.get("glassPrefixSkipped") is not True
+              or sweep.get("caseCount") != 8
+          ):
+              raise SystemExit(f"sweep contract differs: {sweep}")
+          for case in sweep.get("cases", []):
+              if case.get("executed") is not True:
+                  raise SystemExit(f"sweep case failed: {case}")
+              records = (
+                  (case, "inputFile", 1024 * 1024 * 4),
+                  (case["output"], "rawFile", 1024 * 1024 * 4),
+                  (
+                      case["auxiliaryOutput"],
+                      "rawFile",
+                      1024 * 1024 * 8,
+                  ),
+              )
+              if case["auxiliaryOutput"].get("pixelFormat") != 115:
+                  raise SystemExit(
+                      f"auxiliary format differs: {case}"
+                  )
+              for record, key, expected in records:
+                  path = root / record[key]
+                  if path.stat().st_size != expected:
+                      raise SystemExit(
+                          f"{path} size differs: {path.stat().st_size}"
+                      )
+          (root / "highlight-pipeline-validation.json").write_text(
+              json.dumps(
+                  {
+                      "schemaVersion": 1,
+                      "exactContract": True,
+                      "caseCount": 8,
+                      "capturedApplePipelinesUnmodified": True,
+                      "auxiliaryPixelFormat": 115,
+                  },
+                  indent=2,
+                  sort_keys=True,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload Apple highlight-pipeline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-highlight-pipeline-${{ github.run_id }}
+          path: |
+            introspection/build.log
+            introspection/runtime-stdout.log
+            introspection/runtime-stderr.log
+            introspection/runtime.json
+            introspection/highlight-pipeline-validation.json
+            introspection/carenderer-local-backdrop-post-glass-*
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Enforce Apple highlight-pipeline evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s introspection/runtime.json
+          test -s introspection/highlight-pipeline-validation.json

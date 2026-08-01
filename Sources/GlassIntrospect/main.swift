@@ -8825,6 +8825,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             let descriptor = MTLRenderPassDescriptor()
             var retainedTargets: [MTLTexture] = []
             var target: MTLTexture?
+            var auxiliaryTarget: MTLTexture?
             var allocationFailure: [String: Any]?
             for index in 0..<8 {
                 guard let original =
@@ -8840,7 +8841,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         height: source.height,
                         mipmapped: false)
                 textureDescriptor.storageMode =
-                    index == 0 ? .shared : .private
+                    index <= 1 ? .shared : .private
                 textureDescriptor.usage = [
                     .renderTarget,
                     .shaderRead,
@@ -8860,13 +8861,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 retainedTargets.append(replayTarget)
                 if index == 0 {
                     target = replayTarget
+                } else if index == 1 {
+                    auxiliaryTarget = replayTarget
                 }
                 let attachment = descriptor.colorAttachments[index]
                 attachment?.texture = replayTarget
                 attachment?.loadAction =
                     index == 0 ? .load : .clear
                 attachment?.storeAction =
-                    index == 0 ? .store : original.storeAction
+                    index <= 1 ? .store : original.storeAction
                 attachment?.storeActionOptions =
                     original.storeActionOptions
                 attachment?.clearColor = original.clearColor
@@ -8929,7 +8932,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ])
                 continue
             }
-            records.append([
+            var record: [String: Any] = [
                 "name": name,
                 "executed": true,
                 "inputFile": inputFilename,
@@ -8944,7 +8947,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     capture:
                         "\(capture)-post-glass-\(name)-output",
                     outputDirectory: outputDirectory),
-            ])
+            ]
+            if let auxiliaryTarget {
+                record["auxiliaryInput"] = [
+                    "loadAction": "clear",
+                    "clearColor": [0.0, 0.0, 0.0, 0.0],
+                ]
+                record["auxiliaryOutput"] =
+                    carendererOutputSnapshot(
+                        auxiliaryTarget,
+                        commandQueue: queue,
+                        capture:
+                            "\(capture)-post-glass-\(name)"
+                            + "-auxiliary-output",
+                        outputDirectory: outputDirectory)
+            }
+            records.append(record)
             withExtendedLifetime(retainedTargets) {}
         }
         return [
