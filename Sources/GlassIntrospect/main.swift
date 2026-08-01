@@ -8649,6 +8649,317 @@ private final class MetalUniformProbe: @unchecked Sendable {
         ]
     }
 
+    private func postGlassCommands(
+        _ commands: [ReplayCommand]
+    ) -> [ReplayCommand] {
+        var enteredGlass = false
+        var postGlassIndex: Int?
+        for (index, command) in commands.enumerated() {
+            guard case .pipeline(let state) = command else {
+                continue
+            }
+            if enteredGlass, !isGlassPipeline(state) {
+                postGlassIndex = index
+                break
+            }
+            enteredGlass = enteredGlass || isGlassPipeline(state)
+        }
+        guard let postGlassIndex else {
+            return []
+        }
+
+        func isDraw(_ command: ReplayCommand) -> Bool {
+            switch command {
+            case .drawPrimitives,
+                 .drawPrimitivesInstanced,
+                 .drawPrimitivesBaseInstance,
+                 .drawIndexedPrimitives,
+                 .drawIndexedPrimitivesInstanced,
+                 .drawIndexedPrimitivesBaseVertex:
+                return true
+            default:
+                return false
+            }
+        }
+
+        let statePrefix = commands[..<postGlassIndex].filter {
+            !isDraw($0)
+        }
+        return Array(statePrefix) + Array(commands[postGlassIndex...])
+    }
+
+    private func postGlassDestinationBytes(
+        name: String,
+        width: Int,
+        height: Int
+    ) -> [UInt8] {
+        func hash32(_ source: UInt32) -> UInt32 {
+            var value = source
+            value ^= value >> 16
+            value &*= 0x7feb352d
+            value ^= value >> 15
+            value &*= 0x846ca68b
+            value ^= value >> 16
+            return value
+        }
+
+        var bytes = [UInt8](
+            repeating: 0,
+            count: width * height * 4)
+        for y in 0..<height {
+            for x in 0..<width {
+                let index = y * width + x
+                let source = UInt32(index)
+                let blue: UInt8
+                let green: UInt8
+                let red: UInt8
+                switch name {
+                case "black":
+                    (blue, green, red) = (0, 0, 0)
+                case "white":
+                    (blue, green, red) = (255, 255, 255)
+                case "red":
+                    (blue, green, red) = (0, 0, 255)
+                case "green":
+                    (blue, green, red) = (0, 255, 0)
+                case "blue":
+                    (blue, green, red) = (255, 0, 0)
+                case "ramp":
+                    blue = UInt8(truncatingIfNeeded: x + y)
+                    green = UInt8(truncatingIfNeeded: y)
+                    red = UInt8(truncatingIfNeeded: x)
+                case "hash-a":
+                    blue = UInt8(truncatingIfNeeded:
+                        hash32(source ^ 0x243f6a88) >> 24)
+                    green = UInt8(truncatingIfNeeded:
+                        hash32(source ^ 0x85a308d3) >> 24)
+                    red = UInt8(truncatingIfNeeded:
+                        hash32(source ^ 0x13198a2e) >> 24)
+                case "hash-b":
+                    blue = UInt8(truncatingIfNeeded:
+                        hash32(source ^ 0xa4093822) >> 24)
+                    green = UInt8(truncatingIfNeeded:
+                        hash32(source ^ 0x299f31d0) >> 24)
+                    red = UInt8(truncatingIfNeeded:
+                        hash32(source ^ 0x082efa98) >> 24)
+                default:
+                    preconditionFailure(
+                        "unknown post-glass destination pattern")
+                }
+                let offset = index * 4
+                bytes[offset] = blue
+                bytes[offset + 1] = green
+                bytes[offset + 2] = red
+                bytes[offset + 3] = 255
+            }
+        }
+        return bytes
+    }
+
+    private func replayPostGlassDestinationSweep(
+        pass: ReplayPass,
+        queue: MTLCommandQueue,
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let originalTarget =
+                pass.descriptor.colorAttachments[0]?.texture
+        else {
+            return [
+                "executed": false,
+                "reason": "post-glass color target unavailable",
+            ]
+        }
+        guard originalTarget.pixelFormat == .bgra8Unorm,
+              originalTarget.textureType == .type2D,
+              originalTarget.sampleCount == 1
+        else {
+            return [
+                "executed": false,
+                "reason": "post-glass target layout is unsupported",
+                "pixelFormat": originalTarget.pixelFormat.rawValue,
+                "textureType": originalTarget.textureType.rawValue,
+                "sampleCount": originalTarget.sampleCount,
+            ]
+        }
+        let commands = postGlassCommands(pass.commands)
+        guard !commands.isEmpty else {
+            return [
+                "executed": false,
+                "reason": "post-glass command suffix unavailable",
+            ]
+        }
+
+        let names = [
+            "black",
+            "white",
+            "red",
+            "green",
+            "blue",
+            "ramp",
+            "hash-a",
+            "hash-b",
+        ]
+        var records: [[String: Any]] = []
+        for name in names {
+            let bytes = postGlassDestinationBytes(
+                name: name,
+                width: originalTarget.width,
+                height: originalTarget.height)
+            let inputFilename =
+                "\(capture)-post-glass-\(name)-input-bgra8.raw"
+            do {
+                try Data(bytes).write(
+                    to: outputDirectory.appendingPathComponent(
+                        inputFilename),
+                    options: .atomic)
+            } catch {
+                records.append([
+                    "name": name,
+                    "executed": false,
+                    "reason": error.localizedDescription,
+                ])
+                continue
+            }
+
+            let descriptor = MTLRenderPassDescriptor()
+            var retainedTargets: [MTLTexture] = []
+            var target: MTLTexture?
+            var allocationFailure: [String: Any]?
+            for index in 0..<8 {
+                guard let original =
+                        pass.descriptor.colorAttachments[index],
+                      let source = original.texture
+                else {
+                    continue
+                }
+                let textureDescriptor = MTLTextureDescriptor
+                    .texture2DDescriptor(
+                        pixelFormat: source.pixelFormat,
+                        width: source.width,
+                        height: source.height,
+                        mipmapped: false)
+                textureDescriptor.storageMode =
+                    index == 0 ? .shared : .private
+                textureDescriptor.usage = [
+                    .renderTarget,
+                    .shaderRead,
+                ]
+                guard let replayTarget = source.device.makeTexture(
+                    descriptor: textureDescriptor)
+                else {
+                    allocationFailure = [
+                        "name": name,
+                        "executed": false,
+                        "reason":
+                            "post-glass attachment allocation failed",
+                        "attachmentIndex": index,
+                    ]
+                    break
+                }
+                retainedTargets.append(replayTarget)
+                if index == 0 {
+                    target = replayTarget
+                }
+                let attachment = descriptor.colorAttachments[index]
+                attachment?.texture = replayTarget
+                attachment?.loadAction =
+                    index == 0 ? .load : .clear
+                attachment?.storeAction =
+                    index == 0 ? .store : original.storeAction
+                attachment?.storeActionOptions =
+                    original.storeActionOptions
+                attachment?.clearColor = original.clearColor
+            }
+            if let allocationFailure {
+                records.append(allocationFailure)
+                continue
+            }
+            guard let target,
+                  let commandBuffer = queue.makeCommandBuffer()
+            else {
+                records.append([
+                    "name": name,
+                    "executed": false,
+                    "reason": "post-glass replay resources unavailable",
+                ])
+                continue
+            }
+            bytes.withUnsafeBytes { source in
+                target.replace(
+                    region: MTLRegionMake2D(
+                        0,
+                        0,
+                        originalTarget.width,
+                        originalTarget.height),
+                    mipmapLevel: 0,
+                    withBytes: source.baseAddress!,
+                    bytesPerRow: originalTarget.width * 4)
+            }
+            descriptor.renderTargetArrayLength =
+                pass.descriptor.renderTargetArrayLength
+            descriptor.defaultRasterSampleCount =
+                pass.descriptor.defaultRasterSampleCount
+            guard let encoder =
+                    commandBuffer.makeRenderCommandEncoder(
+                        descriptor: descriptor)
+            else {
+                records.append([
+                    "name": name,
+                    "executed": false,
+                    "reason": "post-glass render encoder unavailable",
+                ])
+                continue
+            }
+            let summary = encodeReplayCommands(
+                commands,
+                with: encoder)
+            encoder.endEncoding()
+            commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
+            guard commandBuffer.status == .completed else {
+                records.append([
+                    "name": name,
+                    "executed": false,
+                    "reason":
+                        commandBuffer.error?.localizedDescription
+                            ?? "post-glass replay failed",
+                    "commandBufferStatus":
+                        commandBuffer.status.rawValue,
+                ])
+                continue
+            }
+            records.append([
+                "name": name,
+                "executed": true,
+                "inputFile": inputFilename,
+                "inputBytes": bytes.count,
+                "inputFNV1a64": fnv1a64(bytes),
+                "encodedCommandCount":
+                    summary.encodedCommandCount,
+                "glassDrawCount": summary.glassDrawCount,
+                "output": carendererOutputSnapshot(
+                    target,
+                    commandQueue: queue,
+                    capture:
+                        "\(capture)-post-glass-\(name)-output",
+                    outputDirectory: outputDirectory),
+            ])
+            withExtendedLifetime(retainedTargets) {}
+        }
+        return [
+            "schemaVersion": 1,
+            "executed": records.allSatisfy {
+                $0["executed"] as? Bool == true
+            },
+            "capturedApplePipelinesUnmodified": true,
+            "glassPrefixSkipped": true,
+            "destinationAlpha": 255,
+            "caseCount": records.count,
+            "cases": records,
+        ]
+    }
+
     private func compareReplaySnapshots(
         reference: [String: Any],
         candidate: [String: Any],
@@ -10322,6 +10633,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "preFinalPass": preSnapshot,
             "replayOutput": replaySnapshot,
         ]
+        if capture == "carenderer-local-backdrop" {
+            result["postGlassDestinationSweep"] =
+                replayPostGlassDestinationSweep(
+                    pass: pass,
+                    queue: queue,
+                    capture: capture,
+                    outputDirectory: outputDirectory)
+        }
         let glassPrefixReference = replayGlassPrefix(
             pass: pass,
             preColor0: preColor0,
