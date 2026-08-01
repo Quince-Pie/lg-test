@@ -1,0 +1,102 @@
+name: Test Apple Metal tile center origin
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-tile-center-origin-holdout.yml
+      - Analysis/open_raster_tile_center_origin_holdout.py
+      - Analysis/raster_tile_center_origin_preregistration.json
+      - Analysis/raster_tile_selector_model.py
+      - Analysis/raster_tile_selector_model_v2.py
+      - Analysis/raster_tile_selector_model_v4.py
+      - Analysis/raster_tile_selector_model_v5.py
+      - Analysis/raster_tile_v5_sealed_predictions.zlib
+      - Analysis/test_validate_raster_tile_center_origin_holdout.py
+      - Analysis/validate_raster_tile_center_origin_holdout.py
+      - Sources/GlassRasterTileNumerator/**
+
+concurrency:
+  group: raster-tile-center-origin-holdout-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-tile-center-origin-holdout:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Test frozen center-origin contract
+        run: |
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_raster_tile_center_origin_holdout.py' -v
+
+      - name: Build center-origin probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-tile-center-origin
+          set -o pipefail
+          swiftc -D TILE_CENTER_ORIGIN_HOLDOUT -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterTileNumerator/main.swift \
+            -o glass-raster-tile-center-origin 2>&1 |
+            tee raster-tile-center-origin/build.log
+
+      - name: Capture unseen center-origin records
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-tile-center-origin raster-tile-center-origin
+
+      - name: Validate capture without opening sealed words
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_raster_tile_center_origin_holdout.py \
+            raster-tile-center-origin \
+            --output raster-tile-center-origin/validation.json
+
+      - name: Open committed sealed predictions
+        id: opening
+        if: steps.validate.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/open_raster_tile_center_origin_holdout.py \
+            raster-tile-center-origin \
+            --output raster-tile-center-origin/holdout-opening.json
+
+      - name: Upload center-origin evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-tile-center-origin-${{ github.run_id }}
+          path: raster-tile-center-origin
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce center-origin evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test "${{ steps.opening.outcome }}" = success
+          test -s raster-tile-center-origin/manifest.json
+          test -s raster-tile-center-origin/validation.json
+          test -s raster-tile-center-origin/holdout-opening.json
+          test -s raster-tile-center-origin/raster-tile-numerator.raw

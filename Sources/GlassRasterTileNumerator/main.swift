@@ -59,7 +59,15 @@ private struct SamplePosition {
     }
 }
 
-#if TILE_DOUBLE_ROUNDING_HOLDOUT
+#if TILE_CENTER_ORIGIN_HOLDOUT
+private let schemaVersion = 7
+private let rigVersion = "metal-raster-tile-selector-7.0.0"
+private let role = "prospective-tile-center-origin-quotient-holdout"
+private let preregistrationFile =
+    "Analysis/raster_tile_center_origin_preregistration.json"
+private let preregistrationSha256 =
+    "41d7dff79323b880e687e182d85d6d548f83847c903ae5fa874f8bc6c659fa96"
+#elseif TILE_DOUBLE_ROUNDING_HOLDOUT
 private let schemaVersion = 6
 private let rigVersion = "metal-raster-tile-selector-6.0.0"
 private let role = "prospective-tile-double-rounding-center-path-holdout"
@@ -105,7 +113,41 @@ private let slotCount = axisCount * primitiveCount * tileCount * edgeCount
 private let pullCount = 16
 private let recordComponentCount = pullCount + 2
 private let recordBytes = recordComponentCount * MemoryLayout<UInt32>.stride
-#if TILE_DOUBLE_ROUNDING_HOLDOUT
+#if TILE_CENTER_ORIGIN_HOLDOUT
+private let cases = [
+    CaptureCase(name: "control-square-256", role: "prospective-control", width: 256, height: 256, originX: 384, originY: 384),
+    CaptureCase(name: "sealed-d33-e198-o15-x", role: "sealed-holdout", width: 198, height: 607, originX: 15, originY: 208),
+    CaptureCase(name: "sealed-d33-e198-o15-y", role: "sealed-holdout", width: 607, height: 198, originX: 208, originY: 15),
+    CaptureCase(name: "sealed-d33-e198-o17-x", role: "sealed-holdout", width: 198, height: 619, originX: 17, originY: 197),
+    CaptureCase(name: "sealed-d33-e198-o17-y", role: "sealed-holdout", width: 619, height: 198, originX: 197, originY: 17),
+    CaptureCase(name: "sealed-d33-e198-o48-x", role: "sealed-holdout", width: 198, height: 631, originX: 48, originY: 181),
+    CaptureCase(name: "sealed-d33-e198-o48-y", role: "sealed-holdout", width: 631, height: 198, originX: 181, originY: 48),
+    CaptureCase(name: "sealed-d33-e198-o80-x", role: "sealed-holdout", width: 198, height: 643, originX: 80, originY: 167),
+    CaptureCase(name: "sealed-d33-e198-o80-y", role: "sealed-holdout", width: 643, height: 198, originX: 167, originY: 80),
+    CaptureCase(name: "sealed-d33-e231-o15-x", role: "sealed-holdout", width: 231, height: 653, originX: 15, originY: 190),
+    CaptureCase(name: "sealed-d33-e231-o15-y", role: "sealed-holdout", width: 653, height: 231, originX: 190, originY: 15),
+    CaptureCase(name: "sealed-d33-e231-o17-x", role: "sealed-holdout", width: 231, height: 661, originX: 17, originY: 178),
+    CaptureCase(name: "sealed-d33-e231-o17-y", role: "sealed-holdout", width: 661, height: 231, originX: 178, originY: 17),
+    CaptureCase(name: "sealed-d33-e231-o48-x", role: "sealed-holdout", width: 231, height: 673, originX: 48, originY: 164),
+    CaptureCase(name: "sealed-d33-e231-o48-y", role: "sealed-holdout", width: 673, height: 231, originX: 164, originY: 48),
+    CaptureCase(name: "sealed-non33-e204-o15-x", role: "sealed-holdout", width: 204, height: 683, originX: 15, originY: 161),
+    CaptureCase(name: "sealed-non33-e204-o15-y", role: "sealed-holdout", width: 683, height: 204, originX: 161, originY: 15),
+    CaptureCase(name: "sealed-non33-e204-o16-x", role: "sealed-holdout", width: 204, height: 691, originX: 16, originY: 153),
+    CaptureCase(name: "sealed-non33-e204-o16-y", role: "sealed-holdout", width: 691, height: 204, originX: 153, originY: 16),
+    CaptureCase(name: "sealed-non33-e204-o17-x", role: "sealed-holdout", width: 204, height: 701, originX: 17, originY: 145),
+    CaptureCase(name: "sealed-non33-e204-o17-y", role: "sealed-holdout", width: 701, height: 204, originX: 145, originY: 17),
+    CaptureCase(name: "sealed-non33-e204-o48-x", role: "sealed-holdout", width: 204, height: 709, originX: 48, originY: 137),
+    CaptureCase(name: "sealed-non33-e204-o48-y", role: "sealed-holdout", width: 709, height: 204, originX: 137, originY: 48),
+    CaptureCase(name: "sealed-non33-e252-o16-x", role: "sealed-holdout", width: 252, height: 719, originX: 16, originY: 129),
+    CaptureCase(name: "sealed-non33-e252-o16-y", role: "sealed-holdout", width: 719, height: 252, originX: 129, originY: 16),
+    CaptureCase(name: "sealed-non33-e252-o48-x", role: "sealed-holdout", width: 252, height: 727, originX: 48, originY: 121),
+    CaptureCase(name: "sealed-non33-e252-o48-y", role: "sealed-holdout", width: 727, height: 252, originX: 121, originY: 48),
+    CaptureCase(name: "sealed-non33-e255-o16-x", role: "sealed-holdout", width: 255, height: 733, originX: 16, originY: 113),
+    CaptureCase(name: "sealed-non33-e255-o16-y", role: "sealed-holdout", width: 733, height: 255, originX: 113, originY: 16),
+    CaptureCase(name: "sealed-non33-e315-o16-x", role: "sealed-holdout", width: 315, height: 691, originX: 16, originY: 101),
+    CaptureCase(name: "sealed-non33-e315-o16-y", role: "sealed-holdout", width: 691, height: 315, originX: 101, originY: 16),
+]
+#elseif TILE_DOUBLE_ROUNDING_HOLDOUT
 private let cases = [
     CaptureCase(
         name: "control-square-256", role: "prospective-control",
@@ -458,7 +500,78 @@ private func selectorEndpoints() -> [EndpointCase] {
     return result
 }
 
-#if TILE_DOUBLE_ROUNDING_HOLDOUT
+#if TILE_CENTER_ORIGIN_HOLDOUT
+private let centerOriginPrimaryBase = (name: "b2", bits: UInt32(0x3f00_0000))
+private let centerOriginPrimaryResidues: [UInt32] = [0, 1, 7, 31]
+private let centerOriginPrimarySpans: [UInt32] = [4, 5, 6, 7, 8, 30]
+private let centerOriginTransferBases: [(name: String, bits: UInt32)] = [
+    ("b0", 0x3e00_0000),
+    ("b1", 0x3e80_0000),
+    ("b3", 0x3f80_0000),
+]
+private let centerOriginTransferSpans: [UInt32] = [6, 7, 30]
+
+private func appendCenterOriginEndpointPair(
+    _ result: inout [EndpointCase],
+    baseName: String,
+    baseBits: UInt32,
+    residue: UInt32,
+    span: UInt32
+) {
+    let low = baseBits + residue
+    let high = low + span
+    let stem = String(
+        format: "translated-%@-r%02d-s%02d",
+        baseName,
+        residue,
+        span
+    )
+    result.append(EndpointCase(
+        name: "\(stem)-forward", role: "arithmetic-holdout",
+        lowBits: low, highBits: high
+    ))
+    result.append(EndpointCase(
+        name: "\(stem)-reverse", role: "arithmetic-holdout",
+        lowBits: high, highBits: low
+    ))
+}
+
+private func centerOriginEndpoints() -> [EndpointCase] {
+    var result = [
+        EndpointCase(
+            name: "zero-to-one", role: "prospective-control",
+            lowBits: 0, highBits: 0x3f80_0000
+        ),
+        EndpointCase(
+            name: "one-to-zero", role: "prospective-control",
+            lowBits: 0x3f80_0000, highBits: 0
+        ),
+    ]
+    for residue in centerOriginPrimaryResidues {
+        for span in centerOriginPrimarySpans {
+            appendCenterOriginEndpointPair(
+                &result,
+                baseName: centerOriginPrimaryBase.name,
+                baseBits: centerOriginPrimaryBase.bits,
+                residue: residue,
+                span: span
+            )
+        }
+    }
+    for base in centerOriginTransferBases {
+        for span in centerOriginTransferSpans {
+            appendCenterOriginEndpointPair(
+                &result,
+                baseName: base.name,
+                baseBits: base.bits,
+                residue: 0,
+                span: span
+            )
+        }
+    }
+    return result
+}
+#elseif TILE_DOUBLE_ROUNDING_HOLDOUT
 private let doubleRoundingZeroDeltas: [(units: UInt32, bits: UInt32)] = [
     (5, 0x3420_0000),
     (8, 0x3480_0000),
@@ -608,7 +721,9 @@ private func discriminatorEndpoints() -> [EndpointCase] {
 }
 #endif
 
-#if TILE_DOUBLE_ROUNDING_HOLDOUT
+#if TILE_CENTER_ORIGIN_HOLDOUT
+private let endpoints = centerOriginEndpoints()
+#elseif TILE_DOUBLE_ROUNDING_HOLDOUT
 private let endpoints = doubleRoundingEndpoints()
 #elseif TILE_TRANSLATION_HOLDOUT
 private let endpoints = discriminatorEndpoints()
@@ -841,7 +956,25 @@ private func layoutManifest() -> [String: Any] {
 
 private func verifyFrozenLayout() {
     let layout = layoutManifest()
-#if TILE_DOUBLE_ROUNDING_HOLDOUT
+#if TILE_CENTER_ORIGIN_HOLDOUT
+    precondition(cases.count == 31)
+    precondition(endpoints.count == 68)
+    precondition(layout["recordCount"] as? Int == 539_648)
+    precondition(layout["rawBytes"] as? Int == 38_854_656)
+    precondition(layout["expectedRecordCount"] as? Int == 244_800)
+    precondition(
+        layout["caseWordsSha256"] as? String
+            == "149bdbd30e79c5547ed5f63cc604041619dee961d4b77a793211a0deb0a4c52d"
+    )
+    precondition(
+        layout["endpointWordsSha256"] as? String
+            == "6a8b745c8ccb65f5d788979722dd916bb190ccd791428528a72454de85ca7bf4"
+    )
+    precondition(
+        layout["sampleWordsSha256"] as? String
+            == "af2aa695005329658fb2ff7134b8ba760bcdde4abdcd5822f6cd1c9c00438754"
+    )
+#elseif TILE_DOUBLE_ROUNDING_HOLDOUT
     precondition(cases.count == 21)
     precondition(endpoints.count == 138)
     precondition(layout["recordCount"] as? Int == 741_888)

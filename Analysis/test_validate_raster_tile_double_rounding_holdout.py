@@ -204,7 +204,7 @@ class RasterTileDoubleRoundingHoldoutTests(unittest.TestCase):
             / "main.swift"
         ).read_text(encoding="utf-8")
         for value in (
-            "#if TILE_DOUBLE_ROUNDING_HOLDOUT",
+            "#elseif TILE_DOUBLE_ROUNDING_HOLDOUT",
             capture.PREREGISTRATION_SHA256,
             str(capture.layout_metadata()["caseWordsSha256"]),
             str(capture.layout_metadata()["endpointWordsSha256"]),
@@ -222,7 +222,7 @@ class RasterTileDoubleRoundingHoldoutTests(unittest.TestCase):
             / "main.swift"
         ).read_text(encoding="utf-8")
         case_block = source.split(
-            "#if TILE_DOUBLE_ROUNDING_HOLDOUT\nprivate let cases = [",
+            "#elseif TILE_DOUBLE_ROUNDING_HOLDOUT\nprivate let cases = [",
             maxsplit=1,
         )[1].split("\n]\n#elseif TILE_TRANSLATION_HOLDOUT", maxsplit=1)[0]
         swift_cases = [
@@ -260,7 +260,7 @@ class RasterTileDoubleRoundingHoldoutTests(unittest.TestCase):
         endpoint_block = (
             "private let doubleRoundingZeroDeltas"
             + source.split(
-                "#if TILE_DOUBLE_ROUNDING_HOLDOUT\n"
+                "#elseif TILE_DOUBLE_ROUNDING_HOLDOUT\n"
                 "private let doubleRoundingZeroDeltas",
                 maxsplit=1,
             )[1].split("\n#elseif TILE_TRANSLATION_HOLDOUT", maxsplit=1)[0]

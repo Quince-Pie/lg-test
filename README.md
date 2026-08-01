@@ -3350,6 +3350,34 @@ ablation differs on 1,580 words in total. Zero mismatch on the first run and
 an unchanged repeat are mandatory before integrating this arithmetic into
 Walle.
 
+Run `30699418107` captured schema 6 after commit `3cb0e7b`. The control,
+build, structural validation, and upload gates passed, while the sealed v4
+prediction was prospectively rejected: 632 of 5,961,600 sealed words differed
+across 572 records. All 500 pull mismatches disappear when every pull uses the
+two-stage determinant coefficient; that law is also exact over every opened
+schema-5 pull. The remaining 132 v4 errors are confined to center and
+derivative words. Exhaustive post-opening recovery finds one simpler
+calibration law: translated centers use the exact endpoint delta divided by
+the axis extent and rounded to binary32 toward negative infinity, except when
+the axis origin is 16 modulo the 32-pixel tile, where they use the determinant
+coefficient. Zero-endpoint centers retain the determinant coefficient and all
+constants retain the schema-6 28-bit-nearest then binary32-nearest composition.
+This v5 calibration reproduces all 574,680 opened schema-5/schema-6 records and
+all 10,344,240 words exactly, but is not prospective evidence.
+
+Schema 7 crosses the previously confounded variables before another Apple word
+is observed. Its 30 sealed transposed geometries put denominator-33 extents 198
+and 231 at origins 15, 17, 48, and 80, while extents 204, 252, 255, and 315
+repeat half-tile origins 16 and 48 and neighboring residues. Sixty-six
+translated forward/reverse ramps span four low mantissa residues, four exponent
+regions, and native spans 4 through 30. The committed sealed stream contains
+240,720 records and 4,332,960 words with SHA-256
+`acccb96dc6660a08016c4583385c43de09641a087890c1f4b66f8c3fcdecbf87`.
+Preflight rejects the exact-down-only, denominator-only, absolute-origin-16,
+and determinant-only alternatives by 1,264, 1,140, 432, and 52 words,
+respectively. The first run and an unchanged repeat must both have zero
+mismatched words before the center-origin law is treated as prospective.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
