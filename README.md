@@ -3017,6 +3017,38 @@ X and then Y. At this diameter the downsample footprint can cross the
 therefore distinguish a per-axis footprint decision from a diameter-only
 decision directly; no coefficient is fitted after seeing the phase results.
 
+### Prospective exact source holdout
+
+The focused `introspect.yml` gate now includes two source fields whose Apple
+outputs did not exist when their predictions were frozen:
+
+- `prospective-opaque-seeded-v1`, generated with SplitMix64 seed
+  `0x6a09e667f3bcc909`; and
+- `prospective-premultiplied-seeded-v1`, generated with SplitMix64 seed
+  `0xbb67ae8584caa73b` and integer `(channel * alpha + 127) / 255`
+  premultiplication.
+
+Both fields generate every mip independently from `(level, x, y)`. This makes
+the test sensitive to source-coordinate, bilinear, trilinear, color, alpha,
+and fixed-function blend errors instead of testing another smooth wallpaper.
+`Preregistration/exact-source-holdout-v1.json` records every source-mip hash
+and the independent RX 9070 XT GLSL renderer's predicted 1024x1024 BGRA8 hash
+for clear/regular glass in light/dark appearance. The file is committed before
+the corresponding Apple capture and explicitly records that Apple output was
+unavailable during prediction.
+
+`Analysis/validate_exact_source_holdout.py` fails closed unless all eight
+source interventions execute, all archived bytes match their reported hashes,
+the two prospective inputs match the preregistration, and Apple's private
+fragment, the independently compiled Metal fragment, and the frozen GLSL
+prediction are byte-identical for both prospective fields. CI archives both
+the preregistration and its validation report with each profile artifact.
+
+Passing this gate establishes an unseen source/color/sampler holdout at the
+centered 800-point, 1x, sRGB SDR scope. It does not replace the independent
+repeat, transition evidence, production Walle integration, or a physical 2x
+Retina capture.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

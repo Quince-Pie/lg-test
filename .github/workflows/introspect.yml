@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - .github/workflows/introspect.yml
+      - Analysis/validate_exact_source_holdout.py
+      - Preregistration/exact-source-holdout-v1.json
       - Sources/GlassIntrospect/**
 
 concurrency:
@@ -649,6 +651,22 @@ jobs:
                       print(result.stderr, end="")
           PY
 
+      - name: Preserve prospective holdout preregistration
+        if: always()
+        run: |
+          cp \
+            Preregistration/exact-source-holdout-v1.json \
+            introspection/exact-source-holdout-preregistration.json
+          cmp \
+            Preregistration/exact-source-holdout-v1.json \
+            introspection/exact-source-holdout-preregistration.json
+          python3 Analysis/validate_exact_source_holdout.py \
+            introspection \
+            Preregistration/exact-source-holdout-v1.json \
+            --material '${{ matrix.material }}' \
+            --appearance '${{ matrix.appearance }}' \
+            --output introspection/exact-source-holdout-validation.json
+
       - name: Upload Liquid Glass introspection
         if: always()
         uses: actions/upload-artifact@v4
@@ -1103,6 +1121,34 @@ jobs:
                   "schema-75 independent material replay is not "
                   "byte-exact: "
                   f"{profile_replay}"
+              )
+
+          source_validation_path = (
+              root / "exact-source-holdout-validation.json"
+          )
+          if not source_validation_path.is_file():
+              raise SystemExit(
+                  "prospective source holdout validation is missing"
+              )
+          source_validation = json.loads(
+              source_validation_path.read_text(encoding="utf-8")
+          )
+          if (
+              source_validation.get(
+                  "liquidGlassExactSourceHoldoutValidationSchemaVersion"
+              ) != 1
+              or source_validation.get("profile")
+                  != (
+                      f"{profile['material']}-"
+                      f"{profile['requestedAppearance']}"
+                  )
+              or source_validation.get(
+                  "allAppleMetalAndFrozenGlslOutputsExact"
+              ) is not True
+          ):
+              raise SystemExit(
+                  "prospective source holdout validation differs: "
+                  f"{source_validation}"
               )
 
           texture_evidence = runtime.get("carendererEvidence", {}).get(

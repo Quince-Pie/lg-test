@@ -8785,6 +8785,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "sampler-basis-level-zero"
         case samplerBasisLevelOne =
             "sampler-basis-level-one"
+        case prospectiveOpaqueSeeded =
+            "prospective-opaque-seeded-v1"
+        case prospectivePremultipliedSeeded =
+            "prospective-premultiplied-seeded-v1"
     }
 
     private struct GlassSDFModeIntervention {
@@ -8828,6 +8832,41 @@ private final class MetalUniformProbe: @unchecked Sendable {
         y: Int,
         level: Int
     ) -> (UInt8, UInt8, UInt8, UInt8) {
+        func splitMix64(_ input: UInt64) -> UInt64 {
+            var value = input &+ 0x9e3779b97f4a7c15
+            value = (value ^ (value >> 30))
+                &* 0xbf58476d1ce4e5b9
+            value = (value ^ (value >> 27))
+                &* 0x94d049bb133111eb
+            return value ^ (value >> 31)
+        }
+
+        func seededTexel(
+            seed: UInt64,
+            premultiplied: Bool
+        ) -> (UInt8, UInt8, UInt8, UInt8) {
+            let coordinate =
+                (UInt64(level) << 56)
+                ^ (UInt64(y) << 28)
+                ^ UInt64(x)
+            let value = splitMix64(seed ^ coordinate)
+            let blue = Int(value & 0xff)
+            let green = Int((value >> 8) & 0xff)
+            let red = Int((value >> 16) & 0xff)
+            let alpha =
+                premultiplied
+                ? Int((value >> 24) & 0xff)
+                : 255
+            func premultiply(_ channel: Int) -> UInt8 {
+                UInt8((channel * alpha + 127) / 255)
+            }
+            return (
+                premultiply(blue),
+                premultiply(green),
+                premultiply(red),
+                UInt8(alpha))
+        }
+
         switch pattern {
         case .constantOpaque:
             return (17, 91, 203, 255)
@@ -8912,6 +8951,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
             default:
                 return (0, 0, 0, 255)
             }
+        case .prospectiveOpaqueSeeded:
+            return seededTexel(
+                seed: 0x6a09e667f3bcc909,
+                premultiplied: false)
+        case .prospectivePremultipliedSeeded:
+            return seededTexel(
+                seed: 0xbb67ae8584caa73b,
+                premultiplied: true)
         }
     }
 
@@ -9123,8 +9170,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
         }
         return [
+            "schemaVersion": 2,
             "executed": true,
             "fragmentTextureIndex": 3,
+            "prospectiveHoldout": [
+                "status": "preregistered-before-apple-capture",
+                "patterns": [
+                    HeldOutGlassSourcePattern
+                        .prospectiveOpaqueSeeded.rawValue,
+                    HeldOutGlassSourcePattern
+                        .prospectivePremultipliedSeeded.rawValue,
+                ],
+                "opaqueSeed": "0x6a09e667f3bcc909",
+                "premultipliedSeed": "0xbb67ae8584caa73b",
+            ],
             "source": [
                 "pixelFormat": source.pixelFormat.rawValue,
                 "width": source.width,

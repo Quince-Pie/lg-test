@@ -1,0 +1,409 @@
+{
+  "acceptance": "Every source mip must match its preregistered hash, and the Apple private fragment, independent Metal reconstruction, and frozen AMD GLSL prediction must have identical BGRA8 bytes.",
+  "generatedAt": "2026-08-01T03:29:29.758326+00:00",
+  "generator": {
+    "algorithm": "SplitMix64(seed XOR ((level << 56) XOR (y << 28) XOR x)); BGRA bytes 0..23; optional alpha byte 24..31; RGB uses integer (channel * alpha + 127) / 255 premultiplication",
+    "file": "analysis/liquid_glass_unseen_holdout.py",
+    "seeds": {
+      "prospective-opaque-seeded-v1": "0x6a09e667f3bcc909",
+      "prospective-premultiplied-seeded-v1": "0xbb67ae8584caa73b"
+    }
+  },
+  "host": {
+    "deviceIndex": 1,
+    "platform": "Linux-6.18.38-x86_64-with-glibc2.42",
+    "python": "3.14.4"
+  },
+  "intrinsicTables": {
+    "rsqrt": {
+      "bytes": 2097152,
+      "sha256": "01dc07b5fbdd4b05bad8cba39331c324cd32b94cc1331e9af3096dce58e20fa3"
+    },
+    "source": {
+      "bytes": 8388608,
+      "sha256": "fff71cc0d4428677ca5bc58b91212a7166b701e4efe504c3d71cab70846d0449"
+    },
+    "sqrt": {
+      "bytes": 4194304,
+      "sha256": "dcd882a8af21ac9f2c0f82a3239d6d5f247e2eb5b3535348f6931b65c41f23b1"
+    }
+  },
+  "liquidGlassUnseenSourceHoldoutSchemaVersion": 1,
+  "predictions": {
+    "clear-dark": {
+      "prospective-opaque-seeded-v1": {
+        "capture": "artifacts/liquid-glass-introspection-30575220842/liquid-glass-introspection-clear-dark-30575220842",
+        "captureRuntimeSha256": "5c9adec255fb3e5af16ab00619ca8d0705f1e43c5edba590aebd7f32f2c3bf8c",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 65788,
+          "fragmentShaderSha256": "cae0bbf8ac7ffaf8e91d27192e2af619c119a54c46aaf4054019e8fda90507a8",
+          "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "clear",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "69e6610d373fc245",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "bad61c00dde12b9aa449642fcb18d528d977f793ac0f2a41755ba843f24188bb",
+          "width": 1024
+        },
+        "pattern": "prospective-opaque-seeded-v1",
+        "rasterCoefficientTableSha256": "bbbc2e8391487cfad89e26f0a79ff2dd508e6548a0f1e8a56dab70b288df86b0"
+      },
+      "prospective-premultiplied-seeded-v1": {
+        "capture": "artifacts/liquid-glass-introspection-30575220842/liquid-glass-introspection-clear-dark-30575220842",
+        "captureRuntimeSha256": "5c9adec255fb3e5af16ab00619ca8d0705f1e43c5edba590aebd7f32f2c3bf8c",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 65788,
+          "fragmentShaderSha256": "cae0bbf8ac7ffaf8e91d27192e2af619c119a54c46aaf4054019e8fda90507a8",
+          "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "clear",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "7eedd4d28230a1a4",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "be72bf12e4c7646ec9975b8d7668577949c7f8979dacea9b630e539ef5807532",
+          "width": 1024
+        },
+        "pattern": "prospective-premultiplied-seeded-v1",
+        "rasterCoefficientTableSha256": "bbbc2e8391487cfad89e26f0a79ff2dd508e6548a0f1e8a56dab70b288df86b0"
+      }
+    },
+    "clear-light": {
+      "prospective-opaque-seeded-v1": {
+        "capture": "artifacts/liquid-glass-introspection-30575220842/liquid-glass-introspection-clear-light-30575220842",
+        "captureRuntimeSha256": "677b139239e89bd4a86950642f9c3c5d6665d289b32f608fc2051f2ccaf07799",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 65788,
+          "fragmentShaderSha256": "cae0bbf8ac7ffaf8e91d27192e2af619c119a54c46aaf4054019e8fda90507a8",
+          "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "clear",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "69e6610d373fc245",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "bad61c00dde12b9aa449642fcb18d528d977f793ac0f2a41755ba843f24188bb",
+          "width": 1024
+        },
+        "pattern": "prospective-opaque-seeded-v1",
+        "rasterCoefficientTableSha256": "bbbc2e8391487cfad89e26f0a79ff2dd508e6548a0f1e8a56dab70b288df86b0"
+      },
+      "prospective-premultiplied-seeded-v1": {
+        "capture": "artifacts/liquid-glass-introspection-30575220842/liquid-glass-introspection-clear-light-30575220842",
+        "captureRuntimeSha256": "677b139239e89bd4a86950642f9c3c5d6665d289b32f608fc2051f2ccaf07799",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 65788,
+          "fragmentShaderSha256": "cae0bbf8ac7ffaf8e91d27192e2af619c119a54c46aaf4054019e8fda90507a8",
+          "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "clear",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "7eedd4d28230a1a4",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "be72bf12e4c7646ec9975b8d7668577949c7f8979dacea9b630e539ef5807532",
+          "width": 1024
+        },
+        "pattern": "prospective-premultiplied-seeded-v1",
+        "rasterCoefficientTableSha256": "bbbc2e8391487cfad89e26f0a79ff2dd508e6548a0f1e8a56dab70b288df86b0"
+      }
+    },
+    "regular-dark": {
+      "prospective-opaque-seeded-v1": {
+        "capture": "artifacts/liquid-glass-introspection-30581698599/liquid-glass-introspection-regular-dark-30581698599",
+        "captureRuntimeSha256": "74fed4a8be257cb79456b8389221297fcd64764f3cbd498bfaefc4362c38fbfd",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 65772,
+          "fragmentShaderSha256": "ea7f3e49c1f37286c07b86f6615f706b5416373425eb3562c48b2e198cafd15a",
+          "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "regular",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "a22c07b030ab445e",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "b273b795ff566fd32f4356f5251e1161c4a3e4a4cc0d4f986bbd36e3f3d16c2f",
+          "width": 1024
+        },
+        "pattern": "prospective-opaque-seeded-v1",
+        "rasterCoefficientTableSha256": "95c77d54dd2eec8e9dcb77902d3f2dbdfd6ea71c0b0020964b8a5261eca6dfc8"
+      },
+      "prospective-premultiplied-seeded-v1": {
+        "capture": "artifacts/liquid-glass-introspection-30581698599/liquid-glass-introspection-regular-dark-30581698599",
+        "captureRuntimeSha256": "74fed4a8be257cb79456b8389221297fcd64764f3cbd498bfaefc4362c38fbfd",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 65772,
+          "fragmentShaderSha256": "ea7f3e49c1f37286c07b86f6615f706b5416373425eb3562c48b2e198cafd15a",
+          "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "regular",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "4edd5089a1e860f6",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "ee009f218a5f7e99cd01def729030ed08ccf16140dd7851ab3058b1243068f62",
+          "width": 1024
+        },
+        "pattern": "prospective-premultiplied-seeded-v1",
+        "rasterCoefficientTableSha256": "95c77d54dd2eec8e9dcb77902d3f2dbdfd6ea71c0b0020964b8a5261eca6dfc8"
+      }
+    },
+    "regular-light": {
+      "prospective-opaque-seeded-v1": {
+        "capture": "artifacts/liquid-glass-introspection-30581698599/liquid-glass-introspection-regular-light-30581698599",
+        "captureRuntimeSha256": "8dd182a0097b1c3520ec19505c328b6257b14aa5bb5c24bd9a655309e8aa43c0",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 65772,
+          "fragmentShaderSha256": "ea7f3e49c1f37286c07b86f6615f706b5416373425eb3562c48b2e198cafd15a",
+          "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "regular",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "e8a762920fcfc7de",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "8c7452e2453d52793b5fe1fdf5c3955a476af76563e762077912dec1fac74063",
+          "width": 1024
+        },
+        "pattern": "prospective-opaque-seeded-v1",
+        "rasterCoefficientTableSha256": "95c77d54dd2eec8e9dcb77902d3f2dbdfd6ea71c0b0020964b8a5261eca6dfc8"
+      },
+      "prospective-premultiplied-seeded-v1": {
+        "capture": "artifacts/liquid-glass-introspection-30581698599/liquid-glass-introspection-regular-light-30581698599",
+        "captureRuntimeSha256": "8dd182a0097b1c3520ec19505c328b6257b14aa5bb5c24bd9a655309e8aa43c0",
+        "circleScaleReciprocalBits": "0x3ad65b63",
+        "implementation": {
+          "fragmentShaderBytes": 65772,
+          "fragmentShaderSha256": "ea7f3e49c1f37286c07b86f6615f706b5416373425eb3562c48b2e198cafd15a",
+          "glRenderer": "AMD Radeon RX 9070 XT (radeonsi, gfx1201, ACO, DRM 3.64, 6.18.38)",
+          "glVendor": "AMD",
+          "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+          "moderngl": "5.12.0",
+          "numpy": "2.4.4",
+          "python": "3.14.4"
+        },
+        "material": "regular",
+        "output": {
+          "bytes": 4194304,
+          "fnv1a64": "f2752a0218fdbcc5",
+          "format": "BGRA8Unorm",
+          "height": 1024,
+          "sha256": "20b8e05062e2bccb5c5696acd24e9e0a40a6f590baa99e538ca2f5aa8eae3dd0",
+          "width": 1024
+        },
+        "pattern": "prospective-premultiplied-seeded-v1",
+        "rasterCoefficientTableSha256": "95c77d54dd2eec8e9dcb77902d3f2dbdfd6ea71c0b0020964b8a5261eca6dfc8"
+      }
+    }
+  },
+  "scope": {
+    "appearances": [
+      "light",
+      "dark"
+    ],
+    "appleOutputAvailableDuringPrediction": false,
+    "geometry": "circle-800-center",
+    "materials": [
+      "clear",
+      "regular"
+    ],
+    "patterns": [
+      "prospective-opaque-seeded-v1",
+      "prospective-premultiplied-seeded-v1"
+    ]
+  },
+  "sources": {
+    "prospective-opaque-seeded-v1": {
+      "clear": [
+        {
+          "bytes": 802816,
+          "fnv1a64": "03496bead7d22389",
+          "height": 448,
+          "level": 0,
+          "sha256": "83973e124118913ffbe77818b92b1f40cc77e792ee4fa09a621bf837ac6db2d1",
+          "width": 448
+        },
+        {
+          "bytes": 200704,
+          "fnv1a64": "515cb9db3807ffda",
+          "height": 224,
+          "level": 1,
+          "sha256": "de400d57f7f05799ae65d2a0b493ed709ea991f6fd54001e37a96c6089fe734d",
+          "width": 224
+        }
+      ],
+      "regular": [
+        {
+          "bytes": 589824,
+          "fnv1a64": "38b46badec5b8c2b",
+          "height": 384,
+          "level": 0,
+          "sha256": "c1cc74afd63f6f9e86ed1fe353a459bda1d89144eb42af0142a2879b013aafc9",
+          "width": 384
+        },
+        {
+          "bytes": 147456,
+          "fnv1a64": "01b153ff3452a0ea",
+          "height": 192,
+          "level": 1,
+          "sha256": "0ad3b7b9e72d79859b044ed7b23fae5de641388579ea7e7b8408e53006d0d107",
+          "width": 192
+        },
+        {
+          "bytes": 36864,
+          "fnv1a64": "55d7a65a10561047",
+          "height": 96,
+          "level": 2,
+          "sha256": "0aa4edba1ffc46025a00e007809c63f26001a979d0daf6b4195c4dc8d988a8d8",
+          "width": 96
+        },
+        {
+          "bytes": 9216,
+          "fnv1a64": "666eb9b91054eb76",
+          "height": 48,
+          "level": 3,
+          "sha256": "0d6c9faefd824f10bfcdf70904ee620a44f3fe9d93172f013d3c27b8a0fd77cb",
+          "width": 48
+        },
+        {
+          "bytes": 2304,
+          "fnv1a64": "d78536a1f678a2a8",
+          "height": 24,
+          "level": 4,
+          "sha256": "857d96b8daed977413eff79115cf9d06f5784fe1dca89cc99b3f6c0fb43e25fa",
+          "width": 24
+        },
+        {
+          "bytes": 576,
+          "fnv1a64": "251cf97e558f071c",
+          "height": 12,
+          "level": 5,
+          "sha256": "29f07d70d7328761c44330c9cbcc589895f4c155911bae40264ba8f235f953f6",
+          "width": 12
+        }
+      ]
+    },
+    "prospective-premultiplied-seeded-v1": {
+      "clear": [
+        {
+          "bytes": 802816,
+          "fnv1a64": "ef12119ff9982f5a",
+          "height": 448,
+          "level": 0,
+          "sha256": "d5d5ddd9c38bb87534c11e3a7c13eadb583fc3934ee8446e55bccabb4a586af9",
+          "width": 448
+        },
+        {
+          "bytes": 200704,
+          "fnv1a64": "eeb10591597a79fb",
+          "height": 224,
+          "level": 1,
+          "sha256": "5d29c154ea32ac4822eb22dd73de2d97f19a1063aae3a95210dcdf7d2efcbd90",
+          "width": 224
+        }
+      ],
+      "regular": [
+        {
+          "bytes": 589824,
+          "fnv1a64": "751a35db9c78f864",
+          "height": 384,
+          "level": 0,
+          "sha256": "b08097a080ad5a36a807964e10f5595d981842fe599e22c836f52d3fbdd93b2b",
+          "width": 384
+        },
+        {
+          "bytes": 147456,
+          "fnv1a64": "3290a1b5bc493ac5",
+          "height": 192,
+          "level": 1,
+          "sha256": "617ffd9a22bd7552722ae04347c22d7bbc0da9186f959e9cd2f9fb15c6e3d831",
+          "width": 192
+        },
+        {
+          "bytes": 36864,
+          "fnv1a64": "08751bb97e239eda",
+          "height": 96,
+          "level": 2,
+          "sha256": "a8c5bc2a7f4a36509c743ff5f54c90cac1754b17f347becc75e93e59419cde1a",
+          "width": 96
+        },
+        {
+          "bytes": 9216,
+          "fnv1a64": "30f1259431b47dd6",
+          "height": 48,
+          "level": 3,
+          "sha256": "1b832dc6a6a831bb360bdf86900c2ac0f363a45eb7c881060c6c8abb0cc3888f",
+          "width": 48
+        },
+        {
+          "bytes": 2304,
+          "fnv1a64": "6abd91c2a57177bf",
+          "height": 24,
+          "level": 4,
+          "sha256": "4c056a26efbe48c382a01b61318aac5b3c9107ecf43ce37c1e61aa65ea16b328",
+          "width": 24
+        },
+        {
+          "bytes": 576,
+          "fnv1a64": "928a9ead9e2faac9",
+          "height": 12,
+          "level": 5,
+          "sha256": "1fbb6428be091809409e0e20a60559a3cc412236454db93c88cebbd42fc26bde",
+          "width": 12
+        }
+      ]
+    }
+  },
+  "status": "preregistered-before-apple-capture"
+}
