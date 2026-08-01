@@ -117,6 +117,8 @@ class RasterClipBoundaryTomographyTests(unittest.TestCase):
         ):
             self.assertIn(str(digest), source)
         self.assertIn("for viewport in [256, 512]", source)
+        self.assertIn("const uint base = record * 15u;", source)
+        self.assertNotIn("(recordVectorCount)u", source)
 
 
 if __name__ == "__main__":

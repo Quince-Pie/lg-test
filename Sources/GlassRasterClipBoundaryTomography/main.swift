@@ -570,7 +570,7 @@ fragment float clip_boundary_fragment(
         sampleIndex = indexY * input.layout1.z + indexX;
     }
     const uint record = input.layout0.x + sampleIndex;
-    const uint base = record * (recordVectorCount)u;
+    const uint base = record * 15u;
     const float3 basisX0 = input.basisPull.interpolate_at_offset(
         float2(0.0f, 0.5f));
     const float3 basisX1 = input.basisPull.interpolate_at_offset(
