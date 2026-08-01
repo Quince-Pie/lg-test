@@ -93,12 +93,18 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
             },
             "carendererEvidence": {"exactPassReplay": {
                 "independentGlassReplay": {"sourceTextureDifferential": {
-                    "schemaVersion": 2,
+                    "schemaVersion": 3,
                     "executed": True,
                     "fragmentTextureIndex": 3,
                     "prospectiveHoldout": {
                         "status": "preregistered-before-apple-capture",
                         "patterns": sorted(validator.PROSPECTIVE_PATTERNS),
+                        "regularDiagnosticTraces": sorted(
+                            specification[0]
+                            for specification in (
+                                validator.REGULAR_DIAGNOSTIC_TRACES.values()
+                            )
+                        ),
                     },
                     "records": records,
                 }}
@@ -114,6 +120,46 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
             "sources": preregistered_sources,
             "predictions": preregistered_predictions,
         }), encoding="utf-8")
+
+    def _convert_fixture_to_regular(self) -> None:
+        runtime_path = self.capture / "runtime.json"
+        runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
+        runtime["materialProfileEvidence"]["material"] = "regular"
+        records = runtime["carendererEvidence"]["exactPassReplay"][
+            "independentGlassReplay"
+        ]["sourceTextureDifferential"]["records"]
+        for record in records:
+            if record["name"] not in validator.PROSPECTIVE_PATTERNS:
+                continue
+            for field, (
+                trace_name,
+                pixel_format,
+                bytes_per_pixel,
+            ) in validator.REGULAR_DIAGNOSTIC_TRACES.items():
+                value = bytes(range(bytes_per_pixel))
+                output = self._file_record(
+                    f"{record['name']}-{trace_name}.raw",
+                    value,
+                )
+                output.update({
+                    "width": 1,
+                    "height": 1,
+                    "pixelFormat": pixel_format,
+                })
+                record[field] = {"executed": True, "output": output}
+        runtime_path.write_text(json.dumps(runtime), encoding="utf-8")
+
+        preregistration = json.loads(
+            self.preregistration.read_text(encoding="utf-8")
+        )
+        for source in preregistration["sources"].values():
+            source["regular"] = source.pop("clear")
+        preregistration["predictions"]["regular-light"] = (
+            preregistration["predictions"].pop("clear-light")
+        )
+        self.preregistration.write_text(
+            json.dumps(preregistration), encoding="utf-8"
+        )
 
     def test_accepts_exact_preregistered_fixture(self) -> None:
         report = validator.validate(
@@ -149,6 +195,52 @@ class ExactSourceHoldoutValidationTests(unittest.TestCase):
                 self.capture,
                 self.preregistration,
                 material="clear",
+                appearance="light",
+            )
+
+    def test_accepts_regular_diagnostic_inventory(self) -> None:
+        self._convert_fixture_to_regular()
+        report = validator.validate(
+            self.capture,
+            self.preregistration,
+            material="regular",
+            appearance="light",
+        )
+        diagnostics = report["prospective"][
+            "prospective-opaque-seeded-v1"
+        ]["regularDiagnosticTraceSha256"]
+        self.assertEqual(
+            set(diagnostics),
+            {
+                specification[0]
+                for specification in (
+                    validator.REGULAR_DIAGNOSTIC_TRACES.values()
+                )
+            },
+        )
+
+    def test_rejects_missing_regular_diagnostic(self) -> None:
+        self._convert_fixture_to_regular()
+        runtime_path = self.capture / "runtime.json"
+        runtime = json.loads(runtime_path.read_text(encoding="utf-8"))
+        records = runtime["carendererEvidence"]["exactPassReplay"][
+            "independentGlassReplay"
+        ]["sourceTextureDifferential"]["records"]
+        prospective = next(
+            record
+            for record in records
+            if record["name"] == "prospective-opaque-seeded-v1"
+        )
+        prospective.pop("shadowSampleTrace")
+        runtime_path.write_text(json.dumps(runtime), encoding="utf-8")
+        with self.assertRaisesRegex(
+            ValueError,
+            "shadow-sample diagnostic did not execute",
+        ):
+            validator.validate(
+                self.capture,
+                self.preregistration,
+                material="regular",
                 appearance="light",
             )
 

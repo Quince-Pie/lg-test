@@ -665,11 +665,10 @@ inline half replay_shadow_alpha(
         * uniforms.shadow_opacity;
 }
 
-inline half4 replay_shadow_layer(
+inline half4 replay_shadow_sample(
     float2 source_uv,
     half primary_distance,
     half2 displacement,
-    half shadow_alpha,
     texture2d<half, access::sample> source_texture,
     constant ReplayGlassBackgroundUniforms &uniforms)
 {
@@ -686,20 +685,37 @@ inline half4 replay_shadow_layer(
         half2(source_uv)
         + half2(shift) * displacement);
 
+    constexpr sampler source_sampler(
+        coord::normalized,
+        address::clamp_to_edge,
+        filter::linear,
+        mip_filter::linear);
+    return source_texture.sample(
+        source_sampler,
+        shadow_uv,
+        level(replay_lod(
+            half(uniforms.shadow_blur_radius))));
+}
+
+inline half4 replay_shadow_layer(
+    float2 source_uv,
+    half primary_distance,
+    half2 displacement,
+    half shadow_alpha,
+    texture2d<half, access::sample> source_texture,
+    constant ReplayGlassBackgroundUniforms &uniforms)
+{
+
     half4 shadow_color;
     if (uniforms.shadow_contribution
         > float(replay_epsilon()))
     {
-        constexpr sampler source_sampler(
-            coord::normalized,
-            address::clamp_to_edge,
-            filter::linear,
-            mip_filter::linear);
-        const half4 sampled = source_texture.sample(
-            source_sampler,
-            shadow_uv,
-            level(replay_lod(
-                half(uniforms.shadow_blur_radius))));
+        const half4 sampled = replay_shadow_sample(
+            source_uv,
+            primary_distance,
+            displacement,
+            source_texture,
+            uniforms);
         const half sample_alpha = max(
             sampled.a,
             replay_epsilon());
@@ -744,6 +760,7 @@ inline half4 replay_shadow_layer(
 struct ReplayProfileStages {
     half4 source;
     half4 face;
+    half4 shadow;
     half4 composite;
     half4 bleed;
     half4 holding;
@@ -760,6 +777,7 @@ inline ReplayProfileStages replay_profile_stages(
     ReplayProfileStages stages;
     stages.source = half4(0.0);
     stages.face = half4(0.0);
+    stages.shadow = half4(0.0);
     stages.composite = half4(0.0);
     stages.bleed = half4(0.0);
     stages.holding = half4(0.0);
@@ -821,6 +839,7 @@ inline ReplayProfileStages replay_profile_stages(
             source_texture,
             uniforms.glass)
         : half4(0.0);
+    stages.shadow = shadow_layer;
 
     half4 face = half4(0.0);
     if (coverage > half(0.0)) {
@@ -966,6 +985,61 @@ fragment half4 glass_fragment_profile_replay(
         uniforms,
         edr_scale);
     return stages.final_color;
+}
+
+fragment half4 glass_fragment_shadow_sample_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]])
+{
+    const int mode = int(uniforms.sdf.arg.z);
+    half distance = half(0.0);
+    float2 normal = float2(0.0);
+    half coverage = half(0.0);
+    if (mode >= 0) {
+        const half4 sdf = replay_compute_sdf(
+            input.sdf_uv,
+            mode,
+            uniforms.sdf);
+        distance = sdf.x;
+        normal = float2(sdf.yz);
+        const half feather = max(
+            fwidth(distance),
+            replay_epsilon());
+        coverage = sdf.w * half(saturate(
+            float(-distance / feather) + 0.5));
+    }
+    if (coverage >= half(1.0)) {
+        discard_fragment();
+        return half4(0.0);
+    }
+    const half2 displacement = half2(
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.xy)),
+        half(dot(
+            normal,
+            uniforms.glass.displacement_mat.zw)));
+    return replay_shadow_sample(
+        input.src_uv,
+        distance,
+        displacement,
+        source_texture,
+        uniforms.glass);
+}
+
+fragment half4 glass_fragment_shadow_layer_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    const ReplayProfileStages stages = replay_profile_stages(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale);
+    return stages.shadow;
 }
 
 fragment half4 glass_fragment_final_color_trace(
@@ -7876,6 +7950,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customProfileFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_profile_replay"),
+              let customShadowSampleTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_shadow_sample_trace"),
+              let customShadowLayerTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_shadow_layer_trace"),
               let customFinalColorTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_final_color_trace"),
@@ -8095,6 +8175,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
         )] = []
         var traceBuildRecords: [[String: Any]] = []
         for trace in [
+            (
+                name: "shadow-sample",
+                fragment: customShadowSampleTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
+            (
+                name: "shadow-layer",
+                fragment: customShadowLayerTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba16Float
+            ),
             (
                 name: "final-color",
                 fragment: customFinalColorTraceFragment,
@@ -9088,6 +9178,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
         queue: MTLCommandQueue,
         customPipeline: MTLRenderPipelineState,
         sampleTracePipeline: MTLRenderPipelineState?,
+        diagnosticTracePipelines: [(
+            name: String,
+            pipeline: MTLRenderPipelineState,
+            pixelFormat: MTLPixelFormat
+        )],
         capture: String,
         outputDirectory: URL
     ) -> [String: Any] {
@@ -9164,13 +9259,52 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             "source-\(pattern.rawValue)-sample",
                         outputDirectory: outputDirectory)
             }
+            let isProspective =
+                pattern == .prospectiveOpaqueSeeded
+                || pattern == .prospectivePremultipliedSeeded
+            if isProspective && source.mipmapLevelCount > 2 {
+                let detailedTraces = [
+                    ("edgeSampleTrace", "edge-sample"),
+                    ("shadowSampleTrace", "shadow-sample"),
+                    ("shadowLayerTrace", "shadow-layer"),
+                    ("bleedTrace", "bleed"),
+                    ("colorStagesATrace", "color-stages-a"),
+                    ("colorStagesBTrace", "color-stages-b"),
+                    ("finalColorTrace", "final-color"),
+                ]
+                for (field, traceName) in detailedTraces {
+                    guard let trace =
+                            diagnosticTracePipelines.first(where: {
+                                $0.name == traceName
+                            })
+                    else {
+                        record[field] = [
+                            "executed": false,
+                            "reason":
+                                "diagnostic trace pipeline is unavailable",
+                            "trace": traceName,
+                        ]
+                        continue
+                    }
+                    record[field] = replayGlassNumericTrace(
+                        pass: pass,
+                        queue: queue,
+                        replacement: trace.pipeline,
+                        pixelFormat: trace.pixelFormat,
+                        glassFragmentTextureOverrides: overrides,
+                        capture: capture,
+                        name:
+                            "source-\(pattern.rawValue)-\(traceName)",
+                        outputDirectory: outputDirectory)
+                }
+            }
             records.append(record)
             if candidate["executed"] as? Bool != true {
                 break
             }
         }
         return [
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "executed": true,
             "fragmentTextureIndex": 3,
             "prospectiveHoldout": [
@@ -9183,6 +9317,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ],
                 "opaqueSeed": "0x6a09e667f3bcc909",
                 "premultipliedSeed": "0xbb67ae8584caa73b",
+                "regularDiagnosticTraces": [
+                    "edge-sample",
+                    "shadow-sample",
+                    "shadow-layer",
+                    "bleed",
+                    "color-stages-a",
+                    "color-stages-b",
+                    "final-color",
+                ],
             ],
             "source": [
                 "pixelFormat": source.pixelFormat.rawValue,
@@ -10036,6 +10179,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                                 .first(where: {
                                     $0.name == "sample"
                                 })?.pipeline,
+                        diagnosticTracePipelines:
+                            pipelineSet.numericTraces,
                         capture: capture,
                         outputDirectory: outputDirectory)
                     independentGlassReplay[

@@ -3049,6 +3049,30 @@ centered 800-point, 1x, sRGB SDR scope. It does not replace the independent
 repeat, transition evidence, production Walle integration, or a physical 2x
 Retina capture.
 
+### Opened regular-source calibration
+
+Run `30682287580` opened the first prospective source holdout. Clear-light and
+clear-dark matched the frozen GLSL output byte for byte. Regular-light and
+regular-dark correctly failed closed: Apple's private fragment and the
+independently compiled Metal fragment remained byte-identical, but neither
+regular output matched the preregistered RX 9070 XT GLSL hash. For
+regular-light, the opaque field differed in 5,658 of 4,194,304 bytes over
+5,572 pixels and the premultiplied field differed in 12,232 bytes over 11,664
+pixels; both had a maximum channel delta of 10. The mismatch is confined to
+the regular edge/shadow support. Replaying the archived source-sample trace
+with Apple's full interpolants gives zero mismatched binary16 values for both
+fields, so the primary refraction sampler is not the failing boundary.
+
+Those two seeded fields are now calibration evidence, not an unseen
+validation set. Source-differential schema 3 therefore preserves additional
+regular-only traces for each opened field: raw edge sample, raw shadow sample,
+shadow layer, post-edge-bleed face, packed source/face stages, packed
+composite/holding stages, and final pre-blend color. Every trace is archived
+with byte count, FNV-1a, and an independently checked SHA-256. The frozen v1
+output comparison remains red; it is not weakened or silently rebased. A
+corrected portable model must freeze new source fields before Apple renders
+them, pass that fresh holdout, and then pass an unchanged repeat.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

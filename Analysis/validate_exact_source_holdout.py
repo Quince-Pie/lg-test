@@ -24,6 +24,15 @@ PROSPECTIVE_PATTERNS = {
     "prospective-opaque-seeded-v1",
     "prospective-premultiplied-seeded-v1",
 }
+REGULAR_DIAGNOSTIC_TRACES = {
+    "edgeSampleTrace": ("edge-sample", 115, 8),
+    "shadowSampleTrace": ("shadow-sample", 115, 8),
+    "shadowLayerTrace": ("shadow-layer", 115, 8),
+    "bleedTrace": ("bleed", 115, 8),
+    "colorStagesATrace": ("color-stages-a", 123, 16),
+    "colorStagesBTrace": ("color-stages-b", 123, 16),
+    "finalColorTrace": ("final-color", 115, 8),
+}
 MASK64 = (1 << 64) - 1
 
 
@@ -163,7 +172,7 @@ def validate(
         if isinstance(record, dict)
     }
     prospective = source_differential.get("prospectiveHoldout", {})
-    require(source_differential.get("schemaVersion") == 2, "schema differs")
+    require(source_differential.get("schemaVersion") == 3, "schema differs")
     require(source_differential.get("executed") is True, "probe did not execute")
     require(
         source_differential.get("fragmentTextureIndex") == 3,
@@ -178,7 +187,16 @@ def validate(
         set(prospective.get("patterns", [])) == PROSPECTIVE_PATTERNS,
         "runtime prospective inventory differs",
     )
+    require(
+        set(prospective.get("regularDiagnosticTraces", []))
+        == {
+            specification[0]
+            for specification in REGULAR_DIAGNOSTIC_TRACES.values()
+        },
+        "runtime regular diagnostic inventory differs",
+    )
 
+    diagnostic_hashes: dict[str, dict[str, str]] = {}
     for pattern, record in records.items():
         validate_exact_comparison(record, pattern=pattern)
         construction = record["construction"]
@@ -200,6 +218,37 @@ def validate(
                 record[implementation]["output"],
                 description=f"{pattern} {implementation} output",
             )
+        if material == "regular" and pattern in PROSPECTIVE_PATTERNS:
+            diagnostic_hashes[pattern] = {}
+            for field, (
+                trace_name,
+                pixel_format,
+                bytes_per_pixel,
+            ) in REGULAR_DIAGNOSTIC_TRACES.items():
+                trace = record.get(field, {})
+                require(
+                    trace.get("executed") is True,
+                    f"{pattern} {trace_name} diagnostic did not execute",
+                )
+                output = trace.get("output", {})
+                width = output.get("width")
+                height = output.get("height")
+                require(
+                    isinstance(width, int)
+                    and width > 0
+                    and isinstance(height, int)
+                    and height > 0
+                    and output.get("pixelFormat") == pixel_format
+                    and output.get("rawBytes")
+                    == width * height * bytes_per_pixel,
+                    f"{pattern} {trace_name} diagnostic metadata differs",
+                )
+                path = validate_record_file(
+                    capture_root,
+                    output,
+                    description=f"{pattern} {trace_name} diagnostic",
+                )
+                diagnostic_hashes[pattern][trace_name] = sha256_file(path)
 
     profile_name = f"{material}-{appearance}"
     prospective_results: dict[str, Any] = {}
@@ -257,6 +306,9 @@ def validate(
             "sourceMipSha256": source_hashes,
             "expectedOutputSha256": expected_output["sha256"],
             "outputSha256": output_hashes,
+            "regularDiagnosticTraceSha256": diagnostic_hashes.get(
+                pattern, {}
+            ),
             "exact": True,
         }
 
