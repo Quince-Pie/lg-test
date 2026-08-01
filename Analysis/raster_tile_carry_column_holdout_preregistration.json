@@ -1,0 +1,1177 @@
+{
+  "acceptance": {
+    "allDeclaredRecordsFinite": true,
+    "failureIsEvidence": true,
+    "productionShaderAuthorizedByThisCapture": false,
+    "recordMismatchCount": 0,
+    "tolerance": 0,
+    "unchangedBitIdenticalRepeatRequired": true,
+    "wordMismatchCount": 0
+  },
+  "appleOutputsObservedAtPreregistration": false,
+  "capture": {
+    "caseCount": 12,
+    "caseWordsSha256": "1d6f42d0dcdc5dc8e03741a39630baf22fd81fa3b5ebb038c798942deb44c7cc",
+    "cases": [
+      {
+        "height": 907,
+        "name": "sealed-column-a",
+        "originX": 157,
+        "originY": 53,
+        "role": "sealed-holdout",
+        "width": 659
+      },
+      {
+        "height": 613,
+        "name": "sealed-column-b",
+        "originX": 37,
+        "originY": 211,
+        "role": "sealed-holdout",
+        "width": 877
+      },
+      {
+        "height": 941,
+        "name": "sealed-column-c",
+        "originX": 311,
+        "originY": 29,
+        "role": "sealed-holdout",
+        "width": 523
+      },
+      {
+        "height": 449,
+        "name": "sealed-column-d",
+        "originX": 17,
+        "originY": 503,
+        "role": "sealed-holdout",
+        "width": 967
+      },
+      {
+        "height": 827,
+        "name": "sealed-column-e",
+        "originX": 577,
+        "originY": 109,
+        "role": "sealed-holdout",
+        "width": 389
+      },
+      {
+        "height": 197,
+        "name": "sealed-column-f",
+        "originX": 91,
+        "originY": 701,
+        "role": "sealed-holdout",
+        "width": 853
+      },
+      {
+        "height": 769,
+        "name": "sealed-column-g",
+        "originX": 227,
+        "originY": 143,
+        "role": "sealed-holdout",
+        "width": 617
+      },
+      {
+        "height": 557,
+        "name": "sealed-column-h",
+        "originX": 181,
+        "originY": 347,
+        "role": "sealed-holdout",
+        "width": 743
+      },
+      {
+        "height": 883,
+        "name": "sealed-column-i",
+        "originX": 33,
+        "originY": 79,
+        "role": "sealed-holdout",
+        "width": 919
+      },
+      {
+        "height": 983,
+        "name": "sealed-column-j",
+        "originX": 421,
+        "originY": 5,
+        "role": "sealed-holdout",
+        "width": 467
+      },
+      {
+        "height": 307,
+        "name": "sealed-column-k",
+        "originX": 7,
+        "originY": 601,
+        "role": "sealed-holdout",
+        "width": 991
+      },
+      {
+        "height": 647,
+        "name": "sealed-column-l",
+        "originX": 369,
+        "originY": 257,
+        "role": "sealed-holdout",
+        "width": 601
+      }
+    ],
+    "endpointCount": 36,
+    "endpointWordsSha256": "6209d710233d007f57900cd724758434a904919679af6c8c4b2c592072cd8d00",
+    "endpoints": [
+      {
+        "highBits": "0x3f700063",
+        "lowBits": "0x3780001b",
+        "name": "tiny-near-one-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3780001b",
+        "lowBits": "0x3f700063",
+        "name": "tiny-near-one-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f0abcdf",
+        "lowBits": "0x39813579",
+        "name": "small-wide-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x39813579",
+        "lowBits": "0x3f0abcdf",
+        "name": "small-wide-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f600071",
+        "lowBits": "0x3d800035",
+        "name": "sixteenth-wide-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3d800035",
+        "lowBits": "0x3f600071",
+        "name": "sixteenth-wide-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f00006b",
+        "lowBits": "0x3e000039",
+        "name": "eighth-half-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3e000039",
+        "lowBits": "0x3f00006b",
+        "name": "eighth-half-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f30007d",
+        "lowBits": "0x3e400041",
+        "name": "three-sixteenths-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3e400041",
+        "lowBits": "0x3f30007d",
+        "name": "three-sixteenths-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f000083",
+        "lowBits": "0x3e7fff91",
+        "name": "quarter-cross-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3e7fff91",
+        "lowBits": "0x3f000083",
+        "name": "quarter-cross-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f400089",
+        "lowBits": "0x3effff87",
+        "name": "half-cross-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3effff87",
+        "lowBits": "0x3f400089",
+        "name": "half-cross-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f700095",
+        "lowBits": "0x3f000047",
+        "name": "same-binade-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f000047",
+        "lowBits": "0x3f700095",
+        "name": "same-binade-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f0000a1",
+        "lowBits": "0x3800004d",
+        "name": "tiny-half-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3800004d",
+        "lowBits": "0x3f0000a1",
+        "name": "tiny-half-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f4000ad",
+        "lowBits": "0x3e800053",
+        "name": "quarter-three-quarter-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3e800053",
+        "lowBits": "0x3f4000ad",
+        "name": "quarter-three-quarter-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f555637",
+        "lowBits": "0x3eaaab01",
+        "name": "thirdish-wide-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3eaaab01",
+        "lowBits": "0x3f555637",
+        "name": "thirdish-wide-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f6679c3",
+        "lowBits": "0x3efa135b",
+        "name": "near-half-wide-c-forward",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3efa135b",
+        "lowBits": "0x3f6679c3",
+        "name": "near-half-wide-c-reverse",
+        "role": "carry-column-target"
+      },
+      {
+        "highBits": "0x3f200097",
+        "lowBits": "0x00000000",
+        "name": "zero-wide-c-forward",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0x00000000",
+        "lowBits": "0x3f200097",
+        "name": "zero-wide-c-reverse",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0x3f1000b3",
+        "lowBits": "0xbe800059",
+        "name": "negative-positive-c-forward",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0xbe800059",
+        "lowBits": "0x3f1000b3",
+        "name": "negative-positive-c-reverse",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0x3e8000bf",
+        "lowBits": "0xbd000061",
+        "name": "negative-small-c-forward",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0xbd000061",
+        "lowBits": "0x3e8000bf",
+        "name": "negative-small-c-reverse",
+        "role": "sign-domain"
+      },
+      {
+        "highBits": "0x3f600000",
+        "lowBits": "0x3e000000",
+        "name": "exact-control-c-forward",
+        "role": "arithmetic-control"
+      },
+      {
+        "highBits": "0x3e000000",
+        "lowBits": "0x3f600000",
+        "name": "exact-control-c-reverse",
+        "role": "arithmetic-control"
+      },
+      {
+        "highBits": "0x3f2001d1",
+        "lowBits": "0x3f200067",
+        "name": "close-positive-c-forward",
+        "role": "center-control"
+      },
+      {
+        "highBits": "0x3f200067",
+        "lowBits": "0x3f2001d1",
+        "name": "close-positive-c-reverse",
+        "role": "center-control"
+      },
+      {
+        "highBits": "0x400000cb",
+        "lowBits": "0x3f7fff73",
+        "name": "one-two-cross-c-forward",
+        "role": "binade-control"
+      },
+      {
+        "highBits": "0x3f7fff73",
+        "lowBits": "0x400000cb",
+        "name": "one-two-cross-c-reverse",
+        "role": "binade-control"
+      }
+    ],
+    "layout": {
+      "axisCount": 2,
+      "caseCount": 12,
+      "caseWordsSha256": "1d6f42d0dcdc5dc8e03741a39630baf22fd81fa3b5ebb038c798942deb44c7cc",
+      "edgeCount": 2,
+      "endpointCount": 36,
+      "endpointWordsSha256": "6209d710233d007f57900cd724758434a904919679af6c8c4b2c592072cd8d00",
+      "expectedRecordCount": 77760,
+      "primitiveCount": 2,
+      "pullCount": 16,
+      "rawBytes": 7962624,
+      "recordBytes": 72,
+      "recordComponentCount": 18,
+      "recordCount": 110592,
+      "sampleWordsSha256": "a353f703e97c7357e17674c7d2db4b01bd8aadf8a3cd5700324480176c97abec",
+      "samplesPerCase": [
+        202,
+        190,
+        194,
+        182,
+        158,
+        142,
+        178,
+        170,
+        230,
+        182,
+        170,
+        162
+      ],
+      "slotCount": 256,
+      "tileCount": 32
+    },
+    "ordering": "case-major,endpoint-major,axis-primitive-tile-edge-slot-major,component-minor",
+    "pullOffsetsByAxis": {
+      "x": [
+        [
+          0.0,
+          0.5
+        ],
+        [
+          0.0625,
+          0.5
+        ],
+        [
+          0.125,
+          0.5
+        ],
+        [
+          0.1875,
+          0.5
+        ],
+        [
+          0.25,
+          0.5
+        ],
+        [
+          0.3125,
+          0.5
+        ],
+        [
+          0.375,
+          0.5
+        ],
+        [
+          0.4375,
+          0.5
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5625,
+          0.5
+        ],
+        [
+          0.625,
+          0.5
+        ],
+        [
+          0.6875,
+          0.5
+        ],
+        [
+          0.75,
+          0.5
+        ],
+        [
+          0.8125,
+          0.5
+        ],
+        [
+          0.875,
+          0.5
+        ],
+        [
+          0.9375,
+          0.5
+        ]
+      ],
+      "y": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.0625
+        ],
+        [
+          0.5,
+          0.125
+        ],
+        [
+          0.5,
+          0.1875
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.5,
+          0.3125
+        ],
+        [
+          0.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.4375
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.5625
+        ],
+        [
+          0.5,
+          0.625
+        ],
+        [
+          0.5,
+          0.6875
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.5,
+          0.8125
+        ],
+        [
+          0.5,
+          0.875
+        ],
+        [
+          0.5,
+          0.9375
+        ]
+      ]
+    },
+    "recordComponents": [
+      "axis-pull@0/16",
+      "axis-pull@1/16",
+      "axis-pull@2/16",
+      "axis-pull@3/16",
+      "axis-pull@4/16",
+      "axis-pull@5/16",
+      "axis-pull@6/16",
+      "axis-pull@7/16",
+      "axis-pull@8/16",
+      "axis-pull@9/16",
+      "axis-pull@10/16",
+      "axis-pull@11/16",
+      "axis-pull@12/16",
+      "axis-pull@13/16",
+      "axis-pull@14/16",
+      "axis-pull@15/16",
+      "center",
+      "axis-derivative(center)"
+    ],
+    "rigVersion": "metal-raster-tile-selector-15.0.0",
+    "role": "prospective-carry-column-raster-coefficient-holdout",
+    "sampleWordsSha256": "a353f703e97c7357e17674c7d2db4b01bd8aadf8a3cd5700324480176c97abec",
+    "schemaVersion": 15
+  },
+  "createdAt": "2026-08-01T22:17:00Z",
+  "derivationEvidence": {
+    "openedSchemas": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "prospectiveAtDerivation": false,
+    "recordCount": 5020120,
+    "retrospectiveExactAfterSchema14Calibration": true,
+    "schema13CalibratedPredictionWordMismatchCount": 0,
+    "schema14CalibratedPredictionWordMismatchCount": 0,
+    "schema14RawSha256": "77ff17088f516b5f736c78c9fbef108af00b4d0ea29f5ff8b3a30a251761d9d7",
+    "schema14StickyPredictionWordMismatchCount": 1440,
+    "schema14WasFailedProspectiveEvidence": true,
+    "wordCount": 90362160,
+    "wordMismatchCount": 0
+  },
+  "model": {
+    "baseSourceSha256": "1874d8c452dce244bd8ae2cb7fbf05d0d454a815c0c37c285e1c377524c9369d",
+    "centerPrecisionBits": 36,
+    "coefficientBaseSourceSha256": "69b8546e26dbd17009260621b1a72610e9c25efee21e68022b07c9f00c599248",
+    "coefficientSourceSha256": "99c1725d9fdec0877b8510fb92aaa4a4ee398e61b0c579f0b1c1a0471520f1fe",
+    "constantPath": "universal factorized coefficient setup",
+    "iteratorBaseSourceSha256": "bf0b926e759f9234d924ccd82654abc07ad8bb9ff10c9058ba5a284886dd2429",
+    "iteratorSourceSha256": "366bb45f4ac36726725ba77ad6d266a89c7830968018f7f850607af96d7c29b9",
+    "parameters": {
+      "constant_first_bias": 15,
+      "reciprocal_bias": 20,
+      "reciprocal_truncation_bits": 19,
+      "slope_first_bias": 15,
+      "tile_bias": 10,
+      "tile_carry_mode": "top-columns",
+      "tile_propagated_column_count": 1,
+      "tile_sticky_carry_limit": 1,
+      "tile_truncation_bits": 19
+    },
+    "selectorTableSha256": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+    "sourceSha256": "70aab63ee68cda2659a258ac2b11a97488ad4dbf67cd38b618be2d8bbc30c43f",
+    "tileProduct": "individually low-19-bit-truncated binary partial products plus carry propagated through only discarded column 18, then bias 10 and 27-bit normalization",
+    "v2SourceSha256": "114f6aa52693307521b04a9b231541bda60ee88f8b33a60bfd4d52e45e208dd5",
+    "v4SourceSha256": "f1918f51974f486510ce5d68724cff015bb2e7f618a1153016d464cd9240a103",
+    "v6SourceSha256": "3c5bdc263ea97f56c6cb8f0c7eedff22e13cb9eca02eb7895c458b0370553420",
+    "v7SourceSha256": "2393fc0f190c2fa9daa3b19e2ecacde61815b1ce10432a0336e34303a2d29d25",
+    "v8SourceSha256": "2fe483b51c2c48cc599ea06b69a61cddd207c9191d8daee152cb59ea5cec5915"
+  },
+  "nextGate": "Require zero mismatched words on this first unseen schema-15 capture, then require an unchanged independent capture with the same raw SHA-256 before treating the raster-coefficient domain as prospectively validated.",
+  "predictedTruthStream": {
+    "archive": {
+      "bytes": 2691932,
+      "file": "raster_tile_carry_column_holdout_predictions.zlib",
+      "rawSha256": "e32f2ee9bf75ab82358ddaa055c2f9297ac1f381fc0d2b2f7442fe4981172c01",
+      "sha256": "7c090a4d3e57ddc7423870e7566c042e0d9025a49e71037cc7ba9919cfbe91fc"
+    },
+    "bytes": 5598720,
+    "caseRole": "sealed-holdout",
+    "cases": [
+      {
+        "bytes": 523584,
+        "name": "sealed-column-a",
+        "recordCount": 7272,
+        "sha256": "0b35d0d8daaedd23c28771801a4c6ab9e5d1bc4b01d7679c5cce55be3d08f429"
+      },
+      {
+        "bytes": 492480,
+        "name": "sealed-column-b",
+        "recordCount": 6840,
+        "sha256": "06ebbd9a43dfbf1f5b962fb4f08635e3b5045b71360c786782901cf2a22143a4"
+      },
+      {
+        "bytes": 502848,
+        "name": "sealed-column-c",
+        "recordCount": 6984,
+        "sha256": "82619eb7fbb70e1aa41302abdde467d5a430c81427261a3571b46cd00f912bad"
+      },
+      {
+        "bytes": 471744,
+        "name": "sealed-column-d",
+        "recordCount": 6552,
+        "sha256": "b7a674f00982561b93f69e66156fc32558bf80927cb5c707d8b3c64e38e7e454"
+      },
+      {
+        "bytes": 409536,
+        "name": "sealed-column-e",
+        "recordCount": 5688,
+        "sha256": "5abd3439d8dfa463540ad0ce4188f55b3099b8c3a8a676d0cba63be25fa56e4a"
+      },
+      {
+        "bytes": 368064,
+        "name": "sealed-column-f",
+        "recordCount": 5112,
+        "sha256": "5692d4177c129c5904d669938a273b67d95d0f9cf4cce03785f56b755c48e3bf"
+      },
+      {
+        "bytes": 461376,
+        "name": "sealed-column-g",
+        "recordCount": 6408,
+        "sha256": "fbfd9ffc2ae22f3679d6bc48b95e30462459ae2730059f1be406e98d79dc0f84"
+      },
+      {
+        "bytes": 440640,
+        "name": "sealed-column-h",
+        "recordCount": 6120,
+        "sha256": "fcdbe316d8c354f0a995bc8f9b0ac848e2fa7e97c1166e1e41a95c924509fc9a"
+      },
+      {
+        "bytes": 596160,
+        "name": "sealed-column-i",
+        "recordCount": 8280,
+        "sha256": "a03dec24ec1525043276b38687b985965473dcf27facd96778318b2004bf6af0"
+      },
+      {
+        "bytes": 471744,
+        "name": "sealed-column-j",
+        "recordCount": 6552,
+        "sha256": "d9fe7452e0e244384e9e30b3b7647d09339382a1181afe346cd322a68d406845"
+      },
+      {
+        "bytes": 440640,
+        "name": "sealed-column-k",
+        "recordCount": 6120,
+        "sha256": "7a6e9876423548d0ad81e7f0b2138234a8e480ac6077407b8461aa53487b5b37"
+      },
+      {
+        "bytes": 419904,
+        "name": "sealed-column-l",
+        "recordCount": 5832,
+        "sha256": "360b2f09d4dbf5d69d81e3add38a7c0ff0e3f604a598a854780f3ddad96e9e24"
+      }
+    ],
+    "endpointCount": 36,
+    "endpointRole": "all",
+    "ordering": "case-major,endpoint-major,sample-position-major,record-component-major",
+    "recordBytes": 72,
+    "recordComponentCount": 18,
+    "recordCount": 77760,
+    "sha256": "e32f2ee9bf75ab82358ddaa055c2f9297ac1f381fc0d2b2f7442fe4981172c01"
+  },
+  "preflightDiscrimination": {
+    "ablationDifferences": {
+      "aggregate-tile-product": {
+        "records": 52,
+        "words": 861
+      },
+      "constant-first-bias-14": {
+        "records": 225,
+        "words": 3751
+      },
+      "legacy-combined-product": {
+        "records": 2508,
+        "words": 41403
+      },
+      "partial-tile-product": {
+        "records": 101,
+        "words": 1693
+      },
+      "propagate-eight-columns": {
+        "records": 52,
+        "words": 861
+      },
+      "propagate-four-columns": {
+        "records": 52,
+        "words": 861
+      },
+      "propagate-three-columns": {
+        "records": 48,
+        "words": 793
+      },
+      "propagate-two-columns": {
+        "records": 32,
+        "words": 521
+      },
+      "reciprocal-bias-19": {
+        "records": 463,
+        "words": 3850
+      },
+      "reciprocal-bias-21": {
+        "records": 213,
+        "words": 3124
+      },
+      "reciprocal-truncation-18": {
+        "records": 2617,
+        "words": 31412
+      },
+      "reciprocal-truncation-20": {
+        "records": 4052,
+        "words": 58675
+      },
+      "slope-first-bias-14": {
+        "records": 313,
+        "words": 483
+      },
+      "sticky-one-carry": {
+        "records": 40,
+        "words": 657
+      },
+      "tile-bias-11": {
+        "records": 370,
+        "words": 6160
+      },
+      "tile-bias-9": {
+        "records": 391,
+        "words": 6469
+      },
+      "tile-truncation-18": {
+        "records": 1893,
+        "words": 31252
+      },
+      "tile-truncation-20": {
+        "records": 3921,
+        "words": 64696
+      }
+    },
+    "ablationEndpointWordDifferences": {
+      "aggregate-tile-product": {
+        "negative-small-c-forward": 34,
+        "negative-small-c-reverse": 68,
+        "quarter-three-quarter-c-forward": 86,
+        "same-binade-c-forward": 68,
+        "same-binade-c-reverse": 68,
+        "sixteenth-wide-c-forward": 34,
+        "sixteenth-wide-c-reverse": 68,
+        "small-wide-c-reverse": 102,
+        "three-sixteenths-c-forward": 27,
+        "tiny-half-c-reverse": 68,
+        "tiny-near-one-c-reverse": 136,
+        "zero-wide-c-reverse": 102
+      },
+      "constant-first-bias-14": {
+        "eighth-half-c-forward": 391,
+        "eighth-half-c-reverse": 340,
+        "half-cross-c-forward": 34,
+        "negative-small-c-forward": 226,
+        "negative-small-c-reverse": 218,
+        "one-two-cross-c-forward": 204,
+        "one-two-cross-c-reverse": 374,
+        "quarter-three-quarter-c-forward": 179,
+        "quarter-three-quarter-c-reverse": 34,
+        "same-binade-c-reverse": 34,
+        "thirdish-wide-c-forward": 323,
+        "thirdish-wide-c-reverse": 238,
+        "three-sixteenths-c-forward": 230,
+        "three-sixteenths-c-reverse": 187,
+        "tiny-near-one-c-forward": 382,
+        "tiny-near-one-c-reverse": 357
+      },
+      "legacy-combined-product": {
+        "eighth-half-c-forward": 1059,
+        "eighth-half-c-reverse": 1252,
+        "half-cross-c-forward": 306,
+        "half-cross-c-reverse": 136,
+        "near-half-wide-c-forward": 569,
+        "near-half-wide-c-reverse": 527,
+        "negative-positive-c-forward": 3857,
+        "negative-positive-c-reverse": 4213,
+        "negative-small-c-forward": 2129,
+        "negative-small-c-reverse": 3428,
+        "one-two-cross-c-forward": 561,
+        "one-two-cross-c-reverse": 612,
+        "quarter-cross-c-forward": 419,
+        "quarter-cross-c-reverse": 442,
+        "quarter-three-quarter-c-forward": 502,
+        "quarter-three-quarter-c-reverse": 867,
+        "same-binade-c-forward": 289,
+        "same-binade-c-reverse": 289,
+        "sixteenth-wide-c-forward": 1464,
+        "sixteenth-wide-c-reverse": 1887,
+        "small-wide-c-forward": 1357,
+        "small-wide-c-reverse": 1666,
+        "thirdish-wide-c-forward": 544,
+        "thirdish-wide-c-reverse": 952,
+        "three-sixteenths-c-forward": 606,
+        "three-sixteenths-c-reverse": 867,
+        "tiny-half-c-forward": 1380,
+        "tiny-half-c-reverse": 1768,
+        "tiny-near-one-c-forward": 1727,
+        "tiny-near-one-c-reverse": 2278,
+        "zero-wide-c-forward": 1429,
+        "zero-wide-c-reverse": 2021
+      },
+      "partial-tile-product": {
+        "eighth-half-c-forward": 68,
+        "eighth-half-c-reverse": 136,
+        "negative-positive-c-forward": 94,
+        "negative-positive-c-reverse": 86,
+        "negative-small-c-forward": 68,
+        "negative-small-c-reverse": 238,
+        "one-two-cross-c-forward": 34,
+        "one-two-cross-c-reverse": 68,
+        "quarter-cross-c-forward": 34,
+        "quarter-cross-c-reverse": 68,
+        "quarter-three-quarter-c-forward": 34,
+        "sixteenth-wide-c-forward": 68,
+        "sixteenth-wide-c-reverse": 102,
+        "small-wide-c-forward": 34,
+        "small-wide-c-reverse": 34,
+        "three-sixteenths-c-forward": 34,
+        "three-sixteenths-c-reverse": 102,
+        "tiny-half-c-reverse": 153,
+        "tiny-near-one-c-forward": 102,
+        "tiny-near-one-c-reverse": 102,
+        "zero-wide-c-forward": 34
+      },
+      "propagate-eight-columns": {
+        "negative-small-c-forward": 34,
+        "negative-small-c-reverse": 68,
+        "quarter-three-quarter-c-forward": 86,
+        "same-binade-c-forward": 68,
+        "same-binade-c-reverse": 68,
+        "sixteenth-wide-c-forward": 34,
+        "sixteenth-wide-c-reverse": 68,
+        "small-wide-c-reverse": 102,
+        "three-sixteenths-c-forward": 27,
+        "tiny-half-c-reverse": 68,
+        "tiny-near-one-c-reverse": 136,
+        "zero-wide-c-reverse": 102
+      },
+      "propagate-four-columns": {
+        "negative-small-c-forward": 34,
+        "negative-small-c-reverse": 68,
+        "quarter-three-quarter-c-forward": 86,
+        "same-binade-c-forward": 68,
+        "same-binade-c-reverse": 68,
+        "sixteenth-wide-c-forward": 34,
+        "sixteenth-wide-c-reverse": 68,
+        "small-wide-c-reverse": 102,
+        "three-sixteenths-c-forward": 27,
+        "tiny-half-c-reverse": 68,
+        "tiny-near-one-c-reverse": 136,
+        "zero-wide-c-reverse": 102
+      },
+      "propagate-three-columns": {
+        "negative-small-c-forward": 34,
+        "negative-small-c-reverse": 68,
+        "quarter-three-quarter-c-forward": 86,
+        "same-binade-c-forward": 68,
+        "same-binade-c-reverse": 68,
+        "sixteenth-wide-c-forward": 34,
+        "sixteenth-wide-c-reverse": 68,
+        "small-wide-c-reverse": 102,
+        "three-sixteenths-c-forward": 27,
+        "tiny-half-c-reverse": 68,
+        "tiny-near-one-c-reverse": 68,
+        "zero-wide-c-reverse": 102
+      },
+      "propagate-two-columns": {
+        "negative-small-c-forward": 34,
+        "negative-small-c-reverse": 68,
+        "quarter-three-quarter-c-forward": 18,
+        "sixteenth-wide-c-forward": 34,
+        "sixteenth-wide-c-reverse": 68,
+        "small-wide-c-reverse": 102,
+        "three-sixteenths-c-forward": 27,
+        "tiny-half-c-reverse": 68,
+        "zero-wide-c-reverse": 102
+      },
+      "reciprocal-bias-19": {
+        "eighth-half-c-forward": 102,
+        "eighth-half-c-reverse": 34,
+        "exact-control-c-forward": 131,
+        "exact-control-c-reverse": 105,
+        "half-cross-c-forward": 68,
+        "near-half-wide-c-forward": 34,
+        "near-half-wide-c-reverse": 102,
+        "negative-positive-c-forward": 459,
+        "negative-positive-c-reverse": 272,
+        "negative-small-c-reverse": 130,
+        "one-two-cross-c-forward": 34,
+        "one-two-cross-c-reverse": 34,
+        "quarter-cross-c-forward": 2,
+        "quarter-cross-c-reverse": 70,
+        "quarter-three-quarter-c-forward": 34,
+        "sixteenth-wide-c-forward": 68,
+        "sixteenth-wide-c-reverse": 136,
+        "small-wide-c-forward": 300,
+        "small-wide-c-reverse": 136,
+        "thirdish-wide-c-forward": 68,
+        "thirdish-wide-c-reverse": 102,
+        "three-sixteenths-c-forward": 163,
+        "three-sixteenths-c-reverse": 63,
+        "tiny-half-c-forward": 196,
+        "tiny-half-c-reverse": 357,
+        "tiny-near-one-c-forward": 136,
+        "tiny-near-one-c-reverse": 187,
+        "zero-wide-c-forward": 123,
+        "zero-wide-c-reverse": 204
+      },
+      "reciprocal-bias-21": {
+        "eighth-half-c-forward": 117,
+        "eighth-half-c-reverse": 68,
+        "exact-control-c-forward": 129,
+        "exact-control-c-reverse": 34,
+        "near-half-wide-c-reverse": 34,
+        "negative-positive-c-forward": 353,
+        "negative-positive-c-reverse": 262,
+        "negative-small-c-forward": 161,
+        "negative-small-c-reverse": 272,
+        "quarter-cross-c-forward": 68,
+        "quarter-cross-c-reverse": 102,
+        "same-binade-c-forward": 68,
+        "same-binade-c-reverse": 68,
+        "sixteenth-wide-c-forward": 68,
+        "sixteenth-wide-c-reverse": 136,
+        "small-wide-c-forward": 170,
+        "small-wide-c-reverse": 119,
+        "thirdish-wide-c-forward": 60,
+        "thirdish-wide-c-reverse": 24,
+        "tiny-half-c-forward": 63,
+        "tiny-half-c-reverse": 136,
+        "tiny-near-one-c-forward": 214,
+        "tiny-near-one-c-reverse": 136,
+        "zero-wide-c-forward": 75,
+        "zero-wide-c-reverse": 187
+      },
+      "reciprocal-truncation-18": {
+        "eighth-half-c-forward": 757,
+        "eighth-half-c-reverse": 936,
+        "exact-control-c-forward": 1140,
+        "exact-control-c-reverse": 1176,
+        "half-cross-c-forward": 170,
+        "half-cross-c-reverse": 34,
+        "near-half-wide-c-forward": 289,
+        "near-half-wide-c-reverse": 357,
+        "negative-positive-c-forward": 2474,
+        "negative-positive-c-reverse": 2275,
+        "negative-small-c-forward": 1417,
+        "negative-small-c-reverse": 1827,
+        "one-two-cross-c-forward": 408,
+        "one-two-cross-c-reverse": 272,
+        "quarter-cross-c-forward": 138,
+        "quarter-cross-c-reverse": 206,
+        "quarter-three-quarter-c-forward": 388,
+        "quarter-three-quarter-c-reverse": 395,
+        "same-binade-c-forward": 323,
+        "same-binade-c-reverse": 323,
+        "sixteenth-wide-c-forward": 1057,
+        "sixteenth-wide-c-reverse": 1513,
+        "small-wide-c-forward": 1304,
+        "small-wide-c-reverse": 1675,
+        "thirdish-wide-c-forward": 418,
+        "thirdish-wide-c-reverse": 537,
+        "three-sixteenths-c-forward": 578,
+        "three-sixteenths-c-reverse": 725,
+        "tiny-half-c-forward": 1321,
+        "tiny-half-c-reverse": 1530,
+        "tiny-near-one-c-forward": 1324,
+        "tiny-near-one-c-reverse": 1818,
+        "zero-wide-c-forward": 947,
+        "zero-wide-c-reverse": 1360
+      },
+      "reciprocal-truncation-20": {
+        "eighth-half-c-forward": 1192,
+        "eighth-half-c-reverse": 789,
+        "exact-control-c-forward": 1704,
+        "exact-control-c-reverse": 2091,
+        "half-cross-c-forward": 308,
+        "half-cross-c-reverse": 306,
+        "near-half-wide-c-forward": 637,
+        "near-half-wide-c-reverse": 374,
+        "negative-positive-c-forward": 4494,
+        "negative-positive-c-reverse": 4505,
+        "negative-small-c-forward": 2999,
+        "negative-small-c-reverse": 4320,
+        "one-two-cross-c-forward": 595,
+        "one-two-cross-c-reverse": 561,
+        "quarter-cross-c-forward": 532,
+        "quarter-cross-c-reverse": 697,
+        "quarter-three-quarter-c-forward": 658,
+        "quarter-three-quarter-c-reverse": 748,
+        "same-binade-c-forward": 483,
+        "same-binade-c-reverse": 476,
+        "sixteenth-wide-c-forward": 2012,
+        "sixteenth-wide-c-reverse": 3233,
+        "small-wide-c-forward": 2197,
+        "small-wide-c-reverse": 3142,
+        "thirdish-wide-c-forward": 722,
+        "thirdish-wide-c-reverse": 592,
+        "three-sixteenths-c-forward": 983,
+        "three-sixteenths-c-reverse": 1285,
+        "tiny-half-c-forward": 1339,
+        "tiny-half-c-reverse": 3060,
+        "tiny-near-one-c-forward": 2394,
+        "tiny-near-one-c-reverse": 3274,
+        "zero-wide-c-forward": 3049,
+        "zero-wide-c-reverse": 2924
+      },
+      "slope-first-bias-14": {
+        "eighth-half-c-forward": 34,
+        "eighth-half-c-reverse": 34,
+        "thirdish-wide-c-forward": 61,
+        "thirdish-wide-c-reverse": 61,
+        "tiny-near-one-c-forward": 147,
+        "tiny-near-one-c-reverse": 146
+      },
+      "sticky-one-carry": {
+        "negative-small-c-forward": 34,
+        "negative-small-c-reverse": 34,
+        "quarter-three-quarter-c-forward": 86,
+        "same-binade-c-forward": 68,
+        "same-binade-c-reverse": 68,
+        "sixteenth-wide-c-forward": 34,
+        "sixteenth-wide-c-reverse": 68,
+        "small-wide-c-reverse": 68,
+        "three-sixteenths-c-forward": 27,
+        "tiny-half-c-reverse": 68,
+        "zero-wide-c-reverse": 102
+      },
+      "tile-bias-11": {
+        "eighth-half-c-forward": 34,
+        "eighth-half-c-reverse": 202,
+        "half-cross-c-forward": 34,
+        "near-half-wide-c-forward": 68,
+        "near-half-wide-c-reverse": 34,
+        "negative-positive-c-forward": 288,
+        "negative-positive-c-reverse": 358,
+        "negative-small-c-forward": 290,
+        "negative-small-c-reverse": 510,
+        "one-two-cross-c-forward": 68,
+        "one-two-cross-c-reverse": 102,
+        "quarter-cross-c-reverse": 34,
+        "quarter-three-quarter-c-forward": 86,
+        "quarter-three-quarter-c-reverse": 68,
+        "same-binade-c-forward": 136,
+        "same-binade-c-reverse": 136,
+        "sixteenth-wide-c-forward": 193,
+        "sixteenth-wide-c-reverse": 204,
+        "small-wide-c-forward": 263,
+        "small-wide-c-reverse": 323,
+        "thirdish-wide-c-reverse": 68,
+        "three-sixteenths-c-forward": 61,
+        "tiny-half-c-forward": 425,
+        "tiny-half-c-reverse": 272,
+        "tiny-near-one-c-forward": 228,
+        "tiny-near-one-c-reverse": 561,
+        "zero-wide-c-forward": 451,
+        "zero-wide-c-reverse": 663
+      },
+      "tile-bias-9": {
+        "eighth-half-c-forward": 170,
+        "eighth-half-c-reverse": 238,
+        "half-cross-c-forward": 136,
+        "near-half-wide-c-reverse": 102,
+        "negative-positive-c-forward": 623,
+        "negative-positive-c-reverse": 724,
+        "negative-small-c-forward": 600,
+        "negative-small-c-reverse": 595,
+        "one-two-cross-c-forward": 68,
+        "one-two-cross-c-reverse": 136,
+        "quarter-cross-c-forward": 102,
+        "quarter-cross-c-reverse": 136,
+        "quarter-three-quarter-c-forward": 34,
+        "same-binade-c-forward": 102,
+        "same-binade-c-reverse": 102,
+        "sixteenth-wide-c-forward": 428,
+        "sixteenth-wide-c-reverse": 272,
+        "small-wide-c-forward": 61,
+        "small-wide-c-reverse": 102,
+        "three-sixteenths-c-forward": 93,
+        "three-sixteenths-c-reverse": 204,
+        "tiny-half-c-forward": 224,
+        "tiny-half-c-reverse": 323,
+        "tiny-near-one-c-forward": 204,
+        "tiny-near-one-c-reverse": 272,
+        "zero-wide-c-forward": 248,
+        "zero-wide-c-reverse": 170
+      },
+      "tile-truncation-18": {
+        "eighth-half-c-forward": 598,
+        "eighth-half-c-reverse": 964,
+        "half-cross-c-forward": 272,
+        "half-cross-c-reverse": 68,
+        "near-half-wide-c-forward": 195,
+        "near-half-wide-c-reverse": 204,
+        "negative-positive-c-forward": 2827,
+        "negative-positive-c-reverse": 2473,
+        "negative-small-c-forward": 2017,
+        "negative-small-c-reverse": 2431,
+        "one-two-cross-c-forward": 408,
+        "one-two-cross-c-reverse": 187,
+        "quarter-cross-c-forward": 204,
+        "quarter-cross-c-reverse": 374,
+        "quarter-three-quarter-c-forward": 381,
+        "quarter-three-quarter-c-reverse": 459,
+        "same-binade-c-forward": 306,
+        "same-binade-c-reverse": 306,
+        "sixteenth-wide-c-forward": 1031,
+        "sixteenth-wide-c-reverse": 1241,
+        "small-wide-c-forward": 1216,
+        "small-wide-c-reverse": 1479,
+        "thirdish-wide-c-forward": 578,
+        "thirdish-wide-c-reverse": 663,
+        "three-sixteenths-c-forward": 535,
+        "three-sixteenths-c-reverse": 612,
+        "tiny-half-c-forward": 1127,
+        "tiny-half-c-reverse": 2106,
+        "tiny-near-one-c-forward": 1790,
+        "tiny-near-one-c-reverse": 1751,
+        "zero-wide-c-forward": 1040,
+        "zero-wide-c-reverse": 1409
+      },
+      "tile-truncation-20": {
+        "eighth-half-c-forward": 1469,
+        "eighth-half-c-reverse": 1203,
+        "exact-control-c-forward": 1501,
+        "exact-control-c-reverse": 1938,
+        "half-cross-c-forward": 306,
+        "half-cross-c-reverse": 408,
+        "near-half-wide-c-forward": 544,
+        "near-half-wide-c-reverse": 544,
+        "negative-positive-c-forward": 4657,
+        "negative-positive-c-reverse": 5322,
+        "negative-small-c-forward": 2907,
+        "negative-small-c-reverse": 4732,
+        "one-two-cross-c-forward": 612,
+        "one-two-cross-c-reverse": 782,
+        "quarter-cross-c-forward": 555,
+        "quarter-cross-c-reverse": 476,
+        "quarter-three-quarter-c-forward": 1082,
+        "quarter-three-quarter-c-reverse": 748,
+        "same-binade-c-forward": 823,
+        "same-binade-c-reverse": 850,
+        "sixteenth-wide-c-forward": 2245,
+        "sixteenth-wide-c-reverse": 3077,
+        "small-wide-c-forward": 2268,
+        "small-wide-c-reverse": 3434,
+        "thirdish-wide-c-forward": 528,
+        "thirdish-wide-c-reverse": 782,
+        "three-sixteenths-c-forward": 1173,
+        "three-sixteenths-c-reverse": 1343,
+        "tiny-half-c-forward": 2193,
+        "tiny-half-c-reverse": 2975,
+        "tiny-near-one-c-forward": 2042,
+        "tiny-near-one-c-reverse": 4063,
+        "zero-wide-c-forward": 3544,
+        "zero-wide-c-reverse": 3570
+      }
+    },
+    "recordCount": 77760,
+    "wordCount": 1399680
+  },
+  "role": "prospective-carry-column-raster-coefficient-holdout",
+  "schemaVersion": 1,
+  "scientificQuestion": "Does the AGX tile multiplier propagate carry through exactly the highest discarded product column, while discarding carry from all lower columns, and predict every pull, center, and derivative word for wholly novel geometry and endpoint bits?"
+}

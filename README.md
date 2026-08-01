@@ -3650,6 +3650,42 @@ passing repeat validates only this raster-coefficient domain; it does not by
 itself authorize a production shader change or establish complete Liquid
 Glass image parity.
 
+Run `30717813012` opened schema 14 at commit `b72cfd3`. The build, capture, and
+structural validation succeeded. The 7,962,624-byte raw stream has SHA-256
+`77ff17088f516b5f736c78c9fbef108af00b4d0ea29f5ff8b3a30a251761d9d7`.
+The frozen sticky-one prediction was rejected on 1,440 of 1,469,664 words
+across 86 of 81,648 records. All 86 failures were explained by the two frozen
+no-carry and full-carry endpoints, but neither endpoint explained the corpus
+universally. The red workflow is a real prospective failure.
+
+Post-opening column analysis recovered one input-only multiplier rule. The
+tile product still sums individually low-19-bit-truncated binary partial
+products, but it propagates carry through only the highest discarded product
+column, column 18. Carries originating in columns 0 through 17 are discarded.
+Unlike sticky-one, the retained column-18 carry may be zero, one, or more than
+one. This rule has no capture or endpoint names and replays all 81,648 schema-14
+records, all 23,928 schema-13 records, and all 24,798 independently recovered
+schema-3/4 arithmetic setups with zero mismatches. Across the complete opened
+schemas 3 through 14 it replays 5,020,120 records and 90,362,160 words exactly.
+That exact result is retrospective calibration because schema 14 selected the
+rule.
+
+Schema 15 freezes the first prospective test of the carry-column rule. Twelve
+new geometries and 36 new directed endpoints declare 77,760 records and
+1,399,680 exact component words inside a 7,962,624-byte sparse raw buffer. The
+prediction stream has SHA-256
+`e32f2ee9bf75ab82358ddaa055c2f9297ac1f381fc0d2b2f7442fe4981172c01`;
+its 2,691,932-byte zlib archive has SHA-256
+`7c090a4d3e57ddc7423870e7566c042e0d9025a49e71037cc7ba9919cfbe91fc`;
+the preregistration has SHA-256
+`2d86735e0d6e6bdd4ba88cf766ef8489f1bb6496ad6e27a1e74e37c427d5cc5e`.
+Before any Apple output is observed, the matrix differs from sticky-one on 657
+words, two-column propagation on 521, full carry on 861, no carry on 1,693,
+and every declared neighboring precision or bias model on at least 483 words.
+Acceptance is zero mismatched words on the unseen capture followed by an
+unchanged bit-identical repeat. A failure remains evidence; a pass validates
+only this coefficient domain and still does not establish full image parity.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the frozen schema-14 sticky-carry holdout."""
+"""Tests for the frozen schema-15 carry-column holdout."""
 
 import hashlib
 import re
@@ -7,21 +7,21 @@ import unittest
 import zlib
 from pathlib import Path
 
+import raster_tile_carry_column_holdout_model as model
 import raster_tile_coefficient_model as coefficient_base
-import raster_tile_coefficient_model_v2 as coefficients
+import raster_tile_coefficient_model_v3 as coefficients
 import raster_tile_iterator_model as iterator_base
-import raster_tile_iterator_model_v2 as iterator
+import raster_tile_iterator_model_v3 as iterator
 import raster_tile_selector_model as v1
 import raster_tile_selector_model_v2 as v2
 import raster_tile_selector_model_v4 as v4
 import raster_tile_selector_model_v6 as v6
 import raster_tile_selector_model_v7 as v7
 import raster_tile_selector_model_v8 as v8
-import raster_tile_sticky_holdout_model as model
-import validate_raster_tile_sticky_holdout as capture
+import validate_raster_tile_carry_column_holdout as capture
 
 
-class RasterTileStickyHoldoutTests(unittest.TestCase):
+class RasterTileCarryColumnHoldoutTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.preregistration = capture.load_preregistration()
@@ -33,23 +33,23 @@ class RasterTileStickyHoldoutTests(unittest.TestCase):
         self.assertEqual(layout["caseCount"], 12)
         self.assertEqual(layout["endpointCount"], 36)
         self.assertEqual(layout["recordCount"], 110_592)
-        self.assertEqual(layout["expectedRecordCount"], 81_648)
+        self.assertEqual(layout["expectedRecordCount"], 77_760)
         self.assertEqual(layout["rawBytes"], 7_962_624)
         self.assertEqual(
             layout["samplesPerCase"],
-            [198, 178, 198, 210, 210, 118, 114, 234, 214, 186, 194, 214],
+            [202, 190, 194, 182, 158, 142, 178, 170, 230, 182, 170, 162],
         )
         self.assertEqual(
             layout["caseWordsSha256"],
-            "c68826a95949092fdf046acb12952ed9974f2a793c3902428cddd3f55ffffd27",
+            "1d6f42d0dcdc5dc8e03741a39630baf22fd81fa3b5ebb038c798942deb44c7cc",
         )
         self.assertEqual(
             layout["endpointWordsSha256"],
-            "72f88000946ea0736fd2423faa36b48e4060eebc2ce0ee71b7c87f27d99cbdc9",
+            "6209d710233d007f57900cd724758434a904919679af6c8c4b2c592072cd8d00",
         )
         self.assertEqual(
             layout["sampleWordsSha256"],
-            "6cf9594e97aa3050c45e3c645281646e8bbd9397f4d99f4fb789be9cfcf43889",
+            "a353f703e97c7357e17674c7d2db4b01bd8aadf8a3cd5700324480176c97abec",
         )
         self.assertFalse(
             self.preregistration["appleOutputsObservedAtPreregistration"]
@@ -93,11 +93,11 @@ class RasterTileStickyHoldoutTests(unittest.TestCase):
             "cases",
         ):
             self.assertEqual(expected[key], self.prediction[key])
-        self.assertEqual(self.prediction["recordCount"], 81_648)
-        self.assertEqual(self.prediction["bytes"], 5_878_656)
+        self.assertEqual(self.prediction["recordCount"], 77_760)
+        self.assertEqual(self.prediction["bytes"], 5_598_720)
         self.assertEqual(self.prediction["sha256"], model.PREDICTION_RAW_SHA256)
         archive = model.PREDICTION_ARCHIVE_PATH.read_bytes()
-        self.assertEqual(len(archive), 2_823_187)
+        self.assertEqual(len(archive), 2_691_932)
         self.assertEqual(
             hashlib.sha256(archive).hexdigest(),
             model.PREDICTION_ARCHIVE_SHA256,
@@ -106,25 +106,30 @@ class RasterTileStickyHoldoutTests(unittest.TestCase):
             hashlib.sha256(zlib.decompress(archive)).hexdigest(),
             model.PREDICTION_RAW_SHA256,
         )
+
     def test_holdout_distinguishes_every_declared_rival(self) -> None:
         self.assertEqual(
             self.preflight,
             self.preregistration["preflightDiscrimination"],
         )
-        self.assertEqual(self.preflight["recordCount"], 81_648)
-        self.assertEqual(self.preflight["wordCount"], 1_469_664)
+        self.assertEqual(self.preflight["recordCount"], 77_760)
+        self.assertEqual(self.preflight["wordCount"], 1_399_680)
         differences = self.preflight["ablationDifferences"]
         self.assertEqual(
+            differences["sticky-one-carry"],
+            {"records": 40, "words": 657},
+        )
+        self.assertEqual(
+            differences["propagate-two-columns"],
+            {"records": 32, "words": 521},
+        )
+        self.assertEqual(
             differences["aggregate-tile-product"],
-            {"records": 181, "words": 3_035},
+            {"records": 52, "words": 861},
         )
         self.assertEqual(
             differences["partial-tile-product"],
-            {"records": 277, "words": 4_627},
-        )
-        self.assertEqual(
-            differences["legacy-combined-product"],
-            {"records": 3_141, "words": 52_146},
+            {"records": 101, "words": 1_693},
         )
         self.assertTrue(
             all(
@@ -151,9 +156,12 @@ class RasterTileStickyHoldoutTests(unittest.TestCase):
             / "main.swift"
         ).read_text(encoding="utf-8")
         case_block = source.split(
-            "#elseif TILE_STICKY_COEFFICIENT_HOLDOUT\nprivate let cases = [",
+            "#if TILE_CARRY_COLUMN_HOLDOUT\nprivate let cases = [",
             maxsplit=1,
-        )[1].split("\n]\n#elseif TILE_COEFFICIENT_HOLDOUT", maxsplit=1)[0]
+        )[1].split(
+            "\n]\n#elseif TILE_STICKY_COEFFICIENT_HOLDOUT",
+            maxsplit=1,
+        )[0]
         swift_cases = [
             (
                 match.group("name"),
@@ -191,7 +199,7 @@ class RasterTileStickyHoldoutTests(unittest.TestCase):
             str(capture.layout_metadata()["endpointWordsSha256"]),
             str(capture.layout_metadata()["sampleWordsSha256"]),
             'layout["rawBytes"] as? Int == 7_962_624',
-            'layout["expectedRecordCount"] as? Int == 81_648',
+            'layout["expectedRecordCount"] as? Int == 77_760',
         ):
             self.assertIn(value, source)
 
