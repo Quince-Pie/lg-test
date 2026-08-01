@@ -3686,6 +3686,17 @@ Acceptance is zero mismatched words on the unseen capture followed by an
 unchanged bit-identical repeat. A failure remains evidence; a pass validates
 only this coefficient domain and still does not establish full image parity.
 
+Runs `30719075676` and `30719238560` passed the schema-15 gate and its
+unchanged independent repeat at commit `5cdcb618`. Each compared all 77,760
+records and all 1,399,680 component words with zero mismatches. In both runs,
+the compared Apple stream and frozen prediction had SHA-256
+`e32f2ee9bf75ab82358ddaa055c2f9297ac1f381fc0d2b2f7442fe4981172c01`,
+and the complete sparse raw capture had SHA-256
+`56dc5926cc4c906186ec07e8efa3f3602a19e855002665cbaba330d4b21b120a`.
+This prospectively validates the raster-coefficient domain for the recorded
+macOS/AGX scope. It does not waive the held-out Walle image and transition
+gates or authorize a quality-regressing production shader change.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
