@@ -3205,6 +3205,30 @@ one selector algorithm and every parameter are frozen in git. The historical
 schema-2 contract and preregistration remain versioned alongside schema 3 so
 the prior artifact stays independently reproducible.
 
+Run `30693002613` passed the schema-3 contract. Analysis excluded all four
+sealed geometries and recovered one input-only near-equal endpoint algorithm.
+The local slope is selected from the exact quotient's 27-bit lattice phase:
+phases in `[3/8,1/2)` or `[15/16,1)` use the established fixed partial-product
+coefficient; all other phases use one lattice step below the directed floor.
+Each tile constant is independently rounded to a 28-bit significand,
+nearest-even, and then rounded again to binary32, nearest-even. Pulls use a
+binary32 fused multiply-add, centers convert toward zero, and derivatives use
+the odd-minus-even member of the 2x2 quad. This single algorithm reproduced all
+751,450 accessible selector records and all 13,526,100 component words exactly;
+the paired subset contains 369,740 groups and 739,480 records. No candidate
+union, geometry name, screen coordinate, or captured value participates in the
+selector.
+
+`raster_tile_selector_holdout_preregistration.json` freezes that executable
+model before opening any held-out word. Its four case-major prediction streams
+contain 129,200 records and 9,302,400 bytes with combined SHA-256
+`08d2a53307e94ea4d390e61e313766f89ea98cad38a4fd2e1392bd6cf1de02c1`.
+The workflow now compares every predicted word against the four sealed Apple
+geometries with no tolerance and archives a mismatch-localizing report. Even a
+pass proves only this near-equal tile-selector domain; it does not authorize a
+production shader change before an unchanged repeat and fresh Walle image,
+scale, and dynamic-transition holdouts.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "role": "sealed-holdout-prediction",
+  "holdoutOpenedAtPreregistration": false,
+  "discoverySource": {
+    "runId": 30693002613,
+    "ciCommit": "ecfee9ced024b713ad84157c42e3f539e24d8ee4",
+    "manifestSha256": "628fa0e2348ef964bd2cc874fd2f0abbe4524e7f1ade2e28f357ba5dc2e8c773",
+    "rawSha256": "c260075c6865c8d95749a6b6db51e441a37f9e2448ca4a4c1cfea8baac78c99b",
+    "analysisReportSha256": "8270f5895d90c69b1d29404c4cb3266c5a7a9ddda31e0d9103dc192ae286a1c8",
+    "selectorEndpointCount": 190,
+    "openedRecordCount": 751450,
+    "openedWordCount": 13526100,
+    "pairedGroupCount": 369740,
+    "pairedRecordCount": 739480,
+    "pullMismatchRecordCount": 0,
+    "centerMismatchRecordCount": 0,
+    "derivativeMismatchRecordCount": 0
+  },
+  "model": {
+    "name": "agx-near-equal-tile-selector-v1",
+    "source": "Analysis/raster_tile_selector_model.py",
+    "sourceSha256": "1874d8c452dce244bd8ae2cb7fbf05d0d454a815c0c37c285e1c377524c9369d",
+    "selectorTable": "Analysis/raster_fractional_subpixel_resolved_selectors.zlib",
+    "selectorTableSha256": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+    "slopePrecisionBits": 27,
+    "fixedProductPhaseIntervals": [
+      "[3/8,1/2)",
+      "[15/16,1)"
+    ],
+    "lowerBranch": "one-27-bit-lattice-step-below-directed-floor",
+    "upperBranch": "fixed-partial-product-coefficient",
+    "constantPrecisionBits": 28,
+    "constantRounding": "nearest-even-then-binary32-nearest-even",
+    "pullRounding": "binary32-nearest-even-fused-multiply-add",
+    "centerRounding": "binary32-toward-zero",
+    "derivativeRule": "odd-minus-even-within-2x2-quad"
+  },
+  "domain": {
+    "caseRole": "sealed-holdout",
+    "cases": [
+      "sealed-prime-677x419",
+      "sealed-prime-823x557",
+      "sealed-tall-509x907",
+      "sealed-wide-911x509"
+    ],
+    "endpointRole": "selector-discovery",
+    "endpointCount": 190,
+    "ordering": "sealed-case-major,selector-endpoint-major,sample-position-major,record-component-major"
+  },
+  "predictedTruthStream": {
+    "dtype": "little-endian uint32 binary32 bits",
+    "recordComponentCount": 18,
+    "recordBytes": 72,
+    "recordCount": 129200,
+    "bytes": 9302400,
+    "sha256": "08d2a53307e94ea4d390e61e313766f89ea98cad38a4fd2e1392bd6cf1de02c1",
+    "cases": [
+      {
+        "name": "sealed-prime-677x419",
+        "recordCount": 26980,
+        "bytes": 1942560,
+        "sha256": "6503f0043946bca0b6414bc5f0bb3569e977ce48a30289796270e1fc36f2a634"
+      },
+      {
+        "name": "sealed-prime-823x557",
+        "recordCount": 33060,
+        "bytes": 2380320,
+        "sha256": "70aa35704c68efb27fa4cb3eaa483fd75e7aebde76c1a9821a4be33a231ea9e9"
+      },
+      {
+        "name": "sealed-tall-509x907",
+        "recordCount": 34580,
+        "bytes": 2489760,
+        "sha256": "50a08e2b896a0de2363588d08ed3646bcacc0783243d1217b10828e60bcf9db7"
+      },
+      {
+        "name": "sealed-wide-911x509",
+        "recordCount": 34580,
+        "bytes": 2489760,
+        "sha256": "f034cb160326ccc394ff7665261a317dc10bdf53dd1cc2eb88992c1080502598"
+      }
+    ]
+  },
+  "acceptance": {
+    "recordMismatchCount": 0,
+    "wordMismatchCount": 0,
+    "allCaseStreamsExact": true,
+    "noTolerance": true,
+    "noAdaptiveFit": true
+  },
+  "nonClaims": [
+    "This prediction covers only schema-3 selector-discovery endpoints.",
+    "A pass does not establish arbitrary geometry, endpoint, scale, or clipping parity.",
+    "A pass does not authorize a production shader change without fresh Walle image holdouts.",
+    "A pass does not replace an unchanged repeat or dynamic-transition evidence."
+  ]
+}

@@ -6,6 +6,11 @@ on:
     paths:
       - .github/workflows/raster-tile-numerator.yml
       - Analysis/raster_tile_numerator_preregistration.json
+      - Analysis/raster_tile_selector_holdout_preregistration.json
+      - Analysis/raster_tile_selector_model.py
+      - Analysis/open_raster_tile_selector_holdout.py
+      - Analysis/raster_fractional_subpixel_resolved_selectors.zlib
+      - Analysis/test_raster_tile_selector_model.py
       - Analysis/test_validate_raster_tile_numerator.py
       - Analysis/validate_raster_tile_numerator.py
       - Sources/GlassRasterTileNumerator/**
@@ -34,6 +39,8 @@ jobs:
         run: |
           python3 -m unittest discover -s Analysis \
             -p 'test_validate_raster_tile_numerator.py' -v
+          python3 -m unittest discover -s Analysis \
+            -p 'test_raster_tile_selector_model.py' -v
 
       - name: Build dense tile-selector probe
         id: build
@@ -65,6 +72,15 @@ jobs:
             raster-tile-numerator \
             --output raster-tile-numerator/validation.json
 
+      - name: Open frozen tile-selector holdout
+        id: holdout
+        if: steps.validate.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/open_raster_tile_selector_holdout.py \
+            raster-tile-numerator \
+            --output raster-tile-numerator/tile-selector-holdout-opening.json
+
       - name: Upload dense tile-selector evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -80,6 +96,8 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test "${{ steps.validate.outcome }}" = success
+          test "${{ steps.holdout.outcome }}" = success
           test -s raster-tile-numerator/manifest.json
           test -s raster-tile-numerator/validation.json
+          test -s raster-tile-numerator/tile-selector-holdout-opening.json
           test -s raster-tile-numerator/raster-tile-numerator.raw
