@@ -3290,6 +3290,30 @@ read only the four discovery cases; one executable input-only model and every
 sealed prediction byte must be committed before any sealed record is opened.
 An unchanged repeat remains mandatory.
 
+Run `30696459882` produced the frozen 29,933,568-byte schema-5 stream with
+SHA-256
+`3cd6a35830a3d71af0252b87bce94e97917fdd68234805216d432b0bedbc1cc3`.
+The discovery accessor read exactly 35,168 records from the four declared
+discovery geometries and zero records from the 24 sealed geometries. A single
+input-only v3 model reproduces all 633,024 readable words exactly. Zero-based
+ramps use the established two-stage determinant coefficient rounded to
+binary32 and a physical primitive-anchor tile constant with two exact binary
+phase selectors. Translated ramps use the same rounded coefficient, the
+native-significand reverse selector isolated by the matched-delta pairs, and
+the established 28-bit exact tile constant.
+
+Before opening any sealed word, the complete 196,672-record prediction stream
+was materialized and committed as
+`raster_tile_translation_v3_sealed_predictions.zlib`. Its 14,160,384 raw bytes
+have SHA-256
+`95e16a3c1b7ddf3d5a2a760eea3ae9c31aadf81a3c37eda35d76e2cee819bdc4`;
+the 1,154,510-byte zlib archive has SHA-256
+`a16090cb2eab92bf51c09b73fbef0d2319560745765f4bfbf317c57cdf2c1745`.
+The preregistration freezes the model source, both inherited model sources,
+the selector table, every per-case prediction hash, and the archive itself.
+This discovery fit is not a holdout result and does not authorize a production
+shader change.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

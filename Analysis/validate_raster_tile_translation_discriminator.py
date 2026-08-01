@@ -39,6 +39,9 @@ PREREGISTRATION_PATH = Path(__file__).with_name(
     "raster_tile_translation_discriminator_preregistration.json"
 )
 PREREGISTRATION_SHA256 = (
+    "5a9a44dd433ad610e01ee48dfac8e63be9f41dfb2ba7aa84a2dd52373263d756"
+)
+CAPTURE_PREREGISTRATION_SHA256 = (
     "46c4eb90a2aa3bc7630cedf36ab935f5937e3262cdfa408c4b4d904b2fc5eabd"
 )
 
@@ -302,7 +305,8 @@ def validate(root: Path) -> JsonObject:
         or evidence.get("role") != ROLE
         or evidence.get("preregistrationFile")
         != "Analysis/raster_tile_translation_discriminator_preregistration.json"
-        or evidence.get("preregistrationSha256") != PREREGISTRATION_SHA256
+        or evidence.get("preregistrationSha256")
+        not in {CAPTURE_PREREGISTRATION_SHA256, PREREGISTRATION_SHA256}
         or evidence.get("layout") != layout_metadata()
         or evidence.get("cases") != [asdict(value) for value in CASES]
         or evidence.get("endpoints") != endpoint_metadata()
@@ -375,6 +379,7 @@ def validate(root: Path) -> JsonObject:
         "sealedHoldoutOpened": False,
         "productionShaderAuthorized": False,
         "preregistrationSha256": sha256_path(PREREGISTRATION_PATH),
+        "capturePreregistrationSha256": evidence["preregistrationSha256"],
         "nextGate": preregistration["nextGate"],
     }
 

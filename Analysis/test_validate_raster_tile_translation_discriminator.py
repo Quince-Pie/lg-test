@@ -8,6 +8,10 @@ import unittest
 from dataclasses import asdict
 from pathlib import Path
 
+import analyze_raster_tile_translation_discriminator as analysis
+import raster_tile_selector_model as v1
+import raster_tile_selector_model_v2 as v2
+import raster_tile_selector_model_v3 as model
 import validate_raster_tile_translation_discriminator as capture
 
 
@@ -15,6 +19,7 @@ class RasterTileTranslationDiscriminatorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.preregistration = capture.load_preregistration()
+        cls.prediction_metadata = model.prediction_metadata()
 
     def test_layout_is_frozen_before_capture(self) -> None:
         layout = capture.layout_metadata()
@@ -83,6 +88,56 @@ class RasterTileTranslationDiscriminatorTests(unittest.TestCase):
                 "sealedPredictionsMustBeCommittedBeforeOpening"
             ]
         )
+
+    def test_discovery_accessor_rejects_a_sealed_record_before_io(self) -> None:
+        case_index = next(
+            index
+            for index, capture_case in enumerate(capture.CASES)
+            if capture_case.role == "sealed-holdout"
+        )
+        sample = capture.sample_positions(capture.CASES[case_index])[0]
+        records = analysis.DiscoveryRecords(Path("must-not-be-opened.raw"))
+        with self.assertRaises(PermissionError):
+            records.record(case_index, 0, sample)
+        self.assertEqual(records.discovery_reads, 0)
+        self.assertEqual(records.sealed_reads, 1)
+
+    def test_input_only_model_and_every_prediction_byte_are_frozen(self) -> None:
+        frozen = self.preregistration["model"]
+        prediction = self.preregistration["predictedTruthStream"]
+        self.assertEqual(frozen["sourceSha256"], capture.sha256_path(Path(model.__file__)))
+        self.assertEqual(frozen["baseSourceSha256"], capture.sha256_path(Path(v1.__file__)))
+        self.assertEqual(frozen["v2SourceSha256"], capture.sha256_path(Path(v2.__file__)))
+        self.assertTrue(frozen["inputOnly"])
+        self.assertFalse(frozen["usesCaseNames"])
+        self.assertFalse(frozen["usesCapturedValues"])
+        self.assertEqual(self.prediction_metadata["recordCount"], 196_672)
+        self.assertEqual(self.prediction_metadata["bytes"], 14_160_384)
+        self.assertEqual(
+            self.prediction_metadata["sha256"],
+            "95e16a3c1b7ddf3d5a2a760eea3ae9c31aadf81a3c37eda35d76e2cee819bdc4",
+        )
+        for key in (
+            "ordering",
+            "caseRole",
+            "endpointRole",
+            "endpointCount",
+            "recordComponentCount",
+            "recordBytes",
+            "recordCount",
+            "bytes",
+            "sha256",
+            "cases",
+        ):
+            self.assertEqual(prediction[key], self.prediction_metadata[key])
+        raw = model.read_prediction_archive()
+        self.assertEqual(len(raw), self.prediction_metadata["bytes"])
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), prediction["sha256"])
+
+    def test_model_has_no_geometry_name_selector(self) -> None:
+        source = Path(model.__file__).read_text(encoding="utf-8")
+        for capture_case in capture.CASES:
+            self.assertNotIn(f'"{capture_case.name}"', source)
 
     def test_swift_probe_embeds_the_frozen_contract(self) -> None:
         source = (

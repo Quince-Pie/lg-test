@@ -66,7 +66,7 @@ private let role = "prospective-zero-based-translated-matched-delta-discriminato
 private let preregistrationFile =
     "Analysis/raster_tile_translation_discriminator_preregistration.json"
 private let preregistrationSha256 =
-    "46c4eb90a2aa3bc7630cedf36ab935f5937e3262cdfa408c4b4d904b2fc5eabd"
+    "5a9a44dd433ad610e01ee48dfac8e63be9f41dfb2ba7aa84a2dd52373263d756"
 #elseif TILE_PHASE_HOLDOUT
 private let schemaVersion = 4
 private let rigVersion = "metal-raster-tile-selector-4.0.0"

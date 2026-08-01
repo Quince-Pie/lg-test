@@ -6,6 +6,13 @@ on:
     paths:
       - .github/workflows/raster-tile-translation-discriminator.yml
       - Analysis/raster_tile_translation_discriminator_preregistration.json
+      - Analysis/analyze_raster_tile_translation_discriminator.py
+      - Analysis/open_raster_tile_translation_discriminator.py
+      - Analysis/raster_tile_selector_model.py
+      - Analysis/raster_tile_selector_model_v2.py
+      - Analysis/raster_tile_selector_model_v3.py
+      - Analysis/raster_tile_translation_discovery_analysis_30696459882.json
+      - Analysis/raster_tile_translation_v3_sealed_predictions.zlib
       - Analysis/test_validate_raster_tile_translation_discriminator.py
       - Analysis/validate_raster_tile_numerator.py
       - Analysis/validate_raster_tile_translation_discriminator.py
@@ -66,6 +73,24 @@ jobs:
             raster-tile-translation \
             --output raster-tile-translation/validation.json
 
+      - name: Verify discovery-only fitted model
+        id: discovery
+        if: steps.validate.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/analyze_raster_tile_translation_discriminator.py \
+            raster-tile-translation \
+            --output raster-tile-translation/discovery-analysis.json
+
+      - name: Open committed sealed predictions
+        id: opening
+        if: steps.discovery.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/open_raster_tile_translation_discriminator.py \
+            raster-tile-translation \
+            --output raster-tile-translation/holdout-opening.json
+
       - name: Upload matched-delta evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -81,6 +106,10 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           test "${{ steps.validate.outcome }}" = success
+          test "${{ steps.discovery.outcome }}" = success
+          test "${{ steps.opening.outcome }}" = success
           test -s raster-tile-translation/manifest.json
           test -s raster-tile-translation/validation.json
+          test -s raster-tile-translation/discovery-analysis.json
+          test -s raster-tile-translation/holdout-opening.json
           test -s raster-tile-translation/raster-tile-numerator.raw

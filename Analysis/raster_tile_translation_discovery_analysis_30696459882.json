@@ -1,0 +1,37 @@
+{
+  "componentMismatchCounts": {},
+  "constantSelectorGroupCounts": {
+    "translated-p28-exact-nearest": 15264,
+    "zero-anchor-rounded-slope-fma": 6,
+    "zero-anchor-toward-zero-neighbor-fma": 3,
+    "zero-physical-composite": 2535
+  },
+  "constantSelectorRecordCounts": {
+    "translated-p28-exact-nearest": 30144,
+    "zero-anchor-rounded-slope-fma": 12,
+    "zero-anchor-toward-zero-neighbor-fma": 6,
+    "zero-physical-composite": 5006
+  },
+  "discoveryCaseCount": 4,
+  "discoveryRecordReadCount": 35168,
+  "exact": true,
+  "mismatchExamples": [],
+  "mismatchedRecordCount": 0,
+  "mismatchedWordCount": 0,
+  "nextGate": "Commit this executable model, its compressed sealed prediction bytes, and all prediction hashes before opening any sealed record.",
+  "productionShaderAuthorized": false,
+  "rasterTileTranslationDiscoveryAnalysisSchemaVersion": 1,
+  "recordCount": 35168,
+  "sealedCaseCount": 24,
+  "sealedHoldoutOpened": false,
+  "sealedRecordReadCount": 0,
+  "slopeSelectorRecordCounts": {
+    "determinant-rounded-f32": 33942,
+    "translated-reverse-away": 1226
+  },
+  "source": "artifacts/gh-run-30696459882/liquid-glass-raster-tile-translation-30696459882",
+  "sourceCiCommit": "1158feb31056c21721f08532c5e3de63b71b5cc2",
+  "sourceManifestSha256": "b21324067d1522bca72e51f0fee9fcad59b1695abe38f01b8bc0697ca4985306",
+  "sourceRawManifestSha256": "3cd6a35830a3d71af0252b87bce94e97917fdd68234805216d432b0bedbc1cc3",
+  "wordCount": 633024
+}
