@@ -4048,6 +4048,70 @@ allocation and four-pixel-origin laws. The newly observed producer mesh is
 explicitly discovery data and requires its own later unseen holdout before it
 can authorize production integration.
 
+Run `30748787009` did not pass that frozen gate. This is a useful prospective
+failure, not a parity result: the centered-small, integer-offset,
+fractional-center, and window-clipped jobs all retained complete metadata for
+14 states, but the original validator only admitted four- and sixteen-vertex
+producer meshes. The new jobs also selected 24- and 36-vertex independent-quad
+topologies, so three CI jobs stopped in the analyzer after capture; the
+fractional job reached the gate and failed the frozen geometry-specific law.
+`validate_dynamic_allocation_holdout.py` now validates any positive multiple
+of four vertices against the exact independent-quad index topology. Replaying
+all four timelines locally preserves the prospective failure and makes the
+previously inaccessible states analyzable; it does not retroactively turn the
+run into a pass.
+
+The separate post-opening audit and its immutable input hashes are recorded in
+`Analysis/analyze_dynamic_allocation_holdout.py` and
+`Analysis/dynamic_allocation_geometry_holdout_result.json`. Across 56 states,
+the runtime scale `s = 1 - k/2` is exact in 56 of 56 comparisons and the
+primary producer quad obeys `source = float32(position * q)`, with
+`q = 2/(2-k)`, in all 448 binary32 component comparisons. That identity is
+specific to the primary quad: the clipping and perimeter quads have 536
+mismatches among 1,200 corresponding component comparisons.
+
+The failed run also exposes the missing presentation transform exactly. For
+every non-endpoint state, independently of the requested target offset,
+
+```text
+carrierPosition = (windowExtent - requestedExtent*k) / 2
+carrierExtent   = requestedExtent*k
+```
+
+At `k = 1`, the topology snaps to
+`carrierPosition = round(targetCenter - requestedExtent/2)` and
+`carrierExtent = requestedExtent`. These laws match all 224 captured carrier
+position and extent components exactly. Allocation uses that carrier position
+with the full requested extent, not the animated carrier extent. After
+clipping the resulting interval to the window and applying the Metal Y
+inversion, the destination law is
+
+```text
+destinationExtent = alignUp(s*clippedUpper - O, 64)
+```
+
+where `O = C + B` is the observed effective origin. It matches all 112
+destination components exactly. This closes the destination-size arithmetic
+given `O`; it does not independently predict `O`.
+
+The narrow retrospective origin candidate
+
+```text
+Ox = alignDown(s*clippedLowerX - roundNearestAway(k), 4)
+Oy = alignDown(s*clippedLowerY - 1, 4)
+```
+
+matches 110 of 112 components. Its two four-pixel residuals are the Y
+component of `circle-512-offset` sample 8 and the X component of
+`circle-640-fractional` sample 15. Among the 36 states that select a single
+producer quad, a current asymmetric edge candidate matches 140 of 144 primary
+position bounds; all four residuals are one X pixel. The complete corpus also
+selects 12 sixteen-vertex, two 24-vertex, and six 36-vertex states. Therefore
+the effective-origin phase, producer topology selector, remaining primary X
+edges, and all auxiliary-quad bounds are still unresolved and require a newly
+frozen unseen holdout. This retrospective audit does not authorize a Walle
+shader change or a full-parity claim.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does

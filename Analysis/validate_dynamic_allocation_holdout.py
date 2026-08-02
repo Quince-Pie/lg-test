@@ -326,6 +326,14 @@ def no_raw_stage_dumps(value: object) -> bool:
     return True
 
 
+def independent_quad_indices(vertex_count: int) -> tuple[int, ...]:
+    if vertex_count < 4 or vertex_count % 4 != 0:
+        raise ValueError(f"unexpected producer vertex count: {vertex_count}")
+    return tuple(
+        base + index for base in range(0, vertex_count, 4) for index in QUAD_INDICES
+    )
+
+
 def producer_geometry(
     render: Mapping[str, Any],
     *,
@@ -406,11 +414,7 @@ def producer_geometry(
         raise ValueError("producer index payload is truncated")
     indices = struct.unpack_from(f"<{index_count}H", index_bytes)
     vertex_count = max(indices) + 1
-    if vertex_count not in {4, 16}:
-        raise ValueError(f"unexpected producer vertex count: {vertex_count}")
-    expected_indices = tuple(
-        base + index for base in range(0, vertex_count, 4) for index in QUAD_INDICES
-    )
+    expected_indices = independent_quad_indices(vertex_count)
     if indices != expected_indices:
         raise ValueError("producer quad topology differs")
     vertex_bytes = payload(vertex_snapshot)
@@ -483,6 +487,33 @@ def producer_geometry(
             )
     if source_scale_mismatches:
         raise ValueError("producer source-coordinate q law differs")
+    all_source_scale_mismatches = 0
+    for vertex in vertices:
+        for axis in range(2):
+            predicted = float32(vertex[axis] * inverse_scale)
+            all_source_scale_mismatches += float32_bits(predicted) != float32_bits(
+                vertex[4 + axis]
+            )
+
+    quad_bounds = []
+    for base in range(0, vertex_count, 4):
+        quad = vertices[base : base + 4]
+        quad_bounds.append(
+            {
+                "position": [
+                    min(vertex[0] for vertex in quad),
+                    min(vertex[1] for vertex in quad),
+                    max(vertex[0] for vertex in quad),
+                    max(vertex[1] for vertex in quad),
+                ],
+                "source": [
+                    min(vertex[4] for vertex in quad),
+                    min(vertex[5] for vertex in quad),
+                    max(vertex[4] for vertex in quad),
+                    max(vertex[5] for vertex in quad),
+                ],
+            }
+        )
 
     producer_input = single(
         [
@@ -513,10 +544,13 @@ def producer_geometry(
         "vertexPayloadSHA256": hashlib.sha256(vertex_bytes).hexdigest(),
         "mvpPayloadSHA256": hashlib.sha256(mvp_bytes).hexdigest(),
         "primaryVertices": [list(vertex) for vertex in vertices[:4]],
+        "quadBounds": quad_bounds,
         "viewport": [0, 0, source_width, source_height],
         "scissor": scissor_values,
         "sourceScaleComponentCount": 8,
         "sourceScaleMismatchedComponents": source_scale_mismatches,
+        "allSourceScaleComponentCount": 2 * vertex_count,
+        "allSourceScaleMismatchedComponents": all_source_scale_mismatches,
         "inputTexture": {
             "width": input_texture.get("width"),
             "height": input_texture.get("height"),

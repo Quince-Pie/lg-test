@@ -93,6 +93,16 @@ class PolicyTests(unittest.TestCase):
 
 
 class MetadataTests(unittest.TestCase):
+    def test_six_quad_producer_topology_is_supported(self) -> None:
+        indices = holdout.independent_quad_indices(24)
+        self.assertEqual(len(indices), 36)
+        self.assertEqual(indices[:6], holdout.QUAD_INDICES)
+        self.assertEqual(indices[-6:], tuple(20 + value for value in holdout.QUAD_INDICES))
+
+    def test_partial_quad_producer_topology_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "vertex count"):
+            holdout.independent_quad_indices(22)
+
     def test_raw_stage_file_is_rejected_recursively(self) -> None:
         self.assertTrue(
             holdout.no_raw_stage_dumps({"snapshots": [{"width": 64, "height": 64}]})
