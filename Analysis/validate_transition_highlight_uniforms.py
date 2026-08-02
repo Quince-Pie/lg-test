@@ -353,12 +353,13 @@ def validate_highlight_trace(
             candidates = pipeline.get("candidates")
             if (
                 pipeline.get("executed") is not True
+                or pipeline.get("selectedLabel")
+                != "lg.final-highlight-interpolant-custom-stage-in-vertex"
                 or not isinstance(candidates, list)
                 or not candidates
-                or not any(
-                    isinstance(candidate, Mapping) and candidate.get("built") is True
-                    for candidate in candidates
-                )
+                or not isinstance(candidates[0], Mapping)
+                or candidates[0].get("name") != "custom-stage-in-vertex"
+                or candidates[0].get("built") is not True
             ):
                 raise ValueError("dynamic interpolant pipeline differs")
             tomography = mapping(

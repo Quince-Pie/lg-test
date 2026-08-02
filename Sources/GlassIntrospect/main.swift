@@ -9720,8 +9720,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     descriptor: MTLRenderPipelineDescriptor
                 )] = []
                 for (name, vertex) in [
-                    ("captured-vertex", nil),
                     ("custom-stage-in-vertex", customVertex),
+                    ("captured-vertex", nil),
                 ] as [(String, MTLFunction?)] {
                     guard let descriptor = capturedDescriptor.copy()
                             as? MTLRenderPipelineDescriptor
@@ -10223,13 +10223,17 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 return record
             }
             : []
+        let tomographyExecuted = !includeDiagnostics || (
+            tomographyCases.count == tomographyInterventions.count
+            && tomographyCases.allSatisfy {
+                $0["executed"] as? Bool == true
+            }
+        )
         let diagnosticsExecuted = !includeDiagnostics || (
             exactKeyHalf?["executed"] as? Bool == true
             && exactFillHalf?["executed"] as? Bool == true
             && exactInterpolant?["executed"] as? Bool == true
-            && tomographyCases.allSatisfy {
-            $0["executed"] as? Bool == true
-            }
+            && tomographyExecuted
         )
         let compositorExecuted =
             compositorTrace?["executed"] as? Bool ?? true
@@ -10298,7 +10302,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             result["exactFillHalfAlpha"] = exactFillHalf
             result["stageTomography"] = [
                 "schemaVersion": 1,
-                "executed": diagnosticsExecuted,
+                "executed": tomographyExecuted,
                 "capturedAppleFunctionUnmodified": true,
                 "caseCount": tomographyCases.count,
                 "cases": tomographyCases,
