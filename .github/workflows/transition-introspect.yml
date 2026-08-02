@@ -13,6 +13,7 @@ on:
           - uniform-smoke
           - uniform-profiles
           - allocation-holdout
+          - allocation-calibration
 
 concurrency:
   group: transition-introspect-v5-${{ github.ref }}
@@ -28,7 +29,8 @@ jobs:
       startsWith(matrix.label, 'profile-')) ||
       (inputs.capture_mode == 'uniform-smoke' &&
       matrix.label == 'profile-clear-light-materialize') ||
-      (inputs.capture_mode == 'allocation-holdout' &&
+      ((inputs.capture_mode == 'allocation-holdout' ||
+      inputs.capture_mode == 'allocation-calibration') &&
       matrix.direction == 'materialize' &&
       startsWith(matrix.label, 'geometry-'))) &&
       'macos-26' || 'ubuntu-latest' }}
@@ -125,7 +127,8 @@ jobs:
         startsWith(matrix.label, 'profile-')) ||
         (inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize') ||
-        (inputs.capture_mode == 'allocation-holdout' &&
+        ((inputs.capture_mode == 'allocation-holdout' ||
+        inputs.capture_mode == 'allocation-calibration') &&
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'geometry-'))) && '1' || '0' }}
       LG_GLASS_MATERIAL: ${{ matrix.material }}
@@ -139,7 +142,8 @@ jobs:
         startsWith(matrix.label, 'profile-')) ||
         (inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize') ||
-        (inputs.capture_mode == 'allocation-holdout' &&
+        ((inputs.capture_mode == 'allocation-holdout' ||
+        inputs.capture_mode == 'allocation-calibration') &&
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'geometry-'))) && '1' || '0' }}
       LG_TRANSITION_CONTROLLED_BACKDROP: >-
@@ -149,7 +153,16 @@ jobs:
         (inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize')) && '1' || '0' }}
       LG_TRANSITION_ALLOCATION_ONLY: >-
-        ${{ inputs.capture_mode == 'allocation-holdout' &&
+        ${{ (inputs.capture_mode == 'allocation-holdout' ||
+        inputs.capture_mode == 'allocation-calibration') &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'geometry-') && '1' || '0' }}
+      LG_TRANSITION_ALLOCATION_DENSE: >-
+        ${{ inputs.capture_mode == 'allocation-calibration' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'geometry-') && '1' || '0' }}
+      LG_TRANSITION_ALLOCATION_CALIBRATION: >-
+        ${{ inputs.capture_mode == 'allocation-calibration' &&
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'geometry-') && '1' || '0' }}
       LG_TRANSITION_HIGHLIGHT_TRACE: >-
@@ -222,6 +235,7 @@ jobs:
         if: >-
           env.LG_SELECTED == '1' &&
           env.LG_TRANSITION_ALLOCATION_ONLY == '1' &&
+          env.LG_TRANSITION_ALLOCATION_CALIBRATION != '1' &&
           steps.build.outcome == 'success' &&
           steps.capture.outcome == 'success'
         continue-on-error: true
@@ -231,6 +245,21 @@ jobs:
             --expected-geometry "${{ matrix.geometry }}" \
             --output \
               transition-introspection/dynamic-allocation-holdout.json
+
+      - name: Validate dense allocation calibration
+        id: allocation_calibration
+        if: >-
+          env.LG_SELECTED == '1' &&
+          env.LG_TRANSITION_ALLOCATION_CALIBRATION == '1' &&
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_dynamic_allocation_calibration.py \
+            transition-introspection/transition-timeline.json \
+            --expected-geometry "${{ matrix.geometry }}" \
+            --output \
+              transition-introspection/dynamic-allocation-calibration.json
 
       - name: Upload transition introspection
         if: always() && env.LG_SELECTED == '1'
@@ -247,7 +276,11 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           if [[ "$LG_TRANSITION_ALLOCATION_ONLY" == "1" ]]; then
-            test "${{ steps.allocation_holdout.outcome }}" = success
+            if [[ "$LG_TRANSITION_ALLOCATION_CALIBRATION" == "1" ]]; then
+              test "${{ steps.allocation_calibration.outcome }}" = success
+            else
+              test "${{ steps.allocation_holdout.outcome }}" = success
+            fi
           fi
           test -s transition-introspection/transition-timeline.json
           python3 - <<'PY'

@@ -17910,6 +17910,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_ALLOCATION_ONLY"
                 ] == "1"
+            let denseAllocationRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_ALLOCATION_DENSE"
+                ] == "1"
             if dynamicUniformsRequested,
                direction != .materialize
             {
@@ -17959,6 +17963,19 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         NSLocalizedDescriptionKey:
                             "allocation-only capture excludes "
                             + "matrix uniform interventions",
+                ])
+            }
+            if denseAllocationRequested,
+               !allocationOnlyRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 12,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "dense allocation capture requires "
+                            + "allocation-only capture",
                     ])
             }
 
@@ -17966,7 +17983,9 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             let sampleCount = 33
             let endpointTopologyDeadlineSeconds = 1.0
             let dynamicUniformSampleIndices = Set(
-                allocationOnlyRequested
+                denseAllocationRequested
+                    ? Array(1..<sampleCount)
+                    : allocationOnlyRequested
                     ? [
                         1, 4, 8, 12, 15, 16, 17,
                         20, 24, 27, 28, 29, 31, 32,

@@ -4112,6 +4112,17 @@ edges, and all auxiliary-quad bounds are still unresolved and require a newly
 frozen unseen holdout. This retrospective audit does not authorize a Walle
 shader change or a full-parity claim.
 
+`Analysis/dynamic_allocation_phase_calibration_preregistration.json` freezes
+the next calibration before capture. Existing artifacts contain no samples 13
+or 14, leaving the minimum copy-halo phase transition bracketed only between
+`k = 0.37773990631103516` and `k = 0.4697761535644531`. The metadata-only
+`allocation-calibration` mode retains Apple's original producer input and all
+32 nonzero transition states for the same four geometries. It predeclares the
+`q = 5/4` and rounded eight-pixel-padding thresholds, an explicit
+non-threshold outcome, and the current 140-of-144 single-quad edge candidate.
+This is calibration, not an unseen holdout; any recovered phase or mesh rule
+still requires a separately frozen geometry transfer.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does

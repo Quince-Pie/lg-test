@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "classification": "post-opening dense temporal calibration with frozen finite discriminators; not an unseen holdout",
+  "frozenAtUtc": "2026-08-02T13:42:38Z",
+  "objective": "Use Apple's original producer input and metadata-only Metal capture at every nonzero transition sample to locate the effective-origin halo phase transition and distinguish the remaining primary-mesh edge rounding cases without changing candidates after opening the artifact.",
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-calibration"
+    },
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometries": [
+      "circle-256-center",
+      "circle-512-offset",
+      "circle-640-fractional",
+      "circle-1536-center"
+    ],
+    "requestedSampleIndices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32
+    ],
+    "stateCount": 128,
+    "evidenceMode": "allocation-metadata-v1",
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false
+  },
+  "openedEvidence": {
+    "originalGeometryStateCount": 216,
+    "unseenGeometryStateCount": 56,
+    "combinedEffectiveOriginComponentCount": 544,
+    "postOpeningNarrowCandidateMismatchedComponents": 2,
+    "highestObservedRemainingWithOnePixelMinimumCopyHalo": 0.37773990631103516,
+    "lowestObservedRemainingWithTwoPixelMinimumCopyHalo": 0.4697761535644531,
+    "phaseIntervalStatus": "open on the lower bound and closed on the upper bound; existing captures have no samples 13 or 14",
+    "failedProspectiveRunId": 30748787009,
+    "postOpeningResultSha256": "789500c6e4cdb2b21a3e7a9e417fe7e858ff4cfa7fee002c237061cfcd83a696"
+  },
+  "frozenFiniteDiscriminators": {
+    "effectiveOriginRepresentation": {
+      "scaledLower": "L = s * clippedLower using the exact presentation-carrier law and Metal Y inversion",
+      "producerCrop": "C = ceil(L) away from the lower clipping boundary; the existing axis-specific integral endpoint convention remains retained",
+      "copyHaloForm": "O = alignDown(C - h, 4), where the opened corpus only distinguishes h in {1, 2}",
+      "clippedLowerZero": "C = 0 and O = -4"
+    },
+    "phaseCandidates": [
+      {
+        "name": "resampling-ratio-five-fourths",
+        "law": "h = 2 iff q >= 5/4, equivalently s <= 4/5 or k >= 2/5"
+      },
+      {
+        "name": "rounded-eight-pixel-transition-padding",
+        "law": "h = 2 iff roundNearestAway(8*(1-k)) <= 4, equivalently k >= 7/16 except for the explicit tie rule"
+      },
+      {
+        "name": "no-single-threshold",
+        "law": "the dense evidence contains a phase-sensitive component inconsistent with every threshold in [0.37773990631103516, 0.4697761535644531]"
+      }
+    ],
+    "quad4PrimaryPositionCandidate": {
+      "xLower": "floor(s*(floor(clippedLowerX)-2))",
+      "yLower": "max(0, floor(s*(ceil(clippedLowerY)-10)))",
+      "xUpper": "ceil(s*(ceil(clippedUpperX)+1))",
+      "yUpper": "ceil(s*(ceil(clippedUpperY)+2))",
+      "openedStateCount": 36,
+      "openedComponentCount": 144,
+      "openedMismatchedComponents": 4,
+      "residualScope": "four one-pixel X-edge residuals at samples 28, 29, and 31; dense sample 30 and all omitted temporal neighbors are discriminators"
+    }
+  },
+  "frozenImplementation": {
+    "lgTestCommitBeforeRegistration": "d0644a8f228070edc8b3d28dd6082f0b393ffbf2",
+    "workflowSha256": "073ded5fd5d3679924b28101add70d27ddeb53b15ca14b739844721d6d24d477",
+    "swiftCaptureSha256": "44e976649e2949c523f5a4be843c159fb96195a75df5db9c71b92b0f7a40cdc6",
+    "sharedMetadataValidatorSha256": "50eae8046d184f15bb03a4068dc1ecc2834e904e47392d81ec754a0e61b80c5f",
+    "calibrationValidatorSha256": "027d913793b753d02ac88a4120dc6e921d234ba05237668cc23ec277745b47fe",
+    "calibrationValidatorTestSha256": "e99c85f7a883cde063f8d5f69e83dff68dafaa753eff5e33a2b9331bfce0eda4",
+    "productionShaderSha256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "acceptance": {
+    "role": "calibration evidence integrity, not parity",
+    "ciWorkflowMustSucceed": true,
+    "allFourGeometriesMustExecute": true,
+    "stateCountPerGeometry": 32,
+    "requireRuntimeScaleExactEveryState": true,
+    "requireProducerPrimarySourceCoordinatesExactEveryState": true,
+    "requireOriginalProducerInput": true,
+    "requireCompleteIndependentQuadMetadata": true,
+    "forbidRawStageDumps": true,
+    "allowToleranceForMetalIntegerOrBinary32Comparisons": false,
+    "allowPostOpeningCandidateChanges": false
+  },
+  "interpretation": {
+    "candidateSelection": "A phase candidate may be selected only if every phase-sensitive dense component agrees. Failure of all finite candidates is retained as evidence for a non-threshold selector.",
+    "meshUse": "Mesh values are calibration evidence. A recovered predictor still requires a separately frozen unseen-geometry holdout.",
+    "notClaimed": [
+      "a prospective holdout pass",
+      "a universal allocation or producer-mesh law",
+      "production Walle parity",
+      "permission to modify the protected production shader",
+      "permission to trade image quality for memory or latency"
+    ]
+  }
+}

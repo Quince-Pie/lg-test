@@ -723,9 +723,27 @@ def comparison(
     return result
 
 
-def validate(path: Path, *, expected_geometry: str) -> dict[str, Any]:
+def validate(
+    path: Path,
+    *,
+    expected_geometry: str,
+    expected_sample_indices: Sequence[int] = EXPECTED_SAMPLE_INDICES,
+    classification: str = "prospective-unseen-geometry-holdout",
+) -> dict[str, Any]:
     if expected_geometry not in EXPECTED_GEOMETRIES:
         raise ValueError(f"geometry is not a frozen holdout: {expected_geometry}")
+    expected_samples = tuple(expected_sample_indices)
+    if (
+        not expected_samples
+        or any(
+            not isinstance(sample_index, int) or isinstance(sample_index, bool)
+            for sample_index in expected_samples
+        )
+        or tuple(sorted(set(expected_samples))) != expected_samples
+    ):
+        raise ValueError("expected sample indices must be unique ascending integers")
+    if not isinstance(classification, str) or not classification:
+        raise ValueError("capture classification is empty")
     report = mapping(
         json.loads(path.read_text(encoding="utf-8")),
         "transition report",
@@ -748,12 +766,12 @@ def validate(path: Path, *, expected_geometry: str) -> dict[str, Any]:
         or uniforms.get("executed") is not True
         or uniforms.get("evidenceMode") != "allocation-metadata-v1"
         or uniforms.get("method") != EXPECTED_METHOD
-        or uniforms.get("sampleIndices") != list(EXPECTED_SAMPLE_INDICES)
-        or uniforms.get("sampleCount") != len(EXPECTED_SAMPLE_INDICES)
-        or uniforms.get("executedSampleCount") != len(EXPECTED_SAMPLE_INDICES)
+        or uniforms.get("sampleIndices") != list(expected_samples)
+        or uniforms.get("sampleCount") != len(expected_samples)
+        or uniforms.get("executedSampleCount") != len(expected_samples)
         or uniforms.get("carrierCriticalPaths") != EXPECTED_CARRIER_CRITICAL_PATHS
         or not isinstance(untyped_records, list)
-        or len(untyped_records) != len(EXPECTED_SAMPLE_INDICES)
+        or len(untyped_records) != len(expected_samples)
     ):
         raise ValueError("prospective allocation evidence is incomplete")
     matrix_basis = mapping(uniforms.get("matrixUniformBasis"), "matrixUniformBasis")
@@ -765,7 +783,7 @@ def validate(path: Path, *, expected_geometry: str) -> dict[str, Any]:
 
     states: list[dict[str, Any]] = []
     for sample_index, untyped_record in zip(
-        EXPECTED_SAMPLE_INDICES,
+        expected_samples,
         untyped_records,
         strict=True,
     ):
@@ -839,11 +857,11 @@ def validate(path: Path, *, expected_geometry: str) -> dict[str, Any]:
     acceptance_passed = runtime_scale_exact and allocation_exact and origin_exact
     return {
         "dynamicAllocationHoldoutResultSchemaVersion": 1,
-        "classification": "prospective-unseen-geometry-holdout",
+        "classification": classification,
         "timeline": str(path),
         "timelineSHA256": sha256_file(path),
         "geometry": dict(geometry),
-        "sampleIndices": list(EXPECTED_SAMPLE_INDICES),
+        "sampleIndices": list(expected_samples),
         "states": states,
         "aggregate": {
             "stateCount": len(states),
