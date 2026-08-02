@@ -4166,6 +4166,36 @@ metadata-only producer evidence.  The frozen decision asks whether the 15
 primary-edge residuals follow requested-extent arithmetic or target-center
 phase; the run is calibration and cannot itself authorize a mesh predictor.
 
+The same opened run `30750570327` also exposes a much narrower temporal-input
+problem than the earlier ledger implied.  The immutable retrospective audit
+in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states
+from the four dense geometry jobs.  Of the 47 numeric `glassBackground`
+filter inputs, 46 now have exact binary32 predictions: all 5,888 tested
+field-state components match.  A further 2,560 constant or structured
+nonnumeric components match exactly.  With `k` equal to the captured
+`remaining` value, `D` the requested circle diameter, and `f32mix` denoting
+the captured binary32 multiply/add staging, the shared nontrivial terms are
+
+```text
+G = k * (D + 16 * (1 - k))
+inputBlurDistance0          = -G/2
+inputOuterRefractionAmount  =  G/5
+inputOuterRefractionHeight  =  G/8
+inputShadowHeight           = 2G/5
+w = f32(k * f32mix(0.2, 0.5, k))
+inputBlurOpacity1/2         = w
+inputBlurOpacity3/4         = f32(2*w)
+inputMaxHeadroom            = f32mix(1.2, 9999, k)
+```
+
+The audit also verifies the remaining affine, constant, color, offset, and
+endpoint-control inputs rather than silently excluding them.  `inputClamp`
+is the sole unrecovered numeric field.  The canonical result is
+`Analysis/dynamic_background_filter_law_result.json`.  This recovery was made
+after opening the calibration artifacts, so it is neither an unseen temporal
+transfer nor evidence for profiles outside the captured clear/light domain;
+it does not authorize a Walle shader change.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does
