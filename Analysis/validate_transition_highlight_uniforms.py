@@ -104,7 +104,8 @@ def validate_raw_render_evidence(
         for snapshot in snapshots
         if isinstance(snapshot, Mapping)
         and snapshot.get("pixelFormat") == 80
-        and snapshot.get("mipmapLevelCount") == 2
+        and type(snapshot.get("mipmapLevelCount")) is int
+        and snapshot["mipmapLevelCount"] >= 2
         and snapshot.get("index") == 3
         and fragment_name(snapshot).startswith("glass_background")
     ]
@@ -124,7 +125,7 @@ def validate_raw_render_evidence(
     mips = source.get("mipSnapshots")
     if not isinstance(mips, list) or [
         mip.get("level") for mip in mips if isinstance(mip, Mapping)
-    ] != [0, 1]:
+    ] != list(range(source["mipmapLevelCount"])):
         raise ValueError("backdrop pyramid levels differ")
     for mip in mips:
         typed_mip = mapping(mip, "backdrop mip")
