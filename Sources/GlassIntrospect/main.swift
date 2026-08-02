@@ -9403,6 +9403,42 @@ private final class MetalUniformProbe: @unchecked Sendable {
         ]
         let tomographyInterventions = [
             GlassUniformIntervention(
+                name: "positive-normal-x",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x7bff]),
+                    edit("key_threshold", 0xD2, [0x0000]),
+                    edit("key_direction", 0xD6, [0x3c00, 0x0000]),
+                    edit("fade_mix", 0xE4, [0x0000]),
+                    edit("distance_offset", 0xE6, [0xf400]),
+                ]),
+            GlassUniformIntervention(
+                name: "negative-normal-x",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x7bff]),
+                    edit("key_threshold", 0xD2, [0x0000]),
+                    edit("key_direction", 0xD6, [0xbc00, 0x0000]),
+                    edit("fade_mix", 0xE4, [0x0000]),
+                    edit("distance_offset", 0xE6, [0xf400]),
+                ]),
+            GlassUniformIntervention(
+                name: "positive-normal-y",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x7bff]),
+                    edit("key_threshold", 0xD2, [0x0000]),
+                    edit("key_direction", 0xD6, [0x0000, 0x3c00]),
+                    edit("fade_mix", 0xE4, [0x0000]),
+                    edit("distance_offset", 0xE6, [0xf400]),
+                ]),
+            GlassUniformIntervention(
+                name: "negative-normal-y",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x7bff]),
+                    edit("key_threshold", 0xD2, [0x0000]),
+                    edit("key_direction", 0xD6, [0x0000, 0xbc00]),
+                    edit("fade_mix", 0xE4, [0x0000]),
+                    edit("distance_offset", 0xE6, [0xf400]),
+                ]),
+            GlassUniformIntervention(
                 name: "normalized-normal-x",
                 edits: tomographyCommon + [
                     edit("key_width", 0xD0, [0x7bff]),

@@ -154,6 +154,10 @@ jobs:
                   f"alpha-trace contract differs: {alpha_trace}"
               )
           expected_tomography = {
+              "positive-normal-x",
+              "negative-normal-x",
+              "positive-normal-y",
+              "negative-normal-y",
               "normalized-normal-x",
               "normalized-normal-y",
               "original-directional",
