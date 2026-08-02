@@ -19,6 +19,12 @@ CLASSIFICATION = (
     "post-opening-analysis-of-preregistered-capture-backdrop-symbol-prefix-"
     "and-direct-call-targets; not-a-recovered-producer-mesh-policy"
 )
+EVIDENCE_STATUSES = frozenset(
+    {
+        "prospective-validator-pass",
+        "retrospective-validator-correction-after-failed-ci-gate",
+    }
+)
 
 
 def sign_extend(value: int, bits: int) -> int:
@@ -139,9 +145,17 @@ def producer_call_site(timeline: Mapping[str, Any]) -> Mapping[str, Any]:
     return call_sites[0]
 
 
-def analyze(timeline_path: Path, result_path: Path, *, run_id: int) -> dict[str, Any]:
+def analyze(
+    timeline_path: Path,
+    result_path: Path,
+    *,
+    run_id: int,
+    evidence_status: str = "prospective-validator-pass",
+) -> dict[str, Any]:
     if run_id <= 0:
         raise ValueError("run ID must be positive")
+    if evidence_status not in EVIDENCE_STATUSES:
+        raise ValueError("evidence status differs")
     timeline_sha = holdout.sha256_file(timeline_path)
     validator_result = holdout.mapping(
         json.loads(result_path.read_text(encoding="utf-8")), "validator result"
@@ -189,6 +203,7 @@ def analyze(timeline_path: Path, result_path: Path, *, run_id: int) -> dict[str,
     return {
         "dynamicAllocationCaptureBackdropCodeAnalysisSchemaVersion": 1,
         "classification": CLASSIFICATION,
+        "evidenceStatus": evidence_status,
         "runID": run_id,
         "inputTimelineArtifact": timeline_path.parent.name + "/" + timeline_path.name,
         "inputTimelineSHA256": timeline_sha,
@@ -217,6 +232,9 @@ def analyze(timeline_path: Path, result_path: Path, *, run_id: int) -> dict[str,
         "conclusion": {
             "symbolAndEveryDecisionCallTargetByteValidated": True,
             "controlFlowOpenedWithoutFitting": True,
+            "prospectiveGatePassed": (
+                evidence_status == "prospective-validator-pass"
+            ),
             "producerMeshPolicyRecovered": False,
             "requiresArithmeticAndBranchRecovery": True,
             "requiresUnseenGeometryTransfer": True,
@@ -230,9 +248,19 @@ def main() -> int:
     parser.add_argument("timeline", type=Path)
     parser.add_argument("result", type=Path)
     parser.add_argument("--run-id", type=int, required=True)
+    parser.add_argument(
+        "--evidence-status",
+        choices=sorted(EVIDENCE_STATUSES),
+        default="prospective-validator-pass",
+    )
     parser.add_argument("--output", type=Path)
     arguments = parser.parse_args()
-    result = analyze(arguments.timeline, arguments.result, run_id=arguments.run_id)
+    result = analyze(
+        arguments.timeline,
+        arguments.result,
+        run_id=arguments.run_id,
+        evidence_status=arguments.evidence_status,
+    )
     encoded = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
     if arguments.output is None:
         print(encoded, end="")

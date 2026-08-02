@@ -7,6 +7,8 @@ import argparse
 import copy
 import hashlib
 import json
+import math
+import struct
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -36,6 +38,9 @@ SAMPLE31_REPEAT_CLASSIFICATION = (
     "preregistered-live-baseline-sample31-unit-threshold-and-same-process-"
     "repeat-calibration"
 )
+CAPTURE_BACKDROP_OPERAND_CLASSIFICATION = (
+    "preregistered-live-capture-backdrop-operand-and-primary-position-replay"
+)
 SAMPLE31_REPEAT_SOURCE_SAMPLE_INDICES = (31,)
 FINE_X_VALUES = tuple(range(80, 89))
 FINE_Y_VALUES = tuple(range(64, 97))
@@ -50,6 +55,37 @@ CAPTURE_BACKDROP_CODE_BYTE_COUNT = 0x4000
 CAPTURE_BACKDROP_DECISION_CALL_RANGE = (0x2000, 0x2B58)
 CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET = 0x2B54
 CAPTURE_BACKDROP_DIRECT_CALL_TARGET_CODE_BYTE_COUNT = 0x400
+CAPTURE_BACKDROP_VERTEX_BINDING_RETURN_OFFSET = 0x2B58
+CAPTURE_BACKDROP_FRAME_POINTER_TO_STACK_POINTER = 0xA50
+CAPTURE_BACKDROP_FIRST_REGISTER = 19
+CAPTURE_BACKDROP_REGISTER_COUNT = 11
+CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0xFF
+CAPTURE_BACKDROP_EXPECTED_SYMBOL_PREFIX_SHA256 = (
+    "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2"
+)
+CAPTURE_BACKDROP_EXPECTED_PROLOGUE = bytes.fromhex(
+    "7f2303d5ef3bb66ded33016deb2b026de923036dfc6f04a9fa6705a9f85f06a9"
+    "f65707a9f44f08a9fd7b09a9fd430291ff0327d1"
+)
+CAPTURE_BACKDROP_STACK_OFFSETS = {
+    "originPointer": 0x190,
+    "shapePointer": 0x1A0,
+    "transformPointer": 0x1A8,
+    "contextPointer": 0x220,
+    "rect": 0x280,
+    "affine": 0x390,
+}
+CAPTURE_BACKDROP_CONTEXT_SCALE_OFFSET = 0x18
+CAPTURE_BACKDROP_OPERAND_LAYOUTS = {
+    "registers": (
+        "little-endian x19-through-x29 words",
+        8 * CAPTURE_BACKDROP_REGISTER_COUNT,
+    ),
+    "rect": ("four little-endian signed 32-bit rectangle words", 16),
+    "affine": ("six little-endian binary64 affine words", 48),
+    "origin": ("two little-endian signed 32-bit origin words", 8),
+    "scale": ("one little-endian binary32 scale word", 4),
+}
 SCAN_VALUES_BY_SAMPLE = {
     25: (FINE_X_VALUES, FINE_Y_VALUES),
     31: (CROSS_AXIS_X_VALUES, CROSS_AXIS_Y_VALUES),
@@ -299,6 +335,219 @@ def hexadecimal_address(value: Any, label: str) -> int:
     return address
 
 
+def capture_backdrop_operand_bytes(
+    operands: Mapping[str, Any], field: str
+) -> bytes:
+    class_name, expected_length = CAPTURE_BACKDROP_OPERAND_LAYOUTS[field]
+    record = holdout.mapping(
+        operands.get(field), f"capture_backdrop {field} operands"
+    )
+    payload = hexadecimal_bytes(record, f"capture_backdrop {field} operands")
+    if (
+        record.get("class") != class_name
+        or record.get("lengthBytes") != expected_length
+        or len(payload) != expected_length
+        or record.get("sha256") != hashlib.sha256(payload).hexdigest()
+    ):
+        raise ValueError(f"capture_backdrop {field} operand metadata differs")
+    return payload
+
+
+def float32_fma(multiplier: float, multiplicand: float, addend: float) -> float:
+    return holdout.float32(math.fma(multiplier, multiplicand, addend))
+
+
+def capture_backdrop_primary_position_bits(
+    *,
+    rect: Sequence[int],
+    affine: Sequence[float],
+    origin: Sequence[int],
+    scale: float,
+) -> list[int]:
+    if (
+        len(rect) != 4
+        or len(affine) != 6
+        or len(origin) != 2
+        or not math.isfinite(scale)
+        or scale <= 0
+        or not all(math.isfinite(value) for value in affine)
+    ):
+        raise ValueError("capture_backdrop arithmetic operands differ")
+
+    x, y, width, height = rect
+    if width <= 0 or height <= 0:
+        raise ValueError("capture_backdrop rectangle extent differs")
+    float_x = holdout.float32(float(x))
+    float_y = holdout.float32(float(y))
+    float_right = holdout.float32(float(x + width))
+    float_bottom = holdout.float32(float(y + height))
+    scale = holdout.float32(scale)
+    products = [
+        holdout.float32(scale * value)
+        for value in (float_x, float_y, float_right, float_bottom)
+    ]
+    rounded = [
+        holdout.float32(math.floor(products[0])),
+        holdout.float32(math.floor(products[1])),
+        holdout.float32(math.ceil(products[2])),
+        holdout.float32(math.ceil(products[3])),
+    ]
+    residuals = [
+        float32_fma(-scale, value, integral)
+        for value, integral in zip(
+            (float_x, float_y, float_right, float_bottom),
+            rounded,
+            strict=True,
+        )
+    ]
+    inverse_scale = holdout.float32(1.0 / scale)
+    snapped = [
+        holdout.float32(holdout.float32(residual * inverse_scale) + value)
+        for residual, value in zip(
+            residuals,
+            (float_x, float_y, float_right, float_bottom),
+            strict=True,
+        )
+    ]
+
+    a, b, c, d, translate_x, translate_y = affine
+    x0, y0, x1, y1 = snapped
+    corners = ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
+    origin_x = holdout.float32(float(origin[0]))
+    origin_y = holdout.float32(float(origin[1]))
+    result: list[int] = []
+    for corner_x, corner_y in corners:
+        transformed_x = math.fma(
+            c,
+            float(corner_y),
+            math.fma(a, float(corner_x), translate_x),
+        )
+        transformed_y = math.fma(
+            d,
+            float(corner_y),
+            math.fma(b, float(corner_x), translate_y),
+        )
+        position_x = holdout.float32(
+            holdout.float32(transformed_x) - origin_x
+        )
+        position_y = holdout.float32(
+            holdout.float32(transformed_y) - origin_y
+        )
+        result.extend(
+            (holdout.float32_bits(position_x), holdout.float32_bits(position_y))
+        )
+    return result
+
+
+def validate_capture_backdrop_operands(
+    untyped_operands: Any,
+) -> dict[str, Any]:
+    operands = holdout.mapping(
+        untyped_operands, "capture_backdrop operand evidence"
+    )
+    symbol_address = hexadecimal_address(
+        operands.get("symbolAddress"), "capture_backdrop operand symbol address"
+    )
+    instruction_pointer = hexadecimal_address(
+        operands.get("instructionPointer"),
+        "capture_backdrop operand instruction pointer",
+    )
+    canonical_frame_address = hexadecimal_address(
+        operands.get("canonicalFrameAddress"),
+        "capture_backdrop canonical frame address",
+    )
+    frame_pointer = hexadecimal_address(
+        operands.get("framePointer"), "capture_backdrop frame pointer"
+    )
+    stack_pointer = hexadecimal_address(
+        operands.get("stackPointer"), "capture_backdrop stack pointer"
+    )
+    origin_pointer = hexadecimal_address(
+        operands.get("originPointer"), "capture_backdrop origin pointer"
+    )
+    shape_pointer = hexadecimal_address(
+        operands.get("shapePointer"), "capture_backdrop shape pointer"
+    )
+    transform_pointer = hexadecimal_address(
+        operands.get("transformPointer"), "capture_backdrop transform pointer"
+    )
+    context_pointer = hexadecimal_address(
+        operands.get("contextPointer"), "capture_backdrop context pointer"
+    )
+    registers_payload = capture_backdrop_operand_bytes(operands, "registers")
+    registers = list(
+        struct.unpack(f"<{CAPTURE_BACKDROP_REGISTER_COUNT}Q", registers_payload)
+    )
+    rect_payload = capture_backdrop_operand_bytes(operands, "rect")
+    affine_payload = capture_backdrop_operand_bytes(operands, "affine")
+    origin_payload = capture_backdrop_operand_bytes(operands, "origin")
+    scale_payload = capture_backdrop_operand_bytes(operands, "scale")
+    rect = list(struct.unpack("<4i", rect_payload))
+    affine = list(struct.unpack("<6d", affine_payload))
+    origin = list(struct.unpack("<2i", origin_payload))
+    scale = struct.unpack("<f", scale_payload)[0]
+    read_mask = hexadecimal_address(
+        operands.get("readMask"), "capture_backdrop read mask"
+    )
+    required_read_mask = hexadecimal_address(
+        operands.get("requiredReadMask"),
+        "capture_backdrop required read mask",
+    )
+    if (
+        operands.get("schemaVersion") != 1
+        or operands.get("executed") is not True
+        or operands.get("class")
+        != "bounded live capture_backdrop unwind operands"
+        or operands.get("symbol") != CAPTURE_BACKDROP_SYMBOL
+        or operands.get("returnSymbolOffset")
+        != CAPTURE_BACKDROP_VERTEX_BINDING_RETURN_OFFSET
+        or instruction_pointer
+        != symbol_address + CAPTURE_BACKDROP_VERTEX_BINDING_RETURN_OFFSET
+        or operands.get("framePointerToStackPointerDelta")
+        != CAPTURE_BACKDROP_FRAME_POINTER_TO_STACK_POINTER
+        or frame_pointer
+        != stack_pointer + CAPTURE_BACKDROP_FRAME_POINTER_TO_STACK_POINTER
+        or stack_pointer & 0xF
+        or canonical_frame_address == 0
+        or not 1 <= operands.get("visitedFrameCount", 0) <= 32
+        or operands.get("firstRegister") != CAPTURE_BACKDROP_FIRST_REGISTER
+        or operands.get("registerCount") != CAPTURE_BACKDROP_REGISTER_COUNT
+        or operands.get("stackOffsets") != CAPTURE_BACKDROP_STACK_OFFSETS
+        or operands.get("contextScaleOffset")
+        != CAPTURE_BACKDROP_CONTEXT_SCALE_OFFSET
+        or read_mask != CAPTURE_BACKDROP_REQUIRED_READ_MASK
+        or required_read_mask != CAPTURE_BACKDROP_REQUIRED_READ_MASK
+        or registers[29 - CAPTURE_BACKDROP_FIRST_REGISTER] != frame_pointer
+        or registers[26 - CAPTURE_BACKDROP_FIRST_REGISTER] != origin_pointer
+        or registers[27 - CAPTURE_BACKDROP_FIRST_REGISTER] != context_pointer
+        or origin_pointer == 0
+        or context_pointer == 0
+        or transform_pointer == 0
+    ):
+        raise ValueError("capture_backdrop operand metadata differs")
+    predicted_position_bits = capture_backdrop_primary_position_bits(
+        rect=rect,
+        affine=affine,
+        origin=origin,
+        scale=scale,
+    )
+    return {
+        "symbolAddress": symbol_address,
+        "instructionPointer": instruction_pointer,
+        "canonicalFrameAddress": canonical_frame_address,
+        "framePointer": frame_pointer,
+        "stackPointer": stack_pointer,
+        "shapePointerNonzero": shape_pointer != 0,
+        "transformPointerNonzero": transform_pointer != 0,
+        "rect": rect,
+        "affine": affine,
+        "origin": origin,
+        "scale": scale,
+        "scaleBits": struct.unpack("<I", scale_payload)[0],
+        "predictedPrimaryPositionBits": predicted_position_bits,
+    }
+
+
 def arm64_branch_link_target(instruction: int, address: int) -> int | None:
     if instruction & 0xFC00_0000 != 0x9400_0000:
         return None
@@ -321,6 +570,12 @@ def validate_capture_backdrop_code(
     )
     frame_symbol_address = hexadecimal_address(
         frame.get("symbolAddress"), "capture_backdrop frame symbol address"
+    )
+    frame_return_address = hexadecimal_address(
+        frame.get("returnAddress"), "capture_backdrop frame return address"
+    )
+    frame_symbol_offset = hexadecimal_address(
+        frame.get("symbolOffset"), "capture_backdrop frame symbol offset"
     )
     image_base = hexadecimal_address(
         frame.get("imageBase"), "capture_backdrop frame image base"
@@ -345,7 +600,11 @@ def validate_capture_backdrop_code(
         or frame.get("symbol") != CAPTURE_BACKDROP_SYMBOL
         or symbol_address != frame_symbol_address
         or frame_symbol_address < image_base
-        or frame_image_offset != frame_symbol_address - image_base
+        or frame_return_address < frame_symbol_address
+        or frame_symbol_offset != frame_return_address - frame_symbol_address
+        or frame_symbol_offset
+        != CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET + 4
+        or frame_image_offset != frame_return_address - image_base
         or capture_image_offset != frame_symbol_address - image_base
         or capture.get("requestedByteCount") != CAPTURE_BACKDROP_CODE_BYTE_COUNT
         or capture.get("lengthBytes") != len(payload)
@@ -429,8 +688,12 @@ def validate_capture_backdrop_code(
         raise ValueError("capture_backdrop producer binding call is absent")
     return {
         "symbol": CAPTURE_BACKDROP_SYMBOL,
+        "symbolAddress": symbol_address,
         "symbolPrefixSHA256": hashlib.sha256(payload).hexdigest(),
         "symbolPrefixByteCount": len(payload),
+        "operandFramePrologueExact": payload.startswith(
+            CAPTURE_BACKDROP_EXPECTED_PROLOGUE
+        ),
         "decisionDirectCallRange": list(call_range),
         "decisionDirectCallCount": len(calls),
         "decisionDirectCallOffsets": call_offsets,
@@ -546,9 +809,13 @@ def validate(path: Path) -> dict[str, Any]:
         result_schema = 2
         intervention_builder = fine_scan_interventions
         source_sample_indices = EXPECTED_SOURCE_SAMPLE_INDICES
-    elif evidence_schema == 4:
-        classification = SAMPLE31_REPEAT_CLASSIFICATION
-        result_schema = 3
+    elif evidence_schema in {4, 5}:
+        classification = (
+            SAMPLE31_REPEAT_CLASSIFICATION
+            if evidence_schema == 4
+            else CAPTURE_BACKDROP_OPERAND_CLASSIFICATION
+        )
+        result_schema = 3 if evidence_schema == 4 else 4
         intervention_builder = sample31_repeat_interventions
         source_sample_indices = SAMPLE31_REPEAT_SOURCE_SAMPLE_INDICES
     else:
@@ -611,7 +878,7 @@ def validate(path: Path) -> dict[str, Any]:
         }
     ):
         raise ValueError("surviving-path schema-3 matrix header differs")
-    elif evidence_schema == 4 and (
+    elif evidence_schema in {4, 5} and (
         evidence.get("scanPath") != list(POSITION_PATH)
         or evidence.get("scanMutation") != "position"
         or evidence.get("scanSampleIndex") != 31
@@ -666,6 +933,10 @@ def validate(path: Path) -> dict[str, Any]:
     base_mvp_hash_matches = 0
     base_index_hash_matches = 0
     producer_geometry_call_sites: list[Any] = []
+    capture_backdrop_operand_count = 0
+    capture_backdrop_position_components = 0
+    capture_backdrop_position_mismatches = 0
+    capture_backdrop_symbol_addresses: set[int] = set()
     validated_records: list[dict[str, Any]] = []
 
     for record_index, (record, expected_item) in enumerate(
@@ -780,6 +1051,7 @@ def validate(path: Path) -> dict[str, Any]:
         retained_buffers = holdout.mapping(
             render.get("metalBufferSnapshots"), "retained Metal buffers"
         )
+        record_operand_payloads: list[Any] = []
         for untyped_snapshot in fixed.sequence(
             retained_buffers.get("snapshots"), "retained snapshots"
         ):
@@ -788,12 +1060,72 @@ def validate(path: Path) -> dict[str, Any]:
                 producer_geometry_call_sites.append(
                     snapshot["producerGeometryCallSite"]
                 )
+            if "captureBackdropOperands" in snapshot:
+                record_operand_payloads.append(
+                    snapshot["captureBackdropOperands"]
+                )
+        if evidence_schema == 5:
+            if len(record_operand_payloads) != 1:
+                raise ValueError(
+                    "capture_backdrop operand capture count differs at "
+                    f"{sample}/{intervention_index}"
+                )
+            capture_backdrop_operands = validate_capture_backdrop_operands(
+                record_operand_payloads[0]
+            )
+        elif record_operand_payloads:
+            raise ValueError(
+                "schema-4 record unexpectedly contains capture_backdrop operands"
+            )
+        else:
+            capture_backdrop_operands = None
         observed = holdout.observed_policy(record, scale=scale)
         mesh = holdout.mapping(observed.get("producerMesh"), "producer mesh")
         q_components += int(mesh["sourceScaleComponentCount"])
         q_mismatches += int(mesh["sourceScaleMismatchedComponents"])
         topology_counts[int(mesh["vertexCount"])] += 1
         phase_counts[str(intervention["phase"])] += 1
+
+        if capture_backdrop_operands is not None:
+            primary_vertices = fixed.sequence(
+                mesh.get("primaryVertices"), "primary producer vertices"
+            )
+            if len(primary_vertices) != 4:
+                raise ValueError("primary producer vertex count differs")
+            observed_position_bits = [
+                holdout.float32_bits(
+                    holdout.numeric(component, "primary position component")
+                )
+                for vertex in primary_vertices
+                for component in fixed.sequence(vertex, "primary vertex")[:2]
+            ]
+            predicted_position_bits = capture_backdrop_operands[
+                "predictedPrimaryPositionBits"
+            ]
+            if capture_backdrop_operands["scaleBits"] != holdout.float32_bits(
+                scale
+            ):
+                raise ValueError("capture_backdrop context scale differs")
+            capture_backdrop_operand_count += 1
+            capture_backdrop_position_components += len(observed_position_bits)
+            capture_backdrop_position_mismatches += sum(
+                predicted != observed
+                for predicted, observed in zip(
+                    predicted_position_bits,
+                    observed_position_bits,
+                    strict=True,
+                )
+            )
+            capture_backdrop_symbol_addresses.add(
+                int(capture_backdrop_operands["symbolAddress"])
+            )
+            capture_backdrop_operands = {
+                **capture_backdrop_operands,
+                "observedPrimaryPositionBits": observed_position_bits,
+                "primaryPositionExact": (
+                    predicted_position_bits == observed_position_bits
+                ),
+            }
 
         if intervention["phase"] == "control":
             observed_bases[sample] = observed
@@ -842,6 +1174,11 @@ def validate(path: Path) -> dict[str, Any]:
                 "capturedLayerStateCount": layer_state_count,
                 "selectedRenderAttemptIndex": selected_attempt,
                 "observed": observed,
+                **(
+                    {"captureBackdropOperands": capture_backdrop_operands}
+                    if capture_backdrop_operands is not None
+                    else {}
+                ),
             }
         )
 
@@ -870,6 +1207,31 @@ def validate(path: Path) -> dict[str, Any]:
         if producer_geometry_call_sites
         else {"captured": False}
     )
+    if evidence_schema == 5:
+        capture_backdrop_code = holdout.mapping(
+            producer_geometry_call_site.get("captureBackdrop"),
+            "capture_backdrop validated code summary",
+        )
+        if (
+            len(producer_geometry_call_sites) != 1
+            or producer_geometry_call_site.get("schemaVersion") != 5
+            or capture_backdrop_code.get("symbolPrefixSHA256")
+            != CAPTURE_BACKDROP_EXPECTED_SYMBOL_PREFIX_SHA256
+            or capture_backdrop_code.get("operandFramePrologueExact") is not True
+            or capture_backdrop_operand_count != expected_count
+            or capture_backdrop_position_mismatches != 0
+            or len(capture_backdrop_symbol_addresses) != 1
+            or capture_backdrop_code.get("symbolAddress")
+            != next(iter(capture_backdrop_symbol_addresses))
+        ):
+            raise ValueError(
+                "capture_backdrop operand replay gate failed: "
+                f"captures={capture_backdrop_operand_count}/{expected_count}, "
+                "positions="
+                f"{capture_backdrop_position_components - capture_backdrop_position_mismatches}/"
+                f"{capture_backdrop_position_components}, "
+                f"symbolCount={len(capture_backdrop_symbol_addresses)}"
+            )
     return {
         "dynamicAllocationSurvivingPathThresholdResultSchemaVersion": result_schema,
         "classification": classification,
@@ -908,6 +1270,33 @@ def validate(path: Path) -> dict[str, Any]:
             },
             "retainedBufferSnapshotCount": retained_buffer_count,
             "producerGeometryCallSite": producer_geometry_call_site,
+            **(
+                {
+                    "captureBackdropOperandReplay": {
+                        "captureCount": capture_backdrop_operand_count,
+                        "expectedCaptureCount": expected_count,
+                        "primaryPositionComponentCount": (
+                            capture_backdrop_position_components
+                        ),
+                        "primaryPositionMismatchedComponents": (
+                            capture_backdrop_position_mismatches
+                        ),
+                        "primaryPositionExact": (
+                            capture_backdrop_position_mismatches == 0
+                        ),
+                        "singleMappedSymbolAddress": (
+                            len(capture_backdrop_symbol_addresses) == 1
+                        ),
+                        "symbolPrefixSHA256": (
+                            CAPTURE_BACKDROP_EXPECTED_SYMBOL_PREFIX_SHA256
+                        ),
+                        "affineBranchEveryCapture": True,
+                        "allowNumericTolerance": False,
+                    }
+                }
+                if evidence_schema == 5
+                else {}
+            ),
             "liveBaselinePlusTargetPositionExact": True,
             "liveLayerStateStableAcrossRender": True,
             "liveFilterInputsBeforeAndAfterExact": True,
@@ -928,6 +1317,7 @@ def validate(path: Path) -> dict[str, Any]:
                 2: "deepestSDFPositionThresholdRequiresPostOpeningAnalysis",
                 3: "fineThresholdAndCrossAxisScanRequiresPostOpeningAnalysis",
                 4: "sample31RepeatScanRequiresPostOpeningAnalysis",
+                5: "captureBackdropOperandsRequirePostOpeningPolicyMapping",
             }[evidence_schema]: True,
             "requiresUnseenGeometryTransfer": True,
             "productionShaderAuthorized": False,

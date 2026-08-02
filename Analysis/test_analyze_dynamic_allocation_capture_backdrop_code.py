@@ -53,6 +53,12 @@ class CaptureBackdropCodeAnalyzerTests(unittest.TestCase):
     def test_classification_denies_a_recovered_policy(self) -> None:
         self.assertIn("not-a-recovered-producer-mesh-policy", analyzer.CLASSIFICATION)
 
+    def test_retrospective_status_is_not_a_prospective_pass(self) -> None:
+        self.assertIn(
+            "retrospective-validator-correction-after-failed-ci-gate",
+            analyzer.EVIDENCE_STATUSES,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

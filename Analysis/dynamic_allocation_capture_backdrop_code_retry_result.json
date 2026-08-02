@@ -1,0 +1,616 @@
+{
+  "captureBackdrop": {
+    "controlFlow": [
+      {
+        "instruction": "540003aa",
+        "kind": "b.cond",
+        "offset": 8248,
+        "targetOffset": 8364
+      },
+      {
+        "instruction": "540003ca",
+        "kind": "b.cond",
+        "offset": 8260,
+        "targetOffset": 8380
+      },
+      {
+        "instruction": "1400001d",
+        "kind": "b",
+        "offset": 8360,
+        "targetOffset": 8476
+      },
+      {
+        "instruction": "14000019",
+        "kind": "b",
+        "offset": 8376,
+        "targetOffset": 8476
+      },
+      {
+        "instruction": "54000181",
+        "kind": "b.cond",
+        "offset": 8492,
+        "targetOffset": 8540
+      },
+      {
+        "instruction": "37000148",
+        "kind": "tbnz",
+        "offset": 8500,
+        "targetOffset": 8540
+      },
+      {
+        "instruction": "9409ac3c",
+        "kind": "bl",
+        "offset": 8536,
+        "targetOffset": 2544200
+      },
+      {
+        "instruction": "36100bc8",
+        "kind": "tbz",
+        "offset": 8544,
+        "targetOffset": 8920
+      },
+      {
+        "instruction": "54000b6d",
+        "kind": "b.cond",
+        "offset": 8556,
+        "targetOffset": 8920
+      },
+      {
+        "instruction": "97feaef5",
+        "kind": "bl",
+        "offset": 8572,
+        "targetOffset": -336560
+      },
+      {
+        "instruction": "97fe78ea",
+        "kind": "bl",
+        "offset": 8580,
+        "targetOffset": -391892
+      },
+      {
+        "instruction": "97fe7933",
+        "kind": "bl",
+        "offset": 8600,
+        "targetOffset": -391580
+      },
+      {
+        "instruction": "97ffa07b",
+        "kind": "bl",
+        "offset": 8716,
+        "targetOffset": -89096
+      },
+      {
+        "instruction": "97fe7910",
+        "kind": "bl",
+        "offset": 8740,
+        "targetOffset": -391580
+      },
+      {
+        "instruction": "36000148",
+        "kind": "tbz",
+        "offset": 8872,
+        "targetOffset": 8912
+      },
+      {
+        "instruction": "9409abdf",
+        "kind": "bl",
+        "offset": 8908,
+        "targetOffset": 2544200
+      },
+      {
+        "instruction": "97ff624b",
+        "kind": "bl",
+        "offset": 8916,
+        "targetOffset": -152576
+      },
+      {
+        "instruction": "54004580",
+        "kind": "b.cond",
+        "offset": 8936,
+        "targetOffset": 11160
+      },
+      {
+        "instruction": "97fecdf8",
+        "kind": "bl",
+        "offset": 9012,
+        "targetOffset": -304364
+      },
+      {
+        "instruction": "340040c0",
+        "kind": "cbz",
+        "offset": 9016,
+        "targetOffset": 11088
+      },
+      {
+        "instruction": "36000a08",
+        "kind": "tbz",
+        "offset": 9024,
+        "targetOffset": 9344
+      },
+      {
+        "instruction": "540000e8",
+        "kind": "b.cond",
+        "offset": 9060,
+        "targetOffset": 9088
+      },
+      {
+        "instruction": "b4000209",
+        "kind": "cbz",
+        "offset": 9068,
+        "targetOffset": 9132
+      },
+      {
+        "instruction": "54000189",
+        "kind": "b.cond",
+        "offset": 9084,
+        "targetOffset": 9132
+      },
+      {
+        "instruction": "97fece68",
+        "kind": "bl",
+        "offset": 9108,
+        "targetOffset": -303820
+      },
+      {
+        "instruction": "97fece10",
+        "kind": "bl",
+        "offset": 9276,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "b40004c8",
+        "kind": "cbz",
+        "offset": 9284,
+        "targetOffset": 9436
+      },
+      {
+        "instruction": "14000042",
+        "kind": "b",
+        "offset": 9340,
+        "targetOffset": 9604
+      },
+      {
+        "instruction": "37fff4c8",
+        "kind": "tbnz",
+        "offset": 9364,
+        "targetOffset": 9004
+      },
+      {
+        "instruction": "37f80528",
+        "kind": "tbnz",
+        "offset": 9380,
+        "targetOffset": 9544
+      },
+      {
+        "instruction": "37f803e8",
+        "kind": "tbnz",
+        "offset": 9420,
+        "targetOffset": 9544
+      },
+      {
+        "instruction": "17ffff9b",
+        "kind": "b",
+        "offset": 9432,
+        "targetOffset": 9028
+      },
+      {
+        "instruction": "54000300",
+        "kind": "b.cond",
+        "offset": 9456,
+        "targetOffset": 9552
+      },
+      {
+        "instruction": "54000200",
+        "kind": "b.cond",
+        "offset": 9472,
+        "targetOffset": 9536
+      },
+      {
+        "instruction": "5400008c",
+        "kind": "b.cond",
+        "offset": 9492,
+        "targetOffset": 9508
+      },
+      {
+        "instruction": "5400008c",
+        "kind": "b.cond",
+        "offset": 9520,
+        "targetOffset": 9536
+      },
+      {
+        "instruction": "14000004",
+        "kind": "b",
+        "offset": 9540,
+        "targetOffset": 9556
+      },
+      {
+        "instruction": "17ffff78",
+        "kind": "b",
+        "offset": 9548,
+        "targetOffset": 9004
+      },
+      {
+        "instruction": "b5001e28",
+        "kind": "cbnz",
+        "offset": 9612,
+        "targetOffset": 10576
+      },
+      {
+        "instruction": "540024c0",
+        "kind": "b.cond",
+        "offset": 9676,
+        "targetOffset": 10852
+      },
+      {
+        "instruction": "54ffea80",
+        "kind": "b.cond",
+        "offset": 9692,
+        "targetOffset": 9004
+      },
+      {
+        "instruction": "540000e8",
+        "kind": "b.cond",
+        "offset": 9732,
+        "targetOffset": 9760
+      },
+      {
+        "instruction": "b4000269",
+        "kind": "cbz",
+        "offset": 9740,
+        "targetOffset": 9816
+      },
+      {
+        "instruction": "540001e9",
+        "kind": "b.cond",
+        "offset": 9756,
+        "targetOffset": 9816
+      },
+      {
+        "instruction": "97fecdbf",
+        "kind": "bl",
+        "offset": 9784,
+        "targetOffset": -303820
+      },
+      {
+        "instruction": "540004e1",
+        "kind": "b.cond",
+        "offset": 9848,
+        "targetOffset": 10004
+      },
+      {
+        "instruction": "97fecd79",
+        "kind": "bl",
+        "offset": 9880,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "54000281",
+        "kind": "b.cond",
+        "offset": 9932,
+        "targetOffset": 10012
+      },
+      {
+        "instruction": "97fecd65",
+        "kind": "bl",
+        "offset": 9960,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "14000004",
+        "kind": "b",
+        "offset": 10000,
+        "targetOffset": 10016
+      },
+      {
+        "instruction": "14000003",
+        "kind": "b",
+        "offset": 10008,
+        "targetOffset": 10020
+      },
+      {
+        "instruction": "54000561",
+        "kind": "b.cond",
+        "offset": 10032,
+        "targetOffset": 10204
+      },
+      {
+        "instruction": "97fecd49",
+        "kind": "bl",
+        "offset": 10072,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "540002c1",
+        "kind": "b.cond",
+        "offset": 10132,
+        "targetOffset": 10220
+      },
+      {
+        "instruction": "97fecd33",
+        "kind": "bl",
+        "offset": 10160,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "14000005",
+        "kind": "b",
+        "offset": 10200,
+        "targetOffset": 10220
+      },
+      {
+        "instruction": "54000521",
+        "kind": "b.cond",
+        "offset": 10228,
+        "targetOffset": 10392
+      },
+      {
+        "instruction": "97fecd1a",
+        "kind": "bl",
+        "offset": 10260,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "540002a1",
+        "kind": "b.cond",
+        "offset": 10320,
+        "targetOffset": 10404
+      },
+      {
+        "instruction": "97fecd05",
+        "kind": "bl",
+        "offset": 10344,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "14000004",
+        "kind": "b",
+        "offset": 10388,
+        "targetOffset": 10404
+      },
+      {
+        "instruction": "54ffd3e1",
+        "kind": "b.cond",
+        "offset": 10416,
+        "targetOffset": 9004
+      },
+      {
+        "instruction": "97fecce9",
+        "kind": "bl",
+        "offset": 10456,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "54ffd101",
+        "kind": "b.cond",
+        "offset": 10508,
+        "targetOffset": 9004
+      },
+      {
+        "instruction": "97feccd5",
+        "kind": "bl",
+        "offset": 10536,
+        "targetOffset": -304004
+      },
+      {
+        "instruction": "17fffe78",
+        "kind": "b",
+        "offset": 10572,
+        "targetOffset": 9004
+      },
+      {
+        "instruction": "17fffed3",
+        "kind": "b",
+        "offset": 10848,
+        "targetOffset": 9644
+      },
+      {
+        "instruction": "540005e1",
+        "kind": "b.cond",
+        "offset": 10876,
+        "targetOffset": 11064
+      },
+      {
+        "instruction": "940b7f04",
+        "kind": "bl",
+        "offset": 10896,
+        "targetOffset": 3024544
+      },
+      {
+        "instruction": "34ffd8c0",
+        "kind": "cbz",
+        "offset": 10936,
+        "targetOffset": 9680
+      },
+      {
+        "instruction": "940b7b91",
+        "kind": "bl",
+        "offset": 11036,
+        "targetOffset": 3021152
+      },
+      {
+        "instruction": "17fffea7",
+        "kind": "b",
+        "offset": 11060,
+        "targetOffset": 9680
+      },
+      {
+        "instruction": "940b7c5e",
+        "kind": "bl",
+        "offset": 11080,
+        "targetOffset": 3022016
+      },
+      {
+        "instruction": "17ffffcd",
+        "kind": "b",
+        "offset": 11084,
+        "targetOffset": 10880
+      },
+      {
+        "instruction": "97fecc78",
+        "kind": "bl",
+        "offset": 11092,
+        "targetOffset": -303820
+      }
+    ],
+    "controlFlowInstructionCount": 75,
+    "controlFlowKindCounts": {
+      "b": 14,
+      "b.cond": 24,
+      "bl": 24,
+      "cbnz": 1,
+      "cbz": 5,
+      "tbnz": 4,
+      "tbz": 3
+    },
+    "decisionRegion": [
+      8192,
+      11096
+    ],
+    "directCallCount": 24,
+    "directCallGroups": [
+      {
+        "sourceInstructionOffsets": [
+          8580
+        ],
+        "targetCodeSHA256": "9c2f33cfafd31797ee65ea5957cfcd0a72b618bebe5c0cbaee89ceab50995602",
+        "targetImageOffset": "0x45744",
+        "targetSymbol": "_ZN2CA5Shape9new_shapeERKNS_6BoundsE",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          8600,
+          8740
+        ],
+        "targetCodeSHA256": "60392fa2ab3d5c35ff9f1d3034cb67216f1e560589a6ea732124d1c74e892211",
+        "targetImageOffset": "0x4587c",
+        "targetSymbol": "_ZNK2CA5Shape10get_boundsERNS_6BoundsE",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          8572
+        ],
+        "targetCodeSHA256": "846a781869f05749dca8fc53735bdd1f374355b6202e92f6caa7ed796247ca8b",
+        "targetImageOffset": "0x52f68",
+        "targetSymbol": "_ZN2CA6Bounds12set_exteriorERKNS_4RectE",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          9012
+        ],
+        "targetCodeSHA256": "faf2c7f536d2c76dbac26b3d7af7aeb7a498b1c50a20ecb152d8d896c616bcc6",
+        "targetImageOffset": "0x5ad2c",
+        "targetSymbol": "_ZN2CA13ShapeIterator7iterateERNS_6BoundsE",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          9276,
+          9880,
+          9960,
+          10072,
+          10160,
+          10260,
+          10344,
+          10456,
+          10536
+        ],
+        "targetCodeSHA256": "5d19b55995506677f53fc7c248831c477b0acfd3ac7c262f0caddba1bfacbbd1",
+        "targetImageOffset": "0x5ae94",
+        "targetSymbol": "_ZN2CA3OGL7Context10array_rectEffff",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          9108,
+          9784,
+          11092
+        ],
+        "targetCodeSHA256": "b4ed9fe1f0338b922fe8d3eebd3c66c26bc4b99f323b5f04de5aacc1ded1d39a",
+        "targetImageOffset": "0x5af4c",
+        "targetSymbol": "_ZN2CA3OGL7Context11array_flushEv",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          8916
+        ],
+        "targetCodeSHA256": "9e709da1da554941780adf38331f3fbea94ccc88a9a4991348782aa1166bf413",
+        "targetImageOffset": "0x7fe18",
+        "targetSymbol": "_ZN2CA5Shape5unrefEv",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          8716
+        ],
+        "targetCodeSHA256": "407d3e658ab9210dd6d948657d6d5b33d97b2438f0f60ba18a2477b4f123ea0d",
+        "targetImageOffset": "0x8f610",
+        "targetSymbol": "_ZN2CA15shape_intersectEPPNS_5ShapeERKNS_6BoundsE",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          8536,
+          8908
+        ],
+        "targetCodeSHA256": "e3f30d1f05a9da15a412c2b730863538b20b40a4df9bf7bdae5c274e09259ba3",
+        "targetImageOffset": "0x312460",
+        "targetSymbol": "_ZN2CA3OGL12_GLOBAL__N_124replicate_backdrop_edgesERNS0_7ContextEPKNS_5ShapeES6_fRKNS_6BoundsENS0_13ExtendedColorEf",
+        "targetSymbolOffset": "0x0"
+      },
+      {
+        "sourceInstructionOffsets": [
+          11036
+        ],
+        "targetCodeSHA256": "4900780c5d87cdbc73ca7ce20ff473e37457831c2dae39d8bc4d1f6cca9798b8",
+        "targetImageOffset": "0x386b78",
+        "targetSymbol": null,
+        "targetSymbolOffset": null
+      },
+      {
+        "sourceInstructionOffsets": [
+          11080
+        ],
+        "targetCodeSHA256": "0b10341a1e4715a0f6f81a601bf014c7ceb30aafda6e80153f829c4fbdf768be",
+        "targetImageOffset": "0x386ed8",
+        "targetSymbol": null,
+        "targetSymbolOffset": null
+      },
+      {
+        "sourceInstructionOffsets": [
+          10896
+        ],
+        "targetCodeSHA256": "24ed30b41be9e72a188bd9983ffc7ebe7656e5c92d1ad11706c6826adcf40d4e",
+        "targetImageOffset": "0x3878b8",
+        "targetSymbol": null,
+        "targetSymbolOffset": null
+      }
+    ],
+    "producerVertexBindingCallOffset": 11092,
+    "symbol": "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE",
+    "symbolImageOffset": "0xa5218",
+    "symbolPrefixByteCount": 16384,
+    "symbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "uniqueDirectCallTargetCount": 12
+  },
+  "classification": "post-opening-analysis-of-preregistered-capture-backdrop-symbol-prefix-and-direct-call-targets; not-a-recovered-producer-mesh-policy",
+  "conclusion": {
+    "controlFlowOpenedWithoutFitting": true,
+    "producerMeshPolicyRecovered": false,
+    "productionShaderAuthorized": false,
+    "prospectiveGatePassed": false,
+    "requiresArithmeticAndBranchRecovery": true,
+    "requiresUnseenGeometryTransfer": true,
+    "symbolAndEveryDecisionCallTargetByteValidated": true
+  },
+  "dynamicAllocationCaptureBackdropCodeAnalysisSchemaVersion": 1,
+  "evidenceStatus": "retrospective-validator-correction-after-failed-ci-gate",
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30762428154/transition-timeline.json",
+  "inputTimelineSHA256": "e548b627f12e6d2c600ed372ef004cd898406ca9d755a26883a9b1885c7d8134",
+  "inputValidatorResultArtifact": "tmp/dynamic-allocation-path-isolation-30762428154-v2.json",
+  "inputValidatorResultSHA256": "c801d0c0acfa91a48a3c227494ea37cfc4877ee240fe1eb9d5263ce1bcfe8788",
+  "runID": 30762428154
+}

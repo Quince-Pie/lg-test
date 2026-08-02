@@ -4356,6 +4356,15 @@ private let captureBackdropCodeByteCount = 0x4000
 private let captureBackdropDecisionCallLowerBound = 0x2000
 private let captureBackdropDecisionCallUpperBound = 0x2B58
 private let captureBackdropDirectCallTargetCodeByteCount = 0x400
+private let captureBackdropVertexBindingReturnOffset = 0x2B58
+private let captureBackdropFramePointerToStackPointer = 0xA50
+private let captureBackdropOriginPointerStackOffset = 0x190
+private let captureBackdropShapePointerStackOffset = 0x1A0
+private let captureBackdropTransformPointerStackOffset = 0x1A8
+private let captureBackdropContextPointerStackOffset = 0x220
+private let captureBackdropRectStackOffset = 0x280
+private let captureBackdropAffineStackOffset = 0x390
+private let captureBackdropContextScaleOffset = 0x18
 private let glassMatrixConstructorCallOffsets = [
     0x338,
     0x3AC,
@@ -4556,6 +4565,94 @@ private func captureBackdropCodeEvidence(
         directCalls.count,
         targetCodeCaptureCount
     )
+}
+
+private func captureBackdropOperandEvidence() -> [String: Any]? {
+    var operands = lg_capture_backdrop_operands()
+    guard lg_capture_backdrop_operands_capture(&operands) != 0 else {
+        return nil
+    }
+
+    func serialized<T>(
+        _ value: inout T,
+        className: String
+    ) -> [String: Any] {
+        let bytes = Swift.withUnsafeBytes(of: &value) {
+            Array($0)
+        }
+        return [
+            "class": className,
+            "lengthBytes": bytes.count,
+            "hex": bytes.map {
+                String(format: "%02x", $0)
+            }.joined(),
+            "sha256": transitionSHA256(Data(bytes)),
+        ]
+    }
+
+    let address: (UInt64) -> String = {
+        String(format: "0x%016llx", $0)
+    }
+    return [
+        "schemaVersion": 1,
+        "executed": true,
+        "class": "bounded live capture_backdrop unwind operands",
+        "symbol": captureBackdropSymbol,
+        "symbolAddress": address(operands.symbol_address),
+        "instructionPointer": address(
+            operands.instruction_pointer),
+        "returnSymbolOffset":
+            captureBackdropVertexBindingReturnOffset,
+        "canonicalFrameAddress": address(
+            operands.canonical_frame_address),
+        "framePointer": address(operands.frame_pointer),
+        "stackPointer": address(operands.stack_pointer),
+        "framePointerToStackPointerDelta":
+            captureBackdropFramePointerToStackPointer,
+        "visitedFrameCount": Int(operands.visited_frame_count),
+        "firstRegister":
+            Int(LG_CAPTURE_BACKDROP_FIRST_REGISTER),
+        "registerCount":
+            Int(LG_CAPTURE_BACKDROP_REGISTER_COUNT),
+        "registers": serialized(
+            &operands.registers,
+            className: "little-endian x19-through-x29 words"),
+        "readMask": String(
+            format: "0x%08x",
+            operands.read_mask),
+        "requiredReadMask": String(
+            format: "0x%08x",
+            UInt32(LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK)),
+        "stackOffsets": [
+            "originPointer":
+                captureBackdropOriginPointerStackOffset,
+            "shapePointer":
+                captureBackdropShapePointerStackOffset,
+            "transformPointer":
+                captureBackdropTransformPointerStackOffset,
+            "contextPointer":
+                captureBackdropContextPointerStackOffset,
+            "rect": captureBackdropRectStackOffset,
+            "affine": captureBackdropAffineStackOffset,
+        ],
+        "originPointer": address(operands.origin_pointer),
+        "shapePointer": address(operands.shape_pointer),
+        "transformPointer": address(operands.transform_pointer),
+        "contextPointer": address(operands.context_pointer),
+        "contextScaleOffset": captureBackdropContextScaleOffset,
+        "rect": serialized(
+            &operands.rect,
+            className: "four little-endian signed 32-bit rectangle words"),
+        "affine": serialized(
+            &operands.affine,
+            className: "six little-endian binary64 affine words"),
+        "origin": serialized(
+            &operands.origin,
+            className: "two little-endian signed 32-bit origin words"),
+        "scale": serialized(
+            &operands.scale,
+            className: "one little-endian binary32 scale word"),
+    ]
 }
 
 private func currentCallStackContainsCaptureBackdrop() -> Bool {
@@ -4987,6 +5084,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let buffer: MTLBuffer
         let offset: Int
         let callSite: [String: Any]?
+        let producerOperands: [String: Any]?
     }
 
     private struct BufferSlot: Hashable {
@@ -5151,6 +5249,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         [ObjectIdentifier: [String: Any]] = [:]
     private var glassUniformCallSiteCaptured = false
     private var producerGeometryCallSiteCaptured = false
+    private var producerGeometryOperandCaptures: Set<String> = []
     private var installReport: [String: Any]?
     private var originalNewRenderPipelineState:
         MetalNewRenderPipelineStateFunction?
@@ -5313,6 +5412,27 @@ private final class MetalUniformProbe: @unchecked Sendable {
         evidence["schemaVersion"] = 5
         evidence["purpose"] =
             "producer-primary-mesh-vertex-buffer-binding"
+        return evidence
+    }
+
+    private func captureProducerGeometryOperandsIfNeeded(
+        capture: String,
+        pipeline: [String: Any],
+        index: Int
+    ) -> [String: Any]? {
+        let creation =
+            pipeline["creationDescriptor"] as? [String: Any]
+        let fragment = creation?["fragmentFunction"] as? String
+        guard !producerGeometryOperandCaptures.contains(capture),
+              capture.hasPrefix(
+                  "transition-path-isolation-31-"),
+              index == 1,
+              fragment == "A2Xghfc",
+              let evidence = captureBackdropOperandEvidence()
+        else {
+            return nil
+        }
+        producerGeometryOperandCaptures.insert(capture)
         return evidence
     }
 
@@ -6396,7 +6516,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pipeline: encoderPipeline(encoder),
                 buffer: metalBuffer,
                 offset: offset,
-                callSite: nil))
+                callSite: nil,
+                producerOperands: nil))
             if metalBuffer.storageMode != .private,
                offset >= 0,
                offset <= metalBuffer.length
@@ -7301,7 +7422,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pipeline: pipeline,
                 buffer: metalBuffer,
                 offset: offset,
-                callSite: callSite))
+                callSite: callSite,
+                producerOperands: nil))
             if metalBuffer.storageMode != .private,
                offset >= 0,
                offset <= metalBuffer.length
@@ -7514,6 +7636,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     capture: captureName,
                     pipeline: pipeline,
                     index: index)
+            let producerOperands =
+                captureProducerGeometryOperandsIfNeeded(
+                    capture: captureName,
+                    pipeline: pipeline,
+                    index: index)
             activeBuffers[slot] = metalBuffer
             record["bufferClass"] =
                 String(reflecting: type(of: metalBuffer))
@@ -7529,9 +7656,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 pipeline: pipeline,
                 buffer: metalBuffer,
                 offset: offset,
-                callSite: callSite))
+                callSite: callSite,
+                producerOperands: producerOperands))
             if let callSite {
                 record["producerGeometryCallSite"] = callSite
+            }
+            if let producerOperands {
+                record["captureBackdropOperands"] =
+                    producerOperands
             }
             if metalBuffer.storageMode != .private,
                offset >= 0,
@@ -7601,18 +7733,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return
         }
         let callSite: [String: Any]?
+        let producerOperands: [String: Any]?
         if stage == "fragment" {
             callSite = captureGlassUniformCallSiteIfNeeded(
                 capture: captureName,
                 pipeline: pipeline,
                 index: index)
+            producerOperands = nil
         } else if stage == "vertex" {
             callSite = captureProducerGeometryCallSiteIfNeeded(
                 capture: captureName,
                 pipeline: pipeline,
                 index: index)
+            producerOperands =
+                captureProducerGeometryOperandsIfNeeded(
+                    capture: captureName,
+                    pipeline: pipeline,
+                    index: index)
         } else {
             callSite = nil
+            producerOperands = nil
         }
         record["bufferAddress"] =
             objectAddress(buffer as AnyObject)
@@ -7626,7 +7766,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pipeline: pipeline,
             buffer: buffer,
             offset: offset,
-            callSite: callSite))
+            callSite: callSite,
+            producerOperands: producerOperands))
+        if let producerOperands {
+            record["captureBackdropOperands"] =
+                producerOperands
+        }
         if buffer.storageMode != .private,
            offset >= 0,
            offset <= buffer.length
@@ -7850,7 +7995,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     pipeline: encoderPipeline(encoder),
                     buffer: buffer,
                     offset: resource.offset,
-                    callSite: nil))
+                    callSite: nil,
+                    producerOperands: nil))
             } else {
                 record[resource.key] = [
                     "class": String(
@@ -7909,6 +8055,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         ? "producerGeometryCallSite"
                         : "uniformCallSite"
                 ] = callSite
+            }
+            if let producerOperands = binding.producerOperands {
+                record["captureBackdropOperands"] =
+                    producerOperands
             }
             guard buffer.storageMode != .private else {
                 record["payloadUnavailable"] = "private storage"
@@ -18349,7 +18499,7 @@ private func transitionPathIsolationAllocationEvidence(
         $0["executed"] as? Bool == true
     }.count
     return [
-        "schemaVersion": 4,
+        "schemaVersion": 5,
         "requested": true,
         "executed": executedRecordCount == expectedRecordCount,
         "sourceSampleIndices": selectedSnapshots.map(

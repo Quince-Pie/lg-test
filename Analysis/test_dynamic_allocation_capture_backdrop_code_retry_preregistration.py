@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -17,10 +18,22 @@ PREREGISTRATION = json.loads(
         / "dynamic_allocation_capture_backdrop_code_retry_preregistration.json"
     ).read_text(encoding="utf-8")
 )
+CAPTURE_COMMIT = "3226bf4733290df8409d227bacd1379fa4d2b8be"
 
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def committed_sha256(path: Path) -> str:
+    relative = path.relative_to(REPOSITORY_ROOT)
+    content = subprocess.run(
+        ["git", "show", f"{CAPTURE_COMMIT}:{relative.as_posix()}"],
+        cwd=REPOSITORY_ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout
+    return hashlib.sha256(content).hexdigest()
 
 
 class CaptureBackdropCodeRetryPreregistrationTests(unittest.TestCase):
@@ -76,7 +89,12 @@ class CaptureBackdropCodeRetryPreregistrationTests(unittest.TestCase):
         }
         for name, path in files.items():
             with self.subTest(name=name):
-                self.assertEqual(sha256(path), expected[name])
+                actual = (
+                    sha256(path)
+                    if name == "productionShaderSHA256"
+                    else committed_sha256(path)
+                )
+                self.assertEqual(actual, expected[name])
 
     def test_retry_still_denies_production_authority(self) -> None:
         acceptance = PREREGISTRATION["acceptance"]

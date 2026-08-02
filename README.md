@@ -4561,6 +4561,59 @@ one-shot latch; the latch is set only after the evidence itself contains one
 target-prefix size, zero-tolerance validator, and production prohibition are
 unchanged.
 
+Run `30762428154`, from retry commit `3226bf4`, reached the intended live
+producer stack and retained the complete bounded payload, but the workflow is
+still a failed prospective run.  The final validator rejected it with
+`capture_backdrop symbol-prefix metadata differs`.  The capture itself contains
+exactly one schema-5 call site, one 16 KiB `capture_backdrop` prefix, all 24
+direct calls in the frozen range, and all 24 target prefixes.  Its symbol
+prefix SHA-256 is
+`14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2`.
+The failure was a validator bug: it required the unwind frame's return-address
+image offset to equal the captured symbol-start image offset.  The correct
+relation is that the former equals the latter plus the already frozen `0x2b58`
+return offset.  The regression test now represents those as distinct values.
+
+Applying that correction locally accepts all 114 records, all 912 source-`q`
+components, and all 1,596 allocation/copy components.  This is a retrospective
+harness correction, not a prospective pass for run `30762428154`.  The
+corrected validator result has SHA-256
+`c801d0c0acfa91a48a3c227494ea37cfc4877ee240fe1eb9d5263ce1bcfe8788`.
+The byte-validated post-opening code inventory is retained in
+`Analysis/dynamic_allocation_capture_backdrop_code_retry_result.json`, with
+SHA-256
+`bead96c42d4d40b8b07c2706f46b0bb8f565f1dc23901e8c7aef770a55e27112`;
+it explicitly records that the prospective gate did not pass.
+
+Disassembly of that exact prefix closes the arithmetic skeleton at the primary
+vertex path.  The function converts the signed rectangle at `SP+0x280` to
+binary32, multiplies it by the context scale at `[context+0x18]`, applies
+`frintm` to lower bounds and `frintp` to upper bounds, and uses fused `fmsub`
+to retain each rounding residual.  It divides one by the scale in binary32 and
+reconstructs snapped bounds with separate binary32 multiply and add
+instructions.  On the affine branch it converts those bounds to binary64,
+applies the six doubles at `SP+0x390` with the observed ordered `fmadd`
+sequence, converts back to binary32, subtracts the two signed integer origins,
+and stores the four 48-byte-stride primary vertices.  The byte-gated prologue
+makes current `SP = x29 - 0xa50` at the known `0x2b58` return PC.  These are
+observed instructions, not a fitted mesh formula; the live rectangle, affine
+matrix, scale, and origin were absent from that artifact.
+
+The bounded operand follow-up is frozen before capture in
+`Analysis/dynamic_allocation_capture_backdrop_operand_preregistration.json`.
+It retains one lightweight operand record in each of the unchanged 114
+sample-31 interventions.  `_Unwind_Backtrace` must find the exact symbol and
+return PC; `_Unwind_GetGR` retains `x19...x29`; checked same-task reads retain
+only the preregistered rectangle, affine matrix, pointer slots, origin pair,
+and context scale.  The validator pins the complete prefix hash and 52-byte
+prologue before using the `x29` frame delta, checks the `x26`/origin and
+`x27`/context identities, and independently replays the opened instruction
+order.  Acceptance requires all 114 captures and all 912 primary-position
+words to match by binary32 bit pattern with zero tolerance.  Even a clean pass
+will prove only the captured affine arithmetic stage; mapping every operand
+from public layer state and a separately frozen unseen native geometry remain
+mandatory before production integration.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

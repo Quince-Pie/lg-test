@@ -2,6 +2,7 @@
 """Tests for the reduced surviving-path threshold validator."""
 
 import hashlib
+import struct
 import unittest
 from pathlib import Path
 
@@ -9,6 +10,85 @@ import validate_dynamic_allocation_surviving_path_threshold as surviving
 
 
 class SurvivingPathThresholdValidatorTests(unittest.TestCase):
+    @staticmethod
+    def operand_bytes(payload: bytes, class_name: str) -> dict[str, object]:
+        return {
+            "class": class_name,
+            "lengthBytes": len(payload),
+            "hex": payload.hex(),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+        }
+
+    @classmethod
+    def capture_backdrop_operands(cls) -> dict[str, object]:
+        symbol_address = 0x1000_0000
+        frame_pointer = 0x2000
+        stack_pointer = (
+            frame_pointer
+            - surviving.CAPTURE_BACKDROP_FRAME_POINTER_TO_STACK_POINTER
+        )
+        origin_pointer = 0x3000
+        context_pointer = 0x4000
+        registers = [0] * surviving.CAPTURE_BACKDROP_REGISTER_COUNT
+        registers[26 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER] = origin_pointer
+        registers[27 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER] = context_pointer
+        registers[29 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER] = frame_pointer
+        return {
+            "schemaVersion": 1,
+            "executed": True,
+            "class": "bounded live capture_backdrop unwind operands",
+            "symbol": surviving.CAPTURE_BACKDROP_SYMBOL,
+            "symbolAddress": f"0x{symbol_address:016x}",
+            "instructionPointer": (
+                f"0x{symbol_address + surviving.CAPTURE_BACKDROP_VERTEX_BINDING_RETURN_OFFSET:016x}"
+            ),
+            "returnSymbolOffset": (
+                surviving.CAPTURE_BACKDROP_VERTEX_BINDING_RETURN_OFFSET
+            ),
+            "canonicalFrameAddress": f"0x{frame_pointer + 0x10:016x}",
+            "framePointer": f"0x{frame_pointer:016x}",
+            "stackPointer": f"0x{stack_pointer:016x}",
+            "framePointerToStackPointerDelta": (
+                surviving.CAPTURE_BACKDROP_FRAME_POINTER_TO_STACK_POINTER
+            ),
+            "visitedFrameCount": 6,
+            "firstRegister": surviving.CAPTURE_BACKDROP_FIRST_REGISTER,
+            "registerCount": surviving.CAPTURE_BACKDROP_REGISTER_COUNT,
+            "registers": cls.operand_bytes(
+                struct.pack(
+                    f"<{surviving.CAPTURE_BACKDROP_REGISTER_COUNT}Q",
+                    *registers,
+                ),
+                "little-endian x19-through-x29 words",
+            ),
+            "readMask": "0x000000ff",
+            "requiredReadMask": "0x000000ff",
+            "stackOffsets": surviving.CAPTURE_BACKDROP_STACK_OFFSETS,
+            "originPointer": f"0x{origin_pointer:016x}",
+            "shapePointer": "0x0000000000000000",
+            "transformPointer": "0x0000000000005000",
+            "contextPointer": f"0x{context_pointer:016x}",
+            "contextScaleOffset": (
+                surviving.CAPTURE_BACKDROP_CONTEXT_SCALE_OFFSET
+            ),
+            "rect": cls.operand_bytes(
+                struct.pack("<4i", 1, 2, 3, 4),
+                "four little-endian signed 32-bit rectangle words",
+            ),
+            "affine": cls.operand_bytes(
+                struct.pack("<6d", 1, 0, 0, 1, 0, 0),
+                "six little-endian binary64 affine words",
+            ),
+            "origin": cls.operand_bytes(
+                struct.pack("<2i", 0, 0),
+                "two little-endian signed 32-bit origin words",
+            ),
+            "scale": cls.operand_bytes(
+                struct.pack("<f", 1),
+                "one little-endian binary32 scale word",
+            ),
+        }
+
     @staticmethod
     def producer_call_site() -> dict[str, object]:
         payload = bytes(0x800)
@@ -63,12 +143,19 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             }
         )
         frame = call_site["frames"][0]
+        return_address = (
+            symbol_address + surviving.CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET + 4
+        )
         frame.update(
             {
                 "symbol": surviving.CAPTURE_BACKDROP_SYMBOL,
                 "symbolAddress": f"0x{symbol_address:016x}",
+                "returnAddress": f"0x{return_address:016x}",
+                "symbolOffset": (
+                    f"0x{return_address - symbol_address:x}"
+                ),
                 "imageBase": f"0x{image_base:016x}",
-                "imageOffset": "0x1000",
+                "imageOffset": f"0x{return_address - image_base:x}",
                 "captureBackdropCode": {
                     "class": (
                         "mapped arm64e QuartzCore symbol prefix and direct calls"
@@ -198,8 +285,9 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn('"schemaVersion": 2', fixed_block)
         self.assertNotIn('"schemaVersion": 3', fixed_block)
         self.assertNotIn('"schemaVersion": 4', fixed_block)
-        self.assertIn('"schemaVersion": 4', path_block)
+        self.assertIn('"schemaVersion": 5', path_block)
         self.assertNotIn('"schemaVersion": 3', path_block)
+        self.assertNotIn('"schemaVersion": 4', path_block)
         self.assertIn('"scanXValues"', path_block)
         self.assertIn('"scanYValues"', path_block)
         self.assertIn('"repeatXValues"', path_block)
@@ -248,6 +336,16 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertEqual(capture["decisionDirectCallOffsets"], [0x2B54])
         self.assertEqual(capture["directCallTargetCodeCaptureCount"], 1)
 
+    def test_capture_backdrop_distinguishes_return_and_symbol_image_offsets(
+        self,
+    ) -> None:
+        call_site = self.producer_call_site_with_capture_backdrop()
+        frame = call_site["frames"][0]
+        capture = frame["captureBackdropCode"]
+        self.assertEqual(int(frame["imageOffset"], 16), 0x1000 + 0x2B58)
+        self.assertEqual(int(capture["imageOffset"], 16), 0x1000)
+        surviving.validate_producer_geometry_call_site(call_site)
+
     def test_capture_backdrop_rejects_a_bad_symbol_digest(self) -> None:
         call_site = self.producer_call_site_with_capture_backdrop()
         call_site["frames"][0]["captureBackdropCode"]["sha256"] = "0" * 64
@@ -264,6 +362,68 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         capture["sha256"] = hashlib.sha256(payload).hexdigest()
         with self.assertRaisesRegex(ValueError, "direct-call count differs"):
             surviving.validate_producer_geometry_call_site(call_site)
+
+    def test_capture_backdrop_operand_replay_is_bit_exact(self) -> None:
+        operands = surviving.validate_capture_backdrop_operands(
+            self.capture_backdrop_operands()
+        )
+        expected = [
+            1.0,
+            2.0,
+            4.0,
+            2.0,
+            4.0,
+            6.0,
+            1.0,
+            6.0,
+        ]
+        self.assertEqual(
+            operands["predictedPrimaryPositionBits"],
+            [surviving.holdout.float32_bits(value) for value in expected],
+        )
+        self.assertEqual(operands["rect"], [1, 2, 3, 4])
+        self.assertEqual(operands["origin"], [0, 0])
+        self.assertEqual(operands["scaleBits"], 0x3F80_0000)
+
+    def test_capture_backdrop_operand_replay_preserves_affine_order(self) -> None:
+        predicted = surviving.capture_backdrop_primary_position_bits(
+            rect=(1, 2, 3, 4),
+            affine=(2, 3, 4, 5, 6, 7),
+            origin=(1, 2),
+            scale=1,
+        )
+        expected = [15, 18, 21, 27, 37, 47, 31, 38]
+        self.assertEqual(
+            predicted,
+            [surviving.holdout.float32_bits(value) for value in expected],
+        )
+
+    def test_capture_backdrop_operand_replay_rejects_a_missing_transform(
+        self,
+    ) -> None:
+        operands = self.capture_backdrop_operands()
+        operands["transformPointer"] = "0x0000000000000000"
+        with self.assertRaisesRegex(ValueError, "operand metadata differs"):
+            surviving.validate_capture_backdrop_operands(operands)
+
+    def test_capture_backdrop_operand_replay_rejects_a_bad_payload_hash(
+        self,
+    ) -> None:
+        operands = self.capture_backdrop_operands()
+        operands["affine"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "affine operand metadata differs"):
+            surviving.validate_capture_backdrop_operands(operands)
+
+    def test_swift_captures_bounded_operands_for_every_sample31_record(
+        self,
+    ) -> None:
+        source = (
+            Path(__file__).parents[1] / "Sources" / "GlassIntrospect" / "main.swift"
+        ).read_text(encoding="utf-8")
+        self.assertIn("captureProducerGeometryOperandsIfNeeded", source)
+        self.assertIn('"transition-path-isolation-31-"', source)
+        self.assertIn('record["captureBackdropOperands"]', source)
+        self.assertIn("captureBackdropFramePointerToStackPointer = 0xA50", source)
 
     def test_live_baseline_changes_only_deepest_position(self) -> None:
         states = [
