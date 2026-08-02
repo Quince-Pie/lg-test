@@ -9721,8 +9721,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 )] = []
                 for (name, vertex) in [
                     ("custom-stage-in-vertex", customVertex),
-                    ("captured-vertex", nil),
-                ] as [(String, MTLFunction?)] {
+                ] {
                     guard let descriptor = capturedDescriptor.copy()
                             as? MTLRenderPipelineDescriptor
                     else {
@@ -9730,9 +9729,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     }
                     descriptor.label =
                         "lg.final-highlight-interpolant-" + name
-                    if let vertex {
-                        descriptor.vertexFunction = vertex
-                    }
+                    descriptor.vertexFunction = vertex
+                    let vertexDescriptor = MTLVertexDescriptor()
+                    vertexDescriptor.attributes[0].format = .float4
+                    vertexDescriptor.attributes[0].offset = 0
+                    vertexDescriptor.attributes[0].bufferIndex = 1
+                    vertexDescriptor.attributes[1].format = .float2
+                    vertexDescriptor.attributes[1].offset = 16
+                    vertexDescriptor.attributes[1].bufferIndex = 1
+                    vertexDescriptor.attributes[2].format = .float2
+                    vertexDescriptor.attributes[2].offset = 24
+                    vertexDescriptor.attributes[2].bufferIndex = 1
+                    vertexDescriptor.layouts[1].stride = 32
+                    vertexDescriptor.layouts[1].stepFunction = .perVertex
+                    vertexDescriptor.layouts[1].stepRate = 1
+                    descriptor.vertexDescriptor = vertexDescriptor
                     descriptor.fragmentFunction = fragment
                     descriptor.colorAttachments[0]?.pixelFormat =
                         .rgba32Uint
