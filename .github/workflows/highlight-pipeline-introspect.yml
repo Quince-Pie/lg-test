@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   highlight-pipeline-introspect:
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 15
     env:
       LG_GLASS_MATERIAL: clear
@@ -24,6 +24,7 @@ jobs:
       - name: Require macOS 26+
         run: |
           sw_vers
+          xcodebuild -version
           test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
 
       - name: Select standard visual accessibility state
