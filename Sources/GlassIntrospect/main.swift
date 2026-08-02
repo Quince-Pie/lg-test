@@ -9353,10 +9353,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 bytes: halfVectorBytes(words))
         }
         func makeUniform(
-            _ intervention: GlassUniformIntervention
+            _ intervention: GlassUniformIntervention,
+            base: MTLBuffer
         ) -> MTLBuffer? {
             guard let clone = device.makeBuffer(
-                    length: uniformClone.length,
+                    length: base.length,
                     options: .storageModeShared)
             else {
                 return nil
@@ -9375,8 +9376,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
             memcpy(
                 clone.contents(),
-                uniformClone.contents(),
-                uniformClone.length)
+                base.contents(),
+                base.length)
             for uniformEdit in intervention.edits {
                 let destination = clone.contents().advanced(
                     by:
@@ -9424,8 +9425,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             edits: [
                 edit("key_color", 0xE8, zeroHalf4),
             ])
-        guard let keyUniform = makeUniform(keyOnly),
-              let fillUniform = makeUniform(fillOnly)
+        guard let keyUniform = makeUniform(
+                keyOnly,
+                base: uniformClone),
+              let fillUniform = makeUniform(
+                fillOnly,
+                base: uniformClone)
         else {
             return [
                 "executed": false,
@@ -9530,7 +9535,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             buffer: MTLBuffer
         )] = []
         for intervention in tomographyInterventions {
-            guard let buffer = makeUniform(intervention) else {
+            guard let buffer = makeUniform(
+                    intervention,
+                    base: uniformClone)
+            else {
                 return [
                     "executed": false,
                     "reason":
@@ -9539,6 +9547,100 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
             tomographyUniforms.append((intervention, buffer))
+        }
+
+        let zero = UInt16(0x0000)
+        let one = UInt16(0x3c00)
+        let matrixZero = [zero, zero, zero, zero]
+        let controls = [one, zero, zero, zero]
+        func completeMatrixIntervention(
+            name: String,
+            matrix0: [UInt16],
+            matrix1: [UInt16],
+            matrix2: [UInt16],
+            matrix3: [UInt16],
+            matrix4: [UInt16]
+        ) -> GlassUniformIntervention {
+            GlassUniformIntervention(
+                name: name,
+                edits: [
+                    edit(
+                        "vibrant_matrices_and_controls",
+                        0x60,
+                        matrix0 + matrix1 + matrix2
+                            + matrix3 + matrix4 + controls),
+                ])
+        }
+        let compositorInterventions = [
+            completeMatrixIntervention(
+                name: "zero-rgb-unit-alpha",
+                matrix0: matrixZero,
+                matrix1: matrixZero,
+                matrix2: matrixZero,
+                matrix3: matrixZero,
+                matrix4: [zero, zero, zero, one]),
+            completeMatrixIntervention(
+                name: "unit-rgb-unit-alpha",
+                matrix0: matrixZero,
+                matrix1: matrixZero,
+                matrix2: matrixZero,
+                matrix3: matrixZero,
+                matrix4: [one, one, one, one]),
+            completeMatrixIntervention(
+                name: "identity-rgb-unit-alpha",
+                matrix0: [one, zero, zero, zero],
+                matrix1: [zero, one, zero, zero],
+                matrix2: [zero, zero, one, zero],
+                matrix3: matrixZero,
+                matrix4: [zero, zero, zero, one]),
+            completeMatrixIntervention(
+                name: "permuted-rgb-unit-alpha",
+                matrix0: [zero, zero, one, zero],
+                matrix1: [one, zero, zero, zero],
+                matrix2: [zero, one, zero, zero],
+                matrix3: matrixZero,
+                matrix4: [zero, zero, zero, one]),
+            completeMatrixIntervention(
+                name: "identity-rgb-destination-alpha",
+                matrix0: [one, zero, zero, zero],
+                matrix1: [zero, one, zero, zero],
+                matrix2: [zero, zero, one, zero],
+                matrix3: [zero, zero, zero, one],
+                matrix4: matrixZero),
+            completeMatrixIntervention(
+                name: "asymmetric-constant-unit-alpha",
+                matrix0: matrixZero,
+                matrix1: matrixZero,
+                matrix2: matrixZero,
+                matrix3: matrixZero,
+                matrix4: [0x3400, 0x3800, 0x3a00, one]),
+            GlassUniformIntervention(
+                name: "natural-rgb-unit-alpha",
+                edits: [
+                    edit("matrix3_alpha", 0x7E, [zero]),
+                    edit("matrix4_alpha", 0x86, [one]),
+                ]),
+        ]
+        var compositorUniforms: [(
+            intervention: GlassUniformIntervention,
+            buffer: MTLBuffer
+        )] = []
+        if compositorInput != nil {
+            for intervention in compositorInterventions {
+                guard let buffer = makeUniform(
+                        intervention,
+                        base: selection.uniformBuffer)
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "final compositor tomography clone failed",
+                        "intervention":
+                            interventionRecord(intervention),
+                    ]
+                }
+                compositorUniforms.append((intervention, buffer))
+            }
         }
 
         let rebuiltDescriptor = capturedDescriptor.copy()
@@ -9858,6 +9960,31 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 uniformBuffer: selection.uniformBuffer,
                 captureAuxiliary: false,
                 initialBGRA8: destination)
+            let tomographyCases: [[String: Any]] =
+                compositorUniforms.map { item in
+                    var record = interventionRecord(
+                        item.intervention)
+                    let replay = render(
+                        name:
+                            "compositor-tomography-"
+                            + item.intervention.name
+                            + "-rgba16float",
+                        pipeline: floatPipeline,
+                        pixelFormat: .rgba16Float,
+                        uniformBuffer: item.buffer,
+                        captureAuxiliary: false,
+                        initialBGRA8: destination)
+                    record["executed"] =
+                        replay["executed"] as? Bool == true
+                    record["replay"] = replay
+                    return record
+                }
+            let tomographyExecuted =
+                tomographyCases.count
+                    == compositorInterventions.count
+                && tomographyCases.allSatisfy {
+                    $0["executed"] as? Bool == true
+                }
             let capturedVsReference = compareReplaySnapshots(
                 reference: compositorReference,
                 candidate: capturedCompositor,
@@ -9871,11 +9998,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 candidate: rebuiltCompositor,
                 outputDirectory: outputDirectory)
             compositorTrace = [
-                "schemaVersion": 1,
+                "schemaVersion": 2,
                 "executed":
                     capturedCompositor["executed"] as? Bool == true
                     && rebuiltCompositor["executed"] as? Bool == true
-                    && exactCompositorHalf["executed"] as? Bool == true,
+                    && exactCompositorHalf["executed"] as? Bool == true
+                    && tomographyExecuted,
                 "capturedAppleFunctionUnmodified": true,
                 "input": compositorInput,
                 "reference": compositorReference,
@@ -9885,6 +10013,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "capturedVsReference": capturedVsReference,
                 "rebuiltVsReference": rebuiltVsReference,
                 "capturedVsRebuilt": capturedVsRebuilt,
+                "stageTomography": [
+                    "schemaVersion": 1,
+                    "executed": tomographyExecuted,
+                    "capturedAppleFunctionUnmodified": true,
+                    "caseCount": tomographyCases.count,
+                    "cases": tomographyCases,
+                ],
             ]
         }
         let exactKeyHalf: [String: Any]? =
@@ -11550,6 +11685,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "LG_TRANSITION_HIGHLIGHT_TRACE"
             ] == "1"
             && (capture.hasSuffix("-01")
+                || capture.hasSuffix("-12")
                 || capture.hasSuffix("-32"))
         let glassPrefixReference = replayGlassPrefix(
             pass: pass,

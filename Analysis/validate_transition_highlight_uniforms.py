@@ -10,7 +10,18 @@ from typing import Any
 
 
 EXPECTED_SAMPLE_INDICES = (1, 4, 8, 12, 16, 20, 24, 28, 32)
-HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 32})
+HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 12, 32})
+COMPOSITOR_TOMOGRAPHY_CASES = frozenset(
+    {
+        "zero-rgb-unit-alpha",
+        "unit-rgb-unit-alpha",
+        "identity-rgb-unit-alpha",
+        "permuted-rgb-unit-alpha",
+        "identity-rgb-destination-alpha",
+        "asymmetric-constant-unit-alpha",
+        "natural-rgb-unit-alpha",
+    }
+)
 EXPECTED_CARRIER_CRITICAL_PATHS = [
     [],
     [0],
@@ -286,7 +297,7 @@ def validate_highlight_trace(
         "exactCompositorTrace",
     )
     if (
-        compositor.get("schemaVersion") != 1
+        compositor.get("schemaVersion") != 2
         or compositor.get("executed") is not True
         or compositor.get("capturedAppleFunctionUnmodified") is not True
     ):
@@ -336,6 +347,42 @@ def validate_highlight_trace(
             output,
             root=root,
             name=f"dynamic compositor {key}",
+        )
+    tomography = mapping(
+        compositor.get("stageTomography"),
+        "compositor stageTomography",
+    )
+    cases = tomography.get("cases")
+    if (
+        tomography.get("schemaVersion") != 1
+        or tomography.get("executed") is not True
+        or tomography.get("capturedAppleFunctionUnmodified") is not True
+        or tomography.get("caseCount") != len(COMPOSITOR_TOMOGRAPHY_CASES)
+        or not isinstance(cases, list)
+        or {case.get("name") for case in cases if isinstance(case, Mapping)}
+        != COMPOSITOR_TOMOGRAPHY_CASES
+    ):
+        raise ValueError("dynamic compositor tomography differs")
+    for untyped_case in cases:
+        case = mapping(untyped_case, "compositor tomography case")
+        replay = mapping(case.get("replay"), "compositor tomography replay")
+        output = mapping(replay.get("output"), "compositor tomography output")
+        if (
+            case.get("executed") is not True
+            or not isinstance(case.get("edits"), list)
+            or not case["edits"]
+            or replay.get("executed") is not True
+            or output.get("width") != 1024
+            or output.get("height") != 1024
+            or output.get("pixelFormat") != 115
+            or output.get("rawBytes") != 1024 * 1024 * 8
+            or "auxiliaryOutput" in replay
+        ):
+            raise ValueError("dynamic compositor tomography layout differs")
+        validate_raw_file(
+            output,
+            root=root,
+            name=f"dynamic compositor tomography {case.get('name')}",
         )
 
 

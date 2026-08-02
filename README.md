@@ -1731,11 +1731,12 @@ output byte for byte. The per-state pre-pass BGRA8 texture is included in the
 artifact so an independent renderer is compared over the same carrier pixels;
 substituting a settled capture's background is not a valid dynamic parity test.
 The targeted `uniform-smoke` leg also isolates Apple's unmodified final
-`A2Xghfc` draw at the first fractional state and the settled endpoint. It
+`A2Xghfc` draw at the first fractional state, a preregistered middle-state
+holdout, and the settled endpoint. It
 rebuilds the captured pipeline descriptor in the original BGRA8 format and
 requires that rebuild to match byte for byte, then changes only attachment
 zero to RGBA16Float while replacing the vibrant matrix with an identity alpha
-mapping. The resulting two exact binary16 alpha fields distinguish
+mapping. The resulting three exact binary16 alpha fields distinguish
 transition-raster interpolation from highlight and compositor arithmetic.
 This alpha-only mode omits the larger key/fill tomography matrix and unused
 auxiliary attachments; the complete settled-highlight workflow retains those
@@ -1748,6 +1749,14 @@ byte. A second rebuild changes only attachment zero to RGBA16Float and retains
 the complete post-compositor binary16 field. This isolates partially
 transparent destination arithmetic without fitting an opaque attachment
 sweep or treating a format-converted replay as a parity oracle.
+Seven endpoint matrix-basis interventions then separate the translucent
+source-construction stages: zero and unit RGB controls, identity and permuted
+straight-RGB bases, identity with destination alpha, an asymmetric constant,
+and the natural RGB matrix forced to unit alpha. Each intervention changes
+only the retained uniform copy and records the unmodified Apple function's
+complete RGBA16Float output. These cases distinguish destination
+unpremultiplication, matrix evaluation, premultiplication, and clamp behavior
+without modifying the captured shader or selecting a formula from its output.
 Every state additionally retains attachment zero immediately before the last
 `A2Xghfc` draw, rather than assuming that the glass-prefix boundary is also the
 highlight boundary. This distinction is observable at the materialized
