@@ -3851,6 +3851,17 @@ the unambiguous main-draw surface and requires zero mismatched words across
 diagnostic evidence.  A failure remains useful evidence and must not be
 rewritten as a prospective pass.
 
+Run `30737403841` produced all nine main and combined surfaces and passed the
+capture validator, but the first frozen comparison wrapper failed: 9,726,180
+of 37,748,736 words differed because the wrapper predicted the complete quad
+instead of intersecting it with the captured dynamic scissor.  That
+prospective harness failure is retained.  After opening the trace, adding the
+already-recorded scissor intersection produced zero mismatched words across
+all nine states; this is a retrospective harness correction, not a
+prospective pass.  The corrected wrapper and both result hashes are frozen in
+`Analysis/background_interpolant_transfer_followup_preregistration.json`
+before a new artifact is opened.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

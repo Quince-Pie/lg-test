@@ -1,0 +1,52 @@
+{
+  "backgroundInterpolantTransferFollowupPreregistrationSchemaVersion": 1,
+  "classification": "prospective follow-up after a retained harness failure",
+  "objective": "Test the scissor-aware frozen local AGX raster model against all four background-main interpolants at every dynamic state on a capture opened only after this registration.",
+  "priorOpenedRun": {
+    "runId": 30737403841,
+    "captureCommit": "7a63bbc3061c8ea4837312ff317f40084c35d6dc",
+    "preopenGateWrapperSha256": "6dc8c6aa3459a9e8736920b34b32db85416891eb84c34a31d3b856550f21904e",
+    "resultSha256": "3400eeab6a7978ba334e8079ecce49281e53ea090db3023aca4dca95b03aaea6",
+    "comparedWords": 37748736,
+    "mismatchedWords": 9726180,
+    "retainedVerdict": "prospective harness failure: the wrapper omitted the captured dynamic scissor"
+  },
+  "postOpeningCorrection": {
+    "classification": "retrospective harness correction only",
+    "correctedGateWrapperSha256": "2a2d6ba9f438941efa0bf9a7766f85ed60aa06c805334452afd06611eafcd3b5",
+    "resultSha256": "6d6d08fec7271a44b983310425de4c21eb0eb576fae58216b14ddec6c13e1e8c",
+    "comparedWords": 37748736,
+    "mismatchedWords": 0,
+    "correction": "Intersect the frozen predicted quad bounds with the captured background draw scissor before comparing the full cleared surface."
+  },
+  "capture": {
+    "appearance": "light",
+    "diagnosticReplay": "main-plus-shadow",
+    "direction": "materialize",
+    "material": "clear",
+    "pixelFormat": "rgba32Uint",
+    "prospectiveReplay": "main-only",
+    "sampleIndices": [1, 4, 8, 12, 16, 20, 24, 28, 32],
+    "traceComponents": ["sdf-x", "sdf-y", "source-x", "source-y"]
+  },
+  "frozenPredictor": {
+    "dynamicRenderGateSha256": "fec16ab265aae2ab5738c35fff2488e39807101e5ff51c862fc2374dd9aa200a",
+    "priorPreregistrationSha256": "51847750dd97d20a5e7521986c237181b2cd53e76bfa200de3601ee3f785d26d",
+    "prospectiveGateWrapperSha256": "3f3982f34d3a297b8e2c4b55a1a63dc738ae4f0464294157312013afcde7eee5",
+    "runtimeRasterCoefficientsSha256": "43a5e76869d8e3fba09214e586947b88745dd04283515b8f75e6ca8006d2aaf0",
+    "squareSelectorCalibrationSha256": "aa12e1a33851f60df923667d0e6063d877a194cc4d31548eb644751fa33584b6",
+    "squareSelectorArchiveSha256": "93fcb5859794d67b193e00f2fe741416ae69d93125f38fa7b36506616b98e5ba"
+  },
+  "acceptance": {
+    "comparedWords": 37748736,
+    "maximumAllowedMismatchedWords": 0,
+    "requireEveryStateExact": true,
+    "requireRunIdDifferentFrom": 30737403841
+  },
+  "limitations": [
+    "This follow-up covers the clear/light materialize transition only.",
+    "Only the main-draw replay is part of prospective acceptance; the combined replay remains diagnostic evidence.",
+    "Passing does not by itself authorize production parity.",
+    "The finite square selector table remains calibration-backed rather than a portable closed form."
+  ]
+}
