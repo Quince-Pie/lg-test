@@ -4663,6 +4663,67 @@ tolerance. Even a pass will establish the consumed private region and its
 arithmetic, not yet the upstream public-state rule or an unseen geometry
 transfer, and it cannot authorize a production shader change.
 
+Run `30765781334`, from selected-region commit `ddbd6df`, remains a failed
+prospective gate. It captured complete schema-2 operands in 113 of the 114
+unchanged interventions and failed exactly with `capture_backdrop operand
+capture count differs at 31/9`; the missing state is the `x = -4`
+intervention. The failure is not filled from another sample. After removing
+only the operand extension and reopening the artifact as the already frozen
+schema-4 baseline, all 114 states still pass: primary source `q` is exact in
+912/912 components and the allocation invariants are exact in 1,596/1,596
+components. Independently replaying the 113 retained operands matches all
+904 primary-position words, all 904 primary-source words, and all 113
+consumed rectangles bit for bit with zero tolerance.
+
+All 113 selected handles are Apple's packed-immediate region form. The opened
+decoder places signed `x` in bits 48...63, signed `y` in bits 32...47, width
+in bits 17...31, and height in bits 2...16. The selected handle equals the
+owner's `+0x248` region in every retained state. The owner's `+0x270` region
+differs in three boundary states (`x = -6`, `x = 25`, and `y = 25`); at the
+two X boundaries it is the same pointer-backed region, whose bytes were not
+retained by this preregistration. That is the next concrete evidence target.
+It does not yet establish how public layer state constructs either private
+owner region.
+
+The missing `x = -4` state has an exact later same-state repeat at record 94:
+all non-render state fields and the draw-consumed primary vertex, MVP, and
+index bytes agree. Its selected producer differs, however (`TimgA2Xhfc_Isrc`
+versus `A2Xghfc`), and the full retained vertex/MVP buffers differ outside the
+draw-consumed ranges. This establishes a callback/provenance gap, not its
+cause; buffer reuse remains only a hypothesis. The repeat is diagnostic and
+is not promoted to a live operand capture. The immutable audit is
+`Analysis/dynamic_allocation_capture_backdrop_selected_region_failed_run_result.json`,
+with SHA-256
+`61c3b63b1bc0b57eb91f554b6b58cc5fe3bb9a95b0c6b0ce65de466c7362ded2`.
+
+The dual-owner follow-up is frozen before capture in
+`Analysis/dynamic_allocation_capture_backdrop_owner_region_preregistration.json`.
+Its SHA-256 is
+`fb494a37669252c7c502166839ef1554fa811b3c80126a107f836627bc64562c`.
+It advances the outer evidence to schema 7 and operands to schema 3 while
+leaving the 114-state matrix unchanged. An even selected handle retains a
+checked 256-byte prefix, while pointer-backed owner `+0x248` and owner
+`+0x270` each require a checked 256-byte prefix and continue in checked
+256-byte chunks up to 4 KiB. A separate checked owner window covers offsets
+`0x200...0x2ff` and must contain the independently read `+0x248` and `+0x270`
+handles at their exact byte offsets. A failed same-task read is retried at
+most three times; the complete required mask is `0x000fffff`. The prospective class counts are
+114 packed owner-`+0x248` handles and 112 packed plus two pointer-backed
+owner-`+0x270` handles. The selected handle must equal owner `+0x248` in all
+114 states and owner `+0x270` in 111 states.
+
+The alternate `TimgA2Xhfc_Isrc` producer is eligible only because it was the
+producer selected in the missing `x = -4` state. It has no fallback status:
+like `A2Xghfc`, it must reach vertex-buffer index 1 from the exact
+`capture_backdrop+0x2b58` return PC and pass every complete-read, region,
+rectangle, and primary-word gate. Before a complete capture, at most eight
+eligible callbacks retain a bounded 32-frame symbol/offset inventory. Those
+records expose a changed call path or partial read, but cannot substitute for
+live operands. Thus a clean next run can close the concrete callback and
+owner-pointer gaps; it still cannot by itself prove the public-layer-state
+construction rule, an unseen geometry transfer, physical Retina 2x behavior,
+or production Walle parity.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

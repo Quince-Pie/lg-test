@@ -147,6 +147,43 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         )
         return operands
 
+    @classmethod
+    def capture_backdrop_owner_region_operands(cls) -> dict[str, object]:
+        operands = cls.capture_backdrop_region_operands()
+        region_handle = operands["regionHandle"]
+        region_handle_value = int(region_handle, 16)
+        owner_region_window = bytearray(
+            surviving.CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT
+        )
+        struct.pack_into("<Q", owner_region_window, 0x48, region_handle_value)
+        struct.pack_into("<Q", owner_region_window, 0x70, region_handle_value)
+        operands.update(
+            {
+                "schemaVersion": 3,
+                "completeRead": True,
+                "memoryReadMaximumAttemptCount": (
+                    surviving.CAPTURE_BACKDROP_MEMORY_READ_MAXIMUM_ATTEMPT_COUNT
+                ),
+                "readMask": "0x000fffff",
+                "requiredReadMask": "0x000fffff",
+                "ownerRegion270": region_handle,
+                "ownerRegionWindowOffset": (
+                    surviving.CAPTURE_BACKDROP_OWNER_REGION_WINDOW_OFFSET
+                ),
+                "ownerRegion248Prefix": cls.operand_bytes(
+                    b"", "bounded owner +0x248 region prefix bytes"
+                ),
+                "ownerRegion270Prefix": cls.operand_bytes(
+                    b"", "bounded owner +0x270 region prefix bytes"
+                ),
+                "ownerRegionWindow": cls.operand_bytes(
+                    bytes(owner_region_window),
+                    "bounded owner bytes at offsets 0x200 through 0x2ff",
+                ),
+            }
+        )
+        return operands
+
     @staticmethod
     def producer_call_site() -> dict[str, object]:
         payload = bytes(0x800)
@@ -328,7 +365,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             list(surviving.SAMPLE31_REPEAT_Y_VALUES),
         )
 
-    def test_swift_uses_schema_six_for_the_region_replay(self) -> None:
+    def test_swift_uses_schema_seven_for_the_owner_region_replay(self) -> None:
         source = (
             Path(__file__).parents[1] / "Sources" / "GlassIntrospect" / "main.swift"
         ).read_text(encoding="utf-8")
@@ -341,7 +378,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn('"schemaVersion": 2', fixed_block)
         self.assertNotIn('"schemaVersion": 3', fixed_block)
         self.assertNotIn('"schemaVersion": 4', fixed_block)
-        self.assertIn('"schemaVersion": 6', path_block)
+        self.assertIn('"schemaVersion": 7', path_block)
         self.assertNotIn('"schemaVersion": 3', path_block)
         self.assertNotIn('"schemaVersion": 4', path_block)
         self.assertIn('"scanXValues"', path_block)
@@ -495,6 +532,130 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertEqual(validated["consumedRegionRect"], [1, 2, 3, 4])
         self.assertTrue(validated["consumedRegionRectExact"])
 
+    def test_capture_backdrop_schema_three_replays_both_owner_regions(self) -> None:
+        validated = surviving.validate_capture_backdrop_operands(
+            self.capture_backdrop_owner_region_operands()
+        )
+        self.assertEqual(validated["schemaVersion"], 3)
+        self.assertEqual(validated["ownerRegion248Class"], "packed")
+        self.assertEqual(validated["ownerRegion270Class"], "packed")
+        self.assertEqual(validated["ownerRegion248FirstRect"], [1, 2, 3, 4])
+        self.assertEqual(validated["ownerRegion270FirstRect"], [1, 2, 3, 4])
+        self.assertTrue(validated["selectedEqualsOwner248"])
+        self.assertEqual(validated["ownerRegionWindowByteCount"], 256)
+
+    def test_capture_backdrop_schema_three_cross_checks_the_owner_window(self) -> None:
+        operands = self.capture_backdrop_owner_region_operands()
+        owner_window = bytearray.fromhex(operands["ownerRegionWindow"]["hex"])
+        owner_window[0x48] ^= 1
+        operands["ownerRegionWindow"] = self.operand_bytes(
+            bytes(owner_window),
+            "bounded owner bytes at offsets 0x200 through 0x2ff",
+        )
+        with self.assertRaisesRegex(ValueError, "selected-region replay differs"):
+            surviving.validate_capture_backdrop_operands(operands)
+
+    def test_capture_backdrop_schema_three_requires_complete_owner_prefixes(
+        self,
+    ) -> None:
+        operands = self.capture_backdrop_owner_region_operands()
+        operands["ownerRegion270"] = "0x0000000000008000"
+        owner_window = bytearray.fromhex(operands["ownerRegionWindow"]["hex"])
+        struct.pack_into("<Q", owner_window, 0x70, 0x8000)
+        operands["ownerRegionWindow"] = self.operand_bytes(
+            bytes(owner_window),
+            "bounded owner bytes at offsets 0x200 through 0x2ff",
+        )
+        with self.assertRaisesRegex(ValueError, "ownerRegion270Prefix"):
+            surviving.validate_capture_backdrop_operands(operands)
+
+    def test_capture_backdrop_schema_three_decodes_a_4k_owner_prefix(self) -> None:
+        operands = self.capture_backdrop_owner_region_operands()
+        owner_handle = 0x8000
+        payload = bytearray(surviving.CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT)
+        struct.pack_into("<5i", payload, 12, 2, 4, 1, 4, 6)
+        operands["ownerRegion270"] = f"0x{owner_handle:016x}"
+        owner_window = bytearray.fromhex(operands["ownerRegionWindow"]["hex"])
+        struct.pack_into("<Q", owner_window, 0x70, owner_handle)
+        operands["ownerRegionWindow"] = self.operand_bytes(
+            bytes(owner_window),
+            "bounded owner bytes at offsets 0x200 through 0x2ff",
+        )
+        operands["ownerRegion270Prefix"] = self.operand_bytes(
+            bytes(payload), "bounded owner +0x270 region prefix bytes"
+        )
+        validated = surviving.validate_capture_backdrop_operands(operands)
+        self.assertEqual(validated["ownerRegion270Class"], "pointer")
+        self.assertEqual(validated["ownerRegion270FirstRect"], [1, 2, 3, 4])
+        self.assertEqual(validated["ownerRegion270PrefixByteCount"], 4096)
+
+    def test_capture_backdrop_schema_three_accepts_a_checked_256b_owner_prefix(
+        self,
+    ) -> None:
+        operands = self.capture_backdrop_owner_region_operands()
+        owner_handle = 0x8000
+        payload = bytearray(surviving.CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT)
+        struct.pack_into("<5i", payload, 12, 2, 4, 1, 4, 6)
+        operands["ownerRegion270"] = f"0x{owner_handle:016x}"
+        owner_window = bytearray.fromhex(operands["ownerRegionWindow"]["hex"])
+        struct.pack_into("<Q", owner_window, 0x70, owner_handle)
+        operands["ownerRegionWindow"] = self.operand_bytes(
+            bytes(owner_window),
+            "bounded owner bytes at offsets 0x200 through 0x2ff",
+        )
+        operands["ownerRegion270Prefix"] = self.operand_bytes(
+            bytes(payload), "bounded owner +0x270 region prefix bytes"
+        )
+        validated = surviving.validate_capture_backdrop_operands(operands)
+        self.assertEqual(validated["ownerRegion270FirstRect"], [1, 2, 3, 4])
+        self.assertEqual(validated["ownerRegion270PrefixByteCount"], 256)
+
+    def test_callback_attempt_retains_bounded_symbol_offsets_without_addresses(
+        self,
+    ) -> None:
+        attempt = {
+            "schemaVersion": 1,
+            "executed": True,
+            "class": "bounded eligible producer callback stack provenance",
+            "maximumFrameCount": 32,
+            "frameCount": 2,
+            "attemptIndex": 0,
+            "fragmentFunction": "TimgA2Xhfc_Isrc",
+            "captureBackdropSymbolOffsets": ["0x2410"],
+            "frames": [
+                {"index": 0, "image": "GlassIntrospect", "symbol": "callback"},
+                {
+                    "index": 3,
+                    "image": "QuartzCore",
+                    "symbol": surviving.CAPTURE_BACKDROP_SYMBOL,
+                    "symbolOffset": "0x2410",
+                },
+            ],
+        }
+        validated = surviving.validate_capture_backdrop_operand_attempt(attempt)
+        self.assertEqual(validated["captureBackdropSymbolOffsets"], ["0x2410"])
+        self.assertEqual(validated["fragmentFunction"], "TimgA2Xhfc_Isrc")
+
+    def test_callback_attempt_can_retain_a_failed_closed_partial_read(self) -> None:
+        partial = self.capture_backdrop_owner_region_operands()
+        partial["completeRead"] = False
+        partial["readMask"] = "0x0007ffff"
+        attempt = {
+            "schemaVersion": 1,
+            "executed": True,
+            "class": "bounded eligible producer callback stack provenance",
+            "maximumFrameCount": 32,
+            "frameCount": 0,
+            "attemptIndex": 0,
+            "fragmentFunction": "A2Xghfc",
+            "captureBackdropSymbolOffsets": [],
+            "frames": [],
+            "partialOperands": partial,
+        }
+        validated = surviving.validate_capture_backdrop_operand_attempt(attempt)
+        self.assertEqual(validated["partialReadMask"], "0x0007ffff")
+        self.assertEqual(validated["partialRequiredReadMask"], "0x000fffff")
+
     def test_capture_backdrop_pointer_region_decoder_matches_the_helper(self) -> None:
         payload = bytearray(surviving.CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT)
         struct.pack_into("<5i", payload, 12, 2, 4, 1, 4, 6)
@@ -552,6 +713,10 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn("captureBackdropFramePointerToStackPointer = 0xA50", source)
         self.assertIn("captureBackdropRegionHandleStackOffset = 0x2A0", source)
         self.assertIn('"regionPrefix": serialized(', source)
+        self.assertIn('"ownerRegion248Prefix": serialized(', source)
+        self.assertIn('"ownerRegion270Prefix": serialized(', source)
+        self.assertIn('"captureBackdropOperandAttempt"', source)
+        self.assertIn('"TimgA2Xhfc_Isrc"', source)
 
     def test_live_baseline_changes_only_deepest_position(self) -> None:
         states = [

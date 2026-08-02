@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 1,
+  "frozenAtUtc": "2026-08-02T21:02:39Z",
+  "classification": "preregistered bounded dual-owner capture_backdrop region decoding and callback-provenance calibration; not a public-state crop policy, unseen transfer, or product-parity claim",
+  "openedSelectedRegionEvidence": {
+    "runID": 30765781334,
+    "headSHA": "ddbd6dfa13fe5cee468acd378e3cdc3acd94fd12",
+    "workflowConclusion": "failure",
+    "workflowGateError": "capture_backdrop operand capture count differs at 31/9",
+    "prospectiveGatePassed": false,
+    "timelineSHA256": "9ddd7b312105f97c516cc25707cd633629df964bbf16160301924cff4d5b49fd",
+    "failedRunAnalysisResultSHA256": "61c3b63b1bc0b57eb91f554b6b58cc5fe3bb9a95b0c6b0ce65de466c7362ded2",
+    "recordCount": 114,
+    "completeLiveOperandCaptureCount": 113,
+    "missingLiveOperandCaptureCount": 1,
+    "missingRecord": {
+      "recordIndex": 9,
+      "interventionIndex": 9,
+      "translation": [-4, 0],
+      "sameStateRepeatRecordIndex": 94,
+      "sameStateDrawConsumedPrimaryGeometryExact": true,
+      "sameStateRepeatPromoted": false,
+      "bufferReuseCauseProven": false
+    },
+    "baselinePrimarySourceQ": {
+      "componentCount": 912,
+      "mismatchedComponents": 0
+    },
+    "baselineAllocationInvariants": {
+      "componentCount": 1596,
+      "mismatchedComponents": 0
+    },
+    "retainedPrimaryPositions": {
+      "componentCount": 904,
+      "mismatchedComponents": 0
+    },
+    "retainedPrimarySources": {
+      "componentCount": 904,
+      "mismatchedComponents": 0
+    },
+    "retainedSelectedRegions": {
+      "captureCount": 113,
+      "consumedRectangleMismatchCount": 0,
+      "packedHandleCount": 113,
+      "selectedEqualsOwner248Count": 113,
+      "selectedEqualsOwner270Count": 110
+    },
+    "ownerRegionMismatches": [
+      {
+        "recordIndex": 7,
+        "translation": [-6, 0],
+        "owner270Class": "pointer"
+      },
+      {
+        "recordIndex": 38,
+        "translation": [25, 0],
+        "owner270Class": "pointer"
+      },
+      {
+        "recordIndex": 79,
+        "translation": [0, 25],
+        "owner270Class": "packed"
+      }
+    ],
+    "owner270PointerMismatchCount": 2,
+    "owner270DistinctPointerIdentityCount": 1,
+    "inputClampSideGateExact": true,
+    "sameStateRepeatPromoted": false
+  },
+  "openedCodeFacts": {
+    "architecture": "arm64e",
+    "captureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "captureBackdropSymbolPrefixByteCount": 16384,
+    "knownVertexBindingReturnOffset": 11096,
+    "framePointerToCurrentStackPointerDelta": 2640,
+    "selectedRegionHandleStackOffset": 672,
+    "selectedRegionIteratorStackOffset": 960,
+    "selectedRegionIteratorCallOffset": 9012,
+    "selectedRegionIteratorSymbol": "_ZN2CA13ShapeIterator7iterateERNS_6BoundsE",
+    "selectedRegionIteratorPrefixSHA256": "faf2c7f536d2c76dbac26b3d7af7aeb7a498b1c50a20ecb152d8d896c616bcc6",
+    "regionOwnerRegister": 20,
+    "regionOwnerOffsets": {
+      "region248": 584,
+      "region270": 624
+    },
+    "packedRegionDecoder": {
+      "x": "signed bits 48..63",
+      "y": "signed bits 32..47",
+      "width": "bits 17..31",
+      "height": "bits 2..16"
+    },
+    "limitations": [
+      "The selected +0x248 owner region was exact in all 113 retained states, but this does not identify the upstream public-state construction rule.",
+      "The two pointer-backed +0x270 owner states share one observed pointer identity, but their pointee bytes were absent from the opened artifact.",
+      "The missing x=-4 callback is a provenance gap. Its exact same-state repeat is diagnostic only and cannot replace the missing live operands.",
+      "Every private offset remains conditional on exact capture_backdrop and ShapeIterator code-prefix identity."
+    ]
+  },
+  "frozenQuestion": {
+    "objective": "Repeat the unchanged 114-state sample-31 matrix, retain one complete live operand record in every state, independently capture and decode both owner-region handles and their bounded prefixes, and preserve bounded provenance for each eligible callback that cannot produce complete operands.",
+    "selectionRule": "An operand may be accepted only on vertex-buffer index 1 for fragment A2Xghfc or TimgA2Xhfc_Isrc when _Unwind_Backtrace finds the exact capture_backdrop symbol at return offset 0x2b58. Merely observing either fragment, matching geometry, or finding a later same-state repeat is insufficient.",
+    "alternateProducerRule": "TimgA2Xhfc_Isrc is added because the failed x=-4 state selected that Apple producer. It receives no fallback authority: the same exact symbol, PC, frame, complete-read, rectangle, region, and primary-word gates apply.",
+    "memoryRule": "After the existing byte-gated stack and object reads, retain exactly 256 checked same-task bytes for an even nonzero selected handle. For each even nonzero owner+0x248 and owner+0x270 handle, require the first 256 checked bytes and continue in checked 256-byte chunks up to 4096 bytes; retain the exact successful length. Independently require the 256-byte owner window at offsets 0x200..0x2ff and verify its embedded +0x248 and +0x270 words against the separate handle reads. Immediate odd or null region handles retain zero pointee bytes. Each checked chunk may be attempted at most three times and a missing required read fails closed.",
+    "callbackRule": "Before a complete operand capture, retain at most eight eligible callback diagnostics per record. Each diagnostic contains at most 32 symbolized frames and symbol-relative offsets, no raw stack memory, and an optional incomplete operand read mask. Diagnostics cannot count as operands or satisfy any replay gate.",
+    "matrixRule": "Keep geometry, material, appearance, direction, source sample, 114 interventions, public requested layer states, filter inputs, original producer input, retry policy, and buffer-retention policy unchanged from the failed selected-region run.",
+    "replayRule": "Require the selected region to equal owner+0x248 in all 114 states, decode the first rectangle of both owner regions through the pinned ShapeIterator implementation, require the selected consumed rectangle to equal SP+0x280, and replay every primary position and source component by binary32 bit pattern.",
+    "nullOutcome": "A missing live operand, partial required read mask, wrong fragment or PC, changed code prefix, undecodable owner prefix, selected/owner+0x248 mismatch, wrong owner class count, rectangle mismatch, or one differing position/source bit fails the workflow and remains evidence."
+  },
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-path-isolation"
+    },
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-640-center",
+    "sourceSampleIndices": [31],
+    "totalInterventionCount": 114,
+    "outerCaptureEvidenceSchemaVersion": 7,
+    "operandEvidenceSchemaVersion": 3,
+    "producerCallSiteSchemaVersion": 5,
+    "eligibleProducerFragments": [
+      "A2Xghfc",
+      "TimgA2Xhfc_Isrc"
+    ],
+    "maximumCompleteOperandCaptureCountPerRecord": 1,
+    "maximumUnwindFrameCount": 32,
+    "memoryReadMaximumAttemptCount": 3,
+    "callbackMaximumAttemptCountPerRecord": 8,
+    "callbackMaximumFrameCount": 32,
+    "ownerRegionPrefixMaximumByteCount": 4096,
+    "ownerRegionWindow": [512, 256],
+    "capturedOwnerFields": {
+      "ownerRegister": 20,
+      "owner248": [584, 8],
+      "owner270": [624, 8],
+      "owner248PrefixMaximum": 4096,
+      "owner270PrefixMaximum": 4096
+    },
+    "requiredReadMask": "0x000fffff",
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false
+  },
+  "acceptance": {
+    "all114InterventionsMustExecute": true,
+    "existingSchema4CaptureIntegrityMustPass": true,
+    "outerSchema7Required": true,
+    "operandSchema3Required": true,
+    "operandCaptureCount": 114,
+    "completeRequiredReadMaskCount": 114,
+    "ownerRegionWindowExactCount": 114,
+    "pinnedCaptureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "pinnedShapeIteratorPrefixSHA256": "faf2c7f536d2c76dbac26b3d7af7aeb7a498b1c50a20ecb152d8d896c616bcc6",
+    "selectedRegionConsumedRectangleExactCount": 114,
+    "owner248PackedHandleCount": 114,
+    "owner270PackedHandleCount": 112,
+    "owner270PointerHandleCount": 2,
+    "owner270PointerPrefixMinimumByteCountPerPointerCapture": 256,
+    "owner270PointerPrefixMaximumByteCountPerPointerCapture": 4096,
+    "selectedEqualsOwner248Count": 114,
+    "selectedEqualsOwner270Count": 111,
+    "primaryPositionComponentCount": 912,
+    "primaryPositionMismatchedComponents": 0,
+    "primarySourceComponentCount": 912,
+    "primarySourceMismatchedComponents": 0,
+    "primarySourceQComponentCount": 912,
+    "primarySourceQMismatchedComponents": 0,
+    "allocationInvariantComponentCount": 1596,
+    "allocationInvariantMismatchedComponents": 0,
+    "callbackAttemptMayReplaceLiveOperands": false,
+    "allowNumericTolerance": false,
+    "productionShaderAuthorized": false
+  },
+  "analysisPlan": {
+    "ownerInventory": "Open the two pointer-backed owner+0x270 prefixes only after the prospective gate and compare their exact decoded rectangles, iterator structure, and relation to the packed owner+0x248 region across all 114 records.",
+    "policyMapping": "Trace both private owner handles through the pinned capture_backdrop branch and test a single public-layer-state-only construction rule against every state; do not fit record-index cases.",
+    "nextGate": "Only after the public rule reproduces every private owner and consumed rectangle may it be frozen against unseen native geometries, temporal states, materials, appearances, directions, and a physical Retina 2x capture.",
+    "qualityRule": "No calibration result authorizes a Walle shader edit, approximation, quality tradeoff, or parity claim."
+  },
+  "frozenImplementation": {
+    "lgTestCommitBeforeRegistration": "ddbd6dfa13fe5cee468acd378e3cdc3acd94fd12",
+    "matrixBridgeHeaderSHA256": "b0f851a4ca897cbc8241d77ccc77a69b41e9eb2b0d24d03f758cd9d53d4d3272",
+    "matrixBridgeSourceSHA256": "ba53ed3e58f57fe076162e2443617b1e415ec7dbdf655ec758a839642dc90046",
+    "swiftCaptureSHA256": "80a423c4bfa2dfb0fe9da6eae85f66db630b37dcf0c50e7eae1da85ab559af66",
+    "workflowSHA256": "bc79f75eb6244cda94dc4995164338589396535764b07c61a2d3b6be7570b870",
+    "validatorSHA256": "de4f295be5a53bd93889d6e3d89fe558e21e561bfa6ca658e484bc2041a4c618",
+    "validatorTestSHA256": "6d5e3ebd3e0fbd98bd5e74f604e723927d2f5be80950047ff5cfcb84c71a0430",
+    "failedRunAnalyzerSHA256": "cdf6c759d8e69aeaabd0434961fb2b5ccbb1a12bba9207046fd2cfe14ce64084",
+    "failedRunAnalyzerTestSHA256": "7a452e350e9fba597527c87a474929134236acddcbac6496d0ff3db3e630656a",
+    "failedRunResultSHA256": "61c3b63b1bc0b57eb91f554b6b58cc5fe3bb9a95b0c6b0ce65de466c7362ded2",
+    "selectedRegionPreregistrationSHA256": "5768dc6cd87d72e769ca5ed9002e9e101337068aec31fddf8dcc881fcc28224f",
+    "selectedRegionPreregistrationTestSHA256": "febc9e528e32abdbbabb7aacddbb5d562ff90abd345d89775d019d0d39b06828",
+    "ownerRegionPreregistrationTestSHA256": "458daa11cdea238532f182a8f00dbfc30349590bee31ca5f999134de890fc90a",
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "notClaimed": [
+    "a prospective pass for run 30765781334",
+    "a public-state-only owner-region construction policy",
+    "a universal crop, damage-region, allocation, or primary-mesh policy",
+    "an unseen native Apple geometry or temporal transfer",
+    "a profile, material, appearance, direction, endpoint, backing-scale, or physical Retina 2x transfer",
+    "production Walle parity",
+    "permission to modify or approximate the protected production shader",
+    "permission to trade image quality for memory, throughput, or latency"
+  ]
+}

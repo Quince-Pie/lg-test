@@ -1,0 +1,270 @@
+{
+  "aggregate": {
+    "baselineAllocationInvariants": {
+      "componentCount": 1596,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "baselinePrimarySourceQ": {
+      "componentCount": 912,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "completeLiveOperandCaptureCount": 113,
+    "inputClampSideGate": {
+      "candidateCount": 28,
+      "recoveredTransferCandidate": "float-weighted-mix/affine-expanded-base-darwin-powf",
+      "recoveredTransferCandidateExact": true,
+      "sampleCount": 32
+    },
+    "missingLiveOperandCaptureCount": 1,
+    "owner270DistinctPointerIdentityCount": 1,
+    "owner270PointerMismatchCount": 2,
+    "ownerRegionMismatches": [
+      {
+        "interventionIndex": 7,
+        "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-6",
+        "owner270Class": "pointer",
+        "owner270PointerValueRetainedInArtifactOnly": true,
+        "recordIndex": 7,
+        "selectedAndOwner248": "0x00c800ae05040a29",
+        "translation": [
+          -6,
+          0
+        ]
+      },
+      {
+        "interventionIndex": 38,
+        "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-25",
+        "owner270Class": "pointer",
+        "owner270PointerValueRetainedInArtifactOnly": true,
+        "recordIndex": 38,
+        "selectedAndOwner248": "0x00c900ae05040a29",
+        "translation": [
+          25,
+          0
+        ]
+      },
+      {
+        "interventionIndex": 79,
+        "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-25",
+        "owner270": "0x00c800ad05060a2d",
+        "owner270Class": "packed",
+        "recordIndex": 79,
+        "selectedAndOwner248": "0x00c800ad05060a29",
+        "translation": [
+          0,
+          25
+        ]
+      }
+    ],
+    "recordCount": 114,
+    "retainedOperandReplay": {
+      "allowNumericTolerance": false,
+      "contextScaleBits": [
+        "0x3f03e138"
+      ],
+      "originBoundsValues": [
+        [
+          0,
+          0,
+          1024,
+          1024
+        ]
+      ],
+      "originValues": [
+        [
+          0,
+          0
+        ]
+      ],
+      "primaryPositionComponentCount": 904,
+      "primaryPositionMismatchedComponents": 0,
+      "primarySourceComponentCount": 904,
+      "primarySourceMismatchedComponents": 0,
+      "rendererRegionControlHex": [
+        "01000000000000000000000000000000"
+      ],
+      "rendererScaleBits": [
+        "0x3ff0000000000000"
+      ],
+      "selectedEqualsOwner248Count": 113,
+      "selectedEqualsOwner270Count": 110,
+      "selectedRegionConsumedRectangleExactCount": 113,
+      "selectedRegionIntersectionCount": 0
+    },
+    "selectedRegionHandleFrequency": [
+      {
+        "count": 14,
+        "handle": "0x00c700ac050a0a31"
+      },
+      {
+        "count": 8,
+        "handle": "0x00c700ad05080a31"
+      },
+      {
+        "count": 7,
+        "handle": "0x00c700ad050a0a31"
+      },
+      {
+        "count": 1,
+        "handle": "0x00c800ad05060a29"
+      },
+      {
+        "count": 29,
+        "handle": "0x00c800ad05060a2d"
+      },
+      {
+        "count": 14,
+        "handle": "0x00c800ad05080a31"
+      },
+      {
+        "count": 1,
+        "handle": "0x00c800ae05040a29"
+      },
+      {
+        "count": 38,
+        "handle": "0x00c800ae05060a29"
+      },
+      {
+        "count": 1,
+        "handle": "0x00c900ae05040a29"
+      }
+    ],
+    "selectedRegionRectangleFrequency": [
+      {
+        "count": 14,
+        "rect": [
+          199,
+          172,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 8,
+        "rect": [
+          199,
+          173,
+          644,
+          652
+        ]
+      },
+      {
+        "count": 7,
+        "rect": [
+          199,
+          173,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 29,
+        "rect": [
+          200,
+          173,
+          643,
+          651
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          200,
+          173,
+          644,
+          652
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          174,
+          642,
+          650
+        ]
+      },
+      {
+        "count": 38,
+        "rect": [
+          200,
+          174,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          201,
+          174,
+          642,
+          650
+        ]
+      }
+    ]
+  },
+  "classification": "post-opening-audit-of-failed-preregistered-capture-backdrop-selected-region-replay; not-a-prospective-pass-public-crop-policy-or-parity-claim",
+  "conclusion": {
+    "frozenSelectedRegionGatePassed": false,
+    "missingCapturePromotedFromRepeat": false,
+    "productionShaderAuthorized": false,
+    "publicLayerStateCropRuleRecovered": false,
+    "requiresOwnerRegionConstructionCapture": true,
+    "requiresUnseenGeometryTransfer": true,
+    "retrospective113Of114SelectedRegionReplayExact": true,
+    "selectedPrivateRegionArithmeticRecoveredForRetainedStates": true
+  },
+  "dynamicAllocationCaptureBackdropSelectedRegionFailedRunAnalysisSchemaVersion": 1,
+  "frozenGateError": "capture_backdrop operand capture count differs at 31/9",
+  "headSHA": "ddbd6dfa13fe5cee468acd378e3cdc3acd94fd12",
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30765781334/transition-timeline.json",
+  "inputTimelineSHA256": "9ddd7b312105f97c516cc25707cd633629df964bbf16160301924cff4d5b49fd",
+  "missingCapture": {
+    "allNonRenderStateFieldsExact": true,
+    "bufferReuseCauseProven": false,
+    "classification": "observed callback/provenance gap; the same-state repeat is a diagnostic and is not substituted for the missing live capture",
+    "drawConsumedPrimaryGeometryExact": true,
+    "interventionIndex": 9,
+    "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-4",
+    "missingFragmentFunction": "TimgA2Xhfc_Isrc",
+    "producerMeshDifferingFields": [
+      "fragmentFunction",
+      "mvpPayloadSHA256",
+      "vertexPayloadSHA256"
+    ],
+    "recordIndex": 9,
+    "repeatFragmentFunction": "A2Xghfc",
+    "sameStateRepeatRecordIndex": 94,
+    "sampleIndex": 31,
+    "translation": [
+      -4,
+      0
+    ]
+  },
+  "openedFacts": {
+    "owner270RequiresIndependentPrefixCapture": true,
+    "packedImmediateDecoder": {
+      "height": "bits 2..16",
+      "width": "bits 17..31",
+      "x": "signed bits 48..63",
+      "y": "signed bits 32..47"
+    },
+    "selectedRegionAlwaysOwner248": true,
+    "selectedRegionHandleClass": "packed-immediate in all 113 captures"
+  },
+  "prospectiveGatePassed": false,
+  "runID": 30765781334,
+  "workflowConclusion": "failure"
+}

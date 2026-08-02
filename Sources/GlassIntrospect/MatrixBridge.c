@@ -42,7 +42,21 @@ static_assert(offsetof(lg_capture_backdrop_operands, renderer_region_control) ==
 static_assert(offsetof(lg_capture_backdrop_operands, region_iterator) == 308);
 static_assert(offsetof(lg_capture_backdrop_operands, region_prefix) == 332);
 static_assert(offsetof(lg_capture_backdrop_operands, origin_bounds) == 588);
-static_assert(sizeof(lg_capture_backdrop_operands) == 608);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_region_248_prefix) == 608);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_region_270_prefix) == 4704);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_region_248_prefix_length)
+    == 8800);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_region_270_prefix_length)
+    == 8804);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_region_window) == 8808);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_region_window_length) == 9064);
+static_assert(sizeof(lg_capture_backdrop_operands) == 9072);
 
 static int lg_load_symbol(
     const char *name,
@@ -169,9 +183,11 @@ enum {
     LG_CAPTURE_BACKDROP_CONTEXT_SCALE_OFFSET = 0x18,
     LG_CAPTURE_BACKDROP_OWNER_REGION_248_OFFSET = 0x248,
     LG_CAPTURE_BACKDROP_OWNER_REGION_270_OFFSET = 0x270,
+    LG_CAPTURE_BACKDROP_OWNER_REGION_WINDOW_OFFSET = 0x200,
     LG_CAPTURE_BACKDROP_RENDERER_SCALE_OFFSET = 0x30,
     LG_CAPTURE_BACKDROP_RENDERER_REGION_CONTROL_OFFSET = 0xd0,
     LG_CAPTURE_BACKDROP_MAXIMUM_FRAME_COUNT = 32,
+    LG_CAPTURE_BACKDROP_READ_ATTEMPT_COUNT = 3,
 };
 
 static const char lg_capture_backdrop_symbol[] =
@@ -187,14 +203,55 @@ static int lg_read_self(
     void *destination,
     size_t byte_count)
 {
-    mach_vm_size_t copied = 0;
-    const kern_return_t status = mach_vm_read_overwrite(
-        mach_task_self(),
-        (mach_vm_address_t)source,
-        (mach_vm_size_t)byte_count,
-        (mach_vm_address_t)(uintptr_t)destination,
-        &copied);
-    return status == KERN_SUCCESS && copied == byte_count;
+    for (int attempt = 0;
+         attempt < LG_CAPTURE_BACKDROP_READ_ATTEMPT_COUNT;
+         ++attempt) {
+        mach_vm_size_t copied = 0;
+        const kern_return_t status = mach_vm_read_overwrite(
+            mach_task_self(),
+            (mach_vm_address_t)source,
+            (mach_vm_size_t)byte_count,
+            (mach_vm_address_t)(uintptr_t)destination,
+            &copied);
+        if (status == KERN_SUCCESS && copied == byte_count) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static void lg_read_region_prefix(
+    uint64_t handle,
+    size_t required_byte_count,
+    size_t maximum_byte_count,
+    unsigned char destination[static maximum_byte_count],
+    uint32_t *length,
+    uint32_t *read_mask,
+    uint32_t mask)
+{
+    if (handle == 0 || (handle & 1u) != 0) {
+        *read_mask |= mask;
+        return;
+    }
+    size_t copied = 0;
+    while (copied < maximum_byte_count) {
+        const size_t remaining = maximum_byte_count - copied;
+        const size_t byte_count =
+            remaining < LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT
+            ? remaining
+            : LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT;
+        if (!lg_read_self(
+                (uintptr_t)handle + copied,
+                destination + copied,
+                byte_count)) {
+            break;
+        }
+        copied += byte_count;
+    }
+    *length = (uint32_t)copied;
+    if (copied >= required_byte_count) {
+        *read_mask |= mask;
+    }
 }
 
 static _Unwind_Reason_Code lg_capture_backdrop_unwind_frame(
@@ -330,6 +387,15 @@ static _Unwind_Reason_Code lg_capture_backdrop_unwind_frame(
             sizeof(output->owner_region_270))) {
         output->read_mask |= LG_CAPTURE_BACKDROP_READ_OWNER_REGION_270;
     }
+    if (owner_pointer != 0
+        && lg_read_self(
+            owner_pointer + LG_CAPTURE_BACKDROP_OWNER_REGION_WINDOW_OFFSET,
+            output->owner_region_window,
+            sizeof(output->owner_region_window))) {
+        output->owner_region_window_length =
+            (uint32_t)sizeof(output->owner_region_window);
+        output->read_mask |= LG_CAPTURE_BACKDROP_READ_OWNER_REGION_WINDOW;
+    }
     if (output->renderer_pointer != 0
         && lg_read_self(
             output->renderer_pointer
@@ -346,15 +412,30 @@ static _Unwind_Reason_Code lg_capture_backdrop_unwind_frame(
             sizeof(output->renderer_region_control))) {
         output->read_mask |= LG_CAPTURE_BACKDROP_READ_RENDERER_REGION_CONTROL;
     }
-    if (output->region_handle == 0 || (output->region_handle & 1u) != 0) {
-        output->read_mask |= LG_CAPTURE_BACKDROP_READ_REGION_PREFIX;
-    } else if (lg_read_self(
-            output->region_handle,
-            output->region_prefix,
-            sizeof(output->region_prefix))) {
-        output->region_prefix_length = sizeof(output->region_prefix);
-        output->read_mask |= LG_CAPTURE_BACKDROP_READ_REGION_PREFIX;
-    }
+    lg_read_region_prefix(
+        output->region_handle,
+        sizeof(output->region_prefix),
+        sizeof(output->region_prefix),
+        output->region_prefix,
+        &output->region_prefix_length,
+        &output->read_mask,
+        LG_CAPTURE_BACKDROP_READ_REGION_PREFIX);
+    lg_read_region_prefix(
+        output->owner_region_248,
+        LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT,
+        sizeof(output->owner_region_248_prefix),
+        output->owner_region_248_prefix,
+        &output->owner_region_248_prefix_length,
+        &output->read_mask,
+        LG_CAPTURE_BACKDROP_READ_OWNER_REGION_248_PREFIX);
+    lg_read_region_prefix(
+        output->owner_region_270,
+        LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT,
+        sizeof(output->owner_region_270_prefix),
+        output->owner_region_270_prefix,
+        &output->owner_region_270_prefix_length,
+        &output->read_mask,
+        LG_CAPTURE_BACKDROP_READ_OWNER_REGION_270_PREFIX);
     return _URC_NORMAL_STOP;
 }
 
@@ -370,8 +451,7 @@ int lg_capture_backdrop_operands_capture(
         .found = 0,
     };
     (void)_Unwind_Backtrace(lg_capture_backdrop_unwind_frame, &state);
-    return state.found
-        && output->read_mask == LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK;
+    return state.found;
 }
 
 #else

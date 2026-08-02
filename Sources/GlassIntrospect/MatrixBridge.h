@@ -17,6 +17,7 @@ enum {
     LG_CAPTURE_BACKDROP_RENDERER_REGION_CONTROL_BYTE_COUNT = 16,
     LG_CAPTURE_BACKDROP_REGION_ITERATOR_BYTE_COUNT = 24,
     LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT = 256,
+    LG_CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT = 4096,
 };
 
 enum {
@@ -37,7 +38,10 @@ enum {
     LG_CAPTURE_BACKDROP_READ_RENDERER_REGION_CONTROL = 1u << 14,
     LG_CAPTURE_BACKDROP_READ_REGION_PREFIX = 1u << 15,
     LG_CAPTURE_BACKDROP_READ_ORIGIN_BOUNDS = 1u << 16,
-    LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0x1ffff,
+    LG_CAPTURE_BACKDROP_READ_OWNER_REGION_248_PREFIX = 1u << 17,
+    LG_CAPTURE_BACKDROP_READ_OWNER_REGION_270_PREFIX = 1u << 18,
+    LG_CAPTURE_BACKDROP_READ_OWNER_REGION_WINDOW = 1u << 19,
+    LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0xfffff,
 };
 
 typedef struct {
@@ -74,6 +78,16 @@ typedef struct {
     unsigned char origin_bounds[
         LG_CAPTURE_BACKDROP_ORIGIN_BOUNDS_BYTE_COUNT];
     unsigned char reserved[4];
+    unsigned char owner_region_248_prefix[
+        LG_CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT];
+    unsigned char owner_region_270_prefix[
+        LG_CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT];
+    uint32_t owner_region_248_prefix_length;
+    uint32_t owner_region_270_prefix_length;
+    unsigned char owner_region_window[
+        LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT];
+    uint32_t owner_region_window_length;
+    uint32_t owner_region_window_reserved;
 } lg_capture_backdrop_operands;
 
 int lg_ca_color_matrix_make_saturation(
