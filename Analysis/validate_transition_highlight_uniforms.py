@@ -156,6 +156,8 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
     )
     if uniforms.get("schemaVersion") != 3 or uniforms.get("requested") is not requested:
         raise ValueError("dynamic uniform highlight schema differs")
+    if uniforms.get("presentationLayerReplayed") is not requested:
+        raise ValueError("dynamic presentation replay metadata differs")
     if not requested:
         if uniforms.get("executed") is not False:
             raise ValueError("unrequested dynamic uniforms executed")
@@ -168,6 +170,13 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
     records = uniforms.get("records")
     if (
         uniforms.get("executed") is not True
+        or uniforms.get("sampleIndices") != list(EXPECTED_SAMPLE_INDICES)
+        or uniforms.get("sampleCount") != len(EXPECTED_SAMPLE_INDICES)
+        or uniforms.get("executedSampleCount") != len(EXPECTED_SAMPLE_INDICES)
+        or uniforms.get("method")
+        != "copied-presentation-background-and-foreground-filters-"
+        "plus-layer-state-on-fresh-static-model-tree"
+        or not isinstance(uniforms.get("modelTargetPath"), list)
         or not isinstance(records, list)
         or len(records) != len(EXPECTED_SAMPLE_INDICES)
     ):
@@ -220,19 +229,53 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
                 )
 
         render = mapping(record.get("render"), "render")
+        duration = numeric(render.get("durationSeconds"), "render duration")
+        if (
+            render.get("executed") is not True
+            or duration > 30.0
+            or not isinstance(render.get("metalBufferSnapshots"), Mapping)
+        ):
+            raise ValueError(f"sample {sample_index} render is incomplete")
         validate_raw_render_evidence(render, root=path.parent)
         bindings = render.get("glassFragmentUniformBindings")
         if not isinstance(bindings, list):
             raise ValueError("glassFragmentUniformBindings is not a list")
+        if render.get("glassFragmentUniformBindingCount") != len(bindings):
+            raise ValueError("glassFragmentUniformBindingCount differs")
+        typed_bindings = [mapping(binding, "fragment binding") for binding in bindings]
+        for binding in typed_bindings:
+            payload = mapping(binding.get("payload"), "fragment payload")
+            encoded = payload.get("hex")
+            length = payload.get("lengthBytes")
+            if (
+                binding.get("stage") != "fragment"
+                or binding.get("index") != 1
+                or not isinstance(length, int)
+                or length < 258
+                or not isinstance(encoded, str)
+                or len(encoded) != 2 * length
+            ):
+                raise ValueError("transition fragment binding is incomplete")
+        backgrounds = [
+            binding
+            for binding in typed_bindings
+            if fragment_name(binding).startswith("glass_background")
+        ]
+        if len(backgrounds) != 2:
+            raise ValueError("transition background binding count differs")
         highlights = [
-            mapping(binding, "highlight binding")
-            for binding in bindings
-            if isinstance(binding, Mapping) and fragment_name(binding) == "A2Xghfc"
+            binding for binding in typed_bindings if fragment_name(binding) == "A2Xghfc"
         ]
         if not highlights:
             raise ValueError(f"sample {sample_index} has no A2Xghfc uniform binding")
         for binding in highlights:
             validate_highlight_binding(binding)
+        filter_values = mapping(
+            mapping(record.get("filter"), "background filter").get("inputValues"),
+            "background filter inputValues",
+        )
+        if filter_values.get("inputFaceOpacity") != record.get("remaining"):
+            raise ValueError("background face opacity differs from remaining")
         binding_count += len(highlights)
 
     return {
