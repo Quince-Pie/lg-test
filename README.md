@@ -3802,6 +3802,27 @@ center-only coefficient pairs that reproduce the same rounded pixel centers;
 the validator rejects incomplete tile coverage, unfinished atomic claims,
 non-finite words, or inconsistent pixel/tile identities.
 
+Run `30735362921` completed that compact pull capture. Joint pull/center
+recovery uniquely identified both SDF-axis setups at all nine states. The
+schema-15 coefficient and tile-constant arithmetic becomes exact for every
+record once supplied the recovered 25-bit reciprocal selector, but the old
+fractional-table indexing chooses the wrong selector at six states. Every
+recovered selector is still exactly the floor or ceiling endpoint of the
+unsimplified square determinant. Eight states choose the exact nearest
+endpoint; sample 24 is a measured counterexample, so nearest rounding is not a
+portable replacement.
+
+`raster-square-selector-sweep.yml` therefore measures the complete finite
+production range before another approximation reaches Walle. It covers all
+32,769 1/256-pixel square extents from 768 through 896 pixels, including the
+observed transition range with margin. A symmetric position-correlated ramp
+and two pulls at one interior pixel distinguish the exact floor and ceiling
+selector candidates for every case in the frozen offline preflight. The raw
+capture is only 262,152 bytes. This run is explicitly calibration: it may
+materialize the finite table and support closed-form discovery, but a separate
+frozen transfer holdout is still required before production integration or a
+parity claim.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

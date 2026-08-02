@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "role": "production-square-fixed-grid-reciprocal-selector-calibration",
+  "objective": "Measure the exact AGX reciprocal-selector endpoint for every 1/256-pixel square extent from 768 through 896 pixels, covering the complete observed 1024-pixel Liquid Glass transition range with margin.",
+  "classification": "finite-domain calibration; captured selector branches are not prospective model validation",
+  "capture": {
+    "rigVersion": "metal-raster-square-selector-sweep-1.0.0",
+    "widthFixedLower": 196608,
+    "widthFixedUpper": 229376,
+    "fixedUnitsPerPixel": 256,
+    "caseCount": 32769,
+    "geometry": "axis-aligned square at (64,64), perspective interpolation, w=1",
+    "endpoint": "symmetric scalar ramp [-width/2,+width/2]",
+    "samplePixel": [
+      448,
+      449
+    ],
+    "pullOffsets": [
+      [
+        0.0,
+        0.5
+      ],
+      [
+        0.9375,
+        0.5
+      ]
+    ],
+    "recordComponents": [
+      "pull@0,0.5 binary32 bits",
+      "pull@15/16,0.5 binary32 bits"
+    ],
+    "rawBytes": 262152,
+    "ordering": "ascending-width-fixed"
+  },
+  "candidateModel": {
+    "reciprocalCandidates": "exact floor and ceiling 25-bit reciprocal endpoints of the unsimplified fixed-grid square determinant",
+    "coefficientArithmetic": "prospectively validated schema-15 partial-product and carry-column setup",
+    "constantArithmetic": "shared low-edge anchor, factorized tile term, 28-bit composite quantization",
+    "comparison": "both captured pull words must equal exactly one candidate; no tolerance"
+  },
+  "preflight": {
+    "candidateStreamBytes": 524304,
+    "candidateStreamSha256": "91e174cb7c0eb5131e276a879c51332a88c1158061b74737baccc3f6c4a7e98f",
+    "candidateDistinctCaseCount": 32769,
+    "candidateMultiplicityPerCase": 2,
+    "allCasesDistinguishable": true
+  },
+  "acceptance": {
+    "coverageMustEqualCaseCount": true,
+    "missingRecordCount": 0,
+    "mismatchedCaseCount": 0,
+    "ambiguousCaseCount": 0,
+    "matchedCaseCount": 32769
+  },
+  "afterOpening": {
+    "allowed": [
+      "materialize the complete finite selector table",
+      "search for an input-only closed form",
+      "compare the nine already opened transition states against the table"
+    ],
+    "notAllowed": [
+      "describe calibration as prospective transfer validation",
+      "authorize a production parity claim without a separately frozen holdout",
+      "replace a failed exact comparison with a tolerance"
+    ],
+    "nextGate": "freeze predictions for unseen off-domain or half-grid square determinants and repeat the selected production states before integration"
+  }
+}
