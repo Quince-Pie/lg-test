@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "preregistration": {
+    "file": "Analysis/clear_light_transition_end_to_end_holdout_preregistration.json",
+    "sha256": "1b9b6b1c15ccb5b0d4ec90acb467ae558960f006283207d86d63d9ad622be742",
+    "committedBeforeDispatch": true
+  },
+  "github": {
+    "runId": 30743666804,
+    "jobId": 91485426764,
+    "headSha": "41ebf7e7e4228fba5fba5f82e80676f2920d6a8a",
+    "createdAt": "2026-08-02T10:23:57Z",
+    "completedAt": "2026-08-02T10:26:52Z",
+    "workflowConclusion": "success",
+    "selectedJobConclusion": "success",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/30743666804"
+  },
+  "artifact": {
+    "name": "liquid-glass-transition-introspection-profile-clear-light-materialize-30743666804",
+    "fileCount": 242,
+    "byteCount": 1615326056,
+    "treeSha256": "dee33cbe8dc51c1d31ac7144a8ddf181f94b556a71a674fb8d9d2edd843da6ec",
+    "timelineSha256": "067c287d7c0f056c3ef0304b028f184400b6a097284754083e1bc1f00d86fb7c"
+  },
+  "frozenInputVerification": {
+    "allPreregisteredSourceHashesExact": true,
+    "allPreregisteredRetainedResultHashesExact": true,
+    "allPreregisteredEnvironmentHashesExact": true,
+    "allPreregisteredCalibrationAndIntrinsicHashesExact": true,
+    "staticClearLightCaptureTreeSha256": "9ad94efe87df843c4f158aedba4ea9b8752a35796d47631f072fa05c13a73ecf",
+    "productionShaderSha256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3",
+    "postOpeningPredictorChangeUsed": false
+  },
+  "unseenStateAudit": {
+    "stateCount": 9,
+    "nonterminalStateCount": 8,
+    "nonterminalSampleIndexAndRemainingCollisionsWithPrior63States": 0,
+    "settledEndpointCollisionCount": 1,
+    "interpretation": "All eight fractional presentation states were new exact (sampleIndex, remaining) pairs. The materialized remaining=1 endpoint is intentionally common to prior runs."
+  },
+  "capturedInputTransferGates": {
+    "dynamicRender": {
+      "resultSha256": "614e4a5b12c16bde79239a919b4f8581eefb07500c2d4e70da23f455173a3c10",
+      "stateCount": 9,
+      "executedStateCount": 9,
+      "fractionalRasterStateCount": 8,
+      "unsupportedRasterStateCount": 0,
+      "exactCandidateInputCount": 9,
+      "exactGlassPrefixCount": 9,
+      "exactStageBoundaryCount": 9,
+      "exactIsolatedFinalHighlightCount": 9,
+      "exactFinalImageCount": 9,
+      "mismatchedPixels": 0,
+      "mismatchedBytes": 0,
+      "exact": true
+    },
+    "highlightInterpolant": {
+      "resultSha256": "0294cfec015cec9c1a299b525557e57d48a16abbce4050e390b8eefe0723bb9e",
+      "sampleCount": 9,
+      "comparedSdfWordCount": 12278114,
+      "mismatchedSdfWordCount": 0,
+      "exact": true
+    },
+    "prospectiveCapturedInputTransferPassed": true
+  },
+  "independentUpstreamGenerationAudit": {
+    "resultSha256": "ee838109f639e656693c8f8a6d2132d48c37a052817e21be7302f2b631841bcc",
+    "allGeneratedPositionClipAndSdfBitsExact": false,
+    "mainMismatchedComponents": {
+      "clip": 0,
+      "position": 48,
+      "sdf": 0,
+      "source": 96
+    },
+    "shadowMismatchedComponents": {
+      "clip": 0,
+      "position": 128,
+      "sdf": 16,
+      "source": 256
+    },
+    "capturedPrivateUniformPayloadsConsumedByTransferGate": true,
+    "capturedBackdropMipInputsConsumedByTransferGate": true,
+    "independentTemporalUniformLawProven": false,
+    "independentBackdropFilterPipelineProven": false,
+    "independentCompleteGeometryLawProven": false
+  },
+  "conclusion": {
+    "prospectiveCapturedInputStageTransferPassed": true,
+    "productionWalleParityProven": false,
+    "productionShaderAuthorized": false,
+    "reason": "The frozen shader, raster, blend, and compositor model transferred exactly to eight new fractional Apple states plus the settled endpoint, but it still consumes Apple-captured private uniforms and backdrop mip inputs and the independent geometry generator is not bit-exact.",
+    "nextGate": "Recover and freeze the upstream geometry, temporal uniform, and backdrop-pyramid generators, then render the real Walle production path against a newly captured Apple holdout with zero tolerance."
+  }
+}

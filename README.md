@@ -3879,6 +3879,24 @@ SDF words must match exactly. A pass applies only to the declared clear/light
 materialize profile; a failure remains a failure and requires a separately
 registered follow-up.
 
+Run `30743666804`, captured from preregistered commit `41ebf7e`, passed that
+frozen transfer. All nine candidate inputs, glass prefixes, stage boundaries,
+isolated final highlights, and final BGRA8 images were byte-exact, and all
+12,278,114 compared highlight SDF words matched. The eight fractional
+`(sampleIndex, remaining)` pairs were absent from the 63 already-opened states;
+only the settled `remaining = 1` endpoint repeats. The result and artifact
+hashes are recorded in
+`Analysis/clear_light_transition_end_to_end_holdout_result.json`.
+
+This pass closes the captured-input shader/raster/compositor transfer for the
+declared clear/light domain. It is not yet an independent Walle parity pass.
+The transfer renderer consumes Apple's captured private uniform payloads and
+backdrop mip inputs. Its separate upstream audit still mismatches 48 main
+position components, 96 main source components, 128 shadow position
+components, 16 shadow SDF components, and 256 shadow source components. The
+temporal uniform law, backdrop-filter pipeline, and complete geometry law must
+therefore be recovered and frozen before a production-path parity claim.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does
