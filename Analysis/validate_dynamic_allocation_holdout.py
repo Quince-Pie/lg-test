@@ -729,9 +729,10 @@ def validate(
     expected_geometry: str,
     expected_sample_indices: Sequence[int] = EXPECTED_SAMPLE_INDICES,
     classification: str = "prospective-unseen-geometry-holdout",
+    allowed_geometries: frozenset[str] = EXPECTED_GEOMETRIES,
 ) -> dict[str, Any]:
-    if expected_geometry not in EXPECTED_GEOMETRIES:
-        raise ValueError(f"geometry is not a frozen holdout: {expected_geometry}")
+    if expected_geometry not in allowed_geometries:
+        raise ValueError(f"geometry is not frozen for this capture: {expected_geometry}")
     expected_samples = tuple(expected_sample_indices)
     if (
         not expected_samples

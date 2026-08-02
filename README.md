@@ -4157,6 +4157,15 @@ edges concentrated in late fractional geometry, plus one centered Y upper
 edge.  Endpoint crop/mesh selection is separate.  Therefore this run neither
 authorizes a Walle shader change nor establishes independent Walle parity.
 
+`Analysis/dynamic_allocation_mesh_phase_calibration_preregistration.json`
+freezes the next causal intervention before capture.  It holds the requested
+diameter at 640 points and varies only the target center across centered
+integer, translated integer, positive half-pixel, and oppositely translated
+half-pixel cases.  All 32 nonzero transition samples retain the same
+metadata-only producer evidence.  The frozen decision asks whether the 15
+primary-edge residuals follow requested-extent arithmetic or target-center
+phase; the run is calibration and cannot itself authorize a mesh predictor.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does

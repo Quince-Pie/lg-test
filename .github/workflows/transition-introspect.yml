@@ -14,6 +14,7 @@ on:
           - uniform-profiles
           - allocation-holdout
           - allocation-calibration
+          - allocation-mesh-calibration
 
 concurrency:
   group: transition-introspect-v5-${{ github.ref }}
@@ -32,7 +33,10 @@ jobs:
       ((inputs.capture_mode == 'allocation-holdout' ||
       inputs.capture_mode == 'allocation-calibration') &&
       matrix.direction == 'materialize' &&
-      startsWith(matrix.label, 'geometry-'))) &&
+      startsWith(matrix.label, 'geometry-')) ||
+      (inputs.capture_mode == 'allocation-mesh-calibration' &&
+      matrix.direction == 'materialize' &&
+      startsWith(matrix.label, 'mesh-'))) &&
       'macos-26' || 'ubuntu-latest' }}
     timeout-minutes: 60
     strategy:
@@ -119,6 +123,26 @@ jobs:
             appearance: light
             geometry: circle-1536-center
             direction: dematerialize
+          - label: mesh-640-center-materialize
+            material: clear
+            appearance: light
+            geometry: circle-640-center
+            direction: materialize
+          - label: mesh-640-integer-materialize
+            material: clear
+            appearance: light
+            geometry: circle-640-integer
+            direction: materialize
+          - label: mesh-640-half-even-materialize
+            material: clear
+            appearance: light
+            geometry: circle-640-phase-0500-even
+            direction: materialize
+          - label: mesh-640-half-signed-materialize
+            material: clear
+            appearance: light
+            geometry: circle-640-phase-0500-signed
+            direction: materialize
     env:
       LG_SELECTED: >-
         ${{ (inputs.capture_mode == 'state-matrix' ||
@@ -130,7 +154,10 @@ jobs:
         ((inputs.capture_mode == 'allocation-holdout' ||
         inputs.capture_mode == 'allocation-calibration') &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'geometry-'))) && '1' || '0' }}
+        startsWith(matrix.label, 'geometry-')) ||
+        (inputs.capture_mode == 'allocation-mesh-calibration' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'mesh-'))) && '1' || '0' }}
       LG_GLASS_MATERIAL: ${{ matrix.material }}
       LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
       LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
@@ -145,7 +172,10 @@ jobs:
         ((inputs.capture_mode == 'allocation-holdout' ||
         inputs.capture_mode == 'allocation-calibration') &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'geometry-'))) && '1' || '0' }}
+        startsWith(matrix.label, 'geometry-')) ||
+        (inputs.capture_mode == 'allocation-mesh-calibration' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'mesh-'))) && '1' || '0' }}
       LG_TRANSITION_CONTROLLED_BACKDROP: >-
         ${{ ((inputs.capture_mode == 'uniform-profiles' &&
         matrix.direction == 'materialize' &&
@@ -153,18 +183,28 @@ jobs:
         (inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize')) && '1' || '0' }}
       LG_TRANSITION_ALLOCATION_ONLY: >-
-        ${{ (inputs.capture_mode == 'allocation-holdout' ||
+        ${{ (((inputs.capture_mode == 'allocation-holdout' ||
         inputs.capture_mode == 'allocation-calibration') &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'geometry-') && '1' || '0' }}
-      LG_TRANSITION_ALLOCATION_DENSE: >-
-        ${{ inputs.capture_mode == 'allocation-calibration' &&
+        startsWith(matrix.label, 'geometry-')) ||
+        (inputs.capture_mode == 'allocation-mesh-calibration' &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'geometry-') && '1' || '0' }}
+        startsWith(matrix.label, 'mesh-'))) && '1' || '0' }}
+      LG_TRANSITION_ALLOCATION_DENSE: >-
+        ${{ ((inputs.capture_mode == 'allocation-calibration' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'geometry-')) ||
+        (inputs.capture_mode == 'allocation-mesh-calibration' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'mesh-'))) && '1' || '0' }}
       LG_TRANSITION_ALLOCATION_CALIBRATION: >-
         ${{ inputs.capture_mode == 'allocation-calibration' &&
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'geometry-') && '1' || '0' }}
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: >-
+        ${{ inputs.capture_mode == 'allocation-mesh-calibration' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'mesh-') && '1' || '0' }}
       LG_TRANSITION_HIGHLIGHT_TRACE: >-
         ${{ inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize' && '1' || '0' }}
@@ -261,6 +301,21 @@ jobs:
             --output \
               transition-introspection/dynamic-allocation-calibration.json
 
+      - name: Validate producer mesh center-phase calibration
+        id: allocation_mesh_calibration
+        if: >-
+          env.LG_SELECTED == '1' &&
+          env.LG_TRANSITION_ALLOCATION_MESH_CALIBRATION == '1' &&
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_dynamic_allocation_mesh_calibration.py \
+            transition-introspection/transition-timeline.json \
+            --expected-geometry "${{ matrix.geometry }}" \
+            --output \
+              transition-introspection/dynamic-allocation-mesh-calibration.json
+
       - name: Upload transition introspection
         if: always() && env.LG_SELECTED == '1'
         uses: actions/upload-artifact@v4
@@ -276,7 +331,9 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           if [[ "$LG_TRANSITION_ALLOCATION_ONLY" == "1" ]]; then
-            if [[ "$LG_TRANSITION_ALLOCATION_CALIBRATION" == "1" ]]; then
+            if [[ "$LG_TRANSITION_ALLOCATION_MESH_CALIBRATION" == "1" ]]; then
+              test "${{ steps.allocation_mesh_calibration.outcome }}" = success
+            elif [[ "$LG_TRANSITION_ALLOCATION_CALIBRATION" == "1" ]]; then
               test "${{ steps.allocation_calibration.outcome }}" = success
             else
               test "${{ steps.allocation_holdout.outcome }}" = success
