@@ -7379,6 +7379,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "level": 0,
                 "width": texture.width,
                 "height": texture.height,
+                "rawCapture": record["rawCapture"] as? Bool ?? false,
                 "rawFile": filename,
                 "rawBytes": raw.count,
                 "bytesPerRow": tightBytesPerRow,
@@ -14105,7 +14106,8 @@ private func carendererUniformEvidence(
     rootLayer: CALayer,
     device: MTLDevice,
     capture: String,
-    includeGeometryPolicyEvidence: Bool = false
+    includeGeometryPolicyEvidence: Bool = false,
+    outputDirectory: URL? = nil
 ) -> [String: Any] {
     let bounds = rootLayer.bounds.standardized
     guard bounds.width.isFinite,
@@ -14223,9 +14225,21 @@ private func carendererUniformEvidence(
     ]
     if includeGeometryPolicyEvidence {
         result["metalBufferSnapshots"] = allBufferEvidence
-        result["metalTextureSnapshots"] =
-            MetalUniformProbe.shared.snapshotTextureMetadata(
-                capture: capture)
+        if let outputDirectory {
+            result["output"] = carendererOutputSnapshot(
+                output,
+                commandQueue: commandQueue,
+                capture: capture,
+                outputDirectory: outputDirectory)
+            result["metalTextureSnapshots"] =
+                MetalUniformProbe.shared.snapshotTextures(
+                    capture: capture,
+                    outputDirectory: outputDirectory)
+        } else {
+            result["metalTextureSnapshots"] =
+                MetalUniformProbe.shared.snapshotTextureMetadata(
+                    capture: capture)
+        }
         result["metalUniformProbe"] =
             MetalUniformProbe.shared.report(capture: capture)
     }
@@ -15184,7 +15198,8 @@ private func transitionMatrixUniformBasisEvidence(
 private func transitionBackgroundUniformEvidence(
     rootLayer: CALayer,
     snapshots: [TransitionBackgroundFilterSnapshot],
-    matrixBasisRequested: Bool
+    matrixBasisRequested: Bool,
+    outputDirectory: URL
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
@@ -15272,7 +15287,8 @@ private func transitionBackgroundUniformEvidence(
                 rootLayer: rootLayer,
                 device: device,
                 capture: capture,
-                includeGeometryPolicyEvidence: true),
+                includeGeometryPolicyEvidence: true,
+                outputDirectory: outputDirectory),
         ])
     }
     let executed = records.filter {
@@ -16164,7 +16180,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         rootLayer: carrierRootLayer,
                         snapshots: dynamicUniformSnapshots,
                         matrixBasisRequested:
-                            matrixUniformBasisRequested)
+                            matrixUniformBasisRequested,
+                        outputDirectory: outputDirectory)
                 carrierWindow.orderOut(nil)
                 writeTransitionProbeProgress(
                     outputDirectory: outputDirectory,

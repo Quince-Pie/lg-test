@@ -65,6 +65,86 @@ def validate_highlight_binding(binding: Mapping[str, Any]) -> None:
         raise ValueError("A2Xghfc payload is incomplete")
 
 
+def validate_raw_file(
+    record: Mapping[str, Any],
+    *,
+    root: Path,
+    name: str,
+) -> None:
+    filename = record.get("rawFile")
+    byte_count = record.get("rawBytes")
+    if (
+        record.get("rawCapture") is not True
+        or not isinstance(filename, str)
+        or not isinstance(byte_count, int)
+        or byte_count <= 0
+    ):
+        raise ValueError(f"{name} raw capture is incomplete")
+    path = root / filename
+    if not path.is_file() or path.stat().st_size != byte_count:
+        raise ValueError(f"{name} raw file differs: {path}")
+
+
+def validate_raw_render_evidence(
+    render: Mapping[str, Any],
+    *,
+    root: Path,
+) -> None:
+    output = mapping(render.get("output"), "CARenderer output")
+    validate_raw_file(output, root=root, name="CARenderer output")
+    textures = mapping(
+        render.get("metalTextureSnapshots"),
+        "metalTextureSnapshots",
+    )
+    snapshots = textures.get("snapshots")
+    if not isinstance(snapshots, list):
+        raise ValueError("texture snapshots are not a list")
+    sources = [
+        mapping(snapshot, "source texture")
+        for snapshot in snapshots
+        if isinstance(snapshot, Mapping)
+        and snapshot.get("pixelFormat") == 80
+        and snapshot.get("mipmapLevelCount") == 2
+        and snapshot.get("index") == 3
+        and fragment_name(snapshot).startswith("glass_background")
+    ]
+    if len(sources) != 1:
+        raise ValueError("the complete backdrop pyramid is not unique")
+    source = sources[0]
+    width = source.get("width")
+    height = source.get("height")
+    if (
+        not isinstance(width, int)
+        or not isinstance(height, int)
+        or width <= 0
+        or height <= 0
+    ):
+        raise ValueError("backdrop pyramid dimensions are invalid")
+    validate_raw_file(source, root=root, name="backdrop mip zero")
+    mips = source.get("mipSnapshots")
+    if not isinstance(mips, list) or [
+        mip.get("level") for mip in mips if isinstance(mip, Mapping)
+    ] != [0, 1]:
+        raise ValueError("backdrop pyramid levels differ")
+    for mip in mips:
+        typed_mip = mapping(mip, "backdrop mip")
+        level = typed_mip.get("level")
+        expected_width = max(1, width >> int(level))
+        expected_height = max(1, height >> int(level))
+        if (
+            typed_mip.get("width") != expected_width
+            or typed_mip.get("height") != expected_height
+            or typed_mip.get("bytesPerRow") != 4 * expected_width
+            or typed_mip.get("rawBytes") != 4 * expected_width * expected_height
+        ):
+            raise ValueError(f"backdrop mip {level} layout differs")
+        validate_raw_file(
+            typed_mip,
+            root=root,
+            name=f"backdrop mip {level}",
+        )
+
+
 def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
     report = mapping(
         json.loads(path.read_text(encoding="utf-8")),
@@ -136,6 +216,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
                 )
 
         render = mapping(record.get("render"), "render")
+        validate_raw_render_evidence(render, root=path.parent)
         bindings = render.get("glassFragmentUniformBindings")
         if not isinstance(bindings, list):
             raise ValueError("glassFragmentUniformBindings is not a list")
@@ -154,6 +235,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         "requested": True,
         "states": len(records),
         "highlightBindings": binding_count,
+        "rawBackdropPyramids": len(records),
     }
 
 
