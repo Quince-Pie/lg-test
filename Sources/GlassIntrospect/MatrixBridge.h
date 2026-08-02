@@ -18,7 +18,21 @@ enum {
     LG_CAPTURE_BACKDROP_REGION_ITERATOR_BYTE_COUNT = 24,
     LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT = 256,
     LG_CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT = 4096,
+    LG_CAPTURE_BACKDROP_OWNER_OBJECT_PREFIX_BYTE_COUNT = 768,
+    LG_CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT = 208,
+    LG_CAPTURE_BACKDROP_OWNER_RECORD_MAXIMUM_COUNT = 64,
+    LG_CAPTURE_BACKDROP_OWNER_RECORD_VECTOR_BYTE_COUNT =
+        LG_CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT
+        * LG_CAPTURE_BACKDROP_OWNER_RECORD_MAXIMUM_COUNT,
+    LG_CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT = 40,
 };
+
+typedef struct {
+    unsigned char chunk_0[4096];
+    unsigned char chunk_1[4096];
+    unsigned char chunk_2[4096];
+    unsigned char chunk_3[1024];
+} lg_capture_backdrop_owner_record_vector;
 
 enum {
     LG_CAPTURE_BACKDROP_READ_RECT = 1u << 0,
@@ -41,7 +55,10 @@ enum {
     LG_CAPTURE_BACKDROP_READ_OWNER_REGION_248_PREFIX = 1u << 17,
     LG_CAPTURE_BACKDROP_READ_OWNER_REGION_270_PREFIX = 1u << 18,
     LG_CAPTURE_BACKDROP_READ_OWNER_REGION_WINDOW = 1u << 19,
-    LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0xfffff,
+    LG_CAPTURE_BACKDROP_READ_OWNER_OBJECT_PREFIX = 1u << 20,
+    LG_CAPTURE_BACKDROP_READ_OWNER_RECORD_VECTOR = 1u << 21,
+    LG_CAPTURE_BACKDROP_READ_SOURCE_STATE_WINDOW = 1u << 22,
+    LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0x7fffff,
 };
 
 typedef struct {
@@ -88,6 +105,15 @@ typedef struct {
         LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT];
     uint32_t owner_region_window_length;
     uint32_t owner_region_window_reserved;
+    unsigned char owner_object_prefix[
+        LG_CAPTURE_BACKDROP_OWNER_OBJECT_PREFIX_BYTE_COUNT];
+    lg_capture_backdrop_owner_record_vector owner_record_vector;
+    unsigned char source_state_window[
+        LG_CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT];
+    uint32_t owner_object_prefix_length;
+    uint32_t owner_record_vector_length;
+    uint32_t source_state_window_length;
+    uint32_t owner_record_reserved;
 } lg_capture_backdrop_operands;
 
 int lg_ca_color_matrix_make_saturation(

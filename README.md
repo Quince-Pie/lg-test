@@ -4724,6 +4724,70 @@ owner-pointer gaps; it still cannot by itself prove the public-layer-state
 construction rule, an unseen geometry transfer, physical Retina 2x behavior,
 or production Walle parity.
 
+Run `30767931920`, from preregistered commit `cab92e1`, passes that frozen
+dual-owner gate prospectively.  All 114 interventions contain one complete
+live operand record; no callback diagnostic or partial operand was used.  The
+primary positions match in 912/912 binary32 words, primary sources match in
+912/912 words, source-`q` matches in 912/912 components, allocation/copy
+invariants match in 1,596/1,596 components, and all 114 consumed selected
+rectangles replay exactly with zero tolerance.  The timeline SHA-256 is
+`7cf61e1fdb009d00d8cd7446d407193779f3431dc148551e984541064198dc0d`.
+The immutable post-opening result is
+`Analysis/dynamic_allocation_capture_backdrop_owner_region_result.json`, with
+SHA-256
+`a9fa4206d52aa890f51208adf6c61593f4137181c09aa1d9685b20906d10bc57`.
+
+The selected handle equals owner `+0x248` in all 114 states.  Owner `+0x270`
+equals it in 111 states and retains the previously frozen 112 packed/two
+pointer class split.  Both pointer prefixes were read to the full 4 KiB bound
+and decode completely through the pinned `ShapeIterator`: at `x = -6` the
+owner-`+0x270` shape is
+`[200,173,642,8] U [200,181,643,643]`; at `x = 25` it is
+`[201,173,642,8] U [200,181,643,643]`.  The `y = 25` mismatch remains packed:
+selected/owner-`+0x248` is `[200,173,643,650]`, while owner `+0x270` is
+`[200,173,643,651]`.  These are exact private-region inventories, not fitted
+public geometry rules.
+
+The independently captured 256-byte owner window is now fully accounted for.
+The uint32 words at owner `+0x210` and `+0x214` both equal
+`recordIndex + 33`; after removing only those generation counters, every one
+of the 23 same-state repeat groups is byte-identical.  The two four-binary64
+bounds at owner `+0x228` and `+0x250` equal the public captured bounds of layer
+path `[1,0,1]` in all 114 states.  Owner `+0x248` and `+0x270` hold the two
+region handles, and the binary32 word at owner `+0x2d0` equals `remaining` in
+all 114 states.  Every other byte in the window is zero.  This maps the whole
+opened window to captured state, but does not explain how the region handles
+are constructed.
+
+The already pinned `capture_backdrop` instructions identify the next missing
+input without a raster fit.  Owner `x20` stores a begin/end record vector at
+`+0x50/+0x58`; records are exactly `0xd0` bytes.  Five uint64 words from
+`x19+0x18` are compared with the first 40 bytes of each record while scanning
+from the final record toward zero, the selected index is cached at owner
+`+0x220`, and the selected record's 32 bytes at `+0x30` initialize owner bounds
+at `+0x228`.  Later instructions may expand those bounds while visiting other
+records, so this is an observed construction skeleton rather than a complete
+crop law.  The region selector then chooses owner `+0x248` or `+0x270` and
+stores that handle at `SP+0x2a0`; the live matrix selected `+0x248` every time.
+
+The bounded record-vector follow-up is frozen before capture in
+`Analysis/dynamic_allocation_capture_backdrop_owner_record_preregistration.json`.
+Its SHA-256 is
+`dd8b04528b4678bf1ce5605ff0582498471e7f46da9155c34ec9aa4dc43c028d`.
+It leaves the 114-state matrix unchanged and advances only the enclosing
+evidence to schema 8 and the operand record to schema 4.  Each state requires
+exactly 768 checked owner bytes, the exact 40-byte source key, and the complete
+nonempty owner record vector.  The vector is capped at 64 records/13,312 bytes,
+must be an exact multiple of `0xd0`, and must agree with independently retained
+begin, end, and capacity pointers.  The earlier owner window must equal the
+owner-prefix slice at `0x200...0x2ff`; at least one record key must equal the
+source key; and owner `+0x220` must equal the lowest matching index dictated by
+the opened descending loop.  The complete read mask is `0x007fffff` and every
+read still fails closed after at most three attempts.  A pass can expose the
+remaining live construction inputs; it still cannot authorize a production
+shader change or claim a public crop rule, unseen transfer, Retina 2x transfer,
+or Walle parity.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

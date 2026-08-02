@@ -1,0 +1,384 @@
+{
+  "aggregate": {
+    "allocationInvariants": {
+      "componentCount": 1596,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "callbackAttemptCount": 0,
+    "completeLiveOperandCaptureCount": 114,
+    "owner248HandleClassCounts": {
+      "packed": 114
+    },
+    "owner270HandleClassCounts": {
+      "packed": 112,
+      "pointer": 2
+    },
+    "owner270PointerPrefixByteCount": 4096,
+    "ownerRegionMismatches": [
+      {
+        "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-6",
+        "owner270Class": "pointer",
+        "owner270Rectangles": [
+          [
+            200,
+            173,
+            642,
+            8
+          ],
+          [
+            200,
+            181,
+            643,
+            643
+          ]
+        ],
+        "recordIndex": 7,
+        "selectedOwner248Rect": [
+          200,
+          173,
+          642,
+          651
+        ],
+        "translation": [
+          -6,
+          0
+        ]
+      },
+      {
+        "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-25",
+        "owner270Class": "pointer",
+        "owner270Rectangles": [
+          [
+            201,
+            173,
+            642,
+            8
+          ],
+          [
+            200,
+            181,
+            643,
+            643
+          ]
+        ],
+        "recordIndex": 38,
+        "selectedOwner248Rect": [
+          201,
+          173,
+          642,
+          651
+        ],
+        "translation": [
+          25,
+          0
+        ]
+      },
+      {
+        "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-25",
+        "owner270Class": "packed",
+        "owner270Rectangles": [
+          [
+            200,
+            173,
+            643,
+            651
+          ]
+        ],
+        "recordIndex": 79,
+        "selectedOwner248Rect": [
+          200,
+          173,
+          643,
+          650
+        ],
+        "translation": [
+          0,
+          25
+        ]
+      }
+    ],
+    "primaryPositionReplay": {
+      "allowNumericTolerance": false,
+      "componentCount": 912,
+      "mismatchedComponents": 0
+    },
+    "primarySourceQ": {
+      "componentCount": 912,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "primarySourceReplay": {
+      "allowNumericTolerance": false,
+      "componentCount": 912,
+      "mismatchedComponents": 0
+    },
+    "recordCount": 114,
+    "sameStateNormalizedOwnerWindowGroupCount": 23,
+    "sameStateNormalizedOwnerWindowsExact": true,
+    "selectedEqualsOwner248Count": 114,
+    "selectedEqualsOwner270Count": 111,
+    "selectedRegionConsumedRectangleExactCount": 114,
+    "selectedRegionHandleFrequency": [
+      {
+        "count": 8,
+        "handle": "0x00c700ac05080a35"
+      },
+      {
+        "count": 14,
+        "handle": "0x00c700ac050a0a31"
+      },
+      {
+        "count": 5,
+        "handle": "0x00c700ad050a0a31"
+      },
+      {
+        "count": 14,
+        "handle": "0x00c800ac05080a35"
+      },
+      {
+        "count": 1,
+        "handle": "0x00c800ad05040a2d"
+      },
+      {
+        "count": 1,
+        "handle": "0x00c800ad05060a29"
+      },
+      {
+        "count": 68,
+        "handle": "0x00c800ad05060a2d"
+      },
+      {
+        "count": 2,
+        "handle": "0x00c800ae05060a29"
+      },
+      {
+        "count": 1,
+        "handle": "0x00c900ad05040a2d"
+      }
+    ],
+    "selectedRegionRectangleFrequency": [
+      {
+        "count": 8,
+        "rect": [
+          199,
+          172,
+          644,
+          653
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          199,
+          172,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 5,
+        "rect": [
+          199,
+          173,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          200,
+          172,
+          644,
+          653
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          642,
+          651
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 68,
+        "rect": [
+          200,
+          173,
+          643,
+          651
+        ]
+      },
+      {
+        "count": 2,
+        "rect": [
+          200,
+          174,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          201,
+          173,
+          642,
+          651
+        ]
+      }
+    ]
+  },
+  "classification": "post-opening-analysis-of-prospectively-passing-capture-backdrop-owner-region-construction; not-a-public-state-crop-policy-unseen-transfer-or-product-parity-claim",
+  "conclusion": {
+    "frozenOwnerRegionGatePassed": true,
+    "missingAlternateProducerCaptureClosed": true,
+    "ownerObjectWindowMappedToPublicBoundsAndRemaining": true,
+    "pointerBackedOwnerRegionsDecoded": true,
+    "productionShaderAuthorized": false,
+    "publicLayerStateCropRuleRecovered": false,
+    "requiresBoundedOwnerRecordVectorCapture": true,
+    "requiresUnseenGeometryTransfer": true
+  },
+  "dynamicAllocationCaptureBackdropOwnerRegionAnalysisSchemaVersion": 1,
+  "headSHA": "cab92e1411947cf6dc96313e6a343a7019994b0e",
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30767931920/transition-timeline.json",
+  "inputTimelineSHA256": "7cf61e1fdb009d00d8cd7446d407193779f3431dc148551e984541064198dc0d",
+  "openedInstructions": {
+    "byteGatedWords": [
+      {
+        "offset": 856,
+        "word": "0x9108a28c"
+      },
+      {
+        "offset": 888,
+        "word": "0xf9400e6c"
+      },
+      {
+        "offset": 904,
+        "word": "0x52801a11"
+      },
+      {
+        "offset": 1012,
+        "word": "0xb9021689"
+      },
+      {
+        "offset": 1016,
+        "word": "0xb9021a8a"
+      },
+      {
+        "offset": 1020,
+        "word": "0xf901129b"
+      },
+      {
+        "offset": 1032,
+        "word": "0x3dc00d20"
+      },
+      {
+        "offset": 1040,
+        "word": "0x3d800140"
+      },
+      {
+        "offset": 1044,
+        "word": "0x3dc01120"
+      },
+      {
+        "offset": 1048,
+        "word": "0x3d800540"
+      },
+      {
+        "offset": 6052,
+        "word": "0x52804e08"
+      },
+      {
+        "offset": 6056,
+        "word": "0x52804909"
+      },
+      {
+        "offset": 6060,
+        "word": "0x9a881128"
+      },
+      {
+        "offset": 6076,
+        "word": "0xf8686a80"
+      },
+      {
+        "offset": 6080,
+        "word": "0xf90153e0"
+      }
+    ],
+    "captureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "recordVector": {
+      "ownerBeginEndOffsets": [
+        80,
+        88
+      ],
+      "ownerBoundsDestinationOffset": 552,
+      "recordKeyByteCount": 40,
+      "recordKeyOffset": 0,
+      "recordStrideBytes": 208,
+      "selectedRecordBoundsByteCount": 32,
+      "selectedRecordBoundsOffset": 48,
+      "sourceKeyByteCount": 40,
+      "sourceKeyOffset": 24
+    },
+    "regionSelector": {
+      "candidateOwnerOffsets": [
+        584,
+        624
+      ],
+      "observedSelectedOwnerOffset": 584,
+      "selectedHandleStackOffset": 672
+    }
+  },
+  "openedOwnerWindow": {
+    "allOtherBytesZero": true,
+    "byteCount": 256,
+    "generationCounters": {
+      "exactCount": 114,
+      "exactRule": "recordIndex + 33",
+      "ownerOffsets": [
+        528,
+        532
+      ]
+    },
+    "generationNormalizedDistinctWindowCount": 9,
+    "publicBounds": {
+      "encoding": "four little-endian binary64 words",
+      "exactCount": 114,
+      "layerPath": [
+        1,
+        0,
+        1
+      ],
+      "ownerOffsets": [
+        552,
+        592
+      ]
+    },
+    "regionHandles": {
+      "owner248Offset": 584,
+      "owner270Offset": 624
+    },
+    "remaining": {
+      "encoding": "one little-endian binary32 word",
+      "exactCount": 114,
+      "ownerOffset": 720
+    }
+  },
+  "prospectiveGatePassed": true,
+  "runID": 30767931920,
+  "workflowConclusion": "success"
+}

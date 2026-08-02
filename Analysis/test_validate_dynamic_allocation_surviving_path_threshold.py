@@ -184,6 +184,73 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         )
         return operands
 
+    @classmethod
+    def capture_backdrop_owner_record_operands(cls) -> dict[str, object]:
+        operands = cls.capture_backdrop_owner_region_operands()
+        registers = list(
+            struct.unpack(
+                f"<{surviving.CAPTURE_BACKDROP_REGISTER_COUNT}Q",
+                bytes.fromhex(operands["registers"]["hex"]),
+            )
+        )
+        registers[19 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER] = 0x8000
+        source_key = bytes(
+            range(surviving.CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT)
+        )
+        record_count = 2
+        vector = bytearray(
+            record_count * surviving.CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT
+        )
+        selected_index = 1
+        selected_offset = (
+            selected_index * surviving.CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT
+        )
+        vector[selected_offset : selected_offset + len(source_key)] = source_key
+        vector[selected_offset + 0x30 : selected_offset + 0x50] = bytes(range(32))
+        record_begin = 0x9000
+        record_end = record_begin + len(vector)
+        owner_prefix = bytearray(
+            surviving.CAPTURE_BACKDROP_OWNER_OBJECT_PREFIX_BYTE_COUNT
+        )
+        struct.pack_into(
+            "<3Q", owner_prefix, 0x50, record_begin, record_end, record_end
+        )
+        owner_window = bytearray.fromhex(operands["ownerRegionWindow"]["hex"])
+        struct.pack_into("<Q", owner_window, 0x20, selected_index)
+        operands["ownerRegionWindow"] = cls.operand_bytes(
+            bytes(owner_window),
+            "bounded owner bytes at offsets 0x200 through 0x2ff",
+        )
+        owner_prefix[0x200:0x300] = owner_window
+        operands.update(
+            {
+                "schemaVersion": 4,
+                "readMask": "0x007fffff",
+                "requiredReadMask": "0x007fffff",
+                "registers": cls.operand_bytes(
+                    struct.pack(
+                        f"<{surviving.CAPTURE_BACKDROP_REGISTER_COUNT}Q",
+                        *registers,
+                    ),
+                    "little-endian x19-through-x29 words",
+                ),
+                "ownerRecordOffsets": surviving.CAPTURE_BACKDROP_OWNER_RECORD_OFFSETS,
+                "sourceStateWindowOffset": (
+                    surviving.CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_OFFSET
+                ),
+                "ownerObjectPrefix": cls.operand_bytes(
+                    bytes(owner_prefix), "bounded owner object prefix bytes"
+                ),
+                "ownerRecordVector": cls.operand_bytes(
+                    bytes(vector), "bounded owner 0xd0-byte record vector"
+                ),
+                "sourceStateWindow": cls.operand_bytes(
+                    source_key, "five little-endian source-state key words"
+                ),
+            }
+        )
+        return operands
+
     @staticmethod
     def producer_call_site() -> dict[str, object]:
         payload = bytes(0x800)
@@ -365,7 +432,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             list(surviving.SAMPLE31_REPEAT_Y_VALUES),
         )
 
-    def test_swift_uses_schema_seven_for_the_owner_region_replay(self) -> None:
+    def test_swift_uses_schema_eight_for_the_owner_record_replay(self) -> None:
         source = (
             Path(__file__).parents[1] / "Sources" / "GlassIntrospect" / "main.swift"
         ).read_text(encoding="utf-8")
@@ -378,7 +445,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn('"schemaVersion": 2', fixed_block)
         self.assertNotIn('"schemaVersion": 3', fixed_block)
         self.assertNotIn('"schemaVersion": 4', fixed_block)
-        self.assertIn('"schemaVersion": 7', path_block)
+        self.assertIn('"schemaVersion": 8', path_block)
         self.assertNotIn('"schemaVersion": 3', path_block)
         self.assertNotIn('"schemaVersion": 4', path_block)
         self.assertIn('"scanXValues"', path_block)
@@ -610,6 +677,63 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertEqual(validated["ownerRegion270FirstRect"], [1, 2, 3, 4])
         self.assertEqual(validated["ownerRegion270PrefixByteCount"], 256)
 
+    def test_capture_backdrop_schema_four_replays_the_owner_record_vector(
+        self,
+    ) -> None:
+        validated = surviving.validate_capture_backdrop_operands(
+            self.capture_backdrop_owner_record_operands()
+        )
+        self.assertEqual(validated["schemaVersion"], 4)
+        self.assertEqual(validated["ownerObjectPrefixByteCount"], 768)
+        self.assertEqual(validated["ownerRecordCount"], 2)
+        self.assertEqual(validated["ownerRecordVectorByteCount"], 2 * 0xD0)
+        self.assertEqual(validated["sourceStateWindowByteCount"], 40)
+        self.assertEqual(validated["sourceRecordMatchIndices"], [1])
+        self.assertEqual(validated["selectedOwnerRecordIndex"], 1)
+        self.assertTrue(validated["ownerRegionWindowEmbeddedInPrefix"])
+
+    def test_capture_backdrop_schema_four_cross_checks_the_embedded_window(
+        self,
+    ) -> None:
+        operands = self.capture_backdrop_owner_record_operands()
+        prefix = bytearray.fromhex(operands["ownerObjectPrefix"]["hex"])
+        prefix[0x248] ^= 1
+        operands["ownerObjectPrefix"] = self.operand_bytes(
+            bytes(prefix), "bounded owner object prefix bytes"
+        )
+        with self.assertRaisesRegex(ValueError, "record-vector replay differs"):
+            surviving.validate_capture_backdrop_operands(operands)
+
+    def test_capture_backdrop_schema_four_requires_a_source_key_match(self) -> None:
+        operands = self.capture_backdrop_owner_record_operands()
+        operands["sourceStateWindow"] = self.operand_bytes(
+            bytes([0xFF]) * surviving.CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT,
+            "five little-endian source-state key words",
+        )
+        with self.assertRaisesRegex(ValueError, "record-vector replay differs"):
+            surviving.validate_capture_backdrop_operands(operands)
+
+    def test_capture_backdrop_schema_four_requires_the_cached_record_index(
+        self,
+    ) -> None:
+        operands = self.capture_backdrop_owner_record_operands()
+        prefix = bytearray.fromhex(operands["ownerObjectPrefix"]["hex"])
+        struct.pack_into("<Q", prefix, 0x220, 0)
+        operands["ownerObjectPrefix"] = self.operand_bytes(
+            bytes(prefix), "bounded owner object prefix bytes"
+        )
+        with self.assertRaisesRegex(ValueError, "record-vector replay differs"):
+            surviving.validate_capture_backdrop_operands(operands)
+
+    def test_capture_backdrop_schema_four_rejects_a_partial_record(self) -> None:
+        operands = self.capture_backdrop_owner_record_operands()
+        vector = bytes.fromhex(operands["ownerRecordVector"]["hex"])[1:]
+        operands["ownerRecordVector"] = self.operand_bytes(
+            vector, "bounded owner 0xd0-byte record vector"
+        )
+        with self.assertRaisesRegex(ValueError, "ownerRecordVector"):
+            surviving.validate_capture_backdrop_operands(operands)
+
     def test_callback_attempt_retains_bounded_symbol_offsets_without_addresses(
         self,
     ) -> None:
@@ -715,6 +839,9 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn('"regionPrefix": serialized(', source)
         self.assertIn('"ownerRegion248Prefix": serialized(', source)
         self.assertIn('"ownerRegion270Prefix": serialized(', source)
+        self.assertIn('"ownerObjectPrefix": serialized(', source)
+        self.assertIn('"ownerRecordVector": serialized(', source)
+        self.assertIn('"sourceStateWindow": serialized(', source)
         self.assertIn('"captureBackdropOperandAttempt"', source)
         self.assertIn('"TimgA2Xhfc_Isrc"', source)
 

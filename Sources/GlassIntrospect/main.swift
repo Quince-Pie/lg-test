@@ -4371,6 +4371,10 @@ private let captureBackdropContextScaleOffset = 0x18
 private let captureBackdropOwnerRegion248Offset = 0x248
 private let captureBackdropOwnerRegion270Offset = 0x270
 private let captureBackdropOwnerRegionWindowOffset = 0x200
+private let captureBackdropOwnerRecordBeginOffset = 0x50
+private let captureBackdropOwnerRecordEndOffset = 0x58
+private let captureBackdropOwnerRecordCapacityOffset = 0x60
+private let captureBackdropSourceStateWindowOffset = 0x18
 private let captureBackdropRendererScaleOffset = 0x30
 private let captureBackdropRendererRegionControlOffset = 0xD0
 private let captureBackdropMemoryReadMaximumAttemptCount = 3
@@ -4624,7 +4628,7 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
     let requiredReadMask = UInt32(
         LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK)
     return [
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "executed": true,
         "class": "bounded live capture_backdrop unwind operands",
         "completeRead": operands.read_mask == requiredReadMask,
@@ -4689,6 +4693,15 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
         ],
         "ownerRegionWindowOffset":
             captureBackdropOwnerRegionWindowOffset,
+        "ownerRecordOffsets": [
+            "begin": captureBackdropOwnerRecordBeginOffset,
+            "end": captureBackdropOwnerRecordEndOffset,
+            "capacity": captureBackdropOwnerRecordCapacityOffset,
+            "recordByteCount":
+                Int(LG_CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT),
+        ],
+        "sourceStateWindowOffset":
+            captureBackdropSourceStateWindowOffset,
         "rendererOffsets": [
             "scale": captureBackdropRendererScaleOffset,
             "regionControl": captureBackdropRendererRegionControlOffset,
@@ -4736,6 +4749,21 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
             className: "bounded owner bytes at offsets 0x200 through 0x2ff",
             byteCount: Int(
                 operands.owner_region_window_length)),
+        "ownerObjectPrefix": serialized(
+            &operands.owner_object_prefix,
+            className: "bounded owner object prefix bytes",
+            byteCount: Int(
+                operands.owner_object_prefix_length)),
+        "ownerRecordVector": serialized(
+            &operands.owner_record_vector,
+            className: "bounded owner 0xd0-byte record vector",
+            byteCount: Int(
+                operands.owner_record_vector_length)),
+        "sourceStateWindow": serialized(
+            &operands.source_state_window,
+            className: "five little-endian source-state key words",
+            byteCount: Int(
+                operands.source_state_window_length)),
     ]
 }
 
@@ -18694,7 +18722,7 @@ private func transitionPathIsolationAllocationEvidence(
         $0["executed"] as? Bool == true
     }.count
     return [
-        "schemaVersion": 7,
+        "schemaVersion": 8,
         "requested": true,
         "executed": executedRecordCount == expectedRecordCount,
         "sourceSampleIndices": selectedSnapshots.map(
@@ -18735,14 +18763,26 @@ private func transitionPathIsolationAllocationEvidence(
             captureBackdropOwnerRegionWindowOffset,
         "captureBackdropOwnerRegionWindowByteCount":
             Int(LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT),
+        "captureBackdropOwnerObjectPrefixByteCount":
+            Int(LG_CAPTURE_BACKDROP_OWNER_OBJECT_PREFIX_BYTE_COUNT),
+        "captureBackdropOwnerRecordByteCount":
+            Int(LG_CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT),
+        "captureBackdropOwnerRecordMaximumCount":
+            Int(LG_CAPTURE_BACKDROP_OWNER_RECORD_MAXIMUM_COUNT),
+        "captureBackdropOwnerRecordVectorMaximumByteCount":
+            Int(LG_CAPTURE_BACKDROP_OWNER_RECORD_VECTOR_BYTE_COUNT),
+        "captureBackdropSourceStateWindowOffset":
+            captureBackdropSourceStateWindowOffset,
+        "captureBackdropSourceStateWindowByteCount":
+            Int(LG_CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT),
         "captureBackdropRequiredReadMask": String(
             format: "0x%08x",
             UInt32(LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK)),
         "records": records,
         "method":
             "live-baseline-sample31-unit-scan-with-dual-owner-region-"
-            + "prefixes-bounded-callback-provenance-and-late-same-process-"
-            + "repeat-controls",
+            + "prefixes-bounded-owner-record-vector-source-key-callback-"
+            + "provenance-and-late-same-process-repeat-controls",
     ]
 }
 
@@ -18936,7 +18976,7 @@ private func transitionBackgroundUniformEvidence(
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
-            "schemaVersion": 7,
+            "schemaVersion": 8,
             "requested": true,
             "executed": false,
             "reason": "default Metal device unavailable",
@@ -18947,7 +18987,7 @@ private func transitionBackgroundUniformEvidence(
           !snapshots.isEmpty
     else {
         return [
-            "schemaVersion": 7,
+            "schemaVersion": 8,
             "requested": true,
             "executed": false,
             "reason":
@@ -19138,7 +19178,7 @@ private func transitionBackgroundUniformEvidence(
             + "layer-state-on-fresh-static-model-tree-with-controlled-"
             + "producer-input"
     return [
-        "schemaVersion": 7,
+        "schemaVersion": 8,
         "requested": true,
         "executed":
             executed == snapshots.count
@@ -20215,7 +20255,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     phase: "after-static-model-carrier")
             } else {
                 dynamicUniformEvidence = [
-                    "schemaVersion": 7,
+                    "schemaVersion": 8,
                     "requested": false,
                     "executed": false,
                     "evidenceMode": "disabled",

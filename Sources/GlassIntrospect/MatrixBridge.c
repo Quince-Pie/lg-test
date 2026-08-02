@@ -28,6 +28,17 @@ static_assert(sizeof(void *) == sizeof(lg_unary_float_function));
 static_assert(sizeof(void *) == sizeof(lg_unary_matrix_function));
 static_assert(sizeof(void *) == sizeof(lg_binary_matrix_function));
 static_assert(sizeof(uintptr_t) == sizeof(uint64_t));
+static_assert(
+    sizeof(lg_capture_backdrop_owner_record_vector)
+    == LG_CAPTURE_BACKDROP_OWNER_RECORD_VECTOR_BYTE_COUNT);
+static_assert(
+    offsetof(lg_capture_backdrop_owner_record_vector, chunk_0) == 0);
+static_assert(
+    offsetof(lg_capture_backdrop_owner_record_vector, chunk_1) == 4096);
+static_assert(
+    offsetof(lg_capture_backdrop_owner_record_vector, chunk_2) == 8192);
+static_assert(
+    offsetof(lg_capture_backdrop_owner_record_vector, chunk_3) == 12288);
 static_assert(offsetof(lg_capture_backdrop_operands, registers) == 40);
 static_assert(offsetof(lg_capture_backdrop_operands, origin_pointer) == 128);
 static_assert(offsetof(lg_capture_backdrop_operands, renderer_pointer) == 160);
@@ -56,7 +67,19 @@ static_assert(
     offsetof(lg_capture_backdrop_operands, owner_region_window) == 8808);
 static_assert(
     offsetof(lg_capture_backdrop_operands, owner_region_window_length) == 9064);
-static_assert(sizeof(lg_capture_backdrop_operands) == 9072);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_object_prefix) == 9072);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_record_vector) == 9840);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, source_state_window) == 23152);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_object_prefix_length) == 23192);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, owner_record_vector_length) == 23196);
+static_assert(
+    offsetof(lg_capture_backdrop_operands, source_state_window_length) == 23200);
+static_assert(sizeof(lg_capture_backdrop_operands) == 23208);
 
 static int lg_load_symbol(
     const char *name,
@@ -184,6 +207,10 @@ enum {
     LG_CAPTURE_BACKDROP_OWNER_REGION_248_OFFSET = 0x248,
     LG_CAPTURE_BACKDROP_OWNER_REGION_270_OFFSET = 0x270,
     LG_CAPTURE_BACKDROP_OWNER_REGION_WINDOW_OFFSET = 0x200,
+    LG_CAPTURE_BACKDROP_OWNER_RECORD_BEGIN_OFFSET = 0x50,
+    LG_CAPTURE_BACKDROP_OWNER_RECORD_END_OFFSET = 0x58,
+    LG_CAPTURE_BACKDROP_OWNER_RECORD_CAPACITY_OFFSET = 0x60,
+    LG_CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_OFFSET = 0x18,
     LG_CAPTURE_BACKDROP_RENDERER_SCALE_OFFSET = 0x30,
     LG_CAPTURE_BACKDROP_RENDERER_REGION_CONTROL_OFFSET = 0xd0,
     LG_CAPTURE_BACKDROP_MAXIMUM_FRAME_COUNT = 32,
@@ -395,6 +422,63 @@ static _Unwind_Reason_Code lg_capture_backdrop_unwind_frame(
         output->owner_region_window_length =
             (uint32_t)sizeof(output->owner_region_window);
         output->read_mask |= LG_CAPTURE_BACKDROP_READ_OWNER_REGION_WINDOW;
+    }
+    if (owner_pointer != 0
+        && lg_read_self(
+            owner_pointer,
+            output->owner_object_prefix,
+            sizeof(output->owner_object_prefix))) {
+        output->owner_object_prefix_length =
+            (uint32_t)sizeof(output->owner_object_prefix);
+        output->read_mask |= LG_CAPTURE_BACKDROP_READ_OWNER_OBJECT_PREFIX;
+
+        uint64_t record_begin = 0;
+        uint64_t record_end = 0;
+        uint64_t record_capacity = 0;
+        memcpy(
+            &record_begin,
+            output->owner_object_prefix
+                + LG_CAPTURE_BACKDROP_OWNER_RECORD_BEGIN_OFFSET,
+            sizeof(record_begin));
+        memcpy(
+            &record_end,
+            output->owner_object_prefix
+                + LG_CAPTURE_BACKDROP_OWNER_RECORD_END_OFFSET,
+            sizeof(record_end));
+        memcpy(
+            &record_capacity,
+            output->owner_object_prefix
+                + LG_CAPTURE_BACKDROP_OWNER_RECORD_CAPACITY_OFFSET,
+            sizeof(record_capacity));
+        if (record_begin != 0
+            && record_end > record_begin
+            && record_capacity >= record_end) {
+            const uint64_t vector_byte_count = record_end - record_begin;
+            if (vector_byte_count <= sizeof(output->owner_record_vector)
+                && vector_byte_count
+                    % LG_CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT == 0
+                && lg_read_self(
+                    (uintptr_t)record_begin,
+                    &output->owner_record_vector,
+                    (size_t)vector_byte_count)) {
+                output->owner_record_vector_length =
+                    (uint32_t)vector_byte_count;
+                output->read_mask |=
+                    LG_CAPTURE_BACKDROP_READ_OWNER_RECORD_VECTOR;
+            }
+        }
+    }
+    const uintptr_t source_state_pointer = output->registers[
+        19 - LG_CAPTURE_BACKDROP_FIRST_REGISTER];
+    if (source_state_pointer != 0
+        && lg_read_self(
+            source_state_pointer
+                + LG_CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_OFFSET,
+            output->source_state_window,
+            sizeof(output->source_state_window))) {
+        output->source_state_window_length =
+            (uint32_t)sizeof(output->source_state_window);
+        output->read_mask |= LG_CAPTURE_BACKDROP_READ_SOURCE_STATE_WINDOW;
     }
     if (output->renderer_pointer != 0
         && lg_read_self(
