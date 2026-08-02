@@ -3837,6 +3837,26 @@ calibration because the widened selector window and corrected anchor were
 chosen after opening the run. It does not erase the failed frozen gate or
 authorize production parity.
 
+A later transition capture exposed the square table's remaining domain hole.
+After reproducing the captured MVP and viewport arithmetic, one background
+quad had a 208383-by-208382 fixed-grid extent and one final-highlight quad had
+a 212991-by-212990 extent. The former selects exact reciprocal floor while the
+latter selects the base-table value, also exact reciprocal floor. Linear
+interpolation between adjacent square calibration entries rounds the latter
+one unit too high and changes 945,984 captured SDF words. Replaying the base
+selector instead makes all highlight SDF words exact.
+
+`raster-near-square-selector-sweep.yml` closes that measurement gap without a
+sample-specific correction. One macOS capture crosses all 32,769 production
+widths with eighteen preregistered signed height offsets from -256 through
++256 fixed units, for 589,842 non-square determinants. The frozen narrow
+hypothesis is exact reciprocal floor. A separate predeclared recovery window
+from floor-2 through floor+3 is bit-distinguishable for every case and ensures
+that a falsified simple rule still yields useful finite calibration without
+changing candidates after opening the artifact. Neither outcome is a
+universal closed form or a production parity authorization; the recovered
+predictor still requires an unseen transition holdout.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does

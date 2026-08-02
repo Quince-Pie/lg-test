@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "role": "production-near-square-fixed-grid-reciprocal-selector-calibration",
+  "objective": "Measure AGX reciprocal-selector endpoints for the complete 768-through-896-pixel production width range at eighteen preregistered non-square height offsets, including both width by width-minus-one and width by width-plus-one.",
+  "classification": "finite-domain calibration with a separately scored frozen exact-floor hypothesis; not universal reciprocal validation",
+  "capture": {
+    "rigVersion": "metal-raster-near-square-selector-sweep-1.0.0",
+    "widthFixedLower": 196608,
+    "widthFixedUpper": 229376,
+    "heightFixedDeltas": [
+      -256,
+      -128,
+      -64,
+      -32,
+      -16,
+      -8,
+      -4,
+      -2,
+      -1,
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "fixedUnitsPerPixel": 256,
+    "widthCount": 32769,
+    "caseCount": 589842,
+    "geometry": "axis-aligned widthFixed by widthFixed-plus-delta quad at (64,64), perspective interpolation, w=1",
+    "endpoint": "symmetric X scalar ramp [-width/2,+width/2]",
+    "samplePixel": [
+      448,
+      449
+    ],
+    "pullOffsets": [
+      [
+        0.0,
+        0.5
+      ],
+      [
+        0.9375,
+        0.5
+      ]
+    ],
+    "recordComponents": [
+      "pull@0,0.5 binary32 bits",
+      "pull@15/16,0.5 binary32 bits"
+    ],
+    "rawBytes": 4718736,
+    "ordering": "height-delta-major,width-fixed-minor"
+  },
+  "frozenHypothesis": {
+    "selector": "exact floor of the 25-bit reciprocal endpoint of the unsimplified widthFixed times heightFixed determinant",
+    "motivation": "both opened width by width-minus-one transition cases select exact floor, while linear interpolation between adjacent square calibrations is one selector unit too high for one case",
+    "acceptance": "both pull words must match exact-floor prediction in every captured case; zero tolerance"
+  },
+  "predeclaredRecovery": {
+    "selectorOffsetsFromExactFloor": [
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3
+    ],
+    "coefficientArithmetic": "prospectively validated schema-15 partial-product and carry-column setup",
+    "constantArithmetic": "input-derived descending-diagonal anchor, factorized tile term, 28-bit composite quantization",
+    "comparison": "both captured pull words must equal exactly one predeclared candidate; no tolerance",
+    "interpretation": "a complete unique recovery remains finite calibration even when the narrower exact-floor hypothesis fails"
+  },
+  "preflight": {
+    "candidateStreamBytes": 28312416,
+    "candidateStreamSha256": "50474efe93e42c99fe3122fe2dbaeb2dca047d14b58c9790329a2b333b2f9df5",
+    "candidateDistinctCaseCount": 589842,
+    "candidateMultiplicityPerCase": 6,
+    "allCasesDistinguishable": true
+  },
+  "acceptance": {
+    "coverageMustEqualCaseCount": true,
+    "missingRecordCount": 0,
+    "recoveryMismatchedCaseCount": 0,
+    "recoveryAmbiguousCaseCount": 0,
+    "recoveryMatchedCaseCount": 589842,
+    "exactFloorHypothesisReportedSeparately": true
+  },
+  "afterOpening": {
+    "allowed": [
+      "materialize the complete finite near-square selector table",
+      "test the frozen exact-floor hypothesis without changing it",
+      "search the recovered selector surface for an input-only closed form",
+      "compare already-opened transition states against the predeclared table"
+    ],
+    "notAllowed": [
+      "describe finite calibration as universal prospective validation",
+      "change the recovery window after opening and call the result preregistered",
+      "authorize production parity without a separately frozen unseen transition holdout",
+      "replace an exact comparison with a tolerance"
+    ],
+    "nextGate": "freeze the resulting input-only selector predictor, then evaluate a newly captured transition artifact that was not used for calibration"
+  }
+}

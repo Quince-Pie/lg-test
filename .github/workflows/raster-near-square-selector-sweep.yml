@@ -1,0 +1,90 @@
+name: Calibrate Apple Metal near-square selector
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/raster-near-square-selector-sweep.yml
+      - Analysis/raster_near_square_selector_sweep_preregistration.json
+      - Analysis/validate_raster_near_square_selector_sweep.py
+      - Sources/GlassRasterNearSquareSelectorSweep/**
+
+concurrency:
+  group: raster-near-square-selector-sweep-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  raster-near-square-selector-sweep:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: Analysis/requirements-fractional-selector.txt
+
+      - name: Install validator dependency
+        run: |
+          python -m pip install --disable-pip-version-check \
+            -r Analysis/requirements-fractional-selector.txt
+
+      - name: Build near-square-selector probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p raster-near-square-selector-sweep
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassRasterNearSquareSelectorSweep/main.swift \
+            -o glass-raster-near-square-selector-sweep 2>&1 |
+            tee raster-near-square-selector-sweep/build.log
+
+      - name: Capture preregistered near-square selectors
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SWIFT_BACKTRACE: enable
+        run: |
+          ./glass-raster-near-square-selector-sweep \
+            raster-near-square-selector-sweep
+
+      - name: Test exact-floor rule and recover predeclared window
+        id: validate
+        if: steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python Analysis/validate_raster_near_square_selector_sweep.py \
+            raster-near-square-selector-sweep \
+            --output raster-near-square-selector-sweep/validation.json
+
+      - name: Upload near-square-selector evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-raster-near-square-selector-sweep-${{ github.run_id }}
+          path: raster-near-square-selector-sweep
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce preregistered recovery gate
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s raster-near-square-selector-sweep/manifest.json
+          test -s raster-near-square-selector-sweep/validation.json
+          test -s \
+            raster-near-square-selector-sweep/raster-near-square-selectors-u32le.zlib
+          test -s \
+            raster-near-square-selector-sweep/raster-near-square-selector-offsets-i8.bin
