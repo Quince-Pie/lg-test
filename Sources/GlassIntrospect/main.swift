@@ -16259,6 +16259,142 @@ private struct TransitionLayerState {
     let backdropScale: NSNumber?
 }
 
+private struct TransitionFixedStateTranslation {
+    let name: String
+    let delta: CGPoint
+}
+
+private let transitionFixedStateSampleIndices: Set<Int> = [
+    18, 23, 25, 28, 31,
+]
+
+private let transitionFixedStateTranslations = [
+    TransitionFixedStateTranslation(
+        name: "base",
+        delta: .zero),
+    TransitionFixedStateTranslation(
+        name: "x-negative-91",
+        delta: CGPoint(x: -91, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "x-negative-90",
+        delta: CGPoint(x: -90, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "x-negative-89",
+        delta: CGPoint(x: -89, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "x-negative-1",
+        delta: CGPoint(x: -1, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "x-positive-1",
+        delta: CGPoint(x: 1, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "x-positive-89",
+        delta: CGPoint(x: 89, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "x-positive-90",
+        delta: CGPoint(x: 90, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "x-positive-91",
+        delta: CGPoint(x: 91, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "x-positive-92",
+        delta: CGPoint(x: 92, y: 0)),
+    TransitionFixedStateTranslation(
+        name: "y-negative-135",
+        delta: CGPoint(x: 0, y: -135)),
+    TransitionFixedStateTranslation(
+        name: "y-negative-134",
+        delta: CGPoint(x: 0, y: -134)),
+    TransitionFixedStateTranslation(
+        name: "y-negative-133",
+        delta: CGPoint(x: 0, y: -133)),
+    TransitionFixedStateTranslation(
+        name: "y-negative-132",
+        delta: CGPoint(x: 0, y: -132)),
+    TransitionFixedStateTranslation(
+        name: "y-negative-1",
+        delta: CGPoint(x: 0, y: -1)),
+    TransitionFixedStateTranslation(
+        name: "y-positive-1",
+        delta: CGPoint(x: 0, y: 1)),
+    TransitionFixedStateTranslation(
+        name: "y-positive-133",
+        delta: CGPoint(x: 0, y: 133)),
+    TransitionFixedStateTranslation(
+        name: "y-positive-134",
+        delta: CGPoint(x: 0, y: 134)),
+    TransitionFixedStateTranslation(
+        name: "y-positive-135",
+        delta: CGPoint(x: 0, y: 135)),
+    TransitionFixedStateTranslation(
+        name: "y-positive-136",
+        delta: CGPoint(x: 0, y: 136)),
+    TransitionFixedStateTranslation(
+        name: "target-integer",
+        delta: CGPoint(x: 90, y: -134)),
+    TransitionFixedStateTranslation(
+        name: "target-half-even",
+        delta: CGPoint(x: 91, y: -133)),
+    TransitionFixedStateTranslation(
+        name: "target-half-signed",
+        delta: CGPoint(x: -90, y: 135)),
+]
+
+private let transitionFixedStateBoundsAndPositionPaths: [[Int]] = [
+    [1, 0, 1],
+    [1, 0, 1, 0],
+    [1, 0, 1, 0, 0],
+    [1, 0, 1, 1],
+    [1, 0, 1, 1, 0],
+    [1, 0, 1, 1, 0, 0],
+    [1, 0, 1, 2],
+]
+
+private let transitionFixedStatePositionOnlyPaths: [[Int]] = [
+    [1, 0, 1, 0, 0, 0, 0],
+]
+
+private func translatedTransitionLayerStates(
+    _ states: [TransitionLayerState],
+    by delta: CGPoint
+) -> [TransitionLayerState] {
+    states.map { state in
+        let translatesBounds =
+            transitionFixedStateBoundsAndPositionPaths.contains(
+                state.path)
+        let translatesPosition = translatesBounds
+            || transitionFixedStatePositionOnlyPaths.contains(
+                state.path)
+        var bounds = state.bounds
+        var position = state.position
+        if translatesBounds {
+            bounds.origin.x += delta.x
+            bounds.origin.y += delta.y
+        }
+        if translatesPosition {
+            position.x += delta.x
+            position.y += delta.y
+        }
+        return TransitionLayerState(
+            path: state.path,
+            className: state.className,
+            bounds: bounds,
+            position: position,
+            anchorPoint: state.anchorPoint,
+            zPosition: state.zPosition,
+            opacity: state.opacity,
+            isHidden: state.isHidden,
+            isOpaque: state.isOpaque,
+            masksToBounds: state.masksToBounds,
+            cornerRadius: state.cornerRadius,
+            contentsScale: state.contentsScale,
+            contentsRect: state.contentsRect,
+            transform: state.transform,
+            sublayerTransform: state.sublayerTransform,
+            backdropScale: state.backdropScale)
+    }
+}
+
 private func transitionLayerStateEvidence(
     _ state: TransitionLayerState
 ) -> [String: Any] {
@@ -17097,11 +17233,217 @@ private func localTransitionCARendererEvidence(
 }
 
 @MainActor
+private func transitionFixedStateAllocationEvidence(
+    rootLayer: CALayer,
+    target: TransitionBackgroundFilterTarget,
+    snapshots: [TransitionBackgroundFilterSnapshot],
+    device: MTLDevice,
+    requested: Bool
+) -> [String: Any] {
+    guard requested else {
+        return [
+            "schemaVersion": 1,
+            "requested": false,
+            "executed": false,
+        ]
+    }
+    let selectedSnapshots = snapshots.filter {
+        transitionFixedStateSampleIndices.contains(
+            $0.sampleIndex)
+    }
+    guard selectedSnapshots.count
+            == transitionFixedStateSampleIndices.count
+    else {
+        return [
+            "schemaVersion": 1,
+            "requested": true,
+            "executed": false,
+            "reason": "fixed-state source samples are incomplete",
+            "sourceSampleIndices": selectedSnapshots.map(
+                \.sampleIndex),
+        ]
+    }
+
+    var records: [[String: Any]] = []
+    records.reserveCapacity(
+        selectedSnapshots.count
+            * transitionFixedStateTranslations.count)
+    for snapshot in selectedSnapshots {
+        let sourceLayerEvidence = snapshot.layerStates.map(
+            transitionLayerStateEvidence)
+        let sourceFilterDescription = filterDescription(
+            snapshot.filter)
+        guard let sourceLayerSHA256 =
+                transitionJSONObjectSHA256(sourceLayerEvidence),
+              let sourceFilterInputs =
+                sourceFilterDescription["inputValues"],
+              let sourceFilterInputSHA256 =
+                transitionJSONObjectSHA256(sourceFilterInputs)
+        else {
+            return [
+                "schemaVersion": 1,
+                "requested": true,
+                "executed": false,
+                "reason": "fixed-state source hash construction failed",
+                "sourceSampleIndex": snapshot.sampleIndex,
+            ]
+        }
+        for (translationIndex, translation) in
+            transitionFixedStateTranslations.enumerated()
+        {
+            let translatedStates = translatedTransitionLayerStates(
+                snapshot.layerStates,
+                by: translation.delta)
+            let translatedLayerEvidence = translatedStates.map(
+                transitionLayerStateEvidence)
+            let replay = installCompatibleTransitionLayerStates(
+                translatedStates,
+                rootLayer: rootLayer)
+            let missingCriticalPaths =
+                transitionCarrierCriticalPaths.filter {
+                    !replay.installedPaths.contains($0)
+                }
+            guard missingCriticalPaths.isEmpty,
+                  target.path == snapshot.backgroundPath,
+                  let stateFilter =
+                    copiedTransitionFilter(snapshot.filter),
+                  installTransitionBackgroundFilter(
+                    stateFilter,
+                    target: target)
+            else {
+                records.append([
+                    "sampleIndex": snapshot.sampleIndex,
+                    "remaining": snapshot.remaining,
+                    "translationIndex": translationIndex,
+                    "translationName": translation.name,
+                    "translation": [
+                        translation.delta.x,
+                        translation.delta.y,
+                    ],
+                    "sourceLayerStatesSHA256":
+                        sourceLayerSHA256,
+                    "sourceFilterInputValuesSHA256":
+                        sourceFilterInputSHA256,
+                    "missingCriticalCarrierPaths":
+                        missingCriticalPaths,
+                    "skippedCarrierPaths": replay.skippedPaths,
+                    "executed": false,
+                    "reason":
+                        "fixed-state layer or filter replay failed",
+                ])
+                continue
+            }
+            let replayedFilterDescription = filterDescription(
+                stateFilter)
+            guard let replayedFilterInputs =
+                    replayedFilterDescription["inputValues"],
+                  let replayedFilterInputSHA256 =
+                    transitionJSONObjectSHA256(
+                        replayedFilterInputs),
+                  let translatedLayerSHA256 =
+                    transitionJSONObjectSHA256(
+                        translatedLayerEvidence)
+            else {
+                records.append([
+                    "sampleIndex": snapshot.sampleIndex,
+                    "remaining": snapshot.remaining,
+                    "translationIndex": translationIndex,
+                    "translationName": translation.name,
+                    "translation": [
+                        translation.delta.x,
+                        translation.delta.y,
+                    ],
+                    "sourceLayerStatesSHA256":
+                        sourceLayerSHA256,
+                    "sourceFilterInputValuesSHA256":
+                        sourceFilterInputSHA256,
+                    "executed": false,
+                    "reason": "fixed-state replay hash construction failed",
+                ])
+                continue
+            }
+            let capture = String(
+                format:
+                    "transition-fixed-state-%02d-%02d-%@",
+                snapshot.sampleIndex,
+                translationIndex,
+                translation.name)
+            let render = localTransitionCARendererEvidence(
+                rootLayer: rootLayer,
+                device: device,
+                capture: capture,
+                outputDirectory: nil)
+            records.append([
+                "sampleIndex": snapshot.sampleIndex,
+                "requestedProgress": snapshot.requestedProgress,
+                "remaining": snapshot.remaining,
+                "translationIndex": translationIndex,
+                "translationName": translation.name,
+                "translation": [
+                    translation.delta.x,
+                    translation.delta.y,
+                ],
+                "sourceLayerStatesSHA256": sourceLayerSHA256,
+                "translatedLayerStatesSHA256":
+                    translatedLayerSHA256,
+                "sourceFilterInputValuesSHA256":
+                    sourceFilterInputSHA256,
+                "replayedFilterInputValuesSHA256":
+                    replayedFilterInputSHA256,
+                "filterInputValuesUnchanged":
+                    sourceFilterInputSHA256
+                    == replayedFilterInputSHA256,
+                "translatedLayerStates": translatedLayerEvidence,
+                "capturedLayerStates": translatedLayerEvidence,
+                "installedCarrierLayerCount":
+                    replay.installedPaths.count,
+                "missingCriticalCarrierPaths":
+                    missingCriticalPaths,
+                "skippedCarrierPaths": replay.skippedPaths,
+                "originalProducerInput": true,
+                "render": render,
+                "executed":
+                    render["executed"] as? Bool == true,
+            ])
+        }
+    }
+    let executedRecordCount = records.filter {
+        $0["executed"] as? Bool == true
+            && $0["filterInputValuesUnchanged"] as? Bool
+                == true
+    }.count
+    let expectedRecordCount =
+        selectedSnapshots.count
+        * transitionFixedStateTranslations.count
+    return [
+        "schemaVersion": 1,
+        "requested": true,
+        "executed": executedRecordCount == expectedRecordCount,
+        "sourceSampleIndices": selectedSnapshots.map(
+            \.sampleIndex),
+        "translationCount":
+            transitionFixedStateTranslations.count,
+        "expectedRecordCount": expectedRecordCount,
+        "executedRecordCount": executedRecordCount,
+        "translatedBoundsAndPositionPaths":
+            transitionFixedStateBoundsAndPositionPaths,
+        "translatedPositionOnlyPaths":
+            transitionFixedStatePositionOnlyPaths,
+        "records": records,
+        "method":
+            "same-copied-apple-filter-and-presentation-layer-state-"
+            + "with-only-preregistered-layer-frame-translations-"
+            + "and-original-producer-input",
+    ]
+}
+
+@MainActor
 private func transitionBackgroundUniformEvidence(
     rootLayer: CALayer,
     snapshots: [TransitionBackgroundFilterSnapshot],
     matrixBasisRequested: Bool,
     allocationOnly: Bool,
+    fixedStateRequested: Bool,
     outputDirectory: URL
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
@@ -17264,6 +17606,17 @@ private func transitionBackgroundUniformEvidence(
             sourceSnapshot: snapshots.last,
             device: device,
             requested: matrixBasisRequested)
+    let fixedStateInterventions =
+        transitionFixedStateAllocationEvidence(
+            rootLayer: rootLayer,
+            target: matrixTarget,
+            snapshots: snapshots,
+            device: device,
+            requested: fixedStateRequested)
+    let fixedStateSucceeded =
+        !fixedStateRequested
+        || fixedStateInterventions["executed"] as? Bool
+            == true
     let evidenceMode = allocationOnly
         ? "allocation-metadata-v1"
         : "controlled-replay-v1"
@@ -17277,7 +17630,9 @@ private func transitionBackgroundUniformEvidence(
     return [
         "schemaVersion": 7,
         "requested": true,
-        "executed": executed == snapshots.count,
+        "executed":
+            executed == snapshots.count
+            && fixedStateSucceeded,
         "evidenceMode": evidenceMode,
         "modelTargetPath": matrixTarget.path,
         "sampleIndices": snapshots.map(\.sampleIndex),
@@ -17293,6 +17648,7 @@ private func transitionBackgroundUniformEvidence(
         "transitionForegroundFilterCaptured": true,
         "transitionForegroundFilterReplayedOnCarrier": false,
         "matrixUniformBasis": matrixUniformBasis,
+        "fixedStateInterventions": fixedStateInterventions,
     ]
 }
 
@@ -17394,6 +17750,19 @@ private func transitionSHA256(_ data: Data) -> String {
     SHA256.hash(data: data).map {
         String(format: "%02x", $0)
     }.joined()
+}
+
+private func transitionJSONObjectSHA256(
+    _ value: Any
+) -> String? {
+    guard JSONSerialization.isValidJSONObject(value),
+          let data = try? JSONSerialization.data(
+            withJSONObject: value,
+            options: [.sortedKeys])
+    else {
+        return nil
+    }
+    return transitionSHA256(data)
 }
 
 private struct TransitionRawWindowCapture: @unchecked Sendable {
@@ -17918,6 +18287,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_ALLOCATION_DENSE"
                 ] == "1"
+            let fixedStateAllocationRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_ALLOCATION_FIXED_STATE"
+                ] == "1"
             if dynamicUniformsRequested,
                direction != .materialize
             {
@@ -17980,6 +18353,32 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         NSLocalizedDescriptionKey:
                             "dense allocation capture requires "
                             + "allocation-only capture",
+                    ])
+            }
+            if fixedStateAllocationRequested,
+               !denseAllocationRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 13,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "fixed-state allocation capture requires "
+                            + "dense allocation capture",
+                    ])
+            }
+            if fixedStateAllocationRequested,
+               geometry.rawValue != "circle-640-center"
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 14,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "fixed-state allocation capture requires "
+                            + "the centered 640-point source geometry",
                     ])
             }
 
@@ -18245,6 +18644,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             matrixUniformBasisRequested,
                         allocationOnly:
                             allocationOnlyRequested,
+                        fixedStateRequested:
+                            fixedStateAllocationRequested,
                         outputDirectory: outputDirectory)
                 carrierWindow.orderOut(nil)
                 writeTransitionProbeProgress(

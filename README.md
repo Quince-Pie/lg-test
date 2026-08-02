@@ -4191,6 +4191,21 @@ center and temporal arithmetic can be separated bit-for-bit.  This run does
 not recover the independent producer mesh and does not authorize a Walle
 shader change.
 
+That intervention is frozen before capture in
+`Analysis/dynamic_allocation_fixed_state_preregistration.json`.  A single
+centered 640-point transition supplies five Apple presentation snapshots.
+For each snapshot, 23 replays reuse the identical copied `glassBackground`
+filter, `remaining` value, backdrop scale, source layer-state hash, and
+original producer input.  Only explicitly listed bounds origins and positions
+in the target-dependent SDF/backdrop subtree are translated.  The matrix
+contains zero and unit controls, one-axis neighborhoods around the observed
+integer boundaries, and the three target-anchor deltas from run
+`30751579106`, for 115 metadata-only renders.  The zero translation must
+repeat the normal producer policy exactly, and every undeclared layer field
+must remain byte-for-byte unchanged.  This is a controlled Core Animation
+calibration on Apple's real filter and renderer, not a native shifted-geometry
+capture; any recovered expression still requires a later unseen transfer.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

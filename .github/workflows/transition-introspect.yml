@@ -15,6 +15,7 @@ on:
           - allocation-holdout
           - allocation-calibration
           - allocation-mesh-calibration
+          - allocation-fixed-state
 
 concurrency:
   group: transition-introspect-v5-${{ github.ref }}
@@ -36,7 +37,9 @@ jobs:
       startsWith(matrix.label, 'geometry-')) ||
       (inputs.capture_mode == 'allocation-mesh-calibration' &&
       matrix.direction == 'materialize' &&
-      startsWith(matrix.label, 'mesh-'))) &&
+      startsWith(matrix.label, 'mesh-')) ||
+      (inputs.capture_mode == 'allocation-fixed-state' &&
+      matrix.label == 'mesh-640-center-materialize')) &&
       'macos-26' || 'ubuntu-latest' }}
     timeout-minutes: 60
     strategy:
@@ -157,7 +160,9 @@ jobs:
         startsWith(matrix.label, 'geometry-')) ||
         (inputs.capture_mode == 'allocation-mesh-calibration' &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'mesh-'))) && '1' || '0' }}
+        startsWith(matrix.label, 'mesh-')) ||
+        (inputs.capture_mode == 'allocation-fixed-state' &&
+        matrix.label == 'mesh-640-center-materialize')) && '1' || '0' }}
       LG_GLASS_MATERIAL: ${{ matrix.material }}
       LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
       LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
@@ -175,7 +180,9 @@ jobs:
         startsWith(matrix.label, 'geometry-')) ||
         (inputs.capture_mode == 'allocation-mesh-calibration' &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'mesh-'))) && '1' || '0' }}
+        startsWith(matrix.label, 'mesh-')) ||
+        (inputs.capture_mode == 'allocation-fixed-state' &&
+        matrix.label == 'mesh-640-center-materialize')) && '1' || '0' }}
       LG_TRANSITION_CONTROLLED_BACKDROP: >-
         ${{ ((inputs.capture_mode == 'uniform-profiles' &&
         matrix.direction == 'materialize' &&
@@ -189,14 +196,18 @@ jobs:
         startsWith(matrix.label, 'geometry-')) ||
         (inputs.capture_mode == 'allocation-mesh-calibration' &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'mesh-'))) && '1' || '0' }}
+        startsWith(matrix.label, 'mesh-')) ||
+        (inputs.capture_mode == 'allocation-fixed-state' &&
+        matrix.label == 'mesh-640-center-materialize')) && '1' || '0' }}
       LG_TRANSITION_ALLOCATION_DENSE: >-
         ${{ ((inputs.capture_mode == 'allocation-calibration' &&
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'geometry-')) ||
         (inputs.capture_mode == 'allocation-mesh-calibration' &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'mesh-'))) && '1' || '0' }}
+        startsWith(matrix.label, 'mesh-')) ||
+        (inputs.capture_mode == 'allocation-fixed-state' &&
+        matrix.label == 'mesh-640-center-materialize')) && '1' || '0' }}
       LG_TRANSITION_ALLOCATION_CALIBRATION: >-
         ${{ inputs.capture_mode == 'allocation-calibration' &&
         matrix.direction == 'materialize' &&
@@ -205,6 +216,9 @@ jobs:
         ${{ inputs.capture_mode == 'allocation-mesh-calibration' &&
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'mesh-') && '1' || '0' }}
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: >-
+        ${{ inputs.capture_mode == 'allocation-fixed-state' &&
+        matrix.label == 'mesh-640-center-materialize' && '1' || '0' }}
       LG_TRANSITION_HIGHLIGHT_TRACE: >-
         ${{ inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize' && '1' || '0' }}
@@ -316,6 +330,20 @@ jobs:
             --output \
               transition-introspection/dynamic-allocation-mesh-calibration.json
 
+      - name: Validate fixed-state allocation intervention
+        id: allocation_fixed_state
+        if: >-
+          env.LG_SELECTED == '1' &&
+          env.LG_TRANSITION_ALLOCATION_FIXED_STATE == '1' &&
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_dynamic_allocation_fixed_state.py \
+            transition-introspection/transition-timeline.json \
+            --output \
+              transition-introspection/dynamic-allocation-fixed-state.json
+
       - name: Upload transition introspection
         if: always() && env.LG_SELECTED == '1'
         uses: actions/upload-artifact@v4
@@ -331,7 +359,9 @@ jobs:
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
           if [[ "$LG_TRANSITION_ALLOCATION_ONLY" == "1" ]]; then
-            if [[ "$LG_TRANSITION_ALLOCATION_MESH_CALIBRATION" == "1" ]]; then
+            if [[ "$LG_TRANSITION_ALLOCATION_FIXED_STATE" == "1" ]]; then
+              test "${{ steps.allocation_fixed_state.outcome }}" = success
+            elif [[ "$LG_TRANSITION_ALLOCATION_MESH_CALIBRATION" == "1" ]]; then
               test "${{ steps.allocation_mesh_calibration.outcome }}" = success
             elif [[ "$LG_TRANSITION_ALLOCATION_CALIBRATION" == "1" ]]; then
               test "${{ steps.allocation_calibration.outcome }}" = success
