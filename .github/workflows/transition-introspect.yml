@@ -188,7 +188,6 @@ jobs:
           test -s transition-introspection/transition-timeline.json
           python3 - <<'PY'
           import json
-          import math
           import os
           import pathlib
 
@@ -280,17 +279,10 @@ jobs:
                   filter_values = record.get(
                       "filter", {}
                   ).get("inputValues", {})
-                  foreground = record.get(
-                      "foregroundFilter", {}
-                  )
-                  foreground_values = foreground.get(
-                      "inputValues", {}
-                  )
                   bindings = render.get(
                       "glassFragmentUniformBindings", []
                   )
                   background_bindings = []
-                  highlight_bindings = []
                   for binding in bindings:
                       pipeline = binding.get(
                           "pipeline", {}
@@ -318,45 +310,6 @@ jobs:
                           "glass_background"
                       ):
                           background_bindings.append(binding)
-                      if fragment == "A2Xghfc":
-                          highlight_bindings.append(binding)
-                  remaining = record.get("remaining")
-                  removed = (
-                      1.0 - remaining
-                      if isinstance(remaining, (int, float))
-                      else None
-                  )
-                  expected_foreground = {
-                      "inputAberrationAmount": -5.0 * removed,
-                      "inputAberrationAngle": 0.5 * math.pi * removed,
-                      "inputAberrationHeight": 0.0,
-                      "inputAberrationOffset": 0.0,
-                      "inputEdgeEnd": 0.0,
-                      "inputEdgeOpacityEnd": removed,
-                      "inputEdgeOpacityStart": 0.0,
-                      "inputEdgeStart": 0.0,
-                      "inputRefractionAmount": 0.0,
-                      "inputRefractionHeight": 16.0 * removed,
-                      "inputRefractionOffset": -3.3 * removed,
-                  } if removed is not None else {}
-                  foreground_matches = (
-                      foreground.get("knownValues", {}).get("name")
-                          == "glassForeground"
-                      and foreground.get("knownValues", {}).get("type")
-                          == "glassForeground"
-                      and foreground_values.keys()
-                          >= expected_foreground.keys()
-                      and all(
-                          math.isclose(
-                              float(foreground_values[key]),
-                              expected,
-                              rel_tol=0,
-                              abs_tol=2e-6,
-                          )
-                          for key, expected
-                          in expected_foreground.items()
-                      )
-                  )
                   if (
                       record.get("sampleIndex")
                           != expected_index
@@ -365,14 +318,6 @@ jobs:
                           "glassFragmentUniformBindingCount"
                       ) != len(bindings)
                       or len(background_bindings) != 2
-                      or len(highlight_bindings) < 1
-                      or any(
-                          binding.get("payload", {}).get(
-                              "lengthBytes", 0
-                          ) < 248
-                          for binding in highlight_bindings
-                      )
-                      or not foreground_matches
                       or filter_values.get("inputFaceOpacity")
                           != record.get("remaining")
                       or render.get("durationSeconds", 31) > 30
@@ -897,3 +842,10 @@ jobs:
                   f"{len(output_hashes)} distinct frames"
               )
           PY
+          highlight_args=()
+          if [[ "$LG_TRANSITION_UNIFORMS" == "1" ]]; then
+            highlight_args+=(--requested)
+          fi
+          python3 Analysis/validate_transition_highlight_uniforms.py \
+            transition-introspection/transition-timeline.json \
+            "${highlight_args[@]}"
