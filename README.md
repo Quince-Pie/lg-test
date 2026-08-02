@@ -3758,6 +3758,17 @@ This prospectively validates the raster-coefficient domain for the recorded
 macOS/AGX scope. It does not waive the held-out Walle image and transition
 gates or authorize a quality-regressing production shader change.
 
+The next private-path probe keeps Core Animation's captured `VfxXgh` vertex
+function, its buffers, viewport, scissor, and draw command unmodified while a
+read-only custom fragment attempts to record the linked stage inputs. Both
+the descriptive `user(sdf_uv)`/`user(src_uv)` ABI and generic
+`user(locn0)`/`user(locn1)` ABI are attempted before the existing custom
+vertex fallback. Pipeline metadata records every build result, the selected
+candidate, and both private functions' advertised stage-input attributes.
+Failure to link either private-vertex candidate is retained as evidence; it
+must not be replaced by the fallback trace or described as an original-path
+interpolant measurement.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

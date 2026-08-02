@@ -6414,6 +6414,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private func pipelineDescriptorRecord(
         _ descriptor: MTLRenderPipelineDescriptor
     ) -> [String: Any] {
+        func stageInputAttributes(
+            _ function: MTLFunction?
+        ) -> [[String: Any]] {
+            (function?.stageInputAttributes ?? []).map {
+                [
+                    "name": $0.name,
+                    "attributeIndex": $0.attributeIndex,
+                    "attributeType": $0.attributeType.rawValue,
+                    "active": $0.isActive,
+                    "patchData": $0.isPatchData,
+                    "patchControlPointData":
+                        $0.isPatchControlPointData,
+                ]
+            }
+        }
         var colorAttachments: [[String: Any]] = []
         for index in 0..<8 {
             guard let color = descriptor.colorAttachments[index],
@@ -6480,6 +6495,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 descriptor.vertexFunction?.name ?? "",
             "fragmentFunction":
                 descriptor.fragmentFunction?.name ?? "",
+            "vertexFunctionStageInputAttributes":
+                stageInputAttributes(descriptor.vertexFunction),
+            "fragmentFunctionStageInputAttributes":
+                stageInputAttributes(descriptor.fragmentFunction),
             "rasterSampleCount":
                 descriptor.rasterSampleCount,
             "alphaToCoverageEnabled":
@@ -9677,6 +9696,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     float2 sdfUV [[user(sdf_uv)]];
                     float2 sourceUV [[user(src_uv)]];
                 };
+                struct TraceVertexOutputLocations {
+                    float4 position [[position]];
+                    float2 first [[user(locn0)]];
+                    float2 second [[user(locn1)]];
+                };
                 vertex TraceVertexOutput highlight_trace_vertex(
                     TraceStageInput input [[stage_in]],
                     constant float4x4 &mvp [[buffer(2)]],
@@ -9698,6 +9722,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         as_type<uint>(input.sourceUV.x),
                         as_type<uint>(input.sourceUV.y));
                 }
+                fragment uint4 highlight_interpolant_trace_locations(
+                    TraceVertexOutputLocations input [[stage_in]])
+                {
+                    return uint4(
+                        as_type<uint>(input.first.x),
+                        as_type<uint>(input.first.y),
+                        as_type<uint>(input.second.x),
+                        as_type<uint>(input.second.y));
+                }
                 """
             let options = MTLCompileOptions()
             options.fastMathEnabled = true
@@ -9707,6 +9740,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     options: options)
                 guard let fragment = library.makeFunction(
                         name: "highlight_interpolant_trace"),
+                      let locationFragment = library.makeFunction(
+                        name: "highlight_interpolant_trace_locations"),
                       let customVertex = library.makeFunction(
                         name: "highlight_trace_vertex")
                 else {
@@ -9720,6 +9755,29 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     name: String,
                     descriptor: MTLRenderPipelineDescriptor
                 )] = []
+                for (name, candidateFragment) in [
+                    ("captured-private-vertex-named", fragment),
+                    (
+                        "captured-private-vertex-locations",
+                        locationFragment
+                    ),
+                ] {
+                    guard capturedDescriptor.vertexFunction != nil,
+                          let descriptor = capturedDescriptor.copy()
+                            as? MTLRenderPipelineDescriptor
+                    else {
+                        continue
+                    }
+                    descriptor.label =
+                        "lg.final-highlight-interpolant-" + name
+                    descriptor.fragmentFunction = candidateFragment
+                    descriptor.colorAttachments[0]?.pixelFormat =
+                        .rgba32Uint
+                    descriptor.colorAttachments[0]?.isBlendingEnabled =
+                        false
+                    descriptor.colorAttachments[0]?.writeMask = .all
+                    candidates.append((name, descriptor))
+                }
                 for (name, vertex) in [
                     ("custom-stage-in-vertex", customVertex),
                 ] {
@@ -9754,6 +9812,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     candidates.append((name, descriptor))
                 }
                 var records: [[String: Any]] = []
+                var selectedCandidate = ""
                 for candidate in candidates
                     where interpolantPipeline == nil
                 {
@@ -9762,6 +9821,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             try device.makeRenderPipelineState(
                                 descriptor: candidate.descriptor)
                         interpolantPipeline = pipeline
+                        selectedCandidate = candidate.name
                         records.append([
                             "name": candidate.name,
                             "built": true,
@@ -9788,6 +9848,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 }
                 interpolantPipelineRecord = [
                     "executed": true,
+                    "selectedCandidate": selectedCandidate,
+                    "capturedPrivateVertexUnmodified":
+                        selectedCandidate.hasPrefix(
+                            "captured-private-vertex-"),
                     "selectedLabel": interpolantPipeline.label ?? "",
                     "candidates": records,
                 ]

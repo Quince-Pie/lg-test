@@ -197,39 +197,76 @@ def validate_interpolant_trace(
         "interpolantPipeline",
     )
     candidates = pipeline.get("candidates")
-    first_candidate = (
-        candidates[0] if isinstance(candidates, list) and candidates else None
-    )
-    candidate_descriptor = (
-        first_candidate.get("descriptor")
-        if isinstance(first_candidate, Mapping)
-        else None
-    )
+    expected_candidate_order = [
+        "captured-private-vertex-named",
+        "captured-private-vertex-locations",
+        "custom-stage-in-vertex",
+    ]
     if (
         pipeline.get("executed") is not True
-        or pipeline.get("selectedLabel")
-        != "lg.final-highlight-interpolant-custom-stage-in-vertex"
+        or not isinstance(pipeline.get("selectedCandidate"), str)
         or not isinstance(candidates, list)
         or not candidates
-        or not isinstance(first_candidate, Mapping)
-        or first_candidate.get("name") != "custom-stage-in-vertex"
-        or first_candidate.get("built") is not True
-        or not isinstance(candidate_descriptor, Mapping)
-        or candidate_descriptor.get("vertexAttributes")
-        != [
-            {"bufferIndex": 1, "format": 31, "index": 0, "offset": 0},
-            {"bufferIndex": 1, "format": 29, "index": 1, "offset": 16},
-            {"bufferIndex": 1, "format": 29, "index": 2, "offset": 24},
-        ]
-        or candidate_descriptor.get("vertexLayouts")
-        != [
-            {
-                "index": 1,
-                "stepFunction": 1,
-                "stepRate": 1,
-                "stride": 48,
-            }
-        ]
+        or len(candidates) > len(expected_candidate_order)
+        or any(not isinstance(candidate, Mapping) for candidate in candidates)
+    ):
+        raise ValueError("dynamic interpolant pipeline differs")
+    typed_candidates = [
+        mapping(candidate, "interpolant candidate") for candidate in candidates
+    ]
+    if (
+        [candidate.get("name") for candidate in typed_candidates]
+        != expected_candidate_order[: len(typed_candidates)]
+        or any(
+            not isinstance(candidate.get("descriptor"), Mapping)
+            for candidate in typed_candidates
+        )
+        or any(
+            candidate.get("built") is not False for candidate in typed_candidates[:-1]
+        )
+        or typed_candidates[-1].get("built") is not True
+        or pipeline.get("selectedCandidate") != typed_candidates[-1].get("name")
+        or pipeline.get("selectedLabel")
+        != "lg.final-highlight-interpolant-" + str(pipeline.get("selectedCandidate"))
+    ):
+        raise ValueError("dynamic interpolant pipeline differs")
+    selected_name = str(pipeline["selectedCandidate"])
+    selected_descriptor = mapping(
+        typed_candidates[-1].get("descriptor"),
+        "selected interpolant descriptor",
+    )
+    private_vertex_selected = selected_name.startswith("captured-private-vertex-")
+    if (
+        pipeline.get("capturedPrivateVertexUnmodified") is not private_vertex_selected
+        or (
+            private_vertex_selected
+            and (
+                selected_descriptor.get("vertexFunction") != "VfxXgh"
+                or selected_descriptor.get("vertexAttributes") != []
+                or selected_descriptor.get("vertexLayouts") != []
+            )
+        )
+        or (
+            not private_vertex_selected
+            and (
+                selected_name != "custom-stage-in-vertex"
+                or selected_descriptor.get("vertexAttributes")
+                != [
+                    {"bufferIndex": 1, "format": 31, "index": 0, "offset": 0},
+                    {"bufferIndex": 1, "format": 29, "index": 1, "offset": 16},
+                    {"bufferIndex": 1, "format": 29, "index": 2, "offset": 24},
+                ]
+                or selected_descriptor.get("vertexLayouts")
+                != [
+                    {
+                        "index": 1,
+                        "stepFunction": 1,
+                        "stepRate": 1,
+                        "stride": 48,
+                    }
+                ]
+            )
+        )
     ):
         raise ValueError("dynamic interpolant pipeline differs")
 
