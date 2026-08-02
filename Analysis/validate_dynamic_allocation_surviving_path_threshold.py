@@ -45,6 +45,11 @@ SAMPLE31_UNIT_X_VALUES = tuple(range(-12, 37))
 SAMPLE31_UNIT_Y_VALUES = tuple(range(-4, 37))
 SAMPLE31_REPEAT_X_VALUES = (-12, -8, -4, -1, 1, 4, 16, 17, 31, 32, 36)
 SAMPLE31_REPEAT_Y_VALUES = (-4, -2, -1, 1, 4, 8, 16, 17, 31, 32, 36)
+CAPTURE_BACKDROP_SYMBOL = "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
+CAPTURE_BACKDROP_CODE_BYTE_COUNT = 0x4000
+CAPTURE_BACKDROP_DECISION_CALL_RANGE = (0x2000, 0x2B58)
+CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET = 0x2B54
+CAPTURE_BACKDROP_DIRECT_CALL_TARGET_CODE_BYTE_COUNT = 0x400
 SCAN_VALUES_BY_SAMPLE = {
     25: (FINE_X_VALUES, FINE_Y_VALUES),
     31: (CROSS_AXIS_X_VALUES, CROSS_AXIS_Y_VALUES),
@@ -272,6 +277,171 @@ def decoded_policy_exact(
     )
 
 
+def hexadecimal_bytes(record: Mapping[str, Any], label: str) -> bytes:
+    hex_payload = record.get("hex")
+    if not isinstance(hex_payload, str):
+        raise ValueError(f"{label} payload differs")
+    try:
+        return bytes.fromhex(hex_payload)
+    except ValueError as error:
+        raise ValueError(f"{label} payload is not hexadecimal") from error
+
+
+def hexadecimal_address(value: Any, label: str) -> int:
+    if not isinstance(value, str):
+        raise ValueError(f"{label} differs")
+    try:
+        address = int(value, 16)
+    except ValueError as error:
+        raise ValueError(f"{label} is not hexadecimal") from error
+    if address < 0:
+        raise ValueError(f"{label} is negative")
+    return address
+
+
+def arm64_branch_link_target(instruction: int, address: int) -> int | None:
+    if instruction & 0xFC00_0000 != 0x9400_0000:
+        return None
+    immediate = instruction & 0x03FF_FFFF
+    if immediate & 0x0200_0000:
+        immediate -= 0x0400_0000
+    target = address + immediate * 4
+    return target if target >= 0 else None
+
+
+def validate_capture_backdrop_code(
+    untyped_capture: Any,
+    *,
+    frame: Mapping[str, Any],
+) -> dict[str, Any]:
+    capture = holdout.mapping(untyped_capture, "capture_backdrop code evidence")
+    payload = hexadecimal_bytes(capture, "capture_backdrop symbol-prefix")
+    symbol_address = hexadecimal_address(
+        capture.get("startAddress"), "capture_backdrop start address"
+    )
+    frame_symbol_address = hexadecimal_address(
+        frame.get("symbolAddress"), "capture_backdrop frame symbol address"
+    )
+    image_base = hexadecimal_address(
+        frame.get("imageBase"), "capture_backdrop frame image base"
+    )
+    frame_image_offset = hexadecimal_address(
+        frame.get("imageOffset"), "capture_backdrop frame image offset"
+    )
+    capture_image_offset = hexadecimal_address(
+        capture.get("imageOffset"), "capture_backdrop code image offset"
+    )
+    call_range = tuple(
+        int(value)
+        for value in fixed.sequence(
+            capture.get("decisionDirectCallRange"),
+            "capture_backdrop decision call range",
+        )
+    )
+    if (
+        capture.get("class")
+        != "mapped arm64e QuartzCore symbol prefix and direct calls"
+        or capture.get("symbol") != CAPTURE_BACKDROP_SYMBOL
+        or frame.get("symbol") != CAPTURE_BACKDROP_SYMBOL
+        or symbol_address != frame_symbol_address
+        or frame_symbol_address < image_base
+        or frame_image_offset != frame_symbol_address - image_base
+        or capture_image_offset != frame_symbol_address - image_base
+        or capture.get("requestedByteCount") != CAPTURE_BACKDROP_CODE_BYTE_COUNT
+        or capture.get("lengthBytes") != len(payload)
+        or len(payload) != CAPTURE_BACKDROP_CODE_BYTE_COUNT
+        or capture.get("sha256") != hashlib.sha256(payload).hexdigest()
+        or call_range != CAPTURE_BACKDROP_DECISION_CALL_RANGE
+    ):
+        raise ValueError("capture_backdrop symbol-prefix metadata differs")
+
+    lower, upper = call_range
+    expected_calls: list[tuple[int, int, int]] = []
+    for offset in range(lower, upper, 4):
+        instruction = int.from_bytes(payload[offset : offset + 4], "little")
+        target = arm64_branch_link_target(instruction, symbol_address + offset)
+        if target is not None:
+            expected_calls.append((offset, instruction, target))
+    calls = [
+        holdout.mapping(value, "capture_backdrop direct call")
+        for value in fixed.sequence(
+            capture.get("directCalls"), "capture_backdrop direct calls"
+        )
+    ]
+    if capture.get("decisionDirectCallCount") != len(calls) or len(calls) != len(
+        expected_calls
+    ):
+        raise ValueError("capture_backdrop direct-call count differs")
+
+    target_code_hashes: list[str] = []
+    call_offsets: list[int] = []
+    for call, (offset, instruction, target) in zip(calls, expected_calls, strict=True):
+        target_code = holdout.mapping(
+            call.get("targetCode"), "capture_backdrop direct-call target code"
+        )
+        target_payload = hexadecimal_bytes(
+            target_code, "capture_backdrop direct-call target code"
+        )
+        target_path = call.get("targetImagePath")
+        if (
+            call.get("sourceInstructionOffset") != offset
+            or call.get("sourceInstruction") != f"{instruction:08x}"
+            or hexadecimal_address(
+                call.get("sourceInstructionAddress"),
+                "capture_backdrop source instruction address",
+            )
+            != symbol_address + offset
+            or hexadecimal_address(
+                call.get("targetAddress"), "capture_backdrop target address"
+            )
+            != target
+            or hexadecimal_address(
+                call.get("targetImageBase"),
+                "capture_backdrop target image base",
+            )
+            != image_base
+            or hexadecimal_address(
+                call.get("targetImageOffset"),
+                "capture_backdrop target image offset",
+            )
+            != target - image_base
+            or not isinstance(target_path, str)
+            or "/QuartzCore.framework/" not in target_path
+            or target_code.get("class")
+            != "mapped arm64e QuartzCore direct-call target prefix"
+            or hexadecimal_address(
+                target_code.get("startAddress"),
+                "capture_backdrop target-code start address",
+            )
+            != target
+            or target_code.get("requestedByteCount")
+            != CAPTURE_BACKDROP_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+            or target_code.get("lengthBytes") != len(target_payload)
+            or len(target_payload)
+            != CAPTURE_BACKDROP_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+            or target_code.get("sha256") != hashlib.sha256(target_payload).hexdigest()
+        ):
+            raise ValueError("capture_backdrop direct-call metadata differs")
+        call_offsets.append(offset)
+        target_code_hashes.append(hashlib.sha256(target_payload).hexdigest())
+
+    if CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET not in call_offsets:
+        raise ValueError("capture_backdrop producer binding call is absent")
+    return {
+        "symbol": CAPTURE_BACKDROP_SYMBOL,
+        "symbolPrefixSHA256": hashlib.sha256(payload).hexdigest(),
+        "symbolPrefixByteCount": len(payload),
+        "decisionDirectCallRange": list(call_range),
+        "decisionDirectCallCount": len(calls),
+        "decisionDirectCallOffsets": call_offsets,
+        "directCallTargetCodeCaptureCount": len(target_code_hashes),
+        "directCallTargetCodeSHA256": target_code_hashes,
+        "producerVertexBindingCallOffset": (
+            CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET
+        ),
+    }
+
+
 def validate_producer_geometry_call_site(
     untyped_call_site: Any,
 ) -> dict[str, Any]:
@@ -284,19 +454,18 @@ def validate_producer_geometry_call_site(
     ]
     code_window_count = 0
     code_window_hashes: list[str] = []
+    capture_backdrop_records: list[dict[str, Any]] = []
     for frame in frames:
+        if "captureBackdropCode" in frame:
+            capture_backdrop_records.append(
+                validate_capture_backdrop_code(
+                    frame["captureBackdropCode"], frame=frame
+                )
+            )
         if "codeWindow" not in frame:
             continue
         window = holdout.mapping(frame.get("codeWindow"), "call-site code window")
-        hex_payload = window.get("hex")
-        if not isinstance(hex_payload, str):
-            raise ValueError("producer geometry code-window payload differs")
-        try:
-            payload = bytes.fromhex(hex_payload)
-        except ValueError as error:
-            raise ValueError(
-                "producer geometry code-window payload is not hexadecimal"
-            ) from error
+        payload = hexadecimal_bytes(window, "producer geometry code-window")
         digest = hashlib.sha256(payload).hexdigest()
         image_path = frame.get("imagePath")
         if (
@@ -311,8 +480,9 @@ def validate_producer_geometry_call_site(
             raise ValueError("producer geometry code-window metadata differs")
         code_window_count += 1
         code_window_hashes.append(digest)
+    schema_version = call_site.get("schemaVersion")
     if (
-        call_site.get("schemaVersion") != 4
+        schema_version not in {4, 5}
         or call_site.get("executed") is not True
         or call_site.get("capture") != "transition-path-isolation-31-000"
         or call_site.get("purpose") != "producer-primary-mesh-vertex-buffer-binding"
@@ -320,8 +490,23 @@ def validate_producer_geometry_call_site(
         or call_site.get("quartzCoreCodeWindowCount") != code_window_count
     ):
         raise ValueError("producer geometry call-site evidence differs")
+    if schema_version == 5:
+        if (
+            len(capture_backdrop_records) != 1
+            or call_site.get("captureBackdropCodeCaptureCount") != 1
+            or call_site.get("captureBackdropDecisionDirectCallCount")
+            != capture_backdrop_records[0]["decisionDirectCallCount"]
+            or call_site.get("captureBackdropDirectCallTargetCodeCaptureCount")
+            != capture_backdrop_records[0]["directCallTargetCodeCaptureCount"]
+            or capture_backdrop_records[0]["decisionDirectCallCount"]
+            != capture_backdrop_records[0]["directCallTargetCodeCaptureCount"]
+        ):
+            raise ValueError("capture_backdrop code-capture summary differs")
+    elif capture_backdrop_records:
+        raise ValueError("schema-4 call-site unexpectedly contains schema-5 code")
     return {
         "captured": True,
+        "schemaVersion": schema_version,
         "frameCount": len(frames),
         "quartzCoreCodeWindowCount": code_window_count,
         "quartzCoreCodeWindowSHA256": code_window_hashes,
@@ -333,6 +518,9 @@ def validate_producer_geometry_call_site(
         ),
         "glassMatrixConstructorConstantDataCaptureCount": call_site.get(
             "glassMatrixConstructorConstantDataCaptureCount"
+        ),
+        "captureBackdrop": (
+            capture_backdrop_records[0] if capture_backdrop_records else None
         ),
     }
 

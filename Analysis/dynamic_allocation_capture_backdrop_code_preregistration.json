@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "frozenAtUtc": "2026-08-02T18:29:14Z",
+  "classification": "preregistered bounded QuartzCore capture_backdrop symbol-prefix and direct-call-target recovery; not a producer-mesh policy or unseen geometry transfer",
+  "openedEvidence": {
+    "runID": 30760175468,
+    "captureCommit": "bf94a694fa7cf0efee42ca550c42e1b2d0488a75",
+    "timelineSHA256": "0d27d23de6778fb62f7e20241bbc6be948516c5367fa7dd6a6239c13ea3595dc",
+    "validatorResultSHA256": "df539a9e76a7e5cf0c114a5ec457935a5d3a3868d80b2f4604c0bd6aab00082f",
+    "sample31RepeatScanResultSHA256": "c59bc25ea4e778fe775cc81cc0ab2f71f18ad2f989f19f43826ac711af3f1de4",
+    "recordCount": 114,
+    "exactDecodedDrawConsumedRepeatGroupCount": 23,
+    "producerStackFrameCount": 32,
+    "quartzCoreCodeWindowCount": 8,
+    "captureBackdropSymbol": "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE",
+    "captureBackdropReturnSymbolOffset": 11096,
+    "captureBackdropObservedCallInstructionOffset": 11092,
+    "captureBackdropCallSiteWindowSHA256": "377e19cd1828efe992084686fd7a61269484a6d420e3dc33bd6df8871c40eff7",
+    "captureBackdropObservedCallSiteWindowRange": [10072, 12120],
+    "openedDisassemblyFacts": [
+      "The direct call at symbol offset 0x2b54 returns to the intercepted producer vertex-buffer path at 0x2b58.",
+      "The opened 2 KiB window starts only at symbol offset 0x2758 and therefore cannot expose the earlier crop/allocation branches.",
+      "The opened window constructs four 48-byte vertices from transformed binary32 bounds and subtracts integer origins immediately before the producer draw.",
+      "Repeated direct calls in the opened window target the same vertex-emission helper, but the complete helper and all preceding caller branches were not independently retained."
+    ],
+    "limitations": [
+      "The existing call-site window is not a symbol prefix and starts after potentially relevant decisions.",
+      "The complete capture_backdrop symbol size is unavailable from dladdr, so a bounded 0x4000 prefix must not be described as a proven complete function body.",
+      "Disassembly structure alone does not identify live operand values or establish the producer crop/mesh law.",
+      "No unseen native geometry has tested a derived policy."
+    ]
+  },
+  "frozenQuestion": {
+    "objective": "Retain enough exact mapped QuartzCore code to reconstruct the crop/edge decision path that produces the sample-31 four-vertex mesh, without adding a fitted image or geometry hypothesis.",
+    "symbolRule": "Resolve capture_backdrop from the intercepted VfxXgh/A2Xghfc producer stack and retain exactly 0x4000 mapped bytes beginning at dladdr's symbol address.",
+    "decisionRegionRule": "Decode every arm64 direct BL instruction at four-byte alignment in the half-open symbol-offset range [0x2000,0x2b58). Preserve source instruction, ASLR-relative target metadata, and target bytes without filtering by a desired hypothesis.",
+    "targetRule": "Every decoded direct-call target must resolve into the same mapped QuartzCore image and retain exactly 0x400 bytes beginning at the target. Any unresolved or partial target fails the code-evidence gate.",
+    "knownAnchorRule": "The decoded direct-call set must contain the already opened producer vertex-binding call at symbol offset 0x2b54.",
+    "matrixRule": "Repeat the unchanged 114-record sample-31 unit/repeat matrix. Capture-integrity, q, allocation/copy, live-state, and same-state evidence remain governed by the schema-4 matrix validator; code capture may not replace those gates.",
+    "nullOutcome": "A missing symbol, missing 0x2b54 anchor, byte-count/hash mismatch, direct-call decode mismatch, target outside QuartzCore, or partial target capture fails closed and remains reported."
+  },
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-path-isolation"
+    },
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-640-center",
+    "sourceSampleIndices": [31],
+    "totalInterventionCount": 114,
+    "outerCaptureEvidenceSchemaVersion": 4,
+    "producerCallSiteSchemaVersion": 5,
+    "producerCallSiteCapture": "transition-path-isolation-31-000",
+    "producerVertexBufferIndex": 1,
+    "producerVertexFunction": "VfxXgh",
+    "producerFragmentFunction": "A2Xghfc",
+    "captureBackdropSymbol": "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE",
+    "captureBackdropSymbolPrefixByteCount": 16384,
+    "captureBackdropDecisionDirectCallRange": [8192, 11096],
+    "captureBackdropKnownVertexBindingCallOffset": 11092,
+    "directCallTargetPrefixByteCount": 1024,
+    "maximumRenderAttemptCount": 3,
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false
+  },
+  "acceptance": {
+    "all114InterventionsMustExecute": true,
+    "existingSchema4CaptureIntegrityMustPass": true,
+    "producerCallSiteSchema5Required": true,
+    "captureBackdropCodeCaptureCount": 1,
+    "captureBackdropSymbolPrefixMustMatchDeclaredLengthAndSHA256": true,
+    "decisionDirectCallsMustEqualIndependentDecodeOfCapturedPrefix": true,
+    "everyDirectCallTargetMustResolveWithinSameQuartzCoreImage": true,
+    "everyDirectCallTargetPrefixMustMatchDeclaredLengthAndSHA256": true,
+    "knownVertexBindingCallOffsetRequired": 11092,
+    "allowNumericTolerance": false,
+    "productionShaderAuthorized": false
+  },
+  "analysisPlan": {
+    "controlFlow": "Classify all direct, conditional, compare-and-branch, test-and-branch, indirect, and return instructions in the frozen decision region directly from captured words.",
+    "directCallGrouping": "Group calls only by validated target image offset and require identical symbol metadata and target-code SHA-256 for repeated targets.",
+    "disassembly": "Use the pinned LLVM development shell to disassemble the validated symbol prefix and target prefixes after opening; preserve instruction offsets and distinguish observed code from inferred semantics.",
+    "policyRecovery": "Map exact arithmetic and branch predicates to the already opened mesh transitions. Do not fit a universal law merely because the code path is visible.",
+    "nextGate": "Only a single exact candidate that explains every opened allocation/mesh record may be frozen for a distinct native-geometry holdout."
+  },
+  "frozenImplementation": {
+    "lgTestCommitBeforeRegistration": "b6857f6e2e06dad3fee0192bc6e567f2bab4887e",
+    "swiftCaptureSHA256": "135d22c0d0d3d72cd99b67de0032c3d105c1b8299d3698b71aa4bb57841f8979",
+    "workflowSHA256": "bc79f75eb6244cda94dc4995164338589396535764b07c61a2d3b6be7570b870",
+    "validatorSHA256": "088cfe1915446ca9797e0409cc3966a05d0ce3d38f1b639fc6d3dd90b9aa4b2f",
+    "validatorTestSHA256": "8f0a6f4c44cd0de40d3e3d3fdcb23a8ecd4d6429cb66aa4c5e883780f2d708a4",
+    "analyzerSHA256": "02cd7b0fbde64f56ce34f24745b28eb51f5023e2015ac32c32d848dfe288e58a",
+    "analyzerTestSHA256": "63ce6829a81cb4c76dbe675b856cf1846162fbee1a351b60765beb5009ff109e",
+    "priorSample31PreregistrationSHA256": "39f5949ce5b3555e3be1c480239685fd3bfd6110fce7e51b3c970eea480267a2",
+    "priorSample31ResultSHA256": "c59bc25ea4e778fe775cc81cc0ab2f71f18ad2f989f19f43826ac711af3f1de4",
+    "priorSample31ResultTestSHA256": "32181dc098d12eb919eb11c2ed0b238c296165ca35df8ae85e8868aee0a50900",
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "notClaimed": [
+    "a proven complete capture_backdrop function body",
+    "live register or stack operands for the retained instructions",
+    "a recovered universal crop, allocation, or producer-mesh integerization law",
+    "an unseen native Apple geometry transfer",
+    "a profile, material, appearance, direction, endpoint, scale-factor, or Retina transfer",
+    "production Walle parity",
+    "permission to modify or approximate the protected production shader",
+    "permission to trade image quality for memory, throughput, or latency"
+  ]
+}

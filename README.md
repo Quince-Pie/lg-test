@@ -4516,6 +4516,26 @@ not contain the complete symbol.  Those bytes narrow the remaining work to
 the producer's crop/edge integerization branches; they are not yet sufficient
 to claim their complete policy.
 
+The bounded code-recovery follow-up is frozen before capture in
+`Analysis/dynamic_allocation_capture_backdrop_code_preregistration.json`.
+It repeats the unchanged 114-record sample-31 matrix but upgrades the single
+producer call-site payload to schema 5.  From the resolved
+`CA::OGL::capture_backdrop` symbol it retains exactly 16 KiB, which includes
+the known call at `0x2b54` and all preceding code back to the symbol entry.
+Within the half-open decision region `[0x2000,0x2b58)`, every aligned arm64
+direct call is decoded without semantic filtering.  Each target must resolve
+into the same QuartzCore image and retain an independently hashed 1 KiB target
+prefix.  The validator independently decodes the calls from the symbol bytes,
+checks ASLR-relative source and target offsets, requires the `0x2b54` anchor,
+and fails if even one target is absent or partial.
+
+The 16 KiB bound is intentionally described as a symbol prefix, not a proven
+complete function body: `dladdr` supplies a start address but no trustworthy
+private-symbol size.  Opening these bytes can recover control flow and exact
+arithmetic, but cannot by itself recover live operands or authorize a mesh
+law.  Any derived policy must still explain every opened record exactly and
+then pass a preregistered native-geometry holdout before production work.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

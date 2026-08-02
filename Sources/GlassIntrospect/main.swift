@@ -4350,6 +4350,12 @@ private let glassBackgroundRenderSymbol =
     "EPKNS0_5LayerERNS0_7ContextEfPPNS0_7SurfaceEPfS8_" +
     "PKNS_11ColorMatrixE"
 private let glassBackgroundRenderCodeByteCount = 0x2000
+private let captureBackdropSymbol =
+    "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
+private let captureBackdropCodeByteCount = 0x4000
+private let captureBackdropDecisionCallLowerBound = 0x2000
+private let captureBackdropDecisionCallUpperBound = 0x2B58
+private let captureBackdropDirectCallTargetCodeByteCount = 0x400
 private let glassMatrixConstructorCallOffsets = [
     0x338,
     0x3AC,
@@ -4419,6 +4425,139 @@ private func arm64BranchLinkTarget(
     return (instruction, UInt(targetAddress))
 }
 
+private func captureBackdropCodeEvidence(
+    symbolPointer: UnsafeRawPointer,
+    imageBase: UInt
+) -> (
+    record: [String: Any],
+    directCallCount: Int,
+    targetCodeCaptureCount: Int
+) {
+    let symbolAddress = UInt(bitPattern: symbolPointer)
+    let symbolBytes = Array(UnsafeRawBufferPointer(
+        start: symbolPointer,
+        count: captureBackdropCodeByteCount))
+    var targetCodeCaptureCount = 0
+    let directCalls: [[String: Any]] = stride(
+        from: captureBackdropDecisionCallLowerBound,
+        to: captureBackdropDecisionCallUpperBound,
+        by: 4
+    ).compactMap { offset in
+        guard let decoded = arm64BranchLinkTarget(
+                code: symbolBytes,
+                instructionOffset: offset,
+                symbolAddress: symbolAddress)
+        else {
+            return nil
+        }
+        var call: [String: Any] = [
+            "sourceInstructionOffset": offset,
+            "sourceInstruction": String(
+                format: "%08x",
+                decoded.instruction),
+            "sourceInstructionAddress": String(
+                format: "0x%016llx",
+                UInt64(symbolAddress + UInt(offset))),
+            "targetAddress": String(
+                format: "0x%016llx",
+                UInt64(decoded.target)),
+        ]
+        guard let targetPointer = UnsafeRawPointer(
+                bitPattern: decoded.target)
+        else {
+            call["targetCodeError"] = "invalid direct-call target"
+            return call
+        }
+        var targetInfo = Dl_info()
+        guard dladdr(targetPointer, &targetInfo) != 0 else {
+            call["targetCodeError"] = "dladdr failed"
+            return call
+        }
+        if let targetPath = targetInfo.dli_fname {
+            call["targetImagePath"] = String(cString: targetPath)
+        }
+        if let targetImageBasePointer = targetInfo.dli_fbase {
+            let targetImageBase = UInt(bitPattern: targetImageBasePointer)
+            call["targetImageBase"] = String(
+                format: "0x%016llx",
+                UInt64(targetImageBase))
+            if decoded.target >= targetImageBase {
+                call["targetImageOffset"] = String(
+                    format: "0x%llx",
+                    UInt64(decoded.target - targetImageBase))
+            }
+        }
+        if let targetName = targetInfo.dli_sname {
+            call["targetSymbol"] = String(cString: targetName)
+        }
+        if let targetSymbolPointer = targetInfo.dli_saddr {
+            let targetSymbolAddress = UInt(
+                bitPattern: targetSymbolPointer)
+            call["targetSymbolAddress"] = String(
+                format: "0x%016llx",
+                UInt64(targetSymbolAddress))
+            if decoded.target >= targetSymbolAddress {
+                call["targetSymbolOffset"] = String(
+                    format: "0x%llx",
+                    UInt64(decoded.target - targetSymbolAddress))
+            }
+        }
+        guard let targetImageBasePointer = targetInfo.dli_fbase,
+              UInt(bitPattern: targetImageBasePointer) == imageBase,
+              (call["targetImagePath"] as? String)?.contains(
+                  "/QuartzCore.framework/") == true
+        else {
+            call["targetCodeError"] =
+                "direct-call target is outside the mapped QuartzCore image"
+            return call
+        }
+        let targetBytes = Array(UnsafeRawBufferPointer(
+            start: targetPointer,
+            count: captureBackdropDirectCallTargetCodeByteCount))
+        call["targetCode"] = [
+            "class": "mapped arm64e QuartzCore direct-call target prefix",
+            "startAddress": String(
+                format: "0x%016llx",
+                UInt64(decoded.target)),
+            "requestedByteCount":
+                captureBackdropDirectCallTargetCodeByteCount,
+            "lengthBytes": targetBytes.count,
+            "hex": Data(targetBytes).map {
+                String(format: "%02x", $0)
+            }.joined(),
+            "sha256": transitionSHA256(Data(targetBytes)),
+        ]
+        targetCodeCaptureCount += 1
+        return call
+    }
+    return (
+        [
+            "class": "mapped arm64e QuartzCore symbol prefix and direct calls",
+            "symbol": captureBackdropSymbol,
+            "startAddress": String(
+                format: "0x%016llx",
+                UInt64(symbolAddress)),
+            "imageOffset": String(
+                format: "0x%llx",
+                UInt64(symbolAddress - imageBase)),
+            "requestedByteCount": captureBackdropCodeByteCount,
+            "lengthBytes": symbolBytes.count,
+            "hex": Data(symbolBytes).map {
+                String(format: "%02x", $0)
+            }.joined(),
+            "sha256": transitionSHA256(Data(symbolBytes)),
+            "decisionDirectCallRange": [
+                captureBackdropDecisionCallLowerBound,
+                captureBackdropDecisionCallUpperBound,
+            ],
+            "decisionDirectCallCount": directCalls.count,
+            "directCalls": directCalls,
+        ],
+        directCalls.count,
+        targetCodeCaptureCount
+    )
+}
+
 private func arm64PageRelativeAddress(
     code: [UInt8],
     codeAddress: UInt,
@@ -4482,6 +4621,9 @@ private func glassUniformCallSiteEvidence(
     var glassBackgroundRenderCodeCaptures = 0
     var glassMatrixConstructorCodeCaptures = 0
     var glassMatrixConstructorConstantDataCaptures = 0
+    var captureBackdropCodeCaptures = 0
+    var captureBackdropDecisionDirectCalls = 0
+    var captureBackdropDirectCallTargetCodeCaptures = 0
     let frames: [[String: Any]] = returnAddresses.enumerated().map {
         index, number in
         let addressValue = UInt(truncating: number)
@@ -4719,6 +4861,23 @@ private func glassUniformCallSiteEvidence(
                     )
                 }
             }
+
+            if capture == "transition-path-isolation-31-000",
+               imagePath?.contains(
+                    "/QuartzCore.framework/") == true,
+               record["symbol"] as? String == captureBackdropSymbol,
+               let imageBasePointer = info.dli_fbase
+            {
+                let evidence = captureBackdropCodeEvidence(
+                    symbolPointer: symbolPointer,
+                    imageBase: UInt(bitPattern: imageBasePointer))
+                record["captureBackdropCode"] = evidence.record
+                captureBackdropCodeCaptures += 1
+                captureBackdropDecisionDirectCalls +=
+                    evidence.directCallCount
+                captureBackdropDirectCallTargetCodeCaptures +=
+                    evidence.targetCodeCaptureCount
+            }
         }
 
         guard quartzCoreCodeWindows < 8,
@@ -4769,6 +4928,12 @@ private func glassUniformCallSiteEvidence(
             glassMatrixConstructorCodeCaptures,
         "glassMatrixConstructorConstantDataCaptureCount":
             glassMatrixConstructorConstantDataCaptures,
+        "captureBackdropCodeCaptureCount":
+            captureBackdropCodeCaptures,
+        "captureBackdropDecisionDirectCallCount":
+            captureBackdropDecisionDirectCalls,
+        "captureBackdropDirectCallTargetCodeCaptureCount":
+            captureBackdropDirectCallTargetCodeCaptures,
         "frames": frames,
     ]
 }
@@ -5118,6 +5283,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         producerGeometryCallSiteCaptured = true
         var evidence = glassUniformCallSiteEvidence(
             capture: capture)
+        evidence["schemaVersion"] = 5
         evidence["purpose"] =
             "producer-primary-mesh-vertex-buffer-binding"
         return evidence

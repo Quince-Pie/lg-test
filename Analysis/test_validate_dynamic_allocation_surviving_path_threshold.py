@@ -39,6 +39,82 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             ],
         }
 
+    @classmethod
+    def producer_call_site_with_capture_backdrop(cls) -> dict[str, object]:
+        call_site = cls.producer_call_site()
+        symbol_address = 0x1000_0000
+        image_base = symbol_address - 0x1000
+        call_offset = surviving.CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET
+        instruction = 0x9400_0001
+        target_address = symbol_address + call_offset + 4
+        symbol_payload = bytearray(surviving.CAPTURE_BACKDROP_CODE_BYTE_COUNT)
+        symbol_payload[call_offset : call_offset + 4] = instruction.to_bytes(
+            4, "little"
+        )
+        target_payload = bytes(
+            surviving.CAPTURE_BACKDROP_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+        )
+        call_site.update(
+            {
+                "schemaVersion": 5,
+                "captureBackdropCodeCaptureCount": 1,
+                "captureBackdropDecisionDirectCallCount": 1,
+                "captureBackdropDirectCallTargetCodeCaptureCount": 1,
+            }
+        )
+        frame = call_site["frames"][0]
+        frame.update(
+            {
+                "symbol": surviving.CAPTURE_BACKDROP_SYMBOL,
+                "symbolAddress": f"0x{symbol_address:016x}",
+                "imageBase": f"0x{image_base:016x}",
+                "imageOffset": "0x1000",
+                "captureBackdropCode": {
+                    "class": (
+                        "mapped arm64e QuartzCore symbol prefix and direct calls"
+                    ),
+                    "symbol": surviving.CAPTURE_BACKDROP_SYMBOL,
+                    "startAddress": f"0x{symbol_address:016x}",
+                    "imageOffset": "0x1000",
+                    "requestedByteCount": len(symbol_payload),
+                    "lengthBytes": len(symbol_payload),
+                    "hex": symbol_payload.hex(),
+                    "sha256": hashlib.sha256(symbol_payload).hexdigest(),
+                    "decisionDirectCallRange": list(
+                        surviving.CAPTURE_BACKDROP_DECISION_CALL_RANGE
+                    ),
+                    "decisionDirectCallCount": 1,
+                    "directCalls": [
+                        {
+                            "sourceInstructionOffset": call_offset,
+                            "sourceInstruction": f"{instruction:08x}",
+                            "sourceInstructionAddress": (
+                                f"0x{symbol_address + call_offset:016x}"
+                            ),
+                            "targetAddress": f"0x{target_address:016x}",
+                            "targetImageBase": f"0x{image_base:016x}",
+                            "targetImageOffset": (f"0x{target_address - image_base:x}"),
+                            "targetImagePath": (
+                                "/System/Library/Frameworks/"
+                                "QuartzCore.framework/QuartzCore"
+                            ),
+                            "targetCode": {
+                                "class": (
+                                    "mapped arm64e QuartzCore direct-call target prefix"
+                                ),
+                                "startAddress": f"0x{target_address:016x}",
+                                "requestedByteCount": len(target_payload),
+                                "lengthBytes": len(target_payload),
+                                "hex": target_payload.hex(),
+                                "sha256": hashlib.sha256(target_payload).hexdigest(),
+                            },
+                        }
+                    ],
+                },
+            }
+        )
+        return call_site
+
     def test_matrix_stays_below_observed_capture_ceiling(self) -> None:
         self.assertEqual(len(surviving.expected_interventions(25)), 67)
         self.assertEqual(len(surviving.expected_interventions(31)), 5)
@@ -137,6 +213,9 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn('capture == "transition-path-isolation-31-000"', source)
         self.assertIn('fragment == "A2Xghfc"', source)
         self.assertIn('"producer-primary-mesh-vertex-buffer-binding"', source)
+        self.assertIn("captureBackdropCodeByteCount = 0x4000", source)
+        self.assertIn("captureBackdropDecisionCallLowerBound = 0x2000", source)
+        self.assertIn("captureBackdropDecisionCallUpperBound = 0x2B58", source)
 
     def test_producer_geometry_call_site_payload_is_byte_validated(self) -> None:
         summary = surviving.validate_producer_geometry_call_site(
@@ -151,6 +230,34 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         call_site = self.producer_call_site()
         call_site["frames"][0]["codeWindow"]["sha256"] = "0" * 64
         with self.assertRaisesRegex(ValueError, "metadata differs"):
+            surviving.validate_producer_geometry_call_site(call_site)
+
+    def test_capture_backdrop_symbol_and_direct_call_are_byte_validated(self) -> None:
+        summary = surviving.validate_producer_geometry_call_site(
+            self.producer_call_site_with_capture_backdrop()
+        )
+        capture = summary["captureBackdrop"]
+        self.assertEqual(summary["schemaVersion"], 5)
+        self.assertEqual(capture["symbolPrefixByteCount"], 0x4000)
+        self.assertEqual(capture["decisionDirectCallCount"], 1)
+        self.assertEqual(capture["decisionDirectCallOffsets"], [0x2B54])
+        self.assertEqual(capture["directCallTargetCodeCaptureCount"], 1)
+
+    def test_capture_backdrop_rejects_a_bad_symbol_digest(self) -> None:
+        call_site = self.producer_call_site_with_capture_backdrop()
+        call_site["frames"][0]["captureBackdropCode"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "symbol-prefix metadata differs"):
+            surviving.validate_producer_geometry_call_site(call_site)
+
+    def test_capture_backdrop_requires_the_known_vertex_binding_call(self) -> None:
+        call_site = self.producer_call_site_with_capture_backdrop()
+        capture = call_site["frames"][0]["captureBackdropCode"]
+        payload = bytearray.fromhex(capture["hex"])
+        offset = surviving.CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET
+        payload[offset : offset + 4] = bytes(4)
+        capture["hex"] = payload.hex()
+        capture["sha256"] = hashlib.sha256(payload).hexdigest()
+        with self.assertRaisesRegex(ValueError, "direct-call count differs"):
             surviving.validate_producer_geometry_call_site(call_site)
 
     def test_live_baseline_changes_only_deepest_position(self) -> None:
