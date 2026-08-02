@@ -9244,7 +9244,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         queue: MTLCommandQueue,
         capture: String,
         outputDirectory: URL,
-        includeDiagnostics: Bool = true
+        includeDiagnostics: Bool = true,
+        compositorInput: [String: Any]? = nil,
+        compositorReference: [String: Any]? = nil
     ) -> [String: Any] {
         guard let selection = finalHighlightSelection(
                 in: pass.commands)
@@ -9578,7 +9580,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pipeline: MTLRenderPipelineState,
             pixelFormat: MTLPixelFormat,
             uniformBuffer: MTLBuffer,
-            captureAuxiliary: Bool = true
+            captureAuxiliary: Bool = true,
+            initialBGRA8: Data? = nil
         ) -> [String: Any] {
             let targetDescriptor = MTLTextureDescriptor
                 .texture2DDescriptor(
@@ -9608,18 +9611,33 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
             }
 
+            let pixelCount =
+                originalTarget.width * originalTarget.height
             if pixelFormat == .bgra8Unorm {
-                var pixels = [UInt8](
-                    repeating: 0,
-                    count:
-                        originalTarget.width
-                        * originalTarget.height * 4)
-                for offset in stride(
-                    from: 3,
-                    to: pixels.count,
-                    by: 4)
-                {
-                    pixels[offset] = 255
+                let pixels: Data
+                if let initialBGRA8 {
+                    guard initialBGRA8.count == pixelCount * 4 else {
+                        return [
+                            "executed": false,
+                            "reason":
+                                "final highlight BGRA8 input size differs",
+                            "inputBytes": initialBGRA8.count,
+                            "expectedBytes": pixelCount * 4,
+                        ]
+                    }
+                    pixels = initialBGRA8
+                } else {
+                    var opaqueBlack = [UInt8](
+                        repeating: 0,
+                        count: pixelCount * 4)
+                    for offset in stride(
+                        from: 3,
+                        to: opaqueBlack.count,
+                        by: 4)
+                    {
+                        opaqueBlack[offset] = 255
+                    }
+                    pixels = Data(opaqueBlack)
                 }
                 pixels.withUnsafeBytes { bytes in
                     target.replace(
@@ -9635,15 +9653,44 @@ private final class MetalUniformProbe: @unchecked Sendable {
             } else {
                 var pixels = [UInt16](
                     repeating: 0,
-                    count:
-                        originalTarget.width
-                        * originalTarget.height * 4)
-                for offset in stride(
-                    from: 3,
-                    to: pixels.count,
-                    by: 4)
-                {
-                    pixels[offset] = UInt16(0x3c00).littleEndian
+                    count: pixelCount * 4)
+                if let initialBGRA8 {
+                    guard initialBGRA8.count == pixelCount * 4 else {
+                        return [
+                            "executed": false,
+                            "reason":
+                                "final highlight BGRA8 input size differs",
+                            "inputBytes": initialBGRA8.count,
+                            "expectedBytes": pixelCount * 4,
+                        ]
+                    }
+                    initialBGRA8.withUnsafeBytes { bytes in
+                        let source = bytes.bindMemory(to: UInt8.self)
+                        for index in 0..<pixelCount {
+                            let sourceOffset = index * 4
+                            let targetOffset = index * 4
+                            pixels[targetOffset] = Float16(
+                                Float(source[sourceOffset + 2]) / 255.0
+                            ).bitPattern.littleEndian
+                            pixels[targetOffset + 1] = Float16(
+                                Float(source[sourceOffset + 1]) / 255.0
+                            ).bitPattern.littleEndian
+                            pixels[targetOffset + 2] = Float16(
+                                Float(source[sourceOffset]) / 255.0
+                            ).bitPattern.littleEndian
+                            pixels[targetOffset + 3] = Float16(
+                                Float(source[sourceOffset + 3]) / 255.0
+                            ).bitPattern.littleEndian
+                        }
+                    }
+                } else {
+                    for offset in stride(
+                        from: 3,
+                        to: pixels.count,
+                        by: 4)
+                    {
+                        pixels[offset] = UInt16(0x3c00).littleEndian
+                    }
                 }
                 pixels.withUnsafeBytes { bytes in
                     target.replace(
@@ -9740,6 +9787,106 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pixelFormat: .rgba16Float,
             uniformBuffer: uniformClone,
             captureAuxiliary: includeDiagnostics)
+        if (compositorInput == nil) != (compositorReference == nil) {
+            return [
+                "executed": false,
+                "reason":
+                    "final compositor input/reference pairing differs",
+            ]
+        }
+        var compositorTrace: [String: Any]?
+        if let compositorInput,
+           let compositorReference
+        {
+            guard let inputOutput =
+                    compositorInput["output"] as? [String: Any],
+                  inputOutput["pixelFormat"] as? UInt
+                    == MTLPixelFormat.bgra8Unorm.rawValue,
+                  inputOutput["width"] as? Int
+                    == originalTarget.width,
+                  inputOutput["height"] as? Int
+                    == originalTarget.height,
+                  let inputFile = inputOutput["rawFile"] as? String
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "final compositor input metadata differs",
+                ]
+            }
+            let destination: Data
+            do {
+                destination = try Data(
+                    contentsOf: outputDirectory
+                        .appendingPathComponent(inputFile))
+            } catch {
+                return [
+                    "executed": false,
+                    "reason": error.localizedDescription,
+                    "inputFile": inputFile,
+                ]
+            }
+            guard destination.count
+                    == originalTarget.width
+                        * originalTarget.height * 4
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "final compositor input byte count differs",
+                    "inputBytes": destination.count,
+                ]
+            }
+            let capturedCompositor = render(
+                name: "compositor-captured-bgra8",
+                pipeline: selection.pipeline,
+                pixelFormat: .bgra8Unorm,
+                uniformBuffer: selection.uniformBuffer,
+                captureAuxiliary: false,
+                initialBGRA8: destination)
+            let rebuiltCompositor = render(
+                name: "compositor-rebuilt-bgra8",
+                pipeline: rebuiltPipeline,
+                pixelFormat: .bgra8Unorm,
+                uniformBuffer: selection.uniformBuffer,
+                captureAuxiliary: false,
+                initialBGRA8: destination)
+            let exactCompositorHalf = render(
+                name: "compositor-rebuilt-rgba16float",
+                pipeline: floatPipeline,
+                pixelFormat: .rgba16Float,
+                uniformBuffer: selection.uniformBuffer,
+                captureAuxiliary: false,
+                initialBGRA8: destination)
+            let capturedVsReference = compareReplaySnapshots(
+                reference: compositorReference,
+                candidate: capturedCompositor,
+                outputDirectory: outputDirectory)
+            let rebuiltVsReference = compareReplaySnapshots(
+                reference: compositorReference,
+                candidate: rebuiltCompositor,
+                outputDirectory: outputDirectory)
+            let capturedVsRebuilt = compareReplaySnapshots(
+                reference: capturedCompositor,
+                candidate: rebuiltCompositor,
+                outputDirectory: outputDirectory)
+            compositorTrace = [
+                "schemaVersion": 1,
+                "executed":
+                    capturedCompositor["executed"] as? Bool == true
+                    && rebuiltCompositor["executed"] as? Bool == true
+                    && exactCompositorHalf["executed"] as? Bool == true,
+                "capturedAppleFunctionUnmodified": true,
+                "input": compositorInput,
+                "reference": compositorReference,
+                "capturedBGRA8": capturedCompositor,
+                "rebuiltBGRA8": rebuiltCompositor,
+                "exactHalfComposite": exactCompositorHalf,
+                "capturedVsReference": capturedVsReference,
+                "rebuiltVsReference": rebuiltVsReference,
+                "capturedVsRebuilt": capturedVsRebuilt,
+            ]
+        }
         let exactKeyHalf: [String: Any]? =
             includeDiagnostics
             ? render(
@@ -9781,19 +9928,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
             $0["executed"] as? Bool == true
             }
         )
+        let compositorExecuted =
+            compositorTrace?["executed"] as? Bool ?? true
         let comparison = compareReplaySnapshots(
             reference: capturedBGRA,
             candidate: rebuiltBGRA,
             outputDirectory: outputDirectory)
         var result: [String: Any] = [
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "executed":
                 capturedBGRA["executed"] as? Bool == true
                 && rebuiltBGRA["executed"] as? Bool == true
                 && exactHalf["executed"] as? Bool == true
-                && diagnosticsExecuted,
+                && diagnosticsExecuted
+                && compositorExecuted,
             "diagnosticScope":
-                includeDiagnostics ? "full" : "alpha-only",
+                includeDiagnostics
+                ? "full"
+                : compositorTrace == nil
+                    ? "alpha-only"
+                    : "alpha-and-compositor",
             "capturedAppleFunctionUnmodified": true,
             "selectedLastA2XghfcDraw": true,
             "drawIndex": selection.drawIndex,
@@ -9824,6 +9978,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "capturedVsRebuiltBGRA8": comparison,
             "exactHalfAlpha": exactHalf,
         ]
+        if let compositorTrace {
+            result["exactCompositorTrace"] = compositorTrace
+        }
         if let exactKeyHalf,
            let exactFillHalf
         {
@@ -11394,18 +11551,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ] == "1"
             && (capture.hasSuffix("-01")
                 || capture.hasSuffix("-32"))
-        if capture == "carenderer-local-backdrop"
-            || dynamicHighlightTraceRequested
-        {
-            result["finalHighlightAlphaTrace"] =
-                replayFinalHighlightAlphaTrace(
-                    pass: pass,
-                    queue: queue,
-                    capture: capture,
-                    outputDirectory: outputDirectory,
-                    includeDiagnostics:
-                        capture == "carenderer-local-backdrop")
-        }
         let glassPrefixReference = replayGlassPrefix(
             pass: pass,
             preColor0: preColor0,
@@ -11414,27 +11559,52 @@ private final class MetalUniformProbe: @unchecked Sendable {
             capture: capture,
             suffix: "glass-prefix-reference",
             outputDirectory: outputDirectory)
+        let finalHighlightInputReference: [String: Any]
         if let finalHighlight = finalHighlightSelection(
                 in: pass.commands)
         {
-            result["finalHighlightInputReference"] =
-                replayGlassPrefix(
-                    pass: pass,
-                    preColor0: preColor0,
-                    queue: queue,
-                    commands: Array(
-                        pass.commands.prefix(
-                            finalHighlight.drawIndex)),
-                    replacingGlassPipeline: nil,
-                    stopAfterGlass: false,
-                    capture: capture,
-                    suffix: "pre-final-highlight-reference",
-                    outputDirectory: outputDirectory)
+            finalHighlightInputReference = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                commands: Array(
+                    pass.commands.prefix(
+                        finalHighlight.drawIndex)),
+                replacingGlassPipeline: nil,
+                stopAfterGlass: false,
+                capture: capture,
+                suffix: "pre-final-highlight-reference",
+                outputDirectory: outputDirectory)
         } else {
-            result["finalHighlightInputReference"] = [
+            finalHighlightInputReference = [
                 "executed": false,
                 "reason": "final Apple highlight draw is unavailable",
             ]
+        }
+        result["finalHighlightInputReference"] =
+            finalHighlightInputReference
+        if capture == "carenderer-local-backdrop"
+            || dynamicHighlightTraceRequested
+        {
+            let captureDynamicCompositor =
+                dynamicHighlightTraceRequested
+                && capture.hasSuffix("-32")
+            result["finalHighlightAlphaTrace"] =
+                replayFinalHighlightAlphaTrace(
+                    pass: pass,
+                    queue: queue,
+                    capture: capture,
+                    outputDirectory: outputDirectory,
+                    includeDiagnostics:
+                        capture == "carenderer-local-backdrop",
+                    compositorInput:
+                        captureDynamicCompositor
+                        ? finalHighlightInputReference
+                        : nil,
+                    compositorReference:
+                        captureDynamicCompositor
+                        ? ["output": referenceSnapshot]
+                        : nil)
         }
         var independentGlassReplay: [String: Any] = [
             "reference": glassPrefixReference,

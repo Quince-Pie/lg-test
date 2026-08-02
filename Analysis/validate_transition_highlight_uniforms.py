@@ -234,6 +234,7 @@ def validate_highlight_trace(
     replay: Mapping[str, Any],
     *,
     root: Path,
+    sample_index: int,
 ) -> None:
     trace = mapping(
         replay.get("finalHighlightAlphaTrace"),
@@ -244,9 +245,10 @@ def validate_highlight_trace(
         "capturedVsRebuiltBGRA8",
     )
     if (
-        trace.get("schemaVersion") != 1
+        trace.get("schemaVersion") != 2
         or trace.get("executed") is not True
-        or trace.get("diagnosticScope") != "alpha-only"
+        or trace.get("diagnosticScope")
+        != ("alpha-and-compositor" if sample_index == 32 else "alpha-only")
         or trace.get("capturedAppleFunctionUnmodified") is not True
         or trace.get("selectedLastA2XghfcDraw") is not True
         or comparison.get("compared") is not True
@@ -273,6 +275,68 @@ def validate_highlight_trace(
         ):
             raise ValueError(f"dynamic {key} layout differs")
         validate_raw_file(output, root=root, name=f"dynamic {key}")
+
+    if sample_index != 32:
+        if "exactCompositorTrace" in trace:
+            raise ValueError("fractional alpha trace captured a compositor probe")
+        return
+
+    compositor = mapping(
+        trace.get("exactCompositorTrace"),
+        "exactCompositorTrace",
+    )
+    if (
+        compositor.get("schemaVersion") != 1
+        or compositor.get("executed") is not True
+        or compositor.get("capturedAppleFunctionUnmodified") is not True
+    ):
+        raise ValueError("dynamic exact-compositor trace differs")
+    for key in (
+        "capturedVsReference",
+        "rebuiltVsReference",
+        "capturedVsRebuilt",
+    ):
+        comparison = mapping(compositor.get(key), key)
+        if (
+            comparison.get("compared") is not True
+            or comparison.get("exactByteMatch") is not True
+            or comparison.get("mismatchedByteCount") != 0
+            or comparison.get("mismatchedPixelCount") != 0
+            or comparison.get("maximumChannelDelta") != 0
+        ):
+            raise ValueError(f"dynamic exact-compositor {key} differs")
+    for key, pixel_format, byte_count in (
+        ("capturedBGRA8", 80, 1024 * 1024 * 4),
+        ("rebuiltBGRA8", 80, 1024 * 1024 * 4),
+        ("exactHalfComposite", 115, 1024 * 1024 * 8),
+    ):
+        render = mapping(compositor.get(key), key)
+        output = mapping(render.get("output"), f"{key} output")
+        if (
+            render.get("executed") is not True
+            or output.get("width") != 1024
+            or output.get("height") != 1024
+            or output.get("pixelFormat") != pixel_format
+            or output.get("rawBytes") != byte_count
+            or "auxiliaryOutput" in render
+        ):
+            raise ValueError(f"dynamic compositor {key} layout differs")
+        validate_raw_file(output, root=root, name=f"dynamic compositor {key}")
+    for key in ("input", "reference"):
+        wrapper = mapping(compositor.get(key), f"compositor {key}")
+        output = mapping(wrapper.get("output"), f"compositor {key} output")
+        if (
+            output.get("width") != 1024
+            or output.get("height") != 1024
+            or output.get("pixelFormat") != 80
+            or output.get("rawBytes") != 1024 * 1024 * 4
+        ):
+            raise ValueError(f"dynamic compositor {key} layout differs")
+        validate_raw_file(
+            output,
+            root=root,
+            name=f"dynamic compositor {key}",
+        )
 
 
 def validate(
@@ -414,7 +478,11 @@ def validate(
             highlight_trace and sample_index in HIGHLIGHT_TRACE_SAMPLE_INDICES
         )
         if trace_expected:
-            validate_highlight_trace(replay, root=path.parent)
+            validate_highlight_trace(
+                replay,
+                root=path.parent,
+                sample_index=sample_index,
+            )
             highlight_trace_count += 1
         elif "finalHighlightAlphaTrace" in replay:
             raise ValueError("an unrequested dynamic highlight trace executed")

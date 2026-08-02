@@ -1740,6 +1740,14 @@ transition-raster interpolation from highlight and compositor arithmetic.
 This alpha-only mode omits the larger key/fill tomography matrix and unused
 auxiliary attachments; the complete settled-highlight workflow retains those
 diagnostics.
+At the settled dynamic endpoint, the same focused leg also loads the exact
+BGRA8 attachment retained immediately before the final draw and replays
+Apple's unmodified `A2Xghfc` function in isolation. Both the captured pipeline
+and a descriptor rebuild must reproduce the real CARenderer output byte for
+byte. A second rebuild changes only attachment zero to RGBA16Float and retains
+the complete post-compositor binary16 field. This isolates partially
+transparent destination arithmetic without fitting an opaque attachment
+sweep or treating a format-converted replay as a parity oracle.
 Every state additionally retains attachment zero immediately before the last
 `A2Xghfc` draw, rather than assuming that the glass-prefix boundary is also the
 highlight boundary. This distinction is observable at the materialized
