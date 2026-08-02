@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for the reduced surviving-path threshold validator."""
 
+import hashlib
 import unittest
 from pathlib import Path
 
@@ -8,6 +9,36 @@ import validate_dynamic_allocation_surviving_path_threshold as surviving
 
 
 class SurvivingPathThresholdValidatorTests(unittest.TestCase):
+    @staticmethod
+    def producer_call_site() -> dict[str, object]:
+        payload = bytes(0x800)
+        digest = hashlib.sha256(payload).hexdigest()
+        return {
+            "schemaVersion": 4,
+            "executed": True,
+            "capture": "transition-path-isolation-31-000",
+            "purpose": "producer-primary-mesh-vertex-buffer-binding",
+            "frameCount": 1,
+            "quartzCoreCodeWindowCount": 1,
+            "glassBackgroundRenderCodeCaptureCount": 0,
+            "glassMatrixConstructorCodeCaptureCount": 0,
+            "glassMatrixConstructorConstantDataCaptureCount": 0,
+            "frames": [
+                {
+                    "imagePath": (
+                        "/System/Library/Frameworks/QuartzCore.framework/QuartzCore"
+                    ),
+                    "codeWindow": {
+                        "class": "mapped arm64e call-site window",
+                        "returnInstructionOffset": 0x400,
+                        "lengthBytes": len(payload),
+                        "hex": payload.hex(),
+                        "sha256": digest,
+                    },
+                }
+            ],
+        }
+
     def test_matrix_stays_below_observed_capture_ceiling(self) -> None:
         self.assertEqual(len(surviving.expected_interventions(25)), 67)
         self.assertEqual(len(surviving.expected_interventions(31)), 5)
@@ -43,26 +74,84 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             {delta for _, delta in surviving.STRONG_DELTAS}.issubset(deltas)
         )
 
-    def test_swift_uses_schema_three_only_for_the_fine_scan(self) -> None:
+    def test_sample31_unit_scan_uses_the_complete_process_budget(self) -> None:
+        interventions = surviving.sample31_repeat_interventions(31)
+        scan = [item for item in interventions if item["phase"] == "sample31-unit-scan"]
+        x_count = len(surviving.SAMPLE31_UNIT_X_VALUES)
+        self.assertEqual(surviving.SAMPLE31_UNIT_X_VALUES, tuple(range(-12, 37)))
+        self.assertEqual(surviving.SAMPLE31_UNIT_Y_VALUES, tuple(range(-4, 37)))
+        self.assertEqual(len(interventions), 114)
+        self.assertEqual(
+            [item["delta"][0] for item in scan[:x_count]],
+            list(surviving.SAMPLE31_UNIT_X_VALUES),
+        )
+        self.assertEqual(
+            [item["delta"][1] for item in scan[x_count:]],
+            list(surviving.SAMPLE31_UNIT_Y_VALUES),
+        )
+
+    def test_sample31_late_repeat_controls_are_exactly_frozen(self) -> None:
+        interventions = surviving.sample31_repeat_interventions(31)
+        repeat = [
+            intervention
+            for intervention in interventions
+            if intervention["phase"] == "repeat-control"
+        ]
+        self.assertEqual(repeat[0]["name"], "repeat-base")
+        self.assertEqual(repeat[0]["mutation"], "base")
+        self.assertEqual(repeat[0]["delta"], (0, 0))
+        self.assertEqual(
+            [item["delta"][0] for item in repeat[1:12]],
+            list(surviving.SAMPLE31_REPEAT_X_VALUES),
+        )
+        self.assertEqual(
+            [item["delta"][1] for item in repeat[12:]],
+            list(surviving.SAMPLE31_REPEAT_Y_VALUES),
+        )
+
+    def test_swift_uses_schema_four_only_for_the_sample31_repeat_scan(self) -> None:
         source = (
-            Path(__file__).parents[1]
-            / "Sources"
-            / "GlassIntrospect"
-            / "main.swift"
+            Path(__file__).parents[1] / "Sources" / "GlassIntrospect" / "main.swift"
         ).read_text(encoding="utf-8")
         fixed_block, path_block = source.split(
             "private func transitionFixedStateAllocationEvidence", maxsplit=1
-        )[1].split(
-            "private func transitionPathIsolationAllocationEvidence", maxsplit=1
-        )
+        )[1].split("private func transitionPathIsolationAllocationEvidence", maxsplit=1)
         path_block = path_block.split(
             "private func transitionFloatEvidence", maxsplit=1
         )[0]
         self.assertIn('"schemaVersion": 2', fixed_block)
         self.assertNotIn('"schemaVersion": 3', fixed_block)
-        self.assertIn('"schemaVersion": 3', path_block)
-        self.assertIn('"scanXValuesBySample"', path_block)
-        self.assertIn('"scanYValuesBySample"', path_block)
+        self.assertNotIn('"schemaVersion": 4', fixed_block)
+        self.assertIn('"schemaVersion": 4', path_block)
+        self.assertNotIn('"schemaVersion": 3', path_block)
+        self.assertIn('"scanXValues"', path_block)
+        self.assertIn('"scanYValues"', path_block)
+        self.assertIn('"repeatXValues"', path_block)
+        self.assertIn('"repeatYValues"', path_block)
+
+    def test_swift_captures_the_producer_geometry_call_site_once(self) -> None:
+        source = (
+            Path(__file__).parents[1] / "Sources" / "GlassIntrospect" / "main.swift"
+        ).read_text(encoding="utf-8")
+        self.assertIn("producerGeometryCallSiteCaptured", source)
+        self.assertIn('capture == "transition-path-isolation-31-000"', source)
+        self.assertIn('fragment == "A2Xghfc"', source)
+        self.assertIn('"producer-primary-mesh-vertex-buffer-binding"', source)
+
+    def test_producer_geometry_call_site_payload_is_byte_validated(self) -> None:
+        summary = surviving.validate_producer_geometry_call_site(
+            self.producer_call_site()
+        )
+        self.assertTrue(summary["captured"])
+        self.assertEqual(summary["frameCount"], 1)
+        self.assertEqual(summary["quartzCoreCodeWindowCount"], 1)
+        self.assertEqual(len(summary["quartzCoreCodeWindowSHA256"]), 1)
+
+    def test_producer_geometry_call_site_rejects_a_bad_digest(self) -> None:
+        call_site = self.producer_call_site()
+        call_site["frames"][0]["codeWindow"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "metadata differs"):
+            surviving.validate_producer_geometry_call_site(call_site)
 
     def test_live_baseline_changes_only_deepest_position(self) -> None:
         states = [
@@ -80,12 +169,27 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertEqual(states[1]["position"], [3.5, -2.0])
 
     def test_every_nonbase_intervention_targets_only_position(self) -> None:
-        for builder in (
-            surviving.expected_interventions,
-            surviving.fine_scan_interventions,
-        ):
-            for sample in surviving.EXPECTED_SOURCE_SAMPLE_INDICES:
-                for intervention in builder(sample)[1:]:
+        matrices = (
+            (
+                surviving.expected_interventions,
+                surviving.EXPECTED_SOURCE_SAMPLE_INDICES,
+            ),
+            (
+                surviving.fine_scan_interventions,
+                surviving.EXPECTED_SOURCE_SAMPLE_INDICES,
+            ),
+            (
+                surviving.sample31_repeat_interventions,
+                surviving.SAMPLE31_REPEAT_SOURCE_SAMPLE_INDICES,
+            ),
+        )
+        for builder, samples in matrices:
+            for sample in samples:
+                for intervention in builder(sample):
+                    if intervention["mutation"] == "base":
+                        self.assertEqual(intervention["path"], ())
+                        self.assertEqual(intervention["delta"], (0, 0))
+                        continue
                     self.assertEqual(intervention["path"], surviving.POSITION_PATH)
                     self.assertEqual(intervention["mutation"], "position")
 

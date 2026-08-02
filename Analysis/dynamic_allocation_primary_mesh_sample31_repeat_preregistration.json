@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "frozenAtUtc": "2026-08-02T17:43:24Z",
+  "classification": "preregistered sample-31 primary-mesh unit-threshold and same-process repeat calibration; not an unseen geometry transfer",
+  "openedEvidence": {
+    "runID": 30757430482,
+    "captureCommit": "c1808867bef8e5baa08e15d36e8611a2aa18b804",
+    "timelineSHA256": "b8179bffa10d6e5e12c6eb2fa5b9ffcb86234e0358c101e4c1c8a57d0c1f88de",
+    "validatorResultSHA256": "230a9f3fcf11847d8c215f00056fe3c034b22164e7f29b9a0af2963087c3c94e",
+    "fineScanResultSHA256": "fd7948ee54d4296e600a9ab7ffa5a69539160c41872280807378879b93b14a6d",
+    "normalizedResponseResultSHA256": "b010f11412230ba0fa7fdc08fd876e2159fc8b1ceee5ad9e6fad06771bbb6a72",
+    "pixelCenterTransferResultSHA256": "fcd34bb8d220756346dea1699cee9d71e5ad953349266ad5b53e4bf7ba433ce4",
+    "withinRunRepeatResultSHA256": "6919b968cc207336af0c2ef5d3eca8d73960a564cdd3cd0f16c80db4b30c696f",
+    "observedSuccessfulRecordCapacity": 114,
+    "sample31SourceTargetCenter": [310.0, 310.0],
+    "sample31SourceTargetPixelCenter": [310, 310],
+    "sample31TranslationTransitionBrackets": {
+      "x": [[-8, -4], [16, 32]],
+      "y": [[-2, -1], [16, 32]]
+    },
+    "sample31TargetPixelCenterTransitionBrackets": {
+      "x": [[302, 306], [326, 342]],
+      "y": [[308, 309], [326, 342]]
+    },
+    "limitations": [
+      "The X brackets are wider than one integer step.",
+      "The second Y bracket is wider than one integer step.",
+      "Sample 31 has no previously opened same-state late repeats.",
+      "The observed response is calibration evidence, not a recovered allocation rule."
+    ]
+  },
+  "frozenQuestion": {
+    "objective": "Resolve every sample-31 primary-edge transition in the four opened coarse brackets at unit-pixel steps and determine whether identical sample-31 states retain exact decoded and draw-consumed producer policy across the full 114-record process order.",
+    "mutationPath": [1, 0, 1, 0, 0, 0, 0],
+    "mutation": "position",
+    "liveStateRule": "Record zero defines the complete post-layout sample-31 live tree. Every later record must equal that tree with only its declared deepest-SDF position delta immediately before and after rendering; the late base must equal record zero exactly.",
+    "responseRule": "Preserve the exact signed four-edge response at every declared integer. Report transitions only between adjacent observed values with different responses; never interpolate an unsampled value.",
+    "pixelCenterRule": "The opened source center is pixel (310,310). Re-express every observed translation as its integer target pixel center and preserve the same response without refitting.",
+    "repeatRule": "Compare the four zero-state records and all 22 declared nonzero early/late state pairs at zero tolerance over requested state, live pre/post state, decoded allocation and mesh policy, primary edges, and draw-consumed vertex/MVP/index bytes. Unused full-buffer tails are reported but excluded from this gate.",
+    "nullOutcome": "A live-state or producer-copy integrity failure fails the capture closed. A same-state mesh or draw-consumed mismatch falsifies sample-31 order determinism but remains reported evidence and must not be fitted away.",
+    "callSiteDiagnosticRule": "On the first sample-31 base render, attempt one stack and mapped QuartzCore code-window capture at the VfxXgh/A2Xghfc producer vertex-buffer binding. Absence is diagnostic-only and does not discard the 114-record matrix; any captured payload must pass its internal byte count and SHA-256 checks."
+  },
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-path-isolation"
+    },
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-640-center",
+    "sourceSampleIndices": [31],
+    "sourceInterventionCounts": {
+      "31": 114
+    },
+    "totalInterventionCount": 114,
+    "scanPath": [1, 0, 1, 0, 0, 0, 0],
+    "scanMutation": "position",
+    "scanPhase": "sample31-unit-scan",
+    "scanXValues": [-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
+    "scanYValues": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
+    "repeatPhase": "repeat-control",
+    "repeatBase": true,
+    "repeatXValues": [-12, -8, -4, -1, 1, 4, 16, 17, 31, 32, 36],
+    "repeatYValues": [-4, -2, -1, 1, 4, 8, 16, 17, 31, 32, 36],
+    "recordLayout": {
+      "initialBase": 0,
+      "unitXInclusive": [1, 49],
+      "unitYInclusive": [50, 90],
+      "lateRepeatBase": 91,
+      "repeatXInclusive": [92, 102],
+      "repeatYInclusive": [103, 113],
+      "zeroStateEquivalenceGroup": [0, 13, 54, 91]
+    },
+    "maximumRenderAttemptCount": 3,
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false,
+    "renderBufferRetentionPolicy": "index-all-compute-0-vertex-1-or-2",
+    "producerGeometryCallSiteDiagnostic": {
+      "capture": "transition-path-isolation-31-000",
+      "vertexBufferIndex": 1,
+      "vertexFunction": "VfxXgh",
+      "fragmentFunction": "A2Xghfc",
+      "requiredForMatrixAcceptance": false
+    }
+  },
+  "acceptance": {
+    "all114InterventionsMustExecute": true,
+    "producerCopyBasePassRequiredEveryIntervention": true,
+    "originalProducerInputRequiredEveryIntervention": true,
+    "liveLayerStateMustEqualInitialBasePlusOnlyDeclaredPositionDelta": true,
+    "lateBaseLiveLayerStateMustEqualInitialBase": true,
+    "liveLayerStateMustRemainExactAcrossRender": true,
+    "liveFilterInputsMustMatchSourceBeforeAndAfter": true,
+    "primaryProducerSourceQLawMustRemainExact": true,
+    "allocationAndCopyMetadataMustRemainExactWithinSourceState": true,
+    "initialBaseDecodedProducerPolicyMustMatchNormalCapture": true,
+    "sameStateRepeatComparisonTolerance": 0,
+    "allowNumericTolerance": false,
+    "rawStageDumpsForbidden": true,
+    "productionShaderAuthorized": false
+  },
+  "analysisPlan": {
+    "unitThresholds": "Partition both complete unit-step scans into exact four-edge response runs and report every adjacent integer transition in translation and target-pixel-center coordinates.",
+    "zeroStateEquivalence": "Compare records 0, 13, 54, and 91 as one identical-state group.",
+    "lateRepeats": "Compare each of the 11 X and 11 Y repeat controls with its earlier unit-scan record at zero tolerance.",
+    "callSiteDiagnostic": "If captured, retain mapped QuartzCore frame offsets and validated code-window SHA-256 values for post-opening disassembly; do not let diagnostic absence alter the matrix conclusion.",
+    "modelRecovery": "Only after opening the scan may candidate integerization or tile-allocation laws be derived. Any candidate must then be frozen before a distinct native-geometry holdout and unchanged repeat."
+  },
+  "frozenImplementation": {
+    "lgTestCommitBeforeRegistration": "ebea46993caa75b5184d2959e89cdbdb331838ad",
+    "swiftCaptureSHA256": "a5bbed5d18e796f26e1de70fb74c7d9777327779656a5e8e7f8b07bb5da1b2dd",
+    "workflowSHA256": "bc79f75eb6244cda94dc4995164338589396535764b07c61a2d3b6be7570b870",
+    "validatorSHA256": "cfbd813b2ec08695e3eaba9defa12b61846763b5430835d7fe76c548e8391656",
+    "validatorTestSHA256": "648839b87bbb1704ea2de8e9471d377901cb06927df11f769ff92ef3ee2791d0",
+    "analyzerSHA256": "c4293ab045cac09d15c48e3382746faacb89a47118f06ec5b3108d98ca655880",
+    "analyzerTestSHA256": "ef6638f994c21cc886560f247443b344db5977ff565c0f0d5ddd7a76f2551ca8",
+    "priorFineScanPreregistrationSHA256": "247427f44e71ff603499e91712609d76ea85af3f8e429ad750470860fa291308",
+    "priorFineScanResultSHA256": "fd7948ee54d4296e600a9ab7ffa5a69539160c41872280807378879b93b14a6d",
+    "priorNormalizedResponseResultSHA256": "b010f11412230ba0fa7fdc08fd876e2159fc8b1ceee5ad9e6fad06771bbb6a72",
+    "priorPixelCenterTransferResultSHA256": "fcd34bb8d220756346dea1699cee9d71e5ad953349266ad5b53e4bf7ba433ce4",
+    "priorWithinRunRepeatResultSHA256": "6919b968cc207336af0c2ef5d3eca8d73960a564cdd3cd0f16c80db4b30c696f",
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "notClaimed": [
+    "a recovered universal producer-mesh integerization or tile-allocation law",
+    "an unseen native Apple geometry transfer",
+    "a profile, material, appearance, direction, scale-factor, or Retina transfer",
+    "endpoint crop or mesh recovery",
+    "production Walle parity",
+    "permission to modify or approximate the protected production shader",
+    "permission to trade image quality for memory, throughput, or latency"
+  ]
+}

@@ -4441,6 +4441,39 @@ SHA-256
 This establishes deterministic sample-25 behavior across recorded order, but
 does not establish sample-31 determinism or authorize a shader change.
 
+The next sample-31 experiment is frozen before capture in
+`Analysis/dynamic_allocation_primary_mesh_sample31_repeat_preregistration.json`.
+It uses the complete observed 114-record process capacity on sample 31 alone:
+one initial base; every integer X translation from -12 through 36; every
+integer Y translation from -4 through 36; one late base; and 11 late X plus 11
+late Y controls.  Those unit ranges fully contain both opened X transition
+brackets, `-8 -> -4` and `16 -> 32`, and both opened Y brackets, `-2 -> -1`
+and `16 -> 32`.  In physical coordinates the corresponding source circle
+center is exactly pixel `(310,310)`, so the capture can report every response
+transition directly in target-pixel-center coordinates without fitting an
+unobserved value.
+
+The two unit scans deliberately include zero.  Consequently records 0, 13,
+54, and 91 request the same complete sample-31 state at four different points
+in process order.  The post-opening analyzer treats them as one equivalence
+group and compares another 22 nonzero early/late pairs.  Requested state, live
+pre/post state, decoded allocation and mesh policy, primary edges, and every
+draw-consumed vertex, MVP, and index byte are compared at zero tolerance.
+Bytes beyond the ranges consumed by the draw remain diagnostic, matching the
+already-opened sample-25 determinism audit.  A policy mismatch falsifies
+sample-31 order determinism and is retained rather than discarded or fitted
+away.
+
+The first base render also attempts one diagnostic stack and mapped
+QuartzCore code-window capture at the observed `VfxXgh`/`A2Xghfc` producer
+vertex-buffer binding.  Captured bytes must validate against their declared
+length and SHA-256; absence is diagnostic-only and cannot invalidate or
+upgrade the 114-record causal matrix.  Neither a successful unit scan nor an
+exact repeat recovers the universal mesh policy by itself.  A candidate law
+may be derived only after opening this capture, then must pass a separately
+frozen native-geometry holdout and unchanged repeat before any Walle shader
+change.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

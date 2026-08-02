@@ -4473,7 +4473,9 @@ private func arm64PageRelativeAddress(
     )
 }
 
-private func glassUniformCallSiteEvidence() -> [String: Any] {
+private func glassUniformCallSiteEvidence(
+    capture: String = "transition-matrix-uniform-01-neutral-axes"
+) -> [String: Any] {
     let returnAddresses =
         Array(Thread.callStackReturnAddresses.prefix(32))
     var quartzCoreCodeWindows = 0
@@ -4758,8 +4760,7 @@ private func glassUniformCallSiteEvidence() -> [String: Any] {
     return [
         "schemaVersion": 4,
         "executed": true,
-        "capture":
-            "transition-matrix-uniform-01-neutral-axes",
+        "capture": capture,
         "frameCount": frames.count,
         "quartzCoreCodeWindowCount": quartzCoreCodeWindows,
         "glassBackgroundRenderCodeCaptureCount":
@@ -4963,6 +4964,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var computePipelineCreationRecords:
         [ObjectIdentifier: [String: Any]] = [:]
     private var glassUniformCallSiteCaptured = false
+    private var producerGeometryCallSiteCaptured = false
     private var installReport: [String: Any]?
     private var originalNewRenderPipelineState:
         MetalNewRenderPipelineStateFunction?
@@ -5096,6 +5098,29 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
         glassUniformCallSiteCaptured = true
         return glassUniformCallSiteEvidence()
+    }
+
+    private func captureProducerGeometryCallSiteIfNeeded(
+        capture: String,
+        pipeline: [String: Any],
+        index: Int
+    ) -> [String: Any]? {
+        let creation =
+            pipeline["creationDescriptor"] as? [String: Any]
+        let fragment = creation?["fragmentFunction"] as? String
+        guard !producerGeometryCallSiteCaptured,
+              capture == "transition-path-isolation-31-000",
+              index == 1,
+              fragment == "A2Xghfc"
+        else {
+            return nil
+        }
+        producerGeometryCallSiteCaptured = true
+        var evidence = glassUniformCallSiteEvidence(
+            capture: capture)
+        evidence["purpose"] =
+            "producer-primary-mesh-vertex-buffer-binding"
+        return evidence
     }
 
     func install() -> [String: Any] {
@@ -7270,6 +7295,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        let pipeline = encoderPipeline(encoder)
         var record: [String: Any] = [
             "capture": captureName,
             "kind": "buffer",
@@ -7277,7 +7303,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "index": index,
             "offset": offset,
             "encoder": objectAddress(encoder),
-            "pipeline": encoderPipeline(encoder),
+            "pipeline": pipeline,
         ]
         appendReplayCommand(
             encoder: encoder,
@@ -7290,6 +7316,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             stage: "vertex",
             index: index)
         if let metalBuffer = buffer as? MTLBuffer {
+            let callSite =
+                captureProducerGeometryCallSiteIfNeeded(
+                    capture: captureName,
+                    pipeline: pipeline,
+                    index: index)
             activeBuffers[slot] = metalBuffer
             record["bufferClass"] =
                 String(reflecting: type(of: metalBuffer))
@@ -7302,10 +7333,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 sequence: records.count,
                 stage: "vertex",
                 index: index,
-                pipeline: encoderPipeline(encoder),
+                pipeline: pipeline,
                 buffer: metalBuffer,
                 offset: offset,
-                callSite: nil))
+                callSite: callSite))
+            if let callSite {
+                record["producerGeometryCallSite"] = callSite
+            }
             if metalBuffer.storageMode != .private,
                offset >= 0,
                offset <= metalBuffer.length
@@ -7373,12 +7407,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
             appendRecord(record)
             return
         }
-        let callSite = stage == "fragment"
-            ? captureGlassUniformCallSiteIfNeeded(
+        let callSite: [String: Any]?
+        if stage == "fragment" {
+            callSite = captureGlassUniformCallSiteIfNeeded(
                 capture: captureName,
                 pipeline: pipeline,
                 index: index)
-            : nil
+        } else if stage == "vertex" {
+            callSite = captureProducerGeometryCallSiteIfNeeded(
+                capture: captureName,
+                pipeline: pipeline,
+                index: index)
+        } else {
+            callSite = nil
+        }
         record["bufferAddress"] =
             objectAddress(buffer as AnyObject)
         record["bufferLength"] = buffer.length
@@ -7669,7 +7711,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "offset": binding.offset,
             ]
             if let callSite = binding.callSite {
-                record["uniformCallSite"] = callSite
+                record[
+                    binding.stage == "vertex"
+                        ? "producerGeometryCallSite"
+                        : "uniformCallSite"
+                ] = callSite
             }
             guard buffer.storageMode != .private else {
                 record["payloadUnavailable"] = "private storage"
@@ -16389,37 +16435,25 @@ private struct TransitionPathIsolationIntervention {
 }
 
 private let transitionPathIsolationSampleIndices: Set<Int> = [
-    25, 31,
+    31,
 ]
 
 private let transitionPathIsolationPositionPath = [
     1, 0, 1, 0, 0, 0, 0,
 ]
 
-private let transitionPathIsolationFineXValues = [
-    80, 81, 82, 83, 84, 85, 86, 87, 88,
+private let transitionPathIsolationSample31UnitXValues =
+    Array(-12 ... 36)
+
+private let transitionPathIsolationSample31UnitYValues =
+    Array(-4 ... 36)
+
+private let transitionPathIsolationSample31RepeatXValues = [
+    -12, -8, -4, -1, 1, 4, 16, 17, 31, 32, 36,
 ]
 
-private let transitionPathIsolationFineYValues = [
-    64, 65, 66, 67, 68, 69, 70, 71,
-    72, 73, 74, 75, 76, 77, 78, 79,
-    80, 81, 82, 83, 84, 85, 86, 87,
-    88, 89, 90, 91, 92, 93, 94, 95,
-    96,
-]
-
-private let transitionPathIsolationCrossAxisXValues = [
-    -128, -96, -92, -91, -90, -89, -88, -64,
-    -32, -16, -8, -4, -2, -1,
-    1, 2, 4, 8, 16, 32, 64, 80,
-    88, 89, 90, 91, 92, 96, 128,
-]
-
-private let transitionPathIsolationCrossAxisYValues = [
-    -160, -144, -136, -135, -134, -133, -132,
-    -128, -96, -64, -32, -16, -8, -4, -2, -1,
-    1, 2, 4, 8, 16, 32, 64, 96, 120, 128,
-    132, 133, 134, 135, 136, 144, 160,
+private let transitionPathIsolationSample31RepeatYValues = [
+    -4, -2, -1, 1, 4, 8, 16, 17, 31, 32, 36,
 ]
 
 private func transitionPathIdentifier(_ path: [Int]) -> String {
@@ -16429,6 +16463,9 @@ private func transitionPathIdentifier(_ path: [Int]) -> String {
 private func transitionPathIsolationInterventions(
     sampleIndex: Int
 ) -> [TransitionPathIsolationIntervention] {
+    precondition(
+        sampleIndex == 31,
+        "unexpected path-isolation source sample")
     var interventions = [TransitionPathIsolationIntervention(
         name: "base",
         phase: "control",
@@ -16437,47 +16474,60 @@ private func transitionPathIsolationInterventions(
         delta: .zero)]
     let positionPathName = transitionPathIdentifier(
         transitionPathIsolationPositionPath)
-    let phase: String
-    let namePrefix: String
-    let xValues: [Int]
-    let yValues: [Int]
-    switch sampleIndex {
-    case 25:
-        phase = "fine-threshold"
-        namePrefix = "fine"
-        xValues = transitionPathIsolationFineXValues
-        yValues = transitionPathIsolationFineYValues
-    case 31:
-        phase = "cross-axis-scan"
-        namePrefix = "cross-axis"
-        xValues = transitionPathIsolationCrossAxisXValues
-        yValues = transitionPathIsolationCrossAxisYValues
-    default:
-        preconditionFailure("unexpected path-isolation source sample")
-    }
-
-    for value in xValues {
+    for value in transitionPathIsolationSample31UnitXValues {
         let sign = value < 0 ? "negative" : "positive"
         interventions.append(
             TransitionPathIsolationIntervention(
                 name:
-                    namePrefix + "-" + positionPathName
+                    "sample31-unit-" + positionPathName
                     + "-position-x-" + sign
                     + "-" + String(abs(value)),
-                phase: phase,
+                phase: "sample31-unit-scan",
                 path: transitionPathIsolationPositionPath,
                 mutation: .position,
                 delta: CGPoint(x: value, y: 0)))
     }
-    for value in yValues {
+    for value in transitionPathIsolationSample31UnitYValues {
         let sign = value < 0 ? "negative" : "positive"
         interventions.append(
             TransitionPathIsolationIntervention(
                 name:
-                    namePrefix + "-" + positionPathName
+                    "sample31-unit-" + positionPathName
                     + "-position-y-" + sign
                     + "-" + String(abs(value)),
-                phase: phase,
+                phase: "sample31-unit-scan",
+                path: transitionPathIsolationPositionPath,
+                mutation: .position,
+                delta: CGPoint(x: 0, y: value)))
+    }
+    interventions.append(TransitionPathIsolationIntervention(
+        name: "repeat-base",
+        phase: "repeat-control",
+        path: [],
+        mutation: .base,
+        delta: .zero))
+    for value in transitionPathIsolationSample31RepeatXValues {
+        let sign = value < 0 ? "negative" : "positive"
+        interventions.append(
+            TransitionPathIsolationIntervention(
+                name:
+                    "repeat-" + positionPathName
+                    + "-position-x-" + sign
+                    + "-" + String(abs(value)),
+                phase: "repeat-control",
+                path: transitionPathIsolationPositionPath,
+                mutation: .position,
+                delta: CGPoint(x: value, y: 0)))
+    }
+    for value in transitionPathIsolationSample31RepeatYValues {
+        let sign = value < 0 ? "negative" : "positive"
+        interventions.append(
+            TransitionPathIsolationIntervention(
+                name:
+                    "repeat-" + positionPathName
+                    + "-position-y-" + sign
+                    + "-" + String(abs(value)),
+                phase: "repeat-control",
                 path: transitionPathIsolationPositionPath,
                 mutation: .position,
                 delta: CGPoint(x: 0, y: value)))
@@ -18106,7 +18156,7 @@ private func transitionPathIsolationAllocationEvidence(
         $0["executed"] as? Bool == true
     }.count
     return [
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "requested": true,
         "executed": executedRecordCount == expectedRecordCount,
         "sourceSampleIndices": selectedSnapshots.map(
@@ -18117,27 +18167,26 @@ private func transitionPathIsolationAllocationEvidence(
         "scanPath": transitionPathIsolationPositionPath,
         "scanMutation":
             TransitionPathIsolationMutation.position.rawValue,
-        "scanPhasesBySample": [
-            "25": "fine-threshold",
-            "31": "cross-axis-scan",
-        ],
-        "scanXValuesBySample": [
-            "25": transitionPathIsolationFineXValues,
-            "31": transitionPathIsolationCrossAxisXValues,
-        ],
-        "scanYValuesBySample": [
-            "25": transitionPathIsolationFineYValues,
-            "31": transitionPathIsolationCrossAxisYValues,
-        ],
+        "scanSampleIndex": 31,
+        "scanPhase": "sample31-unit-scan",
+        "scanXValues":
+            transitionPathIsolationSample31UnitXValues,
+        "scanYValues":
+            transitionPathIsolationSample31UnitYValues,
+        "repeatPhase": "repeat-control",
+        "repeatBase": true,
+        "repeatXValues":
+            transitionPathIsolationSample31RepeatXValues,
+        "repeatYValues":
+            transitionPathIsolationSample31RepeatYValues,
         "liveRenderBoundaryReadback": true,
         "maximumRenderAttemptCount": 3,
         "renderBufferRetentionPolicy":
             "index-all-compute-0-vertex-1-or-2",
         "records": records,
         "method":
-            "live-baseline-deepest-sdf-position-fine-threshold-"
-            + "and-cross-axis-scan-after-preregistered-"
-            + "72-record-calibration",
+            "live-baseline-sample31-unit-scan-with-late-"
+            + "same-process-repeat-controls",
     ]
 }
 

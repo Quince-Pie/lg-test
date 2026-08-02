@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 from collections import Counter
 from collections.abc import Mapping, Sequence
@@ -31,10 +32,19 @@ FINE_SCAN_CLASSIFICATION = (
     "preregistered-live-baseline-deepest-sdf-position-fine-threshold-and-"
     "cross-axis-calibration"
 )
+SAMPLE31_REPEAT_CLASSIFICATION = (
+    "preregistered-live-baseline-sample31-unit-threshold-and-same-process-"
+    "repeat-calibration"
+)
+SAMPLE31_REPEAT_SOURCE_SAMPLE_INDICES = (31,)
 FINE_X_VALUES = tuple(range(80, 89))
 FINE_Y_VALUES = tuple(range(64, 97))
 CROSS_AXIS_X_VALUES = DENSE_X_VALUES
 CROSS_AXIS_Y_VALUES = DENSE_Y_VALUES
+SAMPLE31_UNIT_X_VALUES = tuple(range(-12, 37))
+SAMPLE31_UNIT_Y_VALUES = tuple(range(-4, 37))
+SAMPLE31_REPEAT_X_VALUES = (-12, -8, -4, -1, 1, 4, 16, 17, 31, 32, 36)
+SAMPLE31_REPEAT_Y_VALUES = (-4, -2, -1, 1, 4, 8, 16, 17, 31, 32, 36)
 SCAN_VALUES_BY_SAMPLE = {
     25: (FINE_X_VALUES, FINE_Y_VALUES),
     31: (CROSS_AXIS_X_VALUES, CROSS_AXIS_Y_VALUES),
@@ -94,9 +104,7 @@ def expected_interventions(sample_index: int) -> list[dict[str, Any]]:
         return result
     result.extend(
         {
-            "name": (
-                f"dense-{identifier}-position-x-{original.signed_name(value)}"
-            ),
+            "name": (f"dense-{identifier}-position-x-{original.signed_name(value)}"),
             "phase": "dense-threshold",
             "path": POSITION_PATH,
             "mutation": "position",
@@ -106,9 +114,7 @@ def expected_interventions(sample_index: int) -> list[dict[str, Any]]:
     )
     result.extend(
         {
-            "name": (
-                f"dense-{identifier}-position-y-{original.signed_name(value)}"
-            ),
+            "name": (f"dense-{identifier}-position-y-{original.signed_name(value)}"),
             "phase": "dense-threshold",
             "path": POSITION_PATH,
             "mutation": "position",
@@ -137,9 +143,7 @@ def fine_scan_interventions(sample_index: int) -> list[dict[str, Any]]:
     ]
     result.extend(
         {
-            "name": (
-                f"{prefix}-{identifier}-position-x-{original.signed_name(value)}"
-            ),
+            "name": (f"{prefix}-{identifier}-position-x-{original.signed_name(value)}"),
             "phase": phase,
             "path": POSITION_PATH,
             "mutation": "position",
@@ -149,15 +153,82 @@ def fine_scan_interventions(sample_index: int) -> list[dict[str, Any]]:
     )
     result.extend(
         {
-            "name": (
-                f"{prefix}-{identifier}-position-y-{original.signed_name(value)}"
-            ),
+            "name": (f"{prefix}-{identifier}-position-y-{original.signed_name(value)}"),
             "phase": phase,
             "path": POSITION_PATH,
             "mutation": "position",
             "delta": (0, value),
         }
         for value in y_values
+    )
+    return result
+
+
+def sample31_repeat_interventions(sample_index: int) -> list[dict[str, Any]]:
+    if sample_index not in SAMPLE31_REPEAT_SOURCE_SAMPLE_INDICES:
+        raise ValueError(f"unexpected sample-31 repeat source: {sample_index}")
+    identifier = original.path_name(POSITION_PATH)
+    result: list[dict[str, Any]] = [
+        {
+            "name": "base",
+            "phase": "control",
+            "path": (),
+            "mutation": "base",
+            "delta": (0, 0),
+        }
+    ]
+    result.extend(
+        {
+            "name": (
+                f"sample31-unit-{identifier}-position-x-{original.signed_name(value)}"
+            ),
+            "phase": "sample31-unit-scan",
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": (value, 0),
+        }
+        for value in SAMPLE31_UNIT_X_VALUES
+    )
+    result.extend(
+        {
+            "name": (
+                f"sample31-unit-{identifier}-position-y-{original.signed_name(value)}"
+            ),
+            "phase": "sample31-unit-scan",
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": (0, value),
+        }
+        for value in SAMPLE31_UNIT_Y_VALUES
+    )
+    result.append(
+        {
+            "name": "repeat-base",
+            "phase": "repeat-control",
+            "path": (),
+            "mutation": "base",
+            "delta": (0, 0),
+        }
+    )
+    result.extend(
+        {
+            "name": (f"repeat-{identifier}-position-x-{original.signed_name(value)}"),
+            "phase": "repeat-control",
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": (value, 0),
+        }
+        for value in SAMPLE31_REPEAT_X_VALUES
+    )
+    result.extend(
+        {
+            "name": (f"repeat-{identifier}-position-y-{original.signed_name(value)}"),
+            "phase": "repeat-control",
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": (0, value),
+        }
+        for value in SAMPLE31_REPEAT_Y_VALUES
     )
     return result
 
@@ -195,7 +266,75 @@ def decoded_policy_exact(
             return False
     expected_mesh = holdout.mapping(expected.get("producerMesh"), "expected mesh")
     observed_mesh = holdout.mapping(observed.get("producerMesh"), "observed mesh")
-    return all(expected_mesh.get(field) == observed_mesh.get(field) for field in DECODED_MESH_FIELDS)
+    return all(
+        expected_mesh.get(field) == observed_mesh.get(field)
+        for field in DECODED_MESH_FIELDS
+    )
+
+
+def validate_producer_geometry_call_site(
+    untyped_call_site: Any,
+) -> dict[str, Any]:
+    call_site = holdout.mapping(
+        untyped_call_site, "producer geometry call-site evidence"
+    )
+    frames = [
+        holdout.mapping(value, "producer geometry call-site frame")
+        for value in fixed.sequence(call_site.get("frames"), "call-site frames")
+    ]
+    code_window_count = 0
+    code_window_hashes: list[str] = []
+    for frame in frames:
+        if "codeWindow" not in frame:
+            continue
+        window = holdout.mapping(frame.get("codeWindow"), "call-site code window")
+        hex_payload = window.get("hex")
+        if not isinstance(hex_payload, str):
+            raise ValueError("producer geometry code-window payload differs")
+        try:
+            payload = bytes.fromhex(hex_payload)
+        except ValueError as error:
+            raise ValueError(
+                "producer geometry code-window payload is not hexadecimal"
+            ) from error
+        digest = hashlib.sha256(payload).hexdigest()
+        image_path = frame.get("imagePath")
+        if (
+            not isinstance(image_path, str)
+            or "/QuartzCore.framework/" not in image_path
+            or window.get("class") != "mapped arm64e call-site window"
+            or window.get("returnInstructionOffset") != 0x400
+            or window.get("lengthBytes") != len(payload)
+            or window.get("lengthBytes") != 0x800
+            or window.get("sha256") != digest
+        ):
+            raise ValueError("producer geometry code-window metadata differs")
+        code_window_count += 1
+        code_window_hashes.append(digest)
+    if (
+        call_site.get("schemaVersion") != 4
+        or call_site.get("executed") is not True
+        or call_site.get("capture") != "transition-path-isolation-31-000"
+        or call_site.get("purpose") != "producer-primary-mesh-vertex-buffer-binding"
+        or call_site.get("frameCount") != len(frames)
+        or call_site.get("quartzCoreCodeWindowCount") != code_window_count
+    ):
+        raise ValueError("producer geometry call-site evidence differs")
+    return {
+        "captured": True,
+        "frameCount": len(frames),
+        "quartzCoreCodeWindowCount": code_window_count,
+        "quartzCoreCodeWindowSHA256": code_window_hashes,
+        "glassBackgroundRenderCodeCaptureCount": call_site.get(
+            "glassBackgroundRenderCodeCaptureCount"
+        ),
+        "glassMatrixConstructorCodeCaptureCount": call_site.get(
+            "glassMatrixConstructorCodeCaptureCount"
+        ),
+        "glassMatrixConstructorConstantDataCaptureCount": call_site.get(
+            "glassMatrixConstructorConstantDataCaptureCount"
+        ),
+    }
 
 
 def validate(path: Path) -> dict[str, Any]:
@@ -213,10 +352,17 @@ def validate(path: Path) -> dict[str, Any]:
         classification = CLASSIFICATION
         result_schema = 1
         intervention_builder = expected_interventions
+        source_sample_indices = EXPECTED_SOURCE_SAMPLE_INDICES
     elif evidence_schema == 3:
         classification = FINE_SCAN_CLASSIFICATION
         result_schema = 2
         intervention_builder = fine_scan_interventions
+        source_sample_indices = EXPECTED_SOURCE_SAMPLE_INDICES
+    elif evidence_schema == 4:
+        classification = SAMPLE31_REPEAT_CLASSIFICATION
+        result_schema = 3
+        intervention_builder = sample31_repeat_interventions
+        source_sample_indices = SAMPLE31_REPEAT_SOURCE_SAMPLE_INDICES
     else:
         raise ValueError("surviving-path evidence schema differs")
     base = holdout.validate(
@@ -228,8 +374,7 @@ def validate(path: Path) -> dict[str, Any]:
         require_primary_source_q_exact=False,
     )
     expected_by_sample = {
-        sample: intervention_builder(sample)
-        for sample in EXPECTED_SOURCE_SAMPLE_INDICES
+        sample: intervention_builder(sample) for sample in source_sample_indices
     }
     expected_counts = {
         str(sample): len(interventions)
@@ -239,7 +384,7 @@ def validate(path: Path) -> dict[str, Any]:
     if (
         evidence.get("requested") is not True
         or evidence.get("executed") is not True
-        or evidence.get("sourceSampleIndices") != list(EXPECTED_SOURCE_SAMPLE_INDICES)
+        or evidence.get("sourceSampleIndices") != list(source_sample_indices)
         or evidence.get("sourceInterventionCounts") != expected_counts
         or evidence.get("expectedRecordCount") != expected_count
         or evidence.get("executedRecordCount") != expected_count
@@ -253,10 +398,7 @@ def validate(path: Path) -> dict[str, Any]:
         if (
             evidence.get("strongPaths") != [list(POSITION_PATH)]
             or evidence.get("strongDeltas")
-            != [
-                {"name": name, "delta": list(delta)}
-                for name, delta in STRONG_DELTAS
-            ]
+            != [{"name": name, "delta": list(delta)} for name, delta in STRONG_DELTAS]
             or evidence.get("denseSampleIndex") != 25
             or evidence.get("densePath") != list(POSITION_PATH)
             or evidence.get("denseMutation") != "position"
@@ -264,7 +406,7 @@ def validate(path: Path) -> dict[str, Any]:
             or evidence.get("denseYValues") != list(DENSE_Y_VALUES)
         ):
             raise ValueError("surviving-path schema-2 matrix header differs")
-    elif (
+    elif evidence_schema == 3 and (
         evidence.get("scanPath") != list(POSITION_PATH)
         or evidence.get("scanMutation") != "position"
         or evidence.get("scanPhasesBySample")
@@ -281,6 +423,19 @@ def validate(path: Path) -> dict[str, Any]:
         }
     ):
         raise ValueError("surviving-path schema-3 matrix header differs")
+    elif evidence_schema == 4 and (
+        evidence.get("scanPath") != list(POSITION_PATH)
+        or evidence.get("scanMutation") != "position"
+        or evidence.get("scanSampleIndex") != 31
+        or evidence.get("scanPhase") != "sample31-unit-scan"
+        or evidence.get("scanXValues") != list(SAMPLE31_UNIT_X_VALUES)
+        or evidence.get("scanYValues") != list(SAMPLE31_UNIT_Y_VALUES)
+        or evidence.get("repeatPhase") != "repeat-control"
+        or evidence.get("repeatBase") is not True
+        or evidence.get("repeatXValues") != list(SAMPLE31_REPEAT_X_VALUES)
+        or evidence.get("repeatYValues") != list(SAMPLE31_REPEAT_Y_VALUES)
+    ):
+        raise ValueError("surviving-path schema-4 matrix header differs")
 
     records = [
         holdout.mapping(value, "surviving-path record")
@@ -290,7 +445,7 @@ def validate(path: Path) -> dict[str, Any]:
         raise ValueError("surviving-path record count differs")
     expected_order = [
         (sample, index, intervention)
-        for sample in EXPECTED_SOURCE_SAMPLE_INDICES
+        for sample in source_sample_indices
         for index, intervention in enumerate(expected_by_sample[sample])
     ]
     normal_records = {
@@ -322,6 +477,7 @@ def validate(path: Path) -> dict[str, Any]:
     base_vertex_hash_matches = 0
     base_mvp_hash_matches = 0
     base_index_hash_matches = 0
+    producer_geometry_call_sites: list[Any] = []
     validated_records: list[dict[str, Any]] = []
 
     for record_index, (record, expected_item) in enumerate(
@@ -403,7 +559,7 @@ def validate(path: Path) -> dict[str, Any]:
         captured_states = list(
             fixed.sequence(record.get("capturedLayerStates"), "captured states")
         )
-        if intervention["mutation"] == "base":
+        if intervention["phase"] == "control":
             live_bases[sample] = before_states
         if sample not in live_bases:
             raise ValueError("surviving-path base does not precede intervention")
@@ -433,6 +589,17 @@ def validate(path: Path) -> dict[str, Any]:
             raise ValueError("surviving-path backdrop scale differs")
         render = holdout.mapping(record.get("render"), "surviving-path render")
         retained_buffer_count += original.validate_retained_buffers(render)
+        retained_buffers = holdout.mapping(
+            render.get("metalBufferSnapshots"), "retained Metal buffers"
+        )
+        for untyped_snapshot in fixed.sequence(
+            retained_buffers.get("snapshots"), "retained snapshots"
+        ):
+            snapshot = holdout.mapping(untyped_snapshot, "retained snapshot")
+            if "producerGeometryCallSite" in snapshot:
+                producer_geometry_call_sites.append(
+                    snapshot["producerGeometryCallSite"]
+                )
         observed = holdout.observed_policy(record, scale=scale)
         mesh = holdout.mapping(observed.get("producerMesh"), "producer mesh")
         q_components += int(mesh["sourceScaleComponentCount"])
@@ -440,7 +607,7 @@ def validate(path: Path) -> dict[str, Any]:
         topology_counts[int(mesh["vertexCount"])] += 1
         phase_counts[str(intervention["phase"])] += 1
 
-        if intervention["mutation"] == "base":
+        if intervention["phase"] == "control":
             observed_bases[sample] = observed
             normal_observed = holdout.mapping(
                 normal_states[sample].get("observed"), "normal observed policy"
@@ -469,9 +636,7 @@ def validate(path: Path) -> dict[str, Any]:
             invariant_components += len(expected_values)
             invariant_mismatches += sum(
                 expected != actual
-                for expected, actual in zip(
-                    expected_values, actual_values, strict=True
-                )
+                for expected, actual in zip(expected_values, actual_values, strict=True)
             )
 
         validated_records.append(
@@ -492,7 +657,7 @@ def validate(path: Path) -> dict[str, Any]:
             }
         )
 
-    source_count = len(EXPECTED_SOURCE_SAMPLE_INDICES)
+    source_count = len(source_sample_indices)
     if (
         q_mismatches != 0
         or invariant_mismatches != 0
@@ -501,6 +666,13 @@ def validate(path: Path) -> dict[str, Any]:
         or base_index_hash_matches != source_count
     ):
         raise ValueError("surviving-path exact integrity gate failed")
+    if len(producer_geometry_call_sites) > 1:
+        raise ValueError("multiple producer geometry call-site captures survived")
+    producer_geometry_call_site = (
+        validate_producer_geometry_call_site(producer_geometry_call_sites[0])
+        if producer_geometry_call_sites
+        else {"captured": False}
+    )
     return {
         "dynamicAllocationSurvivingPathThresholdResultSchemaVersion": result_schema,
         "classification": classification,
@@ -512,7 +684,7 @@ def validate(path: Path) -> dict[str, Any]:
         "timeline": str(path),
         "timelineSHA256": holdout.sha256_file(path),
         "geometry": report.get("geometry"),
-        "sourceSampleIndices": list(EXPECTED_SOURCE_SAMPLE_INDICES),
+        "sourceSampleIndices": list(source_sample_indices),
         "aggregate": {
             "recordCount": len(validated_records),
             "sourceStateCount": source_count,
@@ -538,6 +710,7 @@ def validate(path: Path) -> dict[str, Any]:
                 for index in sorted(selected_attempt_counts)
             },
             "retainedBufferSnapshotCount": retained_buffer_count,
+            "producerGeometryCallSite": producer_geometry_call_site,
             "liveBaselinePlusTargetPositionExact": True,
             "liveLayerStateStableAcrossRender": True,
             "liveFilterInputsBeforeAndAfterExact": True,
@@ -554,11 +727,11 @@ def validate(path: Path) -> dict[str, Any]:
         "conclusion": {
             "captureIntegrityPassed": True,
             "causalCalibrationOnly": True,
-            (
-                "deepestSDFPositionThresholdRequiresPostOpeningAnalysis"
-                if evidence_schema == 2
-                else "fineThresholdAndCrossAxisScanRequiresPostOpeningAnalysis"
-            ): True,
+            {
+                2: "deepestSDFPositionThresholdRequiresPostOpeningAnalysis",
+                3: "fineThresholdAndCrossAxisScanRequiresPostOpeningAnalysis",
+                4: "sample31RepeatScanRequiresPostOpeningAnalysis",
+            }[evidence_schema]: True,
             "requiresUnseenGeometryTransfer": True,
             "productionShaderAuthorized": False,
         },
