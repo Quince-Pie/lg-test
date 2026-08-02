@@ -1,0 +1,77 @@
+name: Measure Apple Metal half arithmetic
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/half-arithmetic-probe.yml
+      - Sources/GlassHalfArithmeticProbe/**
+
+concurrency:
+  group: half-arithmetic-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  half-arithmetic-probe:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Build Metal half-arithmetic probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p half-arithmetic-probe
+          set -o pipefail
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassHalfArithmeticProbe/main.swift \
+            -o glass-half-arithmetic-probe 2>&1 |
+            tee half-arithmetic-probe/build.log
+
+      - name: Measure Metal half arithmetic
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: ./glass-half-arithmetic-probe half-arithmetic-probe
+
+      - name: Upload Metal half-arithmetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-half-arithmetic-probe-${{ github.run_id }}
+          path: half-arithmetic-probe
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce Metal half-arithmetic evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test -s half-arithmetic-probe/manifest.json
+          test \
+            "$(stat -f %z half-arithmetic-probe/half-division-u16le.bin)" \
+            -eq 16777216
+          python3 - <<'PY'
+          import json
+
+          with open(
+              "half-arithmetic-probe/manifest.json",
+              encoding="utf-8",
+          ) as stream:
+              manifest = json.load(stream)
+          division = manifest.get("halfDivision", {})
+          if manifest.get("schemaVersion") != 1:
+              raise SystemExit("half-arithmetic schema differs")
+          if division.get("recordCount") != 1_048_576:
+              raise SystemExit("half-division record count differs")
+          if division.get("recordStrideBytes") != 16:
+              raise SystemExit("half-division record stride differs")
+          PY

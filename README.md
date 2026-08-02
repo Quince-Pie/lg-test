@@ -3940,3 +3940,15 @@ complete existing nine-surface arithmetic diagnostic; all other transition
 states remain interpolant-only. These are diagnostic custom-Metal
 intermediates, not observations of Apple's private fragment internals, and the
 unchanged private BGRA8 endpoint remains the oracle.
+
+The standalone `half-arithmetic-probe.yml` workflow bounds the remaining
+backend-specific holding-tone division without fitting another image. It
+executes all 1,024-by-1,024 positive normal binary16 significand pairs through
+Metal's `/`, `fast::divide`, and `precise::divide`, and records five additional
+exponent and underflow controls for every pair. The resulting 16 MiB raw table
+can determine whether Apple's fast half division is a numerator-independent
+reciprocal multiplication and, if so, recover that reciprocal at sufficient
+precision for a compact portable implementation. This artifact is discovery
+calibration, not a parity pass. Any recovered law must be frozen before a new
+unseen transition capture, and production remains unauthorized until that
+holdout is bit-exact with no protected quality regression.
