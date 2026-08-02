@@ -24,8 +24,11 @@ BACKGROUND_ARITHMETIC_TRACES = {
 }
 BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE = {
     12: {
-        name: BACKGROUND_ARITHMETIC_TRACES[name]
-        for name in ("color-stages-a", "color-stages-b")
+        **{
+            name: BACKGROUND_ARITHMETIC_TRACES[name]
+            for name in ("color-stages-a", "color-stages-b")
+        },
+        "holding-operands": (123, 1024 * 1024 * 16),
     },
     16: BACKGROUND_ARITHMETIC_TRACES,
 }

@@ -763,6 +763,9 @@ struct ReplayProfileStages {
     half4 shadow;
     half4 composite;
     half4 bleed;
+    half4 holding_operand;
+    half holding_amount;
+    half holding_distance;
     half4 holding;
     half4 final_color;
 };
@@ -780,6 +783,9 @@ inline ReplayProfileStages replay_profile_stages(
     stages.shadow = half4(0.0);
     stages.composite = half4(0.0);
     stages.bleed = half4(0.0);
+    stages.holding_operand = half4(0.0);
+    stages.holding_amount = half(0.0);
+    stages.holding_distance = half(0.0);
     stages.holding = half4(0.0);
     stages.final_color = half4(0.0);
 
@@ -933,6 +939,9 @@ inline ReplayProfileStages replay_profile_stages(
         const half amount =
             holding_distance
             * uniforms.glass.holding_tone_opacity;
+        stages.holding_operand = holding;
+        stages.holding_amount = amount;
+        stages.holding_distance = holding_distance;
         composite =
             uniforms.glass.x86_workaround != half(0.0)
             ? half4(mix(
@@ -1130,6 +1139,34 @@ fragment uint4 glass_fragment_color_stages_b_trace(
             stages.composite.a),
         replay_pack_half_pair(stages.holding.r, stages.holding.g),
         replay_pack_half_pair(stages.holding.b, stages.holding.a));
+}
+
+fragment uint4 glass_fragment_holding_operands_trace(
+    GlassReplayVertexOutput input [[stage_in]],
+    texture2d<half, access::sample> source_texture [[texture(3)]],
+    constant ReplayGlassBackgroundUniformsSdf &uniforms [[buffer(1)]],
+    constant half &edr_scale [[buffer(6)]])
+{
+    if (int(uniforms.sdf.arg.z) < 0) {
+        discard_fragment();
+        return uint4(0);
+    }
+    const ReplayProfileStages stages = replay_profile_stages(
+        input,
+        source_texture,
+        uniforms,
+        edr_scale);
+    return uint4(
+        replay_pack_half_pair(
+            stages.holding_operand.r,
+            stages.holding_operand.g),
+        replay_pack_half_pair(
+            stages.holding_operand.b,
+            stages.holding_operand.a),
+        replay_pack_half_pair(
+            stages.holding_amount,
+            stages.holding_distance),
+        0u);
 }
 
 fragment half4 glass_fragment_sdf_trace(
@@ -8022,6 +8059,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
               let customColorStagesBTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_color_stages_b_trace"),
+              let customHoldingOperandsTraceFragment =
+                shaderLibrary.makeFunction(
+                    name: "glass_fragment_holding_operands_trace"),
               let customSDFTraceFragment =
                 shaderLibrary.makeFunction(
                     name: "glass_fragment_sdf_trace"),
@@ -8259,6 +8299,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             (
                 name: "color-stages-b",
                 fragment: customColorStagesBTraceFragment,
+                pixelFormat: MTLPixelFormat.rgba32Uint
+            ),
+            (
+                name: "holding-operands",
+                fragment: customHoldingOperandsTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba32Uint
             ),
             (
@@ -12347,6 +12392,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     ("sdf", .rgba16Float),
                     ("color-stages-a", .rgba32Uint),
                     ("color-stages-b", .rgba32Uint),
+                    ("holding-operands", .rgba32Uint),
                     ("final-color", .rgba16Float),
                 ]
                 let requestedArithmeticTraceNames: Set<String>
@@ -12354,10 +12400,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     requestedArithmeticTraceNames = Set([
                         "color-stages-a",
                         "color-stages-b",
+                        "holding-operands",
                     ])
                 } else if capture.hasSuffix("-16") {
                     requestedArithmeticTraceNames = Set(
-                        arithmeticTraceSpecifications.map(\.name))
+                        arithmeticTraceSpecifications.compactMap {
+                            $0.name == "holding-operands" ? nil : $0.name
+                        })
                 } else {
                     requestedArithmeticTraceNames = []
                 }
