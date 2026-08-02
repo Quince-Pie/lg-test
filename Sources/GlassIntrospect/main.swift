@@ -9241,7 +9241,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         pass: ReplayPass,
         queue: MTLCommandQueue,
         capture: String,
-        outputDirectory: URL
+        outputDirectory: URL,
+        includeDiagnostics: Bool = true
     ) -> [String: Any] {
         guard let selection = finalHighlightSelection(
                 in: pass.commands)
@@ -9723,29 +9724,38 @@ private final class MetalUniformProbe: @unchecked Sendable {
             name: "captured-bgra8",
             pipeline: selection.pipeline,
             pixelFormat: .bgra8Unorm,
-            uniformBuffer: uniformClone)
+            uniformBuffer: uniformClone,
+            captureAuxiliary: includeDiagnostics)
         let rebuiltBGRA = render(
             name: "rebuilt-bgra8",
             pipeline: rebuiltPipeline,
             pixelFormat: .bgra8Unorm,
-            uniformBuffer: uniformClone)
+            uniformBuffer: uniformClone,
+            captureAuxiliary: includeDiagnostics)
         let exactHalf = render(
             name: "rebuilt-rgba16float",
             pipeline: floatPipeline,
             pixelFormat: .rgba16Float,
-            uniformBuffer: uniformClone)
-        let exactKeyHalf = render(
-            name: "key-rgba16float",
-            pipeline: floatPipeline,
-            pixelFormat: .rgba16Float,
-            uniformBuffer: keyUniform)
-        let exactFillHalf = render(
-            name: "fill-rgba16float",
-            pipeline: floatPipeline,
-            pixelFormat: .rgba16Float,
-            uniformBuffer: fillUniform)
-        let tomographyCases: [[String: Any]] =
-            tomographyUniforms.map { item in
+            uniformBuffer: uniformClone,
+            captureAuxiliary: includeDiagnostics)
+        let exactKeyHalf: [String: Any]? =
+            includeDiagnostics
+            ? render(
+                name: "key-rgba16float",
+                pipeline: floatPipeline,
+                pixelFormat: .rgba16Float,
+                uniformBuffer: keyUniform)
+            : nil
+        let exactFillHalf: [String: Any]? =
+            includeDiagnostics
+            ? render(
+                name: "fill-rgba16float",
+                pipeline: floatPipeline,
+                pixelFormat: .rgba16Float,
+                uniformBuffer: fillUniform)
+            : nil
+        let tomographyCases: [[String: Any]] = includeDiagnostics
+            ? tomographyUniforms.map { item in
                 var record = interventionRecord(item.intervention)
                 let replay = render(
                     name:
@@ -9761,22 +9771,27 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 record["replay"] = replay
                 return record
             }
-        let tomographyExecuted = tomographyCases.allSatisfy {
+            : []
+        let diagnosticsExecuted = !includeDiagnostics || (
+            exactKeyHalf?["executed"] as? Bool == true
+            && exactFillHalf?["executed"] as? Bool == true
+            && tomographyCases.allSatisfy {
             $0["executed"] as? Bool == true
-        }
+            }
+        )
         let comparison = compareReplaySnapshots(
             reference: capturedBGRA,
             candidate: rebuiltBGRA,
             outputDirectory: outputDirectory)
-        return [
+        var result: [String: Any] = [
             "schemaVersion": 1,
             "executed":
                 capturedBGRA["executed"] as? Bool == true
                 && rebuiltBGRA["executed"] as? Bool == true
                 && exactHalf["executed"] as? Bool == true
-                && exactKeyHalf["executed"] as? Bool == true
-                && exactFillHalf["executed"] as? Bool == true
-                && tomographyExecuted,
+                && diagnosticsExecuted,
+            "diagnosticScope":
+                includeDiagnostics ? "full" : "alpha-only",
             "capturedAppleFunctionUnmodified": true,
             "selectedLastA2XghfcDraw": true,
             "drawIndex": selection.drawIndex,
@@ -9806,16 +9821,21 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "rebuiltBGRA8": rebuiltBGRA,
             "capturedVsRebuiltBGRA8": comparison,
             "exactHalfAlpha": exactHalf,
-            "exactKeyHalfAlpha": exactKeyHalf,
-            "exactFillHalfAlpha": exactFillHalf,
-            "stageTomography": [
+        ]
+        if let exactKeyHalf,
+           let exactFillHalf
+        {
+            result["exactKeyHalfAlpha"] = exactKeyHalf
+            result["exactFillHalfAlpha"] = exactFillHalf
+            result["stageTomography"] = [
                 "schemaVersion": 1,
-                "executed": tomographyExecuted,
+                "executed": diagnosticsExecuted,
                 "capturedAppleFunctionUnmodified": true,
                 "caseCount": tomographyCases.count,
                 "cases": tomographyCases,
-            ],
-        ]
+            ]
+        }
+        return result
     }
 
     private func glassUniformBinding(
@@ -11365,12 +11385,24 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     queue: queue,
                     capture: capture,
                     outputDirectory: outputDirectory)
+        }
+        let dynamicHighlightTraceRequested =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_HIGHLIGHT_TRACE"
+            ] == "1"
+            && (capture.hasSuffix("-01")
+                || capture.hasSuffix("-32"))
+        if capture == "carenderer-local-backdrop"
+            || dynamicHighlightTraceRequested
+        {
             result["finalHighlightAlphaTrace"] =
                 replayFinalHighlightAlphaTrace(
                     pass: pass,
                     queue: queue,
                     capture: capture,
-                    outputDirectory: outputDirectory)
+                    outputDirectory: outputDirectory,
+                    includeDiagnostics:
+                        capture == "carenderer-local-backdrop")
         }
         let glassPrefixReference = replayGlassPrefix(
             pass: pass,

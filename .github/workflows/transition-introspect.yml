@@ -132,6 +132,9 @@ jobs:
         startsWith(matrix.label, 'profile-')) ||
         (inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize')) && '1' || '0' }}
+      LG_TRANSITION_HIGHLIGHT_TRACE: >-
+        ${{ inputs.capture_mode == 'uniform-smoke' &&
+        matrix.label == 'profile-clear-light-materialize' && '1' || '0' }}
       LG_TRANSITION_MATRIX_BASIS: >-
         ${{ inputs.capture_mode == 'uniform-profiles' &&
         matrix.label == 'profile-clear-light-materialize' &&
@@ -770,6 +773,9 @@ jobs:
           highlight_args=()
           if [[ "$LG_TRANSITION_UNIFORMS" == "1" ]]; then
             highlight_args+=(--requested)
+          fi
+          if [[ "$LG_TRANSITION_HIGHLIGHT_TRACE" == "1" ]]; then
+            highlight_args+=(--highlight-trace)
           fi
           python3 Analysis/validate_transition_highlight_uniforms.py \
             transition-introspection/transition-timeline.json \

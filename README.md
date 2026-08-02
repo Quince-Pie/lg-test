@@ -1730,6 +1730,16 @@ exact input, and requires the replay output to match the original `CARenderer`
 output byte for byte. The per-state pre-pass BGRA8 texture is included in the
 artifact so an independent renderer is compared over the same carrier pixels;
 substituting a settled capture's background is not a valid dynamic parity test.
+The targeted `uniform-smoke` leg also isolates Apple's unmodified final
+`A2Xghfc` draw at the first fractional state and the settled endpoint. It
+rebuilds the captured pipeline descriptor in the original BGRA8 format and
+requires that rebuild to match byte for byte, then changes only attachment
+zero to RGBA16Float while replacing the vibrant matrix with an identity alpha
+mapping. The resulting two exact binary16 alpha fields distinguish
+transition-raster interpolation from highlight and compositor arithmetic.
+This alpha-only mode omits the larger key/fill tomography matrix and unused
+auxiliary attachments; the complete settled-highlight workflow retains those
+diagnostics.
 The transition-only `glassForeground` branch has a different topology from
 settled glass: its copied filter and exact input law are retained and checked,
 but the report explicitly records that it was not installed on this

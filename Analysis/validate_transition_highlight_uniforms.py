@@ -10,6 +10,7 @@ from typing import Any
 
 
 EXPECTED_SAMPLE_INDICES = (1, 4, 8, 12, 16, 20, 24, 28, 32)
+HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 32})
 EXPECTED_CARRIER_CRITICAL_PATHS = [
     [],
     [0],
@@ -185,7 +186,57 @@ def validate_raw_render_evidence(
         )
 
 
-def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
+def validate_highlight_trace(
+    replay: Mapping[str, Any],
+    *,
+    root: Path,
+) -> None:
+    trace = mapping(
+        replay.get("finalHighlightAlphaTrace"),
+        "finalHighlightAlphaTrace",
+    )
+    comparison = mapping(
+        trace.get("capturedVsRebuiltBGRA8"),
+        "capturedVsRebuiltBGRA8",
+    )
+    if (
+        trace.get("schemaVersion") != 1
+        or trace.get("executed") is not True
+        or trace.get("diagnosticScope") != "alpha-only"
+        or trace.get("capturedAppleFunctionUnmodified") is not True
+        or trace.get("selectedLastA2XghfcDraw") is not True
+        or comparison.get("compared") is not True
+        or comparison.get("exactByteMatch") is not True
+        or comparison.get("mismatchedByteCount") != 0
+        or comparison.get("mismatchedPixelCount") != 0
+        or comparison.get("maximumChannelDelta") != 0
+    ):
+        raise ValueError("dynamic final-highlight trace differs")
+    for key, pixel_format, byte_count in (
+        ("capturedBGRA8", 80, 1024 * 1024 * 4),
+        ("rebuiltBGRA8", 80, 1024 * 1024 * 4),
+        ("exactHalfAlpha", 115, 1024 * 1024 * 8),
+    ):
+        render = mapping(trace.get(key), key)
+        output = mapping(render.get("output"), f"{key} output")
+        if (
+            render.get("executed") is not True
+            or output.get("width") != 1024
+            or output.get("height") != 1024
+            or output.get("pixelFormat") != pixel_format
+            or output.get("rawBytes") != byte_count
+            or "auxiliaryOutput" in render
+        ):
+            raise ValueError(f"dynamic {key} layout differs")
+        validate_raw_file(output, root=root, name=f"dynamic {key}")
+
+
+def validate(
+    path: Path,
+    *,
+    requested: bool,
+    highlight_trace: bool,
+) -> dict[str, int | bool]:
     report = mapping(
         json.loads(path.read_text(encoding="utf-8")),
         "transition report",
@@ -205,6 +256,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
             "requested": False,
             "states": 0,
             "highlightBindings": 0,
+            "highlightTraces": 0,
         }
 
     records = uniforms.get("records")
@@ -229,6 +281,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         raise ValueError("dynamic highlight evidence is incomplete")
 
     binding_count = 0
+    highlight_trace_count = 0
     for sample_index, untyped_record in zip(
         EXPECTED_SAMPLE_INDICES,
         records,
@@ -310,6 +363,15 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         ):
             raise ValueError(f"sample {sample_index} render is incomplete")
         validate_raw_render_evidence(render, root=path.parent)
+        replay = mapping(render.get("exactPassReplay"), "exactPassReplay")
+        trace_expected = (
+            highlight_trace and sample_index in HIGHLIGHT_TRACE_SAMPLE_INDICES
+        )
+        if trace_expected:
+            validate_highlight_trace(replay, root=path.parent)
+            highlight_trace_count += 1
+        elif "finalHighlightAlphaTrace" in replay:
+            raise ValueError("an unrequested dynamic highlight trace executed")
         bindings = render.get("glassFragmentUniformBindings")
         if not isinstance(bindings, list):
             raise ValueError("glassFragmentUniformBindings is not a list")
@@ -357,6 +419,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         "highlightBindings": binding_count,
         "rawBackdropPyramids": len(records),
         "rawPreFinalPasses": len(records),
+        "highlightTraces": highlight_trace_count,
     }
 
 
@@ -368,8 +431,17 @@ def main() -> int:
         action="store_true",
         help="require the uniform capture rather than its disabled record",
     )
+    parser.add_argument(
+        "--highlight-trace",
+        action="store_true",
+        help="require alpha-only traces for the fractional and settled states",
+    )
     arguments = parser.parse_args()
-    result = validate(arguments.report, requested=arguments.requested)
+    result = validate(
+        arguments.report,
+        requested=arguments.requested,
+        highlight_trace=arguments.highlight_trace,
+    )
     print(json.dumps(result, sort_keys=True))
     return 0
 
