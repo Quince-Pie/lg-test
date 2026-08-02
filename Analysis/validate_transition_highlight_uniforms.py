@@ -187,7 +187,11 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         source = record.get("snapshotLayerSource")
         if source != "presentation" and not (
             sample_index == 32
-            and source == "model-endpoint-fallback"
+            and source
+            in {
+                "model-endpoint-fallback",
+                "static-carrier-endpoint",
+            }
             and record.get("remaining") == 1.0
         ):
             raise ValueError("dynamic snapshot layer source is invalid")

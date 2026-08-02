@@ -331,13 +331,17 @@ jobs:
                       or len(background_bindings) != 2
                       or record.get("replayedLayerCount") != 16
                       or record.get("snapshotLayerSource") not in (
-                          ["presentation", "model-endpoint-fallback"]
+                          [
+                              "presentation",
+                              "model-endpoint-fallback",
+                              "static-carrier-endpoint",
+                          ]
                           if expected_index == 32
                           else ["presentation"]
                       )
                       or (
                           record.get("snapshotLayerSource")
-                              == "model-endpoint-fallback"
+                              != "presentation"
                           and record.get("remaining") != 1.0
                       )
                       or not isinstance(

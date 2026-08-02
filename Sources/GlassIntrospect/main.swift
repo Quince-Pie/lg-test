@@ -14651,13 +14651,15 @@ private func installTransitionLayerStates(
 private func transitionBackgroundFilterSnapshot(
     rootLayer: CALayer,
     sampleIndex: Int,
-    requestedProgress: Double
+    requestedProgress: Double,
+    presentationLayerSource: String = "presentation",
+    modelLayerSource: String = "model-endpoint-fallback"
 ) -> TransitionBackgroundFilterSnapshot? {
     var candidates: [(layer: CALayer, source: String)] = []
     if let presentation = rootLayer.presentation() {
-        candidates.append((presentation, "presentation"))
+        candidates.append((presentation, presentationLayerSource))
     }
-    candidates.append((rootLayer, "model-endpoint-fallback"))
+    candidates.append((rootLayer, modelLayerSource))
     for candidate in candidates {
         guard let target = transitionBackgroundFilterTarget(
                 in: candidate.layer),
@@ -16101,12 +16103,14 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 if dynamicUniformsRequested,
                    dynamicUniformSampleIndices.contains(index)
                 {
-                    guard let snapshot =
+                    let snapshot =
                         transitionBackgroundFilterSnapshot(
                             rootLayer: rootLayer,
                             sampleIndex: index,
                             requestedProgress: progress)
-                    else {
+                    if let snapshot {
+                        dynamicUniformSnapshots.append(snapshot)
+                    } else if index != sampleCount - 1 {
                         throw NSError(
                             domain:
                                 "LiquidGlassTransitionProbe",
@@ -16118,7 +16122,6 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                     + "sample \(index)",
                             ])
                     }
-                    dynamicUniformSnapshots.append(snapshot)
                 }
             }
 
@@ -16174,6 +16177,31 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                 "fresh static uniform carrier "
                                 + "root unavailable",
                         ])
+                }
+                if !dynamicUniformSnapshots.contains(
+                    where: { $0.sampleIndex == sampleCount - 1 }
+                ) {
+                    guard let endpointSnapshot =
+                            transitionBackgroundFilterSnapshot(
+                                rootLayer: carrierRootLayer,
+                                sampleIndex: sampleCount - 1,
+                                requestedProgress: 1.0,
+                                presentationLayerSource:
+                                    "static-carrier-endpoint",
+                                modelLayerSource:
+                                    "static-carrier-endpoint")
+                    else {
+                        throw NSError(
+                            domain:
+                                "LiquidGlassTransitionProbe",
+                            code: 10,
+                            userInfo: [
+                                NSLocalizedDescriptionKey:
+                                    "static carrier endpoint "
+                                    + "snapshot unavailable",
+                            ])
+                    }
+                    dynamicUniformSnapshots.append(endpointSnapshot)
                 }
                 dynamicUniformEvidence =
                     transitionBackgroundUniformEvidence(
