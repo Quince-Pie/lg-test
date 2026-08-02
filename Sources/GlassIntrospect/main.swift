@@ -9245,6 +9245,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         capture: String,
         outputDirectory: URL,
         includeDiagnostics: Bool = true,
+        includeInterpolant: Bool = false,
         compositorInput: [String: Any]? = nil,
         compositorReference: [String: Any]? = nil
     ) -> [String: Any] {
@@ -9661,7 +9662,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
         var interpolantPipeline: MTLRenderPipelineState?
         var interpolantPipelineRecord: [String: Any]?
-        if includeDiagnostics {
+        if includeInterpolant {
             let source = """
                 #include <metal_stdlib>
                 using namespace metal;
@@ -9740,7 +9741,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     vertexDescriptor.attributes[2].format = .float2
                     vertexDescriptor.attributes[2].offset = 24
                     vertexDescriptor.attributes[2].bufferIndex = 1
-                    vertexDescriptor.layouts[1].stride = 32
+                    vertexDescriptor.layouts[1].stride = 48
                     vertexDescriptor.layouts[1].stepFunction = .perVertex
                     vertexDescriptor.layouts[1].stepRate = 1
                     descriptor.vertexDescriptor = vertexDescriptor
@@ -10055,7 +10056,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             uniformBuffer: uniformClone,
             captureAuxiliary: captureAuxiliaryDiagnostics)
         let exactInterpolant: [String: Any]? =
-            includeDiagnostics
+            includeInterpolant
             ? interpolantPipeline.map {
                 render(
                     name: "interpolant-rgba32uint",
@@ -10240,11 +10241,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 $0["executed"] as? Bool == true
             }
         )
-        let diagnosticsExecuted = !includeDiagnostics || (
-            exactKeyHalf?["executed"] as? Bool == true
-            && exactFillHalf?["executed"] as? Bool == true
-            && exactInterpolant?["executed"] as? Bool == true
-            && tomographyExecuted
+        let diagnosticsExecuted = (
+            !includeDiagnostics || (
+                exactKeyHalf?["executed"] as? Bool == true
+                && exactFillHalf?["executed"] as? Bool == true
+                && tomographyExecuted
+            )
+        ) && (
+            !includeInterpolant
+            || exactInterpolant?["executed"] as? Bool == true
         )
         let compositorExecuted =
             compositorTrace?["executed"] as? Bool ?? true
@@ -11925,6 +11930,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         capture == "carenderer-local-backdrop"
                         || (dynamicHighlightTraceRequested
                             && capture.hasSuffix("-01")),
+                    includeInterpolant:
+                        dynamicHighlightTraceRequested,
                     compositorInput:
                         captureDynamicCompositor
                         ? finalHighlightInputReference

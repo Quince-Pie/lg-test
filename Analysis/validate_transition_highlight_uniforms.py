@@ -125,6 +125,115 @@ def validate_raw_file(
         raise ValueError(f"{name} raw file differs: {path}")
 
 
+def validate_interpolant_coverage(
+    record: Mapping[str, Any],
+    *,
+    root: Path,
+) -> None:
+    filename = record.get("rawFile")
+    if not isinstance(filename, str):
+        raise ValueError("dynamic exactInterpolant filename differs")
+    words = memoryview((root / filename).read_bytes()).cast("I")
+    expected_pixels = 1024 * 1024
+    if len(words) != expected_pixels * 4:
+        raise ValueError("dynamic exactInterpolant word count differs")
+    active = [
+        pixel
+        for pixel in range(expected_pixels)
+        if any(words[pixel * 4 + channel] for channel in range(4))
+    ]
+    if not active:
+        raise ValueError("dynamic exactInterpolant is empty")
+    minimum_x = min(pixel % 1024 for pixel in active)
+    maximum_x = max(pixel % 1024 for pixel in active)
+    minimum_y = min(pixel // 1024 for pixel in active)
+    maximum_y = max(pixel // 1024 for pixel in active)
+    if (
+        len(active) < 600_000
+        or maximum_x - minimum_x + 1 < 760
+        or maximum_y - minimum_y + 1 < 760
+    ):
+        raise ValueError(
+            "dynamic exactInterpolant coverage is degenerate: "
+            f"{len(active)} pixels, "
+            f"x={minimum_x}...{maximum_x}, "
+            f"y={minimum_y}...{maximum_y}"
+        )
+
+
+def validate_interpolant_trace(
+    trace: Mapping[str, Any],
+    *,
+    root: Path,
+) -> None:
+    interpolant = mapping(
+        trace.get("exactInterpolant"),
+        "exactInterpolant",
+    )
+    interpolant_output = mapping(
+        interpolant.get("output"),
+        "exactInterpolant output",
+    )
+    if (
+        interpolant.get("executed") is not True
+        or interpolant_output.get("width") != 1024
+        or interpolant_output.get("height") != 1024
+        or interpolant_output.get("pixelFormat") != 123
+        or interpolant_output.get("rawBytes") != 1024 * 1024 * 16
+        or "auxiliaryOutput" in interpolant
+    ):
+        raise ValueError("dynamic exactInterpolant layout differs")
+    validate_raw_file(
+        interpolant_output,
+        root=root,
+        name="dynamic exactInterpolant",
+    )
+    validate_interpolant_coverage(
+        interpolant_output,
+        root=root,
+    )
+    pipeline = mapping(
+        trace.get("interpolantPipeline"),
+        "interpolantPipeline",
+    )
+    candidates = pipeline.get("candidates")
+    first_candidate = (
+        candidates[0] if isinstance(candidates, list) and candidates else None
+    )
+    candidate_descriptor = (
+        first_candidate.get("descriptor")
+        if isinstance(first_candidate, Mapping)
+        else None
+    )
+    if (
+        pipeline.get("executed") is not True
+        or pipeline.get("selectedLabel")
+        != "lg.final-highlight-interpolant-custom-stage-in-vertex"
+        or not isinstance(candidates, list)
+        or not candidates
+        or not isinstance(first_candidate, Mapping)
+        or first_candidate.get("name") != "custom-stage-in-vertex"
+        or first_candidate.get("built") is not True
+        or not isinstance(candidate_descriptor, Mapping)
+        or candidate_descriptor.get("vertexAttributes")
+        != [
+            {"bufferIndex": 1, "format": 31, "index": 0, "offset": 0},
+            {"bufferIndex": 1, "format": 29, "index": 1, "offset": 16},
+            {"bufferIndex": 1, "format": 29, "index": 2, "offset": 24},
+        ]
+        or candidate_descriptor.get("vertexLayouts")
+        != [
+            {
+                "index": 1,
+                "stepFunction": 1,
+                "stepRate": 1,
+                "stride": 48,
+            }
+        ]
+    ):
+        raise ValueError("dynamic interpolant pipeline differs")
+
+
 def validate_raw_render_evidence(
     render: Mapping[str, Any],
     *,
@@ -306,6 +415,7 @@ def validate_highlight_trace(
         ):
             raise ValueError(f"dynamic {key} layout differs")
         validate_raw_file(output, root=root, name=f"dynamic {key}")
+    validate_interpolant_trace(trace, root=root)
 
     if sample_index != 32:
         if "exactCompositorTrace" in trace:
@@ -324,44 +434,6 @@ def validate_highlight_trace(
                 ):
                     raise ValueError(f"dynamic {key} layout differs")
                 validate_raw_file(output, root=root, name=f"dynamic {key}")
-            interpolant = mapping(
-                trace.get("exactInterpolant"),
-                "exactInterpolant",
-            )
-            interpolant_output = mapping(
-                interpolant.get("output"),
-                "exactInterpolant output",
-            )
-            if (
-                interpolant.get("executed") is not True
-                or interpolant_output.get("width") != 1024
-                or interpolant_output.get("height") != 1024
-                or interpolant_output.get("pixelFormat") != 123
-                or interpolant_output.get("rawBytes") != 1024 * 1024 * 16
-                or "auxiliaryOutput" in interpolant
-            ):
-                raise ValueError("dynamic exactInterpolant layout differs")
-            validate_raw_file(
-                interpolant_output,
-                root=root,
-                name="dynamic exactInterpolant",
-            )
-            pipeline = mapping(
-                trace.get("interpolantPipeline"),
-                "interpolantPipeline",
-            )
-            candidates = pipeline.get("candidates")
-            if (
-                pipeline.get("executed") is not True
-                or pipeline.get("selectedLabel")
-                != "lg.final-highlight-interpolant-custom-stage-in-vertex"
-                or not isinstance(candidates, list)
-                or not candidates
-                or not isinstance(candidates[0], Mapping)
-                or candidates[0].get("name") != "custom-stage-in-vertex"
-                or candidates[0].get("built") is not True
-            ):
-                raise ValueError("dynamic interpolant pipeline differs")
             tomography = mapping(
                 trace.get("stageTomography"),
                 "highlight stageTomography",
@@ -403,8 +475,6 @@ def validate_highlight_trace(
             for key in (
                 "exactKeyHalfAlpha",
                 "exactFillHalfAlpha",
-                "exactInterpolant",
-                "interpolantPipeline",
                 "stageTomography",
             )
         ):
