@@ -9265,6 +9265,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         outputDirectory: URL,
         includeDiagnostics: Bool = true,
         includeInterpolant: Bool = false,
+        interpolantOnly: Bool = false,
         compositorInput: [String: Any]? = nil,
         compositorReference: [String: Any]? = nil
     ) -> [String: Any] {
@@ -9755,28 +9756,34 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     name: String,
                     descriptor: MTLRenderPipelineDescriptor
                 )] = []
-                for (name, candidateFragment) in [
-                    (
-                        "captured-private-vertex-locations",
-                        locationFragment
-                    ),
-                    ("captured-private-vertex-named", fragment),
-                ] {
-                    guard capturedDescriptor.vertexFunction != nil,
-                          let descriptor = capturedDescriptor.copy()
-                            as? MTLRenderPipelineDescriptor
-                    else {
-                        continue
+                let unsafePrivateTraceEnabled =
+                    ProcessInfo.processInfo.environment[
+                        "LG_ENABLE_UNSAFE_PRIVATE_INTERPOLANT_TRACE"
+                    ] == "1"
+                if unsafePrivateTraceEnabled {
+                    for (name, candidateFragment) in [
+                        (
+                            "captured-private-vertex-locations",
+                            locationFragment
+                        ),
+                        ("captured-private-vertex-named", fragment),
+                    ] {
+                        guard capturedDescriptor.vertexFunction != nil,
+                              let descriptor = capturedDescriptor.copy()
+                                as? MTLRenderPipelineDescriptor
+                        else {
+                            continue
+                        }
+                        descriptor.label =
+                            "lg.final-highlight-interpolant-" + name
+                        descriptor.fragmentFunction = candidateFragment
+                        descriptor.colorAttachments[0]?.pixelFormat =
+                            .rgba32Uint
+                        descriptor.colorAttachments[0]?.isBlendingEnabled =
+                            false
+                        descriptor.colorAttachments[0]?.writeMask = .all
+                        candidates.append((name, descriptor))
                     }
-                    descriptor.label =
-                        "lg.final-highlight-interpolant-" + name
-                    descriptor.fragmentFunction = candidateFragment
-                    descriptor.colorAttachments[0]?.pixelFormat =
-                        .rgba32Uint
-                    descriptor.colorAttachments[0]?.isBlendingEnabled =
-                        false
-                    descriptor.colorAttachments[0]?.writeMask = .all
-                    candidates.append((name, descriptor))
                 }
                 for (name, vertex) in [
                     ("custom-stage-in-vertex", customVertex),
@@ -10098,6 +10105,39 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return result
         }
 
+        let exactInterpolant: [String: Any]? =
+            includeInterpolant
+            ? interpolantPipeline.map {
+                render(
+                    name: "interpolant-rgba32uint",
+                    pipeline: $0,
+                    pixelFormat: .rgba32Uint,
+                    uniformBuffer: uniformClone,
+                    captureAuxiliary: false)
+            }
+            : nil
+        if interpolantOnly {
+            guard includeInterpolant,
+                  let exactInterpolant,
+                  let interpolantPipelineRecord
+            else {
+                return [
+                    "executed": false,
+                    "reason": "interpolant-only trace was not configured",
+                ]
+            }
+            return [
+                "schemaVersion": 1,
+                "executed":
+                    exactInterpolant["executed"] as? Bool == true,
+                "scope": "custom-stage-in-interpolant-only",
+                "capturedPrivateVertexUnmodified": false,
+                "selectedLastA2XghfcDraw": true,
+                "drawIndex": selection.drawIndex,
+                "exactInterpolant": exactInterpolant,
+                "interpolantPipeline": interpolantPipelineRecord,
+            ]
+        }
         let captureAuxiliaryDiagnostics =
             includeDiagnostics
             && capture == "carenderer-local-backdrop"
@@ -10119,17 +10159,6 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pixelFormat: .rgba16Float,
             uniformBuffer: uniformClone,
             captureAuxiliary: captureAuxiliaryDiagnostics)
-        let exactInterpolant: [String: Any]? =
-            includeInterpolant
-            ? interpolantPipeline.map {
-                render(
-                    name: "interpolant-rgba32uint",
-                    pipeline: $0,
-                    pixelFormat: .rgba32Uint,
-                    uniformBuffer: uniformClone,
-                    captureAuxiliary: false)
-            }
-            : nil
         if (compositorInput == nil) != (compositorReference == nil) {
             return [
                 "executed": false,
@@ -11939,10 +11968,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     capture: capture,
                     outputDirectory: outputDirectory)
         }
-        let dynamicHighlightTraceRequested =
+        let dynamicHighlightTraceEnabled =
             ProcessInfo.processInfo.environment[
                 "LG_TRANSITION_HIGHLIGHT_TRACE"
             ] == "1"
+        let dynamicInterpolantTraceRequested =
+            dynamicHighlightTraceEnabled
+            && capture.hasPrefix("transition-background-uniform-")
+        let dynamicHighlightDiagnosticsRequested =
+            dynamicHighlightTraceEnabled
             && (capture.hasSuffix("-01")
                 || capture.hasSuffix("-12")
                 || capture.hasSuffix("-32"))
@@ -11979,10 +12013,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
         result["finalHighlightInputReference"] =
             finalHighlightInputReference
         if capture == "carenderer-local-backdrop"
-            || dynamicHighlightTraceRequested
+            || dynamicHighlightDiagnosticsRequested
         {
             let captureDynamicCompositor =
-                dynamicHighlightTraceRequested
+                dynamicHighlightDiagnosticsRequested
                 && capture.hasSuffix("-32")
             result["finalHighlightAlphaTrace"] =
                 replayFinalHighlightAlphaTrace(
@@ -11992,9 +12026,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     outputDirectory: outputDirectory,
                     includeDiagnostics:
                         capture == "carenderer-local-backdrop"
-                        || dynamicHighlightTraceRequested,
+                        || dynamicHighlightDiagnosticsRequested,
                     includeInterpolant:
-                        dynamicHighlightTraceRequested,
+                        dynamicHighlightDiagnosticsRequested,
                     compositorInput:
                         captureDynamicCompositor
                         ? finalHighlightInputReference
@@ -12003,6 +12037,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         captureDynamicCompositor
                         ? ["output": referenceSnapshot]
                         : nil)
+        } else if dynamicInterpolantTraceRequested {
+            result["finalHighlightInterpolantTrace"] =
+                replayFinalHighlightAlphaTrace(
+                    pass: pass,
+                    queue: queue,
+                    capture: capture,
+                    outputDirectory: outputDirectory,
+                    includeDiagnostics: false,
+                    includeInterpolant: true,
+                    interpolantOnly: true)
         }
         var independentGlassReplay: [String: Any] = [
             "reference": glassPrefixReference,

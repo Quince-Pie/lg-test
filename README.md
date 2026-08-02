@@ -3778,6 +3778,21 @@ artifact was uploaded. The generic `locn0`/`locn1` candidate is therefore
 attempted first in the next isolated probe; the hanging named candidate is
 retained only as a negative control.
 
+Run `30733447984` rejected the generic ABI as well. The
+`captured-private-vertex-locations` pipeline linked successfully, but every
+trace draw again ended with `kIOGPUCommandBufferCallbackErrorHang`; no private
+interpolant word was produced. Cross-library private-varying linkage is now an
+opt-in unsafe probe only. The normal transition workflow uses the already
+validated custom stage-in vertex and labels its output as a control rather
+than evidence from Apple's private vertex function.
+
+The next uniform-smoke capture records that safe custom-stage control at all
+nine retained transition states. Full Apple alpha/stage tomography remains at
+samples 1, 12, and 32, while samples 4, 8, 16, 20, 24, and 28 add only one
+RGBA32Uint interpolant surface apiece. This bounded extension distinguishes
+the input-dependent fractional raster setup path observed at sample 12 without
+multiplying the expensive tomography payload or weakening any existing gate.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

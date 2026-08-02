@@ -197,17 +197,13 @@ def validate_interpolant_trace(
         "interpolantPipeline",
     )
     candidates = pipeline.get("candidates")
-    expected_candidate_order = [
-        "captured-private-vertex-locations",
-        "captured-private-vertex-named",
-        "custom-stage-in-vertex",
-    ]
+    expected_candidate_order = ["custom-stage-in-vertex"]
     if (
         pipeline.get("executed") is not True
         or not isinstance(pipeline.get("selectedCandidate"), str)
         or not isinstance(candidates, list)
         or not candidates
-        or len(candidates) > len(expected_candidate_order)
+        or len(candidates) != len(expected_candidate_order)
         or any(not isinstance(candidate, Mapping) for candidate in candidates)
     ):
         raise ValueError("dynamic interpolant pipeline differs")
@@ -216,7 +212,7 @@ def validate_interpolant_trace(
     ]
     if (
         [candidate.get("name") for candidate in typed_candidates]
-        != expected_candidate_order[: len(typed_candidates)]
+        != expected_candidate_order
         or any(
             not isinstance(candidate.get("descriptor"), Mapping)
             for candidate in typed_candidates
@@ -269,6 +265,26 @@ def validate_interpolant_trace(
         )
     ):
         raise ValueError("dynamic interpolant pipeline differs")
+
+
+def validate_interpolant_only_trace(
+    replay: Mapping[str, Any],
+    *,
+    root: Path,
+) -> None:
+    trace = mapping(
+        replay.get("finalHighlightInterpolantTrace"),
+        "finalHighlightInterpolantTrace",
+    )
+    if (
+        trace.get("schemaVersion") != 1
+        or trace.get("executed") is not True
+        or trace.get("scope") != "custom-stage-in-interpolant-only"
+        or trace.get("capturedPrivateVertexUnmodified") is not False
+        or trace.get("selectedLastA2XghfcDraw") is not True
+    ):
+        raise ValueError("dynamic interpolant-only trace differs")
+    validate_interpolant_trace(trace, root=root)
 
 
 def validate_raw_render_evidence(
@@ -622,6 +638,7 @@ def validate(
             "states": 0,
             "highlightBindings": 0,
             "highlightTraces": 0,
+            "interpolantTraces": 0,
             "intermediateTextures": 0,
         }
 
@@ -648,6 +665,7 @@ def validate(
 
     binding_count = 0
     highlight_trace_count = 0
+    interpolant_trace_count = 0
     intermediate_texture_count = 0
     for sample_index, untyped_record in zip(
         EXPECTED_SAMPLE_INDICES,
@@ -741,8 +759,19 @@ def validate(
                 sample_index=sample_index,
             )
             highlight_trace_count += 1
+            interpolant_trace_count += 1
+        elif highlight_trace:
+            if "finalHighlightAlphaTrace" in replay:
+                raise ValueError("an unrequested full highlight trace executed")
+            validate_interpolant_only_trace(
+                replay,
+                root=path.parent,
+            )
+            interpolant_trace_count += 1
         elif "finalHighlightAlphaTrace" in replay:
             raise ValueError("an unrequested dynamic highlight trace executed")
+        elif "finalHighlightInterpolantTrace" in replay:
+            raise ValueError("an unrequested dynamic interpolant trace executed")
         texture_snapshots = mapping(
             render.get("metalTextureSnapshots"),
             "metalTextureSnapshots",
@@ -823,6 +852,7 @@ def validate(
         "rawBackdropPyramids": len(records),
         "rawPreFinalPasses": len(records),
         "highlightTraces": highlight_trace_count,
+        "interpolantTraces": interpolant_trace_count,
         "intermediateTextures": intermediate_texture_count,
     }
 
