@@ -118,7 +118,7 @@ def validate_raw_render_evidence(
         or not isinstance(replay.get("encodedCommandCount"), int)
         or replay["encodedCommandCount"] != replay["commandCount"]
         or not isinstance(replay.get("glassDrawCount"), int)
-        or replay["glassDrawCount"] < 3
+        or replay["glassDrawCount"] != 2
     ):
         raise ValueError("exact final-pass replay differs")
     validate_raw_file(
