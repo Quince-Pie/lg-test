@@ -3793,6 +3793,15 @@ RGBA32Uint interpolant surface apiece. This bounded extension distinguishes
 the input-dependent fractional raster setup path observed at sample 12 without
 multiplying the expensive tomography payload or weakening any existing gate.
 
+The follow-up control adds compact pull tomography to that same custom-stage
+draw. One atomic winner per axis, primitive, and 32-pixel tile records the
+pixel coordinate plus all sixteen `interpolate_at_offset` phases for both SDF
+and source varyings. Each transition sample adds only 34,304 bytes. These real
+pulls distinguish a genuine setup slope and tile constant from the multiple
+center-only coefficient pairs that reproduce the same rounded pixel centers;
+the validator rejects incomplete tile coverage, unfinished atomic claims,
+non-finite words, or inconsistent pixel/tile identities.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

@@ -9682,6 +9682,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
 
         var interpolantPipeline: MTLRenderPipelineState?
         var interpolantPipelineRecord: [String: Any]?
+        var interpolantPullTraceSupported = false
         if includeInterpolant {
             let source = """
                 #include <metal_stdlib>
@@ -9702,6 +9703,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     float2 first [[user(locn0)]];
                     float2 second [[user(locn1)]];
                 };
+                struct TraceFragmentInput {
+                    float4 position [[position]];
+                    interpolant<float2, interpolation::perspective>
+                        sdfUV [[user(sdf_uv)]];
+                    interpolant<float2, interpolation::perspective>
+                        sourceUV [[user(src_uv)]];
+                };
                 vertex TraceVertexOutput highlight_trace_vertex(
                     TraceStageInput input [[stage_in]],
                     constant float4x4 &mvp [[buffer(2)]],
@@ -9715,13 +9723,84 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     return output;
                 }
                 fragment uint4 highlight_interpolant_trace(
-                    TraceVertexOutput input [[stage_in]])
+                    TraceFragmentInput input [[stage_in]],
+                    uint primitive [[primitive_id]],
+                    device atomic_uint *pullTrace [[buffer(30)]])
                 {
+                    constexpr uint tileCount = 32u;
+                    constexpr uint pullCount = 16u;
+                    constexpr uint componentCount = 4u;
+                    constexpr uint recordWords =
+                        3u + pullCount * componentCount;
+                    const uint2 pixel = uint2(input.position.xy);
+                    for (uint axis = 0u; axis < 2u; ++axis) {
+                        const uint coordinate =
+                            axis == 0u ? pixel.x : pixel.y;
+                        const uint tile = coordinate / 32u;
+                        if (tile >= tileCount || primitive >= 2u) {
+                            continue;
+                        }
+                        const uint slot =
+                            (axis * 2u + primitive) * tileCount + tile;
+                        device atomic_uint *record =
+                            pullTrace + slot * recordWords;
+                        uint expected = 0xffffffffu;
+                        if (!atomic_compare_exchange_weak_explicit(
+                                record,
+                                &expected,
+                                0xfffffffeu,
+                                memory_order_relaxed,
+                                memory_order_relaxed)) {
+                            continue;
+                        }
+                        atomic_store_explicit(
+                            record + 1u,
+                            pixel.x,
+                            memory_order_relaxed);
+                        atomic_store_explicit(
+                            record + 2u,
+                            pixel.y,
+                            memory_order_relaxed);
+                        for (uint pull = 0u; pull < pullCount; ++pull) {
+                            const float phase = float(pull) / 16.0f;
+                            const float2 offset = axis == 0u
+                                ? float2(phase, 0.5f)
+                                : float2(0.5f, phase);
+                            const float2 sdf =
+                                input.sdfUV.interpolate_at_offset(offset);
+                            const float2 source =
+                                input.sourceUV.interpolate_at_offset(offset);
+                            const uint base = 3u + pull * componentCount;
+                            atomic_store_explicit(
+                                record + base,
+                                as_type<uint>(sdf.x),
+                                memory_order_relaxed);
+                            atomic_store_explicit(
+                                record + base + 1u,
+                                as_type<uint>(sdf.y),
+                                memory_order_relaxed);
+                            atomic_store_explicit(
+                                record + base + 2u,
+                                as_type<uint>(source.x),
+                                memory_order_relaxed);
+                            atomic_store_explicit(
+                                record + base + 3u,
+                                as_type<uint>(source.y),
+                                memory_order_relaxed);
+                        }
+                        atomic_store_explicit(
+                            record,
+                            pixel.y * 1024u + pixel.x,
+                            memory_order_relaxed);
+                    }
+                    const float2 sdf = input.sdfUV.interpolate_at_center();
+                    const float2 source =
+                        input.sourceUV.interpolate_at_center();
                     return uint4(
-                        as_type<uint>(input.sdfUV.x),
-                        as_type<uint>(input.sdfUV.y),
-                        as_type<uint>(input.sourceUV.x),
-                        as_type<uint>(input.sourceUV.y));
+                        as_type<uint>(sdf.x),
+                        as_type<uint>(sdf.y),
+                        as_type<uint>(source.x),
+                        as_type<uint>(source.y));
                 }
                 fragment uint4 highlight_interpolant_trace_locations(
                     TraceVertexOutputLocations input [[stage_in]])
@@ -9862,6 +9941,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "selectedLabel": interpolantPipeline.label ?? "",
                     "candidates": records,
                 ]
+                interpolantPullTraceSupported =
+                    selectedCandidate == "custom-stage-in-vertex"
             } catch {
                 return [
                     "executed": false,
@@ -9895,6 +9976,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pixelFormat: MTLPixelFormat,
             uniformBuffer: MTLBuffer,
             captureAuxiliary: Bool = true,
+            captureInterpolantPulls: Bool = false,
             initialBGRA8: Data? = nil
         ) -> [String: Any] {
             let targetDescriptor = MTLTextureDescriptor
@@ -9923,6 +10005,37 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "executed": false,
                     "reason": "final highlight trace allocation failed",
                 ]
+            }
+
+            let pullTraceTileCount = 32
+            let pullTraceAxisCount = 2
+            let pullTracePrimitiveCount = 2
+            let pullTracePullCount = 16
+            let pullTraceComponentCount = 4
+            let pullTraceRecordWords =
+                3 + pullTracePullCount * pullTraceComponentCount
+            let pullTraceWordCount =
+                pullTraceAxisCount * pullTracePrimitiveCount
+                * pullTraceTileCount * pullTraceRecordWords
+            let pullTraceBytes =
+                pullTraceWordCount * MemoryLayout<UInt32>.stride
+            let pullTraceBuffer = captureInterpolantPulls
+                ? device.makeBuffer(
+                    length: pullTraceBytes,
+                    options: .storageModeShared)
+                : nil
+            if captureInterpolantPulls && pullTraceBuffer == nil {
+                return [
+                    "executed": false,
+                    "reason":
+                        "final highlight pull-trace allocation failed",
+                ]
+            }
+            if let pullTraceBuffer {
+                memset(
+                    pullTraceBuffer.contents(),
+                    0xff,
+                    pullTraceBytes)
             }
 
             let pixelCount =
@@ -10062,11 +10175,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "reason": "final highlight trace encoder failed",
                 ]
             }
-            let commands = isolatedFinalHighlightCommands(
+            var commands = isolatedFinalHighlightCommands(
                 pass.commands,
                 selection: selection,
                 pipeline: pipeline,
                 uniformBuffer: uniformBuffer)
+            if let pullTraceBuffer {
+                commands.insert(
+                    .fragmentBuffer(pullTraceBuffer, 0, 30),
+                    at: commands.index(before: commands.endIndex))
+            }
             let summary = encodeReplayCommands(
                 commands,
                 with: encoder)
@@ -10093,6 +10211,48 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         "\(capture)-final-highlight-alpha-\(name)",
                     outputDirectory: outputDirectory),
             ]
+            if let pullTraceBuffer {
+                let data = Data(
+                    bytes: pullTraceBuffer.contents(),
+                    count: pullTraceBytes)
+                let filename =
+                    "\(capture)-final-highlight-alpha-\(name)"
+                    + "-pulls.raw"
+                do {
+                    try data.write(
+                        to: outputDirectory
+                            .appendingPathComponent(filename),
+                        options: .atomic)
+                } catch {
+                    return [
+                        "executed": false,
+                        "reason": error.localizedDescription,
+                        "stage":
+                            "final highlight pull-trace write",
+                    ]
+                }
+                result["pullTrace"] = [
+                    "schemaVersion": 1,
+                    "rawCapture": true,
+                    "rawFile": filename,
+                    "rawBytes": data.count,
+                    "sha256": transitionSHA256(data),
+                    "tileCount": pullTraceTileCount,
+                    "axisCount": pullTraceAxisCount,
+                    "primitiveCount": pullTracePrimitiveCount,
+                    "pullCount": pullTracePullCount,
+                    "componentCount": pullTraceComponentCount,
+                    "recordWords": pullTraceRecordWords,
+                    "recordOrdering":
+                        "axis-major,primitive-major,tile-major",
+                    "recordComponents": [
+                        "pixel-linear-index",
+                        "pixel-x",
+                        "pixel-y",
+                        "16x(sdf-x,sdf-y,source-x,source-y)",
+                    ],
+                ]
+            }
             if captureAuxiliary {
                 result["auxiliaryOutput"] = carendererOutputSnapshot(
                     auxiliary,
@@ -10113,7 +10273,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     pipeline: $0,
                     pixelFormat: .rgba32Uint,
                     uniformBuffer: uniformClone,
-                    captureAuxiliary: false)
+                    captureAuxiliary: false,
+                    captureInterpolantPulls:
+                        interpolantPullTraceSupported)
             }
             : nil
         if interpolantOnly {

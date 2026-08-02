@@ -161,6 +161,85 @@ def validate_interpolant_coverage(
         )
 
 
+def validate_interpolant_pull_trace(
+    record: Mapping[str, Any],
+    *,
+    root: Path,
+) -> None:
+    tile_count = 32
+    axis_count = 2
+    primitive_count = 2
+    pull_count = 16
+    component_count = 4
+    record_words = 3 + pull_count * component_count
+    expected_words = (
+        tile_count * axis_count * primitive_count * record_words
+    )
+    if (
+        record.get("schemaVersion") != 1
+        or record.get("tileCount") != tile_count
+        or record.get("axisCount") != axis_count
+        or record.get("primitiveCount") != primitive_count
+        or record.get("pullCount") != pull_count
+        or record.get("componentCount") != component_count
+        or record.get("recordWords") != record_words
+        or record.get("recordOrdering")
+        != "axis-major,primitive-major,tile-major"
+        or record.get("rawBytes") != expected_words * 4
+    ):
+        raise ValueError("dynamic interpolant pull-trace layout differs")
+    validate_raw_file(
+        record,
+        root=root,
+        name="dynamic interpolant pull trace",
+    )
+    filename = record.get("rawFile")
+    if not isinstance(filename, str):
+        raise ValueError("dynamic interpolant pull-trace filename differs")
+    words = memoryview((root / filename).read_bytes()).cast("I")
+    if len(words) != expected_words:
+        raise ValueError("dynamic interpolant pull-trace word count differs")
+
+    captured_by_axis_primitive = [[0, 0], [0, 0]]
+    for axis in range(axis_count):
+        for primitive in range(primitive_count):
+            for tile in range(tile_count):
+                slot = (axis * primitive_count + primitive) * tile_count + tile
+                base = slot * record_words
+                state = words[base]
+                if state == 0xFFFF_FFFF:
+                    continue
+                if state == 0xFFFF_FFFE:
+                    raise ValueError("dynamic interpolant pull trace retained a lock")
+                x = words[base + 1]
+                y = words[base + 2]
+                coordinate = x if axis == 0 else y
+                payload = words[base + 3 : base + record_words]
+                if (
+                    x >= 1024
+                    or y >= 1024
+                    or state != y * 1024 + x
+                    or coordinate // 32 != tile
+                    or any(
+                        word & 0x7F80_0000 == 0x7F80_0000
+                        for word in payload
+                    )
+                ):
+                    raise ValueError(
+                        "dynamic interpolant pull-trace record differs"
+                    )
+                captured_by_axis_primitive[axis][primitive] += 1
+    if any(
+        count < 24
+        for axis_counts in captured_by_axis_primitive
+        for count in axis_counts
+    ):
+        raise ValueError(
+            "dynamic interpolant pull-trace coverage is incomplete: "
+            f"{captured_by_axis_primitive}"
+        )
+
+
 def validate_interpolant_trace(
     trace: Mapping[str, Any],
     *,
@@ -190,6 +269,13 @@ def validate_interpolant_trace(
     )
     validate_interpolant_coverage(
         interpolant_output,
+        root=root,
+    )
+    validate_interpolant_pull_trace(
+        mapping(
+            interpolant.get("pullTrace"),
+            "exactInterpolant pullTrace",
+        ),
         root=root,
     )
     pipeline = mapping(
