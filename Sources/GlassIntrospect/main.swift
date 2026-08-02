@@ -18210,8 +18210,8 @@ private func transitionInputClampDecodedCandidates(
     var count: Int32 = 1
     vvpowf(
         &vForceResult,
-        &vForceBase,
         &vForceExponent,
+        &vForceBase,
         &count)
     var result: [String: Float] = [
         "float-base-darwin-powf":
