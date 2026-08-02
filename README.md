@@ -3907,3 +3907,11 @@ reimplementation stages, not private Apple shader intermediates.  Apple's
 unmodified final BGRA8 output remains the endpoint oracle, and the diagnostic
 has no predeclared mismatch threshold that could be mislabeled as a parity
 pass.
+
+A dry run against the already-opened `30737403841` fixture caught one harness
+error before the new artifact was opened: the first analyzer selected the
+production-specialized shader, which intentionally removes numeric-trace
+branches.  The corrected frozen analyzer selects the full executable-spec
+shader, applies the same exact recovered configuration, and reproduces the
+retained 29-pixel/29-byte prefix failure.  Both analyzer hashes and the reason
+for the correction are retained in the preregistration.

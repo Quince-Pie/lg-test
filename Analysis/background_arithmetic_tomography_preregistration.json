@@ -2,6 +2,17 @@
   "backgroundArithmeticTomographyPreregistrationSchemaVersion": 1,
   "classification": "prospective diagnostic stage isolation",
   "objective": "Locate the first arithmetic stage responsible for the retained sample-16 one-LSB main-edge error by comparing a frozen local renderer with custom-Metal replays captured only after this registration.",
+  "preOpeningHarnessCorrection": {
+    "newArtifactOpened": false,
+    "dryRunInputRunId": 30737403841,
+    "fault": "The first wrapper selected the final production specialization, which intentionally specializes NumericTrace to zero and therefore cannot emit diagnostic stages.",
+    "correction": "Select the full executable-spec shader and explicitly apply the same recovered exact configuration used by the production specialization.",
+    "originalAnalysisWrapperSha256": "60b05bf08800f4ea78b5b7a4d12f93ab25ed482208df307cc69abcff275fa424",
+    "correctedAnalysisWrapperSha256": "eb79d2494cb0982daa2a9c03fb7fc2e4a6cb8d39299ac432d84433153e998949",
+    "dryRunRetainedPrefixMismatchedPixels": 29,
+    "dryRunRetainedPrefixMismatchedBytes": 29,
+    "dryRunRetainedPrefixMaximumChannelDelta": 1
+  },
   "priorEvidence": {
     "prospectiveInterpolantRunId": 30737749781,
     "prospectiveInterpolantComparedWords": 37748736,
@@ -79,7 +90,7 @@
     "All custom-Metal stages exact while the Apple BGRA8 prefix remains inexact localizes it after the compared shader stages, but does not prove the private Apple shader uses the same intermediates."
   ],
   "frozenAnalysis": {
-    "analysisWrapperSha256": "60b05bf08800f4ea78b5b7a4d12f93ab25ed482208df307cc69abcff275fa424",
+    "analysisWrapperSha256": "eb79d2494cb0982daa2a9c03fb7fc2e4a6cb8d39299ac432d84433153e998949",
     "referenceRendererSha256": "7ac69e72c3b7450f84d009233a781381e14393c136b058ee7f07c2c62866730a",
     "referenceShaderSha256": "0a79c0f7d35b36f09801414c7412bdff7aa11cd88af2613e6568add5c66227c6",
     "dynamicRenderGateSha256": "fec16ab265aae2ab5738c35fff2488e39807101e5ff51c862fc2374dd9aa200a",
