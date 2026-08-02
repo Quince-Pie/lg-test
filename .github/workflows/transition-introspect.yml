@@ -20,7 +20,14 @@ concurrency:
 jobs:
   transition-introspect:
     name: ${{ matrix.label }}
-    runs-on: macos-26
+    runs-on: >-
+      ${{ (inputs.capture_mode == 'state-matrix' ||
+      (inputs.capture_mode == 'uniform-profiles' &&
+      matrix.direction == 'materialize' &&
+      startsWith(matrix.label, 'profile-')) ||
+      (inputs.capture_mode == 'uniform-smoke' &&
+      matrix.label == 'profile-clear-light-materialize')) &&
+      'macos-26' || 'ubuntu-latest' }}
     timeout-minutes: 40
     strategy:
       fail-fast: false
