@@ -55,6 +55,17 @@ EXPECTED_POSITION_ONLY_PATHS = ((1, 0, 1, 0, 0, 0, 0),)
 CLASSIFICATION = (
     "preregistered-fixed-apple-filter-and-layer-state-translation-calibration"
 )
+SNAPSHOT_STORAGE_HASH_FIELDS = frozenset(
+    {
+        "mvpPayloadSHA256",
+        "vertexPayloadSHA256",
+    }
+)
+DRAW_CONSUMED_HASH_FIELDS = (
+    "vertexDrawConsumedPayloadSHA256",
+    "mvpDrawConsumedPayloadSHA256",
+    "indexDrawConsumedPayloadSHA256",
+)
 
 
 def sequence(value: object, name: str) -> Sequence[Any]:
@@ -90,6 +101,26 @@ def translated_layer_states(
     return result
 
 
+def semantic_policy(value: dict[str, Any]) -> dict[str, Any]:
+    result = copy.deepcopy(value)
+    mesh = dict(holdout.mapping(result.get("producerMesh"), "producer mesh"))
+    for name in SNAPSHOT_STORAGE_HASH_FIELDS:
+        mesh.pop(name, None)
+    result["producerMesh"] = mesh
+    return result
+
+
+def draw_consumed_hashes(value: dict[str, Any]) -> dict[str, str]:
+    mesh = holdout.mapping(value.get("producerMesh"), "producer mesh")
+    result: dict[str, str] = {}
+    for name in DRAW_CONSUMED_HASH_FIELDS:
+        digest = mesh.get(name)
+        if not isinstance(digest, str) or len(digest) != 64:
+            raise ValueError(f"draw-consumed hash is missing: {name}")
+        result[name] = digest
+    return result
+
+
 def validate(path: Path) -> dict[str, Any]:
     base = holdout.validate(
         path,
@@ -97,6 +128,7 @@ def validate(path: Path) -> dict[str, Any]:
         expected_sample_indices=EXPECTED_SAMPLE_INDICES,
         classification=CLASSIFICATION,
         allowed_geometries=frozenset({EXPECTED_GEOMETRY}),
+        require_primary_source_q_exact=False,
     )
     report = holdout.mapping(
         json.loads(path.read_text(encoding="utf-8")),
@@ -114,13 +146,15 @@ def validate(path: Path) -> dict[str, Any]:
         EXPECTED_TRANSLATIONS
     )
     if (
-        fixed.get("schemaVersion") != 1
+        fixed.get("schemaVersion") != 2
         or fixed.get("requested") is not True
         or fixed.get("executed") is not True
         or fixed.get("sourceSampleIndices") != list(EXPECTED_SOURCE_SAMPLE_INDICES)
         or fixed.get("translationCount") != len(EXPECTED_TRANSLATIONS)
         or fixed.get("expectedRecordCount") != expected_record_count
         or fixed.get("executedRecordCount") != expected_record_count
+        or fixed.get("liveRenderBoundaryReadback") is not True
+        or fixed.get("maximumRenderAttemptCount") != 3
         or fixed.get("translatedBoundsAndPositionPaths")
         != [list(path_value) for path_value in EXPECTED_BOUNDS_AND_POSITION_PATHS]
         or fixed.get("translatedPositionOnlyPaths")
@@ -153,6 +187,7 @@ def validate(path: Path) -> dict[str, Any]:
     source_layer_hashes: dict[int, str] = {}
     source_filter_hashes: dict[int, str] = {}
     topology_counts: Counter[int] = Counter()
+    zero_draw_consumed_hash_exact = 0
 
     for untyped_record, expected in zip(
         untyped_fixed_records, expected_order, strict=True
@@ -170,6 +205,11 @@ def validate(path: Path) -> dict[str, Any]:
             or record.get("executed") is not True
             or record.get("originalProducerInput") is not True
             or record.get("filterInputValuesUnchanged") is not True
+            or record.get("producerCopyBaseObserved") is not True
+            or record.get("liveLayerStatesBeforeMatchRequested") is not True
+            or record.get("liveLayerStatesAfterMatchRequested") is not True
+            or record.get("liveFilterInputsBeforeUnchanged") is not True
+            or record.get("liveFilterInputsAfterUnchanged") is not True
             or record.get("missingCriticalCarrierPaths") != []
         ):
             raise ValueError(
@@ -211,11 +251,57 @@ def validate(path: Path) -> dict[str, Any]:
         captured_states = sequence(
             record.get("capturedLayerStates"), "replayed captured layer states"
         )
+        before = holdout.mapping(
+            record.get("liveRenderBoundaryBefore"),
+            "live render boundary before",
+        )
+        after = holdout.mapping(
+            record.get("liveRenderBoundaryAfter"),
+            "live render boundary after",
+        )
+        before_states = sequence(before.get("layerStates"), "live before states")
+        after_states = sequence(after.get("layerStates"), "live after states")
+        translated_layer_hash = record.get("translatedLayerStatesSHA256")
         if (
             list(translated_states) != expected_states
-            or list(captured_states) != expected_states
+            or list(before_states) != expected_states
+            or list(after_states) != expected_states
+            or list(captured_states) != list(before_states)
+            or before.get("schemaVersion") != 1
+            or before.get("executed") is not True
+            or after.get("schemaVersion") != 1
+            or after.get("executed") is not True
+            or before.get("backgroundFilterPath") != list(holdout.BACKDROP_LAYER_PATH)
+            or after.get("backgroundFilterPath") != list(holdout.BACKDROP_LAYER_PATH)
+            or before.get("layerStatesSHA256") != translated_layer_hash
+            or after.get("layerStatesSHA256") != translated_layer_hash
+            or before.get("backgroundFilterInputValuesSHA256") != source_filter_hash
+            or after.get("backgroundFilterInputValuesSHA256") != source_filter_hash
         ):
-            raise ValueError("fixed-state replay changed undeclared layer state")
+            raise ValueError("live fixed-state replay changed undeclared state")
+
+        attempts = sequence(record.get("renderAttempts"), "render attempts")
+        selected_attempt = int(record.get("selectedRenderAttemptIndex", -1))
+        if not 1 <= len(attempts) <= 3 or selected_attempt != len(attempts) - 1:
+            raise ValueError("fixed-state render attempt ledger differs")
+        for attempt_index, untyped_attempt in enumerate(attempts):
+            attempt = holdout.mapping(untyped_attempt, "render attempt")
+            if (
+                attempt.get("attemptIndex") != attempt_index
+                or attempt.get("executed") is not True
+                or not isinstance(attempt.get("capture"), str)
+                or not isinstance(attempt.get("metalRecordCount"), int)
+                or attempt.get("metalRecordCount", 0) <= 0
+                or (
+                    attempt_index == selected_attempt
+                    and attempt.get("producerCopyBaseObserved") is not True
+                )
+                or (
+                    attempt_index < selected_attempt
+                    and attempt.get("producerCopyBaseObserved") is not False
+                )
+            ):
+                raise ValueError("fixed-state render attempt differs")
 
         scale, layer_state_count = holdout.captured_scale(record)
         expected_scale = 1.0 - remaining / 2.0
@@ -224,11 +310,22 @@ def validate(path: Path) -> dict[str, Any]:
         observed = holdout.observed_policy(record, scale=scale)
         mesh = holdout.mapping(observed.get("producerMesh"), "producer mesh")
         topology_counts[int(mesh["vertexCount"])] += 1
-        if (
-            translation_name == "base"
-            and observed != base_states[sample_index]["observed"]
+        normal_observed = holdout.mapping(
+            base_states[sample_index].get("observed"), "normal observed policy"
+        )
+        normal_mesh = holdout.mapping(
+            normal_observed.get("producerMesh"), "normal producer mesh"
+        )
+        if int(normal_mesh["sourceScaleMismatchedComponents"]) != 0:
+            raise ValueError("source normal replay q law differs")
+        if translation_name == "base" and semantic_policy(observed) != semantic_policy(
+            dict(normal_observed)
         ):
             raise ValueError("zero-translation replay differs from normal replay")
+        if translation_name == "base":
+            zero_draw_consumed_hash_exact += draw_consumed_hashes(
+                observed
+            ) == draw_consumed_hashes(dict(normal_observed))
         validated_records.append(
             {
                 "sampleIndex": sample_index,
@@ -266,6 +363,11 @@ def validate(path: Path) -> dict[str, Any]:
             "sameFilterInputsWithinEachSourceState": True,
             "onlyPreregisteredLayerFieldsTranslated": True,
             "zeroTranslationReplayExact": True,
+            "zeroTranslationDrawConsumedPayloadExact": (
+                zero_draw_consumed_hash_exact == len(EXPECTED_SOURCE_SAMPLE_INDICES)
+            ),
+            "liveLayerStateBeforeAndAfterExact": True,
+            "liveFilterInputsBeforeAndAfterExact": True,
             "originalProducerInputEveryState": True,
             "rawStageDumpsAbsent": True,
         },

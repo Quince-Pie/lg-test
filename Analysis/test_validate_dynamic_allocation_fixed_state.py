@@ -41,6 +41,30 @@ class FixedStateContractTests(unittest.TestCase):
         self.assertIn("calibration", fixed.CLASSIFICATION)
         self.assertNotIn("unseen", fixed.CLASSIFICATION)
 
+    def test_zero_policy_ignores_only_unconsumed_snapshot_storage(self) -> None:
+        first = {
+            "cropOrigin": [4, 8],
+            "producerMesh": {
+                "vertexPayloadSHA256": "a" * 64,
+                "mvpPayloadSHA256": "b" * 64,
+                "vertexDrawConsumedPayloadSHA256": "c" * 64,
+            },
+        }
+        second = {
+            "cropOrigin": [4, 8],
+            "producerMesh": {
+                "vertexPayloadSHA256": "d" * 64,
+                "mvpPayloadSHA256": "e" * 64,
+                "vertexDrawConsumedPayloadSHA256": "c" * 64,
+            },
+        }
+        self.assertEqual(fixed.semantic_policy(first), fixed.semantic_policy(second))
+        second["producerMesh"]["vertexDrawConsumedPayloadSHA256"] = "f" * 64
+        self.assertNotEqual(
+            fixed.semantic_policy(first),
+            fixed.semantic_policy(second),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

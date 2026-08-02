@@ -4206,6 +4206,75 @@ must remain byte-for-byte unchanged.  This is a controlled Core Animation
 calibration on Apple's real filter and renderer, not a native shifted-geometry
 capture; any recovered expression still requires a later unseen transfer.
 
+Run `30752897393`, captured from preregistered commit `e1e2661`, did not pass
+that frozen gate.  The immutable failed-run audit is
+`Analysis/analyze_dynamic_allocation_fixed_state_run.py`, with its canonical
+result in
+`Analysis/dynamic_allocation_fixed_state_failed_run_result.json`.  Of the 115
+requested interventions, 114 contain an extractable producer/copy pass.  The
+missing record is sample 31 `target-half-signed`: its CARenderer call completed,
+but its Metal trace contains no copy-base source texture.  The frozen validator
+also stops earlier on normal sample 14, where two of eight primary source
+components differ by one binary32 ULP from its overly broad integrity check.
+Neither failure is hidden or reclassified as a passing calibration.
+
+The 114 extractable intervention records nevertheless answer the causal part
+of the frozen question.  Their primary source-coordinate `q` relation is exact
+in all 912 binary32 comparisons.  All 1,596 crop, clamp, producer/destination
+extent, copy-offset, and effective-origin components remain exact against the
+same-state normal replay, and topology remains unchanged in 114 of 114 records.
+At the same time, 49 records change a primary mesh edge: 80 of 456 compared
+edge components move, always by exactly one pixel.  The changes occur in 15
+X-only, 24 Y-only, and 10 combined-target interventions.  Thus coordinates in
+the translated target subtree causally enter primary-mesh integerization,
+while the broader allocation and copy policy does not move.
+
+All five zero translations reproduce the decoded producer policy and every
+draw-consumed vertex, MVP, and index byte exactly.  The original validator's
+full-buffer SHA comparison was not a valid zero-replay test: each Metal
+snapshot is 4 KiB while these single-quad draws consume only 192 vertex bytes,
+64 MVP bytes, and 12 index bytes, leaving unrelated snapshot-tail bytes in the
+old hashes.  The audit retains the old hashes for provenance and adds explicit
+draw-consumed byte counts and hashes.  A separate limitation remains: this
+capture writes the requested translated state into `capturedLayerStates`
+instead of independently reading the live tree immediately before and after
+the render.  Therefore it proves a renderer response to the intervention but
+does not yet prove that every requested field survived layout unchanged at the
+draw boundary.  The exact threshold, independent producer-mesh policy, and an
+unseen transfer remain open; this run does not authorize a Walle shader change.
+
+The replacement experiment is frozen before capture in
+`Analysis/dynamic_allocation_path_isolation_preregistration.json`.  The new
+`allocation-path-isolation` mode uses exact Apple snapshots 25 and 31 and
+changes one layer path and one field class at a time.  At both states it applies
+four signed strong controls to bounds origin, position, and their paired change
+on each of the seven formerly grouped paths, plus position on the deepest SDF
+path.  State 25 additionally scans 29 signed X values and 33 signed Y values on
+the direct backdrop path and deepest SDF position.  Including two zero controls,
+the frozen matrix contains 337 records at state 25 and 89 at state 31, or 426
+records total.
+
+Each record now independently reads the complete live layer state and copied
+`glassBackground` inputs after `CARenderer` attaches and flushes the tree, then
+reads them again after the frame completes.  Requested, pre-render, and
+post-render hashes must be exactly equal; self-reported requested state is no
+longer accepted as readback.  A missing producer copy-base pass can be retried
+twice only after reinstalling the same frozen layer/filter state, and every
+attempt remains in an explicit ledger.  The validator hashes only bytes consumed
+by the indexed draw and retains only the Metal buffer classes needed to recover
+copy uniforms, producer vertices/MVP, and indices.  No numeric tolerance is
+allowed.
+
+The same prospective macOS run measures the final unknown temporal field rather
+than spending a separate capture.  For every one of the 32 dynamic states it
+compares captured `inputClamp` bits with 24 frozen combinations of four
+binary32 interpolation stagings and six platform decoders: Darwin `powf`, two
+Darwin `pow` casts, Accelerate `vvpowf`, and CoreGraphics extended-sRGB to
+extended-linear-sRGB conversion.  The candidate set may select no winner; the
+capture-integrity gate does not require a convenient result.  Both experiments
+remain calibration and require a separately frozen unseen transfer before any
+production rendering change.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

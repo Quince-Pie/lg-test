@@ -1,0 +1,4994 @@
+{
+  "aggregate": {
+    "changedPrimaryEdgeRecordCount": 49,
+    "changedPrimaryEdgeRecordsByInterventionGroup": {
+      "combined-target": 10,
+      "x-only": 15,
+      "y-only": 24
+    },
+    "expectedInterventionCount": 115,
+    "extractableInterventionCount": 114,
+    "independentLiveLayerReadbackAvailable": false,
+    "invariantAllocationPolicy": {
+      "componentCount": 1596,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "normalTimelinePrimaryProducerSourceQ": {
+      "componentCount": 256,
+      "exact": false,
+      "mismatchedComponents": 2
+    },
+    "normalTimelineQResidualSamples": [
+      {
+        "mismatchedComponents": 2,
+        "remaining": 0.43984127044677734,
+        "sampleIndex": 14
+      }
+    ],
+    "primaryEdgeDeltaCounts": [
+      {
+        "count": 12,
+        "difference": 1.0,
+        "edge": "xLower"
+      },
+      {
+        "count": 14,
+        "difference": 1.0,
+        "edge": "xUpper"
+      },
+      {
+        "count": 26,
+        "difference": -1.0,
+        "edge": "yLower"
+      },
+      {
+        "count": 15,
+        "difference": -1.0,
+        "edge": "yUpper"
+      },
+      {
+        "count": 13,
+        "difference": 1.0,
+        "edge": "yUpper"
+      }
+    ],
+    "primaryEdgeResponseAgainstNormal": {
+      "componentCount": 456,
+      "exact": false,
+      "mismatchedComponents": 80
+    },
+    "primaryProducerSourceQ": {
+      "componentCount": 912,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "producerExtractionFailureCount": 1,
+    "producerTopology": {
+      "componentCount": 114,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "rawStageDumpsAbsent": true,
+    "reportedRequestedLayerFieldsOnly": true,
+    "sourceFilterHashStableWithinEachState": true,
+    "sourceLayerHashStableWithinEachState": true,
+    "zeroTranslationDrawConsumedPayloadTriples": {
+      "componentCount": 5,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "zeroTranslationSemanticPolicy": {
+      "componentCount": 5,
+      "exact": true,
+      "mismatchedComponents": 0
+    }
+  },
+  "classification": "post-opening-audit-of-failed-preregistered-fixed-state-calibration; not-an-accepted-calibration-or-unseen-transfer",
+  "conclusion": {
+    "acceptedCalibration": false,
+    "exactThresholdRecovered": false,
+    "independentProducerMeshPolicyRecovered": false,
+    "productionShaderAuthorized": false,
+    "requiresLiveReadbackIntervention": true,
+    "requiresUnseenHoldout": true,
+    "targetSubtreeCoordinatesCausallyAffectPrimaryMeshIntegerization": true
+  },
+  "dynamicAllocationFixedStateFailedRunAnalysisSchemaVersion": 1,
+  "extractionFailures": [
+    {
+      "error": "expected one copy-base source texture; found 0",
+      "glassFragmentUniformBindingCount": 4,
+      "metalRecordCount": 27,
+      "sampleIndex": 31,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationIndex": 22,
+      "translationName": "target-half-signed"
+    }
+  ],
+  "frozenValidatorSHA256": "8d905c5234c98e88e3f54fa2fa80ee66996b525b56bfd8b456d08e4c24af3de9",
+  "gate": {
+    "allowTolerance": false,
+    "correctedPostOpeningFixedStateGatePassed": false,
+    "failureReasons": [
+      "the frozen validator rejected a two-component one-ULP q residual in unrelated normal sample 14",
+      "one intervention render contains no producer copy-base pass",
+      "the capture has no independent live-layer readback at the render boundary"
+    ],
+    "frozenWorkflowPassed": false,
+    "maximumMismatchedComponents": 0
+  },
+  "geometry": {
+    "centerX": 512,
+    "centerY": 512,
+    "extendsBeyondWindow": false,
+    "height": 640,
+    "name": "circle-640-center",
+    "shape": "circle",
+    "width": 640,
+    "windowHeight": 1024,
+    "windowWidth": 1024
+  },
+  "invariantPolicyResiduals": [],
+  "preregistrationArtifact": "dynamic_allocation_fixed_state_preregistration.json",
+  "preregistrationSHA256": "1b5d7a0f27d6977b3e8795aa4d32db057c398490ef8f8962bcaa48f1ae0f2407",
+  "primaryEdgeChangeRecords": [
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        }
+      ],
+      "remaining": 0.5624494552612305,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        133
+      ],
+      "translationName": "y-positive-133"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        }
+      ],
+      "remaining": 0.5624494552612305,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        134
+      ],
+      "translationName": "y-positive-134"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        }
+      ],
+      "remaining": 0.5624494552612305,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        135
+      ],
+      "translationName": "y-positive-135"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        }
+      ],
+      "remaining": 0.5624494552612305,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        136
+      ],
+      "translationName": "y-positive-136"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        }
+      ],
+      "remaining": 0.5624494552612305,
+      "sampleIndex": 18,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationName": "target-half-signed"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7187786102294922,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        133
+      ],
+      "translationName": "y-positive-133"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7187786102294922,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        134
+      ],
+      "translationName": "y-positive-134"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7187786102294922,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        135
+      ],
+      "translationName": "y-positive-135"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7187786102294922,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        136
+      ],
+      "translationName": "y-positive-136"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7187786102294922,
+      "sampleIndex": 23,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationName": "target-half-signed"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        89,
+        0
+      ],
+      "translationName": "x-positive-89"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        90,
+        0
+      ],
+      "translationName": "x-positive-90"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        91,
+        0
+      ],
+      "translationName": "x-positive-91"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        92,
+        0
+      ],
+      "translationName": "x-positive-92"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        133
+      ],
+      "translationName": "y-positive-133"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        134
+      ],
+      "translationName": "y-positive-134"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        135
+      ],
+      "translationName": "y-positive-135"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        136
+      ],
+      "translationName": "y-positive-136"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        90,
+        -134
+      ],
+      "translationName": "target-integer"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        91,
+        -133
+      ],
+      "translationName": "target-half-even"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.7836761474609375,
+      "sampleIndex": 25,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationName": "target-half-signed"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        89,
+        0
+      ],
+      "translationName": "x-positive-89"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        90,
+        0
+      ],
+      "translationName": "x-positive-90"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        91,
+        0
+      ],
+      "translationName": "x-positive-91"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        92,
+        0
+      ],
+      "translationName": "x-positive-92"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        133
+      ],
+      "translationName": "y-positive-133"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        134
+      ],
+      "translationName": "y-positive-134"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        135
+      ],
+      "translationName": "y-positive-135"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        136
+      ],
+      "translationName": "y-positive-136"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        90,
+        -134
+      ],
+      "translationName": "target-integer"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xLower"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        91,
+        -133
+      ],
+      "translationName": "target-half-even"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": -1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.8751411437988281,
+      "sampleIndex": 28,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationName": "target-half-signed"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        -91,
+        0
+      ],
+      "translationName": "x-negative-91"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        -90,
+        0
+      ],
+      "translationName": "x-negative-90"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        -89,
+        0
+      ],
+      "translationName": "x-negative-89"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        89,
+        0
+      ],
+      "translationName": "x-positive-89"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        90,
+        0
+      ],
+      "translationName": "x-positive-90"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        91,
+        0
+      ],
+      "translationName": "x-positive-91"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        92,
+        0
+      ],
+      "translationName": "x-positive-92"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -135
+      ],
+      "translationName": "y-negative-135"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -134
+      ],
+      "translationName": "y-negative-134"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -133
+      ],
+      "translationName": "y-negative-133"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -132
+      ],
+      "translationName": "y-negative-132"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        133
+      ],
+      "translationName": "y-positive-133"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        134
+      ],
+      "translationName": "y-positive-134"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        135
+      ],
+      "translationName": "y-positive-135"
+    },
+    {
+      "changes": [
+        {
+          "difference": -1.0,
+          "edge": "yLower"
+        },
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        136
+      ],
+      "translationName": "y-positive-136"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        90,
+        -134
+      ],
+      "translationName": "target-integer"
+    },
+    {
+      "changes": [
+        {
+          "difference": 1.0,
+          "edge": "xUpper"
+        },
+        {
+          "difference": 1.0,
+          "edge": "yUpper"
+        }
+      ],
+      "remaining": 0.9709081649780273,
+      "sampleIndex": 31,
+      "translation": [
+        91,
+        -133
+      ],
+      "translationName": "target-half-even"
+    }
+  ],
+  "records": [
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        0
+      ],
+      "translationIndex": 0,
+      "translationName": "base"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        -91,
+        0
+      ],
+      "translationIndex": 1,
+      "translationName": "x-negative-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        -90,
+        0
+      ],
+      "translationIndex": 2,
+      "translationName": "x-negative-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        -89,
+        0
+      ],
+      "translationIndex": 3,
+      "translationName": "x-negative-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        -1,
+        0
+      ],
+      "translationIndex": 4,
+      "translationName": "x-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        1,
+        0
+      ],
+      "translationIndex": 5,
+      "translationName": "x-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        89,
+        0
+      ],
+      "translationIndex": 6,
+      "translationName": "x-positive-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        90,
+        0
+      ],
+      "translationIndex": 7,
+      "translationName": "x-positive-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        91,
+        0
+      ],
+      "translationIndex": 8,
+      "translationName": "x-positive-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        92,
+        0
+      ],
+      "translationIndex": 9,
+      "translationName": "x-positive-92"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        -135
+      ],
+      "translationIndex": 10,
+      "translationName": "y-negative-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        -134
+      ],
+      "translationIndex": 11,
+      "translationName": "y-negative-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        -133
+      ],
+      "translationIndex": 12,
+      "translationName": "y-negative-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        -132
+      ],
+      "translationIndex": 13,
+      "translationName": "y-negative-132"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        -1
+      ],
+      "translationIndex": 14,
+      "translationName": "y-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        1
+      ],
+      "translationIndex": 15,
+      "translationName": "y-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "205a59216a741d1364680968b5846253612f055ed6bdfcc4927650706da5f92b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        29.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        133
+      ],
+      "translationIndex": 16,
+      "translationName": "y-positive-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "205a59216a741d1364680968b5846253612f055ed6bdfcc4927650706da5f92b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        29.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        134
+      ],
+      "translationIndex": 17,
+      "translationName": "y-positive-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "205a59216a741d1364680968b5846253612f055ed6bdfcc4927650706da5f92b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        29.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        135
+      ],
+      "translationIndex": 18,
+      "translationName": "y-positive-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "205a59216a741d1364680968b5846253612f055ed6bdfcc4927650706da5f92b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        29.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        0,
+        136
+      ],
+      "translationIndex": 19,
+      "translationName": "y-positive-136"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        90,
+        -134
+      ],
+      "translationIndex": 20,
+      "translationName": "target-integer"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "f28011362daa1814ea6ccf46f21e7984d4a0616c32edf0b5a363cdf196c0bd87"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        30.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        91,
+        -133
+      ],
+      "translationIndex": 21,
+      "translationName": "target-half-even"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee89d6bfe77b111c00880a9141983cb8134a6eef5aec3c9f5c342d9d7c7117e5",
+        "vertexDrawConsumedPayloadSHA256": "205a59216a741d1364680968b5846253612f055ed6bdfcc4927650706da5f92b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        237.0,
+        29.0,
+        701.0,
+        499.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.5624494552612305,
+      "runtimeScale": 0.7187752723693848,
+      "sampleIndex": 18,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationIndex": 22,
+      "translationName": "target-half-signed"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        0
+      ],
+      "translationIndex": 0,
+      "translationName": "base"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        -91,
+        0
+      ],
+      "translationIndex": 1,
+      "translationName": "x-negative-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        -90,
+        0
+      ],
+      "translationIndex": 2,
+      "translationName": "x-negative-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        -89,
+        0
+      ],
+      "translationIndex": 3,
+      "translationName": "x-negative-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        -1,
+        0
+      ],
+      "translationIndex": 4,
+      "translationName": "x-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        1,
+        0
+      ],
+      "translationIndex": 5,
+      "translationName": "x-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        89,
+        0
+      ],
+      "translationIndex": 6,
+      "translationName": "x-positive-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        90,
+        0
+      ],
+      "translationIndex": 7,
+      "translationName": "x-positive-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        91,
+        0
+      ],
+      "translationIndex": 8,
+      "translationName": "x-positive-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        92,
+        0
+      ],
+      "translationIndex": 9,
+      "translationName": "x-positive-92"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        -135
+      ],
+      "translationIndex": 10,
+      "translationName": "y-negative-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        -134
+      ],
+      "translationIndex": 11,
+      "translationName": "y-negative-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        -133
+      ],
+      "translationIndex": 12,
+      "translationName": "y-negative-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        -132
+      ],
+      "translationIndex": 13,
+      "translationName": "y-negative-132"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        -1
+      ],
+      "translationIndex": 14,
+      "translationName": "y-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        1
+      ],
+      "translationIndex": 15,
+      "translationName": "y-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "e3fdd460d68015597d22dccba4c0b2146a960dfb859b1e8cfba7ca1f998a68ab"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        178.0,
+        58.0,
+        592.0,
+        477.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        133
+      ],
+      "translationIndex": 16,
+      "translationName": "y-positive-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "e3fdd460d68015597d22dccba4c0b2146a960dfb859b1e8cfba7ca1f998a68ab"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        178.0,
+        58.0,
+        592.0,
+        477.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        134
+      ],
+      "translationIndex": 17,
+      "translationName": "y-positive-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "e3fdd460d68015597d22dccba4c0b2146a960dfb859b1e8cfba7ca1f998a68ab"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        178.0,
+        58.0,
+        592.0,
+        477.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        135
+      ],
+      "translationIndex": 18,
+      "translationName": "y-positive-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "e3fdd460d68015597d22dccba4c0b2146a960dfb859b1e8cfba7ca1f998a68ab"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        178.0,
+        58.0,
+        592.0,
+        477.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        0,
+        136
+      ],
+      "translationIndex": 19,
+      "translationName": "y-positive-136"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        90,
+        -134
+      ],
+      "translationIndex": 20,
+      "translationName": "target-integer"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "4b6c7e384d17e01ff006af647843eb1aae1fe856286387c683f2f9d6fbb86ec1"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        178.0,
+        59.0,
+        592.0,
+        478.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        91,
+        -133
+      ],
+      "translationIndex": 21,
+      "translationName": "target-half-even"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ee38ccc78443ebe4752d7eb5ad8b0ba24316f62483d38c4b28771949cb4c7971",
+        "vertexDrawConsumedPayloadSHA256": "e3fdd460d68015597d22dccba4c0b2146a960dfb859b1e8cfba7ca1f998a68ab"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        178.0,
+        58.0,
+        592.0,
+        477.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7187786102294922,
+      "runtimeScale": 0.6406106948852539,
+      "sampleIndex": 23,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationIndex": 22,
+      "translationName": "target-half-signed"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        0
+      ],
+      "translationIndex": 0,
+      "translationName": "base"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        -91,
+        0
+      ],
+      "translationIndex": 1,
+      "translationName": "x-negative-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        -90,
+        0
+      ],
+      "translationIndex": 2,
+      "translationName": "x-negative-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        -89,
+        0
+      ],
+      "translationIndex": 3,
+      "translationName": "x-negative-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        -1,
+        0
+      ],
+      "translationIndex": 4,
+      "translationName": "x-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        1,
+        0
+      ],
+      "translationIndex": 5,
+      "translationName": "x-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "1096f0610f4f012cd5fef953900b60266f6acbc6ba989c49b49b30b6b15e168a"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        158.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        89,
+        0
+      ],
+      "translationIndex": 6,
+      "translationName": "x-positive-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "1096f0610f4f012cd5fef953900b60266f6acbc6ba989c49b49b30b6b15e168a"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        158.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        90,
+        0
+      ],
+      "translationIndex": 7,
+      "translationName": "x-positive-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "1096f0610f4f012cd5fef953900b60266f6acbc6ba989c49b49b30b6b15e168a"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        158.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        91,
+        0
+      ],
+      "translationIndex": 8,
+      "translationName": "x-positive-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "1096f0610f4f012cd5fef953900b60266f6acbc6ba989c49b49b30b6b15e168a"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        158.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        92,
+        0
+      ],
+      "translationIndex": 9,
+      "translationName": "x-positive-92"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -135
+      ],
+      "translationIndex": 10,
+      "translationName": "y-negative-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -134
+      ],
+      "translationIndex": 11,
+      "translationName": "y-negative-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -133
+      ],
+      "translationIndex": 12,
+      "translationName": "y-negative-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -132
+      ],
+      "translationIndex": 13,
+      "translationName": "y-negative-132"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -1
+      ],
+      "translationIndex": 14,
+      "translationName": "y-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "bf13238a406549682d7bcd76d52f1502082ee1b3cb383809546e9826b85d9eb8"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        1
+      ],
+      "translationIndex": 15,
+      "translationName": "y-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "d403ef4d3f63be7950a0c1646808d8370c7d2ff4bfff9aaa3eb3d57e5edbd1b0"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        133
+      ],
+      "translationIndex": 16,
+      "translationName": "y-positive-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "d403ef4d3f63be7950a0c1646808d8370c7d2ff4bfff9aaa3eb3d57e5edbd1b0"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        134
+      ],
+      "translationIndex": 17,
+      "translationName": "y-positive-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "d403ef4d3f63be7950a0c1646808d8370c7d2ff4bfff9aaa3eb3d57e5edbd1b0"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        135
+      ],
+      "translationIndex": 18,
+      "translationName": "y-positive-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "d403ef4d3f63be7950a0c1646808d8370c7d2ff4bfff9aaa3eb3d57e5edbd1b0"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        136
+      ],
+      "translationIndex": 19,
+      "translationName": "y-positive-136"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "1096f0610f4f012cd5fef953900b60266f6acbc6ba989c49b49b30b6b15e168a"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        158.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        90,
+        -134
+      ],
+      "translationIndex": 20,
+      "translationName": "target-integer"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "1096f0610f4f012cd5fef953900b60266f6acbc6ba989c49b49b30b6b15e168a"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        158.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        91,
+        -133
+      ],
+      "translationIndex": 21,
+      "translationName": "target-half-even"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "d55df36ec618520a834e370fd7a64a40715725ad58d4e270baf5aecdbc1123fc",
+        "vertexDrawConsumedPayloadSHA256": "d403ef4d3f63be7950a0c1646808d8370c7d2ff4bfff9aaa3eb3d57e5edbd1b0"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.7836761474609375,
+      "runtimeScale": 0.6081619262695312,
+      "sampleIndex": 25,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationIndex": 22,
+      "translationName": "target-half-signed"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        0
+      ],
+      "translationIndex": 0,
+      "translationName": "base"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        -91,
+        0
+      ],
+      "translationIndex": 1,
+      "translationName": "x-negative-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        -90,
+        0
+      ],
+      "translationIndex": 2,
+      "translationName": "x-negative-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        -89,
+        0
+      ],
+      "translationIndex": 3,
+      "translationName": "x-negative-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        -1,
+        0
+      ],
+      "translationIndex": 4,
+      "translationName": "x-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        1,
+        0
+      ],
+      "translationIndex": 5,
+      "translationName": "x-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "6ebb201d8be86ff8396077c3913ae2f136bb01fb85df3765ad6298ecc50883c2"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        129.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        89,
+        0
+      ],
+      "translationIndex": 6,
+      "translationName": "x-positive-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "6ebb201d8be86ff8396077c3913ae2f136bb01fb85df3765ad6298ecc50883c2"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        129.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        90,
+        0
+      ],
+      "translationIndex": 7,
+      "translationName": "x-positive-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "6ebb201d8be86ff8396077c3913ae2f136bb01fb85df3765ad6298ecc50883c2"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        129.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        91,
+        0
+      ],
+      "translationIndex": 8,
+      "translationName": "x-positive-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "6ebb201d8be86ff8396077c3913ae2f136bb01fb85df3765ad6298ecc50883c2"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        129.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        92,
+        0
+      ],
+      "translationIndex": 9,
+      "translationName": "x-positive-92"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        -135
+      ],
+      "translationIndex": 10,
+      "translationName": "y-negative-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        -134
+      ],
+      "translationIndex": 11,
+      "translationName": "y-negative-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        -133
+      ],
+      "translationIndex": 12,
+      "translationName": "y-negative-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        -132
+      ],
+      "translationIndex": 13,
+      "translationName": "y-negative-132"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        -1
+      ],
+      "translationIndex": 14,
+      "translationName": "y-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "35f347c6fdabf9239fe96276102fbb983b9fdf93a826f77a2d5260d2034abbc7"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        128.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        1
+      ],
+      "translationIndex": 15,
+      "translationName": "y-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "0a05b234dec678db626dfbf332d953278c5dd4b6e955619efbb82f034721eb63"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        128.0,
+        79.0,
+        492.0,
+        447.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        133
+      ],
+      "translationIndex": 16,
+      "translationName": "y-positive-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "0a05b234dec678db626dfbf332d953278c5dd4b6e955619efbb82f034721eb63"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        128.0,
+        79.0,
+        492.0,
+        447.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        134
+      ],
+      "translationIndex": 17,
+      "translationName": "y-positive-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "0a05b234dec678db626dfbf332d953278c5dd4b6e955619efbb82f034721eb63"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        128.0,
+        79.0,
+        492.0,
+        447.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        135
+      ],
+      "translationIndex": 18,
+      "translationName": "y-positive-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "0a05b234dec678db626dfbf332d953278c5dd4b6e955619efbb82f034721eb63"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        128.0,
+        79.0,
+        492.0,
+        447.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        0,
+        136
+      ],
+      "translationIndex": 19,
+      "translationName": "y-positive-136"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "6ebb201d8be86ff8396077c3913ae2f136bb01fb85df3765ad6298ecc50883c2"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        129.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        90,
+        -134
+      ],
+      "translationIndex": 20,
+      "translationName": "target-integer"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "6ebb201d8be86ff8396077c3913ae2f136bb01fb85df3765ad6298ecc50883c2"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        129.0,
+        80.0,
+        492.0,
+        448.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        91,
+        -133
+      ],
+      "translationIndex": 21,
+      "translationName": "target-half-even"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "40cc0dba6f6113f83ecb843ac9aac24fc9d5b4789c0c2c449f82aeca5282a6b7",
+        "vertexDrawConsumedPayloadSHA256": "0a05b234dec678db626dfbf332d953278c5dd4b6e955619efbb82f034721eb63"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "primaryEdges": [
+        128.0,
+        79.0,
+        492.0,
+        447.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.8751411437988281,
+      "runtimeScale": 0.5624294281005859,
+      "sampleIndex": 28,
+      "translation": [
+        -90,
+        135
+      ],
+      "translationIndex": 22,
+      "translationName": "target-half-signed"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b77cffe21ac1bbb808bab0912a68a672b349827aee355cfc87206f57d12e76a6"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        434.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        0
+      ],
+      "translationIndex": 0,
+      "translationName": "base"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "6571234053af6685fd4504f584167659eb5d76b915e6a5e66e3c436213086e11"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        434.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        -91,
+        0
+      ],
+      "translationIndex": 1,
+      "translationName": "x-negative-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "6571234053af6685fd4504f584167659eb5d76b915e6a5e66e3c436213086e11"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        434.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        -90,
+        0
+      ],
+      "translationIndex": 2,
+      "translationName": "x-negative-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "6571234053af6685fd4504f584167659eb5d76b915e6a5e66e3c436213086e11"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        0.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        434.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        -89,
+        0
+      ],
+      "translationIndex": 3,
+      "translationName": "x-negative-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b77cffe21ac1bbb808bab0912a68a672b349827aee355cfc87206f57d12e76a6"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        434.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        -1,
+        0
+      ],
+      "translationIndex": 4,
+      "translationName": "x-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b77cffe21ac1bbb808bab0912a68a672b349827aee355cfc87206f57d12e76a6"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        434.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        1,
+        0
+      ],
+      "translationIndex": 5,
+      "translationName": "x-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "bc75cdad1ed9b106fe31310932c855497360d208d727473cd8b39677aca5d90b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        89,
+        0
+      ],
+      "translationIndex": 6,
+      "translationName": "x-positive-89"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "bc75cdad1ed9b106fe31310932c855497360d208d727473cd8b39677aca5d90b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        90,
+        0
+      ],
+      "translationIndex": 7,
+      "translationName": "x-positive-90"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "bc75cdad1ed9b106fe31310932c855497360d208d727473cd8b39677aca5d90b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        91,
+        0
+      ],
+      "translationIndex": 8,
+      "translationName": "x-positive-91"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "bc75cdad1ed9b106fe31310932c855497360d208d727473cd8b39677aca5d90b"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        92,
+        0
+      ],
+      "translationIndex": 9,
+      "translationName": "x-positive-92"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b3ceeefa1b3165c21c55c8be49d3a8f0d5b33cf8f841bf2d32d8ee976802e9cf"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -135
+      ],
+      "translationIndex": 10,
+      "translationName": "y-negative-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b3ceeefa1b3165c21c55c8be49d3a8f0d5b33cf8f841bf2d32d8ee976802e9cf"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -134
+      ],
+      "translationIndex": 11,
+      "translationName": "y-negative-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b3ceeefa1b3165c21c55c8be49d3a8f0d5b33cf8f841bf2d32d8ee976802e9cf"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -133
+      ],
+      "translationIndex": 12,
+      "translationName": "y-negative-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b3ceeefa1b3165c21c55c8be49d3a8f0d5b33cf8f841bf2d32d8ee976802e9cf"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -132
+      ],
+      "translationIndex": 13,
+      "translationName": "y-negative-132"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b77cffe21ac1bbb808bab0912a68a672b349827aee355cfc87206f57d12e76a6"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        434.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -1
+      ],
+      "translationIndex": 14,
+      "translationName": "y-negative-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b77cffe21ac1bbb808bab0912a68a672b349827aee355cfc87206f57d12e76a6"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        434.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        1
+      ],
+      "translationIndex": 15,
+      "translationName": "y-positive-1"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "1a6afd987cb00fe78c2a285744d719f3206640eb05a6dbd6203b655db0acf573"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        1.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        133
+      ],
+      "translationIndex": 16,
+      "translationName": "y-positive-133"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "1a6afd987cb00fe78c2a285744d719f3206640eb05a6dbd6203b655db0acf573"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        1.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        134
+      ],
+      "translationIndex": 17,
+      "translationName": "y-positive-134"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "1a6afd987cb00fe78c2a285744d719f3206640eb05a6dbd6203b655db0acf573"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        1.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        135
+      ],
+      "translationIndex": 18,
+      "translationName": "y-positive-135"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "1a6afd987cb00fe78c2a285744d719f3206640eb05a6dbd6203b655db0acf573"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        -1.0,
+        1.0,
+        0.0
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        424.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        136
+      ],
+      "translationIndex": 19,
+      "translationName": "y-positive-136"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b3ceeefa1b3165c21c55c8be49d3a8f0d5b33cf8f841bf2d32d8ee976802e9cf"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        90,
+        -134
+      ],
+      "translationIndex": 20,
+      "translationName": "target-integer"
+    },
+    {
+      "capturedLayerStateCount": 16,
+      "drawConsumedPayloadSHA256": {
+        "indexDrawConsumedPayloadSHA256": "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        "mvpDrawConsumedPayloadSHA256": "ba62b9977dcbf8f784207b671950c728257124084d8902af54601aef0ea4f7f4",
+        "vertexDrawConsumedPayloadSHA256": "b3ceeefa1b3165c21c55c8be49d3a8f0d5b33cf8f841bf2d32d8ee976802e9cf"
+      },
+      "primaryEdgeDeltaFromNormal": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primarySourceQ": {
+        "componentCount": 8,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "producerVertexCount": 4,
+      "remaining": 0.9709081649780273,
+      "runtimeScale": 0.5145459175109863,
+      "sampleIndex": 31,
+      "translation": [
+        91,
+        -133
+      ],
+      "translationIndex": 21,
+      "translationName": "target-half-even"
+    }
+  ],
+  "runID": 30752897393,
+  "timelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30752897393/transition-timeline.json",
+  "timelineSHA256": "bdf1e7a67ba2669a637689abe8e4ec2c39bcda009cf34157dbcc80b472502ed5"
+}

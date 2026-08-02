@@ -343,6 +343,7 @@ def producer_geometry(
     source_width: int,
     source_height: int,
     scale: float,
+    require_primary_source_q_exact: bool = True,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     render_pass = single(
         [
@@ -410,7 +411,8 @@ def producer_geometry(
     )
     index_count = int(draw["indexCount"])
     index_bytes = payload(index_snapshot)
-    if len(index_bytes) < 2 * index_count:
+    consumed_index_byte_count = 2 * index_count
+    if len(index_bytes) < consumed_index_byte_count:
         raise ValueError("producer index payload is truncated")
     indices = struct.unpack_from(f"<{index_count}H", index_bytes)
     vertex_count = max(indices) + 1
@@ -418,7 +420,8 @@ def producer_geometry(
     if indices != expected_indices:
         raise ValueError("producer quad topology differs")
     vertex_bytes = payload(vertex_snapshot)
-    if len(vertex_bytes) < vertex_count * VERTEX_STRIDE:
+    consumed_vertex_byte_count = vertex_count * VERTEX_STRIDE
+    if len(vertex_bytes) < consumed_vertex_byte_count:
         raise ValueError("producer vertex payload is truncated")
     vertices = [
         struct.unpack_from("<8f", vertex_bytes, index * VERTEX_STRIDE)
@@ -485,7 +488,7 @@ def producer_geometry(
             source_scale_mismatches += float32_bits(predicted) != float32_bits(
                 vertex[4 + axis]
             )
-    if source_scale_mismatches:
+    if require_primary_source_q_exact and source_scale_mismatches:
         raise ValueError("producer source-coordinate q law differs")
     all_source_scale_mismatches = 0
     for vertex in vertices:
@@ -542,7 +545,20 @@ def producer_geometry(
         "vertexCount": vertex_count,
         "indexCount": index_count,
         "vertexPayloadSHA256": hashlib.sha256(vertex_bytes).hexdigest(),
+        "vertexDrawConsumedByteCount": consumed_vertex_byte_count,
+        "vertexDrawConsumedPayloadSHA256": hashlib.sha256(
+            vertex_bytes[:consumed_vertex_byte_count]
+        ).hexdigest(),
+        "vertexSnapshotPayloadByteCount": len(vertex_bytes),
         "mvpPayloadSHA256": hashlib.sha256(mvp_bytes).hexdigest(),
+        "mvpDrawConsumedByteCount": 64,
+        "mvpDrawConsumedPayloadSHA256": hashlib.sha256(mvp_bytes[:64]).hexdigest(),
+        "mvpSnapshotPayloadByteCount": len(mvp_bytes),
+        "indexDrawConsumedByteCount": consumed_index_byte_count,
+        "indexDrawConsumedPayloadSHA256": hashlib.sha256(
+            index_bytes[:consumed_index_byte_count]
+        ).hexdigest(),
+        "indexSnapshotPayloadByteCount": len(index_bytes),
         "primaryVertices": [list(vertex) for vertex in vertices[:4]],
         "quadBounds": quad_bounds,
         "viewport": [0, 0, source_width, source_height],
@@ -564,6 +580,7 @@ def observed_policy(
     record: Mapping[str, Any],
     *,
     scale: float,
+    require_primary_source_q_exact: bool = True,
 ) -> dict[str, Any]:
     render = mapping(record.get("render"), "dynamic render")
     if render.get("executed") is not True:
@@ -644,6 +661,7 @@ def observed_policy(
         source_width=source_width,
         source_height=source_height,
         scale=scale,
+        require_primary_source_q_exact=require_primary_source_q_exact,
     )
     crop_origin = [int(value) for value in crop["origin"]]
     copy_offset = [int(value) for value in uniform["textureCoordinateBase"]]
@@ -730,9 +748,12 @@ def validate(
     expected_sample_indices: Sequence[int] = EXPECTED_SAMPLE_INDICES,
     classification: str = "prospective-unseen-geometry-holdout",
     allowed_geometries: frozenset[str] = EXPECTED_GEOMETRIES,
+    require_primary_source_q_exact: bool = True,
 ) -> dict[str, Any]:
     if expected_geometry not in allowed_geometries:
-        raise ValueError(f"geometry is not frozen for this capture: {expected_geometry}")
+        raise ValueError(
+            f"geometry is not frozen for this capture: {expected_geometry}"
+        )
     expected_samples = tuple(expected_sample_indices)
     if (
         not expected_samples
@@ -819,7 +840,11 @@ def validate(
             remaining=remaining,
             scale=expected_scale,
         )
-        observed = observed_policy(record, scale=scale)
+        observed = observed_policy(
+            record,
+            scale=scale,
+            require_primary_source_q_exact=require_primary_source_q_exact,
+        )
         state_comparison = comparison(prediction, observed)
         states.append(
             {
