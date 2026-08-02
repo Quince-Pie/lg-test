@@ -2,6 +2,7 @@
 """Validate transition-time Apple final-highlight uniform evidence."""
 
 import argparse
+import hashlib
 import json
 import math
 from collections.abc import Mapping
@@ -18,9 +19,14 @@ DYNAMIC_PRODUCER_OUTPUT_EXTENTS = {
     16: (576, 576),
     20: (576, 576),
     24: (512, 512),
-    28: (448, 512),
+    28: (512, 448),
     32: (448, 448),
 }
+DYNAMIC_PRODUCER_INPUT_SHA256 = (
+    "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
+)
+DYNAMIC_PRODUCER_INPUT_FNV1A64 = "7e51eae7957578dd"
+DYNAMIC_PRODUCER_MINIMUM_OUTPUT_PIXELS = 4_096
 HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 12, 32})
 BACKGROUND_ARITHMETIC_TRACES = {
     "sdf-float": (123, 1024 * 1024 * 16),
@@ -216,9 +222,7 @@ def validate_interpolant_pull_trace(
     pull_count = 16
     component_count = 4
     record_words = 3 + pull_count * component_count
-    expected_words = (
-        tile_count * axis_count * primitive_count * record_words
-    )
+    expected_words = tile_count * axis_count * primitive_count * record_words
     if (
         record.get("schemaVersion") != 1
         or record.get("tileCount") != tile_count
@@ -227,8 +231,7 @@ def validate_interpolant_pull_trace(
         or record.get("pullCount") != pull_count
         or record.get("componentCount") != component_count
         or record.get("recordWords") != record_words
-        or record.get("recordOrdering")
-        != "axis-major,primitive-major,tile-major"
+        or record.get("recordOrdering") != "axis-major,primitive-major,tile-major"
         or record.get("rawBytes") != expected_words * 4
     ):
         raise ValueError("dynamic interpolant pull-trace layout differs")
@@ -264,14 +267,9 @@ def validate_interpolant_pull_trace(
                     or y >= 1024
                     or state != y * 1024 + x
                     or coordinate // 32 != tile
-                    or any(
-                        word & 0x7F80_0000 == 0x7F80_0000
-                        for word in payload
-                    )
+                    or any(word & 0x7F80_0000 == 0x7F80_0000 for word in payload)
                 ):
-                    raise ValueError(
-                        "dynamic interpolant pull-trace record differs"
-                    )
+                    raise ValueError("dynamic interpolant pull-trace record differs")
                 captured_by_axis_primitive[axis][primitive] += 1
     if any(
         count < 24
@@ -458,11 +456,11 @@ def validate_background_interpolant_trace(
             else {}
         ),
     }
-    observed_numeric_traces = {
-        item.get("name"): item
-        for item in numeric_traces
-        if isinstance(item, Mapping)
-    } if isinstance(numeric_traces, list) else {}
+    observed_numeric_traces = (
+        {item.get("name"): item for item in numeric_traces if isinstance(item, Mapping)}
+        if isinstance(numeric_traces, list)
+        else {}
+    )
     if (
         trace.get("schemaVersion") != 1
         or trace.get("executed") is not True
@@ -519,22 +517,16 @@ def validate_background_arithmetic_trace(
     if (
         trace.get("schemaVersion") != 1
         or trace.get("executed") is not True
-        or trace.get("scope")
-        != "selected-dynamic-states-custom-metal-main-only"
+        or trace.get("scope") != "selected-dynamic-states-custom-metal-main-only"
         or trace.get("capturedAppleFunctionUnmodified") is not False
         or trace.get("customStageInVertex") is not True
-        or trace.get("classification")
-        != "diagnostic custom-Metal arithmetic replay"
+        or trace.get("classification") != "diagnostic custom-Metal arithmetic replay"
         or not isinstance(replays, list)
         or len(replays) != len(expected_traces)
     ):
         raise ValueError("dynamic background arithmetic trace differs")
 
-    observed = {
-        item.get("name"): item
-        for item in replays
-        if isinstance(item, Mapping)
-    }
+    observed = {item.get("name"): item for item in replays if isinstance(item, Mapping)}
     if set(observed) != set(expected_traces):
         raise ValueError("dynamic background arithmetic trace names differ")
     for name, (pixel_format, byte_count) in expected_traces.items():
@@ -672,6 +664,13 @@ def validate_raw_render_evidence(
     ):
         raise ValueError("backdrop pyramid dimensions are invalid")
     validate_raw_file(source, root=root, name="backdrop mip zero")
+    base_raw = (root / str(source["rawFile"])).read_bytes()
+    if (
+        not any(base_raw)
+        or len(set(memoryview(base_raw).cast("I")))
+        < DYNAMIC_PRODUCER_MINIMUM_OUTPUT_PIXELS
+    ):
+        raise ValueError("controlled backdrop mip zero is degenerate")
     mips = source.get("mipSnapshots")
     if not isinstance(mips, list) or [
         mip.get("level") for mip in mips if isinstance(mip, Mapping)
@@ -708,7 +707,7 @@ def validate_dynamic_backdrop_producer(
     )
     untyped_boundaries = evidence.get("records")
     if (
-        evidence.get("schemaVersion") != 1
+        evidence.get("schemaVersion") != 2
         or evidence.get("boundaryCount") != 1
         or not isinstance(untyped_boundaries, list)
         or len(untyped_boundaries) != 1
@@ -724,18 +723,41 @@ def validate_dynamic_backdrop_producer(
         or evidence.get("capture") != expected_capture
         or boundary.get("index") != 0
         or boundary.get("capturePoint")
-        != "blit-after-producer-render-before-copy-base-compute"
+        != "controlled-input-before-producer-draw-and-blit-after-"
+        "producer-render-before-copy-base-compute"
     ):
         raise ValueError("dynamic backdrop capture point differs")
+
+    intervention = mapping(
+        boundary.get("inputIntervention"),
+        "dynamic backdrop producer input intervention",
+    )
+    original_input_address = intervention.get("originalInputAddress")
+    replacement_input_address = intervention.get("replacementInputAddress")
+    if (
+        intervention.get("schemaVersion") != 1
+        or intervention.get("name") != "opaque-coordinate-hash-v1"
+        or intervention.get("applied") is not True
+        or not isinstance(original_input_address, str)
+        or replacement_input_address != boundary.get("producerInputAddress")
+        or original_input_address == replacement_input_address
+        or intervention.get("pixelFormat") != 80
+        or intervention.get("width") != 1024
+        or intervention.get("height") != 1024
+        or intervention.get("bytesPerRow") != 4096
+        or intervention.get("rawBytes") != 1024 * 1024 * 4
+        or intervention.get("sha256") != DYNAMIC_PRODUCER_INPUT_SHA256
+        or intervention.get("fnv1a64") != DYNAMIC_PRODUCER_INPUT_FNV1A64
+        or intervention.get("alpha") != 255
+        or intervention.get("channelOrder") != "BGRA"
+    ):
+        raise ValueError("dynamic backdrop input intervention differs")
 
     probe = mapping(render.get("metalUniformProbe"), "metalUniformProbe")
     records = probe.get("records")
     if not isinstance(records, list):
         raise ValueError("Metal uniform records are incomplete")
-    typed_records = [
-        mapping(record, "Metal uniform record")
-        for record in records
-    ]
+    typed_records = [mapping(record, "Metal uniform record") for record in records]
     copy_sources = [
         record
         for record in typed_records
@@ -746,9 +768,7 @@ def validate_dynamic_backdrop_producer(
         == "com.apple.coreanimation.variable_blur_copy_base_mip_compute"
     ]
     if len(copy_sources) != 1:
-        raise ValueError(
-            "copy-base producer output binding is not unique"
-        )
+        raise ValueError("copy-base producer output binding is not unique")
     copy_source = copy_sources[0]
     copy_source_texture = mapping(
         copy_source.get("texture"),
@@ -758,8 +778,7 @@ def validate_dynamic_backdrop_producer(
     if (
         not isinstance(source_address, str)
         or boundary.get("copyBaseEncoder") != copy_source.get("encoder")
-        or boundary.get("copyBaseBindingSequence")
-        != copy_source.get("sequence")
+        or boundary.get("copyBaseBindingSequence") != copy_source.get("sequence")
         or boundary.get("producerOutputAddress") != source_address
     ):
         raise ValueError("copy-base producer output has no address")
@@ -797,19 +816,26 @@ def validate_dynamic_backdrop_producer(
         and color_zero_address(record) == source_address
     ]
     if len(producer_passes) != 1:
-        raise ValueError(
-            "render pass producing copy-base input is not unique"
-        )
+        raise ValueError("render pass producing copy-base input is not unique")
     producer_pass = producer_passes[0]
     producer_encoder = producer_pass.get("encoder")
     producer_attachment = color_zero_attachment(producer_pass)
+    producer_command_buffer = producer_pass.get("commandBuffer")
+    copy_base_command_buffers = {
+        record.get("commandBuffer")
+        for record in typed_records
+        if record.get("kind") == "computeEncoder"
+        and record.get("encoder") == copy_source.get("encoder")
+        and isinstance(record.get("commandBuffer"), str)
+    }
     if (
         producer_attachment is None
         or producer_attachment.get("loadAction") != 2
         or producer_attachment.get("storeAction") != 1
+        or not isinstance(producer_command_buffer, str)
+        or copy_base_command_buffers != {producer_command_buffer}
         or boundary.get("producerEncoder") != producer_encoder
-        or boundary.get("producerRenderPassSequence")
-        != producer_pass.get("sequence")
+        or boundary.get("producerRenderPassSequence") != producer_pass.get("sequence")
     ):
         raise ValueError("dynamic backdrop producer pass join differs")
     producer_inputs = [
@@ -828,20 +854,14 @@ def validate_dynamic_backdrop_producer(
     producer_pass_sequence = producer_pass.get("sequence")
     copy_base_sequence = copy_source.get("sequence")
     if (
-        fragment_name(producer_input)
-        not in {"A2Xghfc", "TimgA2Xhfc_Isrc"}
+        fragment_name(producer_input) not in {"A2Xghfc", "TimgA2Xhfc_Isrc"}
         or not isinstance(input_address, str)
         or boundary.get("producerInputAddress") != input_address
-        or boundary.get("producerInputBindingSequence")
-        != producer_input_sequence
+        or boundary.get("producerInputBindingSequence") != producer_input_sequence
         or not isinstance(producer_pass_sequence, int)
         or not isinstance(producer_input_sequence, int)
         or not isinstance(copy_base_sequence, int)
-        or not (
-            producer_pass_sequence
-            < producer_input_sequence
-            < copy_base_sequence
-        )
+        or not (producer_pass_sequence < producer_input_sequence < copy_base_sequence)
     ):
         raise ValueError("dynamic backdrop producer input join differs")
 
@@ -854,8 +874,8 @@ def validate_dynamic_backdrop_producer(
         "dynamic backdrop producer input snapshot",
     )
     if (
-        (producer_input.get("width"), producer_input.get("height"))
-        != (1024, 1024)
+        (producer_input.get("width"), producer_input.get("height")) != (1024, 1024)
+        or producer_input.get("storageMode") != 0
         or (
             copy_source_texture.get("width"),
             copy_source_texture.get("height"),
@@ -899,6 +919,17 @@ def validate_dynamic_backdrop_producer(
         ):
             raise ValueError(f"{name} layout differs")
         validate_raw_file(snapshot, root=root, name=name)
+        raw_path = root / str(snapshot["rawFile"])
+        raw = raw_path.read_bytes()
+        if name == "dynamic backdrop producer input":
+            if hashlib.sha256(raw).hexdigest() != DYNAMIC_PRODUCER_INPUT_SHA256:
+                raise ValueError("dynamic backdrop controlled input differs")
+        elif (
+            not any(raw)
+            or len(set(memoryview(raw).cast("I")))
+            < DYNAMIC_PRODUCER_MINIMUM_OUTPUT_PIXELS
+        ):
+            raise ValueError("dynamic backdrop producer output is degenerate")
 
 
 def validate_highlight_trace(
@@ -1006,16 +1037,13 @@ def validate_highlight_trace(
     if (
         sdf_diagnostics.get("schemaVersion") != 1
         or sdf_diagnostics.get("executed") is not True
-        or sdf_diagnostics.get("classification")
-        != "diagnostic custom-Metal SDF replay"
+        or sdf_diagnostics.get("classification") != "diagnostic custom-Metal SDF replay"
         or sdf_diagnostics.get("capturedAppleFunctionUnmodified") is not False
         or sdf_diagnostics.get("customStageInVertex") is not True
         or not isinstance(sdf_diagnostics.get("uniformRecordOffset"), int)
         or sdf_diagnostics["uniformRecordOffset"] < 0
-        or sdf_diagnostics.get("pipelineCount")
-        != len(HIGHLIGHT_SDF_DIAGNOSTIC_TRACES)
-        or sdf_diagnostics.get("replayCount")
-        != len(HIGHLIGHT_SDF_DIAGNOSTIC_TRACES)
+        or sdf_diagnostics.get("pipelineCount") != len(HIGHLIGHT_SDF_DIAGNOSTIC_TRACES)
+        or sdf_diagnostics.get("replayCount") != len(HIGHLIGHT_SDF_DIAGNOSTIC_TRACES)
         or not isinstance(pipelines, list)
         or not isinstance(replays, list)
         or {item.get("name") for item in pipelines if isinstance(item, Mapping)}
@@ -1047,9 +1075,7 @@ def validate_highlight_trace(
         name = replay_record.get("name")
         if not isinstance(name, str):
             raise ValueError("custom-highlight SDF replay name differs")
-        expected_pixel_format, expected_bytes = (
-            HIGHLIGHT_SDF_DIAGNOSTIC_TRACES[name]
-        )
+        expected_pixel_format, expected_bytes = HIGHLIGHT_SDF_DIAGNOSTIC_TRACES[name]
         diagnostic_replay = mapping(
             replay_record.get("replay"),
             f"custom-highlight {name} replay",
@@ -1188,7 +1214,7 @@ def validate(
         report.get("dynamicBackgroundUniforms"),
         "dynamicBackgroundUniforms",
     )
-    if uniforms.get("schemaVersion") != 6 or uniforms.get("requested") is not requested:
+    if uniforms.get("schemaVersion") != 7 or uniforms.get("requested") is not requested:
         raise ValueError("dynamic uniform highlight schema differs")
     if uniforms.get("presentationLayerReplayed") is not requested:
         raise ValueError("dynamic presentation replay metadata differs")
@@ -1216,7 +1242,8 @@ def validate(
         or uniforms.get("executedSampleCount") != len(EXPECTED_SAMPLE_INDICES)
         or uniforms.get("method")
         != "copied-presentation-background-filter-plus-compatible-"
-        "layer-state-on-fresh-static-model-tree"
+        "layer-state-on-fresh-static-model-tree-with-controlled-"
+        "producer-input"
         or uniforms.get("presentationLayerAssignedToCARenderer") is not False
         or uniforms.get("freshStaticCarrier") is not True
         or uniforms.get("detachedLayerTreeCopies") is not False
@@ -1333,12 +1360,10 @@ def validate(
                 sample_index=sample_index,
             )
             background_interpolant_trace_count += 1
-            background_arithmetic_trace_count += (
-                validate_background_arithmetic_trace(
-                    replay,
-                    root=path.parent,
-                    sample_index=sample_index,
-                )
+            background_arithmetic_trace_count += validate_background_arithmetic_trace(
+                replay,
+                root=path.parent,
+                sample_index=sample_index,
             )
         elif "backgroundInterpolantTrace" in replay:
             raise ValueError("an unrequested background interpolant trace executed")
@@ -1451,12 +1476,8 @@ def validate(
         "backgroundInterpolantTraces": background_interpolant_trace_count,
         "backgroundArithmeticTraces": background_arithmetic_trace_count,
         "intermediateTextures": intermediate_texture_count,
-        "dynamicBackdropProducerInputs": (
-            dynamic_backdrop_producer_input_count
-        ),
-        "dynamicBackdropProducerOutputs": (
-            dynamic_backdrop_producer_output_count
-        ),
+        "dynamicBackdropProducerInputs": (dynamic_backdrop_producer_input_count),
+        "dynamicBackdropProducerOutputs": (dynamic_backdrop_producer_output_count),
     }
 
 

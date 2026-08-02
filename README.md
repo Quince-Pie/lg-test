@@ -1840,6 +1840,36 @@ integration by itself. Its frozen evidence boundary and acceptance criteria
 are recorded in
 `Analysis/dynamic_backdrop_producer_capture_preregistration.json`.
 
+Run `30745630876` falsified the payload half of that intervention while
+preserving its structural result. All nine producer render passes, inserted
+blits, and copy-base encoders share the same Metal command buffer, and all
+nine attachment/address/sequence joins are exact. Nevertheless, every
+point-in-time producer input and output byte is zero. The fresh local
+`CARenderer` carrier has no WindowServer backdrop after the required
+WindowServer-aware flags are disabled; this is not a scheduling race and the
+zero surfaces cannot identify resampling. The original CI failure was a
+transposed preregistered extent at sample 28: the attachment, copy-base source,
+and raw snapshot all independently say 512-by-448. Correcting that typo made
+the schema-6 layout gate pass and exposed the more important defect: it had no
+information-content requirement. The retained payload audit is frozen in
+`Analysis/dynamic_backdrop_controlled_input_preregistration.json`; schema 6 is
+not accepted as producer-raster evidence.
+
+Dynamic-uniform schema 7 therefore performs an explicit discovery-only input
+intervention inside the detached local `CARenderer` pass. At fragment texture
+index 3 of the identified `A2Xghfc` or `TimgA2Xhfc_Isrc` producer—and nowhere
+in the live transition or saved Apple screenshots—the probe substitutes a
+1024-by-1024 opaque BGRA8 coordinate-hash field. Its 4,194,304 bytes, formula,
+863,520 distinct texels, SHA-256, and FNV-1a are frozen before capture. Apple's
+pipeline state, mesh, uniforms, viewport, scissor, sampler, render target,
+draw, copy-base dispatch, mip generation, glass passes, and compositor remain
+unchanged. CI now requires the exact controlled-input hash in every state,
+at least 4,096 distinct pixels in every producer output and downstream base
+mip, the original address/sequence joins, and all existing exact final-pass
+replay gates. This opened calibration can identify producer and copy-base
+arithmetic; it cannot serve as the later seeded-input holdout or authorize a
+Walle shader change.
+
 ## Run locally on macOS 26
 
 ```sh
@@ -3941,7 +3971,7 @@ uv = (position / q - O) / allocatedExtent
 
 or equivalently `(position - q*O) / (q*allocatedExtent)`. This algebra
 explains the previously inferred moving source origins and virtual extents,
-including the sample where the producer source is 448-by-512 but the
+including the sample where the producer source is 512-by-448 but the
 copy-base destination allocation is 512-by-512. It does not yet establish the
 CPU's exact binary32 staging for every UV word, nor independently predict the
 discrete crop/allocation choice from geometry and `k`. Those two upstream

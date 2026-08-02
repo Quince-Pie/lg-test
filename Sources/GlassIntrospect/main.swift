@@ -4032,14 +4032,19 @@ private func probeSetFragmentTexture(
     _ texture: AnyObject?,
     _ index: Int
 ) {
+    let boundTexture = MetalUniformProbe.shared
+        .controlledDynamicBackdropProducerTexture(
+            encoder: encoder,
+            texture: texture,
+            index: index)
     MetalUniformProbe.shared.recordFragmentTexture(
         encoder: encoder,
-        texture: texture,
+        texture: boundTexture,
         index: index)
     MetalUniformProbe.shared.forwardFragmentTexture(
         encoder: encoder,
         selector: selector,
-        texture: texture,
+        texture: boundTexture,
         index: index)
 }
 
@@ -4877,6 +4882,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let producerEncoder: String
         let producerRenderPassSequence: Int
         let producerInputBindingSequence: Int
+        let originalProducerInputAddress: String
         let producerInputAddress: String
         let producerOutputAddress: String
         let producerInputCopy: MTLTexture
@@ -4889,6 +4895,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             producerEncoder: String,
             producerRenderPassSequence: Int,
             producerInputBindingSequence: Int,
+            originalProducerInputAddress: String,
             producerInputAddress: String,
             producerOutputAddress: String,
             producerInputCopy: MTLTexture,
@@ -4900,10 +4907,28 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 producerRenderPassSequence
             self.producerInputBindingSequence =
                 producerInputBindingSequence
+            self.originalProducerInputAddress =
+                originalProducerInputAddress
             self.producerInputAddress = producerInputAddress
             self.producerOutputAddress = producerOutputAddress
             self.producerInputCopy = producerInputCopy
             self.producerOutputCopy = producerOutputCopy
+        }
+    }
+
+    private final class DynamicBackdropProducerInputIntervention {
+        let capture: String
+        let originalInputAddress: String
+        let replacement: MTLTexture
+
+        init(
+            capture: String,
+            originalInputAddress: String,
+            replacement: MTLTexture
+        ) {
+            self.capture = capture
+            self.originalInputAddress = originalInputAddress
+            self.replacement = replacement
         }
     }
 
@@ -4919,6 +4944,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         [ObjectIdentifier: ReplayPass] = [:]
     private var dynamicBackdropProducerBoundaries:
         [DynamicBackdropProducerBoundary] = []
+    private var dynamicBackdropProducerInputInterventions:
+        [String: DynamicBackdropProducerInputIntervention] = [:]
     private var independentReplayGPUFailure: String?
     private var textureBindings: [TextureBinding] = []
     private var samplerBindings: [SamplerBinding] = []
@@ -6364,6 +6391,116 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return record
     }
 
+    func controlledDynamicBackdropProducerTexture(
+        encoder: AnyObject,
+        texture: AnyObject?,
+        index: Int
+    ) -> AnyObject? {
+        guard index == 3,
+              let original = texture as? MTLTexture,
+              original.textureType == .type2D,
+              original.width == 1_024,
+              original.height == 1_024,
+              original.depth == 1,
+              original.arrayLength == 1,
+              original.mipmapLevelCount == 1,
+              original.sampleCount == 1,
+              original.pixelFormat == .bgra8Unorm
+        else {
+            return texture
+        }
+
+        lock.lock()
+        guard let captureName,
+              captureName.hasPrefix(
+                "transition-background-uniform-"),
+              let creation = encoderPipeline(encoder)[
+                "creationDescriptor"
+              ] as? [String: Any],
+              let fragment = creation["fragmentFunction"]
+                as? String,
+              fragment == "A2Xghfc"
+                || fragment == "TimgA2Xhfc_Isrc"
+        else {
+            lock.unlock()
+            return texture
+        }
+        let originalAddress = objectAddress(original as AnyObject)
+        if let intervention =
+            dynamicBackdropProducerInputInterventions[captureName]
+        {
+            lock.unlock()
+            return intervention.originalInputAddress == originalAddress
+                ? intervention.replacement
+                : texture
+        }
+        lock.unlock()
+
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .bgra8Unorm,
+            width: 1_024,
+            height: 1_024,
+            mipmapped: false)
+        descriptor.storageMode = .shared
+        descriptor.usage = [.shaderRead]
+        guard let replacement = original.device.makeTexture(
+                descriptor: descriptor)
+        else {
+            return texture
+        }
+        replacement.label =
+            "GlassIntrospect dynamic producer opaque-coordinate-hash-v1"
+        let bytesPerRow = 1_024 * 4
+        var bytes = Data(count: bytesPerRow * 1_024)
+        bytes.withUnsafeMutableBytes { raw in
+            let pixels = raw.bindMemory(to: UInt8.self)
+            for y in 0..<1_024 {
+                for x in 0..<1_024 {
+                    let offset = (y * 1_024 + x) * 4
+                    pixels[offset] = UInt8(
+                        truncatingIfNeeded:
+                            x * 37 + y * 17 + 13)
+                    pixels[offset + 1] = UInt8(
+                        truncatingIfNeeded:
+                            (x * 11) ^ (y * 29) ^ 0x5a)
+                    pixels[offset + 2] = UInt8(
+                        truncatingIfNeeded:
+                            x * 3 + y * 5 + (x * y) % 251)
+                    pixels[offset + 3] = 255
+                }
+            }
+        }
+        bytes.withUnsafeBytes { raw in
+            if let baseAddress = raw.baseAddress {
+                replacement.replace(
+                    region: MTLRegionMake2D(0, 0, 1_024, 1_024),
+                    mipmapLevel: 0,
+                    withBytes: baseAddress,
+                    bytesPerRow: bytesPerRow)
+            }
+        }
+        let candidate = DynamicBackdropProducerInputIntervention(
+            capture: captureName,
+            originalInputAddress: originalAddress,
+            replacement: replacement)
+
+        lock.lock()
+        let intervention: DynamicBackdropProducerInputIntervention
+        if let existing =
+            dynamicBackdropProducerInputInterventions[captureName]
+        {
+            intervention = existing
+        } else {
+            dynamicBackdropProducerInputInterventions[captureName] =
+                candidate
+            intervention = candidate
+        }
+        lock.unlock()
+        return intervention.originalInputAddress == originalAddress
+            ? intervention.replacement
+            : texture
+    }
+
     private func dynamicBackdropProducerInput(
         in pass: ReplayPass
     ) -> MTLTexture? {
@@ -6425,6 +6562,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
               }),
               let producerInput = dynamicBackdropProducerInput(
                 in: pass),
+              let inputIntervention =
+                dynamicBackdropProducerInputInterventions[
+                    captureName
+                ],
+              inputIntervention.capture == captureName,
+              ObjectIdentifier(
+                inputIntervention.replacement as AnyObject)
+                == ObjectIdentifier(producerInput as AnyObject),
               let outputAttachment =
                 pass.descriptor.colorAttachments[0],
               outputAttachment.level == 0,
@@ -6520,6 +6665,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 producerRenderPassSequence,
             producerInputBindingSequence:
                 producerInputBindingSequence,
+            originalProducerInputAddress:
+                inputIntervention.originalInputAddress,
             producerInputAddress: producerInputAddress,
             producerOutputAddress: producerOutputAddress,
             producerInputCopy: producerInputCopy,
@@ -7555,6 +7702,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         dynamicBackdropProducerBoundaries.removeAll {
             $0.capture == capture
         }
+        dynamicBackdropProducerInputInterventions.removeValue(
+            forKey: capture)
         lock.unlock()
 
         func snapshot(
@@ -7580,7 +7729,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 var record: [String: Any] = [
                     "index": index,
                     "capturePoint": (
-                        "blit-after-producer-render-before-"
+                        "controlled-input-before-producer-draw-"
+                        + "and-blit-after-producer-render-before-"
                         + "copy-base-compute"
                     ),
                     "producerEncoder": boundary.producerEncoder,
@@ -7588,6 +7738,28 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         boundary.producerRenderPassSequence,
                     "producerInputBindingSequence":
                         boundary.producerInputBindingSequence,
+                    "inputIntervention": [
+                        "schemaVersion": 1,
+                        "name": "opaque-coordinate-hash-v1",
+                        "applied": true,
+                        "originalInputAddress":
+                            boundary.originalProducerInputAddress,
+                        "replacementInputAddress":
+                            boundary.producerInputAddress,
+                        "pixelFormat":
+                            MTLPixelFormat.bgra8Unorm.rawValue,
+                        "width": 1_024,
+                        "height": 1_024,
+                        "bytesPerRow": 4_096,
+                        "rawBytes": 4_194_304,
+                        "sha256": (
+                            "3ac65697c38c44ed6332911c83e2f13a0"
+                            + "b4b6958df49fa88365fbe6327cc1f88"
+                        ),
+                        "fnv1a64": "7e51eae7957578dd",
+                        "alpha": 255,
+                        "channelOrder": "BGRA",
+                    ],
                     "producerInputAddress":
                         boundary.producerInputAddress,
                     "producerOutputAddress":
@@ -7611,7 +7783,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 return record
             }
         return [
-            "schemaVersion": 1,
+            "schemaVersion": 2,
             "capture": capture,
             "boundaryCount": records.count,
             "records": records,
@@ -16884,7 +17056,7 @@ private func transitionBackgroundUniformEvidence(
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
-            "schemaVersion": 6,
+            "schemaVersion": 7,
             "requested": true,
             "executed": false,
             "reason": "default Metal device unavailable",
@@ -16895,7 +17067,7 @@ private func transitionBackgroundUniformEvidence(
           !snapshots.isEmpty
     else {
         return [
-            "schemaVersion": 6,
+            "schemaVersion": 7,
             "requested": true,
             "executed": false,
             "reason":
@@ -17036,7 +17208,7 @@ private func transitionBackgroundUniformEvidence(
             device: device,
             requested: matrixBasisRequested)
     return [
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "requested": true,
         "executed": executed == snapshots.count,
         "modelTargetPath": matrixTarget.path,
@@ -17046,7 +17218,8 @@ private func transitionBackgroundUniformEvidence(
         "records": records,
         "method":
             "copied-presentation-background-filter-plus-compatible-"
-            + "layer-state-on-fresh-static-model-tree",
+            + "layer-state-on-fresh-static-model-tree-with-controlled-"
+            + "producer-input",
         "presentationLayerReplayed": true,
         "presentationLayerAssignedToCARenderer": false,
         "freshStaticCarrier": true,
@@ -17958,7 +18131,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     phase: "after-static-model-carrier")
             } else {
                 dynamicUniformEvidence = [
-                    "schemaVersion": 6,
+                    "schemaVersion": 7,
                     "requested": false,
                     "executed": false,
                     "presentationLayerReplayed": false,

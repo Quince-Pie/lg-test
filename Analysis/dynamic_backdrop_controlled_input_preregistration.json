@@ -1,0 +1,100 @@
+{
+  "liquidGlassDynamicBackdropControlledInputPreregistrationSchemaVersion": 1,
+  "status": "preregistered-before-controlled-apple-capture",
+  "registeredUTCDate": "2026-08-02",
+  "classification": "opened-discovery-calibration",
+  "failedNaturalBoundaryCapture": {
+    "runId": 30745630876,
+    "commit": "83518978b356430e41ce2d3e79d54e7a8338d34d",
+    "artifactFileCount": 260,
+    "artifactBytes": 1663836666,
+    "artifactTreeSha256": "b077394bd78497589278195701c7ac50a46788191f222aa47aed032e25f861e1",
+    "artifactTreeHashMethod": "sha256 of artifact-root-relative sha256sum lines sorted by bytewise path",
+    "timelineSha256": "a81c4c80896f4299037928656404f9e8aa383ac14238188806f6cdc289e2476b",
+    "ciLogSha256": "4cf3d2198b2520410ec5cedbb83c78cad763fb6131b061684ee96894834681b9",
+    "payloadAudit": {
+      "implementation": "../analysis/liquid_glass_dynamic_backdrop_payload.py",
+      "implementationSha256": "4bb03af3a566905d8d4540fcbc40a57489fe3f6a3bfb82dca82de6591d3f7f65",
+      "result": "../analysis/results/dynamic-backdrop-payload-30745630876.json",
+      "resultSha256": "27fc0d9b5b88aa636959a4449047b533f4b78d507c7e82172172af6c5717d9b7"
+    },
+    "measured": {
+      "stateCount": 9,
+      "producerAndCopyBaseSharedCommandBufferStateCount": 9,
+      "nonzeroProducerInputStateCount": 0,
+      "nonzeroProducerOutputStateCount": 0,
+      "sample28ProducerOutputExtent": [512, 448]
+    },
+    "interpretation": [
+      "the point-in-time render/input/copy-base joins are structurally valid",
+      "the fresh local CARenderer carrier supplies a transparent producer input when WindowServer-aware backdrop behavior is disabled",
+      "the zero payload is not a cross-command-buffer scheduling race",
+      "the schema-6 gate was insufficient because it checked layout and joins but not payload information content",
+      "the preregistered sample-28 extent was transposed and is corrected from 448x512 to the independently agreeing 512x448 attachment, binding, and raw snapshot"
+    ]
+  },
+  "scope": {
+    "profile": "clear-light-materialize",
+    "sampleIndices": [1, 4, 8, 12, 16, 20, 24, 28, 32],
+    "prospectiveParityHoldout": false,
+    "authorizesProductionIntegration": false,
+    "purpose": [
+      "measure Apple's untouched producer raster on a known information-rich input",
+      "carry that output through Apple's untouched copy-base and mip stages",
+      "derive a byte-exact producer and copy-base replay before freezing a separate unseen input holdout"
+    ]
+  },
+  "controlledIntervention": {
+    "dynamicUniformSchemaVersion": 7,
+    "producerBoundarySchemaVersion": 2,
+    "name": "opaque-coordinate-hash-v1",
+    "location": "fragment texture index 3 of A2Xghfc or TimgA2Xhfc_Isrc in the detached local CARenderer producer pass only",
+    "doesNotModify": [
+      "the live presentation-layer transition",
+      "the CGWindowListCreateImage Apple reference screenshots",
+      "producer pipeline state, mesh, uniforms, viewport, scissor, sampler, render target, or draw call",
+      "copy-base compute pipeline, uniforms, dispatch, destination pyramid, glass pipeline, or final compositor"
+    ],
+    "texture": {
+      "width": 1024,
+      "height": 1024,
+      "pixelFormat": 80,
+      "channelOrder": "BGRA",
+      "alpha": 255,
+      "bytesPerRow": 4096,
+      "rawBytes": 4194304,
+      "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88",
+      "fnv1a64": "7e51eae7957578dd",
+      "uniqueBGRA8PixelCount": 863520,
+      "blue": "(37*x + 17*y + 13) mod 256",
+      "green": "(11*x xor 29*y xor 0x5a) mod 256",
+      "red": "(3*x + 5*y + ((x*y) mod 251)) mod 256"
+    }
+  },
+  "acceptance": {
+    "requiredStateCount": 9,
+    "requiredBoundaryCountPerState": 1,
+    "requireExactControlledInputSha256EveryState": true,
+    "minimumUniqueProducerOutputPixelsPerState": 4096,
+    "minimumUniqueCopyBaseMipZeroPixelsPerState": 4096,
+    "requireProducerAndCopyBaseAddressJoin": true,
+    "requireProducerAndCopyBaseSharedCommandBuffer": true,
+    "requireStrictProducerPassInputCopyBaseSequence": true,
+    "requireExistingFinalPassAndPixelReplayGates": true,
+    "retainFailuresAndCounterexamples": true
+  },
+  "analysisOrder": [
+    "validate exact controlled input and nondegenerate Apple outputs",
+    "fit producer coordinate, sampler, conversion, and raster behavior on opaque-coordinate-hash-v1",
+    "verify copy-base level zero byte for byte from the captured producer output and integer offset",
+    "verify generated mip levels independently",
+    "commit the resulting model and a new seeded input before opening a prospective holdout"
+  ],
+  "notClaimed": [
+    "that the controlled field is Apple's natural WindowServer backdrop",
+    "that one input identifies all producer behavior",
+    "independent crop-allocation recovery",
+    "universal Apple Liquid Glass parity",
+    "production shader authorization"
+  ]
+}
