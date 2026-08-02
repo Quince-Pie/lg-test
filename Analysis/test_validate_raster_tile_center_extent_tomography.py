@@ -146,10 +146,14 @@ class RasterTileCenterExtentTomographyTests(unittest.TestCase):
             / "GlassRasterTileNumerator"
             / "main.swift"
         ).read_text(encoding="utf-8")
-        extent_block = source.split(
-            "#if TILE_CENTER_EXTENT_TOMOGRAPHY\nprivate let centerExtentSet",
+        extent_blocks = re.split(
+            r"#(?:if|elseif) TILE_CENTER_EXTENT_TOMOGRAPHY\n"
+            r"private let centerExtentSet",
+            source,
             maxsplit=1,
-        )[1]
+        )
+        self.assertEqual(len(extent_blocks), 2)
+        extent_block = extent_blocks[1]
         case_block = extent_block.split("private let cases = [", maxsplit=1)[1].split(
             "\n]\n#elseif TILE_CENTER_TOMOGRAPHY",
             maxsplit=1,

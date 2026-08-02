@@ -4339,6 +4339,36 @@ timed states.  Both gates use zero tolerance.  Even if both pass, a separately
 frozen unseen native geometry transfer, the remaining shadow/source work, and
 the broader profile/scale gates remain mandatory before Walle integration.
 
+Prospective run `30756501856`, captured from commit `e22d642`, passed both
+frozen gates.  All 72 surviving-path interventions produced an extractable
+copy-base pass on their first attempt.  Every complete live tree equals its
+same-state zero baseline plus only the declared deepest-SDF position delta,
+and every pre-render tree is byte-identical to its post-render tree.  Source
+`q` is exact in all 576 binary32 comparisons, all 1,008 allocation/copy
+invariant components are exact, and topology remains a four-vertex quad in all
+72 records.  The two zero controls reproduce the decoded policy exactly; their
+MVP and index payloads are byte-exact, while neither raw vertex payload hash is,
+so the latter remains a diagnostic rather than a parity claim.
+
+At state 25, the dense X scan first changes X lower somewhere in the sampled
+integer bracket `80 -> 88`, and the dense Y scan first changes Y upper in the
+sampled bracket `64 -> 96`.  At state 31 the four strong controls expose
+cross-axis edge changes, so these observations do not yet constitute the exact
+primary-mesh integerization law.  The immutable result is
+`Analysis/dynamic_allocation_surviving_path_threshold_result.json`, with
+SHA-256
+`d97062f1da406e6bddf2abd7d575c5aad703fec16e211756ecfcc93bf88bffee`.
+
+The same prospective run tested 28 `inputClamp` arithmetic candidates.  The
+preregistered `float-weighted-mix/affine-expanded-base-darwin-powf` candidate
+is the unique candidate exact in all 32 newly timed states, with zero differing
+binary32 words.  This closes the temporal arithmetic transfer for the captured
+clear/light materialize domain, but it is not an unseen rendered-image or
+profile transfer and does not authorize a production shader change.  The
+immutable result is
+`Analysis/transition_input_clamp_affine_transfer_result.json`, with SHA-256
+`7e1c387afe50544ffb5196ddd7858cad2b5e3fb63e1e4cba47f45dc47d0ebb32`.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

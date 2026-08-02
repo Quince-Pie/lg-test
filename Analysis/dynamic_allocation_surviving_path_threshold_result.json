@@ -1,0 +1,1459 @@
+{
+  "aggregate": {
+    "changedEdgeComponentCount": 25,
+    "changedRecordCount": 23,
+    "denseGroupCount": 2,
+    "edgeComponentCount": 288,
+    "recordCount": 72,
+    "signedEdgeDeltaCounts": {
+      "xLower:+1": 8,
+      "xUpper:+1": 3,
+      "yUpper:+1": 3,
+      "yUpper:-1": 11
+    },
+    "strongGroupCount": 2,
+    "topologyMismatchCount": 0
+  },
+  "classification": "post-opening-analysis-of-preregistered-live-baseline-deepest-sdf-position-threshold; not-an-unseen-geometry-transfer",
+  "conclusion": {
+    "causalCalibrationAnalyzed": true,
+    "independentProducerMeshPolicyRecovered": false,
+    "productionShaderAuthorized": false,
+    "requiresUnseenGeometryTransfer": true,
+    "thresholdsReportedOnlyAsAdjacentObservedBrackets": true
+  },
+  "denseGroups": [
+    {
+      "axis": "x",
+      "distinctResponseCount": 2,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "runs": [
+        {
+          "maximumValue": 80,
+          "minimumValue": -128,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 128,
+          "minimumValue": 88,
+          "response": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "sampleIndex": 25,
+      "sampledValueCount": 29,
+      "transitionBrackets": [
+        {
+          "lowerObservedValue": 80,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 88,
+          "upperResponse": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "axis": "y",
+      "distinctResponseCount": 2,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "runs": [
+        {
+          "maximumValue": 64,
+          "minimumValue": -160,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 160,
+          "minimumValue": 96,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "sampleIndex": 25,
+      "sampledValueCount": 33,
+      "transitionBrackets": [
+        {
+          "lowerObservedValue": 64,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 96,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    }
+  ],
+  "dynamicAllocationSurvivingPathThresholdAnalysisSchemaVersion": 1,
+  "inputValidatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30756501856/dynamic-allocation-path-isolation.json",
+  "inputValidatorResultSHA256": "4d91ef04d4a5e23f83bdf780b73102e0ae54a9458ca5603adbb23592eafc23a7",
+  "recordResponses": [
+    {
+      "interventionName": "base",
+      "phase": "control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 0,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "interventionName": "strong-1-0-1-0-0-0-0-position-x-negative-90",
+      "phase": "path-isolation",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 1,
+      "sampleIndex": 25,
+      "translation": [
+        -90,
+        0
+      ]
+    },
+    {
+      "interventionName": "strong-1-0-1-0-0-0-0-position-x-positive-90",
+      "phase": "path-isolation",
+      "primaryEdgeResponse": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 2,
+      "sampleIndex": 25,
+      "translation": [
+        90,
+        0
+      ]
+    },
+    {
+      "interventionName": "strong-1-0-1-0-0-0-0-position-y-negative-134",
+      "phase": "path-isolation",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 3,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -134
+      ]
+    },
+    {
+      "interventionName": "strong-1-0-1-0-0-0-0-position-y-positive-134",
+      "phase": "path-isolation",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 4,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        134
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-128",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 5,
+      "sampleIndex": 25,
+      "translation": [
+        -128,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-96",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 6,
+      "sampleIndex": 25,
+      "translation": [
+        -96,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-92",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 7,
+      "sampleIndex": 25,
+      "translation": [
+        -92,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-91",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 8,
+      "sampleIndex": 25,
+      "translation": [
+        -91,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-90",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 9,
+      "sampleIndex": 25,
+      "translation": [
+        -90,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-89",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 10,
+      "sampleIndex": 25,
+      "translation": [
+        -89,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-88",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 11,
+      "sampleIndex": 25,
+      "translation": [
+        -88,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-64",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 12,
+      "sampleIndex": 25,
+      "translation": [
+        -64,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-32",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 13,
+      "sampleIndex": 25,
+      "translation": [
+        -32,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-16",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 14,
+      "sampleIndex": 25,
+      "translation": [
+        -16,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-8",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 15,
+      "sampleIndex": 25,
+      "translation": [
+        -8,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-4",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 16,
+      "sampleIndex": 25,
+      "translation": [
+        -4,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-2",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 17,
+      "sampleIndex": 25,
+      "translation": [
+        -2,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-negative-1",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 18,
+      "sampleIndex": 25,
+      "translation": [
+        -1,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-1",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 19,
+      "sampleIndex": 25,
+      "translation": [
+        1,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-2",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 20,
+      "sampleIndex": 25,
+      "translation": [
+        2,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-4",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 21,
+      "sampleIndex": 25,
+      "translation": [
+        4,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-8",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 22,
+      "sampleIndex": 25,
+      "translation": [
+        8,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-16",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 23,
+      "sampleIndex": 25,
+      "translation": [
+        16,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-32",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 24,
+      "sampleIndex": 25,
+      "translation": [
+        32,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-64",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 25,
+      "sampleIndex": 25,
+      "translation": [
+        64,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-80",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 26,
+      "sampleIndex": 25,
+      "translation": [
+        80,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-88",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 27,
+      "sampleIndex": 25,
+      "translation": [
+        88,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-89",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 28,
+      "sampleIndex": 25,
+      "translation": [
+        89,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-90",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 29,
+      "sampleIndex": 25,
+      "translation": [
+        90,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-91",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 30,
+      "sampleIndex": 25,
+      "translation": [
+        91,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-92",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 31,
+      "sampleIndex": 25,
+      "translation": [
+        92,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-96",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 32,
+      "sampleIndex": 25,
+      "translation": [
+        96,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-x-positive-128",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 33,
+      "sampleIndex": 25,
+      "translation": [
+        128,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-160",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 34,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -160
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-144",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 35,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -144
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-136",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 36,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -136
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-135",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 37,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -135
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-134",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 38,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -134
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-133",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 39,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -133
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-132",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 40,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -132
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-128",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 41,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -128
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-96",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 42,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -96
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-64",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 43,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -64
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-32",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 44,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -32
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-16",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 45,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -16
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-8",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 46,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -8
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-4",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 47,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -4
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-2",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 48,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -2
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-negative-1",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 49,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        -1
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-1",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 50,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        1
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-2",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 51,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        2
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-4",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 52,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        4
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-8",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 53,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        8
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-16",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 54,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        16
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-32",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 55,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        32
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-64",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 56,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        64
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-96",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 57,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        96
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-120",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 58,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        120
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-128",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 59,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        128
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-132",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 60,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        132
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-133",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 61,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        133
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-134",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 62,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        134
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-135",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 63,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        135
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-136",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 64,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        136
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-144",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 65,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        144
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-0-0-0-position-y-positive-160",
+      "phase": "dense-threshold",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 66,
+      "sampleIndex": 25,
+      "translation": [
+        0,
+        160
+      ]
+    },
+    {
+      "interventionName": "base",
+      "phase": "control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 67,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "interventionName": "strong-1-0-1-0-0-0-0-position-x-negative-90",
+      "phase": "path-isolation",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "recordIndex": 68,
+      "sampleIndex": 31,
+      "translation": [
+        -90,
+        0
+      ]
+    },
+    {
+      "interventionName": "strong-1-0-1-0-0-0-0-position-x-positive-90",
+      "phase": "path-isolation",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "recordIndex": 69,
+      "sampleIndex": 31,
+      "translation": [
+        90,
+        0
+      ]
+    },
+    {
+      "interventionName": "strong-1-0-1-0-0-0-0-position-y-negative-134",
+      "phase": "path-isolation",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "recordIndex": 70,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        -134
+      ]
+    },
+    {
+      "interventionName": "strong-1-0-1-0-0-0-0-position-y-positive-134",
+      "phase": "path-isolation",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "recordIndex": 71,
+      "sampleIndex": 31,
+      "translation": [
+        0,
+        134
+      ]
+    }
+  ],
+  "runID": 30756501856,
+  "strongGroups": [
+    {
+      "changedInterventionCount": 2,
+      "interventions": [
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-x-negative-90",
+          "phase": "path-isolation",
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 1,
+          "sampleIndex": 25,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-x-positive-90",
+          "phase": "path-isolation",
+          "primaryEdgeResponse": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 2,
+          "sampleIndex": 25,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-y-negative-134",
+          "phase": "path-isolation",
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 3,
+          "sampleIndex": 25,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-y-positive-134",
+          "phase": "path-isolation",
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "recordIndex": 4,
+          "sampleIndex": 25,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedInterventionCount": 4,
+      "interventions": [
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-x-negative-90",
+          "phase": "path-isolation",
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "recordIndex": 68,
+          "sampleIndex": 31,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-x-positive-90",
+          "phase": "path-isolation",
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "recordIndex": 69,
+          "sampleIndex": 31,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-y-negative-134",
+          "phase": "path-isolation",
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "recordIndex": 70,
+          "sampleIndex": 31,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-y-positive-134",
+          "phase": "path-isolation",
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          "recordIndex": 71,
+          "sampleIndex": 31,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sampleIndex": 31
+    }
+  ]
+}

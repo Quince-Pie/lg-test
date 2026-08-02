@@ -1,0 +1,318 @@
+{
+  "aggregate": {
+    "candidateCount": 28,
+    "candidateExactMatchCount": 32,
+    "counterexampleCount": 0,
+    "exactMatchCounts": {
+      "double-multiply-add-cast-float/affine-expanded-base-darwin-powf": 31,
+      "double-multiply-add-cast-float/coregraphics-extended-srgb-to-linear": 8,
+      "double-multiply-add-cast-float/double-base-darwin-pow-cast-float": 5,
+      "double-multiply-add-cast-float/float-base-darwin-pow-cast-float": 18,
+      "double-multiply-add-cast-float/float-base-darwin-powf": 21,
+      "double-multiply-add-cast-float/mixed-base-darwin-powf": 26,
+      "double-multiply-add-cast-float/mixed-base-vforce-vvpowf": 20,
+      "float-fma/affine-expanded-base-darwin-powf": 28,
+      "float-fma/coregraphics-extended-srgb-to-linear": 6,
+      "float-fma/double-base-darwin-pow-cast-float": 4,
+      "float-fma/float-base-darwin-pow-cast-float": 16,
+      "float-fma/float-base-darwin-powf": 18,
+      "float-fma/mixed-base-darwin-powf": 23,
+      "float-fma/mixed-base-vforce-vvpowf": 18,
+      "float-multiply-add/affine-expanded-base-darwin-powf": 30,
+      "float-multiply-add/coregraphics-extended-srgb-to-linear": 6,
+      "float-multiply-add/double-base-darwin-pow-cast-float": 4,
+      "float-multiply-add/float-base-darwin-pow-cast-float": 16,
+      "float-multiply-add/float-base-darwin-powf": 18,
+      "float-multiply-add/mixed-base-darwin-powf": 25,
+      "float-multiply-add/mixed-base-vforce-vvpowf": 20,
+      "float-weighted-mix/affine-expanded-base-darwin-powf": 32,
+      "float-weighted-mix/coregraphics-extended-srgb-to-linear": 7,
+      "float-weighted-mix/double-base-darwin-pow-cast-float": 4,
+      "float-weighted-mix/float-base-darwin-pow-cast-float": 18,
+      "float-weighted-mix/float-base-darwin-powf": 20,
+      "float-weighted-mix/mixed-base-darwin-powf": 27,
+      "float-weighted-mix/mixed-base-vforce-vvpowf": 21
+    },
+    "sampleCount": 32,
+    "uniqueExactEveryStateCandidate": true
+  },
+  "candidateFormula": {
+    "base": "float32(float32(encoded * float32(1.0f/1.055f)) + float32(0.055f/1.055f))",
+    "decode": "Darwin.powf(base, 2.4f)",
+    "encoded": "float32((1-k)*1.0f + k*1.15f)",
+    "offsetBits": "3d55891a",
+    "reciprocalBits": "3f72a76f"
+  },
+  "candidateName": "float-weighted-mix/affine-expanded-base-darwin-powf",
+  "classification": "prospective-transfer-of-preregistered-input-clamp-arithmetic-to-newly-timed-clear-light-states; not-an-unseen-rendering-or-profile-transfer",
+  "conclusion": {
+    "clearLightMaterializeDomainOnly": true,
+    "preregisteredTemporalArithmeticTransferPassed": true,
+    "productionShaderAuthorized": false,
+    "requiresUnseenRenderingAndProfileTransfer": true,
+    "zeroTolerance": true
+  },
+  "inputValidatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30756501856/input-clamp-arithmetic-probe.json",
+  "inputValidatorResultSHA256": "16e0e63ed4b950b6f4aac1b4ac767a45c3f904cb563f0ae9d2e85fed2a73e315",
+  "records": [
+    {
+      "candidateBits": "3f815ddf",
+      "observedInputClamp": 1.0106772184371948,
+      "observedInputClampBits": "3f815ddf",
+      "remaining": 0.031192779541015625,
+      "remainingBits": "3cff8800",
+      "sampleIndex": 1
+    },
+    {
+      "candidateBits": "3f82c21e",
+      "observedInputClamp": 1.0215489864349365,
+      "observedInputClampBits": "3f82c21e",
+      "remaining": 0.0627584457397461,
+      "remainingBits": "3d808780",
+      "sampleIndex": 2
+    },
+    {
+      "candidateBits": "3f842103",
+      "observedInputClamp": 1.0322574377059937,
+      "observedInputClampBits": "3f842103",
+      "remaining": 0.0936574935913086,
+      "remainingBits": "3dbfcf80",
+      "sampleIndex": 3
+    },
+    {
+      "candidateBits": "3f858715",
+      "observedInputClamp": 1.0431848764419556,
+      "observedInputClampBits": "3f858715",
+      "remaining": 0.12499618530273438,
+      "remainingBits": "3dfffe00",
+      "sampleIndex": 4
+    },
+    {
+      "candidateBits": "3f86edc4",
+      "observedInputClamp": 1.054131031036377,
+      "observedInputClampBits": "3f86edc4",
+      "remaining": 0.15619850158691406,
+      "remainingBits": "3e1ff280",
+      "sampleIndex": 5
+    },
+    {
+      "candidateBits": "3f88788b",
+      "observedInputClamp": 1.0661786794662476,
+      "observedInputClampBits": "3f88788b",
+      "remaining": 0.1903219223022461,
+      "remainingBits": "3e42e3c0",
+      "sampleIndex": 6
+    },
+    {
+      "candidateBits": "3f89c3bb",
+      "observedInputClamp": 1.076285719871521,
+      "observedInputClampBits": "3f89c3bb",
+      "remaining": 0.21877574920654297,
+      "remainingBits": "3e6006c0",
+      "sampleIndex": 7
+    },
+    {
+      "candidateBits": "3f8b4cfe",
+      "observedInputClamp": 1.088287115097046,
+      "observedInputClampBits": "3f8b4cfe",
+      "remaining": 0.2523612976074219,
+      "remainingBits": "3e813580",
+      "sampleIndex": 8
+    },
+    {
+      "candidateBits": "3f8cb0b4",
+      "observedInputClamp": 1.0991425514221191,
+      "observedInputClampBits": "3f8cb0b4",
+      "remaining": 0.28255462646484375,
+      "remainingBits": "3e90ab00",
+      "sampleIndex": 9
+    },
+    {
+      "candidateBits": "3f8e2c1d",
+      "observedInputClamp": 1.110721230506897,
+      "observedInputClampBits": "3f8e2c1d",
+      "remaining": 0.31456756591796875,
+      "remainingBits": "3ea10f00",
+      "sampleIndex": 10
+    },
+    {
+      "candidateBits": "3f8fa363",
+      "observedInputClamp": 1.1221736669540405,
+      "observedInputClampBits": "3f8fa363",
+      "remaining": 0.3460407257080078,
+      "remainingBits": "3eb12c40",
+      "sampleIndex": 11
+    },
+    {
+      "candidateBits": "3f911dc1",
+      "observedInputClamp": 1.1337205171585083,
+      "observedInputClampBits": "3f911dc1",
+      "remaining": 0.37758445739746094,
+      "remainingBits": "3ec152c0",
+      "sampleIndex": 12
+    },
+    {
+      "candidateBits": "3f92951b",
+      "observedInputClamp": 1.1451753377914429,
+      "observedInputClampBits": "3f92951b",
+      "remaining": 0.4086923599243164,
+      "remainingBits": "3ed14020",
+      "sampleIndex": 13
+    },
+    {
+      "candidateBits": "3f93f4bb",
+      "observedInputClamp": 1.155906081199646,
+      "observedInputClampBits": "3f93f4bb",
+      "remaining": 0.4376697540283203,
+      "remainingBits": "3ee01640",
+      "sampleIndex": 14
+    },
+    {
+      "candidateBits": "3f957cea",
+      "observedInputClamp": 1.1678745746612549,
+      "observedInputClampBits": "3f957cea",
+      "remaining": 0.4698047637939453,
+      "remainingBits": "3ef08a40",
+      "sampleIndex": 15
+    },
+    {
+      "candidateBits": "3f970fb7",
+      "observedInputClamp": 1.1801670789718628,
+      "observedInputClampBits": "3f970fb7",
+      "remaining": 0.5026102066040039,
+      "remainingBits": "3f00ab10",
+      "sampleIndex": 16
+    },
+    {
+      "candidateBits": "3f9888cf",
+      "observedInputClamp": 1.191675066947937,
+      "observedInputClampBits": "3f9888cf",
+      "remaining": 0.53314208984375,
+      "remainingBits": "3f087c00",
+      "sampleIndex": 17
+    },
+    {
+      "candidateBits": "3f9a0fb4",
+      "observedInputClamp": 1.2036042213439941,
+      "observedInputClampBits": "3f9a0fb4",
+      "remaining": 0.564610481262207,
+      "remainingBits": "3f108a50",
+      "sampleIndex": 18
+    },
+    {
+      "candidateBits": "3f9b7c15",
+      "observedInputClamp": 1.2147241830825806,
+      "observedInputClampBits": "3f9b7c15",
+      "remaining": 0.5937795639038086,
+      "remainingBits": "3f1801f0",
+      "sampleIndex": 19
+    },
+    {
+      "candidateBits": "3f9d275d",
+      "observedInputClamp": 1.2277637720108032,
+      "observedInputClampBits": "3f9d275d",
+      "remaining": 0.6277875900268555,
+      "remainingBits": "3f20b6b0",
+      "sampleIndex": 20
+    },
+    {
+      "candidateBits": "3f9ea651",
+      "observedInputClamp": 1.2394505739212036,
+      "observedInputClampBits": "3f9ea651",
+      "remaining": 0.6580896377563477,
+      "remainingBits": "3f287890",
+      "sampleIndex": 21
+    },
+    {
+      "candidateBits": "3fa03113",
+      "observedInputClamp": 1.2514976263046265,
+      "observedInputClampBits": "3fa03113",
+      "remaining": 0.6891508102416992,
+      "remainingBits": "3f306c30",
+      "sampleIndex": 22
+    },
+    {
+      "candidateBits": "3fa1c316",
+      "observedInputClamp": 1.2637660503387451,
+      "observedInputClampBits": "3fa1c316",
+      "remaining": 0.7206039428710938,
+      "remainingBits": "3f387980",
+      "sampleIndex": 23
+    },
+    {
+      "candidateBits": "3fa33d8f",
+      "observedInputClamp": 1.2753161191940308,
+      "observedInputClampBits": "3fa33d8f",
+      "remaining": 0.7500534057617188,
+      "remainingBits": "3f400380",
+      "sampleIndex": 24
+    },
+    {
+      "candidateBits": "3fa4d325",
+      "observedInputClamp": 1.2876936197280884,
+      "observedInputClampBits": "3fa4d325",
+      "remaining": 0.7814407348632812,
+      "remainingBits": "3f480c80",
+      "sampleIndex": 25
+    },
+    {
+      "candidateBits": "3fa667e8",
+      "observedInputClamp": 1.3000459671020508,
+      "observedInputClampBits": "3fa667e8",
+      "remaining": 0.8125886917114258,
+      "remainingBits": "3f5005d0",
+      "sampleIndex": 26
+    },
+    {
+      "candidateBits": "3fa81bcd",
+      "observedInputClamp": 1.313348412513733,
+      "observedInputClampBits": "3fa81bcd",
+      "remaining": 0.8459396362304688,
+      "remainingBits": "3f588f80",
+      "sampleIndex": 27
+    },
+    {
+      "candidateBits": "3fa9bbc5",
+      "observedInputClamp": 1.3260427713394165,
+      "observedInputClampBits": "3fa9bbc5",
+      "remaining": 0.8775835037231445,
+      "remainingBits": "3f60a950",
+      "sampleIndex": 28
+    },
+    {
+      "candidateBits": "3fab4858",
+      "observedInputClamp": 1.3381452560424805,
+      "observedInputClampBits": "3fab4858",
+      "remaining": 0.9075870513916016,
+      "remainingBits": "3f6857a0",
+      "sampleIndex": 29
+    },
+    {
+      "candidateBits": "3facee24",
+      "observedInputClamp": 1.3510174751281738,
+      "observedInputClampBits": "3facee24",
+      "remaining": 0.939326286315918,
+      "remainingBits": "3f7077b0",
+      "sampleIndex": 30
+    },
+    {
+      "candidateBits": "3fae9a71",
+      "observedInputClamp": 1.3640881776809692,
+      "observedInputClampBits": "3fae9a71",
+      "remaining": 0.9713754653930664,
+      "remainingBits": "3f78ac10",
+      "sampleIndex": 31
+    },
+    {
+      "candidateBits": "3fb01b04",
+      "observedInputClamp": 1.3758244514465332,
+      "observedInputClampBits": "3fb01b04",
+      "remaining": 1.0,
+      "remainingBits": "3f800000",
+      "sampleIndex": 32
+    }
+  ],
+  "runID": 30756501856,
+  "timelineSHA256": "6a473b35a642009d0595890fb6f8d38b7c9ae453ab90731a63357f0670610bc3",
+  "transitionInputClampAffineTransferAnalysisSchemaVersion": 1
+}
