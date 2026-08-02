@@ -3891,11 +3891,45 @@ hashes are recorded in
 This pass closes the captured-input shader/raster/compositor transfer for the
 declared clear/light domain. It is not yet an independent Walle parity pass.
 The transfer renderer consumes Apple's captured private uniform payloads and
-backdrop mip inputs. Its separate upstream audit still mismatches 48 main
+backdrop mip inputs. The first separate upstream audit mismatched 48 main
 position components, 96 main source components, 128 shadow position
-components, 16 shadow SDF components, and 256 shadow source components. The
-temporal uniform law, backdrop-filter pipeline, and complete geometry law must
-therefore be recovered and frozen before a production-path parity claim.
+components, 16 shadow SDF components, and 256 shadow source components.
+Replaying the measured SwiftUI-to-Metal Y inversion removed every main
+position mismatch and reduced the shadow position residual to 24 components;
+main position/clip/SDF are now exact, while 96 main source, 24 shadow position,
+16 shadow SDF, and 256 shadow source components remain. This correction was
+recovered after opening the artifact and is calibration, not a prospective
+holdout result.
+
+The same capture removes the dynamic backdrop transform from the unknown
+optical model. Let `k` be the captured transition `remaining` value, which is
+also the background filter's `inputFaceOpacity`. Across all nine retained
+states, Apple's producer mesh uses the structural resampling scale
+
+```text
+q = 2 / (2 - k)
+```
+
+The source-coordinate domain spans `q` times the allocated copy-base
+destination width and height. Its origin is not fitted from the glass
+vertices: the producer-pass orthographic MVP yields an integer crop origin
+`C`, the copy-base compute uniform supplies its signed integer offset `B`, and
+the effective unscaled origin is exactly `O = C + B`. The glass mapping is
+therefore structurally
+
+```text
+uv = (position / q - O) / allocatedExtent
+```
+
+or equivalently `(position - q*O) / (q*allocatedExtent)`. This algebra
+explains the previously inferred moving source origins and virtual extents,
+including the sample where the producer source is 448-by-512 but the
+copy-base destination allocation is 512-by-512. It does not yet establish the
+CPU's exact binary32 staging for every UV word, nor independently predict the
+discrete crop/allocation choice from geometry and `k`. Those two upstream
+problems, the remaining shadow nine-grid residuals, the temporal uniform law,
+and a newly frozen unseen holdout must close before a production-path parity
+claim or shader change.
 
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
