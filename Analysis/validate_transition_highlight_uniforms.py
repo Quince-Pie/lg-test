@@ -132,6 +132,32 @@ def validate_raw_render_evidence(
         root=root,
         name="exact-pass replay output",
     )
+    final_input = mapping(
+        replay.get("finalHighlightInputReference"),
+        "finalHighlightInputReference",
+    )
+    if (
+        final_input.get("executed") is not True
+        or final_input.get("glassDrawCount") != 2
+        or final_input.get("stoppedAfterGlass") is not False
+    ):
+        raise ValueError("pre-final-highlight replay differs")
+    final_input_output = mapping(
+        final_input.get("output"),
+        "finalHighlightInput output",
+    )
+    if (
+        final_input_output.get("width") != 1024
+        or final_input_output.get("height") != 1024
+        or final_input_output.get("pixelFormat") != 80
+        or final_input_output.get("rawBytes") != 1024 * 1024 * 4
+    ):
+        raise ValueError("pre-final-highlight output layout differs")
+    validate_raw_file(
+        final_input_output,
+        root=root,
+        name="pre-final-highlight output",
+    )
     textures = mapping(
         render.get("metalTextureSnapshots"),
         "metalTextureSnapshots",
@@ -257,6 +283,7 @@ def validate(
             "states": 0,
             "highlightBindings": 0,
             "highlightTraces": 0,
+            "intermediateTextures": 0,
         }
 
     records = uniforms.get("records")
@@ -282,6 +309,7 @@ def validate(
 
     binding_count = 0
     highlight_trace_count = 0
+    intermediate_texture_count = 0
     for sample_index, untyped_record in zip(
         EXPECTED_SAMPLE_INDICES,
         records,
@@ -372,6 +400,38 @@ def validate(
             highlight_trace_count += 1
         elif "finalHighlightAlphaTrace" in replay:
             raise ValueError("an unrequested dynamic highlight trace executed")
+        texture_snapshots = mapping(
+            render.get("metalTextureSnapshots"),
+            "metalTextureSnapshots",
+        ).get("snapshots")
+        if not isinstance(texture_snapshots, list):
+            raise ValueError("metalTextureSnapshots are incomplete")
+        intermediate_textures = [
+            mapping(snapshot, "intermediate texture")
+            for snapshot in texture_snapshots
+            if isinstance(snapshot, Mapping)
+            and snapshot.get("index") == 3
+            and fragment_name(snapshot) == "TimgA2Xhfc_Isrc"
+        ]
+        if sample_index == 32:
+            if len(intermediate_textures) != 1:
+                raise ValueError("endpoint intermediate texture is not unique")
+            texture = intermediate_textures[0]
+            if (
+                texture.get("width") != 800
+                or texture.get("height") != 800
+                or texture.get("pixelFormat") != 80
+                or texture.get("mipmapLevelCount") != 1
+            ):
+                raise ValueError("endpoint intermediate texture layout differs")
+            validate_raw_file(
+                texture,
+                root=path.parent,
+                name="endpoint intermediate texture",
+            )
+            intermediate_texture_count += 1
+        elif intermediate_textures:
+            raise ValueError("moving state has an unexpected intermediate texture")
         bindings = render.get("glassFragmentUniformBindings")
         if not isinstance(bindings, list):
             raise ValueError("glassFragmentUniformBindings is not a list")
@@ -420,6 +480,7 @@ def validate(
         "rawBackdropPyramids": len(records),
         "rawPreFinalPasses": len(records),
         "highlightTraces": highlight_trace_count,
+        "intermediateTextures": intermediate_texture_count,
     }
 
 

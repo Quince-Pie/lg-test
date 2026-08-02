@@ -4958,6 +4958,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return false
         }
         return fragment.hasPrefix("glass_background")
+            || fragment == "TimgA2Xhfc_Isrc"
     }
 
     private init() {}
@@ -8505,6 +8506,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         commands commandOverride: [ReplayCommand]? = nil,
         replacingGlassPipeline replacement:
             MTLRenderPipelineState?,
+        stopAfterGlass: Bool = true,
         glassFragmentTextureOverrides:
             [Int: MTLTexture] = [:],
         capture: String,
@@ -8613,7 +8615,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             replacingGlassPipeline: replacement,
             glassFragmentTextureOverrides:
                 glassFragmentTextureOverrides,
-            stopAfterGlass: true)
+            stopAfterGlass: stopAfterGlass)
         writeIndependentGlassProgress(
             capture: capture,
             phase: "after-prefix-encoding",
@@ -11412,6 +11414,28 @@ private final class MetalUniformProbe: @unchecked Sendable {
             capture: capture,
             suffix: "glass-prefix-reference",
             outputDirectory: outputDirectory)
+        if let finalHighlight = finalHighlightSelection(
+                in: pass.commands)
+        {
+            result["finalHighlightInputReference"] =
+                replayGlassPrefix(
+                    pass: pass,
+                    preColor0: preColor0,
+                    queue: queue,
+                    commands: Array(
+                        pass.commands.prefix(
+                            finalHighlight.drawIndex)),
+                    replacingGlassPipeline: nil,
+                    stopAfterGlass: false,
+                    capture: capture,
+                    suffix: "pre-final-highlight-reference",
+                    outputDirectory: outputDirectory)
+        } else {
+            result["finalHighlightInputReference"] = [
+                "executed": false,
+                "reason": "final Apple highlight draw is unavailable",
+            ]
+        }
         var independentGlassReplay: [String: Any] = [
             "reference": glassPrefixReference,
         ]

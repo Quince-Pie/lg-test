@@ -1740,6 +1740,12 @@ transition-raster interpolation from highlight and compositor arithmetic.
 This alpha-only mode omits the larger key/fill tomography matrix and unused
 auxiliary attachments; the complete settled-highlight workflow retains those
 diagnostics.
+Every state additionally retains attachment zero immediately before the last
+`A2Xghfc` draw, rather than assuming that the glass-prefix boundary is also the
+highlight boundary. This distinction is observable at the materialized
+endpoint, where Core Animation inserts a blended `TimgA2Xhfc_Isrc` draw. The
+probe retains that draw's exact 800×800 BGRA8 source texture and command state;
+CI rejects the texture in moving states or its absence at the endpoint.
 The transition-only `glassForeground` branch has a different topology from
 settled glass: its copied filter and exact input law are retained and checked,
 but the report explicitly records that it was not installed on this
