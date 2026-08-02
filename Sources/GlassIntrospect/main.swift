@@ -6396,7 +6396,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
         texture: AnyObject?,
         index: Int
     ) -> AnyObject? {
-        guard index == 3,
+        guard ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_CONTROLLED_BACKDROP"
+              ] == "1",
+              index == 3,
               let original = texture as? MTLTexture,
               original.textureType == .type2D,
               original.width == 1_024,
@@ -16252,6 +16255,48 @@ private struct TransitionLayerState {
     let backdropScale: NSNumber?
 }
 
+private func transitionLayerStateEvidence(
+    _ state: TransitionLayerState
+) -> [String: Any] {
+    [
+        "path": state.path,
+        "class": state.className,
+        "bounds": [
+            state.bounds.origin.x,
+            state.bounds.origin.y,
+            state.bounds.size.width,
+            state.bounds.size.height,
+        ],
+        "position": [
+            state.position.x,
+            state.position.y,
+        ],
+        "anchorPoint": [
+            state.anchorPoint.x,
+            state.anchorPoint.y,
+        ],
+        "zPosition": state.zPosition,
+        "opacity": state.opacity,
+        "isHidden": state.isHidden,
+        "isOpaque": state.isOpaque,
+        "masksToBounds": state.masksToBounds,
+        "cornerRadius": state.cornerRadius,
+        "contentsScale": state.contentsScale,
+        "contentsRect": [
+            state.contentsRect.origin.x,
+            state.contentsRect.origin.y,
+            state.contentsRect.size.width,
+            state.contentsRect.size.height,
+        ],
+        "transform": serializedTransform(state.transform),
+        "sublayerTransform": serializedTransform(
+            state.sublayerTransform),
+        "backdropScale": state.backdropScale.map {
+            $0 as Any
+        } ?? NSNull(),
+    ]
+}
+
 private func transitionFilterType(_ value: Any) -> String? {
     guard let object = value as? NSObject,
           object.responds(to: NSSelectorFromString("type"))
@@ -16996,7 +17041,7 @@ private func localTransitionCARendererEvidence(
     rootLayer: CALayer,
     device: MTLDevice,
     capture: String,
-    outputDirectory: URL
+    outputDirectory: URL?
 ) -> [String: Any] {
     var mutations: [LayerBoolMutation] = []
     if let mutation = mutateLayerBool(
@@ -17052,6 +17097,7 @@ private func transitionBackgroundUniformEvidence(
     rootLayer: CALayer,
     snapshots: [TransitionBackgroundFilterSnapshot],
     matrixBasisRequested: Bool,
+    allocationOnly: Bool,
     outputDirectory: URL
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
@@ -17172,8 +17218,9 @@ private func transitionBackgroundUniformEvidence(
             rootLayer: rootLayer,
             device: device,
             capture: capture,
-            outputDirectory: outputDirectory)
-        records.append([
+            outputDirectory:
+                allocationOnly ? nil : outputDirectory)
+        var record: [String: Any] = [
             "sampleIndex": snapshot.sampleIndex,
             "requestedProgress": snapshot.requestedProgress,
             "remaining": snapshot.remaining,
@@ -17194,7 +17241,13 @@ private func transitionBackgroundUniformEvidence(
             "detachedLayerTreeCopy": false,
             "presentationLayerAssignedToCARenderer": false,
             "render": render,
-        ])
+        ]
+        if allocationOnly {
+            record["capturedLayerStates"] =
+                snapshot.layerStates.map(
+                    transitionLayerStateEvidence)
+        }
+        records.append(record)
     }
     let executed = records.filter {
         ($0["render"] as? [String: Any])?["executed"]
@@ -17207,19 +17260,27 @@ private func transitionBackgroundUniformEvidence(
             sourceSnapshot: snapshots.last,
             device: device,
             requested: matrixBasisRequested)
+    let evidenceMode = allocationOnly
+        ? "allocation-metadata-v1"
+        : "controlled-replay-v1"
+    let method = allocationOnly
+        ? "copied-presentation-background-filter-plus-compatible-"
+            + "layer-state-on-fresh-static-model-tree-with-original-"
+            + "producer-input-and-metadata-only-stage-capture"
+        : "copied-presentation-background-filter-plus-compatible-"
+            + "layer-state-on-fresh-static-model-tree-with-controlled-"
+            + "producer-input"
     return [
         "schemaVersion": 7,
         "requested": true,
         "executed": executed == snapshots.count,
+        "evidenceMode": evidenceMode,
         "modelTargetPath": matrixTarget.path,
         "sampleIndices": snapshots.map(\.sampleIndex),
         "sampleCount": snapshots.count,
         "executedSampleCount": executed,
         "records": records,
-        "method":
-            "copied-presentation-background-filter-plus-compatible-"
-            + "layer-state-on-fresh-static-model-tree-with-controlled-"
-            + "producer-input",
+        "method": method,
         "presentationLayerReplayed": true,
         "presentationLayerAssignedToCARenderer": false,
         "freshStaticCarrier": true,
@@ -17845,6 +17906,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_MATRIX_BASIS"
                 ] == "1"
+            let allocationOnlyRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_ALLOCATION_ONLY"
+                ] == "1"
             if dynamicUniformsRequested,
                direction != .materialize
             {
@@ -17870,13 +17935,45 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "dynamic uniform capture",
                     ])
             }
+            if allocationOnlyRequested,
+               !dynamicUniformsRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 10,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "allocation-only capture requires "
+                            + "dynamic uniform capture",
+                    ])
+            }
+            if allocationOnlyRequested,
+               matrixUniformBasisRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 11,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "allocation-only capture excludes "
+                            + "matrix uniform interventions",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
             let endpointTopologyDeadlineSeconds = 1.0
-            let dynamicUniformSampleIndices = Set([
-                1, 4, 8, 12, 16, 20, 24, 28, 32,
-            ])
+            let dynamicUniformSampleIndices = Set(
+                allocationOnlyRequested
+                    ? [
+                        1, 4, 8, 12, 15, 16, 17,
+                        20, 24, 27, 28, 29, 31, 32,
+                    ]
+                    : [
+                        1, 4, 8, 12, 16, 20, 24, 28, 32,
+                    ])
             var dynamicUniformSnapshots:
                 [TransitionBackgroundFilterSnapshot] = []
             if transitionModel.visible != direction.initialVisible {
@@ -18123,6 +18220,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         snapshots: dynamicUniformSnapshots,
                         matrixBasisRequested:
                             matrixUniformBasisRequested,
+                        allocationOnly:
+                            allocationOnlyRequested,
                         outputDirectory: outputDirectory)
                 carrierWindow.orderOut(nil)
                 writeTransitionProbeProgress(
@@ -18134,6 +18233,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     "schemaVersion": 7,
                     "requested": false,
                     "executed": false,
+                    "evidenceMode": "disabled",
                     "presentationLayerReplayed": false,
                     "matrixUniformBasis": [
                         "schemaVersion": 1,

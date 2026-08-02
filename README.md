@@ -4009,6 +4009,45 @@ problems, the remaining shadow nine-grid residuals, the temporal uniform law,
 and a newly frozen unseen holdout must close before a production-path parity
 claim or shader change.
 
+The discrete allocation gap is no longer a black box for the opened
+`clear/light`, `circle-800-center`, materialize corpus. Across 24 independent
+captures and 216 dynamic states, the following policy predicts all 2,160
+checked crop, clamp, producer-extent, and copy-destination components exactly:
+
+```text
+frameMin = center - requestedExtent*k/2
+clipped = intersect([frameMin, frameMin + requestedExtent], window)
+s = 1 - k/2
+cropX = floor(s*clippedLowerX) + 1
+cropY = ceil(s*clippedLowerY)                 // Metal-inverted Y
+clampMax = floor(s*clippedUpper) - crop - 1
+producerExtent = alignUp(clampMax + 1, 64)
+destinationExtent = alignUp(s*clippedSpan, 64)
+```
+
+This includes the independently observed 512-by-448 producer versus
+512-by-512 destination case: clamp maximum 447 needs 448 source samples,
+whereas clamp maximum 448 needs 449 and therefore crosses the 512-pixel
+allocation quantum. The result is retrospective and geometry-specific; it is
+not yet a universal allocation law. The effective origin `O = C + B` is always
+four-pixel aligned in the same corpus. The narrow candidate
+`Ox = alignDown(Cx - 1 - [k >= 0.5], 4)` and
+`Oy = alignDown(Cy - 1, 4)` also matches all 432 opened origin components, but
+the old geometry does not sufficiently distinguish that phase rule.
+
+`Analysis/dynamic_allocation_geometry_holdout_preregistration.json` freezes a
+zero-tolerance transfer gate before opening four new geometry families:
+centered small, integer-offset, fractional-center, and window-clipped circles.
+The `allocation-holdout` workflow mode captures 14 states per geometry,
+including dense samples around `k = 0.5` and the later allocation boundary.
+It preserves Apple's original producer input, complete Metal command and
+buffer payloads, and the exact presentation layer states used by the replay,
+while omitting raw textures, exact-pass replays, numeric traces, and
+tomography. A pass can establish prospective transfer only for the frozen
+allocation and four-pixel-origin laws. The newly observed producer mesh is
+explicitly discovery data and requires its own later unseen holdout before it
+can authorize production integration.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does

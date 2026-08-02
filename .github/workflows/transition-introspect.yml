@@ -12,6 +12,7 @@ on:
           - state-matrix
           - uniform-smoke
           - uniform-profiles
+          - allocation-holdout
 
 concurrency:
   group: transition-introspect-v5-${{ github.ref }}
@@ -26,7 +27,10 @@ jobs:
       matrix.direction == 'materialize' &&
       startsWith(matrix.label, 'profile-')) ||
       (inputs.capture_mode == 'uniform-smoke' &&
-      matrix.label == 'profile-clear-light-materialize')) &&
+      matrix.label == 'profile-clear-light-materialize') ||
+      (inputs.capture_mode == 'allocation-holdout' &&
+      matrix.direction == 'materialize' &&
+      startsWith(matrix.label, 'geometry-'))) &&
       'macos-26' || 'ubuntu-latest' }}
     timeout-minutes: 60
     strategy:
@@ -120,7 +124,10 @@ jobs:
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'profile-')) ||
         (inputs.capture_mode == 'uniform-smoke' &&
-        matrix.label == 'profile-clear-light-materialize')) && '1' || '0' }}
+        matrix.label == 'profile-clear-light-materialize') ||
+        (inputs.capture_mode == 'allocation-holdout' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'geometry-'))) && '1' || '0' }}
       LG_GLASS_MATERIAL: ${{ matrix.material }}
       LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
       LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
@@ -131,7 +138,20 @@ jobs:
         matrix.direction == 'materialize' &&
         startsWith(matrix.label, 'profile-')) ||
         (inputs.capture_mode == 'uniform-smoke' &&
+        matrix.label == 'profile-clear-light-materialize') ||
+        (inputs.capture_mode == 'allocation-holdout' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'geometry-'))) && '1' || '0' }}
+      LG_TRANSITION_CONTROLLED_BACKDROP: >-
+        ${{ ((inputs.capture_mode == 'uniform-profiles' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'profile-')) ||
+        (inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize')) && '1' || '0' }}
+      LG_TRANSITION_ALLOCATION_ONLY: >-
+        ${{ inputs.capture_mode == 'allocation-holdout' &&
+        matrix.direction == 'materialize' &&
+        startsWith(matrix.label, 'geometry-') && '1' || '0' }}
       LG_TRANSITION_HIGHLIGHT_TRACE: >-
         ${{ inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize' && '1' || '0' }}
@@ -197,6 +217,21 @@ jobs:
             > transition-introspection/runtime-stdout.log \
             2> transition-introspection/runtime-stderr.log
 
+      - name: Validate prospective allocation holdout
+        id: allocation_holdout
+        if: >-
+          env.LG_SELECTED == '1' &&
+          env.LG_TRANSITION_ALLOCATION_ONLY == '1' &&
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_dynamic_allocation_holdout.py \
+            transition-introspection/transition-timeline.json \
+            --expected-geometry "${{ matrix.geometry }}" \
+            --output \
+              transition-introspection/dynamic-allocation-holdout.json
+
       - name: Upload transition introspection
         if: always() && env.LG_SELECTED == '1'
         uses: actions/upload-artifact@v4
@@ -211,6 +246,9 @@ jobs:
         run: |
           test "${{ steps.build.outcome }}" = success
           test "${{ steps.capture.outcome }}" = success
+          if [[ "$LG_TRANSITION_ALLOCATION_ONLY" == "1" ]]; then
+            test "${{ steps.allocation_holdout.outcome }}" = success
+          fi
           test -s transition-introspection/transition-timeline.json
           python3 - <<'PY'
           import json
@@ -770,13 +808,15 @@ jobs:
                   f"{len(output_hashes)} distinct frames"
               )
           PY
-          highlight_args=()
-          if [[ "$LG_TRANSITION_UNIFORMS" == "1" ]]; then
-            highlight_args+=(--requested)
+          if [[ "$LG_TRANSITION_ALLOCATION_ONLY" != "1" ]]; then
+            highlight_args=()
+            if [[ "$LG_TRANSITION_UNIFORMS" == "1" ]]; then
+              highlight_args+=(--requested)
+            fi
+            if [[ "$LG_TRANSITION_HIGHLIGHT_TRACE" == "1" ]]; then
+              highlight_args+=(--highlight-trace)
+            fi
+            python3 Analysis/validate_transition_highlight_uniforms.py \
+              transition-introspection/transition-timeline.json \
+              "${highlight_args[@]}"
           fi
-          if [[ "$LG_TRANSITION_HIGHLIGHT_TRACE" == "1" ]]; then
-            highlight_args+=(--highlight-trace)
-          fi
-          python3 Analysis/validate_transition_highlight_uniforms.py \
-            transition-introspection/transition-timeline.json \
-            "${highlight_args[@]}"

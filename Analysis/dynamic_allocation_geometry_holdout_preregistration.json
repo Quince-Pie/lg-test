@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "classification": "prospective allocation-and-origin transfer holdout plus producer-mesh discovery capture",
+  "frozenAtUtc": "2026-08-02T12:40:16Z",
+  "objective": "Test the frozen dynamic backdrop crop, clamp, allocation, runtime-scale, q-coordinate, and four-pixel effective-origin laws on Apple geometries that were not present in the opened fitting corpus. Retain the original Apple producer input and exact Metal command/buffer metadata needed to recover the still-unknown producer-mesh policy, without retaining raw texture, replay, trace, or tomography dumps.",
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-holdout"
+    },
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometries": [
+      "circle-256-center",
+      "circle-512-offset",
+      "circle-640-fractional",
+      "circle-1536-center"
+    ],
+    "requestedSampleIndices": [
+      1,
+      4,
+      8,
+      12,
+      15,
+      16,
+      17,
+      20,
+      24,
+      27,
+      28,
+      29,
+      31,
+      32
+    ],
+    "evidenceMode": "allocation-metadata-v1",
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false,
+    "prospectiveStateCount": 56
+  },
+  "retainedOpenedEvidence": {
+    "classification": "retrospective circle-800-center fitting corpus",
+    "captureCount": 24,
+    "stateCount": 216,
+    "allocationComponentCount": 2160,
+    "allocationMismatchedComponentCount": 0,
+    "effectiveOriginComponentCount": 432,
+    "effectiveOriginMismatchedComponentCount": 0,
+    "latestRunId": 30746489805,
+    "independentAxisBoundaryRunId": 30745630876,
+    "resultSha256": "5d3da69d69241a4c5326a58a0b90821d4862756353e8c0324293d42b6664e267"
+  },
+  "frozenPredictor": {
+    "lgTestCommitBeforeRegistration": "04124c1e46b83ef4741c8138e45ede472f601919",
+    "validator": "Analysis/validate_dynamic_allocation_holdout.py",
+    "validatorSha256": "d7ef570c8bf8ad1cbe1b0c8df55ed05a99d521125f41719b665ef6d6b9ca9c9d",
+    "validatorTestSha256": "092fbaced369aace2af254d7a432e15654a2c0d736518c682df9e03b20311389",
+    "openedAnalyzerSha256": "c2b7bd407fd8844c9154fc7c84c439087c5198b4ec2e9fc5de5545bb0229e46c",
+    "productionShaderSha256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3",
+    "laws": {
+      "runtimeScale": "s = 1 - k/2",
+      "dynamicResamplingScale": "q = 1/s = 2/(2-k)",
+      "nominalFrame": "full requested extent placed at center - requestedExtent*k/2 on each axis, then clipped to the window; Metal Y uses inverted window bounds",
+      "producerCropX": "floor(s*clippedLowerX)+1",
+      "producerCropY": "ceil(s*clippedLowerY)",
+      "copyClampMaximum": "floor(s*clippedUpper)-producerCrop-1 independently per axis",
+      "producerExtent": "align(copyClampMaximum+1, 64) independently per axis",
+      "destinationExtent": "align(s*clippedNominalSpan, 64) independently per axis",
+      "effectiveOriginX": "alignDown(producerCropX-1-indicator(k>=0.5), 4)",
+      "effectiveOriginY": "alignDown(producerCropY-1, 4)",
+      "producerPrimarySourceCoordinates": "binary32(position*q) for the first producer quad"
+    }
+  },
+  "acceptance": {
+    "ciWorkflowMustSucceed": true,
+    "captureCommitMustContainThisRegistration": true,
+    "allFourGeometriesMustExecute": true,
+    "stateCountPerGeometry": 14,
+    "maximumAllowedMismatchedComponents": 0,
+    "requireRuntimeScaleExactEveryState": true,
+    "requireCropOriginExactEveryState": true,
+    "requireClampExactEveryState": true,
+    "requireProducerExtentExactEveryState": true,
+    "requireDestinationExtentExactEveryState": true,
+    "requireEffectiveOriginExactEveryState": true,
+    "requireProducerPrimarySourceCoordinatesExactEveryState": true,
+    "requireOriginalProducerInput": true,
+    "forbidRawStageDumps": true,
+    "allowTolerance": false,
+    "allowPostOpeningPredictorChanges": false
+  },
+  "discoverySurfaces": {
+    "producerMesh": [
+      "primary vertex binary32 payload",
+      "vertex count and quad topology",
+      "MVP payload and integer crop",
+      "viewport and scissor",
+      "exact captured presentation layer states"
+    ],
+    "restriction": "Producer-mesh values from this run are discovery evidence only. They cannot be called a prospective mesh-policy pass; any recovered mesh predictor requires a later separately frozen unseen holdout."
+  },
+  "interpretation": {
+    "pass": "Prospective zero-tolerance transfer of the frozen allocation and effective-origin laws across the four specified geometries and 56 captured states.",
+    "fail": "Preserve the failed result and use its metadata to distinguish the false law. Do not weaken or overwrite this gate after observing the artifact.",
+    "notClaimed": [
+      "a recovered independent producer-mesh policy",
+      "all Apple shapes, materials, appearances, OS builds, GPUs, scales, or accessibility states",
+      "production Walle parity",
+      "permission to alter the protected production shader or trade image quality for resource usage"
+    ]
+  }
+}
