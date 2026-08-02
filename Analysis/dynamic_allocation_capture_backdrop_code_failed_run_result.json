@@ -1,0 +1,88 @@
+{
+  "aggregate": {
+    "allocationInvariants": {
+      "componentCount": 1596,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "baseDrawConsumedHashes": {
+      "indexExact": true,
+      "mvpExact": true,
+      "vertexExact": false
+    },
+    "baseMeshDifferenceFields": [
+      "fragmentFunction",
+      "mvpPayloadSHA256",
+      "vertexDrawConsumedPayloadSHA256",
+      "vertexPayloadSHA256"
+    ],
+    "basePrimaryVerticesExact": true,
+    "captureBackdropCodeCaptureCount": 0,
+    "captureBackdropDecisionDirectCallCount": 0,
+    "captureBackdropDirectCallTargetCodeCaptureCount": 0,
+    "firstInterventionFragmentFunction": "TimgA2Xhfc_Isrc",
+    "latchedCallSiteSchemaVersion": 5,
+    "latchedSnapshotFragmentFunction": "A2Xghfc",
+    "latchedStackFrameCount": 32,
+    "latchedStackSymbols": [
+      "$s4main28glassUniformCallSiteEvidence029_12232F587A4C5CD8B1EEDF696793H2FCLL7captureSDySSypGSS_tF",
+      "$s4main17MetalUniformProbe029_12232F587A4C5CD8B1EEDF696793F2FCLLC39captureProducerGeometryCallSiteIfNeeded0L08pipeline5indexSDySSypGSgSS_AISitF",
+      "$s4main17MetalUniformProbe029_12232F587A4C5CD8B1EEDF696793F2FCLLC18recordBufferOffset7encoder5stage6offset5indexyyXl_SSS2itF",
+      "$s4main26probeSetVertexBufferOffset029_12232F587A4C5CD8B1EEDF696793H2FCLLyyyXl_10ObjectiveC8SelectorVS2itFTo",
+      "_ZN2CA3OGL15MetalBufferPool17encode_vertex_argEmPKvjj",
+      "_ZN2CA3OGL12MetalContext4drawE16MTLPrimitiveTypejjPKvmmjjPKtPKNS0_9ClipPlaneEPKNS0_15MetalBufferPool11MetalBufferE",
+      "_ZN2CA3OGL12MetalContext13draw_elementsENS0_13PrimitiveModeEjPKtPKNS0_6VertexEjjPKNS0_9ClipPlaneE",
+      "_ZN2CA3OGL7Context12ClippedArray9next_rectERNS_6BoundsE",
+      "_ZN2CA3OGL17emit_quad_indicesERNS0_7ContextERKNS0_9RectStateEPKtmmm",
+      "_ZN2CA3OGL19emit_nine_part_rectERNS0_7ContextERKNS0_9RectStateEPKdS7_PKfS9_S9_S9_jf",
+      "_ZN2CA3OGL13fill_rect_texERNS0_7ContextERKNS0_9RectStateEPKf",
+      "_ZNK2CA3OGL16ContentsGeometry15fill_and_unbindERNS0_7ContextEPNS0_5ImageE",
+      "_ZN2CA3OGL26render_contents_backgroundERNS0_8RendererEPKNS0_5LayerE",
+      "_ZN2CA3OGL9LayerNode5applyEfPPNS0_7SurfaceEPf",
+      "_ZN2CA3OGL11ImagingNode6renderEPNS1_13RenderClosureEj",
+      "_ZN2CA3OGL13render_layersERNS0_8RendererEPNS0_5LayerE",
+      "_ZN2CA3OGL9LayerNode5applyEfPPNS0_7SurfaceEPf",
+      "_ZN2CA3OGL11ImagingNode6renderEPNS1_13RenderClosureEj",
+      "_ZN2CA3OGL13render_layersERNS0_8RendererEPNS0_5LayerE",
+      "_ZN2CA3OGL9LayerNode5applyEfPPNS0_7SurfaceEPf",
+      "_ZN2CA3OGL11ImagingNode6renderEPNS1_13RenderClosureEj",
+      "_ZN2CA3OGL13render_layersERNS0_8RendererEPNS0_5LayerE",
+      "_ZN2CA3OGL9LayerNode5applyEfPPNS0_7SurfaceEPf",
+      "_ZN2CA3OGL11ImagingNode6renderEPNS1_13RenderClosureEj",
+      "_ZN2CA3OGL13render_layersERNS0_8RendererEPNS0_5LayerE",
+      "_ZN2CA3OGL8Renderer6renderEPKNS_6Render6UpdateEmPNS_13CASharedEventE",
+      "_ZN2CA3OGL6renderERNS0_8RendererEPNS_6Render6UpdateEm",
+      "-[CARenderer render]",
+      "$s4main25carendererUniformEvidence029_12232F587A4C5CD8B1EEDF696793F2FCLL9rootLayer6device7capture021includeGeometryPolicyD00p18LiveRenderBoundaryD015outputDirectorySDySSypGSo7CALayerC_So9MTLDevice_pSSS2b10Foundation3URLVSgtF",
+      "$s4main33localTransitionCARendererEvidence029_12232F587A4C5CD8B1EEDF696793G2FCLL9rootLayer6device7capture15outputDirectorySDySSypGSo7CALayerC_So9MTLDevice_pSS10Foundation3URLVSgtF",
+      "$s4main37transitionAllocationRenderWithRetries029_12232F587A4C5CD8B1EEDF696793H2FCLL9rootLayer6device7capture16retryPreparationSDySSypGSo7CALayerC_So9MTLDevice_pSSSbyXEtF029$s4main38transitionFixedStatec17Evidence029_12232ghijkl61H2FCLL9rootLayer6target9snapshots6device9requestedSDySSypGSo7t70C_AA32TransitionBackgroundFilterTargetACLLVSayAA0uvW8SnapshotACLLVGSo9U15_pSbtFSbyXEfU1_SayAA010TransitionoX0ACLLVGAjA34TransitionBackgroundFilterSnapshotACLLVAA32TransitionBackgroundFilterTargetACLLVTf1nnnc_nTf4nnnggggX_nTm",
+      "$s4main41transitionPathIsolationAllocationEvidence029_12232F587A4C5CD8B1EEDF696793H2FCLL9rootLayer6target9snapshots6device9requestedSDySSypGSo7CALayerC_AA32TransitionBackgroundFilterTargetACLLVSayAA0uvW8SnapshotACLLVGSo9MTLDevice_pSbtF"
+    ],
+    "normalFragmentFunction": "A2Xghfc",
+    "preIntegrityValidationReached": true,
+    "primarySourceQ": {
+      "componentCount": 912,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "recordCount": 114
+  },
+  "classification": "post-opening-audit-of-failed-preregistered-capture-backdrop-code-capture; not-an-accepted-code-recovery-or-producer-mesh-policy",
+  "conclusion": {
+    "captureBackdropBytesRecovered": false,
+    "firstMatchingA2XBindingWasBackdropProducer": false,
+    "frozenCodeCaptureGatePassed": false,
+    "latchedStackWasContentsGeometry": true,
+    "primaryGeometryChangedByFailedDiagnostic": false,
+    "producerMeshPolicyRecovered": false,
+    "productionShaderAuthorized": false,
+    "requiresLiveStackQualifiedRetry": true,
+    "sample31MatrixRemainsExtractable": true
+  },
+  "dynamicAllocationCaptureBackdropCodeFailedRunAnalysisSchemaVersion": 1,
+  "frozenGateError": "surviving-path exact integrity gate failed: q=912/912, allocation=1596/1596, baseDecoded=0/1, baseMVP=1/1, baseIndex=1/1",
+  "headSHA": "6eefa49e882fd6e23a89fe10ae443d2276f8f005",
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30761875264/transition-timeline.json",
+  "inputTimelineSHA256": "07c232fe8cc53c3aec3d85c33ac464c747ddcccb4667664c68742b1529dac294",
+  "runID": 30761875264
+}

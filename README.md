@@ -4536,6 +4536,31 @@ arithmetic, but cannot by itself recover live operands or authorize a mesh
 law.  Any derived policy must still explain every opened record exactly and
 then pass a preregistered native-geometry holdout before production work.
 
+Run `30761875264`, from preregistered commit `6eefa49`, correctly failed the
+new gate and is retained in
+`Analysis/dynamic_allocation_capture_backdrop_code_failed_run_result.json`
+with SHA-256
+`5d75ceb21031d22402e1d44446d01d0badba6dc9b54b3f48e35be0b2d866aa7e`.
+The full 114-record matrix completed; all 912 source-`q` components and all
+1,596 allocation/copy components remained exact, as did the normal/base
+primary vertices and draw-consumed MVP and index bytes.  However, the first
+`A2Xghfc`/vertex-index-1 callback was a contents-geometry draw.  Its 32-frame
+stack contains `ContentsGeometry::fill_and_unbind` and
+`render_contents_background`, not `capture_backdrop`.  The one-shot hook
+latched there, retained zero `capture_backdrop` payloads, and made the later
+producer callback ineligible.  The run therefore recovered no target code and
+must not be relabeled as a successful code capture.
+
+The selector-only retry is frozen in
+`Analysis/dynamic_allocation_capture_backdrop_code_retry_preregistration.json`.
+Before constructing or retaining a call-site payload, it scans at most 32
+return addresses and requires the exact `capture_backdrop` symbol on the live
+stack.  A wrong-stack `A2Xghfc` callback now returns without consuming the
+one-shot latch; the latch is set only after the evidence itself contains one
+`capture_backdrop` prefix.  The 114 states, code bounds, direct-call range,
+target-prefix size, zero-tolerance validator, and production prohibition are
+unchanged.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

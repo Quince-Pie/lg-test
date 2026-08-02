@@ -216,6 +216,11 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn("captureBackdropCodeByteCount = 0x4000", source)
         self.assertIn("captureBackdropDecisionCallLowerBound = 0x2000", source)
         self.assertIn("captureBackdropDecisionCallUpperBound = 0x2B58", source)
+        self.assertIn("currentCallStackContainsCaptureBackdrop()", source)
+        self.assertIn(
+            'evidence["captureBackdropCodeCaptureCount"]\n                as? Int == 1',
+            source,
+        )
 
     def test_producer_geometry_call_site_payload_is_byte_validated(self) -> None:
         summary = surviving.validate_producer_geometry_call_site(

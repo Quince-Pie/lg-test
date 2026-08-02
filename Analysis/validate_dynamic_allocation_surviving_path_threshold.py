@@ -853,7 +853,16 @@ def validate(path: Path) -> dict[str, Any]:
         or base_mvp_hash_matches != source_count
         or base_index_hash_matches != source_count
     ):
-        raise ValueError("surviving-path exact integrity gate failed")
+        raise ValueError(
+            "surviving-path exact integrity gate failed: "
+            f"q={q_components - q_mismatches}/{q_components}, "
+            "allocation="
+            f"{invariant_components - invariant_mismatches}/"
+            f"{invariant_components}, "
+            f"baseDecoded={base_decoded_matches}/{source_count}, "
+            f"baseMVP={base_mvp_hash_matches}/{source_count}, "
+            f"baseIndex={base_index_hash_matches}/{source_count}"
+        )
     if len(producer_geometry_call_sites) > 1:
         raise ValueError("multiple producer geometry call-site captures survived")
     producer_geometry_call_site = (

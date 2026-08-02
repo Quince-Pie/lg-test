@@ -4558,6 +4558,27 @@ private func captureBackdropCodeEvidence(
     )
 }
 
+private func currentCallStackContainsCaptureBackdrop() -> Bool {
+    for number in Thread.callStackReturnAddresses.prefix(32) {
+        let addressValue = UInt(truncating: number)
+        guard let address = UnsafeRawPointer(
+                bitPattern: addressValue)
+        else {
+            continue
+        }
+        var info = Dl_info()
+        guard dladdr(address, &info) != 0,
+              let name = info.dli_sname
+        else {
+            continue
+        }
+        if String(cString: name) == captureBackdropSymbol {
+            return true
+        }
+    }
+    return false
+}
+
 private func arm64PageRelativeAddress(
     code: [UInt8],
     codeAddress: UInt,
@@ -5276,13 +5297,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
         guard !producerGeometryCallSiteCaptured,
               capture == "transition-path-isolation-31-000",
               index == 1,
-              fragment == "A2Xghfc"
+              fragment == "A2Xghfc",
+              currentCallStackContainsCaptureBackdrop()
+        else {
+            return nil
+        }
+        var evidence = glassUniformCallSiteEvidence(
+            capture: capture)
+        guard evidence["captureBackdropCodeCaptureCount"]
+                as? Int == 1
         else {
             return nil
         }
         producerGeometryCallSiteCaptured = true
-        var evidence = glassUniformCallSiteEvidence(
-            capture: capture)
         evidence["schemaVersion"] = 5
         evidence["purpose"] =
             "producer-primary-mesh-vertex-buffer-binding"
