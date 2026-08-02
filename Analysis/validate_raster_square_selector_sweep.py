@@ -40,7 +40,8 @@ RECORD = struct.Struct("<II")
 RAW_BYTES = CASE_COUNT * RECORD.size
 RAW_FILE = "raster-square-selector-sweep.raw"
 SELECTOR_FILE = "raster-square-selectors-u32le.zlib"
-BRANCH_FILE = "raster-square-selector-branches.bin"
+OFFSET_FILE = "raster-square-selector-offsets-i8.bin"
+POST_OPENING_SELECTOR_OFFSETS = (-1, 0, 1, 2)
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -158,16 +159,18 @@ def constant_bits(
     width_fixed: int,
     *,
     reciprocal_index: int,
+    anchor_high: bool = False,
 ) -> int:
     numerator_index, numerator_exponent = first_stage_numerator(
         width_fixed,
         bias_units=coefficients.MEASURED_POLICY.constant_first_bias,
     )
+    anchor_fixed = ORIGIN_FIXED + (width_fixed if anchor_high else 0)
     displacement_fixed = (
-        TILE * TILE_SIZE * FIXED_UNITS_PER_PIXEL - ORIGIN_FIXED
+        TILE * TILE_SIZE * FIXED_UNITS_PER_PIXEL - anchor_fixed
     )
     distance_bits = arithmetic.round_fraction_to_float32_bits(
-        Fraction(displacement_fixed, FIXED_UNITS_PER_PIXEL)
+        Fraction(abs(displacement_fixed), FIXED_UNITS_PER_PIXEL)
     )
     distance_index, distance_exponent = (
         arithmetic.float_significand_and_lsb_exponent(distance_bits)
@@ -194,10 +197,14 @@ def constant_bits(
         reciprocal_index=reciprocal_index,
         reciprocal_lsb_exponent=reciprocal_exponent(width_fixed),
     )
-    low_bits, _ = endpoint_bits(width_fixed)
+    low_bits, high_bits = endpoint_bits(width_fixed)
     value = (
-        arithmetic.float32_bits_fraction(low_bits)
-        + Fraction(index) * power_of_two(exponent)
+        arithmetic.float32_bits_fraction(
+            high_bits if anchor_high else low_bits
+        )
+        + (-1 if displacement_fixed < 0 else 1)
+        * Fraction(index)
+        * power_of_two(exponent)
     )
     return composite.quantize_composite_constant_bits(value)
 
@@ -206,10 +213,15 @@ def prediction(
     width_fixed: int,
     *,
     reciprocal_index: int,
+    anchor_high: bool = False,
 ) -> tuple[int, int]:
     setup_slope = slope(width_fixed, reciprocal_index=reciprocal_index)
     constant = arithmetic.bits_float32(
-        constant_bits(width_fixed, reciprocal_index=reciprocal_index)
+        constant_bits(
+            width_fixed,
+            reciprocal_index=reciprocal_index,
+            anchor_high=anchor_high,
+        )
     )
     return tuple(
         arithmetic.float32_bits(
@@ -219,6 +231,51 @@ def prediction(
         )
         for phase in PULL_PHASES
     )  # type: ignore[return-value]
+
+
+def anchor_high(width_fixed: int) -> bool:
+    """Return the X anchor selected by the captured descending diagonal."""
+
+    half = FIXED_UNITS_PER_PIXEL // 2
+    relative_x = SAMPLE_X * FIXED_UNITS_PER_PIXEL + half - ORIGIN_FIXED
+    relative_y = SAMPLE_Y * FIXED_UNITS_PER_PIXEL + half - ORIGIN_FIXED
+    primitive = int(
+        (relative_x + relative_y) * width_fixed
+        < width_fixed * width_fixed
+    )
+    return primitive == 0
+
+
+def post_opening_selectors(width_fixed: int) -> tuple[int, ...]:
+    floor = reciprocal_candidates(width_fixed)[0]
+    return tuple(floor + offset for offset in POST_OPENING_SELECTOR_OFFSETS)
+
+
+def post_opening_candidate_stream() -> tuple[bytes, int]:
+    stream = bytearray()
+    distinct = 0
+    for width_fixed in range(WIDTH_FIXED_LOWER, WIDTH_FIXED_UPPER + 1):
+        records = {
+            prediction(
+                width_fixed,
+                reciprocal_index=selector,
+                anchor_high=anchor_high(width_fixed),
+            )
+            for selector in post_opening_selectors(width_fixed)
+        }
+        for selector in post_opening_selectors(width_fixed):
+            stream.extend(
+                RECORD.pack(
+                    *prediction(
+                        width_fixed,
+                        reciprocal_index=selector,
+                        anchor_high=anchor_high(width_fixed),
+                    )
+                )
+            )
+        if len(records) == len(POST_OPENING_SELECTOR_OFFSETS):
+            distinct += 1
+    return bytes(stream), distinct
 
 
 def candidate_stream() -> tuple[bytes, int]:
@@ -290,10 +347,9 @@ def validate(root: Path) -> tuple[JsonObject, bytes, bytes]:
     ):
         raise ValueError("square selector preflight differs")
 
-    selectors: list[int] = []
-    branch_bits = bytearray((CASE_COUNT + 7) // 8)
-    branch_counts: Counter[str] = Counter()
-    failures: list[JsonObject] = []
+    frozen_matched = 0
+    frozen_ambiguous = 0
+    frozen_failures: list[JsonObject] = []
     for case_index, width_fixed in enumerate(
         range(WIDTH_FIXED_LOWER, WIDTH_FIXED_UPPER + 1)
     ):
@@ -308,9 +364,12 @@ def validate(root: Path) -> tuple[JsonObject, bytes, bytes]:
             for index, predicted in enumerate(predictions)
             if predicted == observed
         ]
-        if len(matches) != 1:
-            if len(failures) < 32:
-                failures.append(
+        if len(matches) == 1:
+            frozen_matched += 1
+        else:
+            frozen_ambiguous += len(matches) > 1
+            if len(frozen_failures) < 32:
+                frozen_failures.append(
                     {
                         "widthFixed": width_fixed,
                         "observed": [f"0x{word:08x}" for word in observed],
@@ -322,26 +381,68 @@ def validate(root: Path) -> tuple[JsonObject, bytes, bytes]:
                         "matchingCandidateIndices": matches,
                     }
                 )
-            continue
-        selected_index = matches[0]
-        selector = candidates[selected_index]
-        selectors.append(selector)
-        branch = "exact" if len(candidates) == 1 else (
-            "floor" if selected_index == 0 else "ceil"
-        )
-        branch_counts[branch] += 1
-        if selected_index == 1:
-            branch_bits[case_index // 8] |= 1 << (case_index % 8)
 
-    if failures or len(selectors) != CASE_COUNT:
+    post_opening_bytes, post_opening_distinct = post_opening_candidate_stream()
+    if post_opening_distinct != CASE_COUNT:
+        raise ValueError("post-opening square selector candidates overlap")
+    selectors: list[int] = []
+    selector_offsets: list[int] = []
+    offset_counts: Counter[int] = Counter()
+    anchor_counts: Counter[str] = Counter()
+    post_opening_failures: list[JsonObject] = []
+    for case_index, width_fixed in enumerate(
+        range(WIDTH_FIXED_LOWER, WIDTH_FIXED_UPPER + 1)
+    ):
+        observed = RECORD.unpack_from(raw, case_index * RECORD.size)
+        candidates = post_opening_selectors(width_fixed)
+        use_high_anchor = anchor_high(width_fixed)
+        predictions = [
+            prediction(
+                width_fixed,
+                reciprocal_index=selector,
+                anchor_high=use_high_anchor,
+            )
+            for selector in candidates
+        ]
+        matches = [
+            index
+            for index, predicted in enumerate(predictions)
+            if predicted == observed
+        ]
+        if len(matches) != 1:
+            if len(post_opening_failures) < 32:
+                post_opening_failures.append(
+                    {
+                        "widthFixed": width_fixed,
+                        "anchor": "high" if use_high_anchor else "low",
+                        "observed": [f"0x{word:08x}" for word in observed],
+                        "selectors": candidates,
+                        "predictions": [
+                            [f"0x{word:08x}" for word in record]
+                            for record in predictions
+                        ],
+                        "matchingCandidateIndices": matches,
+                    }
+                )
+            continue
+        selector = candidates[matches[0]]
+        offset = selector - reciprocal_candidates(width_fixed)[0]
+        selectors.append(selector)
+        selector_offsets.append(offset)
+        offset_counts[offset] += 1
+        anchor_counts["high" if use_high_anchor else "low"] += 1
+
+    if post_opening_failures or len(selectors) != CASE_COUNT:
         raise ValueError(
-            f"square selector recovery failed: {len(failures)} examples; "
+            "post-opening square selector recovery failed: "
+            f"{len(post_opening_failures)} examples; "
             f"selected={len(selectors)}/{CASE_COUNT}"
         )
     selector_raw = struct.pack(f"<{len(selectors)}I", *selectors)
+    offset_raw = struct.pack(f"<{len(selector_offsets)}b", *selector_offsets)
     selector_archive = zlib.compress(selector_raw, level=9)
     report: JsonObject = {
-        "rasterSquareSelectorValidationSchemaVersion": 1,
+        "rasterSquareSelectorValidationSchemaVersion": 2,
         "classification": (
             "complete production-range square fixed-grid calibration; "
             "not yet a prospective transfer validation"
@@ -360,10 +461,34 @@ def validate(root: Path) -> tuple[JsonObject, bytes, bytes]:
             "rawBytes": len(raw),
             "rawSha256": sha256_bytes(raw),
         },
-        "preflight": {
+        "frozenPreregisteredGate": {
             "candidateStreamBytes": len(candidate_bytes),
             "candidateStreamSha256": sha256_bytes(candidate_bytes),
             "candidateDistinctCaseCount": distinct_count,
+            "hypothesis": "exact floor/ceiling reciprocal plus low-edge anchor",
+            "matchedCaseCount": frozen_matched,
+            "mismatchedCaseCount": CASE_COUNT - frozen_matched,
+            "ambiguousCaseCount": frozen_ambiguous,
+            "passed": frozen_matched == CASE_COUNT,
+            "failureExamples": frozen_failures,
+        },
+        "postOpeningRecovery": {
+            "classification": "retrospective calibration",
+            "selectorOffsetsFromExactFloor": list(
+                POST_OPENING_SELECTOR_OFFSETS
+            ),
+            "candidateStreamBytes": len(post_opening_bytes),
+            "candidateStreamSha256": sha256_bytes(post_opening_bytes),
+            "candidateDistinctCaseCount": post_opening_distinct,
+            "anchorCounts": dict(sorted(anchor_counts.items())),
+            "selectorOffsetCounts": {
+                str(offset): count
+                for offset, count in sorted(offset_counts.items())
+            },
+            "matchedCaseCount": len(selectors),
+            "mismatchedCaseCount": 0,
+            "ambiguousCaseCount": 0,
+            "exact": True,
         },
         "selectors": {
             "file": SELECTOR_FILE,
@@ -373,28 +498,28 @@ def validate(root: Path) -> tuple[JsonObject, bytes, bytes]:
             "compressedSha256": sha256_bytes(selector_archive),
             "dtype": "little-endian uint32",
             "ordering": "ascending-width-fixed",
-            "branchBitsetFile": BRANCH_FILE,
-            "branchBitsetBytes": len(branch_bits),
-            "branchBitsetSha256": sha256_bytes(branch_bits),
-            "branchBitOrdering": "LSB-first; one means ceil",
+            "offsetFile": OFFSET_FILE,
+            "offsetBytes": len(offset_raw),
+            "offsetSha256": sha256_bytes(offset_raw),
+            "offsetDtype": "signed int8 relative to exact floor",
         },
         "measurement": {
             "caseCount": CASE_COUNT,
             "uniqueSelectorCount": len(set(selectors)),
-            "branchCounts": dict(sorted(branch_counts.items())),
             "matchedCaseCount": len(selectors),
             "mismatchedCaseCount": 0,
             "ambiguousCaseCount": 0,
-            "exact": True,
+            "retrospectiveCalibrationExact": True,
         },
         "gate": {
             "calibrationComplete": True,
+            "frozenHypothesisPassed": frozen_matched == CASE_COUNT,
             "portableClosedFormEstablished": False,
             "prospectiveTransferPassed": False,
             "productionParityAuthorized": False,
         },
     }
-    return report, selector_archive, bytes(branch_bits)
+    return report, selector_archive, offset_raw
 
 
 def main() -> int:
@@ -402,10 +527,10 @@ def main() -> int:
     parser.add_argument("root", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     arguments = parser.parse_args()
-    report, selectors, branches = validate(arguments.root)
+    report, selectors, offsets = validate(arguments.root)
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     (arguments.output.parent / SELECTOR_FILE).write_bytes(selectors)
-    (arguments.output.parent / BRANCH_FILE).write_bytes(branches)
+    (arguments.output.parent / OFFSET_FILE).write_bytes(offsets)
     arguments.output.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",

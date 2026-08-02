@@ -87,4 +87,4 @@ jobs:
           test -s \
             raster-square-selector-sweep/raster-square-selectors-u32le.zlib
           test -s \
-            raster-square-selector-sweep/raster-square-selector-branches.bin
+            raster-square-selector-sweep/raster-square-selector-offsets-i8.bin

@@ -3823,6 +3823,20 @@ materialize the finite table and support closed-form discovery, but a separate
 frozen transfer holdout is still required before production integration or a
 parity claim.
 
+Run `30736128650` captured all 32,769 records and passed its build, coverage,
+and artifact gates. It correctly falsified the preregistered exact-floor-or-
+ceiling plus universal-low-anchor hypothesis: only 31,740 records selected one
+of those frozen candidates. The workflow remained red and uploaded the raw
+262,152-byte stream. Post-opening recovery first applies the actual descending-
+diagonal primitive anchor at the scissored pixel, then searches the four
+input-only reciprocal endpoints from exact floor minus one through floor plus
+two. Every record selects exactly one candidate. The selector-offset counts
+are `-1: 410`, `0: 16,683`, `+1: 15,407`, and `+2: 269`; high- and low-anchor
+counts are 513 and 32,256. This 32,769-of-32,769 replay is retrospective
+calibration because the widened selector window and corrected anchor were
+chosen after opening the run. It does not erase the failed frozen gate or
+authorize production parity.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
