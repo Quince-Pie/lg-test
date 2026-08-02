@@ -1,0 +1,91 @@
+{
+  "liquidGlassDynamicBackdropControlledInputResultSchemaVersion": 1,
+  "status": "opened-discovery-calibration-exact-replay",
+  "recordedUTCDate": "2026-08-02",
+  "capture": {
+    "runId": 30746489805,
+    "sourceCommit": "64903fc098495f48eedae7cc842dd454ddad2ef9",
+    "artifactId": 8833071835,
+    "artifactName": "liquid-glass-transition-introspection-profile-clear-light-materialize-30746489805",
+    "artifactFileCount": 260,
+    "artifactBytes": 1663955873,
+    "artifactTreeSha256": "b21678cb5c612a4cfa0b4a4bb0d04db323637ea8e6559c6b9d8876f121cfbf9e",
+    "artifactTreeHashMethod": "sha256 of artifact-root-relative sha256sum lines sorted by bytewise path",
+    "timelineSha256": "4ef0d2db8ee6516cc5e978a662f710fe1d1eb0ae7ed0b3232df104ee80064c2d",
+    "ciLogSha256": "7cb3340aa3068c24011f4148afe55bcfb3b3289d88a15274d37f2ec62f68928a",
+    "ciConclusion": "failure-after-successful-build-capture-and-artifact-upload",
+    "ciFailure": "the old sample-index extent gate required 512x448 at sample 28, while the captured state used 512x512"
+  },
+  "controlledInput": {
+    "name": "opaque-coordinate-hash-v1",
+    "sha256": "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88",
+    "exactHashStateCount": 9,
+    "stateCount": 9
+  },
+  "allocationBoundaryCounterexample": {
+    "candidateBoundary": "k = 7/8",
+    "below": {
+      "runId": 30746489805,
+      "sampleIndex": 28,
+      "remainingK": 0.87498664855957031,
+      "producerExtent": [512, 512]
+    },
+    "above": {
+      "runId": 30745630876,
+      "sampleIndex": 28,
+      "remainingK": 0.87600040435791016,
+      "producerExtent": [512, 448]
+    },
+    "interpretation": "the producer allocation depends on the realized dynamic state rather than sample index alone",
+    "exactPolicyClaimed": false
+  },
+  "localValidation": {
+    "schema7ArtifactValidatorPassed": true,
+    "validatorFocusedTestsPassed": 8,
+    "validatorFocusedTestsFailed": 0,
+    "extentPolicy": {
+      "sample28AllowedObservedExtents": [[512, 512], [512, 448]],
+      "otherSampleExtentSetsUnchanged": true
+    }
+  },
+  "bitExactReplay": {
+    "implementation": "../analysis/liquid_glass_controlled_backdrop.py",
+    "implementationSha256": "f4aadc1d7b45b4f4c1467d3cbebc5b1a79c9ab5d2c15ca21ab9ba043f47665f0",
+    "implementationTests": "../analysis/test_liquid_glass_controlled_backdrop.py",
+    "implementationTestsSha256": "86584dba163eb0dde84ad569e134a163ebcf4cfd19e32df30d7de8d76b344dfb",
+    "result": "../analysis/results/controlled-backdrop-30746489805.json",
+    "resultSha256": "3fd46b96d3ea11338eb0a3d19ea315350f3216acd988a595388c72f3558fe3da",
+    "stateCount": 9,
+    "producer": {
+      "observedBytes": 10862592,
+      "mismatchedBytes": 0,
+      "exactEveryState": true
+    },
+    "copyBase": {
+      "observedBytes": 10862592,
+      "mismatchedBytes": 0,
+      "exactEveryState": true
+    },
+    "generatedMips": {
+      "observedBytes": 2715648,
+      "mismatchedBytes": 0,
+      "exactEveryState": true
+    },
+    "totalObservedBytes": 24440832,
+    "totalMismatchedBytes": 0
+  },
+  "recovered": [
+    "captured producer mesh rasterization through the independently recovered AGX 32-pixel tile interpolator",
+    "1/256-phase BGRA8 UNORM bilinear sampling and sixteenth-code accumulation",
+    "binary16 sampling conversion and BGRA8 render-target store",
+    "producer scissor and the three one-pixel boundary quads used in the first six states",
+    "copy-base integer offset and clamp",
+    "the generated half-resolution mip"
+  ],
+  "notRecoveredOrClaimed": [
+    "independent crop/allocation prediction from public geometry and k",
+    "a prospective unseen seeded-input holdout",
+    "universal Liquid Glass parity",
+    "authorization to change the Walle production shader"
+  ]
+}

@@ -12,15 +12,17 @@ from typing import Any
 
 EXPECTED_SAMPLE_INDICES = (1, 4, 8, 12, 16, 20, 24, 28, 32)
 DYNAMIC_PRODUCER_OUTPUT_EXTENTS = {
-    1: (576, 576),
-    4: (576, 576),
-    8: (576, 576),
-    12: (576, 576),
-    16: (576, 576),
-    20: (576, 576),
-    24: (512, 512),
-    28: (512, 448),
-    32: (448, 448),
+    1: frozenset({(576, 576)}),
+    4: frozenset({(576, 576)}),
+    8: frozenset({(576, 576)}),
+    12: frozenset({(576, 576)}),
+    16: frozenset({(576, 576)}),
+    20: frozenset({(576, 576)}),
+    24: frozenset({(512, 512)}),
+    # Run 30746489805 landed just below k=7/8 and retained 512x512;
+    # run 30745630876 landed just above it and allocated 512x448.
+    28: frozenset({(512, 512), (512, 448)}),
+    32: frozenset({(448, 448)}),
 }
 DYNAMIC_PRODUCER_INPUT_SHA256 = (
     "3ac65697c38c44ed6332911c83e2f13a0b4b6958df49fa88365fbe6327cc1f88"
@@ -880,7 +882,7 @@ def validate_dynamic_backdrop_producer(
             copy_source_texture.get("width"),
             copy_source_texture.get("height"),
         )
-        != DYNAMIC_PRODUCER_OUTPUT_EXTENTS[sample_index]
+        not in DYNAMIC_PRODUCER_OUTPUT_EXTENTS[sample_index]
     ):
         raise ValueError("dynamic backdrop producer extent differs")
     for name, snapshot, descriptor in (

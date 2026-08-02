@@ -1870,6 +1870,36 @@ replay gates. This opened calibration can identify producer and copy-base
 arithmetic; it cannot serve as the later seeded-input holdout or authorize a
 Walle shader change.
 
+Run `30746489805` produced the first information-rich controlled boundary.
+Every one of the nine producer inputs has the preregistered
+`3ac65697...7cc1f88` SHA-256, and every producer output and downstream base mip
+is nondegenerate. The run's evidence step failed only because sample 28 landed
+at `k = 0.87498664855957031` and Apple retained a 512-by-512 producer, whereas
+run `30745630876` landed at `k = 0.87600040435791016` and allocated a
+512-by-448 producer. This brackets a real allocation transition around the
+exact candidate `k = 7/8`; it falsifies a sample-index-only extent gate rather
+than the capture. CI now admits only those two observed sample-28 allocations
+while preserving all descriptor, attachment, address, command-buffer, raw
+layout, input-hash, and information-content joins. The boundary itself remains
+an upstream policy to predict independently.
+
+The frozen local replay in
+`../analysis/liquid_glass_controlled_backdrop.py` applies the previously
+recovered AGX 32-pixel-tile interpolator to Apple's captured producer mesh,
+then the measured 1/256-phase BGRA8 linear sampler, sixteenth-code accumulator,
+binary16 conversion, BGRA8 store, scissor, the primary quad, and all three
+one-pixel boundary quads. Against run `30746489805` it matches all 10,862,592
+producer bytes, all 10,862,592 copy-base bytes, and all 2,715,648 generated-mip
+bytes exactly: zero
+mismatches in every stage and all nine states. The result is retained in
+`../analysis/results/controlled-backdrop-30746489805.json`, with the artifact,
+log, implementation, and result hashes frozen in
+`Analysis/dynamic_backdrop_controlled_input_result.json`. This closes the
+producer/copy-base/mip arithmetic conditional on Apple's captured mesh and
+allocation. It does not yet predict that mesh/allocation from public geometry,
+and the preregistered seeded-input holdout still must pass before production
+integration.
+
 ## Run locally on macOS 26
 
 ```sh

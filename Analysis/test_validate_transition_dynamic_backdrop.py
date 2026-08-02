@@ -23,8 +23,8 @@ def controlled_input_bytes() -> bytes:
 
 
 @functools.cache
-def producer_output_bytes() -> bytes:
-    payload = bytearray(576 * 576 * 4)
+def producer_output_bytes(width: int = 576, height: int = 576) -> bytes:
+    payload = bytearray(width * height * 4)
     pixels = memoryview(payload).cast("I")
     for index in range(len(pixels)):
         pixels[index] = 0xFF00_0000 | (index & 0x00FF_FFFF)
@@ -233,6 +233,36 @@ class DynamicBackdropProducerValidationTests(unittest.TestCase):
                 root=self.root,
                 sample_index=4,
             )
+
+    def test_accepts_both_observed_sample_28_boundary_allocations(self) -> None:
+        for height in (512, 448):
+            with self.subTest(height=height):
+                modified = copy.deepcopy(self.render)
+                modified["capture"] = "transition-background-uniform-28"
+                evidence = modified["dynamicBackdropProducerBoundary"]
+                evidence["capture"] = "transition-background-uniform-28"
+                boundary = evidence["records"][0]
+                boundary["output"].update(
+                    {
+                        "width": 512,
+                        "height": height,
+                        "bytesPerRow": 512 * 4,
+                        "rawBytes": 512 * height * 4,
+                    }
+                )
+                producer_output = modified["metalUniformProbe"]["records"][0][
+                    "colorAttachments"
+                ][0]["texture"]
+                producer_output["width"] = 512
+                producer_output["height"] = height
+                (self.root / "producer-output.raw").write_bytes(
+                    producer_output_bytes(512, height)
+                )
+                validator.validate_dynamic_backdrop_producer(
+                    modified,
+                    root=self.root,
+                    sample_index=28,
+                )
 
     def test_rejects_a_cross_command_buffer_join(self) -> None:
         modified = copy.deepcopy(self.render)
