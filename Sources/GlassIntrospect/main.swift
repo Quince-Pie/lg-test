@@ -4934,12 +4934,25 @@ private final class MetalUniformProbe: @unchecked Sendable {
         "carenderer-local-backdrop",
     ])
 
-    private func retainsTextureBindings(
-        capture: String
+    private func retainsTextureBinding(
+        capture: String,
+        index: Int,
+        pipeline: [String: Any]
     ) -> Bool {
-        textureCaptureNames.contains(capture)
-            || capture.hasPrefix(
-                "transition-background-uniform-")
+        if textureCaptureNames.contains(capture) {
+            return true
+        }
+        guard capture.hasPrefix(
+                "transition-background-uniform-"),
+              index == 3,
+              let creation = pipeline["creationDescriptor"]
+                as? [String: Any],
+              let fragment = creation["fragmentFunction"]
+                as? String
+        else {
+            return false
+        }
+        return fragment.hasPrefix("glass_background")
     }
 
     private init() {}
@@ -6656,13 +6669,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
+        let pipeline = encoderPipeline(encoder)
         var record: [String: Any] = [
             "capture": captureName,
             "kind": "texture",
             "stage": "fragment",
             "index": index,
             "encoder": objectAddress(encoder),
-            "pipeline": encoderPipeline(encoder),
+            "pipeline": pipeline,
         ]
         appendReplayCommand(
             encoder: encoder,
@@ -6684,12 +6698,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
             record["textureType"] = metalTexture.textureType.rawValue
             record["usage"] = metalTexture.usage.rawValue
             record["storageMode"] = metalTexture.storageMode.rawValue
-            if retainsTextureBindings(capture: captureName) {
+            if retainsTextureBinding(
+                capture: captureName,
+                index: index,
+                pipeline: pipeline)
+            {
                 textureBindings.append(TextureBinding(
                     capture: captureName,
                     sequence: records.count,
                     index: index,
-                    pipeline: encoderPipeline(encoder),
+                    pipeline: pipeline,
                     encoder: ObjectIdentifier(encoder),
                     texture: metalTexture))
             }
