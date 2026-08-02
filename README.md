@@ -1744,8 +1744,11 @@ Every state additionally retains attachment zero immediately before the last
 `A2Xghfc` draw, rather than assuming that the glass-prefix boundary is also the
 highlight boundary. This distinction is observable at the materialized
 endpoint, where Core Animation inserts a blended `TimgA2Xhfc_Isrc` draw. The
-probe retains that draw's exact 800×800 BGRA8 source texture and command state;
-CI rejects the texture in moving states or its absence at the endpoint.
+probe retains every such binding's exact BGRA8 source texture, dimensions,
+and command state. CI compares the two stage-boundary attachments directly; for
+the registered carrier they are byte-identical in all nine states, proving
+that any intervening draw is a color-zero operation rather than silently
+assuming so from the command label.
 The transition-only `glassForeground` branch has a different topology from
 settled glass: its copied filter and exact input law are retained and checked,
 but the report explicitly records that it was not installed on this

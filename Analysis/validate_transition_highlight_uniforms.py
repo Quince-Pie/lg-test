@@ -158,6 +158,24 @@ def validate_raw_render_evidence(
         root=root,
         name="pre-final-highlight output",
     )
+    independent = mapping(
+        replay.get("independentGlassReplay"),
+        "independentGlassReplay",
+    )
+    glass_prefix = mapping(independent.get("reference"), "glass-prefix reference")
+    glass_prefix_output = mapping(
+        glass_prefix.get("output"),
+        "glass-prefix output",
+    )
+    validate_raw_file(
+        glass_prefix_output,
+        root=root,
+        name="glass-prefix output",
+    )
+    glass_prefix_path = root / str(glass_prefix_output["rawFile"])
+    final_input_path = root / str(final_input_output["rawFile"])
+    if glass_prefix_path.read_bytes() != final_input_path.read_bytes():
+        raise ValueError("commands between glass and highlight changed attachment zero")
     textures = mapping(
         render.get("metalTextureSnapshots"),
         "metalTextureSnapshots",
@@ -413,25 +431,25 @@ def validate(
             and snapshot.get("index") == 3
             and fragment_name(snapshot) == "TimgA2Xhfc_Isrc"
         ]
-        if sample_index == 32:
-            if len(intermediate_textures) != 1:
-                raise ValueError("endpoint intermediate texture is not unique")
-            texture = intermediate_textures[0]
+        for texture in intermediate_textures:
+            width = texture.get("width")
+            height = texture.get("height")
             if (
-                texture.get("width") != 800
-                or texture.get("height") != 800
+                not isinstance(width, int)
+                or not isinstance(height, int)
+                or not 0 < width <= 1024
+                or not 0 < height <= 1024
                 or texture.get("pixelFormat") != 80
                 or texture.get("mipmapLevelCount") != 1
+                or texture.get("rawBytes") != width * height * 4
             ):
-                raise ValueError("endpoint intermediate texture layout differs")
+                raise ValueError("intermediate texture layout differs")
             validate_raw_file(
                 texture,
                 root=path.parent,
-                name="endpoint intermediate texture",
+                name="intermediate texture",
             )
             intermediate_texture_count += 1
-        elif intermediate_textures:
-            raise ValueError("moving state has an unexpected intermediate texture")
         bindings = render.get("glassFragmentUniformBindings")
         if not isinstance(bindings, list):
             raise ValueError("glassFragmentUniformBindings is not a list")
