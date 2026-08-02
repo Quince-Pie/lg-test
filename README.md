@@ -4166,6 +4166,31 @@ metadata-only producer evidence.  The frozen decision asks whether the 15
 primary-edge residuals follow requested-extent arithmetic or target-center
 phase; the run is calibration and cannot itself authorize a mesh predictor.
 
+Run `30751579106`, captured from preregistered commit `e1ca51a`, completed all
+four jobs and passed the frozen capture-integrity checks for all 128 states.
+The post-opening audit is
+`Analysis/analyze_dynamic_allocation_mesh_calibration.py`, with its canonical
+result in
+`Analysis/dynamic_allocation_mesh_phase_calibration_result.json`.  Runtime
+scale is exact in 128 of 128 comparisons and the primary source-coordinate
+`q` law is exact in all 1,024 binary32 comparisons.  The unchanged primary
+quad candidate is not exact: it mismatches 39 of 304 non-endpoint edge
+components, broken down as 2 centered-integer, 10 translated-integer, 11
+nearby half-pixel, and 16 oppositely translated half-pixel residuals.
+
+This rejects fractional center phase as the sole cause.  The translated
+integer and nearby half-pixel targets both affect X edges, while the
+oppositely translated target affects Y edges; the two half-pixel targets have
+no residual edge class in common.  The run does not, however, prove a full
+target-coordinate term.  None of the 31 non-endpoint sample indices realized
+the same `k` in all four independent jobs: cross-job spreads range from
+`0.00017452239990234375` to `0.0027675628662109375`, which is material at an
+integer edge threshold.  The predeclared outcome is therefore mixed and
+exact-`k` confounded.  A fixed-state replay/intervention is required before
+center and temporal arithmetic can be separated bit-for-bit.  This run does
+not recover the independent producer mesh and does not authorize a Walle
+shader change.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

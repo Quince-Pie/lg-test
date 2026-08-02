@@ -1,0 +1,488 @@
+{
+  "aggregate": {
+    "causalDiagnostics": {
+      "exactKCenterAttributionPossible": false,
+      "fractionalPhaseInsufficientAcrossTranslations": true,
+      "fractionalPhaseOnlyHypothesisRejected": true,
+      "halfPixelControlMismatchedComponents": 27,
+      "integerControlMismatchedComponents": 12,
+      "maximumCrossGeometryRemainingSpread": {
+        "maximumRemaining": 0.28383541107177734,
+        "minimumRemaining": 0.2810678482055664,
+        "sampleIndex": 9,
+        "spread": 0.0027675628662109375
+      },
+      "meanCrossGeometryRemainingSpread": 0.0017441472699565271,
+      "minimumCrossGeometryRemainingSpread": {
+        "maximumRemaining": 0.06261062622070312,
+        "minimumRemaining": 0.06243610382080078,
+        "sampleIndex": 2,
+        "spread": 0.00017452239990234375
+      },
+      "nonEndpointExactRemainingMatchedSampleCount": 0,
+      "nonEndpointSampleCount": 31,
+      "predeclaredOutcome": "mixed-and-exact-k-confounded",
+      "residualEdgesByGeometry": {
+        "circle-640-center": [
+          "xLower",
+          "yUpper"
+        ],
+        "circle-640-integer": [
+          "xLower",
+          "xUpper"
+        ],
+        "circle-640-phase-0500-even": [
+          "xLower",
+          "xUpper"
+        ],
+        "circle-640-phase-0500-signed": [
+          "yLower",
+          "yUpper"
+        ]
+      },
+      "sameFractionalPhaseResidualEdgeIntersection": []
+    },
+    "existingQuad4PrimaryBoundsCandidate": {
+      "byGeometry": {
+        "circle-640-center": {
+          "componentCount": 76,
+          "exact": false,
+          "mismatchedComponents": 2,
+          "mismatchedEdges": {
+            "xLower": 1,
+            "yUpper": 1
+          },
+          "quad4NonEndpointStateCount": 19,
+          "residuals": [
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 103.0,
+              "predicted": 102,
+              "remaining": 0.9688119888305664,
+              "sampleIndex": 31
+            },
+            {
+              "difference": 1.0,
+              "edge": "yUpper",
+              "observed": 425.0,
+              "predicted": 426,
+              "remaining": 0.9688119888305664,
+              "sampleIndex": 31
+            }
+          ],
+          "topologyStateCounts": {
+            "16": 12,
+            "4": 20
+          }
+        },
+        "circle-640-integer": {
+          "componentCount": 76,
+          "exact": false,
+          "mismatchedComponents": 10,
+          "mismatchedEdges": {
+            "xLower": 5,
+            "xUpper": 5
+          },
+          "quad4NonEndpointStateCount": 19,
+          "residuals": [
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 158.0,
+              "predicted": 157,
+              "remaining": 0.7840890884399414,
+              "sampleIndex": 25
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 550.0,
+              "predicted": 549,
+              "remaining": 0.7840890884399414,
+              "sampleIndex": 25
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 148.0,
+              "predicted": 147,
+              "remaining": 0.8132848739624023,
+              "sampleIndex": 26
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 531.0,
+              "predicted": 530,
+              "remaining": 0.8132848739624023,
+              "sampleIndex": 26
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 138.0,
+              "predicted": 137,
+              "remaining": 0.8465642929077148,
+              "sampleIndex": 27
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 129.0,
+              "predicted": 128,
+              "remaining": 0.8762969970703125,
+              "sampleIndex": 28
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 492.0,
+              "predicted": 491,
+              "remaining": 0.8762969970703125,
+              "sampleIndex": 28
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 474.0,
+              "predicted": 473,
+              "remaining": 0.9061737060546875,
+              "sampleIndex": 29
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 111.0,
+              "predicted": 110,
+              "remaining": 0.9394636154174805,
+              "sampleIndex": 30
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 435.0,
+              "predicted": 434,
+              "remaining": 0.9707345962524414,
+              "sampleIndex": 31
+            }
+          ],
+          "topologyStateCounts": {
+            "16": 12,
+            "4": 20
+          }
+        },
+        "circle-640-phase-0500-even": {
+          "componentCount": 76,
+          "exact": false,
+          "mismatchedComponents": 11,
+          "mismatchedEdges": {
+            "xLower": 5,
+            "xUpper": 6
+          },
+          "quad4NonEndpointStateCount": 19,
+          "residuals": [
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 592.0,
+              "predicted": 591,
+              "remaining": 0.7194423675537109,
+              "sampleIndex": 23
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 571.0,
+              "predicted": 570,
+              "remaining": 0.7525787353515625,
+              "sampleIndex": 24
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 158.0,
+              "predicted": 157,
+              "remaining": 0.7837247848510742,
+              "sampleIndex": 25
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 148.0,
+              "predicted": 147,
+              "remaining": 0.8150243759155273,
+              "sampleIndex": 26
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 129.0,
+              "predicted": 128,
+              "remaining": 0.8758993148803711,
+              "sampleIndex": 28
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 492.0,
+              "predicted": 491,
+              "remaining": 0.8758993148803711,
+              "sampleIndex": 28
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 120.0,
+              "predicted": 119,
+              "remaining": 0.9064159393310547,
+              "sampleIndex": 29
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 473.0,
+              "predicted": 472,
+              "remaining": 0.9064159393310547,
+              "sampleIndex": 29
+            },
+            {
+              "difference": -1.0,
+              "edge": "xLower",
+              "observed": 111.0,
+              "predicted": 110,
+              "remaining": 0.9380941390991211,
+              "sampleIndex": 30
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 454.0,
+              "predicted": 453,
+              "remaining": 0.9380941390991211,
+              "sampleIndex": 30
+            },
+            {
+              "difference": -1.0,
+              "edge": "xUpper",
+              "observed": 435.0,
+              "predicted": 434,
+              "remaining": 0.9712333679199219,
+              "sampleIndex": 31
+            }
+          ],
+          "topologyStateCounts": {
+            "16": 12,
+            "4": 20
+          }
+        },
+        "circle-640-phase-0500-signed": {
+          "componentCount": 76,
+          "exact": false,
+          "mismatchedComponents": 16,
+          "mismatchedEdges": {
+            "yLower": 11,
+            "yUpper": 5
+          },
+          "quad4NonEndpointStateCount": 19,
+          "residuals": [
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 29.0,
+              "predicted": 30,
+              "remaining": 0.5624675750732422,
+              "sampleIndex": 18
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 36.0,
+              "predicted": 37,
+              "remaining": 0.5945072174072266,
+              "sampleIndex": 19
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 42.0,
+              "predicted": 43,
+              "remaining": 0.6258773803710938,
+              "sampleIndex": 20
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 48.0,
+              "predicted": 49,
+              "remaining": 0.6569414138793945,
+              "sampleIndex": 21
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 53.0,
+              "predicted": 54,
+              "remaining": 0.6894540786743164,
+              "sampleIndex": 22
+            },
+            {
+              "difference": 1.0,
+              "edge": "yUpper",
+              "observed": 481.0,
+              "predicted": 482,
+              "remaining": 0.6894540786743164,
+              "sampleIndex": 22
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 58.0,
+              "predicted": 59,
+              "remaining": 0.7191839218139648,
+              "sampleIndex": 23
+            },
+            {
+              "difference": 1.0,
+              "edge": "yUpper",
+              "observed": 477.0,
+              "predicted": 478,
+              "remaining": 0.7191839218139648,
+              "sampleIndex": 23
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 63.0,
+              "predicted": 64,
+              "remaining": 0.7517423629760742,
+              "sampleIndex": 24
+            },
+            {
+              "difference": 1.0,
+              "edge": "yUpper",
+              "observed": 471.0,
+              "predicted": 472,
+              "remaining": 0.7517423629760742,
+              "sampleIndex": 24
+            },
+            {
+              "difference": 1.0,
+              "edge": "yUpper",
+              "observed": 465.0,
+              "predicted": 466,
+              "remaining": 0.7837457656860352,
+              "sampleIndex": 25
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 71.0,
+              "predicted": 72,
+              "remaining": 0.8123350143432617,
+              "sampleIndex": 26
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 79.0,
+              "predicted": 80,
+              "remaining": 0.8752470016479492,
+              "sampleIndex": 28
+            },
+            {
+              "difference": 1.0,
+              "edge": "yUpper",
+              "observed": 447.0,
+              "predicted": 448,
+              "remaining": 0.8752470016479492,
+              "sampleIndex": 28
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 85.0,
+              "predicted": 86,
+              "remaining": 0.9400444030761719,
+              "sampleIndex": 30
+            },
+            {
+              "difference": 1.0,
+              "edge": "yLower",
+              "observed": 88.0,
+              "predicted": 89,
+              "remaining": 0.9699459075927734,
+              "sampleIndex": 31
+            }
+          ],
+          "topologyStateCounts": {
+            "16": 12,
+            "4": 20
+          }
+        }
+      },
+      "componentCount": 304,
+      "exact": false,
+      "mismatchedComponents": 39
+    },
+    "geometryCount": 4,
+    "primaryProducerSourceQ": {
+      "componentCount": 1024,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "producerVertexCountStates": {
+      "16": 48,
+      "4": 80
+    },
+    "runtimeScale": {
+      "componentCount": 128,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "stateCount": 128
+  },
+  "classification": "post-opening-causal-calibration-with-unmatched-realized-k; not-an-unseen-holdout",
+  "conclusion": {
+    "captureIntegrityPassed": true,
+    "exactKCenterAttributionEstablished": false,
+    "existingPrimaryMeshCandidateExact": false,
+    "fractionalCenterPhaseAloneExplainsResiduals": false,
+    "independentProducerMeshPolicyRecovered": false,
+    "productionShaderAuthorized": false,
+    "requiresFixedStateIntervention": true,
+    "requiresNewUnseenHoldout": true
+  },
+  "dynamicAllocationMeshCalibrationAnalysisSchemaVersion": 1,
+  "inputs": [
+    {
+      "geometry": "circle-640-center",
+      "timelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30751579106/transition-timeline.json",
+      "timelineSHA256": "edea01d4883c8663d7596745596722085128d347a7c682c36920f095dca8c1ed",
+      "validatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30751579106/dynamic-allocation-mesh-calibration.json",
+      "validatorResultSHA256": "739b3873e2b86e6069174b462b605a05cd275042bdaea3ae155459121ccaaff3"
+    },
+    {
+      "geometry": "circle-640-phase-0500-even",
+      "timelineArtifact": "liquid-glass-transition-introspection-mesh-640-half-even-materialize-30751579106/transition-timeline.json",
+      "timelineSHA256": "e46cf2c32a221c6dec1d9c89f1d7dd98308b66e499db6adfee9cdeee8a48e510",
+      "validatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-half-even-materialize-30751579106/dynamic-allocation-mesh-calibration.json",
+      "validatorResultSHA256": "5ab39299c17d6e07d5cc63184f504cc24a52d6ec2d7a3d5d93a9d85cf84c7618"
+    },
+    {
+      "geometry": "circle-640-phase-0500-signed",
+      "timelineArtifact": "liquid-glass-transition-introspection-mesh-640-half-signed-materialize-30751579106/transition-timeline.json",
+      "timelineSHA256": "c94517bd573875639fc157df8493822c19e39dfb1dda2e4476a58d128bced85e",
+      "validatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-half-signed-materialize-30751579106/dynamic-allocation-mesh-calibration.json",
+      "validatorResultSHA256": "e556baa8e9cc25fdff6a78d2764028f72a4d1f584e57ca07d20d34a5e6e1326c"
+    },
+    {
+      "geometry": "circle-640-integer",
+      "timelineArtifact": "liquid-glass-transition-introspection-mesh-640-integer-materialize-30751579106/transition-timeline.json",
+      "timelineSHA256": "ad2aae3f57ddda2112c388fb177ac7c0e5f69999d425702cfb83c42c9f267508",
+      "validatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-integer-materialize-30751579106/dynamic-allocation-mesh-calibration.json",
+      "validatorResultSHA256": "e80e632f5359a98ef926a51152531a430fe54020d3b31afbfd15dcbcfc203a41"
+    }
+  ],
+  "runID": 30751579106
+}
