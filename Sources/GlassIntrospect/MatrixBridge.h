@@ -11,7 +11,12 @@ enum {
     LG_CAPTURE_BACKDROP_RECT_BYTE_COUNT = 16,
     LG_CAPTURE_BACKDROP_AFFINE_BYTE_COUNT = 48,
     LG_CAPTURE_BACKDROP_ORIGIN_BYTE_COUNT = 8,
+    LG_CAPTURE_BACKDROP_ORIGIN_BOUNDS_BYTE_COUNT = 16,
     LG_CAPTURE_BACKDROP_SCALE_BYTE_COUNT = 4,
+    LG_CAPTURE_BACKDROP_RENDERER_SCALE_BYTE_COUNT = 8,
+    LG_CAPTURE_BACKDROP_RENDERER_REGION_CONTROL_BYTE_COUNT = 16,
+    LG_CAPTURE_BACKDROP_REGION_ITERATOR_BYTE_COUNT = 24,
+    LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT = 256,
 };
 
 enum {
@@ -23,7 +28,16 @@ enum {
     LG_CAPTURE_BACKDROP_READ_CONTEXT_POINTER = 1u << 5,
     LG_CAPTURE_BACKDROP_READ_ORIGIN = 1u << 6,
     LG_CAPTURE_BACKDROP_READ_SCALE = 1u << 7,
-    LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0xff,
+    LG_CAPTURE_BACKDROP_READ_RENDERER_POINTER = 1u << 8,
+    LG_CAPTURE_BACKDROP_READ_REGION_HANDLE = 1u << 9,
+    LG_CAPTURE_BACKDROP_READ_REGION_ITERATOR = 1u << 10,
+    LG_CAPTURE_BACKDROP_READ_OWNER_REGION_248 = 1u << 11,
+    LG_CAPTURE_BACKDROP_READ_OWNER_REGION_270 = 1u << 12,
+    LG_CAPTURE_BACKDROP_READ_RENDERER_SCALE = 1u << 13,
+    LG_CAPTURE_BACKDROP_READ_RENDERER_REGION_CONTROL = 1u << 14,
+    LG_CAPTURE_BACKDROP_READ_REGION_PREFIX = 1u << 15,
+    LG_CAPTURE_BACKDROP_READ_ORIGIN_BOUNDS = 1u << 16,
+    LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0x1ffff,
 };
 
 typedef struct {
@@ -37,12 +51,28 @@ typedef struct {
     uint64_t shape_pointer;
     uint64_t transform_pointer;
     uint64_t context_pointer;
+    uint64_t renderer_pointer;
+    uint64_t region_handle;
+    uint64_t owner_region_248;
+    uint64_t owner_region_270;
     uint32_t visited_frame_count;
     uint32_t read_mask;
+    uint32_t region_prefix_length;
+    uint32_t metadata_reserved;
     unsigned char rect[LG_CAPTURE_BACKDROP_RECT_BYTE_COUNT];
     unsigned char affine[LG_CAPTURE_BACKDROP_AFFINE_BYTE_COUNT];
     unsigned char origin[LG_CAPTURE_BACKDROP_ORIGIN_BYTE_COUNT];
     unsigned char scale[LG_CAPTURE_BACKDROP_SCALE_BYTE_COUNT];
+    unsigned char renderer_scale[
+        LG_CAPTURE_BACKDROP_RENDERER_SCALE_BYTE_COUNT];
+    unsigned char renderer_region_control[
+        LG_CAPTURE_BACKDROP_RENDERER_REGION_CONTROL_BYTE_COUNT];
+    unsigned char region_iterator[
+        LG_CAPTURE_BACKDROP_REGION_ITERATOR_BYTE_COUNT];
+    unsigned char region_prefix[
+        LG_CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT];
+    unsigned char origin_bounds[
+        LG_CAPTURE_BACKDROP_ORIGIN_BOUNDS_BYTE_COUNT];
     unsigned char reserved[4];
 } lg_capture_backdrop_operands;
 

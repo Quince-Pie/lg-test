@@ -60,35 +60,25 @@ class CaptureBackdropOperandPreregistrationTests(unittest.TestCase):
             opened["retrospectiveCodeAnalysisResultSHA256"],
         )
 
-    def test_frozen_implementation_hashes_match_files(self) -> None:
+    def test_frozen_implementation_remains_historical(self) -> None:
         expected = PREREGISTRATION["frozenImplementation"]
-        files = {
-            "matrixBridgeHeaderSHA256": REPOSITORY_ROOT
-            / "Sources/GlassIntrospect/MatrixBridge.h",
-            "matrixBridgeSourceSHA256": REPOSITORY_ROOT
-            / "Sources/GlassIntrospect/MatrixBridge.c",
-            "swiftCaptureSHA256": REPOSITORY_ROOT
-            / "Sources/GlassIntrospect/main.swift",
-            "workflowSHA256": REPOSITORY_ROOT
-            / ".github/workflows/transition-introspect.yml",
-            "validatorSHA256": ANALYSIS_ROOT
-            / "validate_dynamic_allocation_surviving_path_threshold.py",
-            "validatorTestSHA256": ANALYSIS_ROOT
-            / "test_validate_dynamic_allocation_surviving_path_threshold.py",
-            "codeAnalyzerSHA256": ANALYSIS_ROOT
-            / "analyze_dynamic_allocation_capture_backdrop_code.py",
-            "codeAnalyzerTestSHA256": ANALYSIS_ROOT
-            / "test_analyze_dynamic_allocation_capture_backdrop_code.py",
-            "retrospectiveCodeResultSHA256": ANALYSIS_ROOT
-            / "dynamic_allocation_capture_backdrop_code_retry_result.json",
-            "retryPreregistrationSHA256": ANALYSIS_ROOT
-            / "dynamic_allocation_capture_backdrop_code_retry_preregistration.json",
-            "productionShaderSHA256": REPOSITORY_ROOT.parent
-            / "shaders/frag.glsl",
-        }
-        for name, path in files.items():
-            with self.subTest(name=name):
-                self.assertEqual(sha256(path), expected[name])
+        self.assertEqual(
+            expected["lgTestCommitBeforeRegistration"],
+            "3226bf4733290df8409d227bacd1379fa4d2b8be",
+        )
+        self.assertEqual(
+            expected["validatorSHA256"],
+            "e751223a16bf793b32ba10cec3f381b344e6e2cfce8aa4cf81e2593ccd9c3492",
+        )
+        self.assertEqual(
+            expected["productionShaderSHA256"],
+            sha256(REPOSITORY_ROOT.parent / "shaders/frag.glsl"),
+        )
+        for name, digest in expected.items():
+            if name.endswith("SHA256"):
+                with self.subTest(name=name):
+                    self.assertEqual(len(digest), 64)
+                    int(digest, 16)
 
     def test_preregistration_denies_production_authority(self) -> None:
         acceptance = PREREGISTRATION["acceptance"]

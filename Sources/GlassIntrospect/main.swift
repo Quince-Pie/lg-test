@@ -4362,9 +4362,16 @@ private let captureBackdropOriginPointerStackOffset = 0x190
 private let captureBackdropShapePointerStackOffset = 0x1A0
 private let captureBackdropTransformPointerStackOffset = 0x1A8
 private let captureBackdropContextPointerStackOffset = 0x220
+private let captureBackdropRendererPointerStackOffset = 0x228
 private let captureBackdropRectStackOffset = 0x280
+private let captureBackdropRegionHandleStackOffset = 0x2A0
 private let captureBackdropAffineStackOffset = 0x390
+private let captureBackdropRegionIteratorStackOffset = 0x3C0
 private let captureBackdropContextScaleOffset = 0x18
+private let captureBackdropOwnerRegion248Offset = 0x248
+private let captureBackdropOwnerRegion270Offset = 0x270
+private let captureBackdropRendererScaleOffset = 0x30
+private let captureBackdropRendererRegionControlOffset = 0xD0
 private let glassMatrixConstructorCallOffsets = [
     0x338,
     0x3AC,
@@ -4575,11 +4582,24 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
 
     func serialized<T>(
         _ value: inout T,
-        className: String
+        className: String,
+        byteCount: Int? = nil
     ) -> [String: Any] {
-        let bytes = Swift.withUnsafeBytes(of: &value) {
+        let allBytes = Swift.withUnsafeBytes(of: &value) {
             Array($0)
         }
+        let count = byteCount ?? allBytes.count
+        guard count >= 0,
+              count <= allBytes.count
+        else {
+            return [
+                "class": className,
+                "lengthBytes": -1,
+                "hex": "",
+                "sha256": "",
+            ]
+        }
+        let bytes = Array(allBytes.prefix(count))
         return [
             "class": className,
             "lengthBytes": bytes.count,
@@ -4594,7 +4614,7 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
         String(format: "0x%016llx", $0)
     }
     return [
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "executed": true,
         "class": "bounded live capture_backdrop unwind operands",
         "symbol": captureBackdropSymbol,
@@ -4632,14 +4652,32 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
                 captureBackdropTransformPointerStackOffset,
             "contextPointer":
                 captureBackdropContextPointerStackOffset,
+            "rendererPointer":
+                captureBackdropRendererPointerStackOffset,
             "rect": captureBackdropRectStackOffset,
+            "regionHandle": captureBackdropRegionHandleStackOffset,
             "affine": captureBackdropAffineStackOffset,
+            "regionIterator":
+                captureBackdropRegionIteratorStackOffset,
         ],
         "originPointer": address(operands.origin_pointer),
         "shapePointer": address(operands.shape_pointer),
         "transformPointer": address(operands.transform_pointer),
         "contextPointer": address(operands.context_pointer),
         "contextScaleOffset": captureBackdropContextScaleOffset,
+        "rendererPointer": address(
+            operands.renderer_pointer),
+        "regionHandle": address(operands.region_handle),
+        "ownerRegion248": address(operands.owner_region_248),
+        "ownerRegion270": address(operands.owner_region_270),
+        "regionOwnerOffsets": [
+            "region248": captureBackdropOwnerRegion248Offset,
+            "region270": captureBackdropOwnerRegion270Offset,
+        ],
+        "rendererOffsets": [
+            "scale": captureBackdropRendererScaleOffset,
+            "regionControl": captureBackdropRendererRegionControlOffset,
+        ],
         "rect": serialized(
             &operands.rect,
             className: "four little-endian signed 32-bit rectangle words"),
@@ -4649,9 +4687,25 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
         "origin": serialized(
             &operands.origin,
             className: "two little-endian signed 32-bit origin words"),
+        "originBounds": serialized(
+            &operands.origin_bounds,
+            className: "four little-endian signed 32-bit origin-bound words"),
         "scale": serialized(
             &operands.scale,
             className: "one little-endian binary32 scale word"),
+        "rendererScale": serialized(
+            &operands.renderer_scale,
+            className: "one little-endian binary64 renderer scale word"),
+        "rendererRegionControl": serialized(
+            &operands.renderer_region_control,
+            className: "bounded renderer region-control bytes at offset d0"),
+        "regionIterator": serialized(
+            &operands.region_iterator,
+            className: "three little-endian region iterator words"),
+        "regionPrefix": serialized(
+            &operands.region_prefix,
+            className: "bounded selected-region prefix bytes",
+            byteCount: Int(operands.region_prefix_length)),
     ]
 }
 
@@ -18499,7 +18553,7 @@ private func transitionPathIsolationAllocationEvidence(
         $0["executed"] as? Bool == true
     }.count
     return [
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "requested": true,
         "executed": executedRecordCount == expectedRecordCount,
         "sourceSampleIndices": selectedSnapshots.map(

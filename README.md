@@ -4614,6 +4614,55 @@ will prove only the captured affine arithmetic stage; mapping every operand
 from public layer state and a separately frozen unseen native geometry remain
 mandatory before production integration.
 
+Run `30764095287`, from operand-capture commit `56ee240`, retained one complete
+operand record in every one of the 114 unchanged sample-31 interventions, but
+the prospective workflow failed with `capture_backdrop operand metadata
+differs`. The preregistered validator had required a nonzero transform pointer.
+The opened evidence proves that assumption wrong: the shape pointer is nonzero
+and the transform pointer is null in all 114 records. The run remains a failed
+prospective gate; the immutable post-opening audit is
+`Analysis/dynamic_allocation_capture_backdrop_operand_failed_run_result.json`,
+with SHA-256
+`0e42f26db761f218f2830aa7b89ebe550942c83be67338ed9483f177fa739032`.
+
+Re-reading the pinned instructions also corrects the field classification.
+The call at symbol offset `0x243c` appends the four primary position pairs from
+`floor(scale * lower)` and `ceil(scale * upper)`. The following identity path
+uses the fused rounding residual, binary32 inverse scale, integer rectangle,
+and origin to produce the four primary source pairs. Replaying that exact
+order matches all 912 primary position words and all 912 primary source words
+bit for bit across the run. All origins are `(0,0)`, all affine payloads are
+zero, and the single context-scale word is `0x3f03eb10`; the live selected
+rectangle still takes nine distinct values. These are retrospective facts,
+not a recovered public crop policy.
+
+The remaining rectangle input is now tied to a byte-gated producer. The
+selected region handle at `SP+0x2a0` initializes the iterator at `SP+0x3c0`,
+and the direct call at `capture_backdrop+0x2334` resolves to
+`CA::ShapeIterator::iterate(CA::Bounds&)`. Its captured 1 KiB prefix has
+SHA-256
+`faf2c7f536d2c76dbac26b3d7af7aeb7a498b1c50a20ecb152d8d896c616bcc6`.
+That code contains both Apple's packed immediate-region decoder and its
+pointer-region iterator progression; the helper writes the exact
+candidate rectangle. On the observed null-transform/nonzero-shape branch,
+`capture_backdrop` then intersects that candidate with the four signed bounds
+words at the origin pointer before consuming it at `SP+0x280`.
+
+The selected-region follow-up is frozen before capture in
+`Analysis/dynamic_allocation_capture_backdrop_selected_region_preregistration.json`.
+It advances only the operand record to schema 2 and the enclosing matrix to
+schema 6. For each unchanged intervention it retains the selected handle, a
+bounded 256-byte prefix only when the handle is a pointer, the post-call
+iterator, all four origin-bound words, the two owner-region handles, and the
+bounded renderer fields used by the surrounding region branches. Acceptance
+requires the byte-gated iterator and bounds intersection to reproduce all 114
+consumed rectangles and
+requires all 1,824 primary position/source words, all 912 source-`q`
+components, and all 1,596 allocation components to remain exact with zero
+tolerance. Even a pass will establish the consumed private region and its
+arithmetic, not yet the upstream public-state rule or an unseen geometry
+transfer, and it cannot authorize a production shader change.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

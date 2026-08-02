@@ -24,8 +24,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         symbol_address = 0x1000_0000
         frame_pointer = 0x2000
         stack_pointer = (
-            frame_pointer
-            - surviving.CAPTURE_BACKDROP_FRAME_POINTER_TO_STACK_POINTER
+            frame_pointer - surviving.CAPTURE_BACKDROP_FRAME_POINTER_TO_STACK_POINTER
         )
         origin_pointer = 0x3000
         context_pointer = 0x4000
@@ -63,14 +62,12 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             ),
             "readMask": "0x000000ff",
             "requiredReadMask": "0x000000ff",
-            "stackOffsets": surviving.CAPTURE_BACKDROP_STACK_OFFSETS,
+            "stackOffsets": surviving.CAPTURE_BACKDROP_V1_STACK_OFFSETS,
             "originPointer": f"0x{origin_pointer:016x}",
-            "shapePointer": "0x0000000000000000",
-            "transformPointer": "0x0000000000005000",
+            "shapePointer": "0x0000000000005000",
+            "transformPointer": "0x0000000000000000",
             "contextPointer": f"0x{context_pointer:016x}",
-            "contextScaleOffset": (
-                surviving.CAPTURE_BACKDROP_CONTEXT_SCALE_OFFSET
-            ),
+            "contextScaleOffset": (surviving.CAPTURE_BACKDROP_CONTEXT_SCALE_OFFSET),
             "rect": cls.operand_bytes(
                 struct.pack("<4i", 1, 2, 3, 4),
                 "four little-endian signed 32-bit rectangle words",
@@ -88,6 +85,67 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
                 "one little-endian binary32 scale word",
             ),
         }
+
+    @classmethod
+    def capture_backdrop_region_operands(cls) -> dict[str, object]:
+        operands = cls.capture_backdrop_operands()
+        rect = (1, 2, 3, 4)
+        region_handle = (
+            ((rect[0] & 0xFFFF) << 48)
+            | ((rect[1] & 0xFFFF) << 32)
+            | (rect[2] << 17)
+            | (rect[3] << 2)
+            | 1
+        )
+        registers = list(
+            struct.unpack(
+                f"<{surviving.CAPTURE_BACKDROP_REGISTER_COUNT}Q",
+                bytes.fromhex(operands["registers"]["hex"]),
+            )
+        )
+        registers[20 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER] = 0x6000
+        registers[25 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER] = 2
+        operands.update(
+            {
+                "schemaVersion": 2,
+                "readMask": "0x0001ffff",
+                "requiredReadMask": "0x0001ffff",
+                "stackOffsets": surviving.CAPTURE_BACKDROP_STACK_OFFSETS,
+                "registers": cls.operand_bytes(
+                    struct.pack(
+                        f"<{surviving.CAPTURE_BACKDROP_REGISTER_COUNT}Q",
+                        *registers,
+                    ),
+                    "little-endian x19-through-x29 words",
+                ),
+                "rendererPointer": "0x0000000000007000",
+                "regionHandle": f"0x{region_handle:016x}",
+                "ownerRegion248": f"0x{region_handle:016x}",
+                "ownerRegion270": "0x0000000000000000",
+                "regionOwnerOffsets": surviving.CAPTURE_BACKDROP_REGION_OWNER_OFFSETS,
+                "rendererOffsets": (surviving.CAPTURE_BACKDROP_RENDERER_OFFSETS),
+                "rendererScale": cls.operand_bytes(
+                    struct.pack("<d", 1),
+                    "one little-endian binary64 renderer scale word",
+                ),
+                "rendererRegionControl": cls.operand_bytes(
+                    bytes(16),
+                    "bounded renderer region-control bytes at offset d0",
+                ),
+                "originBounds": cls.operand_bytes(
+                    struct.pack("<4i", 0, 0, 10, 10),
+                    "four little-endian signed 32-bit origin-bound words",
+                ),
+                "regionIterator": cls.operand_bytes(
+                    struct.pack("<3Q", region_handle, 1, 0),
+                    "three little-endian region iterator words",
+                ),
+                "regionPrefix": cls.operand_bytes(
+                    b"", "bounded selected-region prefix bytes"
+                ),
+            }
+        )
+        return operands
 
     @staticmethod
     def producer_call_site() -> dict[str, object]:
@@ -151,9 +209,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
                 "symbol": surviving.CAPTURE_BACKDROP_SYMBOL,
                 "symbolAddress": f"0x{symbol_address:016x}",
                 "returnAddress": f"0x{return_address:016x}",
-                "symbolOffset": (
-                    f"0x{return_address - symbol_address:x}"
-                ),
+                "symbolOffset": (f"0x{return_address - symbol_address:x}"),
                 "imageBase": f"0x{image_base:016x}",
                 "imageOffset": f"0x{return_address - image_base:x}",
                 "captureBackdropCode": {
@@ -272,7 +328,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             list(surviving.SAMPLE31_REPEAT_Y_VALUES),
         )
 
-    def test_swift_uses_schema_four_only_for_the_sample31_repeat_scan(self) -> None:
+    def test_swift_uses_schema_six_for_the_region_replay(self) -> None:
         source = (
             Path(__file__).parents[1] / "Sources" / "GlassIntrospect" / "main.swift"
         ).read_text(encoding="utf-8")
@@ -285,7 +341,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn('"schemaVersion": 2', fixed_block)
         self.assertNotIn('"schemaVersion": 3', fixed_block)
         self.assertNotIn('"schemaVersion": 4', fixed_block)
-        self.assertIn('"schemaVersion": 5', path_block)
+        self.assertIn('"schemaVersion": 6', path_block)
         self.assertNotIn('"schemaVersion": 3', path_block)
         self.assertNotIn('"schemaVersion": 4', path_block)
         self.assertIn('"scanXValues"', path_block)
@@ -381,16 +437,22 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             operands["predictedPrimaryPositionBits"],
             [surviving.holdout.float32_bits(value) for value in expected],
         )
+        self.assertEqual(
+            operands["predictedPrimarySourceBits"],
+            [surviving.holdout.float32_bits(value) for value in expected],
+        )
+        self.assertEqual(operands["transformBranch"], "identity")
         self.assertEqual(operands["rect"], [1, 2, 3, 4])
         self.assertEqual(operands["origin"], [0, 0])
         self.assertEqual(operands["scaleBits"], 0x3F80_0000)
 
     def test_capture_backdrop_operand_replay_preserves_affine_order(self) -> None:
-        predicted = surviving.capture_backdrop_primary_position_bits(
+        predicted = surviving.capture_backdrop_primary_source_bits(
             rect=(1, 2, 3, 4),
             affine=(2, 3, 4, 5, 6, 7),
             origin=(1, 2),
             scale=1,
+            transform_branch=True,
         )
         expected = [15, 18, 21, 27, 37, 47, 31, 38]
         self.assertEqual(
@@ -398,13 +460,77 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             [surviving.holdout.float32_bits(value) for value in expected],
         )
 
-    def test_capture_backdrop_operand_replay_rejects_a_missing_transform(
+    def test_capture_backdrop_operand_replay_uses_the_null_transform_branch(
         self,
     ) -> None:
         operands = self.capture_backdrop_operands()
         operands["transformPointer"] = "0x0000000000000000"
+        validated = surviving.validate_capture_backdrop_operands(operands)
+        self.assertEqual(validated["transformBranch"], "identity")
+
+    def test_capture_backdrop_operand_replay_rejects_a_missing_shape(self) -> None:
+        operands = self.capture_backdrop_operands()
+        operands["shapePointer"] = "0x0000000000000000"
         with self.assertRaisesRegex(ValueError, "operand metadata differs"):
             surviving.validate_capture_backdrop_operands(operands)
+
+    def test_capture_backdrop_primary_positions_use_floor_and_ceil(self) -> None:
+        predicted = surviving.capture_backdrop_primary_position_bits(
+            rect=(1, 2, 3, 4),
+            scale=0.5,
+        )
+        expected = [0, 1, 2, 1, 2, 3, 0, 3]
+        self.assertEqual(
+            predicted,
+            [surviving.holdout.float32_bits(value) for value in expected],
+        )
+
+    def test_capture_backdrop_packed_region_replays_the_selected_rect(self) -> None:
+        validated = surviving.validate_capture_backdrop_operands(
+            self.capture_backdrop_region_operands()
+        )
+        self.assertEqual(validated["schemaVersion"], 2)
+        self.assertEqual(validated["regionHandleClass"], "packed")
+        self.assertEqual(validated["selectedRegionRect"], [1, 2, 3, 4])
+        self.assertEqual(validated["consumedRegionRect"], [1, 2, 3, 4])
+        self.assertTrue(validated["consumedRegionRectExact"])
+
+    def test_capture_backdrop_pointer_region_decoder_matches_the_helper(self) -> None:
+        payload = bytearray(surviving.CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT)
+        struct.pack_into("<5i", payload, 12, 2, 4, 1, 4, 6)
+        self.assertEqual(
+            surviving.capture_backdrop_first_region_rect(0x1000, bytes(payload)),
+            [1, 2, 3, 4],
+        )
+
+    def test_capture_backdrop_region_decoder_rejects_an_empty_immediate(self) -> None:
+        with self.assertRaisesRegex(ValueError, "selected-region rectangle is empty"):
+            surviving.capture_backdrop_first_region_rect(1 << 32 | 1, b"")
+
+    def test_capture_backdrop_region_iterator_selects_the_emitted_interval(
+        self,
+    ) -> None:
+        payload = bytearray(surviving.CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT)
+        struct.pack_into("<7i", payload, 12, 2, 6, 1, 4, 5, 9, 8)
+        self.assertEqual(
+            surviving.capture_backdrop_region_rect_for_iterator(
+                0x1000, bytes(payload), [0x1000, 9, 0]
+            ),
+            [5, 2, 4, 6],
+        )
+
+    def test_capture_backdrop_region_replay_applies_the_observed_intersection(
+        self,
+    ) -> None:
+        self.assertEqual(
+            surviving.capture_backdrop_consumed_region_rect(
+                [0, 0, 10, 10],
+                [2, 3, 5, 4],
+                shape_pointer=1,
+                transform_pointer=0,
+            ),
+            [2, 3, 5, 4],
+        )
 
     def test_capture_backdrop_operand_replay_rejects_a_bad_payload_hash(
         self,
@@ -424,6 +550,8 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn('"transition-path-isolation-31-"', source)
         self.assertIn('record["captureBackdropOperands"]', source)
         self.assertIn("captureBackdropFramePointerToStackPointer = 0xA50", source)
+        self.assertIn("captureBackdropRegionHandleStackOffset = 0x2A0", source)
+        self.assertIn('"regionPrefix": serialized(', source)
 
     def test_live_baseline_changes_only_deepest_position(self) -> None:
         states = [

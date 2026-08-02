@@ -1,0 +1,164 @@
+{
+  "aggregate": {
+    "allocationInvariants": {
+      "componentCount": 1596,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "captureBackdropOperandReplay": {
+      "affineValues": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "allowNumericTolerance": false,
+      "captureCount": 114,
+      "contextScaleBits": [
+        "0x3f03eb10"
+      ],
+      "originValues": [
+        [
+          0,
+          0
+        ]
+      ],
+      "primaryPositionComponentCount": 912,
+      "primaryPositionMismatchedComponents": 0,
+      "primarySourceComponentCount": 912,
+      "primarySourceMismatchedComponents": 0,
+      "shapePointerNonzeroCount": 114,
+      "transformBranchCounts": {
+        "identity": 114
+      }
+    },
+    "capturedRectangleFrequency": [
+      {
+        "count": 8,
+        "rect": [
+          199,
+          172,
+          644,
+          653
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          199,
+          172,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 5,
+        "rect": [
+          199,
+          173,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          200,
+          172,
+          644,
+          653
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          642,
+          651
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 68,
+        "rect": [
+          200,
+          173,
+          643,
+          651
+        ]
+      },
+      {
+        "count": 2,
+        "rect": [
+          200,
+          174,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          201,
+          173,
+          642,
+          651
+        ]
+      }
+    ],
+    "primarySourceQ": {
+      "componentCount": 912,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "recordCount": 114
+  },
+  "classification": "post-opening-audit-of-failed-preregistered-capture-backdrop-operand-replay; not-a-prospective-pass-or-upstream-crop-policy",
+  "conclusion": {
+    "failureWasIncorrectNonzeroTransformRequirement": true,
+    "frozenOperandGatePassed": false,
+    "primaryPositionAndSourceWordsExact": true,
+    "productionShaderAuthorized": false,
+    "requiresSelectedRegionCapture": true,
+    "requiresUnseenGeometryTransfer": true,
+    "retrospectiveInstructionOrderReplayExact": true,
+    "selectedRegionPolicyRecovered": false
+  },
+  "dynamicAllocationCaptureBackdropOperandFailedRunAnalysisSchemaVersion": 1,
+  "frozenGateError": "capture_backdrop operand metadata differs",
+  "headSHA": "56ee24016165155da617898c476a08ca1494f168",
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30764095287/transition-timeline.json",
+  "inputTimelineSHA256": "b9497caae11dd25fd010c1c0ba235d9375aee9dfdc136251cab6f4db786e57b1",
+  "openedCodeFacts": {
+    "originBoundsByteCount": 16,
+    "originBoundsPointerStackOffset": 400,
+    "primaryPositionRule": "floor(scale * lower) and ceil(scale * upper), stored as the four position pairs",
+    "primarySourceRule": "identity-branch fused residual-times-inverse-scale plus the integer-origin-adjusted rectangle bound",
+    "selectedRegionHandleStackOffset": 672,
+    "selectedRegionIntersectionCondition": "null transform pointer and nonzero shape pointer",
+    "selectedRegionIntersectionInstructionRange": [
+      9344,
+      9436
+    ],
+    "selectedRegionIteratorCallOffset": 9012,
+    "selectedRegionIteratorPrefixSHA256": "faf2c7f536d2c76dbac26b3d7af7aeb7a498b1c50a20ecb152d8d896c616bcc6",
+    "selectedRegionIteratorStackOffset": 960,
+    "selectedRegionIteratorSymbol": "_ZN2CA13ShapeIterator7iterateERNS_6BoundsE"
+  },
+  "prospectiveGatePassed": false,
+  "runID": 30764095287,
+  "workflowConclusion": "failure"
+}
