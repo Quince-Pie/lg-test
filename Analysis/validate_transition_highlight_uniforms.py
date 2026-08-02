@@ -11,6 +11,20 @@ from typing import Any
 
 EXPECTED_SAMPLE_INDICES = (1, 4, 8, 12, 16, 20, 24, 28, 32)
 HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 12, 32})
+ALPHA_TOMOGRAPHY_CASES = frozenset(
+    {
+        "positive-normal-x",
+        "negative-normal-x",
+        "positive-normal-y",
+        "negative-normal-y",
+        "normalized-normal-x",
+        "normalized-normal-y",
+        "original-directional",
+        "shifted-scaled-distance",
+        "leading-coverage",
+        "original-coverage",
+    }
+)
 COMPOSITOR_TOMOGRAPHY_CASES = frozenset(
     {
         "zero-rgb-unit-alpha",
@@ -259,7 +273,13 @@ def validate_highlight_trace(
         trace.get("schemaVersion") != 2
         or trace.get("executed") is not True
         or trace.get("diagnosticScope")
-        != ("alpha-and-compositor" if sample_index == 32 else "alpha-only")
+        != (
+            "full"
+            if sample_index == 1
+            else "alpha-and-compositor"
+            if sample_index == 32
+            else "alpha-only"
+        )
         or trace.get("capturedAppleFunctionUnmodified") is not True
         or trace.get("selectedLastA2XghfcDraw") is not True
         or comparison.get("compared") is not True
@@ -290,6 +310,104 @@ def validate_highlight_trace(
     if sample_index != 32:
         if "exactCompositorTrace" in trace:
             raise ValueError("fractional alpha trace captured a compositor probe")
+        if sample_index == 1:
+            for key in ("exactKeyHalfAlpha", "exactFillHalfAlpha"):
+                render = mapping(trace.get(key), key)
+                output = mapping(render.get("output"), f"{key} output")
+                if (
+                    render.get("executed") is not True
+                    or output.get("width") != 1024
+                    or output.get("height") != 1024
+                    or output.get("pixelFormat") != 115
+                    or output.get("rawBytes") != 1024 * 1024 * 8
+                    or "auxiliaryOutput" in render
+                ):
+                    raise ValueError(f"dynamic {key} layout differs")
+                validate_raw_file(output, root=root, name=f"dynamic {key}")
+            interpolant = mapping(
+                trace.get("exactInterpolant"),
+                "exactInterpolant",
+            )
+            interpolant_output = mapping(
+                interpolant.get("output"),
+                "exactInterpolant output",
+            )
+            if (
+                interpolant.get("executed") is not True
+                or interpolant_output.get("width") != 1024
+                or interpolant_output.get("height") != 1024
+                or interpolant_output.get("pixelFormat") != 123
+                or interpolant_output.get("rawBytes") != 1024 * 1024 * 16
+                or "auxiliaryOutput" in interpolant
+            ):
+                raise ValueError("dynamic exactInterpolant layout differs")
+            validate_raw_file(
+                interpolant_output,
+                root=root,
+                name="dynamic exactInterpolant",
+            )
+            pipeline = mapping(
+                trace.get("interpolantPipeline"),
+                "interpolantPipeline",
+            )
+            candidates = pipeline.get("candidates")
+            if (
+                pipeline.get("executed") is not True
+                or not isinstance(candidates, list)
+                or not candidates
+                or not any(
+                    isinstance(candidate, Mapping) and candidate.get("built") is True
+                    for candidate in candidates
+                )
+            ):
+                raise ValueError("dynamic interpolant pipeline differs")
+            tomography = mapping(
+                trace.get("stageTomography"),
+                "highlight stageTomography",
+            )
+            cases = tomography.get("cases")
+            if (
+                tomography.get("schemaVersion") != 1
+                or tomography.get("executed") is not True
+                or tomography.get("capturedAppleFunctionUnmodified") is not True
+                or tomography.get("caseCount") != len(ALPHA_TOMOGRAPHY_CASES)
+                or not isinstance(cases, list)
+                or {case.get("name") for case in cases if isinstance(case, Mapping)}
+                != ALPHA_TOMOGRAPHY_CASES
+            ):
+                raise ValueError("dynamic highlight tomography differs")
+            for untyped_case in cases:
+                case = mapping(untyped_case, "highlight tomography case")
+                replay = mapping(case.get("replay"), "highlight tomography replay")
+                output = mapping(replay.get("output"), "highlight tomography output")
+                if (
+                    case.get("executed") is not True
+                    or not isinstance(case.get("edits"), list)
+                    or not case["edits"]
+                    or replay.get("executed") is not True
+                    or output.get("width") != 1024
+                    or output.get("height") != 1024
+                    or output.get("pixelFormat") != 115
+                    or output.get("rawBytes") != 1024 * 1024 * 8
+                    or "auxiliaryOutput" in replay
+                ):
+                    raise ValueError("dynamic highlight tomography case differs")
+                validate_raw_file(
+                    output,
+                    root=root,
+                    name="dynamic highlight tomography",
+                )
+        elif any(
+            key in trace
+            for key in (
+                "exactKeyHalfAlpha",
+                "exactFillHalfAlpha",
+                "exactInterpolant",
+                "interpolantPipeline",
+                "stageTomography",
+            )
+        ):
+            raise ValueError("middle alpha trace captured full diagnostics")
         return
 
     compositor = mapping(

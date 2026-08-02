@@ -9659,6 +9659,135 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "lg.apple-final-highlight-alpha-rgba16float"
         floatDescriptor.colorAttachments[0]?.pixelFormat = .rgba16Float
 
+        var interpolantPipeline: MTLRenderPipelineState?
+        var interpolantPipelineRecord: [String: Any]?
+        if includeDiagnostics {
+            let source = """
+                #include <metal_stdlib>
+                using namespace metal;
+
+                struct TraceStageInput {
+                    float4 position [[attribute(0)]];
+                    float2 sdfUV [[attribute(1)]];
+                    float2 sourceUV [[attribute(2)]];
+                };
+                struct TraceVertexOutput {
+                    float4 position [[position]];
+                    float2 sdfUV [[user(sdf_uv)]];
+                    float2 sourceUV [[user(src_uv)]];
+                };
+                vertex TraceVertexOutput highlight_trace_vertex(
+                    TraceStageInput input [[stage_in]],
+                    constant float4x4 &mvp [[buffer(2)]],
+                    constant float4 &unusedTextureMatrix [[buffer(3)]])
+                {
+                    (void)unusedTextureMatrix;
+                    TraceVertexOutput output;
+                    output.position = mvp * input.position;
+                    output.sdfUV = input.sdfUV;
+                    output.sourceUV = input.sourceUV;
+                    return output;
+                }
+                fragment uint4 highlight_interpolant_trace(
+                    TraceVertexOutput input [[stage_in]])
+                {
+                    return uint4(
+                        as_type<uint>(input.sdfUV.x),
+                        as_type<uint>(input.sdfUV.y),
+                        as_type<uint>(input.sourceUV.x),
+                        as_type<uint>(input.sourceUV.y));
+                }
+                """
+            let options = MTLCompileOptions()
+            options.fastMathEnabled = true
+            do {
+                let library = try device.makeLibrary(
+                    source: source,
+                    options: options)
+                guard let fragment = library.makeFunction(
+                        name: "highlight_interpolant_trace"),
+                      let customVertex = library.makeFunction(
+                        name: "highlight_trace_vertex")
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "final highlight trace functions unavailable",
+                    ]
+                }
+                var candidates: [(
+                    name: String,
+                    descriptor: MTLRenderPipelineDescriptor
+                )] = []
+                for (name, vertex) in [
+                    ("captured-vertex", nil),
+                    ("custom-stage-in-vertex", customVertex),
+                ] as [(String, MTLFunction?)] {
+                    guard let descriptor = capturedDescriptor.copy()
+                            as? MTLRenderPipelineDescriptor
+                    else {
+                        continue
+                    }
+                    descriptor.label =
+                        "lg.final-highlight-interpolant-" + name
+                    if let vertex {
+                        descriptor.vertexFunction = vertex
+                    }
+                    descriptor.fragmentFunction = fragment
+                    descriptor.colorAttachments[0]?.pixelFormat =
+                        .rgba32Uint
+                    descriptor.colorAttachments[0]?.isBlendingEnabled =
+                        false
+                    descriptor.colorAttachments[0]?.writeMask = .all
+                    candidates.append((name, descriptor))
+                }
+                var records: [[String: Any]] = []
+                for candidate in candidates
+                    where interpolantPipeline == nil
+                {
+                    do {
+                        let pipeline =
+                            try device.makeRenderPipelineState(
+                                descriptor: candidate.descriptor)
+                        interpolantPipeline = pipeline
+                        records.append([
+                            "name": candidate.name,
+                            "built": true,
+                            "descriptor": pipelineDescriptorRecord(
+                                candidate.descriptor),
+                        ])
+                    } catch {
+                        records.append([
+                            "name": candidate.name,
+                            "built": false,
+                            "error": error.localizedDescription,
+                            "descriptor": pipelineDescriptorRecord(
+                                candidate.descriptor),
+                        ])
+                    }
+                }
+                guard let interpolantPipeline else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "final highlight interpolant pipeline failed",
+                        "interpolantPipelineCandidates": records,
+                    ]
+                }
+                interpolantPipelineRecord = [
+                    "executed": true,
+                    "selectedLabel": interpolantPipeline.label ?? "",
+                    "candidates": records,
+                ]
+            } catch {
+                return [
+                    "executed": false,
+                    "reason": error.localizedDescription,
+                    "stage": "final-highlight-interpolant-library",
+                ]
+            }
+        }
+
         let rebuiltPipeline: MTLRenderPipelineState
         let floatPipeline: MTLRenderPipelineState
         do {
@@ -9752,7 +9881,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         withBytes: bytes.baseAddress!,
                         bytesPerRow: originalTarget.width * 4)
                 }
-            } else {
+            } else if pixelFormat == .rgba16Float {
                 var pixels = [UInt16](
                     repeating: 0,
                     count: pixelCount * 4)
@@ -9805,6 +9934,28 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         withBytes: bytes.baseAddress!,
                         bytesPerRow: originalTarget.width * 8)
                 }
+            } else if pixelFormat == .rgba32Uint {
+                let pixels = [UInt32](
+                    repeating: 0,
+                    count: pixelCount * 4)
+                pixels.withUnsafeBytes { bytes in
+                    target.replace(
+                        region: MTLRegionMake2D(
+                            0,
+                            0,
+                            originalTarget.width,
+                            originalTarget.height),
+                        mipmapLevel: 0,
+                        withBytes: bytes.baseAddress!,
+                        bytesPerRow: originalTarget.width * 16)
+                }
+            } else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "unsupported final highlight trace format",
+                    "pixelFormat": pixelFormat.rawValue,
+                ]
             }
 
             let descriptor = MTLRenderPassDescriptor()
@@ -9871,24 +10022,38 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return result
         }
 
+        let captureAuxiliaryDiagnostics =
+            includeDiagnostics
+            && capture == "carenderer-local-backdrop"
         let capturedBGRA = render(
             name: "captured-bgra8",
             pipeline: selection.pipeline,
             pixelFormat: .bgra8Unorm,
             uniformBuffer: uniformClone,
-            captureAuxiliary: includeDiagnostics)
+            captureAuxiliary: captureAuxiliaryDiagnostics)
         let rebuiltBGRA = render(
             name: "rebuilt-bgra8",
             pipeline: rebuiltPipeline,
             pixelFormat: .bgra8Unorm,
             uniformBuffer: uniformClone,
-            captureAuxiliary: includeDiagnostics)
+            captureAuxiliary: captureAuxiliaryDiagnostics)
         let exactHalf = render(
             name: "rebuilt-rgba16float",
             pipeline: floatPipeline,
             pixelFormat: .rgba16Float,
             uniformBuffer: uniformClone,
-            captureAuxiliary: includeDiagnostics)
+            captureAuxiliary: captureAuxiliaryDiagnostics)
+        let exactInterpolant: [String: Any]? =
+            includeDiagnostics
+            ? interpolantPipeline.map {
+                render(
+                    name: "interpolant-rgba32uint",
+                    pipeline: $0,
+                    pixelFormat: .rgba32Uint,
+                    uniformBuffer: uniformClone,
+                    captureAuxiliary: false)
+            }
+            : nil
         if (compositorInput == nil) != (compositorReference == nil) {
             return [
                 "executed": false,
@@ -10028,7 +10193,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 name: "key-rgba16float",
                 pipeline: floatPipeline,
                 pixelFormat: .rgba16Float,
-                uniformBuffer: keyUniform)
+                uniformBuffer: keyUniform,
+                captureAuxiliary: captureAuxiliaryDiagnostics)
             : nil
         let exactFillHalf: [String: Any]? =
             includeDiagnostics
@@ -10036,7 +10202,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 name: "fill-rgba16float",
                 pipeline: floatPipeline,
                 pixelFormat: .rgba16Float,
-                uniformBuffer: fillUniform)
+                uniformBuffer: fillUniform,
+                captureAuxiliary: captureAuxiliaryDiagnostics)
             : nil
         let tomographyCases: [[String: Any]] = includeDiagnostics
             ? tomographyUniforms.map { item in
@@ -10059,6 +10226,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let diagnosticsExecuted = !includeDiagnostics || (
             exactKeyHalf?["executed"] as? Bool == true
             && exactFillHalf?["executed"] as? Bool == true
+            && exactInterpolant?["executed"] as? Bool == true
             && tomographyCases.allSatisfy {
             $0["executed"] as? Bool == true
             }
@@ -10115,6 +10283,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
         ]
         if let compositorTrace {
             result["exactCompositorTrace"] = compositorTrace
+        }
+        if let exactInterpolant,
+           let interpolantPipelineRecord
+        {
+            result["exactInterpolant"] = exactInterpolant
+            result["interpolantPipeline"] =
+                interpolantPipelineRecord
         }
         if let exactKeyHalf,
            let exactFillHalf
@@ -11732,7 +11907,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     capture: capture,
                     outputDirectory: outputDirectory,
                     includeDiagnostics:
-                        capture == "carenderer-local-backdrop",
+                        capture == "carenderer-local-backdrop"
+                        || (dynamicHighlightTraceRequested
+                            && capture.hasSuffix("-01")),
                     compositorInput:
                         captureDynamicCompositor
                         ? finalHighlightInputReference
