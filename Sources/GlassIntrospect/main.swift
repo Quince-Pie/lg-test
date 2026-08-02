@@ -4934,6 +4934,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
         "carenderer-local-backdrop",
     ])
 
+    private func retainsTextureBindings(
+        capture: String
+    ) -> Bool {
+        textureCaptureNames.contains(capture)
+            || capture.hasPrefix(
+                "transition-background-uniform-")
+    }
+
     private init() {}
 
     private func captureGlassUniformCallSiteIfNeeded(
@@ -6676,7 +6684,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             record["textureType"] = metalTexture.textureType.rawValue
             record["usage"] = metalTexture.usage.rawValue
             record["storageMode"] = metalTexture.storageMode.rawValue
-            if textureCaptureNames.contains(captureName) {
+            if retainsTextureBindings(capture: captureName) {
                 textureBindings.append(TextureBinding(
                     capture: captureName,
                     sequence: records.count,
