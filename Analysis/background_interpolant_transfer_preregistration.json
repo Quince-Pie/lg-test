@@ -1,0 +1,32 @@
+{
+  "backgroundInterpolantTransferPreregistrationSchemaVersion": 1,
+  "classification": "prospective dynamic transfer gate",
+  "objective": "Test the frozen local AGX raster model against all four background interpolants at every dynamic state before any trace is opened.",
+  "capture": {
+    "appearance": "light",
+    "diagnosticReplay": "main-plus-shadow",
+    "direction": "materialize",
+    "material": "clear",
+    "pixelFormat": "rgba32Uint",
+    "prospectiveReplay": "main-only",
+    "sampleIndices": [1, 4, 8, 12, 16, 20, 24, 28, 32],
+    "traceComponents": ["sdf-x", "sdf-y", "source-x", "source-y"]
+  },
+  "frozenPredictor": {
+    "dynamicRenderGateSha256": "fec16ab265aae2ab5738c35fff2488e39807101e5ff51c862fc2374dd9aa200a",
+    "runtimeRasterCoefficientsSha256": "43a5e76869d8e3fba09214e586947b88745dd04283515b8f75e6ca8006d2aaf0",
+    "squareSelectorCalibrationSha256": "aa12e1a33851f60df923667d0e6063d877a194cc4d31548eb644751fa33584b6",
+    "squareSelectorArchiveSha256": "93fcb5859794d67b193e00f2fe741416ae69d93125f38fa7b36506616b98e5ba"
+  },
+  "acceptance": {
+    "comparedWords": 37748736,
+    "maximumAllowedMismatchedWords": 0,
+    "requireEveryStateExact": true
+  },
+  "limitations": [
+    "This gate covers the clear/light materialize transition only.",
+    "Only the main-draw replay is part of the prospective zero-mismatch acceptance; the combined replay is diagnostic evidence.",
+    "Passing does not by itself authorize production parity.",
+    "The finite square selector table remains calibration-backed rather than a portable closed form."
+  ]
+}

@@ -7913,7 +7913,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private func makeIndependentGlassPipelines(
         for pass: ReplayPass,
         capture: String,
-        outputDirectory: URL
+        outputDirectory: URL,
+        buildCandidatePipelines: Bool = true,
+        numericTraceNames: Set<String>? = nil
     ) throws -> IndependentGlassPipelineSet {
         writeIndependentGlassProgress(
             capture: capture,
@@ -8183,7 +8185,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 to: outputDirectory.appendingPathComponent(
                     "independent-glass-pipeline-builds.json"))
         }
-        for candidate in descriptorCandidates {
+        for candidate in descriptorCandidates
+            where buildCandidatePipelines
+        {
             writeIndependentGlassProgress(
                 capture: capture,
                 phase: "before-pipeline-build",
@@ -8352,7 +8356,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 fragment: customEdgeAmountTraceFragment,
                 pixelFormat: MTLPixelFormat.rgba16Float
             ),
-        ] {
+        ] where (numericTraceNames?.contains(trace.name) ?? true) {
             let descriptor = try copyCapturedDescriptor()
             descriptor.vertexFunction = customStageInVertex
             descriptor.fragmentFunction = trace.fragment
@@ -8430,6 +8434,27 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
         result.append(contentsOf: commands[glassIndex...])
         return result
+    }
+
+    private func commandsThroughGlassDraw(
+        _ commands: [ReplayCommand],
+        ordinal: Int
+    ) -> [ReplayCommand]? {
+        guard ordinal > 0 else { return nil }
+        var currentPipelineIsGlass = false
+        var glassDrawCount = 0
+        for (index, command) in commands.enumerated() {
+            if case .pipeline(let state) = command {
+                currentPipelineIsGlass = isGlassPipeline(state)
+            }
+            if currentPipelineIsGlass && replayCommandIsDraw(command) {
+                glassDrawCount += 1
+                if glassDrawCount == ordinal {
+                    return Array(commands.prefix(through: index))
+                }
+            }
+        }
+        return nil
     }
 
     private func replayGlassNumericTrace(
@@ -12174,6 +12199,95 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
         result["finalHighlightInputReference"] =
             finalHighlightInputReference
+        if dynamicInterpolantTraceRequested {
+            do {
+                let pipelineSet =
+                    try makeIndependentGlassPipelines(
+                        for: pass,
+                        capture: capture,
+                        outputDirectory: outputDirectory,
+                        buildCandidatePipelines: false,
+                        numericTraceNames: Set(["interpolant"]))
+                guard let trace = pipelineSet.numericTraces.first,
+                      trace.name == "interpolant",
+                      trace.pixelFormat == .rgba32Uint
+                else {
+                    result["backgroundInterpolantTrace"] = [
+                        "schemaVersion": 1,
+                        "executed": false,
+                        "reason":
+                            "background interpolant pipeline unavailable",
+                        "pipelineBuild": pipelineSet.report,
+                    ]
+                    throw NSError(
+                        domain:
+                            "GlassIntrospect.BackgroundInterpolant",
+                        code: 1,
+                        userInfo: [
+                            NSLocalizedDescriptionKey:
+                                "background interpolant pipeline unavailable",
+                        ])
+                }
+                guard let mainCommands = commandsThroughGlassDraw(
+                        pass.commands,
+                        ordinal: 1)
+                else {
+                    result["backgroundInterpolantTrace"] = [
+                        "schemaVersion": 1,
+                        "executed": false,
+                        "reason": "first background glass draw unavailable",
+                        "pipelineBuild": pipelineSet.report,
+                    ]
+                    throw NSError(
+                        domain:
+                            "GlassIntrospect.BackgroundInterpolant",
+                        code: 2,
+                        userInfo: [
+                            NSLocalizedDescriptionKey:
+                                "first background glass draw unavailable",
+                        ])
+                }
+                let mainReplay = replayGlassNumericTrace(
+                    pass: pass,
+                    queue: queue,
+                    commands: mainCommands,
+                    replacement: trace.pipeline,
+                    pixelFormat: trace.pixelFormat,
+                    capture: capture,
+                    name: "dynamic-main-interpolant",
+                    outputDirectory: outputDirectory)
+                let combinedReplay = replayGlassNumericTrace(
+                    pass: pass,
+                    queue: queue,
+                    replacement: trace.pipeline,
+                    pixelFormat: trace.pixelFormat,
+                    capture: capture,
+                    name: "dynamic-combined-interpolant",
+                    outputDirectory: outputDirectory)
+                result["backgroundInterpolantTrace"] = [
+                    "schemaVersion": 1,
+                    "executed":
+                        mainReplay["executed"] as? Bool == true
+                        && combinedReplay["executed"] as? Bool == true,
+                    "scope": "all-dynamic-background-states",
+                    "capturedAppleFunctionUnmodified": false,
+                    "customStageInVertex": true,
+                    "prospectiveReplay": "main-only",
+                    "diagnosticReplay": "main-plus-shadow",
+                    "pipelineBuild": pipelineSet.report,
+                    "mainReplay": mainReplay,
+                    "combinedReplay": combinedReplay,
+                ]
+            } catch {
+                if result["backgroundInterpolantTrace"] == nil {
+                    result["backgroundInterpolantTrace"] = [
+                        "schemaVersion": 1,
+                        "executed": false,
+                        "reason": error.localizedDescription,
+                    ]
+                }
+            }
+        }
         if capture == "carenderer-local-backdrop"
             || dynamicHighlightDiagnosticsRequested
         {

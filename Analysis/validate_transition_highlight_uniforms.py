@@ -373,6 +373,63 @@ def validate_interpolant_only_trace(
     validate_interpolant_trace(trace, root=root)
 
 
+def validate_background_interpolant_trace(
+    replay: Mapping[str, Any],
+    *,
+    root: Path,
+) -> None:
+    trace = mapping(
+        replay.get("backgroundInterpolantTrace"),
+        "backgroundInterpolantTrace",
+    )
+    main = mapping(trace.get("mainReplay"), "background main interpolant replay")
+    main_output = mapping(
+        main.get("output"),
+        "background main interpolant output",
+    )
+    combined = mapping(
+        trace.get("combinedReplay"),
+        "background combined interpolant replay",
+    )
+    combined_output = mapping(
+        combined.get("output"),
+        "background combined interpolant output",
+    )
+    build = mapping(trace.get("pipelineBuild"), "background pipeline build")
+    numeric_traces = build.get("numericTraces")
+    if (
+        trace.get("schemaVersion") != 1
+        or trace.get("executed") is not True
+        or trace.get("scope") != "all-dynamic-background-states"
+        or trace.get("capturedAppleFunctionUnmodified") is not False
+        or trace.get("customStageInVertex") is not True
+        or trace.get("prospectiveReplay") != "main-only"
+        or trace.get("diagnosticReplay") != "main-plus-shadow"
+        or main.get("executed") is not True
+        or main.get("glassDrawCount") != 1
+        or combined.get("executed") is not True
+        or combined.get("glassDrawCount") != 2
+        or not isinstance(numeric_traces, list)
+        or len(numeric_traces) != 1
+        or numeric_traces[0].get("name") != "interpolant"
+        or numeric_traces[0].get("built") is not True
+        or numeric_traces[0].get("pixelFormat") != 123
+    ):
+        raise ValueError("dynamic background interpolant trace differs")
+    for output, name in (
+        (main_output, "dynamic background main interpolant"),
+        (combined_output, "dynamic background combined interpolant"),
+    ):
+        if (
+            output.get("width") != 1024
+            or output.get("height") != 1024
+            or output.get("pixelFormat") != 123
+            or output.get("rawBytes") != 1024 * 1024 * 16
+        ):
+            raise ValueError(f"{name} layout differs")
+        validate_raw_file(output, root=root, name=name)
+
+
 def validate_raw_render_evidence(
     render: Mapping[str, Any],
     *,
@@ -725,6 +782,7 @@ def validate(
             "highlightBindings": 0,
             "highlightTraces": 0,
             "interpolantTraces": 0,
+            "backgroundInterpolantTraces": 0,
             "intermediateTextures": 0,
         }
 
@@ -752,6 +810,7 @@ def validate(
     binding_count = 0
     highlight_trace_count = 0
     interpolant_trace_count = 0
+    background_interpolant_trace_count = 0
     intermediate_texture_count = 0
     for sample_index, untyped_record in zip(
         EXPECTED_SAMPLE_INDICES,
@@ -835,6 +894,14 @@ def validate(
             raise ValueError(f"sample {sample_index} render is incomplete")
         validate_raw_render_evidence(render, root=path.parent)
         replay = mapping(render.get("exactPassReplay"), "exactPassReplay")
+        if highlight_trace:
+            validate_background_interpolant_trace(
+                replay,
+                root=path.parent,
+            )
+            background_interpolant_trace_count += 1
+        elif "backgroundInterpolantTrace" in replay:
+            raise ValueError("an unrequested background interpolant trace executed")
         trace_expected = (
             highlight_trace and sample_index in HIGHLIGHT_TRACE_SAMPLE_INDICES
         )
@@ -939,6 +1006,7 @@ def validate(
         "rawPreFinalPasses": len(records),
         "highlightTraces": highlight_trace_count,
         "interpolantTraces": interpolant_trace_count,
+        "backgroundInterpolantTraces": background_interpolant_trace_count,
         "intermediateTextures": intermediate_texture_count,
     }
 

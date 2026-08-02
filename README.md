@@ -3837,6 +3837,20 @@ calibration because the widened selector window and corrected anchor were
 chosen after opening the run. It does not erase the failed frozen gate or
 authorize production parity.
 
+The next dynamic transfer is preregistered in
+`Analysis/background_interpolant_transfer_preregistration.json`.  While the
+existing transition evidence traces the final-highlight interpolants, it does
+not expose the four background planes at every state.  The new trace replays a
+custom stage-in vertex and an integer fragment twice: first through the main
+glass draw only, then through both the main and shadow draws.  Both surfaces
+write raw `rgba32Uint` values for SDF X/Y and source U/V at all nine dynamic
+states.  The frozen local predictor and selector-archive hashes were recorded
+before the first such artifact.  The prospective acceptance applies only to
+the unambiguous main-draw surface and requires zero mismatched words across
+37,748,736 comparisons.  The combined surface preserves shadow ownership as
+diagnostic evidence.  A failure remains useful evidence and must not be
+rewritten as a prospective pass.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:
