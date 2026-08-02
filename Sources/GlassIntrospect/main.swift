@@ -14465,7 +14465,10 @@ private struct TransitionBackgroundFilterSnapshot {
     let requestedProgress: Double
     let remaining: Double
     let filter: NSObject
-    let foregroundFilter: NSObject
+    let backgroundPath: [Int]
+    let foregroundFilter: NSObject?
+    let foregroundPath: [Int]?
+    let detachedRootLayer: CALayer
     let layerStates: [TransitionLayerState]
     let layerSource: String
 }
@@ -14549,6 +14552,22 @@ private func copiedTransitionFilter(
 ) -> NSObject? {
     guard let copying = filter as? NSCopying else { return nil }
     return copying.copy(with: nil) as? NSObject
+}
+
+private func detachedTransitionLayerTree(
+    _ layer: CALayer
+) -> CALayer? {
+    guard let copied = layer.copy() as? CALayer else { return nil }
+    copied.removeAllAnimations()
+    copied.sublayers = nil
+    for child in layer.sublayers ?? [] {
+        guard let copiedChild = detachedTransitionLayerTree(child)
+        else {
+            return nil
+        }
+        copied.addSublayer(copiedChild)
+    }
+    return copied
 }
 
 private func transitionLayerStates(
@@ -14653,7 +14672,8 @@ private func transitionBackgroundFilterSnapshot(
     sampleIndex: Int,
     requestedProgress: Double,
     presentationLayerSource: String = "presentation",
-    modelLayerSource: String = "model-endpoint-fallback"
+    modelLayerSource: String = "model-endpoint-fallback",
+    requireForeground: Bool = true
 ) -> TransitionBackgroundFilterSnapshot? {
     var candidates: [(layer: CALayer, source: String)] = []
     if let presentation = rootLayer.presentation() {
@@ -14663,14 +14683,20 @@ private func transitionBackgroundFilterSnapshot(
     for candidate in candidates {
         guard let target = transitionBackgroundFilterTarget(
                 in: candidate.layer),
-              let foregroundTarget = transitionForegroundFilterTarget(
-                in: candidate.layer),
               let copied = copiedTransitionFilter(target.filter),
-              let copiedForeground = copiedTransitionFilter(
-                foregroundTarget.filter),
+              let detachedRootLayer =
+                detachedTransitionLayerTree(candidate.layer),
               let remaining = copied.value(
                 forKey: "inputFaceOpacity") as? NSNumber
         else {
+            continue
+        }
+        let foregroundTarget = transitionForegroundFilterTarget(
+            in: candidate.layer)
+        let copiedForeground = foregroundTarget.flatMap {
+            copiedTransitionFilter($0.filter)
+        }
+        if requireForeground && copiedForeground == nil {
             continue
         }
         return TransitionBackgroundFilterSnapshot(
@@ -14678,7 +14704,10 @@ private func transitionBackgroundFilterSnapshot(
             requestedProgress: requestedProgress,
             remaining: remaining.doubleValue,
             filter: copied,
+            backgroundPath: target.path,
             foregroundFilter: copiedForeground,
+            foregroundPath: foregroundTarget?.path,
+            detachedRootLayer: detachedRootLayer,
             layerStates: transitionLayerStates(candidate.layer),
             layerSource: candidate.source)
     }
@@ -15197,6 +15226,62 @@ private func transitionMatrixUniformBasisEvidence(
 }
 
 @MainActor
+private func detachedTransitionCARendererEvidence(
+    rootLayer: CALayer,
+    device: MTLDevice,
+    capture: String,
+    outputDirectory: URL
+) -> [String: Any] {
+    var mutations: [LayerBoolMutation] = []
+    if let mutation = mutateLayerBool(
+        rootLayer,
+        getterName:
+            "rasterizationPrefersWindowServerAwareBackdrops",
+        setterName:
+            "setRasterizationPrefersWindowServerAwareBackdrops:",
+        value: false)
+    {
+        mutations.append(mutation)
+    }
+    for layer in allLayers(root: rootLayer) where
+        NSStringFromClass(type(of: layer)) == "CABackdropLayer"
+    {
+        if let mutation = mutateLayerBool(
+            layer,
+            getterName: "windowServerAware",
+            setterName: "setWindowServerAware:",
+            value: false)
+        {
+            mutations.append(mutation)
+        }
+    }
+    defer {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        for mutation in mutations.reversed() {
+            restoreLayerBool(mutation)
+        }
+        CATransaction.commit()
+        CATransaction.flush()
+    }
+
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    for mutation in mutations {
+        mutation.layer.setNeedsDisplay()
+        mutation.layer.setNeedsLayout()
+    }
+    CATransaction.commit()
+    CATransaction.flush()
+    return carendererUniformEvidence(
+        rootLayer: rootLayer,
+        device: device,
+        capture: capture,
+        includeGeometryPolicyEvidence: true,
+        outputDirectory: outputDirectory)
+}
+
+@MainActor
 private func transitionBackgroundUniformEvidence(
     rootLayer: CALayer,
     snapshots: [TransitionBackgroundFilterSnapshot],
@@ -15205,60 +15290,37 @@ private func transitionBackgroundUniformEvidence(
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "requested": true,
             "executed": false,
             "reason": "default Metal device unavailable",
         ]
     }
-    guard let target = transitionBackgroundFilterTarget(
+    guard let matrixTarget = transitionBackgroundFilterTarget(
             in: rootLayer),
-          let foregroundTarget = transitionForegroundFilterTarget(
-            in: rootLayer)
+          !snapshots.isEmpty
     else {
         return [
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "requested": true,
             "executed": false,
             "reason":
-                "settled model glass filter target unavailable",
+                "static endpoint target or saved state unavailable",
         ]
-    }
-    let originalFilters = target.layer.filters
-    let originalForegroundFilters = foregroundTarget.layer.filters
-    let originalLayerStates = transitionLayerStates(rootLayer)
-    defer {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        target.layer.filters = originalFilters
-        foregroundTarget.layer.filters = originalForegroundFilters
-        target.layer.setNeedsDisplay()
-        target.layer.setNeedsLayout()
-        foregroundTarget.layer.setNeedsDisplay()
-        foregroundTarget.layer.setNeedsLayout()
-        CATransaction.commit()
-        CATransaction.flush()
-        _ = installTransitionLayerStates(
-            originalLayerStates,
-            rootLayer: rootLayer)
     }
 
     var records: [[String: Any]] = []
     records.reserveCapacity(snapshots.count)
     for snapshot in snapshots {
-        guard let stateFilter =
+        let stateRoot = snapshot.detachedRootLayer
+        guard let target = transitionBackgroundFilterTarget(
+                in: stateRoot),
+              target.path == snapshot.backgroundPath,
+              let stateFilter =
                 copiedTransitionFilter(snapshot.filter),
-              let stateForegroundFilter =
-                copiedTransitionFilter(snapshot.foregroundFilter),
-              installTransitionLayerStates(
-                snapshot.layerStates,
-                rootLayer: rootLayer),
               installTransitionBackgroundFilter(
                 stateFilter,
-                target: target),
-              installTransitionBackgroundFilter(
-                stateForegroundFilter,
-                target: foregroundTarget)
+                target: target)
         else {
             records.append([
                 "sampleIndex": snapshot.sampleIndex,
@@ -15267,15 +15329,52 @@ private func transitionBackgroundUniformEvidence(
                 "remaining": snapshot.remaining,
                 "executed": false,
                 "reason":
-                    "background/foreground filter copy or "
+                    "detached background filter copy or "
                     + "installation failed",
             ])
             continue
+        }
+        var foregroundEvidence: [String: Any] = [
+            "source": "static-glass-endpoint",
+            "filterPresent": false,
+        ]
+        if let sourceForeground = snapshot.foregroundFilter,
+           let foregroundPath = snapshot.foregroundPath
+        {
+            guard let foregroundTarget =
+                    transitionForegroundFilterTarget(
+                        in: stateRoot),
+                  foregroundTarget.path == foregroundPath,
+                  let stateForegroundFilter =
+                    copiedTransitionFilter(sourceForeground),
+                  installTransitionBackgroundFilter(
+                    stateForegroundFilter,
+                    target: foregroundTarget)
+            else {
+                records.append([
+                    "sampleIndex": snapshot.sampleIndex,
+                    "requestedProgress":
+                        snapshot.requestedProgress,
+                    "remaining": snapshot.remaining,
+                    "executed": false,
+                    "reason":
+                        "detached foreground filter copy or "
+                        + "installation failed",
+                ])
+                continue
+            }
+            foregroundEvidence =
+                filterDescription(stateForegroundFilter)
         }
         let capture = String(
             format:
                 "transition-background-uniform-%02d",
             snapshot.sampleIndex)
+        let render = detachedTransitionCARendererEvidence(
+            rootLayer: stateRoot,
+            device: device,
+            capture: capture,
+            outputDirectory: outputDirectory)
         records.append([
             "sampleIndex": snapshot.sampleIndex,
             "requestedProgress": snapshot.requestedProgress,
@@ -15283,14 +15382,10 @@ private func transitionBackgroundUniformEvidence(
             "replayedLayerCount": snapshot.layerStates.count,
             "snapshotLayerSource": snapshot.layerSource,
             "filter": filterDescription(stateFilter),
-            "foregroundFilter":
-                filterDescription(stateForegroundFilter),
-            "render": carendererUniformEvidence(
-                rootLayer: rootLayer,
-                device: device,
-                capture: capture,
-                includeGeometryPolicyEvidence: true,
-                outputDirectory: outputDirectory),
+            "foregroundFilter": foregroundEvidence,
+            "detachedLayerTreeCopy": true,
+            "presentationLayerAssignedToCARenderer": false,
+            "render": render,
         ])
     }
     let executed = records.filter {
@@ -15300,23 +15395,24 @@ private func transitionBackgroundUniformEvidence(
     let matrixUniformBasis =
         transitionMatrixUniformBasisEvidence(
             rootLayer: rootLayer,
-            target: target,
+            target: matrixTarget,
             sourceSnapshot: snapshots.last,
             device: device,
             requested: matrixBasisRequested)
     return [
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "requested": true,
         "executed": executed == snapshots.count,
-        "modelTargetPath": target.path,
+        "modelTargetPath": matrixTarget.path,
         "sampleIndices": snapshots.map(\.sampleIndex),
         "sampleCount": snapshots.count,
         "executedSampleCount": executed,
         "records": records,
         "method":
-            "copied-presentation-background-and-foreground-filters-"
-            + "plus-layer-state-on-fresh-static-model-tree",
+            "detached-copies-of-presentation-and-static-carrier-layer-trees",
         "presentationLayerReplayed": true,
+        "presentationLayerAssignedToCARenderer": false,
+        "detachedLayerTreeCopies": true,
         "matrixUniformBasis": matrixUniformBasis,
     ]
 }
@@ -16178,7 +16274,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                 presentationLayerSource:
                                     "static-carrier-endpoint",
                                 modelLayerSource:
-                                    "static-carrier-endpoint")
+                                    "static-carrier-endpoint",
+                                requireForeground: false)
                     {
                         carrierRootLayer = rootLayer
                         carrierEndpointSnapshot = snapshot
@@ -16196,7 +16293,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         code: 8,
                         userInfo: [
                             NSLocalizedDescriptionKey:
-                                "fresh static uniform carrier filters "
+                                "fresh static uniform carrier background "
                                 + "unavailable after 5 seconds",
                         ])
                 }
@@ -16220,7 +16317,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     phase: "after-static-model-carrier")
             } else {
                 dynamicUniformEvidence = [
-                    "schemaVersion": 3,
+                    "schemaVersion": 4,
                     "requested": false,
                     "executed": false,
                     "presentationLayerReplayed": false,

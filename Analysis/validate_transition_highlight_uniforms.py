@@ -155,7 +155,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         report.get("dynamicBackgroundUniforms"),
         "dynamicBackgroundUniforms",
     )
-    if uniforms.get("schemaVersion") != 3 or uniforms.get("requested") is not requested:
+    if uniforms.get("schemaVersion") != 4 or uniforms.get("requested") is not requested:
         raise ValueError("dynamic uniform highlight schema differs")
     if uniforms.get("presentationLayerReplayed") is not requested:
         raise ValueError("dynamic presentation replay metadata differs")
@@ -175,8 +175,9 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         or uniforms.get("sampleCount") != len(EXPECTED_SAMPLE_INDICES)
         or uniforms.get("executedSampleCount") != len(EXPECTED_SAMPLE_INDICES)
         or uniforms.get("method")
-        != "copied-presentation-background-and-foreground-filters-"
-        "plus-layer-state-on-fresh-static-model-tree"
+        != "detached-copies-of-presentation-and-static-carrier-layer-trees"
+        or uniforms.get("presentationLayerAssignedToCARenderer") is not False
+        or uniforms.get("detachedLayerTreeCopies") is not True
         or not isinstance(uniforms.get("modelTargetPath"), list)
         or not isinstance(records, list)
         or len(records) != len(EXPECTED_SAMPLE_INDICES)
@@ -192,7 +193,12 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         record = mapping(untyped_record, f"sample {sample_index}")
         if record.get("sampleIndex") != sample_index:
             raise ValueError("dynamic highlight sample order differs")
-        if record.get("replayedLayerCount") != 16:
+        if (
+            record.get("detachedLayerTreeCopy") is not True
+            or record.get("presentationLayerAssignedToCARenderer") is not False
+        ):
+            raise ValueError("dynamic render did not use a detached tree copy")
+        if sample_index != 32 and record.get("replayedLayerCount") != 16:
             raise ValueError("dynamic presentation layer replay is incomplete")
         source = record.get("snapshotLayerSource")
         if source != "presentation" and not (
@@ -210,24 +216,33 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
             record.get("foregroundFilter"),
             "foregroundFilter",
         )
-        known = mapping(foreground.get("knownValues"), "knownValues")
-        if (
-            known.get("name") != "glassForeground"
-            or known.get("type") != "glassForeground"
-        ):
-            raise ValueError("copied foreground is not glassForeground")
-        inputs = mapping(foreground.get("inputValues"), "inputValues")
-        for name, expected in expected_foreground(remaining).items():
-            observed = numeric(inputs.get(name), name)
-            if not math.isclose(
-                observed,
-                expected,
-                rel_tol=0.0,
-                abs_tol=2e-6,
+        if sample_index == 32 and source == "static-carrier-endpoint":
+            if (
+                foreground.get("source") != "static-glass-endpoint"
+                or foreground.get("filterPresent") is not False
+                or remaining != 1.0
             ):
-                raise ValueError(
-                    f"sample {sample_index} {name} differs: {observed} != {expected}"
-                )
+                raise ValueError("static endpoint foreground evidence differs")
+        else:
+            known = mapping(foreground.get("knownValues"), "knownValues")
+            if (
+                known.get("name") != "glassForeground"
+                or known.get("type") != "glassForeground"
+            ):
+                raise ValueError("copied foreground is not glassForeground")
+            inputs = mapping(foreground.get("inputValues"), "inputValues")
+            for name, expected in expected_foreground(remaining).items():
+                observed = numeric(inputs.get(name), name)
+                if not math.isclose(
+                    observed,
+                    expected,
+                    rel_tol=0.0,
+                    abs_tol=2e-6,
+                ):
+                    raise ValueError(
+                        f"sample {sample_index} {name} differs: "
+                        f"{observed} != {expected}"
+                    )
 
         render = mapping(record.get("render"), "render")
         duration = numeric(render.get("durationSeconds"), "render duration")

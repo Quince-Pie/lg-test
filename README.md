@@ -1715,17 +1715,19 @@ rejects any leg with fewer than 16 states containing exact color components.
 Schema 5 adds a separately gated dynamic-uniform mode. The real WindowServer
 timeline is captured completely before this mode performs any local rendering.
 At nine preregistered materialize states it copies the actual presentation
-`glassBackground` filter. After the complete transition timeline has been
-captured, a fresh static SwiftUI glass model tree with the same material,
-appearance, and geometry is created solely as an offscreen render carrier.
-Each saved filter copy is installed on that model tree's `CABackdropLayer` and
-rendered through a lightweight Metal-backed `CARenderer`. This avoids
-reusing the transition host after Core Animation has retired its render
-context. Only fragment-buffer bindings from the glass pipelines are retained.
-A presentation layer is never assigned to `CARenderer`; the report records
-`presentationLayerReplayed = false`, and CI rejects missing filter copies,
-missing uniform payloads, non-background pipelines, or anything other than
-two background uniform bindings per state. The final timeline sample also
+`glassBackground` and `glassForeground` filters and recursively detaches a
+model-layer copy of that exact presentation topology. After the complete
+transition timeline has been captured, each detached tree is rendered through
+a lightweight Metal-backed `CARenderer`, with WindowServer-aware backdrop
+flags disabled on the copy so its source is produced locally. No live
+presentation object is assigned to `CARenderer`. If Core Animation has already
+retired the terminal presentation tree, a fresh static SwiftUI glass tree with
+the same material, appearance, and geometry supplies only that exact endpoint
+and the independent matrix-intervention carrier. The report records both the
+detached-copy method and `presentationLayerAssignedToCARenderer = false`; CI
+rejects missing filter copies, missing uniform payloads, malformed raw texture
+pyramids, non-background pipelines, or anything other than two background
+uniform bindings per state. The final timeline sample also
 waits, for at most one second, for Core Animation's presentation topology to
 match the declared endpoint; CI rejects a lingering materialized or
 dematerialized layer instead of accepting a nominal-clock endpoint. A
