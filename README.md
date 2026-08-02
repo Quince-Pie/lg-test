@@ -3915,3 +3915,14 @@ branches.  The corrected frozen analyzer selects the full executable-spec
 shader, applies the same exact recovered configuration, and reproduces the
 retained 29-pixel/29-byte prefix failure.  Both analyzer hashes and the reason
 for the correction are retained in the preregistration.
+
+The final-highlight diagnostic now also replays the independent Metal SDF on
+the actual `A2Xghfc` vertex buffer, stage-in interpolation, uniform buffer,
+viewport, scissor, and draw.  At samples 1, 12, and 32 it records the complete
+half SDF plus raw float geometry, oval, distance, and normal stages.  These
+surfaces use the safe custom stage-in vertex whose center values are separately
+bit-gated; they do not modify or expose Apple's private fragment function and
+are explicitly labelled custom-Metal diagnostic evidence.  The unmodified
+Apple alpha and tomography surfaces remain the endpoint oracle.  The capture
+validator requires all five diagnostic surfaces and their exact raw layouts,
+so a missing or partially executed replay cannot be mistaken for evidence.

@@ -23,6 +23,13 @@ BACKGROUND_ARITHMETIC_TRACES = {
     "color-stages-b": (123, 1024 * 1024 * 16),
     "final-color": (115, 1024 * 1024 * 8),
 }
+HIGHLIGHT_SDF_DIAGNOSTIC_TRACES = {
+    "sdf": (115, 1024 * 1024 * 8),
+    "sdf-float": (123, 1024 * 1024 * 16),
+    "sdf-geometry": (123, 1024 * 1024 * 16),
+    "sdf-oval": (123, 1024 * 1024 * 16),
+    "sdf-normal": (123, 1024 * 1024 * 16),
+}
 ALPHA_TOMOGRAPHY_CASES = frozenset(
     {
         "positive-normal-x",
@@ -751,6 +758,84 @@ def validate_highlight_trace(
             output,
             root=root,
             name="dynamic highlight tomography",
+        )
+
+    sdf_diagnostics = mapping(
+        trace.get("customHighlightSDFDiagnostics"),
+        "customHighlightSDFDiagnostics",
+    )
+    pipelines = sdf_diagnostics.get("pipelines")
+    replays = sdf_diagnostics.get("replays")
+    if (
+        sdf_diagnostics.get("schemaVersion") != 1
+        or sdf_diagnostics.get("executed") is not True
+        or sdf_diagnostics.get("classification")
+        != "diagnostic custom-Metal SDF replay"
+        or sdf_diagnostics.get("capturedAppleFunctionUnmodified") is not False
+        or sdf_diagnostics.get("customStageInVertex") is not True
+        or not isinstance(sdf_diagnostics.get("uniformRecordOffset"), int)
+        or sdf_diagnostics["uniformRecordOffset"] < 0
+        or sdf_diagnostics.get("pipelineCount")
+        != len(HIGHLIGHT_SDF_DIAGNOSTIC_TRACES)
+        or sdf_diagnostics.get("replayCount")
+        != len(HIGHLIGHT_SDF_DIAGNOSTIC_TRACES)
+        or not isinstance(pipelines, list)
+        or not isinstance(replays, list)
+        or {item.get("name") for item in pipelines if isinstance(item, Mapping)}
+        != HIGHLIGHT_SDF_DIAGNOSTIC_TRACES.keys()
+        or {item.get("name") for item in replays if isinstance(item, Mapping)}
+        != HIGHLIGHT_SDF_DIAGNOSTIC_TRACES.keys()
+    ):
+        raise ValueError("dynamic custom-highlight SDF diagnostics differ")
+    for untyped_pipeline in pipelines:
+        pipeline = mapping(
+            untyped_pipeline,
+            "custom-highlight SDF pipeline",
+        )
+        name = pipeline.get("name")
+        if not isinstance(name, str):
+            raise ValueError("custom-highlight SDF pipeline name differs")
+        expected_pixel_format, _ = HIGHLIGHT_SDF_DIAGNOSTIC_TRACES[name]
+        if (
+            pipeline.get("pixelFormat") != expected_pixel_format
+            or pipeline.get("label") != f"lg.final-highlight-{name}"
+            or not isinstance(pipeline.get("descriptor"), Mapping)
+        ):
+            raise ValueError(f"dynamic custom-highlight {name} pipeline differs")
+    for untyped_replay in replays:
+        replay_record = mapping(
+            untyped_replay,
+            "custom-highlight SDF replay record",
+        )
+        name = replay_record.get("name")
+        if not isinstance(name, str):
+            raise ValueError("custom-highlight SDF replay name differs")
+        expected_pixel_format, expected_bytes = (
+            HIGHLIGHT_SDF_DIAGNOSTIC_TRACES[name]
+        )
+        diagnostic_replay = mapping(
+            replay_record.get("replay"),
+            f"custom-highlight {name} replay",
+        )
+        output = mapping(
+            diagnostic_replay.get("output"),
+            f"custom-highlight {name} output",
+        )
+        if (
+            replay_record.get("executed") is not True
+            or replay_record.get("pixelFormat") != expected_pixel_format
+            or diagnostic_replay.get("executed") is not True
+            or output.get("width") != 1024
+            or output.get("height") != 1024
+            or output.get("pixelFormat") != expected_pixel_format
+            or output.get("rawBytes") != expected_bytes
+            or "auxiliaryOutput" in diagnostic_replay
+        ):
+            raise ValueError(f"dynamic custom-highlight {name} layout differs")
+        validate_raw_file(
+            output,
+            root=root,
+            name=f"dynamic custom-highlight {name}",
         )
 
     if sample_index != 32:

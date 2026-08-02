@@ -9708,6 +9708,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var interpolantPipeline: MTLRenderPipelineState?
         var interpolantPipelineRecord: [String: Any]?
         var interpolantPullTraceSupported = false
+        var highlightSDFDiagnosticPipelines: [(
+            name: String,
+            pipeline: MTLRenderPipelineState,
+            pixelFormat: MTLPixelFormat
+        )] = []
+        var highlightSDFDiagnosticPipelineRecords: [[String: Any]] = []
         if includeInterpolant {
             let source = """
                 #include <metal_stdlib>
@@ -9856,6 +9862,39 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             "final highlight trace functions unavailable",
                     ]
                 }
+                let sdfLibrary = try device.makeLibrary(
+                    source: independentGlassShaderSource,
+                    options: options)
+                guard let sdfVertex = sdfLibrary.makeFunction(
+                        name: "glass_vertex_stage_in"),
+                      let sdfTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_trace"),
+                      let sdfFloatTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_float_trace"),
+                      let sdfGeometryTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_geometry_trace"),
+                      let sdfOvalTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_oval_trace"),
+                      let sdfNormalTrace = sdfLibrary.makeFunction(
+                        name: "glass_fragment_sdf_normal_trace")
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "final highlight SDF trace functions unavailable",
+                    ]
+                }
+                let sdfDiagnosticFunctions: [(
+                    name: String,
+                    function: MTLFunction,
+                    pixelFormat: MTLPixelFormat
+                )] = [
+                    ("sdf", sdfTrace, .rgba16Float),
+                    ("sdf-float", sdfFloatTrace, .rgba32Uint),
+                    ("sdf-geometry", sdfGeometryTrace, .rgba32Uint),
+                    ("sdf-oval", sdfOvalTrace, .rgba32Uint),
+                    ("sdf-normal", sdfNormalTrace, .rgba32Uint),
+                ]
                 var candidates: [(
                     name: String,
                     descriptor: MTLRenderPipelineDescriptor
@@ -9968,6 +10007,56 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
                 interpolantPullTraceSupported =
                     selectedCandidate == "custom-stage-in-vertex"
+                if includeDiagnostics {
+                    for diagnostic in sdfDiagnosticFunctions {
+                        guard let descriptor = capturedDescriptor.copy()
+                                as? MTLRenderPipelineDescriptor
+                        else {
+                            return [
+                                "executed": false,
+                                "reason":
+                                    "final highlight SDF descriptor copy failed",
+                            ]
+                        }
+                        descriptor.label =
+                            "lg.final-highlight-" + diagnostic.name
+                        descriptor.vertexFunction = sdfVertex
+                        let vertexDescriptor = MTLVertexDescriptor()
+                        vertexDescriptor.attributes[0].format = .float4
+                        vertexDescriptor.attributes[0].offset = 0
+                        vertexDescriptor.attributes[0].bufferIndex = 1
+                        vertexDescriptor.attributes[1].format = .float2
+                        vertexDescriptor.attributes[1].offset = 16
+                        vertexDescriptor.attributes[1].bufferIndex = 1
+                        vertexDescriptor.attributes[2].format = .float2
+                        vertexDescriptor.attributes[2].offset = 24
+                        vertexDescriptor.attributes[2].bufferIndex = 1
+                        vertexDescriptor.layouts[1].stride = 48
+                        vertexDescriptor.layouts[1].stepFunction = .perVertex
+                        vertexDescriptor.layouts[1].stepRate = 1
+                        descriptor.vertexDescriptor = vertexDescriptor
+                        descriptor.fragmentFunction = diagnostic.function
+                        descriptor.colorAttachments[0]?.pixelFormat =
+                            diagnostic.pixelFormat
+                        descriptor.colorAttachments[0]?.isBlendingEnabled =
+                            false
+                        descriptor.colorAttachments[0]?.writeMask = .all
+                        let pipeline = try device.makeRenderPipelineState(
+                            descriptor: descriptor)
+                        highlightSDFDiagnosticPipelines.append((
+                            diagnostic.name,
+                            pipeline,
+                            diagnostic.pixelFormat
+                        ))
+                        highlightSDFDiagnosticPipelineRecords.append([
+                            "name": diagnostic.name,
+                            "pixelFormat": diagnostic.pixelFormat.rawValue,
+                            "label": pipeline.label ?? "",
+                            "descriptor": pipelineDescriptorRecord(
+                                descriptor),
+                        ])
+                    }
+                }
             } catch {
                 return [
                     "executed": false,
@@ -10303,6 +10392,30 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         interpolantPullTraceSupported)
             }
             : nil
+        let highlightSDFDiagnosticReplays: [[String: Any]] =
+            includeDiagnostics
+            ? highlightSDFDiagnosticPipelines.map { item in
+                let replay = render(
+                    name:
+                        "custom-" + item.name,
+                    pipeline: item.pipeline,
+                    pixelFormat: item.pixelFormat,
+                    uniformBuffer: uniformClone,
+                    captureAuxiliary: false)
+                return [
+                    "name": item.name,
+                    "pixelFormat": item.pixelFormat.rawValue,
+                    "executed": replay["executed"] as? Bool == true,
+                    "replay": replay,
+                ]
+            }
+            : []
+        let highlightSDFDiagnosticsExecuted = !includeDiagnostics || (
+            highlightSDFDiagnosticReplays.count == 5
+            && highlightSDFDiagnosticReplays.allSatisfy {
+                $0["executed"] as? Bool == true
+            }
+        )
         if interpolantOnly {
             guard includeInterpolant,
                   let exactInterpolant,
@@ -10526,6 +10639,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 exactKeyHalf?["executed"] as? Bool == true
                 && exactFillHalf?["executed"] as? Bool == true
                 && tomographyExecuted
+                && highlightSDFDiagnosticsExecuted
             )
         ) && (
             !includeInterpolant
@@ -10590,6 +10704,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
             result["exactInterpolant"] = exactInterpolant
             result["interpolantPipeline"] =
                 interpolantPipelineRecord
+        }
+        if includeDiagnostics {
+            result["customHighlightSDFDiagnostics"] = [
+                "schemaVersion": 1,
+                "executed": highlightSDFDiagnosticsExecuted,
+                "classification":
+                    "diagnostic custom-Metal SDF replay",
+                "capturedAppleFunctionUnmodified": false,
+                "customStageInVertex": true,
+                "uniformRecordOffset": selection.uniformOffset,
+                "pipelineCount":
+                    highlightSDFDiagnosticPipelines.count,
+                "pipelines": highlightSDFDiagnosticPipelineRecords,
+                "replayCount": highlightSDFDiagnosticReplays.count,
+                "replays": highlightSDFDiagnosticReplays,
+            ]
         }
         if let exactKeyHalf,
            let exactFillHalf
