@@ -12162,6 +12162,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let dynamicInterpolantTraceRequested =
             dynamicHighlightTraceEnabled
             && capture.hasPrefix("transition-background-uniform-")
+        let dynamicBackgroundArithmeticTraceRequested =
+            dynamicInterpolantTraceRequested
+            && capture.hasSuffix("-16")
         let dynamicHighlightDiagnosticsRequested =
             dynamicHighlightTraceEnabled
             && (capture.hasSuffix("-01")
@@ -12201,15 +12204,35 @@ private final class MetalUniformProbe: @unchecked Sendable {
             finalHighlightInputReference
         if dynamicInterpolantTraceRequested {
             do {
+                let arithmeticTraceSpecifications: [(
+                    name: String,
+                    pixelFormat: MTLPixelFormat
+                )] = [
+                    ("sdf-float", .rgba32Uint),
+                    ("sdf-geometry", .rgba32Uint),
+                    ("sdf-oval", .rgba32Uint),
+                    ("sdf-normal", .rgba32Uint),
+                    ("sdf-coverage", .rgba32Uint),
+                    ("sdf", .rgba16Float),
+                    ("color-stages-a", .rgba32Uint),
+                    ("color-stages-b", .rgba32Uint),
+                    ("final-color", .rgba16Float),
+                ]
+                var requestedTraceNames = Set(["interpolant"])
+                if dynamicBackgroundArithmeticTraceRequested {
+                    requestedTraceNames.formUnion(
+                        arithmeticTraceSpecifications.map(\.name))
+                }
                 let pipelineSet =
                     try makeIndependentGlassPipelines(
                         for: pass,
                         capture: capture,
                         outputDirectory: outputDirectory,
                         buildCandidatePipelines: false,
-                        numericTraceNames: Set(["interpolant"]))
-                guard let trace = pipelineSet.numericTraces.first,
-                      trace.name == "interpolant",
+                        numericTraceNames: requestedTraceNames)
+                guard let trace = pipelineSet.numericTraces.first(where: {
+                          $0.name == "interpolant"
+                      }),
                       trace.pixelFormat == .rgba32Uint
                 else {
                     result["backgroundInterpolantTrace"] = [
@@ -12278,9 +12301,77 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "mainReplay": mainReplay,
                     "combinedReplay": combinedReplay,
                 ]
+                if dynamicBackgroundArithmeticTraceRequested {
+                    var arithmeticReplays: [[String: Any]] = []
+                    for specification in arithmeticTraceSpecifications {
+                        guard let arithmeticTrace =
+                                pipelineSet.numericTraces.first(where: {
+                                    $0.name == specification.name
+                                }),
+                              arithmeticTrace.pixelFormat
+                                == specification.pixelFormat
+                        else {
+                            throw NSError(
+                                domain:
+                                    "GlassIntrospect."
+                                    + "BackgroundArithmetic",
+                                code: 1,
+                                userInfo: [
+                                    NSLocalizedDescriptionKey:
+                                        "background arithmetic pipeline "
+                                        + "unavailable: "
+                                        + specification.name,
+                                ])
+                        }
+                        let replay = replayGlassNumericTrace(
+                            pass: pass,
+                            queue: queue,
+                            commands: mainCommands,
+                            replacement: arithmeticTrace.pipeline,
+                            pixelFormat: arithmeticTrace.pixelFormat,
+                            capture: capture,
+                            name:
+                                "dynamic-main-"
+                                + arithmeticTrace.name,
+                            outputDirectory: outputDirectory)
+                        arithmeticReplays.append([
+                            "name": arithmeticTrace.name,
+                            "pixelFormat":
+                                arithmeticTrace.pixelFormat.rawValue,
+                            "replay": replay,
+                        ])
+                    }
+                    result["backgroundArithmeticTrace"] = [
+                        "schemaVersion": 1,
+                        "executed": arithmeticReplays.allSatisfy {
+                            replay in
+                            guard let value = replay["replay"]
+                                    as? [String: Any]
+                            else {
+                                return false
+                            }
+                            return value["executed"] as? Bool == true
+                        },
+                        "scope": "sample-16-custom-metal-main-only",
+                        "capturedAppleFunctionUnmodified": false,
+                        "customStageInVertex": true,
+                        "classification":
+                            "diagnostic custom-Metal arithmetic replay",
+                        "replays": arithmeticReplays,
+                    ]
+                }
             } catch {
                 if result["backgroundInterpolantTrace"] == nil {
                     result["backgroundInterpolantTrace"] = [
+                        "schemaVersion": 1,
+                        "executed": false,
+                        "reason": error.localizedDescription,
+                    ]
+                }
+                if dynamicBackgroundArithmeticTraceRequested
+                    && result["backgroundArithmeticTrace"] == nil
+                {
+                    result["backgroundArithmeticTrace"] = [
                         "schemaVersion": 1,
                         "executed": false,
                         "reason": error.localizedDescription,

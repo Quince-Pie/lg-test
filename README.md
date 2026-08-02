@@ -3882,3 +3882,28 @@ currently exposes only 1x modes, so a real 2x Mac capture remains required
 before claiming Retina parity. A final claim additionally requires zero
 unexplained pixel regression on held-out captures; visual similarity alone is
 not acceptance.
+
+Run `30737749781` is the clean prospective follow-up for the corrected
+background-interpolant wrapper.  It compared all 37,748,736 main-draw words at
+all nine states with zero mismatches; the result has SHA-256
+`76b7b0f368154f012fe2af1a367b632ea9de8a265f337abf52f0ebfbb323c66f`.
+The independently executed full render also matched all nine final BGRA8
+surfaces exactly in that run.  This is real transfer evidence for that
+clear/light materialize capture, but not universal parity: run `30737403841`
+retains a sample-16 error of 29 bytes in the background prefix and 56 bytes in
+the final surface, all with maximum channel delta one.  Those prefix pixels
+lie on the main SDF edge, none is owned by the shadow draw, and the captured
+main interpolants at those pixels are already bit-identical to the local
+prediction.
+
+The next bounded probe is frozen in
+`Analysis/background_arithmetic_tomography_preregistration.json`.  Sample 16
+adds nine main-only custom-Metal surfaces spanning float SDF construction,
+half SDF/coverage, source and face color, pre/post holding color, and final
+pre-blend color.  The local comparison wrapper and every calibration input are
+hashed before a new artifact is opened.  These surfaces run custom Metal over
+the captured buffers, scissor, and raster state; they are diagnostic
+reimplementation stages, not private Apple shader intermediates.  Apple's
+unmodified final BGRA8 output remains the endpoint oracle, and the diagnostic
+has no predeclared mismatch threshold that could be mislabeled as a parity
+pass.

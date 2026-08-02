@@ -11,6 +11,18 @@ from typing import Any
 
 EXPECTED_SAMPLE_INDICES = (1, 4, 8, 12, 16, 20, 24, 28, 32)
 HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 12, 32})
+BACKGROUND_ARITHMETIC_SAMPLE_INDEX = 16
+BACKGROUND_ARITHMETIC_TRACES = {
+    "sdf-float": (123, 1024 * 1024 * 16),
+    "sdf-geometry": (123, 1024 * 1024 * 16),
+    "sdf-oval": (123, 1024 * 1024 * 16),
+    "sdf-normal": (123, 1024 * 1024 * 16),
+    "sdf-coverage": (123, 1024 * 1024 * 16),
+    "sdf": (115, 1024 * 1024 * 8),
+    "color-stages-a": (123, 1024 * 1024 * 16),
+    "color-stages-b": (123, 1024 * 1024 * 16),
+    "final-color": (115, 1024 * 1024 * 8),
+}
 ALPHA_TOMOGRAPHY_CASES = frozenset(
     {
         "positive-normal-x",
@@ -377,6 +389,7 @@ def validate_background_interpolant_trace(
     replay: Mapping[str, Any],
     *,
     root: Path,
+    sample_index: int,
 ) -> None:
     trace = mapping(
         replay.get("backgroundInterpolantTrace"),
@@ -397,6 +410,22 @@ def validate_background_interpolant_trace(
     )
     build = mapping(trace.get("pipelineBuild"), "background pipeline build")
     numeric_traces = build.get("numericTraces")
+    expected_numeric_traces = {
+        "interpolant": 123,
+        **(
+            {
+                name: pixel_format
+                for name, (pixel_format, _) in BACKGROUND_ARITHMETIC_TRACES.items()
+            }
+            if sample_index == BACKGROUND_ARITHMETIC_SAMPLE_INDEX
+            else {}
+        ),
+    }
+    observed_numeric_traces = {
+        item.get("name"): item
+        for item in numeric_traces
+        if isinstance(item, Mapping)
+    } if isinstance(numeric_traces, list) else {}
     if (
         trace.get("schemaVersion") != 1
         or trace.get("executed") is not True
@@ -410,10 +439,13 @@ def validate_background_interpolant_trace(
         or combined.get("executed") is not True
         or combined.get("glassDrawCount") != 2
         or not isinstance(numeric_traces, list)
-        or len(numeric_traces) != 1
-        or numeric_traces[0].get("name") != "interpolant"
-        or numeric_traces[0].get("built") is not True
-        or numeric_traces[0].get("pixelFormat") != 123
+        or len(numeric_traces) != len(expected_numeric_traces)
+        or set(observed_numeric_traces) != set(expected_numeric_traces)
+        or any(
+            observed_numeric_traces[name].get("built") is not True
+            or observed_numeric_traces[name].get("pixelFormat") != pixel_format
+            for name, pixel_format in expected_numeric_traces.items()
+        )
     ):
         raise ValueError("dynamic background interpolant trace differs")
     for output, name in (
@@ -428,6 +460,71 @@ def validate_background_interpolant_trace(
         ):
             raise ValueError(f"{name} layout differs")
         validate_raw_file(output, root=root, name=name)
+
+
+def validate_background_arithmetic_trace(
+    replay: Mapping[str, Any],
+    *,
+    root: Path,
+    sample_index: int,
+) -> int:
+    if sample_index != BACKGROUND_ARITHMETIC_SAMPLE_INDEX:
+        if "backgroundArithmeticTrace" in replay:
+            raise ValueError("an unrequested background arithmetic trace executed")
+        return 0
+
+    trace = mapping(
+        replay.get("backgroundArithmeticTrace"),
+        "backgroundArithmeticTrace",
+    )
+    replays = trace.get("replays")
+    if (
+        trace.get("schemaVersion") != 1
+        or trace.get("executed") is not True
+        or trace.get("scope") != "sample-16-custom-metal-main-only"
+        or trace.get("capturedAppleFunctionUnmodified") is not False
+        or trace.get("customStageInVertex") is not True
+        or trace.get("classification")
+        != "diagnostic custom-Metal arithmetic replay"
+        or not isinstance(replays, list)
+        or len(replays) != len(BACKGROUND_ARITHMETIC_TRACES)
+    ):
+        raise ValueError("dynamic background arithmetic trace differs")
+
+    observed = {
+        item.get("name"): item
+        for item in replays
+        if isinstance(item, Mapping)
+    }
+    if set(observed) != set(BACKGROUND_ARITHMETIC_TRACES):
+        raise ValueError("dynamic background arithmetic trace names differ")
+    for name, (pixel_format, byte_count) in BACKGROUND_ARITHMETIC_TRACES.items():
+        wrapper = mapping(observed[name], f"background arithmetic {name}")
+        numeric_replay = mapping(
+            wrapper.get("replay"),
+            f"background arithmetic {name} replay",
+        )
+        output = mapping(
+            numeric_replay.get("output"),
+            f"background arithmetic {name} output",
+        )
+        if (
+            wrapper.get("pixelFormat") != pixel_format
+            or numeric_replay.get("executed") is not True
+            or numeric_replay.get("glassDrawCount") != 1
+            or output.get("width") != 1024
+            or output.get("height") != 1024
+            or output.get("pixelFormat") != pixel_format
+            or output.get("rawBytes") != byte_count
+            or "auxiliaryOutput" in numeric_replay
+        ):
+            raise ValueError(f"dynamic background arithmetic {name} differs")
+        validate_raw_file(
+            output,
+            root=root,
+            name=f"dynamic background arithmetic {name}",
+        )
+    return len(BACKGROUND_ARITHMETIC_TRACES)
 
 
 def validate_raw_render_evidence(
@@ -783,6 +880,7 @@ def validate(
             "highlightTraces": 0,
             "interpolantTraces": 0,
             "backgroundInterpolantTraces": 0,
+            "backgroundArithmeticTraces": 0,
             "intermediateTextures": 0,
         }
 
@@ -811,6 +909,7 @@ def validate(
     highlight_trace_count = 0
     interpolant_trace_count = 0
     background_interpolant_trace_count = 0
+    background_arithmetic_trace_count = 0
     intermediate_texture_count = 0
     for sample_index, untyped_record in zip(
         EXPECTED_SAMPLE_INDICES,
@@ -898,10 +997,20 @@ def validate(
             validate_background_interpolant_trace(
                 replay,
                 root=path.parent,
+                sample_index=sample_index,
             )
             background_interpolant_trace_count += 1
+            background_arithmetic_trace_count += (
+                validate_background_arithmetic_trace(
+                    replay,
+                    root=path.parent,
+                    sample_index=sample_index,
+                )
+            )
         elif "backgroundInterpolantTrace" in replay:
             raise ValueError("an unrequested background interpolant trace executed")
+        elif "backgroundArithmeticTrace" in replay:
+            raise ValueError("an unrequested background arithmetic trace executed")
         trace_expected = (
             highlight_trace and sample_index in HIGHLIGHT_TRACE_SAMPLE_INDICES
         )
@@ -1007,6 +1116,7 @@ def validate(
         "highlightTraces": highlight_trace_count,
         "interpolantTraces": interpolant_trace_count,
         "backgroundInterpolantTraces": background_interpolant_trace_count,
+        "backgroundArithmeticTraces": background_arithmetic_trace_count,
         "intermediateTextures": intermediate_texture_count,
     }
 

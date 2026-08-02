@@ -1,0 +1,107 @@
+{
+  "backgroundArithmeticTomographyPreregistrationSchemaVersion": 1,
+  "classification": "prospective diagnostic stage isolation",
+  "objective": "Locate the first arithmetic stage responsible for the retained sample-16 one-LSB main-edge error by comparing a frozen local renderer with custom-Metal replays captured only after this registration.",
+  "priorEvidence": {
+    "prospectiveInterpolantRunId": 30737749781,
+    "prospectiveInterpolantComparedWords": 37748736,
+    "prospectiveInterpolantMismatchedWords": 0,
+    "prospectiveFullRenderExactStates": 9,
+    "prospectiveFullRenderStateCount": 9,
+    "retainedFailingRunId": 30737403841,
+    "retainedFailingSampleIndex": 16,
+    "retainedPrefixMismatchedBytes": 29,
+    "retainedPrefixMismatchedPixels": 29,
+    "retainedPrefixMaximumChannelDelta": 1,
+    "retainedFinalMismatchedBytes": 56,
+    "retainedFinalMismatchedPixels": 36,
+    "retainedFinalMaximumChannelDelta": 1,
+    "shadowOwnedPrefixMismatchPixels": 0
+  },
+  "capture": {
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "sampleIndex": 16,
+    "capturedAppleFunctionUnmodified": false,
+    "customStageInVertex": true,
+    "replay": "main-only",
+    "forbiddenOpenedRunIds": [30737403841, 30737749781],
+    "traceNames": [
+      "sdf-float",
+      "sdf-geometry",
+      "sdf-oval",
+      "sdf-normal",
+      "sdf-coverage",
+      "sdf",
+      "color-stages-a",
+      "color-stages-b",
+      "final-color"
+    ]
+  },
+  "frozenComparisons": [
+    {
+      "name": "sdf",
+      "metalTrace": "sdf",
+      "localNumericTrace": 1,
+      "components": ["distance", "normal-x", "normal-y", "coverage"]
+    },
+    {
+      "name": "sdf-coverage",
+      "metalTrace": "sdf-coverage",
+      "localNumericTrace": 8,
+      "components": ["distance", "feather", "quotient", "coverage"]
+    },
+    {
+      "name": "color-stages-a",
+      "metalTrace": "color-stages-a",
+      "localNumericTraces": [10, 11],
+      "components": ["source-rgba", "face-rgba"]
+    },
+    {
+      "name": "color-stages-b",
+      "metalTrace": "color-stages-b",
+      "localNumericTraces": [12, 13],
+      "components": ["pre-holding-composite-rgba", "post-holding-rgba"]
+    },
+    {
+      "name": "final-color",
+      "metalTrace": "final-color",
+      "localNumericTrace": 9,
+      "components": ["pre-blend-r", "pre-blend-g", "pre-blend-b", "pre-blend-a"]
+    }
+  ],
+  "frozenInterpretation": [
+    "A first divergence in sdf or sdf-coverage localizes the retained error to SDF construction, half conversion, fine derivatives, or coverage arithmetic.",
+    "Exact sdf and sdf-coverage followed by a color-stages-a divergence localizes it to source sampling or face construction.",
+    "Exact color-stages-a followed by color-stages-b localizes it to edge, bleed, shadow, or holding composition.",
+    "Exact color stages followed by final-color localizes it to clamp or EDR arithmetic.",
+    "All custom-Metal stages exact while the Apple BGRA8 prefix remains inexact localizes it after the compared shader stages, but does not prove the private Apple shader uses the same intermediates."
+  ],
+  "frozenAnalysis": {
+    "analysisWrapperSha256": "60b05bf08800f4ea78b5b7a4d12f93ab25ed482208df307cc69abcff275fa424",
+    "referenceRendererSha256": "7ac69e72c3b7450f84d009233a781381e14393c136b058ee7f07c2c62866730a",
+    "referenceShaderSha256": "0a79c0f7d35b36f09801414c7412bdff7aa11cd88af2613e6568add5c66227c6",
+    "dynamicRenderGateSha256": "fec16ab265aae2ab5738c35fff2488e39807101e5ff51c862fc2374dd9aa200a",
+    "runtimeRasterCoefficientsSha256": "43a5e76869d8e3fba09214e586947b88745dd04283515b8f75e6ca8006d2aaf0",
+    "squareSelectorCalibrationSha256": "aa12e1a33851f60df923667d0e6063d877a194cc4d31548eb644751fa33584b6",
+    "staticRuntimeSha256": "bf4c3ff3883614d7e6b7fc6ac6457a62c772f366a82f9f951d6df206d2f7a21a",
+    "halfIntrinsicTableSha256": "ca1e5cbcaa645cad27917b87990edba4e8e06931c8089fbb2fbf1ae96837bfc2",
+    "floatIntrinsicTableSha256": "fff71cc0d4428677ca5bc58b91212a7166b701e4efe504c3d71cab70846d0449",
+    "squareSelectorArchiveSha256": "93fcb5859794d67b193e00f2fe741416ae69d93125f38fa7b36506616b98e5ba"
+  },
+  "acceptance": {
+    "requireAllNineRawTraceSurfaces": true,
+    "requireMainGlassDrawCount": 1,
+    "requireFrozenWrapperAndInputHashes": true,
+    "requireOpenedRunDifferentFromPriorRuns": true,
+    "maximumAllowedMismatchedWords": null,
+    "verdict": "diagnostic first-divergent-stage result; this is not a parity gate"
+  },
+  "limitations": [
+    "These are custom-Metal reimplementation stages executed on the captured buffers and raster state, not private Apple fragment-shader intermediates.",
+    "The unmodified Apple private shader remains the endpoint BGRA8 oracle.",
+    "This probe covers only clear/light materialize sample 16.",
+    "No result from this probe authorizes a production shader change or a Liquid Glass parity claim."
+  ]
+}
