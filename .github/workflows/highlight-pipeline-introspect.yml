@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   highlight-pipeline-introspect:
-    runs-on: xcode-27
+    runs-on: macos-26
     timeout-minutes: 15
     env:
       LG_GLASS_MATERIAL: clear
@@ -24,7 +24,6 @@ jobs:
       - name: Require macOS 26+
         run: |
           sw_vers
-          xcodebuild -version
           test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
 
       - name: Select standard visual accessibility state
@@ -90,33 +89,6 @@ jobs:
               )
           PY
 
-      - name: Interrogate captured GPU trace
-        id: gpudebug
-        if: steps.capture.outcome == 'success'
-        continue-on-error: true
-        run: |
-          mkdir -p introspection/gpudebug
-          trace="introspection/liquid-glass.gputrace"
-          test -d "$trace"
-
-          if tool="$(xcrun --find gpudebug 2>/dev/null)"; then
-            printf '%s\n' "$tool" > introspection/gpudebug/tool-path.txt
-          elif tool="$(command -v gpudebug 2>/dev/null)"; then
-            printf '%s\n' "$tool" > introspection/gpudebug/tool-path.txt
-          else
-            printf '%s\n' \
-              "gpudebug is unavailable in the selected Xcode" \
-              > introspection/gpudebug/unavailable.txt
-            exit 1
-          fi
-
-          "$tool" --help \
-            > introspection/gpudebug/help.txt 2>&1 || true
-          MANWIDTH=200 man gpudebug 2>&1 | col -bx \
-            > introspection/gpudebug/manual.txt || true
-          "$tool" --oneshot -t "$trace" -c "list --all" \
-            > introspection/gpudebug/root.txt 2>&1
-
       - name: Validate captured Apple attachment sweep
         id: validate
         if: steps.capture.outcome == 'success'
@@ -142,6 +114,7 @@ jobs:
           ]["render"]["exactPassReplay"][
               "finalHighlightAlphaTrace"
           ]
+          tomography = alpha_trace["stageTomography"]
           if (
               sweep.get("executed") is not True
               or sweep.get("capturedApplePipelinesUnmodified") is not True
@@ -179,6 +152,27 @@ jobs:
           ):
               raise SystemExit(
                   f"alpha-trace contract differs: {alpha_trace}"
+              )
+          expected_tomography = {
+              "normalized-normal-x",
+              "normalized-normal-y",
+              "original-directional",
+              "shifted-scaled-distance",
+              "leading-coverage",
+              "original-coverage",
+          }
+          tomography_names = {
+              case.get("name") for case in tomography.get("cases", [])
+          }
+          if (
+              tomography.get("executed") is not True
+              or tomography.get("capturedAppleFunctionUnmodified")
+                  is not True
+              or tomography.get("caseCount") != len(expected_tomography)
+              or tomography_names != expected_tomography
+          ):
+              raise SystemExit(
+                  f"stage tomography contract differs: {tomography}"
               )
           comparison = alpha_trace["capturedVsRebuiltBGRA8"]
           if (
@@ -249,11 +243,62 @@ jobs:
                   "maximumWord": max(alpha_words),
                   "sha256": hashlib.sha256(alpha_bytes).hexdigest(),
               }
+          tomography_statistics = {}
+          for case in tomography["cases"]:
+              name = case["name"]
+              replay = case["replay"]
+              if (
+                  case.get("executed") is not True
+                  or replay.get("executed") is not True
+              ):
+                  raise SystemExit(
+                      f"stage tomography replay failed: {case}"
+                  )
+              output = replay["output"]
+              if output.get("pixelFormat") != 115:
+                  raise SystemExit(
+                      f"{name} tomography format differs: {output}"
+                  )
+              path = root / output["rawFile"]
+              if path.stat().st_size != 1024 * 1024 * 8:
+                  raise SystemExit(
+                      f"{path} size differs: {path.stat().st_size}"
+                  )
+              payload = path.read_bytes()
+              active_words = []
+              unique_words = set()
+              for red, green, blue, _alpha in struct.iter_unpack(
+                  "<4H", payload
+              ):
+                  if red != green or red != blue:
+                      raise SystemExit(
+                          f"RGBA16F {name} tomography does not have "
+                          "equal RGB words"
+                      )
+                  if red:
+                      active_words.append(red)
+                      unique_words.add(red)
+              if (
+                  len(active_words) < 1000
+                  or len(unique_words) < 2
+              ):
+                  raise SystemExit(
+                      f"RGBA16F {name} tomography lacks an active "
+                      f"field: pixels={len(active_words)} "
+                      f"values={len(unique_words)}"
+                  )
+              tomography_statistics[name] = {
+                  "activePixelCount": len(active_words),
+                  "uniqueWordCount": len(unique_words),
+                  "minimumWord": min(active_words),
+                  "maximumWord": max(active_words),
+                  "sha256": hashlib.sha256(payload).hexdigest(),
+              }
           combined = alpha_statistics["combined"]
           (root / "highlight-pipeline-validation.json").write_text(
               json.dumps(
                   {
-                      "schemaVersion": 3,
+                      "schemaVersion": 4,
                       "exactContract": True,
                       "caseCount": 8,
                       "capturedApplePipelinesUnmodified": True,
@@ -270,6 +315,8 @@ jobs:
                           combined["maximumWord"],
                       "exactHalfAlphaSHA256": combined["sha256"],
                       "bandStatistics": alpha_statistics,
+                      "stageTomographyStatistics":
+                          tomography_statistics,
                   },
                   indent=2,
                   sort_keys=True,
@@ -290,8 +337,6 @@ jobs:
             introspection/runtime-stderr.log
             introspection/runtime.json
             introspection/highlight-pipeline-validation.json
-            introspection/liquid-glass.gputrace
-            introspection/gpudebug/**
             introspection/carenderer-local-backdrop-post-glass-*
             introspection/carenderer-local-backdrop-final-highlight-alpha-*
           if-no-files-found: error

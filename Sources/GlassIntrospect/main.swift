@@ -9292,39 +9292,180 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
         }
 
-        func makeBandUniform(
-            zeroingColorAt recordOffset: Int
+        func halfBytes(_ bits: UInt16) -> Data {
+            var littleEndian = bits.littleEndian
+            return Swift.withUnsafeBytes(of: &littleEndian) {
+                Data($0)
+            }
+        }
+        func halfVectorBytes(_ bits: [UInt16]) -> Data {
+            var data = Data(capacity: bits.count * 2)
+            for value in bits {
+                data.append(halfBytes(value))
+            }
+            return data
+        }
+        func edit(
+            _ field: String,
+            _ offset: Int,
+            _ words: [UInt16]
+        ) -> GlassUniformEdit {
+            GlassUniformEdit(
+                field: field,
+                recordOffset: offset,
+                bytes: halfVectorBytes(words))
+        }
+        func makeUniform(
+            _ intervention: GlassUniformIntervention
         ) -> MTLBuffer? {
-            let destinationOffset =
-                selection.uniformOffset + recordOffset
-            guard destinationOffset >= 0,
-                  destinationOffset + 4 * MemoryLayout<UInt16>.size
-                    <= uniformClone.length,
-                  let clone = device.makeBuffer(
+            guard let clone = device.makeBuffer(
                     length: uniformClone.length,
                     options: .storageModeShared)
             else {
                 return nil
             }
+            for uniformEdit in intervention.edits {
+                let destinationOffset =
+                    selection.uniformOffset
+                    + uniformEdit.recordOffset
+                guard destinationOffset >= 0,
+                      !uniformEdit.bytes.isEmpty,
+                      destinationOffset + uniformEdit.bytes.count
+                        <= clone.length
+                else {
+                    return nil
+                }
+            }
             memcpy(
                 clone.contents(),
                 uniformClone.contents(),
                 uniformClone.length)
-            memset(
-                clone.contents().advanced(by: destinationOffset),
-                0,
-                4 * MemoryLayout<UInt16>.size)
+            for uniformEdit in intervention.edits {
+                let destination = clone.contents().advanced(
+                    by:
+                        selection.uniformOffset
+                        + uniformEdit.recordOffset)
+                uniformEdit.bytes.withUnsafeBytes { bytes in
+                    memcpy(
+                        destination,
+                        bytes.baseAddress!,
+                        bytes.count)
+                }
+            }
             return clone
         }
-        guard let keyUniform = makeBandUniform(
-                zeroingColorAt: 0xF0),
-              let fillUniform = makeBandUniform(
-                zeroingColorAt: 0xE8)
+        func interventionRecord(
+            _ intervention: GlassUniformIntervention
+        ) -> [String: Any] {
+            [
+                "name": intervention.name,
+                "edits": intervention.edits.map {
+                    [
+                        "field": $0.field,
+                        "recordOffset": $0.recordOffset,
+                        "hex": $0.bytes.map {
+                            String(format: "%02x", $0)
+                        }.joined(),
+                    ]
+                },
+            ]
+        }
+
+        let zeroHalf4 = [
+            UInt16(0x0000), 0x0000, 0x0000, 0x0000,
+        ]
+        let oneHalf4 = [
+            UInt16(0x3c00), 0x3c00, 0x3c00, 0x3c00,
+        ]
+        let keyOnly = GlassUniformIntervention(
+            name: "key-only",
+            edits: [
+                edit("fill_color", 0xF0, zeroHalf4),
+            ])
+        let fillOnly = GlassUniformIntervention(
+            name: "fill-only",
+            edits: [
+                edit("key_color", 0xE8, zeroHalf4),
+            ])
+        guard let keyUniform = makeUniform(keyOnly),
+              let fillUniform = makeUniform(fillOnly)
         else {
             return [
                 "executed": false,
                 "reason": "final highlight band uniform clone failed",
             ]
+        }
+
+        let tomographyCommon = [
+            edit("key_compositing_parameter", 0xD4, [0x0000]),
+            edit("key_color", 0xE8, oneHalf4),
+            edit("fill_color", 0xF0, zeroHalf4),
+        ]
+        let tomographyInterventions = [
+            GlassUniformIntervention(
+                name: "normalized-normal-x",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x7bff]),
+                    edit("key_threshold", 0xD2, [0xc000]),
+                    edit("key_direction", 0xD6, [0x3c00, 0x0000]),
+                    edit("fade_mix", 0xE4, [0x0000]),
+                    edit("distance_offset", 0xE6, [0xf400]),
+                ]),
+            GlassUniformIntervention(
+                name: "normalized-normal-y",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x7bff]),
+                    edit("key_threshold", 0xD2, [0xc000]),
+                    edit("key_direction", 0xD6, [0x0000, 0x3c00]),
+                    edit("fade_mix", 0xE4, [0x0000]),
+                    edit("distance_offset", 0xE6, [0xf400]),
+                ]),
+            GlassUniformIntervention(
+                name: "original-directional",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x7bff]),
+                    edit("fade_mix", 0xE4, [0x0000]),
+                    edit("distance_offset", 0xE6, [0xf400]),
+                ]),
+            GlassUniformIntervention(
+                name: "shifted-scaled-distance",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x4c00]),
+                    edit("key_threshold", 0xD2, [0xe800]),
+                    edit("key_direction", 0xD6, [0x0000, 0x0000]),
+                    edit("fade_mix", 0xE4, [0x3c00]),
+                    edit("distance_offset", 0xE6, [0xc400]),
+                ]),
+            GlassUniformIntervention(
+                name: "leading-coverage",
+                edits: tomographyCommon + [
+                    edit("key_width", 0xD0, [0x7bff]),
+                    edit("key_threshold", 0xD2, [0xe800]),
+                    edit("key_direction", 0xD6, [0x0000, 0x0000]),
+                    edit("fade_mix", 0xE4, [0x0000]),
+                    edit("distance_offset", 0xE6, [0x0000]),
+                ]),
+            GlassUniformIntervention(
+                name: "original-coverage",
+                edits: tomographyCommon + [
+                    edit("key_threshold", 0xD2, [0xe800]),
+                    edit("key_direction", 0xD6, [0x0000, 0x0000]),
+                ]),
+        ]
+        var tomographyUniforms: [(
+            intervention: GlassUniformIntervention,
+            buffer: MTLBuffer
+        )] = []
+        for intervention in tomographyInterventions {
+            guard let buffer = makeUniform(intervention) else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "final highlight tomography uniform clone failed",
+                    "intervention": interventionRecord(intervention),
+                ]
+            }
+            tomographyUniforms.append((intervention, buffer))
         }
 
         let rebuiltDescriptor = capturedDescriptor.copy()
@@ -9365,7 +9506,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             name: String,
             pipeline: MTLRenderPipelineState,
             pixelFormat: MTLPixelFormat,
-            uniformBuffer: MTLBuffer
+            uniformBuffer: MTLBuffer,
+            captureAuxiliary: Bool = true
         ) -> [String: Any] {
             let targetDescriptor = MTLTextureDescriptor
                 .texture2DDescriptor(
@@ -9487,7 +9629,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         commandBuffer.status.rawValue,
                 ]
             }
-            return [
+            var result: [String: Any] = [
                 "executed": true,
                 "encodedCommandCount": summary.encodedCommandCount,
                 "output": carendererOutputSnapshot(
@@ -9496,14 +9638,17 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     capture:
                         "\(capture)-final-highlight-alpha-\(name)",
                     outputDirectory: outputDirectory),
-                "auxiliaryOutput": carendererOutputSnapshot(
+            ]
+            if captureAuxiliary {
+                result["auxiliaryOutput"] = carendererOutputSnapshot(
                     auxiliary,
                     commandQueue: queue,
                     capture:
                         "\(capture)-final-highlight-alpha-\(name)"
                         + "-auxiliary",
-                    outputDirectory: outputDirectory),
-            ]
+                    outputDirectory: outputDirectory)
+            }
+            return result
         }
 
         let capturedBGRA = render(
@@ -9531,6 +9676,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pipeline: floatPipeline,
             pixelFormat: .rgba16Float,
             uniformBuffer: fillUniform)
+        let tomographyCases: [[String: Any]] =
+            tomographyUniforms.map { item in
+                var record = interventionRecord(item.intervention)
+                let replay = render(
+                    name:
+                        "tomography-"
+                        + item.intervention.name
+                        + "-rgba16float",
+                    pipeline: floatPipeline,
+                    pixelFormat: .rgba16Float,
+                    uniformBuffer: item.buffer,
+                    captureAuxiliary: false)
+                record["executed"] =
+                    replay["executed"] as? Bool == true
+                record["replay"] = replay
+                return record
+            }
+        let tomographyExecuted = tomographyCases.allSatisfy {
+            $0["executed"] as? Bool == true
+        }
         let comparison = compareReplaySnapshots(
             reference: capturedBGRA,
             candidate: rebuiltBGRA,
@@ -9542,7 +9707,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 && rebuiltBGRA["executed"] as? Bool == true
                 && exactHalf["executed"] as? Bool == true
                 && exactKeyHalf["executed"] as? Bool == true
-                && exactFillHalf["executed"] as? Bool == true,
+                && exactFillHalf["executed"] as? Bool == true
+                && tomographyExecuted,
             "capturedAppleFunctionUnmodified": true,
             "selectedLastA2XghfcDraw": true,
             "drawIndex": selection.drawIndex,
@@ -9574,6 +9740,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "exactHalfAlpha": exactHalf,
             "exactKeyHalfAlpha": exactKeyHalf,
             "exactFillHalfAlpha": exactFillHalf,
+            "stageTomography": [
+                "schemaVersion": 1,
+                "executed": tomographyExecuted,
+                "capturedAppleFunctionUnmodified": true,
+                "caseCount": tomographyCases.count,
+                "cases": tomographyCases,
+            ],
         ]
     }
 
