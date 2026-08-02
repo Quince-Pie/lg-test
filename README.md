@@ -4827,6 +4827,51 @@ bytes needed to map its two bounds sets and in-place float bounds to public
 layer paths; it still cannot by itself establish unseen transfer or production
 parity.
 
+Run `30771308161`, from corrected commit `a326be3`, passes that frozen retry
+prospectively.  All 114 states contain exactly one 208-byte record, exactly one
+source-key match, and selected index zero.  The complete earlier replay remains
+bit exact: 912/912 primary-position words, 912/912 primary-source words,
+912/912 source-`q` components, 1,596/1,596 allocation components, and all 114
+consumed rectangles match with zero tolerance.  The timeline SHA-256 is
+`38d660532faba98af0e24cab22b5fe7d3e34379d1916b85440dd96d36f83e2d6`.
+
+The record vector is Apple's inline owner storage in this corpus.  The owner
+address is live register `x20`; owner `+0x50` equals `x20+0x70`, owner `+0x58`
+equals `x20+0x140`, and the independently read vector is byte-identical to the
+owner-prefix slice `+0x70...+0x13f` in 114/114 states.  Owner `+0x60` is another
+copy of the begin pointer, not a capacity pointer; the still-uninterpreted word
+at `+0x68` is exactly 2 in every state.
+
+Every byte of the single record is now accounted for.  Bytes `+0x00...+0x27`
+are the five-word source key.  `+0x30...+0x4f` equals the captured public bounds
+of layer `[1,0,1]`; `+0x50...+0x6f` is four zero binary64 words;
+`+0x70...+0x8f` equals the selected private region rectangle as four binary64
+words; and `+0x90...+0xaf` is the exact binary32 four-corner expansion of the
+public bounds.  `+0xb0...+0xc7` is zero, and `+0xc8` is the same
+`recordIndex + 33` generation value found at owner `+0x40`, `+0x210`, and
+`+0x214`.  After normalizing only `+0x28` and the generation, the records have
+exactly nine variants in one-to-one correspondence with the nine selected
+rectangles, and all 23 same-state repeat groups are byte-identical.
+
+The opened instructions bound the one remaining opaque record word.  Record
+`+0x28` is loaded as both the current- and selected-record helper operand on
+the multi-record transform/union path.  This run has one selected record, so
+the equality branch at `capture_backdrop+0x478` jumps directly to `+0x890` in
+all 114 states and that helper path never executes.  The 14 nonzero aligned
+pointer identities repeat with exact period 14, but their object type is not
+promoted from that pattern.  The immutable passing analysis is
+`Analysis/dynamic_allocation_capture_backdrop_owner_record_result.json`, with
+SHA-256
+`c954f29e91b7546d505a45fb821f659f1936cb705c5fe798f211cf82cd457b75`.
+
+This closes the record layout, not the upstream crop policy: the record stores
+the already-constructed selected rectangle but contains no additional public
+input explaining how the owner `+0x248/+0x270` regions were built.  The next
+evidence target is therefore the producer of those owner regions (and a
+separate multi-record case if Apple emits one), followed by an unseen geometry
+transfer.  This pass does not authorize a production shader change or a Walle
+parity claim.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

@@ -1,0 +1,369 @@
+{
+  "aggregate": {
+    "allocationInvariants": {
+      "componentCount": 1596,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "completeLiveOperandCaptureCount": 114,
+    "distinctOwnerPrefixCount": 114,
+    "distinctOwnerRecordCount": 114,
+    "distinctSourceKeyCount": 1,
+    "ownerRecordCountEveryState": 1,
+    "primaryPositionReplay": {
+      "allowNumericTolerance": false,
+      "componentCount": 912,
+      "mismatchedComponents": 0
+    },
+    "primarySourceQ": {
+      "componentCount": 912,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "primarySourceReplay": {
+      "allowNumericTolerance": false,
+      "componentCount": 912,
+      "mismatchedComponents": 0
+    },
+    "recordCount": 114,
+    "sameStateNormalizedRecordGroupCount": 23,
+    "sameStateNormalizedRecordsExact": true,
+    "selectedRecordIndexEveryState": 0,
+    "selectedRegionConsumedRectangleExactCount": 114,
+    "selectedRegionRectangleFrequency": [
+      {
+        "count": 8,
+        "rect": [
+          199,
+          172,
+          644,
+          653
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          199,
+          172,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 5,
+        "rect": [
+          199,
+          173,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          200,
+          172,
+          644,
+          653
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          642,
+          651
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 68,
+        "rect": [
+          200,
+          173,
+          643,
+          651
+        ]
+      },
+      {
+        "count": 2,
+        "rect": [
+          200,
+          174,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          201,
+          173,
+          642,
+          651
+        ]
+      }
+    ],
+    "sourceKeyMatchCountEveryState": 1
+  },
+  "classification": "post-opening-analysis-of-prospectively-passing-capture-backdrop-owner-record-vector; not-a-public-state-crop-policy-unseen-transfer-or-product-parity-claim",
+  "conclusion": {
+    "everyOwnerRecordByteAccountedFor": true,
+    "frozenOwnerRecordGatePassed": true,
+    "ownerRecordVectorCaptured": true,
+    "ownerRecordVectorIsInlineOwnerStorage": true,
+    "productionShaderAuthorized": false,
+    "publicLayerStateCropRuleRecovered": false,
+    "requiresUnseenGeometryTransfer": true,
+    "singleRecordTransformAndUnionBranchExercised": false,
+    "upstreamPrivateRegionConstructionStillMissing": true
+  },
+  "dynamicAllocationCaptureBackdropOwnerRecordAnalysisSchemaVersion": 1,
+  "headSHA": "a326be3a0887e9fe661ada3a66e5437e954956e4",
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30771308161/transition-timeline.json",
+  "inputTimelineSHA256": "38d660532faba98af0e24cab22b5fe7d3e34379d1916b85440dd96d36f83e2d6",
+  "openedInstructions": {
+    "byteGatedWords": [
+      {
+        "offset": 844,
+        "word": "0xa945229c"
+      },
+      {
+        "offset": 888,
+        "word": "0xf9400e6c"
+      },
+      {
+        "offset": 904,
+        "word": "0x52801a11"
+      },
+      {
+        "offset": 920,
+        "word": "0xf9400220"
+      },
+      {
+        "offset": 980,
+        "word": "0x9a9b021b"
+      },
+      {
+        "offset": 1020,
+        "word": "0xf901129b"
+      },
+      {
+        "offset": 1032,
+        "word": "0x3dc00d20"
+      },
+      {
+        "offset": 1044,
+        "word": "0x3dc01120"
+      },
+      {
+        "offset": 1052,
+        "word": "0xad428921"
+      },
+      {
+        "offset": 1056,
+        "word": "0x52801519"
+      },
+      {
+        "offset": 1100,
+        "word": "0x3cd882a0"
+      },
+      {
+        "offset": 1104,
+        "word": "0x3cd982a1"
+      },
+      {
+        "offset": 1108,
+        "word": "0x0e616800"
+      },
+      {
+        "offset": 1112,
+        "word": "0x0e616821"
+      },
+      {
+        "offset": 1116,
+        "word": "0x0e20d421"
+      },
+      {
+        "offset": 1128,
+        "word": "0x6d3e8aa0"
+      },
+      {
+        "offset": 1136,
+        "word": "0x6d3f82a1"
+      },
+      {
+        "offset": 1140,
+        "word": "0xeb17037f"
+      },
+      {
+        "offset": 1144,
+        "word": "0x540020c0"
+      },
+      {
+        "offset": 1280,
+        "word": "0xf85802a1"
+      },
+      {
+        "offset": 1284,
+        "word": "0x52801a09"
+      },
+      {
+        "offset": 1288,
+        "word": "0x9b092368"
+      },
+      {
+        "offset": 1292,
+        "word": "0xf9401502"
+      },
+      {
+        "offset": 2188,
+        "word": "0xa945229c"
+      },
+      {
+        "offset": 2192,
+        "word": "0x910006f7"
+      },
+      {
+        "offset": 2208,
+        "word": "0x91034339"
+      },
+      {
+        "offset": 2216,
+        "word": "0x54ffdd03"
+      }
+    ],
+    "captureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "descendingKeyScanSelectsLowestMatchingIndex": true,
+    "generatedCornerArithmetic": "binary64-to-binary32 lower and extent conversion, binary32 upper=lower+extent, then four-corner stores",
+    "otherRecordHelperOperands": {
+      "currentRecordPointerOffset": 40,
+      "pathExecutedInThisCorpus": false,
+      "selectedRecordPointerOffset": 40
+    },
+    "selectedRecordBoundsCopiedToOwner228": true,
+    "singleRecordSelectedBranch": {
+      "branchOffset": 1144,
+      "branchTargetOffset": 2192,
+      "bypassesOtherRecordTransformAndUnionPath": true,
+      "compareOffset": 1140
+    }
+  },
+  "openedOwnerInlineStorage": {
+    "beginEqualsOwnerPlusInlineOffsetCount": 114,
+    "beginPointerOwnerOffset": 80,
+    "distinctOwnerAddressCount": 1,
+    "duplicateBeginWordOwnerOffset": 96,
+    "endEqualsOwnerPlusInlineEndCount": 114,
+    "endPointerOwnerOffset": 88,
+    "inlineBytesEqualIndependentVectorCount": 114,
+    "inlineRecordOwnerRange": [
+      112,
+      320
+    ],
+    "opaqueConstantWordOwnerOffset": 104,
+    "opaqueConstantWordValue": 2,
+    "ownerPrefixByteCount": 768,
+    "ownerRegister": "x20",
+    "word60EqualsBeginCount": 114
+  },
+  "openedOwnerRecord": {
+    "auxiliaryBounds": {
+      "allZeroCount": 114,
+      "encoding": "four little-endian binary64 words",
+      "recordRange": [
+        80,
+        112
+      ]
+    },
+    "byteCount": 208,
+    "fullyReconstructedExactCount": 114,
+    "generatedPublicBoundsCorners": {
+      "encoding": "eight little-endian binary32 words",
+      "exactCount": 114,
+      "order": [
+        "lowerX",
+        "lowerY",
+        "upperX",
+        "lowerY",
+        "upperX",
+        "upperY",
+        "lowerX",
+        "upperY"
+      ],
+      "recordRange": [
+        144,
+        176
+      ]
+    },
+    "generation": {
+      "exactCount": 114,
+      "exactRule": "recordIndex + 33",
+      "recordOffset": 200,
+      "sameValueOwnerOffsets": [
+        64,
+        528,
+        532
+      ]
+    },
+    "helperPointer": {
+      "distinctPointerCount": 14,
+      "exactSequencePeriod": 14,
+      "helperPathBypassedBySingleSelectedRecordCount": 114,
+      "periodExact": true,
+      "recordOffset": 40,
+      "semanticObjectTypeRecovered": false
+    },
+    "initialPublicBounds": {
+      "capturedLayerPath": [
+        1,
+        0,
+        1
+      ],
+      "encoding": "four little-endian binary64 words",
+      "exactCount": 114,
+      "recordRange": [
+        48,
+        80
+      ]
+    },
+    "normalizedVariantsAreInOneToOneCorrespondenceWithRectangles": true,
+    "pointerAndGenerationNormalizedDistinctVariantCount": 9,
+    "selectedRegionRectangle": {
+      "encoding": "four little-endian binary64 words",
+      "exactCount": 114,
+      "recordRange": [
+        112,
+        144
+      ]
+    },
+    "sourceKey": {
+      "exactCount": 114,
+      "recordRange": [
+        0,
+        40
+      ],
+      "sourceObjectRange": [
+        24,
+        64
+      ]
+    },
+    "zeroReservedExactCount": 114,
+    "zeroReservedRange": [
+      176,
+      200
+    ]
+  },
+  "prospectiveGatePassed": true,
+  "runID": 30771308161,
+  "workflowConclusion": "success"
+}
