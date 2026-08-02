@@ -54,8 +54,46 @@ class AllocationTests(unittest.TestCase):
             [260, 20],
         )
 
+    def test_nonendpoint_crop_clamp_extent_and_scissor(self) -> None:
+        bounds = {"x": [352.0, 992.0], "y": [32.0, 672.0]}
+        self.assertEqual(
+            audit.nonendpoint_allocation_metadata(bounds, scale=0.75),
+            {
+                "cropOrigin": [265, 24],
+                "clampMaximum": [478, 479],
+                "producerExtent": [512, 512],
+                "scissorExtent": [496, 497],
+            },
+        )
+
 
 class MeshTests(unittest.TestCase):
+    def test_two_clipped_sides_select_four_quads(self) -> None:
+        sides = {
+            "xLower": False,
+            "xUpper": True,
+            "yLower": True,
+            "yUpper": False,
+        }
+        self.assertEqual(audit.expected_nonendpoint_vertex_count(sides), 16)
+        primary = {
+            "position": [10.0, 20.0, 30.0, 40.0],
+            "source": [11.0, 21.0, 31.0, 41.0],
+        }
+        auxiliary = audit.expected_auxiliary_quad_bounds(primary, sides)
+        self.assertEqual(len(auxiliary), 3)
+        self.assertEqual(auxiliary[0]["position"], [10.0, 19.0, 30.0, 20.0])
+        self.assertEqual(auxiliary[-1]["source"], [30.5, 21.0, 30.5, 41.0])
+
+    def test_four_clipped_sides_select_nine_quads(self) -> None:
+        sides = dict.fromkeys(("xLower", "xUpper", "yLower", "yUpper"), True)
+        self.assertEqual(audit.expected_nonendpoint_vertex_count(sides), 36)
+        primary = {
+            "position": [0.0, 0.0, 8.0, 8.0],
+            "source": [0.0, 0.0, 16.0, 16.0],
+        }
+        self.assertEqual(len(audit.expected_auxiliary_quad_bounds(primary, sides)), 8)
+
     def test_quad4_candidate_preserves_asymmetric_edge_expansion(self) -> None:
         bounds = {
             "x": [361.6697998046875, 1001.6697998046875],

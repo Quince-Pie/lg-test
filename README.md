@@ -4123,6 +4123,40 @@ non-threshold outcome, and the current 140-of-144 single-quad edge candidate.
 This is calibration, not an unseen holdout; any recovered phase or mesh rule
 still requires a separately frozen geometry transfer.
 
+Run `30750570327`, captured from preregistered commit `bccdf29`, completed all
+four geometry jobs and retained all 128 requested states.  The immutable
+post-opening audit is recorded by
+`Analysis/analyze_dynamic_allocation_calibration.py` and
+`Analysis/dynamic_allocation_phase_calibration_result.json`.  Apple's
+effective-origin selector chooses the preregistered rounded-padding law:
+
+```text
+h = 2 iff roundNearestAway(8*(1-k)) <= 4, otherwise h = 1
+O = alignDown(C - h, 4)
+O = -4 when the clipped lower bound is zero
+```
+
+Using the independently predicted non-endpoint crop `C`, this law matches all
+248 origin components exactly.  The competing `q >= 5/4` threshold matches
+247 of 248.  The distinguishing component is the X axis of
+`circle-512-offset` sample 13 at `k = 0.4087800979614258`: `C = 325` and Apple
+uses `O = 324`; the rounded-padding law predicts 324 while the ratio threshold
+predicts 320.  This is a predeclared finite-candidate selection, not a fitted
+threshold.  It remains calibration evidence and needs an unseen geometry
+transfer before production use.
+
+The same dense capture closes the other non-endpoint producer-allocation
+arithmetic on the opened geometries: 496 of 496 crop/clamp components, 248 of
+248 producer extents, 248 of 248 destination extents, 248 of 248 scissor
+components, all 124 topology selections, and all 1,432 auxiliary clamp-quad
+position/source components are exact.  The primary quad is not closed.  The
+current independent candidates match 481 of 496 position components: all 132
+components in the 16-vertex states and all 40 in the 36-vertex states, but
+only 309 of 324 in the single-quad states.  The 15 residuals are one-pixel
+edges concentrated in late fractional geometry, plus one centered Y upper
+edge.  Endpoint crop/mesh selection is separate.  Therefore this run neither
+authorizes a Walle shader change nor establishes independent Walle parity.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does

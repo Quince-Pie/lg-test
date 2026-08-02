@@ -129,6 +129,133 @@ def allocation_bounds(
     }
 
 
+def clipped_sides(
+    geometry: Mapping[str, Any], carrier_position: Sequence[float | int]
+) -> dict[str, bool]:
+    if len(carrier_position) != 2:
+        raise ValueError("carrier position is not two-dimensional")
+    x = numeric(carrier_position[0], "carrier X")
+    y = numeric(carrier_position[1], "carrier Y")
+    width = numeric(geometry.get("width"), "geometry width")
+    height = numeric(geometry.get("height"), "geometry height")
+    window_width = numeric(geometry.get("windowWidth"), "window width")
+    window_height = numeric(geometry.get("windowHeight"), "window height")
+    metal_y_lower = window_height - (y + height)
+    metal_y_upper = window_height - y
+    return {
+        "xLower": x < 0.0,
+        "xUpper": x + width > window_width,
+        "yLower": metal_y_lower < 0.0,
+        "yUpper": metal_y_upper > window_height,
+    }
+
+
+def nonendpoint_allocation_metadata(
+    bounds: Mapping[str, Sequence[float]], *, scale: float
+) -> dict[str, list[int]]:
+    x_bounds = sequence(bounds.get("x"), "X allocation bounds")
+    y_bounds = sequence(bounds.get("y"), "Y allocation bounds")
+    if len(x_bounds) != 2 or len(y_bounds) != 2:
+        raise ValueError("allocation bounds are not two-dimensional intervals")
+    crop: list[int] = []
+    clamp: list[int] = []
+    extent: list[int] = []
+    for axis, interval in enumerate((x_bounds, y_bounds)):
+        lower = numeric(interval[0], "allocation lower bound")
+        upper = numeric(interval[1], "allocation upper bound")
+        scaled_lower = scale * lower
+        crop_value = (
+            0
+            if lower == 0.0
+            else math.floor(scaled_lower) + 1
+            if axis == 0
+            else math.ceil(scaled_lower)
+        )
+        clamp_value = math.floor(scale * upper) - crop_value - 1
+        if clamp_value < 0:
+            raise ValueError("predicted copy-base clamp is empty")
+        crop.append(crop_value)
+        clamp.append(clamp_value)
+        extent.append(align_up(clamp_value + 1))
+    return {
+        "cropOrigin": crop,
+        "clampMaximum": clamp,
+        "producerExtent": extent,
+        "scissorExtent": [
+            min(producer_extent, clamp_maximum + 18)
+            for producer_extent, clamp_maximum in zip(extent, clamp, strict=True)
+        ],
+    }
+
+
+def expected_nonendpoint_vertex_count(sides: Mapping[str, bool]) -> int:
+    required = {"xLower", "xUpper", "yLower", "yUpper"}
+    if set(sides) != required or any(
+        not isinstance(value, bool) for value in sides.values()
+    ):
+        raise ValueError("clipped-side flags differ")
+    x_segments = 1 + int(sides["xLower"]) + int(sides["xUpper"])
+    y_segments = 1 + int(sides["yLower"]) + int(sides["yUpper"])
+    return 4 * x_segments * y_segments
+
+
+def expected_auxiliary_quad_bounds(
+    primary: Mapping[str, Any], sides: Mapping[str, bool]
+) -> list[dict[str, list[float]]]:
+    position = sequence(primary.get("position"), "primary position bounds")
+    source = sequence(primary.get("source"), "primary source bounds")
+    if len(position) != 4 or len(source) != 4:
+        raise ValueError("primary producer bounds are incomplete")
+    x0, y0, x1, y1 = (numeric(value, "primary position") for value in position)
+    u0, v0, u1, v1 = (numeric(value, "primary source") for value in source)
+
+    def quad(
+        quad_position: list[float], quad_source: list[float]
+    ) -> dict[str, list[float]]:
+        return {"position": quad_position, "source": quad_source}
+
+    if not any(sides.values()):
+        return []
+    if sides == {
+        "xLower": False,
+        "xUpper": True,
+        "yLower": True,
+        "yUpper": False,
+    }:
+        return [
+            quad([x0, y0 - 1, x1, y0], [u0, v0 + 0.5, u1, v0 + 0.5]),
+            quad(
+                [x1, y0 - 1, x1 + 1, y0],
+                [u1 - 0.5, v0 + 0.5, u1 - 0.5, v0 + 0.5],
+            ),
+            quad([x1, y0, x1 + 1, y1], [u1 - 0.5, v0, u1 - 0.5, v1]),
+        ]
+    if all(sides.values()):
+        return [
+            quad([x0 - 1, y0, x0, y1], [u0 + 0.5, v0, u0 + 0.5, v1]),
+            quad(
+                [x0 - 1, y0 - 1, x0, y0],
+                [u0 + 0.5, v0 + 0.5, u0 + 0.5, v0 + 0.5],
+            ),
+            quad([x0, y0 - 1, x1, y0], [u0, v0 + 0.5, u1, v0 + 0.5]),
+            quad(
+                [x1, y0 - 1, x1 + 1, y0],
+                [u1 - 0.5, v0 + 0.5, u1 - 0.5, v0 + 0.5],
+            ),
+            quad([x1, y0, x1 + 1, y1], [u1 - 0.5, v0, u1 - 0.5, v1]),
+            quad(
+                [x1, y1, x1 + 1, y1 + 1],
+                [u1 - 0.5, v1 - 0.5, u1 - 0.5, v1 - 0.5],
+            ),
+            quad([x0, y1, x1, y1 + 1], [u0, v1 - 0.5, u1, v1 - 0.5]),
+            quad(
+                [x0 - 1, y1, x0, y1 + 1],
+                [u0 + 0.5, v1 - 0.5, u0 + 0.5, v1 - 0.5],
+            ),
+        ]
+    raise ValueError(f"unmeasured non-endpoint clipping combination: {dict(sides)}")
+
+
 def origin_candidate(
     bounds: Mapping[str, Sequence[float]], *, remaining: float, scale: float
 ) -> list[int]:
@@ -246,12 +373,26 @@ def analyze(
     quad4_mismatches = 0
     quad4_residuals: list[dict[str, Any]] = []
     topology_counts: Counter[int] = Counter()
+    nonendpoint_crop_clamp_components = 0
+    nonendpoint_crop_clamp_mismatches = 0
+    nonendpoint_producer_extent_components = 0
+    nonendpoint_producer_extent_mismatches = 0
+    nonendpoint_scissor_components = 0
+    nonendpoint_scissor_mismatches = 0
+    nonendpoint_topology_states = 0
+    nonendpoint_topology_mismatches = 0
+    nonendpoint_auxiliary_components = 0
+    nonendpoint_auxiliary_mismatches = 0
+    nonendpoint_side_patterns: Counter[str] = Counter()
 
     for result_path in sorted(result_paths):
         result = load_json(result_path, "holdout validator result")
         geometry = mapping(result.get("geometry"), "holdout geometry")
         geometry_name = geometry.get("name")
-        if not isinstance(geometry_name, str) or geometry_name not in EXPECTED_GEOMETRIES:
+        if (
+            not isinstance(geometry_name, str)
+            or geometry_name not in EXPECTED_GEOMETRIES
+        ):
             raise ValueError(f"unexpected holdout geometry: {geometry_name!r}")
         if geometry_name in geometry_names:
             raise ValueError(f"duplicate holdout geometry: {geometry_name}")
@@ -265,9 +406,10 @@ def analyze(
             timeline_hash, str
         ):
             raise ValueError("validator result has no timeline identity")
-        timeline_relative = Path(Path(timeline_description).parent.name) / Path(
-            timeline_description
-        ).name
+        timeline_relative = (
+            Path(Path(timeline_description).parent.name)
+            / Path(timeline_description).name
+        )
         timeline_path = artifact_root / timeline_relative
         actual_timeline_hash = sha256_file(timeline_path)
         if actual_timeline_hash != timeline_hash:
@@ -291,7 +433,9 @@ def analyze(
             result.get("aggregate"), "prospective aggregate"
         )
         prospective_mismatches = {
-            field: int(mapping(prospective_aggregate.get(field), field)["mismatchedComponents"])
+            field: int(
+                mapping(prospective_aggregate.get(field), field)["mismatchedComponents"]
+            )
             for field in (
                 "cropOrigin",
                 "textureCoordinateClamp",
@@ -334,9 +478,7 @@ def analyze(
                     observed_carrier, expected_carrier, strict=True
                 )
             )
-            policy_bounds = allocation_bounds(
-                geometry, carrier_prediction["position"]
-            )
+            policy_bounds = allocation_bounds(geometry, carrier_prediction["position"])
             observed = mapping(state.get("observed"), "observed allocation policy")
             observed_origin = sequence(
                 observed.get("effectiveOrigin"), "observed effective origin"
@@ -382,15 +524,94 @@ def analyze(
                         "scaledLower": scale * lower,
                         "predicted": predicted,
                         "observed": observed_value,
-                        "difference": predicted - numeric(
-                            observed_value, "observed effective origin"
-                        ),
+                        "difference": predicted
+                        - numeric(observed_value, "observed effective origin"),
                     }
                 )
 
             mesh = mapping(observed.get("producerMesh"), "producer mesh")
             vertex_count = int(mesh["vertexCount"])
             topology_counts[vertex_count] += 1
+            quad_bounds = sequence(mesh.get("quadBounds"), "producer quad bounds")
+            if remaining < 1.0:
+                allocation_prediction = nonendpoint_allocation_metadata(
+                    policy_bounds, scale=scale
+                )
+                observed_crop = sequence(
+                    observed.get("cropOrigin"), "observed crop origin"
+                )
+                observed_clamp = sequence(
+                    observed.get("textureCoordinateClamp"),
+                    "observed texture-coordinate clamp",
+                )
+                observed_extent = sequence(
+                    observed.get("producerExtent"), "observed producer extent"
+                )
+                observed_scissor = sequence(mesh.get("scissor"), "producer scissor")
+                predicted_crop_clamp = [
+                    *allocation_prediction["cropOrigin"],
+                    *allocation_prediction["clampMaximum"],
+                ]
+                observed_crop_clamp = [*observed_crop, *observed_clamp[2:]]
+                nonendpoint_crop_clamp_components += 4
+                nonendpoint_crop_clamp_mismatches += sum(
+                    predicted != observed_value
+                    for predicted, observed_value in zip(
+                        predicted_crop_clamp, observed_crop_clamp, strict=True
+                    )
+                )
+                nonendpoint_producer_extent_components += 2
+                nonendpoint_producer_extent_mismatches += sum(
+                    predicted != observed_value
+                    for predicted, observed_value in zip(
+                        allocation_prediction["producerExtent"],
+                        observed_extent,
+                        strict=True,
+                    )
+                )
+                nonendpoint_scissor_components += 2
+                nonendpoint_scissor_mismatches += sum(
+                    predicted != observed_value
+                    for predicted, observed_value in zip(
+                        allocation_prediction["scissorExtent"],
+                        observed_scissor[2:],
+                        strict=True,
+                    )
+                )
+                sides = clipped_sides(geometry, carrier_prediction["position"])
+                pattern = ",".join(name for name, clipped in sides.items() if clipped)
+                nonendpoint_side_patterns[pattern or "none"] += 1
+                expected_vertex_count = expected_nonendpoint_vertex_count(sides)
+                nonendpoint_topology_states += 1
+                nonendpoint_topology_mismatches += expected_vertex_count != vertex_count
+                if not quad_bounds:
+                    raise ValueError("producer mesh has no primary quad")
+                expected_auxiliary = expected_auxiliary_quad_bounds(
+                    mapping(quad_bounds[0], "primary quad bounds"), sides
+                )
+                observed_auxiliary = [
+                    mapping(value, "auxiliary quad bounds") for value in quad_bounds[1:]
+                ]
+                nonendpoint_auxiliary_components += 8 * len(expected_auxiliary)
+                nonendpoint_auxiliary_mismatches += 8 * abs(
+                    len(expected_auxiliary) - len(observed_auxiliary)
+                )
+                for predicted_quad, observed_quad in zip(
+                    expected_auxiliary, observed_auxiliary
+                ):
+                    for field in ("position", "source"):
+                        predicted_values = predicted_quad[field]
+                        observed_values = sequence(
+                            observed_quad.get(field), f"auxiliary {field} bounds"
+                        )
+                        if len(observed_values) != 4:
+                            raise ValueError(f"auxiliary {field} bounds are incomplete")
+                        nonendpoint_auxiliary_mismatches += sum(
+                            predicted != observed_value
+                            for predicted, observed_value in zip(
+                                predicted_values, observed_values, strict=True
+                            )
+                        )
             vertices = sequence(mesh.get("primaryVertices"), "primary vertices")
             for row in vertices:
                 vertex = sequence(row, "primary vertex")
@@ -408,9 +629,7 @@ def analyze(
                         predicted_source
                     ) != float32_bits(observed_source)
             all_source_components += int(mesh["allSourceScaleComponentCount"])
-            all_source_mismatches += int(
-                mesh["allSourceScaleMismatchedComponents"]
-            )
+            all_source_mismatches += int(mesh["allSourceScaleMismatchedComponents"])
             if vertex_count == 4:
                 quad4_state_count += 1
                 predicted_edges = quad4_primary_bounds_candidate(
@@ -451,7 +670,9 @@ def analyze(
     if geometry_names != EXPECTED_GEOMETRIES:
         missing = sorted(EXPECTED_GEOMETRIES - geometry_names)
         extra = sorted(geometry_names - EXPECTED_GEOMETRIES)
-        raise ValueError(f"holdout geometry set differs; missing={missing}, extra={extra}")
+        raise ValueError(
+            f"holdout geometry set differs; missing={missing}, extra={extra}"
+        )
     prospective_frozen_gate_passed = all(prospective_passes)
     carrier_metric = metric(
         component_count=carrier_components, mismatch_count=carrier_mismatches
@@ -469,6 +690,19 @@ def analyze(
         **metric(component_count=quad4_components, mismatch_count=quad4_mismatches),
         "residuals": quad4_residuals,
     }
+    nonendpoint_topology_metric = {
+        "stateCount": nonendpoint_topology_states,
+        "mismatchedStates": nonendpoint_topology_mismatches,
+        "exact": nonendpoint_topology_mismatches == 0,
+        "clippedSidePatternStates": {
+            pattern: nonendpoint_side_patterns[pattern]
+            for pattern in sorted(nonendpoint_side_patterns)
+        },
+    }
+    nonendpoint_auxiliary_metric = metric(
+        component_count=nonendpoint_auxiliary_components,
+        mismatch_count=nonendpoint_auxiliary_mismatches,
+    )
     return {
         "dynamicAllocationGeometryHoldoutAnalysisSchemaVersion": 1,
         "classification": (
@@ -496,6 +730,20 @@ def analyze(
             "destinationExtentGivenObservedEffectiveOrigin": destination_metric,
             "narrowEffectiveOriginCandidate": origin_metric,
             "quad4PrimaryPositionBoundsCandidate": quad4_metric,
+            "nonEndpointCropAndClamp": metric(
+                component_count=nonendpoint_crop_clamp_components,
+                mismatch_count=nonendpoint_crop_clamp_mismatches,
+            ),
+            "nonEndpointProducerExtent": metric(
+                component_count=nonendpoint_producer_extent_components,
+                mismatch_count=nonendpoint_producer_extent_mismatches,
+            ),
+            "producerScissorFromClamp": metric(
+                component_count=nonendpoint_scissor_components,
+                mismatch_count=nonendpoint_scissor_mismatches,
+            ),
+            "nonEndpointTopology": nonendpoint_topology_metric,
+            "nonEndpointAuxiliaryBoundsGivenPrimary": (nonendpoint_auxiliary_metric),
             "producerVertexCountStates": {
                 str(count): topology_counts[count] for count in sorted(topology_counts)
             },
@@ -505,6 +753,12 @@ def analyze(
             "retrospectiveCarrierLawExact": carrier_metric["exact"],
             "retrospectiveDestinationLawExactGivenObservedOrigin": (
                 destination_metric["exact"]
+            ),
+            "retrospectiveNonEndpointTopologyExact": (
+                nonendpoint_topology_metric["exact"]
+            ),
+            "retrospectiveNonEndpointAuxiliaryBoundsExactGivenPrimary": (
+                nonendpoint_auxiliary_metric["exact"]
             ),
             "independentEffectiveOriginPolicyRecovered": origin_metric["exact"],
             "independentProducerMeshPolicyRecovered": (
