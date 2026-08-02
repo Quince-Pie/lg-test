@@ -4369,6 +4369,26 @@ immutable result is
 `Analysis/transition_input_clamp_affine_transfer_result.json`, with SHA-256
 `7e1c387afe50544ffb5196ddd7858cad2b5e3fb63e1e4cba47f45dc47d0ebb32`.
 
+The next primary-mesh experiment is frozen before capture in
+`Analysis/dynamic_allocation_primary_mesh_fine_scan_preregistration.json`.
+It contains 106 interventions, below the observed 114-record monolithic
+process boundary.  At state 25 it exhausts every integer X value from 80
+through 88 and every integer Y value from 64 through 96, including both ends
+of the two previously observed transition brackets.  At state 31 it spends the
+remaining budget on the complete preceding 29-value X and 33-value Y signed
+scan, including all four strong controls that exposed cross-axis responses.
+
+The capture remains on the only mutation proven present at the live render
+boundary: `position` at path `[1,0,1,0,0,0,0]`.  All 106 records must preserve
+the full live-baseline-plus-declared-delta rule, stable pre/post live trees,
+unchanged filter inputs, exact `q`, and exact allocation/copy metadata.  The
+post-opening analyzer may report only observed response runs and adjacent
+sampled transition brackets.  Eight repeated response anchors are compared at
+zero tolerance; a mismatch is retained as failed transfer evidence rather than
+invalidating or refitting the capture.  This remains causal calibration and
+cannot authorize a Walle shader change without a separately frozen unseen
+native-geometry transfer.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

@@ -27,6 +27,22 @@ BUFFER_RETENTION_POLICY = original.BUFFER_RETENTION_POLICY
 CLASSIFICATION = (
     "preregistered-live-baseline-deepest-sdf-position-threshold-calibration"
 )
+FINE_SCAN_CLASSIFICATION = (
+    "preregistered-live-baseline-deepest-sdf-position-fine-threshold-and-"
+    "cross-axis-calibration"
+)
+FINE_X_VALUES = tuple(range(80, 89))
+FINE_Y_VALUES = tuple(range(64, 97))
+CROSS_AXIS_X_VALUES = DENSE_X_VALUES
+CROSS_AXIS_Y_VALUES = DENSE_Y_VALUES
+SCAN_VALUES_BY_SAMPLE = {
+    25: (FINE_X_VALUES, FINE_Y_VALUES),
+    31: (CROSS_AXIS_X_VALUES, CROSS_AXIS_Y_VALUES),
+}
+SCAN_PHASES_BY_SAMPLE = {
+    25: "fine-threshold",
+    31: "cross-axis-scan",
+}
 INVARIANT_FIELDS = (
     "cropOrigin",
     "textureCoordinateClamp",
@@ -103,6 +119,49 @@ def expected_interventions(sample_index: int) -> list[dict[str, Any]]:
     return result
 
 
+def fine_scan_interventions(sample_index: int) -> list[dict[str, Any]]:
+    if sample_index not in EXPECTED_SOURCE_SAMPLE_INDICES:
+        raise ValueError(f"unexpected source sample: {sample_index}")
+    identifier = original.path_name(POSITION_PATH)
+    x_values, y_values = SCAN_VALUES_BY_SAMPLE[sample_index]
+    phase = SCAN_PHASES_BY_SAMPLE[sample_index]
+    prefix = "fine" if sample_index == 25 else "cross-axis"
+    result: list[dict[str, Any]] = [
+        {
+            "name": "base",
+            "phase": "control",
+            "path": (),
+            "mutation": "base",
+            "delta": (0, 0),
+        }
+    ]
+    result.extend(
+        {
+            "name": (
+                f"{prefix}-{identifier}-position-x-{original.signed_name(value)}"
+            ),
+            "phase": phase,
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": (value, 0),
+        }
+        for value in x_values
+    )
+    result.extend(
+        {
+            "name": (
+                f"{prefix}-{identifier}-position-y-{original.signed_name(value)}"
+            ),
+            "phase": phase,
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": (0, value),
+        }
+        for value in y_values
+    )
+    return result
+
+
 def live_baseline_states(
     states: Sequence[Any], delta: tuple[int, int]
 ) -> list[dict[str, Any]]:
@@ -140,14 +199,6 @@ def decoded_policy_exact(
 
 
 def validate(path: Path) -> dict[str, Any]:
-    base = holdout.validate(
-        path,
-        expected_geometry=EXPECTED_GEOMETRY,
-        expected_sample_indices=EXPECTED_SAMPLE_INDICES,
-        classification=CLASSIFICATION,
-        allowed_geometries=frozenset({EXPECTED_GEOMETRY}),
-        require_primary_source_q_exact=False,
-    )
     report = holdout.mapping(
         json.loads(path.read_text(encoding="utf-8")), "transition report"
     )
@@ -157,8 +208,27 @@ def validate(path: Path) -> dict[str, Any]:
     evidence = holdout.mapping(
         uniforms.get("pathIsolationInterventions"), "surviving-path evidence"
     )
+    evidence_schema = evidence.get("schemaVersion")
+    if evidence_schema == 2:
+        classification = CLASSIFICATION
+        result_schema = 1
+        intervention_builder = expected_interventions
+    elif evidence_schema == 3:
+        classification = FINE_SCAN_CLASSIFICATION
+        result_schema = 2
+        intervention_builder = fine_scan_interventions
+    else:
+        raise ValueError("surviving-path evidence schema differs")
+    base = holdout.validate(
+        path,
+        expected_geometry=EXPECTED_GEOMETRY,
+        expected_sample_indices=EXPECTED_SAMPLE_INDICES,
+        classification=classification,
+        allowed_geometries=frozenset({EXPECTED_GEOMETRY}),
+        require_primary_source_q_exact=False,
+    )
     expected_by_sample = {
-        sample: expected_interventions(sample)
+        sample: intervention_builder(sample)
         for sample in EXPECTED_SOURCE_SAMPLE_INDICES
     }
     expected_counts = {
@@ -167,30 +237,50 @@ def validate(path: Path) -> dict[str, Any]:
     }
     expected_count = sum(expected_counts.values())
     if (
-        evidence.get("schemaVersion") != 2
-        or evidence.get("requested") is not True
+        evidence.get("requested") is not True
         or evidence.get("executed") is not True
         or evidence.get("sourceSampleIndices") != list(EXPECTED_SOURCE_SAMPLE_INDICES)
         or evidence.get("sourceInterventionCounts") != expected_counts
         or evidence.get("expectedRecordCount") != expected_count
         or evidence.get("executedRecordCount") != expected_count
-        or evidence.get("strongPaths") != [list(POSITION_PATH)]
-        or evidence.get("strongDeltas")
-        != [
-            {"name": name, "delta": list(delta)}
-            for name, delta in STRONG_DELTAS
-        ]
-        or evidence.get("denseSampleIndex") != 25
-        or evidence.get("densePath") != list(POSITION_PATH)
-        or evidence.get("denseMutation") != "position"
-        or evidence.get("denseXValues") != list(DENSE_X_VALUES)
-        or evidence.get("denseYValues") != list(DENSE_Y_VALUES)
         or evidence.get("liveRenderBoundaryReadback") is not True
         or evidence.get("maximumRenderAttemptCount") != 3
         or evidence.get("renderBufferRetentionPolicy") != BUFFER_RETENTION_POLICY
         or not holdout.no_raw_stage_dumps(evidence)
     ):
         raise ValueError("surviving-path evidence header differs")
+    if evidence_schema == 2:
+        if (
+            evidence.get("strongPaths") != [list(POSITION_PATH)]
+            or evidence.get("strongDeltas")
+            != [
+                {"name": name, "delta": list(delta)}
+                for name, delta in STRONG_DELTAS
+            ]
+            or evidence.get("denseSampleIndex") != 25
+            or evidence.get("densePath") != list(POSITION_PATH)
+            or evidence.get("denseMutation") != "position"
+            or evidence.get("denseXValues") != list(DENSE_X_VALUES)
+            or evidence.get("denseYValues") != list(DENSE_Y_VALUES)
+        ):
+            raise ValueError("surviving-path schema-2 matrix header differs")
+    elif (
+        evidence.get("scanPath") != list(POSITION_PATH)
+        or evidence.get("scanMutation") != "position"
+        or evidence.get("scanPhasesBySample")
+        != {str(sample): phase for sample, phase in SCAN_PHASES_BY_SAMPLE.items()}
+        or evidence.get("scanXValuesBySample")
+        != {
+            str(sample): list(values[0])
+            for sample, values in SCAN_VALUES_BY_SAMPLE.items()
+        }
+        or evidence.get("scanYValuesBySample")
+        != {
+            str(sample): list(values[1])
+            for sample, values in SCAN_VALUES_BY_SAMPLE.items()
+        }
+    ):
+        raise ValueError("surviving-path schema-3 matrix header differs")
 
     records = [
         holdout.mapping(value, "surviving-path record")
@@ -412,8 +502,13 @@ def validate(path: Path) -> dict[str, Any]:
     ):
         raise ValueError("surviving-path exact integrity gate failed")
     return {
-        "dynamicAllocationSurvivingPathThresholdResultSchemaVersion": 1,
-        "classification": CLASSIFICATION,
+        "dynamicAllocationSurvivingPathThresholdResultSchemaVersion": result_schema,
+        "classification": classification,
+        **(
+            {"captureEvidenceSchemaVersion": evidence_schema}
+            if evidence_schema >= 3
+            else {}
+        ),
         "timeline": str(path),
         "timelineSHA256": holdout.sha256_file(path),
         "geometry": report.get("geometry"),
@@ -459,7 +554,11 @@ def validate(path: Path) -> dict[str, Any]:
         "conclusion": {
             "captureIntegrityPassed": True,
             "causalCalibrationOnly": True,
-            "deepestSDFPositionThresholdRequiresPostOpeningAnalysis": True,
+            (
+                "deepestSDFPositionThresholdRequiresPostOpeningAnalysis"
+                if evidence_schema == 2
+                else "fineThresholdAndCrossAxisScanRequiresPostOpeningAnalysis"
+            ): True,
             "requiresUnseenGeometryTransfer": True,
             "productionShaderAuthorized": False,
         },

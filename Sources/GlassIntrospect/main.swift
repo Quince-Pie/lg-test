@@ -16396,24 +16396,26 @@ private let transitionPathIsolationPositionPath = [
     1, 0, 1, 0, 0, 0, 0,
 ]
 
-private let transitionPathIsolationStrongDeltas: [(
-    name: String,
-    delta: CGPoint
-)] = [
-    ("x-negative-90", CGPoint(x: -90, y: 0)),
-    ("x-positive-90", CGPoint(x: 90, y: 0)),
-    ("y-negative-134", CGPoint(x: 0, y: -134)),
-    ("y-positive-134", CGPoint(x: 0, y: 134)),
+private let transitionPathIsolationFineXValues = [
+    80, 81, 82, 83, 84, 85, 86, 87, 88,
 ]
 
-private let transitionPathIsolationDenseXValues = [
+private let transitionPathIsolationFineYValues = [
+    64, 65, 66, 67, 68, 69, 70, 71,
+    72, 73, 74, 75, 76, 77, 78, 79,
+    80, 81, 82, 83, 84, 85, 86, 87,
+    88, 89, 90, 91, 92, 93, 94, 95,
+    96,
+]
+
+private let transitionPathIsolationCrossAxisXValues = [
     -128, -96, -92, -91, -90, -89, -88, -64,
     -32, -16, -8, -4, -2, -1,
     1, 2, 4, 8, 16, 32, 64, 80,
     88, 89, 90, 91, 92, 96, 128,
 ]
 
-private let transitionPathIsolationDenseYValues = [
+private let transitionPathIsolationCrossAxisYValues = [
     -160, -144, -136, -135, -134, -133, -132,
     -128, -96, -64, -32, -16, -8, -4, -2, -1,
     1, 2, 4, 8, 16, 32, 64, 96, 120, 128,
@@ -16435,40 +16437,47 @@ private func transitionPathIsolationInterventions(
         delta: .zero)]
     let positionPathName = transitionPathIdentifier(
         transitionPathIsolationPositionPath)
-    for strong in transitionPathIsolationStrongDeltas {
-        interventions.append(TransitionPathIsolationIntervention(
-            name:
-                "strong-" + positionPathName + "-position-"
-                + strong.name,
-            phase: "path-isolation",
-            path: transitionPathIsolationPositionPath,
-            mutation: .position,
-            delta: strong.delta))
+    let phase: String
+    let namePrefix: String
+    let xValues: [Int]
+    let yValues: [Int]
+    switch sampleIndex {
+    case 25:
+        phase = "fine-threshold"
+        namePrefix = "fine"
+        xValues = transitionPathIsolationFineXValues
+        yValues = transitionPathIsolationFineYValues
+    case 31:
+        phase = "cross-axis-scan"
+        namePrefix = "cross-axis"
+        xValues = transitionPathIsolationCrossAxisXValues
+        yValues = transitionPathIsolationCrossAxisYValues
+    default:
+        preconditionFailure("unexpected path-isolation source sample")
     }
-    guard sampleIndex == 25 else { return interventions }
 
-    for value in transitionPathIsolationDenseXValues {
+    for value in xValues {
         let sign = value < 0 ? "negative" : "positive"
         interventions.append(
             TransitionPathIsolationIntervention(
                 name:
-                    "dense-" + positionPathName
+                    namePrefix + "-" + positionPathName
                     + "-position-x-" + sign
                     + "-" + String(abs(value)),
-                phase: "dense-threshold",
+                phase: phase,
                 path: transitionPathIsolationPositionPath,
                 mutation: .position,
                 delta: CGPoint(x: value, y: 0)))
     }
-    for value in transitionPathIsolationDenseYValues {
+    for value in yValues {
         let sign = value < 0 ? "negative" : "positive"
         interventions.append(
             TransitionPathIsolationIntervention(
                 name:
-                    "dense-" + positionPathName
+                    namePrefix + "-" + positionPathName
                     + "-position-y-" + sign
                     + "-" + String(abs(value)),
-                phase: "dense-threshold",
+                phase: phase,
                 path: transitionPathIsolationPositionPath,
                 mutation: .position,
                 delta: CGPoint(x: 0, y: value)))
@@ -18097,7 +18106,7 @@ private func transitionPathIsolationAllocationEvidence(
         $0["executed"] as? Bool == true
     }.count
     return [
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "requested": true,
         "executed": executedRecordCount == expectedRecordCount,
         "sourceSampleIndices": selectedSnapshots.map(
@@ -18105,28 +18114,30 @@ private func transitionPathIsolationAllocationEvidence(
         "sourceInterventionCounts": sourceInterventionCounts,
         "expectedRecordCount": expectedRecordCount,
         "executedRecordCount": executedRecordCount,
-        "strongPaths": [transitionPathIsolationPositionPath],
-        "strongDeltas": transitionPathIsolationStrongDeltas.map {
-            [
-                "name": $0.name,
-                "delta": [$0.delta.x, $0.delta.y],
-            ] as [String: Any]
-        },
-        "denseSampleIndex": 25,
-        "densePath": transitionPathIsolationPositionPath,
-        "denseMutation":
+        "scanPath": transitionPathIsolationPositionPath,
+        "scanMutation":
             TransitionPathIsolationMutation.position.rawValue,
-        "denseXValues": transitionPathIsolationDenseXValues,
-        "denseYValues": transitionPathIsolationDenseYValues,
+        "scanPhasesBySample": [
+            "25": "fine-threshold",
+            "31": "cross-axis-scan",
+        ],
+        "scanXValuesBySample": [
+            "25": transitionPathIsolationFineXValues,
+            "31": transitionPathIsolationCrossAxisXValues,
+        ],
+        "scanYValuesBySample": [
+            "25": transitionPathIsolationFineYValues,
+            "31": transitionPathIsolationCrossAxisYValues,
+        ],
         "liveRenderBoundaryReadback": true,
         "maximumRenderAttemptCount": 3,
         "renderBufferRetentionPolicy":
             "index-all-compute-0-vertex-1-or-2",
         "records": records,
         "method":
-            "live-baseline-deepest-sdf-position-only-"
-            + "causal-threshold-scan-after-preregistered-"
-            + "broad-path-live-readback-failure",
+            "live-baseline-deepest-sdf-position-fine-threshold-"
+            + "and-cross-axis-scan-after-preregistered-"
+            + "72-record-calibration",
     ]
 }
 
