@@ -12294,7 +12294,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             && capture.hasPrefix("transition-background-uniform-")
         let dynamicBackgroundArithmeticTraceRequested =
             dynamicInterpolantTraceRequested
-            && capture.hasSuffix("-16")
+            && (capture.hasSuffix("-12")
+                || capture.hasSuffix("-16"))
         let dynamicHighlightDiagnosticsRequested =
             dynamicHighlightTraceEnabled
             && (capture.hasSuffix("-01")
@@ -12348,10 +12349,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     ("color-stages-b", .rgba32Uint),
                     ("final-color", .rgba16Float),
                 ]
+                let requestedArithmeticTraceNames: Set<String>
+                if capture.hasSuffix("-12") {
+                    requestedArithmeticTraceNames = Set([
+                        "color-stages-a",
+                        "color-stages-b",
+                    ])
+                } else if capture.hasSuffix("-16") {
+                    requestedArithmeticTraceNames = Set(
+                        arithmeticTraceSpecifications.map(\.name))
+                } else {
+                    requestedArithmeticTraceNames = []
+                }
                 var requestedTraceNames = Set(["interpolant"])
                 if dynamicBackgroundArithmeticTraceRequested {
                     requestedTraceNames.formUnion(
-                        arithmeticTraceSpecifications.map(\.name))
+                        requestedArithmeticTraceNames)
                 }
                 let pipelineSet =
                     try makeIndependentGlassPipelines(
@@ -12433,7 +12446,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ]
                 if dynamicBackgroundArithmeticTraceRequested {
                     var arithmeticReplays: [[String: Any]] = []
-                    for specification in arithmeticTraceSpecifications {
+                    for specification in arithmeticTraceSpecifications
+                    where requestedArithmeticTraceNames.contains(
+                        specification.name)
+                    {
                         guard let arithmeticTrace =
                                 pipelineSet.numericTraces.first(where: {
                                     $0.name == specification.name
@@ -12482,7 +12498,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                             }
                             return value["executed"] as? Bool == true
                         },
-                        "scope": "sample-16-custom-metal-main-only",
+                        "scope":
+                            "selected-dynamic-states-custom-metal-main-only",
                         "capturedAppleFunctionUnmodified": false,
                         "customStageInVertex": true,
                         "classification":

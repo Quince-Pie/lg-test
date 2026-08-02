@@ -11,7 +11,6 @@ from typing import Any
 
 EXPECTED_SAMPLE_INDICES = (1, 4, 8, 12, 16, 20, 24, 28, 32)
 HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 12, 32})
-BACKGROUND_ARITHMETIC_SAMPLE_INDEX = 16
 BACKGROUND_ARITHMETIC_TRACES = {
     "sdf-float": (123, 1024 * 1024 * 16),
     "sdf-geometry": (123, 1024 * 1024 * 16),
@@ -22,6 +21,13 @@ BACKGROUND_ARITHMETIC_TRACES = {
     "color-stages-a": (123, 1024 * 1024 * 16),
     "color-stages-b": (123, 1024 * 1024 * 16),
     "final-color": (115, 1024 * 1024 * 8),
+}
+BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE = {
+    12: {
+        name: BACKGROUND_ARITHMETIC_TRACES[name]
+        for name in ("color-stages-a", "color-stages-b")
+    },
+    16: BACKGROUND_ARITHMETIC_TRACES,
 }
 HIGHLIGHT_SDF_DIAGNOSTIC_TRACES = {
     "sdf": (115, 1024 * 1024 * 8),
@@ -422,9 +428,14 @@ def validate_background_interpolant_trace(
         **(
             {
                 name: pixel_format
-                for name, (pixel_format, _) in BACKGROUND_ARITHMETIC_TRACES.items()
+                for name, (pixel_format, _) in (
+                    BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE.get(
+                        sample_index,
+                        {},
+                    ).items()
+                )
             }
-            if sample_index == BACKGROUND_ARITHMETIC_SAMPLE_INDEX
+            if sample_index in BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE
             else {}
         ),
     }
@@ -475,7 +486,8 @@ def validate_background_arithmetic_trace(
     root: Path,
     sample_index: int,
 ) -> int:
-    if sample_index != BACKGROUND_ARITHMETIC_SAMPLE_INDEX:
+    expected_traces = BACKGROUND_ARITHMETIC_TRACES_BY_SAMPLE.get(sample_index)
+    if expected_traces is None:
         if "backgroundArithmeticTrace" in replay:
             raise ValueError("an unrequested background arithmetic trace executed")
         return 0
@@ -488,13 +500,14 @@ def validate_background_arithmetic_trace(
     if (
         trace.get("schemaVersion") != 1
         or trace.get("executed") is not True
-        or trace.get("scope") != "sample-16-custom-metal-main-only"
+        or trace.get("scope")
+        != "selected-dynamic-states-custom-metal-main-only"
         or trace.get("capturedAppleFunctionUnmodified") is not False
         or trace.get("customStageInVertex") is not True
         or trace.get("classification")
         != "diagnostic custom-Metal arithmetic replay"
         or not isinstance(replays, list)
-        or len(replays) != len(BACKGROUND_ARITHMETIC_TRACES)
+        or len(replays) != len(expected_traces)
     ):
         raise ValueError("dynamic background arithmetic trace differs")
 
@@ -503,9 +516,9 @@ def validate_background_arithmetic_trace(
         for item in replays
         if isinstance(item, Mapping)
     }
-    if set(observed) != set(BACKGROUND_ARITHMETIC_TRACES):
+    if set(observed) != set(expected_traces):
         raise ValueError("dynamic background arithmetic trace names differ")
-    for name, (pixel_format, byte_count) in BACKGROUND_ARITHMETIC_TRACES.items():
+    for name, (pixel_format, byte_count) in expected_traces.items():
         wrapper = mapping(observed[name], f"background arithmetic {name}")
         numeric_replay = mapping(
             wrapper.get("replay"),
@@ -531,7 +544,7 @@ def validate_background_arithmetic_trace(
             root=root,
             name=f"dynamic background arithmetic {name}",
         )
-    return len(BACKGROUND_ARITHMETIC_TRACES)
+    return len(expected_traces)
 
 
 def validate_raw_render_evidence(

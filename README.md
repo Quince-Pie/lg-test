@@ -3926,3 +3926,15 @@ are explicitly labelled custom-Metal diagnostic evidence.  The unmodified
 Apple alpha and tomography surfaces remain the endpoint oracle.  The capture
 validator requires all five diagnostic surfaces and their exact raw layouts,
 so a missing or partially executed replay cannot be mistaken for evidence.
+
+The next bounded arithmetic capture extends only sample 12 with the existing
+custom-Metal `color-stages-a` and `color-stages-b` surfaces. The independent
+Metal replay already matches Apple's unmodified sample-12 glass-prefix endpoint
+byte for byte, while the portable replay differs at two BGRA8 pixels. These
+two 16 MiB traces expose the custom replay's source/face values and its
+pre/post-holding half words at those coordinates, distinguishing an upstream
+operand difference from the competing weighted-sum and delta-FMA `mix`
+lowerings. Sample 16 retains the complete nine-surface arithmetic diagnostic;
+all other transition states remain interpolant-only. These are diagnostic
+custom-Metal intermediates, not observations of Apple's private fragment
+internals, and the unchanged private BGRA8 endpoint remains the oracle.
