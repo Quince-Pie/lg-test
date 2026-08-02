@@ -4474,6 +4474,48 @@ may be derived only after opening this capture, then must pass a separately
 frozen native-geometry holdout and unchanged repeat before any Walle shader
 change.
 
+Run `30760175468`, captured from preregistered commit `bf94a69`, completed the
+entire schema-4 matrix on the first render attempt: 114 of 114 records, 912 of
+912 source-`q` binary32 comparisons, and 1,596 of 1,596 allocation/copy
+components are exact.  The deepest target center is exactly pixel `(310,310)`
+with zero binary64 ULP residual.  The immutable post-opening result is
+`Analysis/dynamic_allocation_primary_mesh_sample31_repeat_scan_result.json`,
+with SHA-256
+`c59bc25ea4e778fe775cc81cc0ab2f71f18ad2f989f19f43826ac711af3f1de4`.
+
+The X scan contains three exact response runs.  In target-center coordinates,
+X lower is one pixel lower through 303, X upper alone is one pixel lower at
+304, and the base response resumes from 305 through 346.  Its two transition
+brackets are therefore exactly `303 -> 304` and `304 -> 305`.  The Y scan has
+four runs: the X-lower response through 309, the base response from 310 through
+334, Y upper alone one pixel lower at 335, and both lower edges one pixel lower
+from 336 through 346.  Its transition brackets are exactly `309 -> 310`,
+`334 -> 335`, and `335 -> 336`.  These are observed integer response runs, not
+an interpolated or inferred threshold law.
+
+All 23 preregistered same-state equivalence groups are exact over requested
+state, live pre/post state, allocation policy, decoded mesh policy, primary
+edges, and the 192 vertex, 64 MVP, and 12 index bytes consumed by the draw.
+The four zero-state records `[0,13,54,91]` remain exact across a maximum
+91-record separation.  Whole 4 KiB vertex and MVP snapshot hashes differ in
+all groups only in unconsumed tail bytes and remain outside the determinism
+gate.  This establishes same-process sample-31 determinism; it does not
+establish a geometry-independent allocation policy.
+
+The diagnostic capture also reached the producer path.  Its 32-frame stack
+contains QuartzCore's `CA::OGL::capture_backdrop`, `draw_elements`, `draw`, and
+`MetalBufferPool::encode_vertex_arg` frames at the `VfxXgh`/`A2Xghfc` draw.
+All eight captured 2 KiB QuartzCore windows passed their declared length and
+SHA-256 checks.  Disassembly of the `capture_backdrop` window places the
+intercepted vertex-buffer call at symbol offset `0x2b54` (return `0x2b58`) and
+shows the immediately preceding construction of four 48-byte vertices:
+floating bounds are transformed by a 2D affine matrix, converted back to
+binary32, adjusted by integer origins, then bound for drawing.  The window
+also contains exact comparisons and half-/one-pixel adjustments, but it does
+not contain the complete symbol.  Those bytes narrow the remaining work to
+the producer's crop/edge integerization branches; they are not yet sufficient
+to claim their complete policy.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

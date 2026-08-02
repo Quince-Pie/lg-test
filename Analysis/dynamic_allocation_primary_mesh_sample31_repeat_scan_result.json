@@ -1,0 +1,3986 @@
+{
+  "aggregate": {
+    "changedEdgeComponentCount": 45,
+    "changedRecordCount": 31,
+    "edgeComponentCount": 456,
+    "exactDecodedDrawConsumedRepeatGroupCount": 23,
+    "fullSnapshotHashFieldsExcludedFromDeterminismGate": [
+      "vertexPayloadSHA256",
+      "mvpPayloadSHA256"
+    ],
+    "maximumRepeatRecordIndexSeparation": 91,
+    "maximumTargetCenterResidualULPs": 0.0,
+    "producerGeometryCallSite": {
+      "captured": true,
+      "frameCount": 32,
+      "glassBackgroundRenderCodeCaptureCount": 0,
+      "glassMatrixConstructorCodeCaptureCount": 0,
+      "glassMatrixConstructorConstantDataCaptureCount": 0,
+      "quartzCoreCodeWindowCount": 8,
+      "quartzCoreCodeWindowSHA256": [
+        "7c9e3dcc7db786378f8674adde9a3712729fff7c8d0e9b9f2460ee45c6c37698",
+        "e6682713c24e6229f12130780dfeb6beee896891104aabcc9a6bb2a9926a6814",
+        "e8ed163626744737b27d373149334f3353fac8f8b5fb03d104d7b7870d4f3f9d",
+        "377e19cd1828efe992084686fd7a61269484a6d420e3dc33bd6df8871c40eff7",
+        "ccca1da04cb23807c2266d252147708020935312c58142482dd1bb16a90e04f0",
+        "40be9f0c0f9053383588ba7e4070825131e76c3a278a2006c9af181abaa15aa2",
+        "1cc71b94cfc31cfe83da48dda52d952500b593e4d76fc3314bbe738473012ed6",
+        "c84c12cd62951071d2bb6720922ec00cb883c1d3fbece493c610c04493819a30"
+      ]
+    },
+    "recordCount": 114,
+    "repeatEquivalenceGroupCount": 23,
+    "scanGroupCount": 2,
+    "signedEdgeDeltaCounts": {
+      "xLower:-1": 29,
+      "xUpper:-1": 1,
+      "yLower:-1": 14,
+      "yUpper:-1": 1
+    },
+    "unitScanRecordCount": 90
+  },
+  "classification": "post-opening-analysis-of-preregistered-sample31-unit-threshold-and-same-process-repeat-scan; not-a-complete-producer-mesh-policy",
+  "conclusion": {
+    "comparisonRestrictedToDecodedPolicyAndDrawConsumedBytes": true,
+    "everyReportedTransitionBracketHasUnitWidth": true,
+    "independentProducerMeshPolicyRecovered": false,
+    "productionShaderAuthorized": false,
+    "requiresUnseenGeometryTransfer": true,
+    "sample31SameStateResponseDeterministicAcrossRecordedOrder": true,
+    "sample31UnitThresholdsOpened": true,
+    "unusedSnapshotTailBytesExcluded": true
+  },
+  "dynamicAllocationPrimaryMeshSample31RepeatScanAnalysisSchemaVersion": 1,
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30760175468/transition-timeline.json",
+  "inputTimelineSHA256": "0d27d23de6778fb62f7e20241bbc6be948516c5367fa7dd6a6239c13ea3595dc",
+  "inputValidatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30760175468/dynamic-allocation-path-isolation.json",
+  "inputValidatorResultSHA256": "df539a9e76a7e5cf0c114a5ec457935a5d3a3868d80b2f4604c0bd6aab00082f",
+  "recordResponses": [
+    {
+      "interventionName": "base",
+      "phase": "control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 0,
+      "targetCenter": [
+        310.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        310,
+        310
+      ],
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-12",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 1,
+      "targetCenter": [
+        298.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        298,
+        310
+      ],
+      "translation": [
+        -12,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-11",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 2,
+      "targetCenter": [
+        299.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        299,
+        310
+      ],
+      "translation": [
+        -11,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-10",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 3,
+      "targetCenter": [
+        300.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        300,
+        310
+      ],
+      "translation": [
+        -10,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-9",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 4,
+      "targetCenter": [
+        301.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        301,
+        310
+      ],
+      "translation": [
+        -9,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-8",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 5,
+      "targetCenter": [
+        302.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        302,
+        310
+      ],
+      "translation": [
+        -8,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-7",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 6,
+      "targetCenter": [
+        303.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        303,
+        310
+      ],
+      "translation": [
+        -7,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-6",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "recordIndex": 7,
+      "targetCenter": [
+        304.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        304,
+        310
+      ],
+      "translation": [
+        -6,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-5",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 8,
+      "targetCenter": [
+        305.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        305,
+        310
+      ],
+      "translation": [
+        -5,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-4",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 9,
+      "targetCenter": [
+        306.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        306,
+        310
+      ],
+      "translation": [
+        -4,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-3",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 10,
+      "targetCenter": [
+        307.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        307,
+        310
+      ],
+      "translation": [
+        -3,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-2",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 11,
+      "targetCenter": [
+        308.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        308,
+        310
+      ],
+      "translation": [
+        -2,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-negative-1",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 12,
+      "targetCenter": [
+        309.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        309,
+        310
+      ],
+      "translation": [
+        -1,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-0",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 13,
+      "targetCenter": [
+        310.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        310,
+        310
+      ],
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-1",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 14,
+      "targetCenter": [
+        311.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        311,
+        310
+      ],
+      "translation": [
+        1,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-2",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 15,
+      "targetCenter": [
+        312.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        312,
+        310
+      ],
+      "translation": [
+        2,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-3",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 16,
+      "targetCenter": [
+        313.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        313,
+        310
+      ],
+      "translation": [
+        3,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-4",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 17,
+      "targetCenter": [
+        314.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        314,
+        310
+      ],
+      "translation": [
+        4,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-5",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 18,
+      "targetCenter": [
+        315.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        315,
+        310
+      ],
+      "translation": [
+        5,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-6",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 19,
+      "targetCenter": [
+        316.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        316,
+        310
+      ],
+      "translation": [
+        6,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-7",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 20,
+      "targetCenter": [
+        317.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        317,
+        310
+      ],
+      "translation": [
+        7,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-8",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 21,
+      "targetCenter": [
+        318.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        318,
+        310
+      ],
+      "translation": [
+        8,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-9",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 22,
+      "targetCenter": [
+        319.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        319,
+        310
+      ],
+      "translation": [
+        9,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-10",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 23,
+      "targetCenter": [
+        320.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        320,
+        310
+      ],
+      "translation": [
+        10,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-11",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 24,
+      "targetCenter": [
+        321.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        321,
+        310
+      ],
+      "translation": [
+        11,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-12",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 25,
+      "targetCenter": [
+        322.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        322,
+        310
+      ],
+      "translation": [
+        12,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-13",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 26,
+      "targetCenter": [
+        323.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        323,
+        310
+      ],
+      "translation": [
+        13,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-14",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 27,
+      "targetCenter": [
+        324.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        324,
+        310
+      ],
+      "translation": [
+        14,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-15",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 28,
+      "targetCenter": [
+        325.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        325,
+        310
+      ],
+      "translation": [
+        15,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-16",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 29,
+      "targetCenter": [
+        326.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        326,
+        310
+      ],
+      "translation": [
+        16,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-17",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 30,
+      "targetCenter": [
+        327.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        327,
+        310
+      ],
+      "translation": [
+        17,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-18",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 31,
+      "targetCenter": [
+        328.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        328,
+        310
+      ],
+      "translation": [
+        18,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-19",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 32,
+      "targetCenter": [
+        329.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        329,
+        310
+      ],
+      "translation": [
+        19,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-20",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 33,
+      "targetCenter": [
+        330.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        330,
+        310
+      ],
+      "translation": [
+        20,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-21",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 34,
+      "targetCenter": [
+        331.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        331,
+        310
+      ],
+      "translation": [
+        21,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-22",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 35,
+      "targetCenter": [
+        332.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        332,
+        310
+      ],
+      "translation": [
+        22,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-23",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 36,
+      "targetCenter": [
+        333.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        333,
+        310
+      ],
+      "translation": [
+        23,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-24",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 37,
+      "targetCenter": [
+        334.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        334,
+        310
+      ],
+      "translation": [
+        24,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-25",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 38,
+      "targetCenter": [
+        335.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        335,
+        310
+      ],
+      "translation": [
+        25,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-26",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 39,
+      "targetCenter": [
+        336.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        336,
+        310
+      ],
+      "translation": [
+        26,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-27",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 40,
+      "targetCenter": [
+        337.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        337,
+        310
+      ],
+      "translation": [
+        27,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-28",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 41,
+      "targetCenter": [
+        338.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        338,
+        310
+      ],
+      "translation": [
+        28,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-29",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 42,
+      "targetCenter": [
+        339.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        339,
+        310
+      ],
+      "translation": [
+        29,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-30",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 43,
+      "targetCenter": [
+        340.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        340,
+        310
+      ],
+      "translation": [
+        30,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-31",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 44,
+      "targetCenter": [
+        341.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        341,
+        310
+      ],
+      "translation": [
+        31,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-32",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 45,
+      "targetCenter": [
+        342.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        342,
+        310
+      ],
+      "translation": [
+        32,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-33",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 46,
+      "targetCenter": [
+        343.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        343,
+        310
+      ],
+      "translation": [
+        33,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-34",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 47,
+      "targetCenter": [
+        344.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        344,
+        310
+      ],
+      "translation": [
+        34,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-35",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 48,
+      "targetCenter": [
+        345.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        345,
+        310
+      ],
+      "translation": [
+        35,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-x-positive-36",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 49,
+      "targetCenter": [
+        346.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        346,
+        310
+      ],
+      "translation": [
+        36,
+        0
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-negative-4",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 50,
+      "targetCenter": [
+        310.0,
+        306.0
+      ],
+      "targetPixelCenter": [
+        310,
+        306
+      ],
+      "translation": [
+        0,
+        -4
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-negative-3",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 51,
+      "targetCenter": [
+        310.0,
+        307.0
+      ],
+      "targetPixelCenter": [
+        310,
+        307
+      ],
+      "translation": [
+        0,
+        -3
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-negative-2",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 52,
+      "targetCenter": [
+        310.0,
+        308.0
+      ],
+      "targetPixelCenter": [
+        310,
+        308
+      ],
+      "translation": [
+        0,
+        -2
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-negative-1",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 53,
+      "targetCenter": [
+        310.0,
+        309.0
+      ],
+      "targetPixelCenter": [
+        310,
+        309
+      ],
+      "translation": [
+        0,
+        -1
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-0",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 54,
+      "targetCenter": [
+        310.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        310,
+        310
+      ],
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-1",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 55,
+      "targetCenter": [
+        310.0,
+        311.0
+      ],
+      "targetPixelCenter": [
+        310,
+        311
+      ],
+      "translation": [
+        0,
+        1
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-2",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 56,
+      "targetCenter": [
+        310.0,
+        312.0
+      ],
+      "targetPixelCenter": [
+        310,
+        312
+      ],
+      "translation": [
+        0,
+        2
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-3",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 57,
+      "targetCenter": [
+        310.0,
+        313.0
+      ],
+      "targetPixelCenter": [
+        310,
+        313
+      ],
+      "translation": [
+        0,
+        3
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-4",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 58,
+      "targetCenter": [
+        310.0,
+        314.0
+      ],
+      "targetPixelCenter": [
+        310,
+        314
+      ],
+      "translation": [
+        0,
+        4
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-5",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 59,
+      "targetCenter": [
+        310.0,
+        315.0
+      ],
+      "targetPixelCenter": [
+        310,
+        315
+      ],
+      "translation": [
+        0,
+        5
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-6",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 60,
+      "targetCenter": [
+        310.0,
+        316.0
+      ],
+      "targetPixelCenter": [
+        310,
+        316
+      ],
+      "translation": [
+        0,
+        6
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-7",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 61,
+      "targetCenter": [
+        310.0,
+        317.0
+      ],
+      "targetPixelCenter": [
+        310,
+        317
+      ],
+      "translation": [
+        0,
+        7
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-8",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 62,
+      "targetCenter": [
+        310.0,
+        318.0
+      ],
+      "targetPixelCenter": [
+        310,
+        318
+      ],
+      "translation": [
+        0,
+        8
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-9",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 63,
+      "targetCenter": [
+        310.0,
+        319.0
+      ],
+      "targetPixelCenter": [
+        310,
+        319
+      ],
+      "translation": [
+        0,
+        9
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-10",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 64,
+      "targetCenter": [
+        310.0,
+        320.0
+      ],
+      "targetPixelCenter": [
+        310,
+        320
+      ],
+      "translation": [
+        0,
+        10
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-11",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 65,
+      "targetCenter": [
+        310.0,
+        321.0
+      ],
+      "targetPixelCenter": [
+        310,
+        321
+      ],
+      "translation": [
+        0,
+        11
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-12",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 66,
+      "targetCenter": [
+        310.0,
+        322.0
+      ],
+      "targetPixelCenter": [
+        310,
+        322
+      ],
+      "translation": [
+        0,
+        12
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-13",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 67,
+      "targetCenter": [
+        310.0,
+        323.0
+      ],
+      "targetPixelCenter": [
+        310,
+        323
+      ],
+      "translation": [
+        0,
+        13
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-14",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 68,
+      "targetCenter": [
+        310.0,
+        324.0
+      ],
+      "targetPixelCenter": [
+        310,
+        324
+      ],
+      "translation": [
+        0,
+        14
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-15",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 69,
+      "targetCenter": [
+        310.0,
+        325.0
+      ],
+      "targetPixelCenter": [
+        310,
+        325
+      ],
+      "translation": [
+        0,
+        15
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-16",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 70,
+      "targetCenter": [
+        310.0,
+        326.0
+      ],
+      "targetPixelCenter": [
+        310,
+        326
+      ],
+      "translation": [
+        0,
+        16
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-17",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 71,
+      "targetCenter": [
+        310.0,
+        327.0
+      ],
+      "targetPixelCenter": [
+        310,
+        327
+      ],
+      "translation": [
+        0,
+        17
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-18",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 72,
+      "targetCenter": [
+        310.0,
+        328.0
+      ],
+      "targetPixelCenter": [
+        310,
+        328
+      ],
+      "translation": [
+        0,
+        18
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-19",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 73,
+      "targetCenter": [
+        310.0,
+        329.0
+      ],
+      "targetPixelCenter": [
+        310,
+        329
+      ],
+      "translation": [
+        0,
+        19
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-20",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 74,
+      "targetCenter": [
+        310.0,
+        330.0
+      ],
+      "targetPixelCenter": [
+        310,
+        330
+      ],
+      "translation": [
+        0,
+        20
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-21",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 75,
+      "targetCenter": [
+        310.0,
+        331.0
+      ],
+      "targetPixelCenter": [
+        310,
+        331
+      ],
+      "translation": [
+        0,
+        21
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-22",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 76,
+      "targetCenter": [
+        310.0,
+        332.0
+      ],
+      "targetPixelCenter": [
+        310,
+        332
+      ],
+      "translation": [
+        0,
+        22
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-23",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 77,
+      "targetCenter": [
+        310.0,
+        333.0
+      ],
+      "targetPixelCenter": [
+        310,
+        333
+      ],
+      "translation": [
+        0,
+        23
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-24",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 78,
+      "targetCenter": [
+        310.0,
+        334.0
+      ],
+      "targetPixelCenter": [
+        310,
+        334
+      ],
+      "translation": [
+        0,
+        24
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-25",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "recordIndex": 79,
+      "targetCenter": [
+        310.0,
+        335.0
+      ],
+      "targetPixelCenter": [
+        310,
+        335
+      ],
+      "translation": [
+        0,
+        25
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-26",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 80,
+      "targetCenter": [
+        310.0,
+        336.0
+      ],
+      "targetPixelCenter": [
+        310,
+        336
+      ],
+      "translation": [
+        0,
+        26
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-27",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 81,
+      "targetCenter": [
+        310.0,
+        337.0
+      ],
+      "targetPixelCenter": [
+        310,
+        337
+      ],
+      "translation": [
+        0,
+        27
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-28",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 82,
+      "targetCenter": [
+        310.0,
+        338.0
+      ],
+      "targetPixelCenter": [
+        310,
+        338
+      ],
+      "translation": [
+        0,
+        28
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-29",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 83,
+      "targetCenter": [
+        310.0,
+        339.0
+      ],
+      "targetPixelCenter": [
+        310,
+        339
+      ],
+      "translation": [
+        0,
+        29
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-30",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 84,
+      "targetCenter": [
+        310.0,
+        340.0
+      ],
+      "targetPixelCenter": [
+        310,
+        340
+      ],
+      "translation": [
+        0,
+        30
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-31",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 85,
+      "targetCenter": [
+        310.0,
+        341.0
+      ],
+      "targetPixelCenter": [
+        310,
+        341
+      ],
+      "translation": [
+        0,
+        31
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-32",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 86,
+      "targetCenter": [
+        310.0,
+        342.0
+      ],
+      "targetPixelCenter": [
+        310,
+        342
+      ],
+      "translation": [
+        0,
+        32
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-33",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 87,
+      "targetCenter": [
+        310.0,
+        343.0
+      ],
+      "targetPixelCenter": [
+        310,
+        343
+      ],
+      "translation": [
+        0,
+        33
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-34",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 88,
+      "targetCenter": [
+        310.0,
+        344.0
+      ],
+      "targetPixelCenter": [
+        310,
+        344
+      ],
+      "translation": [
+        0,
+        34
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-35",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 89,
+      "targetCenter": [
+        310.0,
+        345.0
+      ],
+      "targetPixelCenter": [
+        310,
+        345
+      ],
+      "translation": [
+        0,
+        35
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "sample31-unit-1-0-1-0-0-0-0-position-y-positive-36",
+      "phase": "sample31-unit-scan",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 90,
+      "targetCenter": [
+        310.0,
+        346.0
+      ],
+      "targetPixelCenter": [
+        310,
+        346
+      ],
+      "translation": [
+        0,
+        36
+      ]
+    },
+    {
+      "interventionName": "repeat-base",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 91,
+      "targetCenter": [
+        310.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        310,
+        310
+      ],
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-negative-12",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 92,
+      "targetCenter": [
+        298.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        298,
+        310
+      ],
+      "translation": [
+        -12,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-negative-8",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 93,
+      "targetCenter": [
+        302.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        302,
+        310
+      ],
+      "translation": [
+        -8,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-negative-4",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 94,
+      "targetCenter": [
+        306.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        306,
+        310
+      ],
+      "translation": [
+        -4,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-negative-1",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 95,
+      "targetCenter": [
+        309.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        309,
+        310
+      ],
+      "translation": [
+        -1,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-positive-1",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 96,
+      "targetCenter": [
+        311.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        311,
+        310
+      ],
+      "translation": [
+        1,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-positive-4",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 97,
+      "targetCenter": [
+        314.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        314,
+        310
+      ],
+      "translation": [
+        4,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-positive-16",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 98,
+      "targetCenter": [
+        326.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        326,
+        310
+      ],
+      "translation": [
+        16,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-positive-17",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 99,
+      "targetCenter": [
+        327.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        327,
+        310
+      ],
+      "translation": [
+        17,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-positive-31",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 100,
+      "targetCenter": [
+        341.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        341,
+        310
+      ],
+      "translation": [
+        31,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-positive-32",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 101,
+      "targetCenter": [
+        342.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        342,
+        310
+      ],
+      "translation": [
+        32,
+        0
+      ]
+    },
+    {
+      "axis": "x",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-x-positive-36",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 102,
+      "targetCenter": [
+        346.0,
+        310.0
+      ],
+      "targetPixelCenter": [
+        346,
+        310
+      ],
+      "translation": [
+        36,
+        0
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-negative-4",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 103,
+      "targetCenter": [
+        310.0,
+        306.0
+      ],
+      "targetPixelCenter": [
+        310,
+        306
+      ],
+      "translation": [
+        0,
+        -4
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-negative-2",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 104,
+      "targetCenter": [
+        310.0,
+        308.0
+      ],
+      "targetPixelCenter": [
+        310,
+        308
+      ],
+      "translation": [
+        0,
+        -2
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-negative-1",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 105,
+      "targetCenter": [
+        310.0,
+        309.0
+      ],
+      "targetPixelCenter": [
+        310,
+        309
+      ],
+      "translation": [
+        0,
+        -1
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-positive-1",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 106,
+      "targetCenter": [
+        310.0,
+        311.0
+      ],
+      "targetPixelCenter": [
+        310,
+        311
+      ],
+      "translation": [
+        0,
+        1
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-positive-4",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 107,
+      "targetCenter": [
+        310.0,
+        314.0
+      ],
+      "targetPixelCenter": [
+        310,
+        314
+      ],
+      "translation": [
+        0,
+        4
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-positive-8",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 108,
+      "targetCenter": [
+        310.0,
+        318.0
+      ],
+      "targetPixelCenter": [
+        310,
+        318
+      ],
+      "translation": [
+        0,
+        8
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-positive-16",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 109,
+      "targetCenter": [
+        310.0,
+        326.0
+      ],
+      "targetPixelCenter": [
+        310,
+        326
+      ],
+      "translation": [
+        0,
+        16
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-positive-17",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 110,
+      "targetCenter": [
+        310.0,
+        327.0
+      ],
+      "targetPixelCenter": [
+        310,
+        327
+      ],
+      "translation": [
+        0,
+        17
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-positive-31",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 111,
+      "targetCenter": [
+        310.0,
+        341.0
+      ],
+      "targetPixelCenter": [
+        310,
+        341
+      ],
+      "translation": [
+        0,
+        31
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-positive-32",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 112,
+      "targetCenter": [
+        310.0,
+        342.0
+      ],
+      "targetPixelCenter": [
+        310,
+        342
+      ],
+      "translation": [
+        0,
+        32
+      ]
+    },
+    {
+      "axis": "y",
+      "interventionName": "repeat-1-0-1-0-0-0-0-position-y-positive-36",
+      "phase": "repeat-control",
+      "primaryEdgeResponse": [
+        -1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 113,
+      "targetCenter": [
+        310.0,
+        346.0
+      ],
+      "targetPixelCenter": [
+        310,
+        346
+      ],
+      "translation": [
+        0,
+        36
+      ]
+    }
+  ],
+  "repeatEquivalenceGroups": [
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "base",
+        "translation": 0
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "control",
+        "sample31-unit-scan",
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 91,
+      "recordIndices": [
+        0,
+        13,
+        54,
+        91
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": -12
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 91,
+      "recordIndices": [
+        1,
+        92
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": -8
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 88,
+      "recordIndices": [
+        5,
+        93
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": -4
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 85,
+      "recordIndices": [
+        9,
+        94
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": -1
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 83,
+      "recordIndices": [
+        12,
+        95
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": 1
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 82,
+      "recordIndices": [
+        14,
+        96
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": 4
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 80,
+      "recordIndices": [
+        17,
+        97
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": 16
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 69,
+      "recordIndices": [
+        29,
+        98
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": 17
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 69,
+      "recordIndices": [
+        30,
+        99
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": 31
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 56,
+      "recordIndices": [
+        44,
+        100
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": 32
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 56,
+      "recordIndices": [
+        45,
+        101
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "x",
+        "translation": 36
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 53,
+      "recordIndices": [
+        49,
+        102
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": -4
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 53,
+      "recordIndices": [
+        50,
+        103
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": -2
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 52,
+      "recordIndices": [
+        52,
+        104
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": -1
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        102.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 52,
+      "recordIndices": [
+        53,
+        105
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": 1
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 51,
+      "recordIndices": [
+        55,
+        106
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": 4
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 49,
+      "recordIndices": [
+        58,
+        107
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": 8
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 46,
+      "recordIndices": [
+        62,
+        108
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": 16
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 39,
+      "recordIndices": [
+        70,
+        109
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": 17
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 39,
+      "recordIndices": [
+        71,
+        110
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": 31
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 26,
+      "recordIndices": [
+        85,
+        111
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": 32
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 26,
+      "recordIndices": [
+        86,
+        112
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "key": {
+        "axis": "y",
+        "translation": 36
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "sample31-unit-scan",
+        "repeat-control"
+      ],
+      "primaryEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 23,
+      "recordIndices": [
+        90,
+        113
+      ],
+      "requestedStateExact": true,
+      "sourceStateScalarsExact": true
+    }
+  ],
+  "runID": 30760175468,
+  "scanGroups": [
+    {
+      "axis": "x",
+      "distinctResponseCount": 3,
+      "fixedOtherAxisPixelCenter": 310,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "phase": "sample31-unit-scan",
+      "sampleIndex": 31,
+      "sampledValueCount": 49,
+      "targetPixelCenterMaximum": 346,
+      "targetPixelCenterMinimum": 298,
+      "targetPixelCenterRuns": [
+        {
+          "maximumValue": 303,
+          "minimumValue": 298,
+          "response": [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 304,
+          "minimumValue": 304,
+          "response": [
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 346,
+          "minimumValue": 305,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "targetPixelCenterTransitionBrackets": [
+        {
+          "lowerObservedValue": 303,
+          "lowerResponse": [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 304,
+          "upperResponse": [
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ]
+        },
+        {
+          "lowerObservedValue": 304,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "upperObservedValue": 305,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "translationMaximum": 36,
+      "translationMinimum": -12,
+      "translationRuns": [
+        {
+          "maximumValue": -7,
+          "minimumValue": -12,
+          "response": [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": -6,
+          "minimumValue": -6,
+          "response": [
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 36,
+          "minimumValue": -5,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "translationTransitionBrackets": [
+        {
+          "lowerObservedValue": -7,
+          "lowerResponse": [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": -6,
+          "upperResponse": [
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ]
+        },
+        {
+          "lowerObservedValue": -6,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "upperObservedValue": -5,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "unitStepCoverage": true
+    },
+    {
+      "axis": "y",
+      "distinctResponseCount": 4,
+      "fixedOtherAxisPixelCenter": 310,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "phase": "sample31-unit-scan",
+      "sampleIndex": 31,
+      "sampledValueCount": 41,
+      "targetPixelCenterMaximum": 346,
+      "targetPixelCenterMinimum": 306,
+      "targetPixelCenterRuns": [
+        {
+          "maximumValue": 309,
+          "minimumValue": 306,
+          "response": [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 334,
+          "minimumValue": 310,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 335,
+          "minimumValue": 335,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "maximumValue": 346,
+          "minimumValue": 336,
+          "response": [
+            -1.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "targetPixelCenterTransitionBrackets": [
+        {
+          "lowerObservedValue": 309,
+          "lowerResponse": [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 310,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "lowerObservedValue": 334,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 335,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "lowerObservedValue": 335,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "upperObservedValue": 336,
+          "upperResponse": [
+            -1.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "translationMaximum": 36,
+      "translationMinimum": -4,
+      "translationRuns": [
+        {
+          "maximumValue": -1,
+          "minimumValue": -4,
+          "response": [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 24,
+          "minimumValue": 0,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 25,
+          "minimumValue": 25,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "maximumValue": 36,
+          "minimumValue": 26,
+          "response": [
+            -1.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "translationTransitionBrackets": [
+        {
+          "lowerObservedValue": -1,
+          "lowerResponse": [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 0,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "lowerObservedValue": 24,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 25,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "lowerObservedValue": 25,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "upperObservedValue": 26,
+          "upperResponse": [
+            -1.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "unitStepCoverage": true
+    }
+  ],
+  "sourceTargetCenter": [
+    310.0,
+    310.0
+  ],
+  "sourceTargetCenterResidual": [
+    0.0,
+    0.0
+  ],
+  "sourceTargetCenterResidualULPs": [
+    0.0,
+    0.0
+  ],
+  "sourceTargetPixelCenter": [
+    310,
+    310
+  ]
+}
