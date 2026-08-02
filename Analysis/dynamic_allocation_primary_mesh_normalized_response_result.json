@@ -1,0 +1,6229 @@
+{
+  "aggregate": {
+    "edgeComponentCount": 424,
+    "maximumTargetCenterResidualULPs": 1.0,
+    "naturalBaseCandidateExactCount": 1,
+    "nonzeroCandidateCorrectionComponentCount": 110,
+    "nonzeroCandidateCorrectionRecordCount": 69,
+    "recordCount": 106,
+    "sample25SharedTargetPixelCenterTransitionBracket": {
+      "lowerObservedValue": 335,
+      "upperObservedValue": 336
+    },
+    "scanGroupCount": 4,
+    "signedCandidateCorrectionCounts": {
+      "xLower:+1": 29,
+      "xUpper:+1": 9,
+      "yLower:-1": 33,
+      "yUpper:-1": 39
+    },
+    "sourceStateCount": 2
+  },
+  "classification": "post-opening-live-carrier-normalization-of-preregistered-primary-mesh-fine-scan; not-an-unseen-geometry-transfer",
+  "conclusion": {
+    "everyCapturedTargetCenterWithinOneBinary64ULPOfInteger": true,
+    "independentProducerMeshPolicyRecovered": false,
+    "liveCarrierNormalizationApplied": true,
+    "productionShaderAuthorized": false,
+    "requiresExactKAndGeometryTransfer": true,
+    "sample25AxesShare335To336PixelCenterBracket": true
+  },
+  "dynamicAllocationPrimaryMeshNormalizedResponseAnalysisSchemaVersion": 1,
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30757430482/transition-timeline.json",
+  "inputTimelineSHA256": "b8179bffa10d6e5e12c6eb2fa5b9ffcb86234e0358c101e4c1c8a57d0c1f88de",
+  "inputValidatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30757430482/dynamic-allocation-path-isolation.json",
+  "inputValidatorResultSHA256": "230a9f3fcf11847d8c215f00056fe3c034b22164e7f29b9a0af2963087c3c94e",
+  "recordCorrections": [
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "control",
+      "recordIndex": 0,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        251
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -70.7353820800781
+      ],
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 1,
+      "sampleIndex": 25,
+      "targetCenter": [
+        331.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -9.264617919921903,
+        "xUpper": 151.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        331,
+        251
+      ],
+      "targetPosition": [
+        9.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        80,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 2,
+      "sampleIndex": 25,
+      "targetCenter": [
+        332.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -10.264617919921903,
+        "xUpper": 152.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        332,
+        251
+      ],
+      "targetPosition": [
+        10.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        81,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 3,
+      "sampleIndex": 25,
+      "targetCenter": [
+        333.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -11.264617919921903,
+        "xUpper": 153.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        333,
+        251
+      ],
+      "targetPosition": [
+        11.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        82,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 4,
+      "sampleIndex": 25,
+      "targetCenter": [
+        334.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -12.264617919921903,
+        "xUpper": 154.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        334,
+        251
+      ],
+      "targetPosition": [
+        12.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        83,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 5,
+      "sampleIndex": 25,
+      "targetCenter": [
+        335.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -13.264617919921903,
+        "xUpper": 155.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        335,
+        251
+      ],
+      "targetPosition": [
+        13.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        84,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        158.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 6,
+      "sampleIndex": 25,
+      "targetCenter": [
+        336.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -14.264617919921903,
+        "xUpper": 156.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        336,
+        251
+      ],
+      "targetPosition": [
+        14.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        85,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        158.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 7,
+      "sampleIndex": 25,
+      "targetCenter": [
+        337.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -15.264617919921903,
+        "xUpper": 157.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        337,
+        251
+      ],
+      "targetPosition": [
+        15.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        86,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        158.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 8,
+      "sampleIndex": 25,
+      "targetCenter": [
+        338.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -16.264617919921903,
+        "xUpper": 158.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        338,
+        251
+      ],
+      "targetPosition": [
+        16.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        87,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        158.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 9,
+      "sampleIndex": 25,
+      "targetCenter": [
+        339.0,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": -17.264617919921903,
+        "xUpper": 159.56594848632812,
+        "yLower": 70.7353820800781,
+        "yUpper": 71.56594848632812
+      },
+      "targetPixelCenter": [
+        339,
+        251
+      ],
+      "targetPosition": [
+        17.264617919921903,
+        -70.7353820800781
+      ],
+      "translation": [
+        88,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 10,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        315.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": 6.735382080078097,
+        "yUpper": 135.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        315
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -6.735382080078097
+      ],
+      "translation": [
+        0,
+        64
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 11,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        316.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": 5.735382080078097,
+        "yUpper": 136.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        316
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -5.735382080078097
+      ],
+      "translation": [
+        0,
+        65
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 12,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        317.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": 4.735382080078097,
+        "yUpper": 137.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        317
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -4.735382080078097
+      ],
+      "translation": [
+        0,
+        66
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 13,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        318.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": 3.7353820800780966,
+        "yUpper": 138.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        318
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -3.7353820800780966
+      ],
+      "translation": [
+        0,
+        67
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 14,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        319.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": 2.7353820800780966,
+        "yUpper": 139.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        319
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -2.7353820800780966
+      ],
+      "translation": [
+        0,
+        68
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 15,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        320.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": 1.7353820800780966,
+        "yUpper": 140.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        320
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -1.7353820800780966
+      ],
+      "translation": [
+        0,
+        69
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 16,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        321.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": 0.7353820800780966,
+        "yUpper": 141.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        321
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -0.7353820800780966
+      ],
+      "translation": [
+        0,
+        70
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 17,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        322.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -0.2646179199219034,
+        "yUpper": 142.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        322
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        0.2646179199219034
+      ],
+      "translation": [
+        0,
+        71
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 18,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        323.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -1.2646179199219034,
+        "yUpper": 143.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        323
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        1.2646179199219034
+      ],
+      "translation": [
+        0,
+        72
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 19,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        324.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -2.2646179199219034,
+        "yUpper": 144.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        324
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        2.2646179199219034
+      ],
+      "translation": [
+        0,
+        73
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 20,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        325.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -3.2646179199219034,
+        "yUpper": 145.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        325
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        3.2646179199219034
+      ],
+      "translation": [
+        0,
+        74
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 21,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        326.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -4.264617919921903,
+        "yUpper": 146.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        326
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        4.264617919921903
+      ],
+      "translation": [
+        0,
+        75
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 22,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        327.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -5.264617919921903,
+        "yUpper": 147.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        327
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        5.264617919921903
+      ],
+      "translation": [
+        0,
+        76
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 23,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        328.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -6.264617919921903,
+        "yUpper": 148.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        328
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        6.264617919921903
+      ],
+      "translation": [
+        0,
+        77
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 24,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        329.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -7.264617919921903,
+        "yUpper": 149.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        329
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        7.264617919921903
+      ],
+      "translation": [
+        0,
+        78
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 25,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        330.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -8.264617919921903,
+        "yUpper": 150.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        330
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        8.264617919921903
+      ],
+      "translation": [
+        0,
+        79
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 26,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        331.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -9.264617919921903,
+        "yUpper": 151.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        331
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        9.264617919921903
+      ],
+      "translation": [
+        0,
+        80
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 27,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        332.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -10.264617919921903,
+        "yUpper": 152.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        332
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        10.264617919921903
+      ],
+      "translation": [
+        0,
+        81
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 28,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        333.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -11.264617919921903,
+        "yUpper": 153.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        333
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        11.264617919921903
+      ],
+      "translation": [
+        0,
+        82
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 29,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        334.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -12.264617919921903,
+        "yUpper": 154.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        334
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        12.264617919921903
+      ],
+      "translation": [
+        0,
+        83
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 30,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        335.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -13.264617919921903,
+        "yUpper": 155.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        335
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        13.264617919921903
+      ],
+      "translation": [
+        0,
+        84
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 31,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        336.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -14.264617919921903,
+        "yUpper": 156.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        336
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        14.264617919921903
+      ],
+      "translation": [
+        0,
+        85
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 32,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        337.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -15.264617919921903,
+        "yUpper": 157.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        337
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        15.264617919921903
+      ],
+      "translation": [
+        0,
+        86
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 33,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        338.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -16.264617919921903,
+        "yUpper": 158.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        338
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        16.264617919921903
+      ],
+      "translation": [
+        0,
+        87
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 34,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        339.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -17.264617919921903,
+        "yUpper": 159.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        339
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        17.264617919921903
+      ],
+      "translation": [
+        0,
+        88
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 35,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        340.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -18.264617919921903,
+        "yUpper": 160.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        340
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        18.264617919921903
+      ],
+      "translation": [
+        0,
+        89
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 36,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        341.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -19.264617919921903,
+        "yUpper": 161.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        341
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        19.264617919921903
+      ],
+      "translation": [
+        0,
+        90
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 37,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        342.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -20.264617919921903,
+        "yUpper": 162.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        342
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        20.264617919921903
+      ],
+      "translation": [
+        0,
+        91
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 38,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        343.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -21.264617919921903,
+        "yUpper": 163.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        343
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        21.264617919921903
+      ],
+      "translation": [
+        0,
+        92
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 39,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        344.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -22.264617919921903,
+        "yUpper": 164.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        344
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        22.264617919921903
+      ],
+      "translation": [
+        0,
+        93
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 40,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        345.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -23.264617919921903,
+        "yUpper": 165.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        345
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        23.264617919921903
+      ],
+      "translation": [
+        0,
+        94
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 41,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        346.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -24.264617919921903,
+        "yUpper": 166.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        346
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        24.264617919921903
+      ],
+      "translation": [
+        0,
+        95
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "observedEdges": [
+        157.0,
+        68.0,
+        550.0,
+        465.0
+      ],
+      "phase": "fine-threshold",
+      "recordIndex": 42,
+      "sampleIndex": 25,
+      "targetCenter": [
+        251.00000000000003,
+        347.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 70.7353820800781,
+        "xUpper": 71.56594848632812,
+        "yLower": -25.264617919921903,
+        "yUpper": 167.56594848632812
+      },
+      "targetPixelCenter": [
+        251,
+        347
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        25.264617919921903
+      ],
+      "translation": [
+        0,
+        96
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "control",
+      "recordIndex": 43,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        310
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 44,
+      "sampleIndex": 31,
+      "targetCenter": [
+        182.00000000000003,
+        310.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 138.24393463134763,
+        "xUpper": -118.24129486083984,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        182,
+        310
+      ],
+      "targetPosition": [
+        -138.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -128,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 45,
+      "sampleIndex": 31,
+      "targetCenter": [
+        214.00000000000003,
+        310.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 106.24393463134763,
+        "xUpper": -86.24129486083984,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        214,
+        310
+      ],
+      "targetPosition": [
+        -106.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -96,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 46,
+      "sampleIndex": 31,
+      "targetCenter": [
+        218.00000000000003,
+        310.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 102.24393463134763,
+        "xUpper": -82.24129486083984,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        218,
+        310
+      ],
+      "targetPosition": [
+        -102.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -92,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 47,
+      "sampleIndex": 31,
+      "targetCenter": [
+        219.00000000000003,
+        310.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 101.24393463134763,
+        "xUpper": -81.24129486083984,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        219,
+        310
+      ],
+      "targetPosition": [
+        -101.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -91,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 48,
+      "sampleIndex": 31,
+      "targetCenter": [
+        220.00000000000003,
+        310.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 100.24393463134763,
+        "xUpper": -80.24129486083984,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        220,
+        310
+      ],
+      "targetPosition": [
+        -100.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -90,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 49,
+      "sampleIndex": 31,
+      "targetCenter": [
+        221.00000000000003,
+        310.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 99.24393463134763,
+        "xUpper": -79.24129486083984,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        221,
+        310
+      ],
+      "targetPosition": [
+        -99.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -89,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 50,
+      "sampleIndex": 31,
+      "targetCenter": [
+        222.00000000000003,
+        310.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 98.24393463134763,
+        "xUpper": -78.24129486083984,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        222,
+        310
+      ],
+      "targetPosition": [
+        -98.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -88,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 51,
+      "sampleIndex": 31,
+      "targetCenter": [
+        246.00000000000003,
+        310.0
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 74.24393463134763,
+        "xUpper": -54.241294860839844,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        246,
+        310
+      ],
+      "targetPosition": [
+        -74.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -64,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 52,
+      "sampleIndex": 31,
+      "targetCenter": [
+        278.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 42.24393463134763,
+        "xUpper": -22.241294860839844,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        278,
+        310
+      ],
+      "targetPosition": [
+        -42.24393463134763,
+        -10.243934631347628
+      ],
+      "translation": [
+        -32,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 53,
+      "sampleIndex": 31,
+      "targetCenter": [
+        294.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 26.243934631347628,
+        "xUpper": -6.241294860839844,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        294,
+        310
+      ],
+      "targetPosition": [
+        -26.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        -16,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 54,
+      "sampleIndex": 31,
+      "targetCenter": [
+        302.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 18.243934631347628,
+        "xUpper": 1.7587051391601562,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        302,
+        310
+      ],
+      "targetPosition": [
+        -18.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        -8,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 55,
+      "sampleIndex": 31,
+      "targetCenter": [
+        306.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 14.243934631347628,
+        "xUpper": 5.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        306,
+        310
+      ],
+      "targetPosition": [
+        -14.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        -4,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 56,
+      "sampleIndex": 31,
+      "targetCenter": [
+        308.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 12.243934631347628,
+        "xUpper": 7.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        308,
+        310
+      ],
+      "targetPosition": [
+        -12.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        -2,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 57,
+      "sampleIndex": 31,
+      "targetCenter": [
+        309.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 11.243934631347628,
+        "xUpper": 8.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        309,
+        310
+      ],
+      "targetPosition": [
+        -11.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        -1,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 58,
+      "sampleIndex": 31,
+      "targetCenter": [
+        311.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 9.243934631347628,
+        "xUpper": 10.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        311,
+        310
+      ],
+      "targetPosition": [
+        -9.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        1,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 59,
+      "sampleIndex": 31,
+      "targetCenter": [
+        312.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 8.243934631347628,
+        "xUpper": 11.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        312,
+        310
+      ],
+      "targetPosition": [
+        -8.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        2,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 60,
+      "sampleIndex": 31,
+      "targetCenter": [
+        314.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 6.243934631347628,
+        "xUpper": 13.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        314,
+        310
+      ],
+      "targetPosition": [
+        -6.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        4,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 61,
+      "sampleIndex": 31,
+      "targetCenter": [
+        318.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 2.243934631347628,
+        "xUpper": 17.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        318,
+        310
+      ],
+      "targetPosition": [
+        -2.243934631347628,
+        -10.243934631347628
+      ],
+      "translation": [
+        8,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 62,
+      "sampleIndex": 31,
+      "targetCenter": [
+        326.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -5.756065368652372,
+        "xUpper": 25.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        326,
+        310
+      ],
+      "targetPosition": [
+        5.756065368652372,
+        -10.243934631347628
+      ],
+      "translation": [
+        16,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 63,
+      "sampleIndex": 31,
+      "targetCenter": [
+        342.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -21.756065368652372,
+        "xUpper": 41.758705139160156,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        342,
+        310
+      ],
+      "targetPosition": [
+        21.756065368652372,
+        -10.243934631347628
+      ],
+      "translation": [
+        32,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 64,
+      "sampleIndex": 31,
+      "targetCenter": [
+        374.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -53.75606536865237,
+        "xUpper": 73.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        374,
+        310
+      ],
+      "targetPosition": [
+        53.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        64,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 65,
+      "sampleIndex": 31,
+      "targetCenter": [
+        390.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -69.75606536865237,
+        "xUpper": 89.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        390,
+        310
+      ],
+      "targetPosition": [
+        69.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        80,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 66,
+      "sampleIndex": 31,
+      "targetCenter": [
+        398.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -77.75606536865237,
+        "xUpper": 97.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        398,
+        310
+      ],
+      "targetPosition": [
+        77.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        88,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 67,
+      "sampleIndex": 31,
+      "targetCenter": [
+        399.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -78.75606536865237,
+        "xUpper": 98.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        399,
+        310
+      ],
+      "targetPosition": [
+        78.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        89,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 68,
+      "sampleIndex": 31,
+      "targetCenter": [
+        400.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -79.75606536865237,
+        "xUpper": 99.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        400,
+        310
+      ],
+      "targetPosition": [
+        79.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        90,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 69,
+      "sampleIndex": 31,
+      "targetCenter": [
+        401.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -80.75606536865237,
+        "xUpper": 100.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        401,
+        310
+      ],
+      "targetPosition": [
+        80.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        91,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 70,
+      "sampleIndex": 31,
+      "targetCenter": [
+        402.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -81.75606536865237,
+        "xUpper": 101.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        402,
+        310
+      ],
+      "targetPosition": [
+        81.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        92,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 71,
+      "sampleIndex": 31,
+      "targetCenter": [
+        406.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -85.75606536865237,
+        "xUpper": 105.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        406,
+        310
+      ],
+      "targetPosition": [
+        85.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        96,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        88.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 72,
+      "sampleIndex": 31,
+      "targetCenter": [
+        438.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": -117.75606536865237,
+        "xUpper": 137.75870513916016,
+        "yLower": 10.243934631347628,
+        "yUpper": 9.758705139160156
+      },
+      "targetPixelCenter": [
+        438,
+        310
+      ],
+      "targetPosition": [
+        117.75606536865237,
+        -10.243934631347628
+      ],
+      "translation": [
+        128,
+        0
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 73,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        150.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 170.24393463134763,
+        "yUpper": -150.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        150
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -170.24393463134763
+      ],
+      "translation": [
+        0,
+        -160
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 74,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        166.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 154.24393463134763,
+        "yUpper": -134.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        166
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -154.24393463134763
+      ],
+      "translation": [
+        0,
+        -144
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 75,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        174.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 146.24393463134763,
+        "yUpper": -126.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        174
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -146.24393463134763
+      ],
+      "translation": [
+        0,
+        -136
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 76,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        175.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 145.24393463134763,
+        "yUpper": -125.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        175
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -145.24393463134763
+      ],
+      "translation": [
+        0,
+        -135
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 77,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        176.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 144.24393463134763,
+        "yUpper": -124.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        176
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -144.24393463134763
+      ],
+      "translation": [
+        0,
+        -134
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 78,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        177.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 143.24393463134763,
+        "yUpper": -123.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        177
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -143.24393463134763
+      ],
+      "translation": [
+        0,
+        -133
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 79,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        178.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 142.24393463134763,
+        "yUpper": -122.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        178
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -142.24393463134763
+      ],
+      "translation": [
+        0,
+        -132
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 80,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        182.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 138.24393463134763,
+        "yUpper": -118.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        182
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -138.24393463134763
+      ],
+      "translation": [
+        0,
+        -128
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 81,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        214.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 106.24393463134763,
+        "yUpper": -86.24129486083984
+      },
+      "targetPixelCenter": [
+        310,
+        214
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -106.24393463134763
+      ],
+      "translation": [
+        0,
+        -96
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 82,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        246.00000000000003
+      ],
+      "targetCenterResidual": [
+        0.0,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        1.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 74.24393463134763,
+        "yUpper": -54.241294860839844
+      },
+      "targetPixelCenter": [
+        310,
+        246
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -74.24393463134763
+      ],
+      "translation": [
+        0,
+        -64
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 83,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        278.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 42.24393463134763,
+        "yUpper": -22.241294860839844
+      },
+      "targetPixelCenter": [
+        310,
+        278
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -42.24393463134763
+      ],
+      "translation": [
+        0,
+        -32
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 84,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        294.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 26.243934631347628,
+        "yUpper": -6.241294860839844
+      },
+      "targetPixelCenter": [
+        310,
+        294
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -26.243934631347628
+      ],
+      "translation": [
+        0,
+        -16
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 85,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        302.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 18.243934631347628,
+        "yUpper": 1.7587051391601562
+      },
+      "targetPixelCenter": [
+        310,
+        302
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -18.243934631347628
+      ],
+      "translation": [
+        0,
+        -8
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 86,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        306.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 14.243934631347628,
+        "yUpper": 5.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        306
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -14.243934631347628
+      ],
+      "translation": [
+        0,
+        -4
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 87,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        308.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 12.243934631347628,
+        "yUpper": 7.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        308
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -12.243934631347628
+      ],
+      "translation": [
+        0,
+        -2
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 88,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        309.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 11.243934631347628,
+        "yUpper": 8.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        309
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -11.243934631347628
+      ],
+      "translation": [
+        0,
+        -1
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 89,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        311.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 9.243934631347628,
+        "yUpper": 10.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        311
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -9.243934631347628
+      ],
+      "translation": [
+        0,
+        1
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 90,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        312.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 8.243934631347628,
+        "yUpper": 11.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        312
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -8.243934631347628
+      ],
+      "translation": [
+        0,
+        2
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 91,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        314.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 6.243934631347628,
+        "yUpper": 13.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        314
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -6.243934631347628
+      ],
+      "translation": [
+        0,
+        4
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 92,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        318.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": 2.243934631347628,
+        "yUpper": 17.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        318
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -2.243934631347628
+      ],
+      "translation": [
+        0,
+        8
+      ]
+    },
+    {
+      "candidateCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 93,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        326.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -5.756065368652372,
+        "yUpper": 25.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        326
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        5.756065368652372
+      ],
+      "translation": [
+        0,
+        16
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 94,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        342.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -21.756065368652372,
+        "yUpper": 41.758705139160156
+      },
+      "targetPixelCenter": [
+        310,
+        342
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        21.756065368652372
+      ],
+      "translation": [
+        0,
+        32
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 95,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        374.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -53.75606536865237,
+        "yUpper": 73.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        374
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        53.75606536865237
+      ],
+      "translation": [
+        0,
+        64
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 96,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        406.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -85.75606536865237,
+        "yUpper": 105.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        406
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        85.75606536865237
+      ],
+      "translation": [
+        0,
+        96
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 97,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        430.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -109.75606536865237,
+        "yUpper": 129.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        430
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        109.75606536865237
+      ],
+      "translation": [
+        0,
+        120
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 98,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        438.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -117.75606536865237,
+        "yUpper": 137.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        438
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        117.75606536865237
+      ],
+      "translation": [
+        0,
+        128
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 99,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        442.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -121.75606536865237,
+        "yUpper": 141.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        442
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        121.75606536865237
+      ],
+      "translation": [
+        0,
+        132
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 100,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        443.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -122.75606536865237,
+        "yUpper": 142.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        443
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        122.75606536865237
+      ],
+      "translation": [
+        0,
+        133
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 101,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        444.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -123.75606536865237,
+        "yUpper": 143.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        444
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        123.75606536865237
+      ],
+      "translation": [
+        0,
+        134
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 102,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        445.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -124.75606536865237,
+        "yUpper": 144.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        445
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        124.75606536865237
+      ],
+      "translation": [
+        0,
+        135
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 103,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        446.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -125.75606536865237,
+        "yUpper": 145.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        446
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        125.75606536865237
+      ],
+      "translation": [
+        0,
+        136
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 104,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        454.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -133.75606536865237,
+        "yUpper": 153.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        454
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        133.75606536865237
+      ],
+      "translation": [
+        0,
+        144
+      ]
+    },
+    {
+      "candidateCorrection": [
+        0.0,
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "observedEdges": [
+        102.0,
+        88.0,
+        435.0,
+        425.0
+      ],
+      "phase": "cross-axis-scan",
+      "recordIndex": 105,
+      "sampleIndex": 31,
+      "targetCenter": [
+        310.0,
+        470.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetOverhang": {
+        "xLower": 10.243934631347628,
+        "xUpper": 9.758705139160156,
+        "yLower": -149.75606536865237,
+        "yUpper": 169.75870513916016
+      },
+      "targetPixelCenter": [
+        310,
+        470
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        149.75606536865237
+      ],
+      "translation": [
+        0,
+        160
+      ]
+    }
+  ],
+  "runID": 30757430482,
+  "scanGroups": [
+    {
+      "axis": "x",
+      "distinctCorrectionCount": 2,
+      "runs": [
+        {
+          "maximumValue": 84,
+          "minimumValue": 80,
+          "response": [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 88,
+          "minimumValue": 85,
+          "response": [
+            1.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "sampleIndex": 25,
+      "sampledValueCount": 9,
+      "targetPixelCenterRuns": [
+        {
+          "maximumValue": 335,
+          "minimumValue": 331,
+          "response": [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 339,
+          "minimumValue": 336,
+          "response": [
+            1.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "targetPixelCenterTransitionBrackets": [
+        {
+          "lowerObservedValue": 335,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          "upperObservedValue": 336,
+          "upperResponse": [
+            1.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "transitionBrackets": [
+        {
+          "lowerObservedValue": 84,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          "upperObservedValue": 85,
+          "upperResponse": [
+            1.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "axis": "y",
+      "distinctCorrectionCount": 2,
+      "runs": [
+        {
+          "maximumValue": 84,
+          "minimumValue": 64,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 96,
+          "minimumValue": 85,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "sampleIndex": 25,
+      "sampledValueCount": 33,
+      "targetPixelCenterRuns": [
+        {
+          "maximumValue": 335,
+          "minimumValue": 315,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 347,
+          "minimumValue": 336,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "targetPixelCenterTransitionBrackets": [
+        {
+          "lowerObservedValue": 335,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 336,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "transitionBrackets": [
+        {
+          "lowerObservedValue": 84,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 85,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    },
+    {
+      "axis": "x",
+      "distinctCorrectionCount": 3,
+      "runs": [
+        {
+          "maximumValue": -8,
+          "minimumValue": -128,
+          "response": [
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 16,
+          "minimumValue": -4,
+          "response": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "maximumValue": 128,
+          "minimumValue": 32,
+          "response": [
+            1.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "sampleIndex": 31,
+      "sampledValueCount": 29,
+      "targetPixelCenterRuns": [
+        {
+          "maximumValue": 302,
+          "minimumValue": 182,
+          "response": [
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 326,
+          "minimumValue": 306,
+          "response": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "maximumValue": 438,
+          "minimumValue": 342,
+          "response": [
+            1.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "targetPixelCenterTransitionBrackets": [
+        {
+          "lowerObservedValue": 302,
+          "lowerResponse": [
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 306,
+          "upperResponse": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "lowerObservedValue": 326,
+          "lowerResponse": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "upperObservedValue": 342,
+          "upperResponse": [
+            1.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "transitionBrackets": [
+        {
+          "lowerObservedValue": -8,
+          "lowerResponse": [
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": -4,
+          "upperResponse": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "lowerObservedValue": 16,
+          "lowerResponse": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "upperObservedValue": 32,
+          "upperResponse": [
+            1.0,
+            -1.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "axis": "y",
+      "distinctCorrectionCount": 3,
+      "runs": [
+        {
+          "maximumValue": -2,
+          "minimumValue": -160,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 16,
+          "minimumValue": -1,
+          "response": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "maximumValue": 160,
+          "minimumValue": 32,
+          "response": [
+            0.0,
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "sampleIndex": 31,
+      "sampledValueCount": 33,
+      "targetPixelCenterRuns": [
+        {
+          "maximumValue": 308,
+          "minimumValue": 150,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 326,
+          "minimumValue": 309,
+          "response": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "maximumValue": 470,
+          "minimumValue": 342,
+          "response": [
+            0.0,
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "targetPixelCenterTransitionBrackets": [
+        {
+          "lowerObservedValue": 308,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 309,
+          "upperResponse": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "lowerObservedValue": 326,
+          "lowerResponse": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "upperObservedValue": 342,
+          "upperResponse": [
+            0.0,
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "transitionBrackets": [
+        {
+          "lowerObservedValue": -2,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": -1,
+          "upperResponse": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        },
+        {
+          "lowerObservedValue": 16,
+          "lowerResponse": [
+            1.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "upperObservedValue": 32,
+          "upperResponse": [
+            0.0,
+            -1.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    }
+  ],
+  "sourceStates": [
+    {
+      "baseCorrection": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "candidateEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "carrierBounds": [
+        0.0,
+        0.0,
+        501.16943359375,
+        501.16943359375
+      ],
+      "carrierPosition": [
+        261.415283203125,
+        261.415283203125
+      ],
+      "observedBaseEdges": [
+        157.0,
+        68.0,
+        550.0,
+        466.0
+      ],
+      "remaining": 0.7830772399902344,
+      "runtimeScale": 0.6084613800048828,
+      "sampleIndex": 25,
+      "targetBounds": [
+        0.0,
+        0.0,
+        643.4707641601562,
+        643.4707641601562
+      ],
+      "targetCenter": [
+        251.00000000000003,
+        251.00000000000003
+      ],
+      "targetCenterResidual": [
+        2.842170943040401e-14,
+        2.842170943040401e-14
+      ],
+      "targetCenterResidualULPs": [
+        1.0,
+        1.0
+      ],
+      "targetCornerRadius": 321.7353820800781,
+      "targetPixelCenter": [
+        251,
+        251
+      ],
+      "targetPosition": [
+        -70.7353820800781,
+        -70.7353820800781
+      ]
+    },
+    {
+      "baseCorrection": [
+        1.0,
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "candidateEdges": [
+        102.0,
+        89.0,
+        435.0,
+        426.0
+      ],
+      "carrierBounds": [
+        0.0,
+        0.0,
+        620.4852294921875,
+        620.4852294921875
+      ],
+      "carrierPosition": [
+        201.75738525390625,
+        201.75738525390625
+      ],
+      "observedBaseEdges": [
+        103.0,
+        89.0,
+        435.0,
+        425.0
+      ],
+      "remaining": 0.969508171081543,
+      "runtimeScale": 0.5152459144592285,
+      "sampleIndex": 31,
+      "targetBounds": [
+        0.0,
+        0.0,
+        640.4878692626953,
+        640.4878692626953
+      ],
+      "targetCenter": [
+        310.0,
+        310.0
+      ],
+      "targetCenterResidual": [
+        0.0,
+        0.0
+      ],
+      "targetCenterResidualULPs": [
+        0.0,
+        0.0
+      ],
+      "targetCornerRadius": 320.24393463134766,
+      "targetPixelCenter": [
+        310,
+        310
+      ],
+      "targetPosition": [
+        -10.243934631347628,
+        -10.243934631347628
+      ]
+    }
+  ]
+}

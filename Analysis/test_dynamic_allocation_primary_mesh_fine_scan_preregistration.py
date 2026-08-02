@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -17,10 +18,22 @@ PREREGISTRATION = json.loads(
         / "dynamic_allocation_primary_mesh_fine_scan_preregistration.json"
     ).read_text(encoding="utf-8")
 )
+CAPTURE_COMMIT = "c1808867bef8e5baa08e15d36e8611a2aa18b804"
 
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def committed_sha256(path: Path) -> str:
+    relative = path.relative_to(REPOSITORY_ROOT)
+    content = subprocess.run(
+        ["git", "show", f"{CAPTURE_COMMIT}:{relative.as_posix()}"],
+        cwd=REPOSITORY_ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout
+    return hashlib.sha256(content).hexdigest()
 
 
 class PrimaryMeshFineScanPreregistrationTests(unittest.TestCase):
@@ -89,7 +102,10 @@ class PrimaryMeshFineScanPreregistrationTests(unittest.TestCase):
         }
         for name, path in files.items():
             with self.subTest(name=name):
-                self.assertEqual(sha256(path), expected[name])
+                if name == "productionShaderSHA256":
+                    self.assertEqual(sha256(path), expected[name])
+                else:
+                    self.assertEqual(committed_sha256(path), expected[name])
 
     def test_preregistration_denies_production_authority(self) -> None:
         self.assertFalse(PREREGISTRATION["acceptance"]["allowNumericTolerance"])

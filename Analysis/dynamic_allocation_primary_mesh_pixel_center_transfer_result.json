@@ -1,0 +1,168 @@
+{
+  "classification": "post-opening-pixel-center-coordinate-transfer-between-preregistered-sparse-and-fine-scans; not-a-complete-mesh-policy",
+  "conclusion": {
+    "independentProducerMeshPolicyRecovered": false,
+    "productionShaderAuthorized": false,
+    "rawResponseAnchorComparisonIsExactKConfounded": true,
+    "realizedTemporalStateDiffersAcrossRuns": true,
+    "requiresUnseenGeometryTransfer": true,
+    "sample25PixelCenterBracketTransferPassed": true,
+    "sample31DeterminismEstablished": false,
+    "transferredUnitStepBracket": [
+      335,
+      336
+    ]
+  },
+  "dynamicAllocationPrimaryMeshPixelCenterTransferAnalysisSchemaVersion": 1,
+  "fineRunID": 30757430482,
+  "fineSourceState": {
+    "remaining": 0.7830772399902344,
+    "runtimeScale": 0.6084613800048828,
+    "sampleIndex": 25,
+    "targetCenter": [
+      251.00000000000003,
+      251.00000000000003
+    ],
+    "targetPixelCenter": [
+      251,
+      251
+    ]
+  },
+  "inputs": {
+    "fineNormalizedResult": "dynamic_allocation_primary_mesh_normalized_response_result.json",
+    "fineNormalizedResultSHA256": "b010f11412230ba0fa7fdc08fd876e2159fc8b1ceee5ad9e6fad06771bbb6a72",
+    "priorTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30756501856/transition-timeline.json",
+    "priorTimelineSHA256": "6a473b35a642009d0595890fb6f8d38b7c9ae453ab90731a63357f0670610bc3",
+    "priorValidatorArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30756501856/dynamic-allocation-path-isolation.json",
+    "priorValidatorSHA256": "4d91ef04d4a5e23f83bdf780b73102e0ae54a9458ca5603adbb23592eafc23a7"
+  },
+  "priorRunID": 30756501856,
+  "priorScans": [
+    {
+      "axis": "x",
+      "targetPixelCenterRuns": [
+        {
+          "maximumValue": 330,
+          "minimumValue": 122,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 378,
+          "minimumValue": 338,
+          "response": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "targetPixelCenterTransitionBrackets": [
+        {
+          "lowerObservedValue": 330,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 338,
+          "upperResponse": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "axis": "y",
+      "targetPixelCenterRuns": [
+        {
+          "maximumValue": 314,
+          "minimumValue": 90,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "maximumValue": 410,
+          "minimumValue": 346,
+          "response": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ],
+      "targetPixelCenterTransitionBrackets": [
+        {
+          "lowerObservedValue": 314,
+          "lowerResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "upperObservedValue": 346,
+          "upperResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        }
+      ]
+    }
+  ],
+  "priorSourceState": {
+    "maximumScanTargetCenterResidualULPs": 2.0,
+    "remaining": 0.7814407348632812,
+    "runtimeScale": 0.6092796325683594,
+    "sampleIndex": 25,
+    "targetCenter": [
+      250.00000000000003,
+      250.00000000000003
+    ],
+    "targetPixelCenter": [
+      250,
+      250
+    ]
+  },
+  "transfers": [
+    {
+      "axis": "x",
+      "fineBracketContainedByPriorBracket": true,
+      "fineUnitStepBracket": [
+        335,
+        336
+      ],
+      "priorSparseBracket": [
+        330,
+        338
+      ]
+    },
+    {
+      "axis": "y",
+      "fineBracketContainedByPriorBracket": true,
+      "fineUnitStepBracket": [
+        335,
+        336
+      ],
+      "priorSparseBracket": [
+        314,
+        346
+      ]
+    }
+  ]
+}

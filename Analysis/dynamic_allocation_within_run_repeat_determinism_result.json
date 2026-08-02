@@ -1,0 +1,185 @@
+{
+  "aggregate": {
+    "exactDecodedDrawConsumedGroupCount": 4,
+    "fullSnapshotHashFieldsExcludedFromDeterminismGate": [
+      "vertexPayloadSHA256",
+      "mvpPayloadSHA256"
+    ],
+    "maximumRecordIndexSeparation": 58,
+    "repeatGroupCount": 4,
+    "sampleIndices": [
+      25
+    ]
+  },
+  "classification": "post-opening-within-run-repeat-determinism-audit-of-preregistered-sample-25-controls; not-an-exact-policy-recovery",
+  "conclusion": {
+    "comparisonRestrictedToDecodedPolicyAndDrawConsumedBytes": true,
+    "independentProducerMeshPolicyRecovered": false,
+    "productionShaderAuthorized": false,
+    "requestedAndLiveStatesExactWithinEveryRepeatPair": true,
+    "requiresExactStateAndUnseenGeometryTransfer": true,
+    "sample25SameStateResponseDeterministicAcrossRecordedOrder": true,
+    "sample31DeterminismEstablished": false,
+    "unusedSnapshotTailBytesExcluded": true
+  },
+  "dynamicAllocationWithinRunRepeatDeterminismAnalysisSchemaVersion": 1,
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30756501856/transition-timeline.json",
+  "inputTimelineSHA256": "6a473b35a642009d0595890fb6f8d38b7c9ae453ab90731a63357f0670610bc3",
+  "inputValidatorResultArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30756501856/dynamic-allocation-path-isolation.json",
+  "inputValidatorResultSHA256": "4d91ef04d4a5e23f83bdf780b73102e0ae54a9458ca5603adbb23592eafc23a7",
+  "repeatGroups": [
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "path-isolation",
+        "dense-threshold"
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        551.0,
+        467.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 8,
+      "recordIndices": [
+        1,
+        9
+      ],
+      "remaining": 0.7814407348632812,
+      "requestedStateExact": true,
+      "runtimeScale": 0.6092796325683594,
+      "sampleIndex": 25,
+      "sourceStateScalarsExact": true,
+      "translation": [
+        -90,
+        0
+      ]
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "path-isolation",
+        "dense-threshold"
+      ],
+      "primaryEdges": [
+        158.0,
+        68.0,
+        551.0,
+        467.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 27,
+      "recordIndices": [
+        2,
+        29
+      ],
+      "remaining": 0.7814407348632812,
+      "requestedStateExact": true,
+      "runtimeScale": 0.6092796325683594,
+      "sampleIndex": 25,
+      "sourceStateScalarsExact": true,
+      "translation": [
+        90,
+        0
+      ]
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "path-isolation",
+        "dense-threshold"
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        551.0,
+        467.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 35,
+      "recordIndices": [
+        3,
+        38
+      ],
+      "remaining": 0.7814407348632812,
+      "requestedStateExact": true,
+      "runtimeScale": 0.6092796325683594,
+      "sampleIndex": 25,
+      "sourceStateScalarsExact": true,
+      "translation": [
+        0,
+        -134
+      ]
+    },
+    {
+      "allocationPolicyExact": true,
+      "decodedDrawConsumedPolicyExact": true,
+      "decodedMeshPolicyExact": true,
+      "drawConsumedPayloadsExact": true,
+      "eachRenderStateStable": true,
+      "fullSnapshotHashesExact": {
+        "mvpPayloadSHA256": false,
+        "vertexPayloadSHA256": false
+      },
+      "liveStateAfterExact": true,
+      "liveStateBeforeExact": true,
+      "phases": [
+        "path-isolation",
+        "dense-threshold"
+      ],
+      "primaryEdges": [
+        157.0,
+        68.0,
+        551.0,
+        466.0
+      ],
+      "primaryEdgesExact": true,
+      "recordIndexSeparation": 58,
+      "recordIndices": [
+        4,
+        62
+      ],
+      "remaining": 0.7814407348632812,
+      "requestedStateExact": true,
+      "runtimeScale": 0.6092796325683594,
+      "sampleIndex": 25,
+      "sourceStateScalarsExact": true,
+      "translation": [
+        0,
+        134
+      ]
+    }
+  ],
+  "runID": 30756501856
+}

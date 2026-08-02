@@ -4389,6 +4389,58 @@ invalidating or refitting the capture.  This remains causal calibration and
 cannot authorize a Walle shader change without a separately frozen unseen
 native-geometry transfer.
 
+Run `30757430482`, captured from preregistered commit `c180886`, completed the
+106-record matrix and passed every capture-integrity gate.  All 106 producer
+passes were present on the first attempt, every live pre-render tree was stable
+through its render, copied filter inputs were unchanged, source `q` was exact in
+all 848 binary32 comparisons, and all 1,484 allocation/copy components were
+exact.  The immutable post-opening fine-scan result is
+`Analysis/dynamic_allocation_primary_mesh_fine_scan_result.json`, with SHA-256
+`fd7948ee54d4296e600a9ab7ffa5a69539160c41872280807378879b93b14a6d`.
+
+The eight raw cross-run response anchors match only two times.  This is not
+random capture noise and must not be reported as a transferred mesh law: the
+two runs realized different Apple temporal states.  At sample 25, `k` changed
+from `0.7814407348632812` to `0.7830772399902344`; at sample 31 it changed from
+`0.9713754653930664` to `0.969508171081543`.  Those differences move the
+natural integer mesh edges before any target intervention.  The normalized
+audit therefore uses each run's read-back carrier position and runtime scale
+instead of comparing raw response vectors across unequal `k` values.  Its
+canonical result is
+`Analysis/dynamic_allocation_primary_mesh_normalized_response_result.json`,
+with SHA-256
+`b010f11412230ba0fa7fdc08fd876e2159fc8b1ceee5ad9e6fad06771bbb6a72`.
+
+That normalization exposes a stable physical coordinate.  The deepest circle
+center is within one binary64 ULP of an integer pixel in every fine-scan
+record.  At sample 25, both independent axes change in the same adjacent
+circle-center bracket, `335 -> 336`: X lower changes at that boundary and Y
+upper changes at the corresponding boundary after the producer's Y inversion.
+The earlier sparse run bracketed the same boundary at `330 -> 338` in X and
+`314 -> 346` in Y, despite its different `k` and its one-pixel-different source
+center.  The explicit coordinate-transfer audit records both containments and
+the unit-step result in
+`Analysis/dynamic_allocation_primary_mesh_pixel_center_transfer_result.json`,
+with SHA-256
+`fcd34bb8d220756346dea1699cee9d71e5ad953349266ad5b53e4bf7ba433ce4`.
+This closes the sample-25 threshold coordinate; it does not recover the full
+four-edge policy at sample 31 or constitute an unseen geometry transfer.
+
+The accepted sparse run also contains four preregistered sample-25 controls
+that were repeated later in the same process: translations `(-90,0)`,
+`(+90,0)`, `(0,-134)`, and `(0,+134)` at record separations 8, 27, 35, and 58.
+For all four pairs, the requested state, live pre/post state, decoded
+allocation and mesh policy, and every draw-consumed vertex, MVP, and index byte
+are exact.  The enclosing 4 KiB snapshot hashes differ only because they
+include bytes beyond the 192-byte vertex, 64-byte MVP, and 12-byte index ranges
+consumed by the draw; those unused tails are deliberately outside the gate.
+The canonical repeat audit is
+`Analysis/dynamic_allocation_within_run_repeat_determinism_result.json`, with
+SHA-256
+`6919b968cc207336af0c2ef5d3eca8d73960a564cdd3cd0f16c80db4b30c696f`.
+This establishes deterministic sample-25 behavior across recorded order, but
+does not establish sample-31 determinism or authorize a shader change.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states
