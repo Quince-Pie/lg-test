@@ -3857,6 +3857,28 @@ changing candidates after opening the artifact. Neither outcome is a
 universal closed form or a production parity authorization; the recovered
 predictor still requires an unseen transition holdout.
 
+Run `30743164322` passed the capture and finite-calibration gates. It also
+falsified the narrow exact-floor hypothesis: 296,132 of 589,842 cases matched
+floor and 293,710 did not. The preregistered recovery window identified exactly
+one selector in every case, with zero missing or ambiguous cases and offsets
+`-1: 6,720`, `0: 296,132`, `+1: 281,316`, and `+2: 5,674`. The raw capture hash
+is `61ae1edb63cf3453a6be7ef30fe66867748bf911951b03ac1cc43f305794ca0d`;
+the materialized selector archive hash is
+`0a4a226b18e3a2f4a3e58a36fd6125aa37cf50aa769581926e55349b5272436c`.
+This is complete calibration over the declared near-square production domain,
+not evidence for a portable reciprocal formula.
+
+Before opening another transition artifact, the complete local source and
+data dependency closure, the seven already-opened exact replays, and the
+zero-tolerance acceptance criteria are frozen in
+`Analysis/clear_light_transition_end_to_end_holdout_preregistration.json`.
+The new artifact must come from a later `uniform-smoke` dispatch. Every one of
+its nine candidate inputs, glass-prefix outputs, stage-boundary images,
+isolated final-highlight outputs, final BGRA8 images, and captured highlight
+SDF words must match exactly. A pass applies only to the declared clear/light
+materialize profile; a failure remains a failure and requires a separately
+registered follow-up.
+
 The next dynamic transfer is preregistered in
 `Analysis/background_interpolant_transfer_preregistration.json`.  While the
 existing transition evidence traces the final-highlight interpolants, it does

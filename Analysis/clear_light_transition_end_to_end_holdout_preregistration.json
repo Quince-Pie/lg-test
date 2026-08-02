@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "classification": "prospective end-to-end transfer holdout over a newly captured Apple presentation state",
+  "frozenAtUtc": "2026-08-02T10:22:03Z",
+  "objective": "Evaluate the already frozen local renderer against a clear/light materialize artifact whose real presentation timestamps, private uniforms, transformed vertices, raster extents, interpolant traces, stage boundaries, and final pixels were not available when this registration was committed.",
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "uniform-smoke"
+    },
+    "artifactLabel": "profile-clear-light-materialize",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-800-center",
+    "requestedSampleIndices": [1, 4, 8, 12, 16, 20, 24, 28, 32],
+    "unseenBasis": "The requested grid is fixed, but WindowServer acquisition produces new actual presentation times, filter payloads, MVP-transformed vertices, fixed-grid extents, and source pyramids on every run. The artifact must come from a run dispatched only after this file is committed."
+  },
+  "retainedOpenedEvidence": {
+    "classification": "retrospective confirmation only",
+    "runIds": [
+      30734657824,
+      30735362921,
+      30737403841,
+      30737749781,
+      30738174938,
+      30740129117,
+      30741372987
+    ],
+    "stateCount": 63,
+    "exactStateCount": 63,
+    "mismatchedPixelCount": 0,
+    "newestHighlightInterpolant": {
+      "runId": 30741372987,
+      "sampleCount": 9,
+      "comparedSdfWordCount": 12278114,
+      "mismatchedSdfWordCount": 0
+    },
+    "resultSha256": {
+      "dynamic-render-gate-measured-near-square-30734657824.json": "ac05228d1fccefefa2a8a3209077fa1a31d5fc29a43dc2628024d189f3205071",
+      "dynamic-render-gate-measured-near-square-30735362921.json": "ccee37aa466e486f99194c1a17b8c06d069d9498455b9c8f1ef463d72ff50b31",
+      "dynamic-render-gate-measured-near-square-30737403841.json": "230ab028a6eb9ae68b9b904eec106809f8462ed108f09b00430c646c09174b66",
+      "dynamic-render-gate-measured-near-square-30737749781.json": "d67b1805545ed3533561c14433bab414922f4398481313bc175c916b5b12d8bf",
+      "dynamic-render-gate-measured-near-square-30738174938.json": "cd94996019e93b8d13cfaaf01329a26cdd892c6be070e9a15ed41ec33b51f2c0",
+      "dynamic-render-gate-measured-near-square-30740129117.json": "84833ad350e9abaa6ca6b9f802fd26190c10a52d69db99553662760eeab31e57",
+      "dynamic-render-gate-measured-near-square-30741372987.json": "1b86f549a8fde2ae20f6ca21fe624221ff2b263dd886ae2d40fdd15741d204ba",
+      "dynamic-highlight-interpolant-gate-measured-near-square-30741372987.json": "cd51fb24093d55238d289ced4d6296924369b00cac438bf4081832cc74a022a0"
+    }
+  },
+  "frozenPredictor": {
+    "lgTestCommitBeforeRegistration": "30d41fb069e98cf7f801aaecc694be62bb275bcf",
+    "generatedCoordinateMode4FragmentShaderSha256": "2fe8036ecaa46d757fef4e7edd5de5ee41e4eac6fd5ec323b1a9659373c16ac2",
+    "generatedCoordinateMode4FragmentShaderBytes": 125643,
+    "productionShaderSha256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3",
+    "sourceSha256": {
+      "analysis/apple_glass_reference.frag.glsl": "e55157fce1bbb96282e8b34d5f89e9f4b4cc22e2aed7ef171d4a870b9ab09610",
+      "analysis/apple_glass_reference.vert.glsl": "99d6942f6b39b52460c23b4e52c498f2d98a03cb6ffc32d87ef6e94c43e7a958",
+      "analysis/apple_glass_reference_renderer.py": "9c43fc5812d1654c505c1619afe379f36197b668eb0ff5f9ebcb0c9b4f6d5118",
+      "analysis/liquid_glass_complete_static_gate.py": "8a5639f61a8f888b345eb204c718cee0fd9d7c3a28fb59613283d2fe7e2d90d5",
+      "analysis/liquid_glass_dynamic_capture.py": "47a57b63db31e9f0f09237ce71dbc5c6795033ed81622a37dba67be169a7f082",
+      "analysis/liquid_glass_dynamic_interpolant_gate.py": "2ed8d5a4a0314625e293654ac987fa26ba4f789845b0a78402af59ec85cc7078",
+      "analysis/liquid_glass_dynamic_render_gate.py": "a1d58bedcae55f2cf414bd685fdc22268aea93de0112cf7a9e31005302bf04cb",
+      "analysis/liquid_glass_geometry_transfer.py": "622f6bfa71bebc2255b3ebd6713498878a74394001ef176a81368414cef4c84f",
+      "analysis/liquid_glass_pack_intrinsic_tables.py": "695709b6cad533a87330c08e0ae66ad04c7f6fe9d7fd57563970144ff402f3cb",
+      "analysis/liquid_glass_post_glass_gate.py": "0c84c42bfa0d065c87ec968e0d2f6326b396de1770c00078951b0acea3a20de9",
+      "analysis/liquid_glass_profile_matrix.py": "f8e3c1889b999f29b6cc09a50aa1e4f8881414af2560b2f06dc2b50bff858611",
+      "analysis/liquid_glass_raster_interpolant.py": "44976f1eea71a67a9843c42885fb600b90bbe42447b0864d74dffd1898c28d61",
+      "analysis/liquid_glass_runtime_raster_coefficients.py": "f9c1759a0e75ad527754f2d43ab1ace5c9e9077632fd4cd30d13a0341270d489",
+      "analysis/liquid_glass_shader_specialization.py": "bf2e6cd3a92d0aa68043bbd2834e6bfb8df5d985dff995198ee4c601ace0dbab",
+      "analysis/liquid_glass_square_selector_calibration.py": "7160daee1b8bd4d6c81714ddf927aa294cf9345cc9792fc8071907d074979228",
+      "analysis/liquid_glass_transition_geometry.py": "bddb660e503a2e7a7b21f78d523ddc705a0f9ef5db6127647bf3dea0b09aa124",
+      "lg-test/Analysis/raster_tile_coefficient_model.py": "69b8546e26dbd17009260621b1a72610e9c25efee21e68022b07c9f00c599248",
+      "lg-test/Analysis/raster_tile_coefficient_model_v3.py": "99c1725d9fdec0877b8510fb92aaa4a4ee398e61b0c579f0b1c1a0471520f1fe",
+      "lg-test/Analysis/raster_tile_iterator_model.py": "bf0b926e759f9234d924ccd82654abc07ad8bb9ff10c9058ba5a284886dd2429",
+      "lg-test/Analysis/raster_tile_selector_model.py": "1874d8c452dce244bd8ae2cb7fbf05d0d454a815c0c37c285e1c377524c9369d",
+      "lg-test/Analysis/raster_tile_selector_model_v2.py": "114f6aa52693307521b04a9b231541bda60ee88f8b33a60bfd4d52e45e208dd5",
+      "lg-test/Analysis/raster_tile_selector_model_v4.py": "f1918f51974f486510ce5d68724cff015bb2e7f618a1153016d464cd9240a103",
+      "lg-test/Analysis/raster_tile_selector_model_v5.py": "76723aa8f139b81f784b91a11e68e3e4b23d646031e10254fe4e8488244291e7",
+      "lg-test/Analysis/raster_tile_selector_model_v6.py": "3c5bdc263ea97f56c6cb8f0c7eedff22e13cb9eca02eb7895c458b0370553420",
+      "lg-test/Analysis/raster_tile_selector_model_v7.py": "2393fc0f190c2fa9daa3b19e2ecacde61815b1ce10432a0336e34303a2d29d25",
+      "lg-test/Analysis/raster_tile_selector_model_v8.py": "2fe483b51c2c48cc599ea06b69a61cddd207c9191d8daee152cb59ea5cec5915",
+      "lg-test/Analysis/validate_raster_tile_center_boundary_holdout.py": "0cf97a627774f643714a3a1ff14a9687e6099237c792a6961425e1e6005e6579",
+      "lg-test/Analysis/validate_raster_tile_center_lattice_holdout.py": "22539da6538752ebba63cb1717255e23ffa4bd19a1bd0dce7d8fac5615f0bfb2",
+      "lg-test/Analysis/validate_raster_tile_center_origin_holdout.py": "b9e7dbd081d4a3fbce260bdefe8b0cc4f0b793e63cf1f1404db743e56e42281f",
+      "lg-test/Analysis/validate_raster_tile_center_scale_holdout.py": "2b847ef043218c4d038d02b66d242fc7cffb2ff7b7f778bce3df410c23db9a66",
+      "lg-test/Analysis/validate_raster_tile_double_rounding_holdout.py": "129e7c2957682f20c57488f5c1d7aeb34cc693bd1f78d83f684a314556680284",
+      "lg-test/Analysis/validate_raster_tile_numerator.py": "28b2565b33cb9a3c82c15a11c08fa271adebdc74f1555db7e2037b3ffe8bca66",
+      "lg-test/Analysis/validate_raster_tile_phase_holdout.py": "b658115bd51affd5539cedd99ba4d66db30b75e559ec1fee3c90ee4c69a8254e"
+    },
+    "dataSha256": {
+      "baseFractionalSelectorArchive": "2b49309da4283726cc894f7aada3c25db41cf8ca71a4c278c952407e9e1eedd3",
+      "squareSelectorArchive": "93fcb5859794d67b193e00f2fe741416ae69d93125f38fa7b36506616b98e5ba",
+      "nearSquareSelectorArchive": "0a4a226b18e3a2f4a3e58a36fd6125aa37cf50aa769581926e55349b5272436c",
+      "floatIntrinsicTable": "fff71cc0d4428677ca5bc58b91212a7166b701e4efe504c3d71cab70846d0449",
+      "staticClearLightHalfIntrinsicTable": "ca1e5cbcaa645cad27917b87990edba4e8e06931c8089fbb2fbf1ae96837bfc2",
+      "staticClearLightCaptureTree": "9ad94efe87df843c4f158aedba4ea9b8752a35796d47631f072fa05c13a73ecf"
+    },
+    "environmentSha256": {
+      "flake.nix": "f65d67ce823d1f748da3568cab00dcfe71edec26ed4649feea2aa8ae641ef171",
+      "flake.lock": "eb95e20b32318a9600731a26accc67db9501b82a1176f02e53850ece25113301"
+    }
+  },
+  "acceptance": {
+    "ciWorkflowMustSucceed": true,
+    "runIdMustNotAppearInRetainedOpenedEvidence": true,
+    "captureCommitMustContainThisRegistration": true,
+    "dynamicStateCount": 9,
+    "unsupportedRasterStateCount": 0,
+    "maximumAllowedMismatchedPixelsPerState": 0,
+    "maximumAllowedMismatchedBytesPerState": 0,
+    "requireEveryCandidateInputExact": true,
+    "requireEveryGlassPrefixExact": true,
+    "requireEveryStageBoundaryExact": true,
+    "requireEveryIsolatedFinalHighlightExact": true,
+    "requireEveryFinalImageExact": true,
+    "requireEveryCapturedHighlightSdfWordExact": true,
+    "allowTolerance": false,
+    "allowPostOpeningPredictorChanges": false
+  },
+  "interpretation": {
+    "pass": "Prospective observational byte parity for this measured clear/light, circle-800-center, materialize profile and its captured states. It authorizes a separate production integration attempt only if the production shader remains unchanged until that attempt is itself proven pixel-identical.",
+    "fail": "Retain the failure and localize it without changing this gate's verdict. Any correction requires a separately frozen new holdout.",
+    "notClaimed": [
+      "a universal closed form for every AGX raster determinant",
+      "all Apple materials, appearances, geometries, operating-system builds, GPUs, or accessibility states",
+      "production Walle parity before a production-path image gate passes",
+      "permission to trade image quality for VRAM, throughput, or latency"
+    ]
+  }
+}
