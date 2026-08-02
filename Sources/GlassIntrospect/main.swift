@@ -4934,6 +4934,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
         "carenderer-local-backdrop",
     ])
 
+    private func capturesReplayPass(_ name: String) -> Bool {
+        replayCaptureNames.contains(name)
+            || name.hasPrefix("transition-background-uniform-")
+    }
+
     private func retainsTextureBinding(
         capture: String,
         index: Int,
@@ -6262,7 +6267,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     ) -> MTLTexture? {
         lock.lock()
         let shouldCapture = captureName.map {
-            replayCaptureNames.contains($0)
+            capturesReplayPass($0)
         } ?? false
         lock.unlock()
         guard shouldCapture,
@@ -6329,7 +6334,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let captureName else { return }
-        if replayCaptureNames.contains(captureName),
+        if capturesReplayPass(captureName),
            let descriptorCopy =
             descriptor.copy() as? MTLRenderPassDescriptor
         {
@@ -14252,11 +14257,17 @@ private func carendererUniformEvidence(
     if includeGeometryPolicyEvidence {
         result["metalBufferSnapshots"] = allBufferEvidence
         if let outputDirectory {
-            result["output"] = carendererOutputSnapshot(
+            let outputSnapshot = carendererOutputSnapshot(
                 output,
                 commandQueue: commandQueue,
                 capture: capture,
                 outputDirectory: outputDirectory)
+            result["output"] = outputSnapshot
+            result["exactPassReplay"] =
+                MetalUniformProbe.shared.replayFinalPass(
+                    capture: capture,
+                    referenceSnapshot: outputSnapshot,
+                    outputDirectory: outputDirectory)
             result["metalTextureSnapshots"] =
                 MetalUniformProbe.shared.snapshotTextures(
                     capture: capture,

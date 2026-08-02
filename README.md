@@ -1724,6 +1724,12 @@ feeds the backdrop, background SDF, and final-highlight branches, requires all
 12 preregistered critical paths to match by path and runtime class, installs
 the copied `glassBackground` filter, and renders through a lightweight
 Metal-backed `CARenderer` with WindowServer-aware backdrop flags disabled.
+For every state, the Metal probe now retains color attachment zero immediately
+before Apple's final render pass, replays every recorded command from that
+exact input, and requires the replay output to match the original `CARenderer`
+output byte for byte. The per-state pre-pass BGRA8 texture is included in the
+artifact so an independent renderer is compared over the same carrier pixels;
+substituting a settled capture's background is not a valid dynamic parity test.
 The transition-only `glassForeground` branch has a different topology from
 settled glass: its copied filter and exact input law are retained and checked,
 but the report explicitly records that it was not installed on this

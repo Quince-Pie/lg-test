@@ -106,6 +106,31 @@ def validate_raw_render_evidence(
 ) -> None:
     output = mapping(render.get("output"), "CARenderer output")
     validate_raw_file(output, root=root, name="CARenderer output")
+    replay = mapping(render.get("exactPassReplay"), "exactPassReplay")
+    if (
+        replay.get("executed") is not True
+        or replay.get("exactByteMatch") is not True
+        or replay.get("mismatchedByteCount") != 0
+        or replay.get("mismatchedPixelCount") != 0
+        or replay.get("maximumChannelDelta") != 0
+        or not isinstance(replay.get("commandCount"), int)
+        or replay["commandCount"] <= 0
+        or not isinstance(replay.get("encodedCommandCount"), int)
+        or replay["encodedCommandCount"] != replay["commandCount"]
+        or not isinstance(replay.get("glassDrawCount"), int)
+        or replay["glassDrawCount"] < 3
+    ):
+        raise ValueError("exact final-pass replay differs")
+    validate_raw_file(
+        mapping(replay.get("preFinalPass"), "preFinalPass"),
+        root=root,
+        name="pre-final-pass",
+    )
+    validate_raw_file(
+        mapping(replay.get("replayOutput"), "replayOutput"),
+        root=root,
+        name="exact-pass replay output",
+    )
     textures = mapping(
         render.get("metalTextureSnapshots"),
         "metalTextureSnapshots",
@@ -331,6 +356,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         "states": len(records),
         "highlightBindings": binding_count,
         "rawBackdropPyramids": len(records),
+        "rawPreFinalPasses": len(records),
     }
 
 
