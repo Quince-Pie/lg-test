@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - state-matrix
+          - uniform-smoke
           - uniform-profiles
 
 concurrency:
@@ -110,16 +111,20 @@ jobs:
         ${{ (inputs.capture_mode == 'state-matrix' ||
         (inputs.capture_mode == 'uniform-profiles' &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'profile-'))) && '1' || '0' }}
+        startsWith(matrix.label, 'profile-')) ||
+        (inputs.capture_mode == 'uniform-smoke' &&
+        matrix.label == 'profile-clear-light-materialize')) && '1' || '0' }}
       LG_GLASS_MATERIAL: ${{ matrix.material }}
       LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
       LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
       LG_TRANSITION_TIMELINE: "1"
       LG_TRANSITION_DIRECTION: ${{ matrix.direction }}
       LG_TRANSITION_UNIFORMS: >-
-        ${{ inputs.capture_mode == 'uniform-profiles' &&
+        ${{ ((inputs.capture_mode == 'uniform-profiles' &&
         matrix.direction == 'materialize' &&
-        startsWith(matrix.label, 'profile-') && '1' || '0' }}
+        startsWith(matrix.label, 'profile-')) ||
+        (inputs.capture_mode == 'uniform-smoke' &&
+        matrix.label == 'profile-clear-light-materialize')) && '1' || '0' }}
       LG_TRANSITION_MATRIX_BASIS: >-
         ${{ inputs.capture_mode == 'uniform-profiles' &&
         matrix.label == 'profile-clear-light-materialize' &&

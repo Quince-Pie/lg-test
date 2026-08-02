@@ -14468,7 +14468,6 @@ private struct TransitionBackgroundFilterSnapshot {
     let backgroundPath: [Int]
     let foregroundFilter: NSObject?
     let foregroundPath: [Int]?
-    let detachedRootLayer: CALayer
     let layerStates: [TransitionLayerState]
     let layerSource: String
 }
@@ -14554,22 +14553,6 @@ private func copiedTransitionFilter(
     return copying.copy(with: nil) as? NSObject
 }
 
-private func detachedTransitionLayerTree(
-    _ layer: CALayer
-) -> CALayer? {
-    guard let copied = layer.copy() as? CALayer else { return nil }
-    copied.removeAllAnimations()
-    copied.sublayers = nil
-    for child in layer.sublayers ?? [] {
-        guard let copiedChild = detachedTransitionLayerTree(child)
-        else {
-            return nil
-        }
-        copied.addSublayer(copiedChild)
-    }
-    return copied
-}
-
 private func transitionLayerStates(
     _ layer: CALayer,
     path: [Int] = []
@@ -14620,11 +14603,35 @@ private func transitionLayer(
     return layer
 }
 
-private func installTransitionLayerStates(
+private struct TransitionLayerReplayResult {
+    let installedPaths: [[Int]]
+    let skippedPaths: [[Int]]
+}
+
+private let transitionCarrierCriticalPaths: [[Int]] = [
+    [],
+    [0],
+    [1],
+    [1, 0],
+    [1, 0, 0],
+    [1, 0, 1],
+    [1, 0, 1, 0],
+    [1, 0, 1, 0, 0],
+    [1, 0, 1, 0, 0, 0],
+    [1, 0, 1, 0, 0, 0, 0],
+    [1, 0, 1, 2],
+    [1, 0, 1, 2, 0],
+]
+
+private func installCompatibleTransitionLayerStates(
     _ states: [TransitionLayerState],
     rootLayer: CALayer
-) -> Bool {
-    let resolved = states.compactMap { state -> CALayer? in
+) -> TransitionLayerReplayResult {
+    var resolved: [(TransitionLayerState, CALayer)] = []
+    var skippedPaths: [[Int]] = []
+    resolved.reserveCapacity(states.count)
+    skippedPaths.reserveCapacity(states.count)
+    for state in states {
         guard let layer = transitionLayer(
                 in: rootLayer,
                 path: state.path),
@@ -14633,15 +14640,14 @@ private func installTransitionLayerStates(
                 || layer.responds(
                     to: NSSelectorFromString("setScale:"))
         else {
-            return nil
+            skippedPaths.append(state.path)
+            continue
         }
-        return layer
+        resolved.append((state, layer))
     }
-    guard resolved.count == states.count else { return false }
-
     CATransaction.begin()
     CATransaction.setDisableActions(true)
-    for (state, layer) in zip(states, resolved) {
+    for (state, layer) in resolved {
         layer.removeAllAnimations()
         layer.anchorPoint = state.anchorPoint
         layer.bounds = state.bounds
@@ -14664,7 +14670,9 @@ private func installTransitionLayerStates(
     }
     CATransaction.commit()
     CATransaction.flush()
-    return true
+    return TransitionLayerReplayResult(
+        installedPaths: resolved.map { $0.0.path },
+        skippedPaths: skippedPaths)
 }
 
 private func transitionBackgroundFilterSnapshot(
@@ -14684,8 +14692,6 @@ private func transitionBackgroundFilterSnapshot(
         guard let target = transitionBackgroundFilterTarget(
                 in: candidate.layer),
               let copied = copiedTransitionFilter(target.filter),
-              let detachedRootLayer =
-                detachedTransitionLayerTree(candidate.layer),
               let remaining = copied.value(
                 forKey: "inputFaceOpacity") as? NSNumber
         else {
@@ -14707,7 +14713,6 @@ private func transitionBackgroundFilterSnapshot(
             backgroundPath: target.path,
             foregroundFilter: copiedForeground,
             foregroundPath: foregroundTarget?.path,
-            detachedRootLayer: detachedRootLayer,
             layerStates: transitionLayerStates(candidate.layer),
             layerSource: candidate.source)
     }
@@ -15226,7 +15231,7 @@ private func transitionMatrixUniformBasisEvidence(
 }
 
 @MainActor
-private func detachedTransitionCARendererEvidence(
+private func localTransitionCARendererEvidence(
     rootLayer: CALayer,
     device: MTLDevice,
     capture: String,
@@ -15290,7 +15295,7 @@ private func transitionBackgroundUniformEvidence(
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
-            "schemaVersion": 4,
+            "schemaVersion": 5,
             "requested": true,
             "executed": false,
             "reason": "default Metal device unavailable",
@@ -15301,7 +15306,7 @@ private func transitionBackgroundUniformEvidence(
           !snapshots.isEmpty
     else {
         return [
-            "schemaVersion": 4,
+            "schemaVersion": 5,
             "requested": true,
             "executed": false,
             "reason":
@@ -15312,44 +15317,75 @@ private func transitionBackgroundUniformEvidence(
     var records: [[String: Any]] = []
     records.reserveCapacity(snapshots.count)
     for snapshot in snapshots {
-        let stateRoot = snapshot.detachedRootLayer
-        guard let target = transitionBackgroundFilterTarget(
-                in: stateRoot),
-              target.path == snapshot.backgroundPath,
+        let replay = installCompatibleTransitionLayerStates(
+            snapshot.layerStates,
+            rootLayer: rootLayer)
+        let installedCriticalPaths =
+            transitionCarrierCriticalPaths.filter {
+                replay.installedPaths.contains($0)
+            }
+        let missingCriticalPaths =
+            transitionCarrierCriticalPaths.filter {
+                !replay.installedPaths.contains($0)
+            }
+        guard missingCriticalPaths.isEmpty else {
+            records.append([
+                "sampleIndex": snapshot.sampleIndex,
+                "requestedProgress":
+                    snapshot.requestedProgress,
+                "remaining": snapshot.remaining,
+                "replayedLayerCount": snapshot.layerStates.count,
+                "installedCarrierLayerCount":
+                    replay.installedPaths.count,
+                "installedCriticalCarrierPaths":
+                    installedCriticalPaths,
+                "missingCriticalCarrierPaths":
+                    missingCriticalPaths,
+                "skippedCarrierPaths": replay.skippedPaths,
+                "executed": false,
+                "reason":
+                    "fresh static carrier lacks a critical "
+                    + "transition layer path",
+            ])
+            continue
+        }
+        guard matrixTarget.path == snapshot.backgroundPath,
               let stateFilter =
                 copiedTransitionFilter(snapshot.filter),
               installTransitionBackgroundFilter(
                 stateFilter,
-                target: target)
+                target: matrixTarget)
         else {
             records.append([
                 "sampleIndex": snapshot.sampleIndex,
                 "requestedProgress":
                     snapshot.requestedProgress,
                 "remaining": snapshot.remaining,
+                "replayedLayerCount": snapshot.layerStates.count,
+                "installedCarrierLayerCount":
+                    replay.installedPaths.count,
+                "installedCriticalCarrierPaths":
+                    installedCriticalPaths,
+                "missingCriticalCarrierPaths":
+                    missingCriticalPaths,
+                "skippedCarrierPaths": replay.skippedPaths,
                 "executed": false,
                 "reason":
-                    "detached background filter copy or "
-                    + "installation failed",
+                    "background filter copy or installation on "
+                    + "fresh static carrier failed",
             ])
             continue
         }
         var foregroundEvidence: [String: Any] = [
             "source": "static-glass-endpoint",
             "filterPresent": false,
+            "replayedOnCarrier": false,
         ]
         if let sourceForeground = snapshot.foregroundFilter,
            let foregroundPath = snapshot.foregroundPath
         {
-            guard let foregroundTarget =
-                    transitionForegroundFilterTarget(
-                        in: stateRoot),
-                  foregroundTarget.path == foregroundPath,
-                  let stateForegroundFilter =
-                    copiedTransitionFilter(sourceForeground),
-                  installTransitionBackgroundFilter(
-                    stateForegroundFilter,
-                    target: foregroundTarget)
+            guard let stateForegroundFilter =
+                    copiedTransitionFilter(sourceForeground)
             else {
                 records.append([
                     "sampleIndex": snapshot.sampleIndex,
@@ -15358,20 +15394,21 @@ private func transitionBackgroundUniformEvidence(
                     "remaining": snapshot.remaining,
                     "executed": false,
                     "reason":
-                        "detached foreground filter copy or "
-                        + "installation failed",
+                        "saved foreground filter copy failed",
                 ])
                 continue
             }
-            foregroundEvidence =
-                filterDescription(stateForegroundFilter)
+            foregroundEvidence = filterDescription(
+                stateForegroundFilter)
+            foregroundEvidence["capturedPath"] = foregroundPath
+            foregroundEvidence["replayedOnCarrier"] = false
         }
         let capture = String(
             format:
                 "transition-background-uniform-%02d",
             snapshot.sampleIndex)
-        let render = detachedTransitionCARendererEvidence(
-            rootLayer: stateRoot,
+        let render = localTransitionCARendererEvidence(
+            rootLayer: rootLayer,
             device: device,
             capture: capture,
             outputDirectory: outputDirectory)
@@ -15380,10 +15417,20 @@ private func transitionBackgroundUniformEvidence(
             "requestedProgress": snapshot.requestedProgress,
             "remaining": snapshot.remaining,
             "replayedLayerCount": snapshot.layerStates.count,
+            "installedCarrierLayerCount":
+                replay.installedPaths.count,
+            "installedCriticalCarrierPaths":
+                installedCriticalPaths,
+            "missingCriticalCarrierPaths":
+                missingCriticalPaths,
+            "skippedCarrierPaths": replay.skippedPaths,
             "snapshotLayerSource": snapshot.layerSource,
             "filter": filterDescription(stateFilter),
             "foregroundFilter": foregroundEvidence,
-            "detachedLayerTreeCopy": true,
+            "backgroundFilterReplayedOnCarrier": true,
+            "foregroundFilterReplayedOnCarrier": false,
+            "freshStaticCarrier": true,
+            "detachedLayerTreeCopy": false,
             "presentationLayerAssignedToCARenderer": false,
             "render": render,
         ])
@@ -15400,7 +15447,7 @@ private func transitionBackgroundUniformEvidence(
             device: device,
             requested: matrixBasisRequested)
     return [
-        "schemaVersion": 4,
+        "schemaVersion": 5,
         "requested": true,
         "executed": executed == snapshots.count,
         "modelTargetPath": matrixTarget.path,
@@ -15409,10 +15456,15 @@ private func transitionBackgroundUniformEvidence(
         "executedSampleCount": executed,
         "records": records,
         "method":
-            "detached-copies-of-presentation-and-static-carrier-layer-trees",
+            "copied-presentation-background-filter-plus-compatible-"
+            + "layer-state-on-fresh-static-model-tree",
         "presentationLayerReplayed": true,
         "presentationLayerAssignedToCARenderer": false,
-        "detachedLayerTreeCopies": true,
+        "freshStaticCarrier": true,
+        "detachedLayerTreeCopies": false,
+        "carrierCriticalPaths": transitionCarrierCriticalPaths,
+        "transitionForegroundFilterCaptured": true,
+        "transitionForegroundFilterReplayedOnCarrier": false,
         "matrixUniformBasis": matrixUniformBasis,
     ]
 }
@@ -16317,7 +16369,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     phase: "after-static-model-carrier")
             } else {
                 dynamicUniformEvidence = [
-                    "schemaVersion": 4,
+                    "schemaVersion": 5,
                     "requested": false,
                     "executed": false,
                     "presentationLayerReplayed": false,

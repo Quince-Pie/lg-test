@@ -1715,28 +1715,37 @@ rejects any leg with fewer than 16 states containing exact color components.
 Schema 5 adds a separately gated dynamic-uniform mode. The real WindowServer
 timeline is captured completely before this mode performs any local rendering.
 At nine preregistered materialize states it copies the actual presentation
-`glassBackground` and `glassForeground` filters and recursively detaches a
-model-layer copy of that exact presentation topology. After the complete
-transition timeline has been captured, each detached tree is rendered through
-a lightweight Metal-backed `CARenderer`, with WindowServer-aware backdrop
-flags disabled on the copy so its source is produced locally. No live
-presentation object is assigned to `CARenderer`. If Core Animation has already
-retired the terminal presentation tree, a fresh static SwiftUI glass tree with
-the same material, appearance, and geometry supplies only that exact endpoint
-and the independent matrix-intervention carrier. The report records both the
-detached-copy method and `presentationLayerAssignedToCARenderer = false`; CI
-rejects missing filter copies, missing uniform payloads, malformed raw texture
-pyramids, non-background pipelines, or anything other than two background
-uniform bindings per state. The final timeline sample also
+`glassBackground` and `glassForeground` filters and the complete presentation
+layer state, without copying or rendering a live presentation object. After
+the complete transition timeline has been captured, a fresh static SwiftUI
+glass tree with the same material, appearance, and geometry becomes the local
+background-shader carrier. The probe replays every captured state path that
+feeds the backdrop, background SDF, and final-highlight branches, requires all
+12 preregistered critical paths to match by path and runtime class, installs
+the copied `glassBackground` filter, and renders through a lightweight
+Metal-backed `CARenderer` with WindowServer-aware backdrop flags disabled.
+The transition-only `glassForeground` branch has a different topology from
+settled glass: its copied filter and exact input law are retained and checked,
+but the report explicitly records that it was not installed on this
+background-only carrier. No live presentation object is assigned to
+`CARenderer`, and no detached-tree copy is claimed. CI rejects missing
+critical paths or filter copies, missing uniform payloads, malformed raw
+texture pyramids, non-background pipelines, or anything other than two
+background uniform bindings per state. If Core Animation has already retired
+the terminal presentation tree, the fresh carrier also supplies that exact
+endpoint and the independent matrix-intervention carrier. The final timeline
+sample
 waits, for at most one second, for Core Animation's presentation topology to
 match the declared endpoint; CI rejects a lingering materialized or
 dematerialized layer instead of accepting a nominal-clock endpoint. A
 materialized endpoint must also expose `inputFaceOpacity == 1.0` exactly;
 layer presence alone is insufficient because Core Animation can publish the
 topology one presentation tick before the terminal filter state. Dispatch
-`transition-introspect.yml` with `capture_mode=uniform-profiles` to enable
-this evidence on the four material/appearance materialize legs. The
-clear/light leg additionally renders 16 preregistered, independent KVC
+`transition-introspect.yml` with `capture_mode=uniform-smoke` to run only the
+clear/light carrier gate without the matrix basis, or with
+`capture_mode=uniform-profiles` to enable the complete evidence on all four
+material/appearance materialize legs. The clear/light leg in the complete
+matrix additionally renders 16 preregistered, independent KVC
 interventions on copies of the captured endpoint filter. The basis varies the
 face, bleed, and shadow black/white/saturation axes, face and shadow opacity,
 three extended-sRGB fill colors, and a combined holdout. CI requires every

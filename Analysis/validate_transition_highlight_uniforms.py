@@ -10,6 +10,20 @@ from typing import Any
 
 
 EXPECTED_SAMPLE_INDICES = (1, 4, 8, 12, 16, 20, 24, 28, 32)
+EXPECTED_CARRIER_CRITICAL_PATHS = [
+    [],
+    [0],
+    [1],
+    [1, 0],
+    [1, 0, 0],
+    [1, 0, 1],
+    [1, 0, 1, 0],
+    [1, 0, 1, 0, 0],
+    [1, 0, 1, 0, 0, 0],
+    [1, 0, 1, 0, 0, 0, 0],
+    [1, 0, 1, 2],
+    [1, 0, 1, 2, 0],
+]
 
 
 def mapping(value: object, name: str) -> Mapping[str, Any]:
@@ -155,7 +169,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         report.get("dynamicBackgroundUniforms"),
         "dynamicBackgroundUniforms",
     )
-    if uniforms.get("schemaVersion") != 4 or uniforms.get("requested") is not requested:
+    if uniforms.get("schemaVersion") != 5 or uniforms.get("requested") is not requested:
         raise ValueError("dynamic uniform highlight schema differs")
     if uniforms.get("presentationLayerReplayed") is not requested:
         raise ValueError("dynamic presentation replay metadata differs")
@@ -175,9 +189,14 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         or uniforms.get("sampleCount") != len(EXPECTED_SAMPLE_INDICES)
         or uniforms.get("executedSampleCount") != len(EXPECTED_SAMPLE_INDICES)
         or uniforms.get("method")
-        != "detached-copies-of-presentation-and-static-carrier-layer-trees"
+        != "copied-presentation-background-filter-plus-compatible-"
+        "layer-state-on-fresh-static-model-tree"
         or uniforms.get("presentationLayerAssignedToCARenderer") is not False
-        or uniforms.get("detachedLayerTreeCopies") is not True
+        or uniforms.get("freshStaticCarrier") is not True
+        or uniforms.get("detachedLayerTreeCopies") is not False
+        or uniforms.get("carrierCriticalPaths") != EXPECTED_CARRIER_CRITICAL_PATHS
+        or uniforms.get("transitionForegroundFilterCaptured") is not True
+        or uniforms.get("transitionForegroundFilterReplayedOnCarrier") is not False
         or not isinstance(uniforms.get("modelTargetPath"), list)
         or not isinstance(records, list)
         or len(records) != len(EXPECTED_SAMPLE_INDICES)
@@ -194,10 +213,20 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         if record.get("sampleIndex") != sample_index:
             raise ValueError("dynamic highlight sample order differs")
         if (
-            record.get("detachedLayerTreeCopy") is not True
+            record.get("freshStaticCarrier") is not True
+            or record.get("detachedLayerTreeCopy") is not False
             or record.get("presentationLayerAssignedToCARenderer") is not False
+            or record.get("backgroundFilterReplayedOnCarrier") is not True
+            or record.get("foregroundFilterReplayedOnCarrier") is not False
+            or record.get("installedCriticalCarrierPaths")
+            != EXPECTED_CARRIER_CRITICAL_PATHS
+            or record.get("missingCriticalCarrierPaths") != []
+            or not isinstance(record.get("skippedCarrierPaths"), list)
+            or not isinstance(record.get("installedCarrierLayerCount"), int)
+            or record["installedCarrierLayerCount"]
+            < len(EXPECTED_CARRIER_CRITICAL_PATHS)
         ):
-            raise ValueError("dynamic render did not use a detached tree copy")
+            raise ValueError("dynamic render carrier replay is incomplete")
         if sample_index != 32 and record.get("replayedLayerCount") != 16:
             raise ValueError("dynamic presentation layer replay is incomplete")
         source = record.get("snapshotLayerSource")
@@ -220,6 +249,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
             if (
                 foreground.get("source") != "static-glass-endpoint"
                 or foreground.get("filterPresent") is not False
+                or foreground.get("replayedOnCarrier") is not False
                 or remaining != 1.0
             ):
                 raise ValueError("static endpoint foreground evidence differs")
@@ -228,6 +258,8 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
             if (
                 known.get("name") != "glassForeground"
                 or known.get("type") != "glassForeground"
+                or foreground.get("capturedPath") != [1, 0, 1, 1, 0]
+                or foreground.get("replayedOnCarrier") is not False
             ):
                 raise ValueError("copied foreground is not glassForeground")
             inputs = mapping(foreground.get("inputValues"), "inputValues")
