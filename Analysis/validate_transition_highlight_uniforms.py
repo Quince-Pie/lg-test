@@ -74,7 +74,7 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         report.get("dynamicBackgroundUniforms"),
         "dynamicBackgroundUniforms",
     )
-    if uniforms.get("schemaVersion") != 2 or uniforms.get("requested") is not requested:
+    if uniforms.get("schemaVersion") != 3 or uniforms.get("requested") is not requested:
         raise ValueError("dynamic uniform highlight schema differs")
     if not requested:
         if uniforms.get("executed") is not False:
@@ -102,6 +102,15 @@ def validate(path: Path, *, requested: bool) -> dict[str, int | bool]:
         record = mapping(untyped_record, f"sample {sample_index}")
         if record.get("sampleIndex") != sample_index:
             raise ValueError("dynamic highlight sample order differs")
+        if record.get("replayedLayerCount") != 16:
+            raise ValueError("dynamic presentation layer replay is incomplete")
+        source = record.get("snapshotLayerSource")
+        if source != "presentation" and not (
+            sample_index == 32
+            and source == "model-endpoint-fallback"
+            and record.get("remaining") == 1.0
+        ):
+            raise ValueError("dynamic snapshot layer source is invalid")
         remaining = numeric(record.get("remaining"), "remaining")
         foreground = mapping(
             record.get("foregroundFilter"),

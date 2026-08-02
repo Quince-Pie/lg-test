@@ -14452,6 +14452,27 @@ private struct TransitionBackgroundFilterSnapshot {
     let remaining: Double
     let filter: NSObject
     let foregroundFilter: NSObject
+    let layerStates: [TransitionLayerState]
+    let layerSource: String
+}
+
+private struct TransitionLayerState {
+    let path: [Int]
+    let className: String
+    let bounds: CGRect
+    let position: CGPoint
+    let anchorPoint: CGPoint
+    let zPosition: CGFloat
+    let opacity: Float
+    let isHidden: Bool
+    let isOpaque: Bool
+    let masksToBounds: Bool
+    let cornerRadius: CGFloat
+    let contentsScale: CGFloat
+    let contentsRect: CGRect
+    let transform: CATransform3D
+    let sublayerTransform: CATransform3D
+    let backdropScale: NSNumber?
 }
 
 private func transitionFilterType(_ value: Any) -> String? {
@@ -14516,30 +14537,136 @@ private func copiedTransitionFilter(
     return copying.copy(with: nil) as? NSObject
 }
 
+private func transitionLayerStates(
+    _ layer: CALayer,
+    path: [Int] = []
+) -> [TransitionLayerState] {
+    let scaleSelector = NSSelectorFromString("scale")
+    let backdropScale = layer.responds(to: scaleSelector)
+        ? layer.value(forKey: "scale") as? NSNumber
+        : nil
+    var states = [TransitionLayerState(
+        path: path,
+        className: String(reflecting: type(of: layer)),
+        bounds: layer.bounds,
+        position: layer.position,
+        anchorPoint: layer.anchorPoint,
+        zPosition: layer.zPosition,
+        opacity: layer.opacity,
+        isHidden: layer.isHidden,
+        isOpaque: layer.isOpaque,
+        masksToBounds: layer.masksToBounds,
+        cornerRadius: layer.cornerRadius,
+        contentsScale: layer.contentsScale,
+        contentsRect: layer.contentsRect,
+        transform: layer.transform,
+        sublayerTransform: layer.sublayerTransform,
+        backdropScale: backdropScale
+    )]
+    for (index, child) in (layer.sublayers ?? []).enumerated() {
+        states.append(contentsOf: transitionLayerStates(
+            child,
+            path: path + [index]))
+    }
+    return states
+}
+
+private func transitionLayer(
+    in root: CALayer,
+    path: [Int]
+) -> CALayer? {
+    var layer = root
+    for index in path {
+        guard let children = layer.sublayers,
+              children.indices.contains(index)
+        else {
+            return nil
+        }
+        layer = children[index]
+    }
+    return layer
+}
+
+private func installTransitionLayerStates(
+    _ states: [TransitionLayerState],
+    rootLayer: CALayer
+) -> Bool {
+    let resolved = states.compactMap { state -> CALayer? in
+        guard let layer = transitionLayer(
+                in: rootLayer,
+                path: state.path),
+              String(reflecting: type(of: layer)) == state.className,
+              state.backdropScale == nil
+                || layer.responds(
+                    to: NSSelectorFromString("setScale:"))
+        else {
+            return nil
+        }
+        return layer
+    }
+    guard resolved.count == states.count else { return false }
+
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    for (state, layer) in zip(states, resolved) {
+        layer.removeAllAnimations()
+        layer.anchorPoint = state.anchorPoint
+        layer.bounds = state.bounds
+        layer.position = state.position
+        layer.zPosition = state.zPosition
+        layer.opacity = state.opacity
+        layer.isHidden = state.isHidden
+        layer.isOpaque = state.isOpaque
+        layer.masksToBounds = state.masksToBounds
+        layer.cornerRadius = state.cornerRadius
+        layer.contentsScale = state.contentsScale
+        layer.contentsRect = state.contentsRect
+        layer.transform = state.transform
+        layer.sublayerTransform = state.sublayerTransform
+        if let scale = state.backdropScale {
+            layer.setValue(scale, forKey: "scale")
+        }
+        layer.setNeedsDisplay()
+        layer.setNeedsLayout()
+    }
+    CATransaction.commit()
+    CATransaction.flush()
+    return true
+}
+
 private func transitionBackgroundFilterSnapshot(
     rootLayer: CALayer,
     sampleIndex: Int,
     requestedProgress: Double
 ) -> TransitionBackgroundFilterSnapshot? {
-    let presentationRoot = rootLayer.presentation() ?? rootLayer
-    guard let target = transitionBackgroundFilterTarget(
-            in: presentationRoot),
-          let foregroundTarget = transitionForegroundFilterTarget(
-            in: presentationRoot),
-          let copied = copiedTransitionFilter(target.filter),
-          let copiedForeground = copiedTransitionFilter(
-            foregroundTarget.filter),
-          let remaining = copied.value(
-            forKey: "inputFaceOpacity") as? NSNumber
-    else {
-        return nil
+    var candidates: [(layer: CALayer, source: String)] = []
+    if let presentation = rootLayer.presentation() {
+        candidates.append((presentation, "presentation"))
     }
-    return TransitionBackgroundFilterSnapshot(
-        sampleIndex: sampleIndex,
-        requestedProgress: requestedProgress,
-        remaining: remaining.doubleValue,
-        filter: copied,
-        foregroundFilter: copiedForeground)
+    candidates.append((rootLayer, "model-endpoint-fallback"))
+    for candidate in candidates {
+        guard let target = transitionBackgroundFilterTarget(
+                in: candidate.layer),
+              let foregroundTarget = transitionForegroundFilterTarget(
+                in: candidate.layer),
+              let copied = copiedTransitionFilter(target.filter),
+              let copiedForeground = copiedTransitionFilter(
+                foregroundTarget.filter),
+              let remaining = copied.value(
+                forKey: "inputFaceOpacity") as? NSNumber
+        else {
+            continue
+        }
+        return TransitionBackgroundFilterSnapshot(
+            sampleIndex: sampleIndex,
+            requestedProgress: requestedProgress,
+            remaining: remaining.doubleValue,
+            filter: copied,
+            foregroundFilter: copiedForeground,
+            layerStates: transitionLayerStates(candidate.layer),
+            layerSource: candidate.source)
+    }
+    return nil
 }
 
 private func installTransitionBackgroundFilter(
@@ -15061,7 +15188,7 @@ private func transitionBackgroundUniformEvidence(
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "requested": true,
             "executed": false,
             "reason": "default Metal device unavailable",
@@ -15073,7 +15200,7 @@ private func transitionBackgroundUniformEvidence(
             in: rootLayer)
     else {
         return [
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "requested": true,
             "executed": false,
             "reason":
@@ -15082,6 +15209,7 @@ private func transitionBackgroundUniformEvidence(
     }
     let originalFilters = target.layer.filters
     let originalForegroundFilters = foregroundTarget.layer.filters
+    let originalLayerStates = transitionLayerStates(rootLayer)
     defer {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
@@ -15093,6 +15221,9 @@ private func transitionBackgroundUniformEvidence(
         foregroundTarget.layer.setNeedsLayout()
         CATransaction.commit()
         CATransaction.flush()
+        _ = installTransitionLayerStates(
+            originalLayerStates,
+            rootLayer: rootLayer)
     }
 
     var records: [[String: Any]] = []
@@ -15102,6 +15233,9 @@ private func transitionBackgroundUniformEvidence(
                 copiedTransitionFilter(snapshot.filter),
               let stateForegroundFilter =
                 copiedTransitionFilter(snapshot.foregroundFilter),
+              installTransitionLayerStates(
+                snapshot.layerStates,
+                rootLayer: rootLayer),
               installTransitionBackgroundFilter(
                 stateFilter,
                 target: target),
@@ -15129,13 +15263,16 @@ private func transitionBackgroundUniformEvidence(
             "sampleIndex": snapshot.sampleIndex,
             "requestedProgress": snapshot.requestedProgress,
             "remaining": snapshot.remaining,
+            "replayedLayerCount": snapshot.layerStates.count,
+            "snapshotLayerSource": snapshot.layerSource,
             "filter": filterDescription(stateFilter),
             "foregroundFilter":
                 filterDescription(stateForegroundFilter),
             "render": carendererUniformEvidence(
                 rootLayer: rootLayer,
                 device: device,
-                capture: capture),
+                capture: capture,
+                includeGeometryPolicyEvidence: true),
         ])
     }
     let executed = records.filter {
@@ -15150,7 +15287,7 @@ private func transitionBackgroundUniformEvidence(
             device: device,
             requested: matrixBasisRequested)
     return [
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "requested": true,
         "executed": executed == snapshots.count,
         "modelTargetPath": target.path,
@@ -15160,8 +15297,8 @@ private func transitionBackgroundUniformEvidence(
         "records": records,
         "method":
             "copied-presentation-background-and-foreground-filters-"
-            + "on-fresh-static-model-tree",
-        "presentationLayerReplayed": false,
+            + "plus-layer-state-on-fresh-static-model-tree",
+        "presentationLayerReplayed": true,
         "matrixUniformBasis": matrixUniformBasis,
     ]
 }
@@ -16035,7 +16172,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     phase: "after-static-model-carrier")
             } else {
                 dynamicUniformEvidence = [
-                    "schemaVersion": 2,
+                    "schemaVersion": 3,
                     "requested": false,
                     "executed": false,
                     "presentationLayerReplayed": false,
