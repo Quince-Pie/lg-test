@@ -10,6 +10,17 @@ from typing import Any
 
 
 EXPECTED_SAMPLE_INDICES = (1, 4, 8, 12, 16, 20, 24, 28, 32)
+DYNAMIC_PRODUCER_OUTPUT_EXTENTS = {
+    1: (576, 576),
+    4: (576, 576),
+    8: (576, 576),
+    12: (576, 576),
+    16: (576, 576),
+    20: (576, 576),
+    24: (512, 512),
+    28: (448, 512),
+    32: (448, 448),
+}
 HIGHLIGHT_TRACE_SAMPLE_INDICES = frozenset({1, 12, 32})
 BACKGROUND_ARITHMETIC_TRACES = {
     "sdf-float": (123, 1024 * 1024 * 16),
@@ -116,6 +127,11 @@ def fragment_name(binding: Mapping[str, Any]) -> str:
         "pipeline creation descriptor",
     )
     return str(descriptor.get("fragmentFunction", ""))
+
+
+def pipeline_label(binding: Mapping[str, Any]) -> str:
+    pipeline = mapping(binding.get("pipeline"), "pipeline")
+    return str(pipeline.get("label", ""))
 
 
 def validate_highlight_binding(binding: Mapping[str, Any]) -> None:
@@ -680,6 +696,211 @@ def validate_raw_render_evidence(
         )
 
 
+def validate_dynamic_backdrop_producer(
+    render: Mapping[str, Any],
+    *,
+    root: Path,
+    sample_index: int,
+) -> None:
+    evidence = mapping(
+        render.get("dynamicBackdropProducerBoundary"),
+        "dynamicBackdropProducerBoundary",
+    )
+    untyped_boundaries = evidence.get("records")
+    if (
+        evidence.get("schemaVersion") != 1
+        or evidence.get("boundaryCount") != 1
+        or not isinstance(untyped_boundaries, list)
+        or len(untyped_boundaries) != 1
+    ):
+        raise ValueError("dynamic backdrop producer boundary is incomplete")
+    boundary = mapping(
+        untyped_boundaries[0],
+        "dynamic backdrop producer boundary",
+    )
+    expected_capture = f"transition-background-uniform-{sample_index:02d}"
+    if (
+        render.get("capture") != expected_capture
+        or evidence.get("capture") != expected_capture
+        or boundary.get("index") != 0
+        or boundary.get("capturePoint")
+        != "blit-after-producer-render-before-copy-base-compute"
+    ):
+        raise ValueError("dynamic backdrop capture point differs")
+
+    probe = mapping(render.get("metalUniformProbe"), "metalUniformProbe")
+    records = probe.get("records")
+    if not isinstance(records, list):
+        raise ValueError("Metal uniform records are incomplete")
+    typed_records = [
+        mapping(record, "Metal uniform record")
+        for record in records
+    ]
+    copy_sources = [
+        record
+        for record in typed_records
+        if record.get("kind") == "texture"
+        and record.get("stage") == "compute"
+        and record.get("index") == 0
+        and pipeline_label(record)
+        == "com.apple.coreanimation.variable_blur_copy_base_mip_compute"
+    ]
+    if len(copy_sources) != 1:
+        raise ValueError(
+            "copy-base producer output binding is not unique"
+        )
+    copy_source = copy_sources[0]
+    copy_source_texture = mapping(
+        copy_source.get("texture"),
+        "copy-base producer output texture",
+    )
+    source_address = copy_source_texture.get("address")
+    if (
+        not isinstance(source_address, str)
+        or boundary.get("copyBaseEncoder") != copy_source.get("encoder")
+        or boundary.get("copyBaseBindingSequence")
+        != copy_source.get("sequence")
+        or boundary.get("producerOutputAddress") != source_address
+    ):
+        raise ValueError("copy-base producer output has no address")
+
+    def color_zero_attachment(
+        record: Mapping[str, Any],
+    ) -> Mapping[str, Any] | None:
+        attachments = record.get("colorAttachments")
+        if not isinstance(attachments, list):
+            return None
+        for untyped_attachment in attachments:
+            attachment = mapping(
+                untyped_attachment,
+                "render-pass color attachment",
+            )
+            if attachment.get("index") != 0:
+                continue
+            return attachment
+        return None
+
+    def color_zero_address(record: Mapping[str, Any]) -> object:
+        attachment = color_zero_attachment(record)
+        if attachment is None:
+            return None
+        texture = mapping(
+            attachment.get("texture"),
+            "render-pass color texture",
+        )
+        return texture.get("address")
+
+    producer_passes = [
+        record
+        for record in typed_records
+        if record.get("kind") == "renderPass"
+        and color_zero_address(record) == source_address
+    ]
+    if len(producer_passes) != 1:
+        raise ValueError(
+            "render pass producing copy-base input is not unique"
+        )
+    producer_pass = producer_passes[0]
+    producer_encoder = producer_pass.get("encoder")
+    producer_attachment = color_zero_attachment(producer_pass)
+    if (
+        producer_attachment is None
+        or producer_attachment.get("loadAction") != 2
+        or producer_attachment.get("storeAction") != 1
+        or boundary.get("producerEncoder") != producer_encoder
+        or boundary.get("producerRenderPassSequence")
+        != producer_pass.get("sequence")
+    ):
+        raise ValueError("dynamic backdrop producer pass join differs")
+    producer_inputs = [
+        record
+        for record in typed_records
+        if record.get("kind") == "texture"
+        and record.get("stage") == "fragment"
+        and record.get("index") == 3
+        and record.get("encoder") == producer_encoder
+    ]
+    if len(producer_inputs) != 1:
+        raise ValueError("dynamic backdrop producer input is not unique")
+    producer_input = producer_inputs[0]
+    input_address = producer_input.get("address")
+    producer_input_sequence = producer_input.get("sequence")
+    producer_pass_sequence = producer_pass.get("sequence")
+    copy_base_sequence = copy_source.get("sequence")
+    if (
+        fragment_name(producer_input)
+        not in {"A2Xghfc", "TimgA2Xhfc_Isrc"}
+        or not isinstance(input_address, str)
+        or boundary.get("producerInputAddress") != input_address
+        or boundary.get("producerInputBindingSequence")
+        != producer_input_sequence
+        or not isinstance(producer_pass_sequence, int)
+        or not isinstance(producer_input_sequence, int)
+        or not isinstance(copy_base_sequence, int)
+        or not (
+            producer_pass_sequence
+            < producer_input_sequence
+            < copy_base_sequence
+        )
+    ):
+        raise ValueError("dynamic backdrop producer input join differs")
+
+    producer_output_snapshot = mapping(
+        boundary.get("output"),
+        "dynamic backdrop producer output snapshot",
+    )
+    producer_input_snapshot = mapping(
+        boundary.get("input"),
+        "dynamic backdrop producer input snapshot",
+    )
+    if (
+        (producer_input.get("width"), producer_input.get("height"))
+        != (1024, 1024)
+        or (
+            copy_source_texture.get("width"),
+            copy_source_texture.get("height"),
+        )
+        != DYNAMIC_PRODUCER_OUTPUT_EXTENTS[sample_index]
+    ):
+        raise ValueError("dynamic backdrop producer extent differs")
+    for name, snapshot, descriptor in (
+        (
+            "dynamic backdrop producer output",
+            producer_output_snapshot,
+            copy_source_texture,
+        ),
+        (
+            "dynamic backdrop producer input",
+            producer_input_snapshot,
+            producer_input,
+        ),
+    ):
+        width = descriptor.get("width")
+        height = descriptor.get("height")
+        if (
+            not isinstance(width, int)
+            or not isinstance(height, int)
+            or not 0 < width <= 1024
+            or not 0 < height <= 1024
+            or descriptor.get("pixelFormat") != 80
+            or descriptor.get("mipmapLevelCount") != 1
+            or descriptor.get("depth") != 1
+            or descriptor.get("arrayLength") != 1
+            or descriptor.get("sampleCount") != 1
+            or snapshot.get("width") != width
+            or snapshot.get("height") != height
+            or snapshot.get("pixelFormat") != 80
+            or snapshot.get("mipmapLevelCount") != 1
+            or snapshot.get("depth") != 1
+            or snapshot.get("arrayLength") != 1
+            or snapshot.get("sampleCount") != 1
+            or snapshot.get("rawBytes") != width * height * 4
+            or snapshot.get("bytesPerRow") != width * 4
+        ):
+            raise ValueError(f"{name} layout differs")
+        validate_raw_file(snapshot, root=root, name=name)
+
+
 def validate_highlight_trace(
     replay: Mapping[str, Any],
     *,
@@ -967,7 +1188,7 @@ def validate(
         report.get("dynamicBackgroundUniforms"),
         "dynamicBackgroundUniforms",
     )
-    if uniforms.get("schemaVersion") != 5 or uniforms.get("requested") is not requested:
+    if uniforms.get("schemaVersion") != 6 or uniforms.get("requested") is not requested:
         raise ValueError("dynamic uniform highlight schema differs")
     if uniforms.get("presentationLayerReplayed") is not requested:
         raise ValueError("dynamic presentation replay metadata differs")
@@ -983,6 +1204,8 @@ def validate(
             "backgroundInterpolantTraces": 0,
             "backgroundArithmeticTraces": 0,
             "intermediateTextures": 0,
+            "dynamicBackdropProducerInputs": 0,
+            "dynamicBackdropProducerOutputs": 0,
         }
 
     records = uniforms.get("records")
@@ -1012,6 +1235,8 @@ def validate(
     background_interpolant_trace_count = 0
     background_arithmetic_trace_count = 0
     intermediate_texture_count = 0
+    dynamic_backdrop_producer_input_count = 0
+    dynamic_backdrop_producer_output_count = 0
     for sample_index, untyped_record in zip(
         EXPECTED_SAMPLE_INDICES,
         records,
@@ -1093,6 +1318,13 @@ def validate(
         ):
             raise ValueError(f"sample {sample_index} render is incomplete")
         validate_raw_render_evidence(render, root=path.parent)
+        validate_dynamic_backdrop_producer(
+            render,
+            root=path.parent,
+            sample_index=sample_index,
+        )
+        dynamic_backdrop_producer_input_count += 1
+        dynamic_backdrop_producer_output_count += 1
         replay = mapping(render.get("exactPassReplay"), "exactPassReplay")
         if highlight_trace:
             validate_background_interpolant_trace(
@@ -1219,6 +1451,12 @@ def validate(
         "backgroundInterpolantTraces": background_interpolant_trace_count,
         "backgroundArithmeticTraces": background_arithmetic_trace_count,
         "intermediateTextures": intermediate_texture_count,
+        "dynamicBackdropProducerInputs": (
+            dynamic_backdrop_producer_input_count
+        ),
+        "dynamicBackdropProducerOutputs": (
+            dynamic_backdrop_producer_output_count
+        ),
     }
 
 

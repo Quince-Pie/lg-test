@@ -1822,6 +1822,24 @@ both of its fixed matrix operands without hard-coding a process address or
 accepting a symbol name inferred from unrelated code. The other matrix legs
 still rerun the unchanged state/pixel gates as controls.
 
+Dynamic-uniform schema 6 captures the two byte fields needed to test the
+recovered moving-backdrop algebra independently. A normal post-frame texture
+dump is not valid for this purpose: the 1024-by-1024 producer input is reused
+as a later render target and no longer contains the bytes sampled by the
+producer. Instead, immediately after the `A2Xghfc` or `TimgA2Xhfc_Isrc`
+producer draw has ended and before Core Animation creates its next compute
+encoder, the probe inserts one read-only blit of both the producer input and
+output into dedicated textures. It later joins that output to source index
+zero of `variable_blur_copy_base_mip_compute` by Metal object address. CI
+requires the producer render-pass identity, input-binding identity,
+copy-base-binding identity, strict command sequence, and both raw single-mip
+BGRA8 payloads in all nine states. This is a discovery/calibration capture: it
+can test the producer raster and copy-base stages byte for byte, but it is not
+the prospective geometry/progress holdout and cannot authorize Walle
+integration by itself. Its frozen evidence boundary and acceptance criteria
+are recorded in
+`Analysis/dynamic_backdrop_producer_capture_preregistration.json`.
+
 ## Run locally on macOS 26
 
 ```sh

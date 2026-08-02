@@ -3650,6 +3650,8 @@ private func probeMakeComputeCommandEncoder(
     _ commandBuffer: AnyObject,
     _ selector: Selector
 ) -> Unmanaged<AnyObject>? {
+    MetalUniformProbe.shared.prepareDynamicBackdropProducerBoundary(
+        commandBuffer: commandBuffer)
     guard let result = MetalUniformProbe.shared
         .forwardMakeComputeCommandEncoder(
             commandBuffer: commandBuffer,
@@ -3670,6 +3672,8 @@ private func probeMakeComputeCommandEncoderWithDispatchType(
     _ selector: Selector,
     _ dispatchType: MTLDispatchType
 ) -> Unmanaged<AnyObject>? {
+    MetalUniformProbe.shared.prepareDynamicBackdropProducerBoundary(
+        commandBuffer: commandBuffer)
     guard let result = MetalUniformProbe.shared
         .forwardMakeComputeCommandEncoderWithDispatchType(
             commandBuffer: commandBuffer,
@@ -3692,6 +3696,8 @@ private func probeMakeComputeCommandEncoderWithDescriptor(
     _ selector: Selector,
     _ descriptor: MTLComputePassDescriptor
 ) -> Unmanaged<AnyObject>? {
+    MetalUniformProbe.shared.prepareDynamicBackdropProducerBoundary(
+        commandBuffer: commandBuffer)
     guard let result = MetalUniformProbe.shared
         .forwardMakeComputeCommandEncoderWithDescriptor(
             commandBuffer: commandBuffer,
@@ -4846,6 +4852,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private final class ReplayPass {
         let capture: String
         let encoder: ObjectIdentifier
+        let encoderAddress: String
         let descriptor: MTLRenderPassDescriptor
         let preColor0: MTLTexture?
         var commands: [ReplayCommand] = []
@@ -4853,13 +4860,50 @@ private final class MetalUniformProbe: @unchecked Sendable {
         init(
             capture: String,
             encoder: ObjectIdentifier,
+            encoderAddress: String,
             descriptor: MTLRenderPassDescriptor,
             preColor0: MTLTexture?
         ) {
             self.capture = capture
             self.encoder = encoder
+            self.encoderAddress = encoderAddress
             self.descriptor = descriptor
             self.preColor0 = preColor0
+        }
+    }
+
+    private final class DynamicBackdropProducerBoundary {
+        let capture: String
+        let producerEncoder: String
+        let producerRenderPassSequence: Int
+        let producerInputBindingSequence: Int
+        let producerInputAddress: String
+        let producerOutputAddress: String
+        let producerInputCopy: MTLTexture
+        let producerOutputCopy: MTLTexture
+        var copyBaseEncoder: String?
+        var copyBaseBindingSequence: Int?
+
+        init(
+            capture: String,
+            producerEncoder: String,
+            producerRenderPassSequence: Int,
+            producerInputBindingSequence: Int,
+            producerInputAddress: String,
+            producerOutputAddress: String,
+            producerInputCopy: MTLTexture,
+            producerOutputCopy: MTLTexture
+        ) {
+            self.capture = capture
+            self.producerEncoder = producerEncoder
+            self.producerRenderPassSequence =
+                producerRenderPassSequence
+            self.producerInputBindingSequence =
+                producerInputBindingSequence
+            self.producerInputAddress = producerInputAddress
+            self.producerOutputAddress = producerOutputAddress
+            self.producerInputCopy = producerInputCopy
+            self.producerOutputCopy = producerOutputCopy
         }
     }
 
@@ -4873,6 +4917,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var replayPasses: [ReplayPass] = []
     private var replayPassByEncoder:
         [ObjectIdentifier: ReplayPass] = [:]
+    private var dynamicBackdropProducerBoundaries:
+        [DynamicBackdropProducerBoundary] = []
     private var independentReplayGPUFailure: String?
     private var textureBindings: [TextureBinding] = []
     private var samplerBindings: [SamplerBinding] = []
@@ -6151,6 +6197,25 @@ private final class MetalUniformProbe: @unchecked Sendable {
         ]
         if let metalTexture = texture as? MTLTexture {
             record["texture"] = textureRecord(metalTexture)
+            if captureName.hasPrefix(
+                    "transition-background-uniform-"),
+               index == 0,
+               let label = pipeline["label"] as? String,
+               label ==
+                   "com.apple.coreanimation.variable_blur_copy_base_mip_compute",
+               let boundary =
+                   dynamicBackdropProducerBoundaries.reversed()
+                    .first(where: {
+                        $0.capture == captureName
+                            && $0.producerOutputAddress
+                                == objectAddress(
+                                    metalTexture as AnyObject)
+                            && $0.copyBaseBindingSequence == nil
+                    })
+            {
+                boundary.copyBaseEncoder = objectAddress(encoder)
+                boundary.copyBaseBindingSequence = records.count
+            }
             if captureName == "carenderer-live-tree",
                index == 0,
                let label = pipeline["label"] as? String,
@@ -6299,6 +6364,176 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return record
     }
 
+    private func dynamicBackdropProducerInput(
+        in pass: ReplayPass
+    ) -> MTLTexture? {
+        var producerPipeline = false
+        var fragmentInput: MTLTexture?
+        var selectedInput: MTLTexture?
+        for command in pass.commands {
+            switch command {
+            case .pipeline(let state):
+                let descriptor =
+                    pipelineDescriptors[ObjectIdentifier(state)]
+                let fragment = descriptor?
+                    .fragmentFunction?.name
+                producerPipeline = fragment == "A2Xghfc"
+                    || fragment == "TimgA2Xhfc_Isrc"
+            case .fragmentTexture(let texture, let index):
+                if index == 3 {
+                    fragmentInput = texture
+                }
+            case .drawPrimitives,
+                 .drawPrimitivesInstanced,
+                 .drawPrimitivesBaseInstance,
+                 .drawIndexedPrimitives,
+                 .drawIndexedPrimitivesInstanced,
+                 .drawIndexedPrimitivesBaseVertex:
+                if producerPipeline,
+                   let fragmentInput,
+                   fragmentInput.textureType == .type2D,
+                   fragmentInput.width == 1_024,
+                   fragmentInput.height == 1_024,
+                   fragmentInput.depth == 1,
+                   fragmentInput.arrayLength == 1,
+                   fragmentInput.mipmapLevelCount == 1,
+                   fragmentInput.sampleCount == 1,
+                   fragmentInput.pixelFormat == .bgra8Unorm
+                {
+                    selectedInput = fragmentInput
+                }
+            default:
+                break
+            }
+        }
+        return selectedInput
+    }
+
+    func prepareDynamicBackdropProducerBoundary(
+        commandBuffer: AnyObject
+    ) {
+        lock.lock()
+        guard let captureName,
+              captureName.hasPrefix(
+                "transition-background-uniform-"),
+              let pass = replayPasses.last(where: {
+                  $0.capture == captureName
+              }),
+              !dynamicBackdropProducerBoundaries.contains(where: {
+                  $0.capture == captureName
+                      && $0.producerEncoder == pass.encoderAddress
+              }),
+              let producerInput = dynamicBackdropProducerInput(
+                in: pass),
+              let outputAttachment =
+                pass.descriptor.colorAttachments[0],
+              outputAttachment.level == 0,
+              outputAttachment.slice == 0,
+              outputAttachment.depthPlane == 0,
+              outputAttachment.storeAction == .store,
+              let producerOutput = outputAttachment.texture,
+              producerOutput.textureType == .type2D,
+              producerOutput.depth == 1,
+              producerOutput.arrayLength == 1,
+              producerOutput.mipmapLevelCount == 1,
+              producerOutput.sampleCount == 1,
+              producerOutput.pixelFormat == .bgra8Unorm,
+              producerOutput.width > 0,
+              producerOutput.height > 0,
+              producerOutput.width <= 1_024,
+              producerOutput.height <= 1_024,
+              ObjectIdentifier(producerInput as AnyObject)
+                != ObjectIdentifier(producerOutput as AnyObject),
+              let renderPassRecord = records.last(where: {
+                  $0["kind"] as? String == "renderPass"
+                      && $0["encoder"] as? String
+                          == pass.encoderAddress
+              }),
+              let producerRenderPassSequence =
+                renderPassRecord["sequence"] as? Int,
+              let inputBindingRecord = records.last(where: {
+                  $0["kind"] as? String == "texture"
+                      && $0["stage"] as? String == "fragment"
+                      && $0["index"] as? Int == 3
+                      && $0["encoder"] as? String
+                          == pass.encoderAddress
+                      && $0["address"] as? String
+                          == objectAddress(
+                              producerInput as AnyObject)
+              }),
+              let producerInputBindingSequence =
+                inputBindingRecord["sequence"] as? Int,
+              let metalCommandBuffer =
+                commandBuffer as? MTLCommandBuffer
+        else {
+            lock.unlock()
+            return
+        }
+        let producerEncoder = pass.encoderAddress
+        let producerInputAddress = objectAddress(
+            producerInput as AnyObject)
+        let producerOutputAddress = objectAddress(
+            producerOutput as AnyObject)
+        lock.unlock()
+
+        func makeCopy(of source: MTLTexture) -> MTLTexture? {
+            let descriptor = MTLTextureDescriptor
+                .texture2DDescriptor(
+                    pixelFormat: source.pixelFormat,
+                    width: source.width,
+                    height: source.height,
+                    mipmapped: false)
+            descriptor.storageMode = .private
+            descriptor.usage = [.shaderRead]
+            return source.device.makeTexture(descriptor: descriptor)
+        }
+        guard let producerInputCopy = makeCopy(of: producerInput),
+              let producerOutputCopy = makeCopy(of: producerOutput),
+              let blit = metalCommandBuffer.makeBlitCommandEncoder()
+        else {
+            return
+        }
+        for (source, destination) in [
+            (producerInput, producerInputCopy),
+            (producerOutput, producerOutputCopy),
+        ] {
+            blit.copy(
+                from: source,
+                sourceSlice: 0,
+                sourceLevel: 0,
+                sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                sourceSize: MTLSize(
+                    width: source.width,
+                    height: source.height,
+                    depth: 1),
+                to: destination,
+                destinationSlice: 0,
+                destinationLevel: 0,
+                destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+        }
+        blit.endEncoding()
+
+        let boundary = DynamicBackdropProducerBoundary(
+            capture: captureName,
+            producerEncoder: producerEncoder,
+            producerRenderPassSequence:
+                producerRenderPassSequence,
+            producerInputBindingSequence:
+                producerInputBindingSequence,
+            producerInputAddress: producerInputAddress,
+            producerOutputAddress: producerOutputAddress,
+            producerInputCopy: producerInputCopy,
+            producerOutputCopy: producerOutputCopy)
+        lock.lock()
+        if !dynamicBackdropProducerBoundaries.contains(where: {
+            $0.capture == captureName
+                && $0.producerEncoder == producerEncoder
+        }) {
+            dynamicBackdropProducerBoundaries.append(boundary)
+        }
+        lock.unlock()
+    }
+
     func prepareRenderPassCopy(
         commandBuffer: AnyObject,
         descriptor: MTLRenderPassDescriptor
@@ -6379,6 +6614,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             let pass = ReplayPass(
                 capture: captureName,
                 encoder: ObjectIdentifier(encoder),
+                encoderAddress: objectAddress(encoder),
                 descriptor: descriptorCopy,
                 preColor0: preColor0)
             replayPasses.append(pass)
@@ -7304,6 +7540,81 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return [
             "bindingCount": bindings.count,
             "snapshots": snapshots,
+        ]
+    }
+
+    func snapshotDynamicBackdropProducerBoundary(
+        capture: String,
+        commandQueue: MTLCommandQueue,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        lock.lock()
+        let boundaries = dynamicBackdropProducerBoundaries.filter {
+            $0.capture == capture
+        }
+        dynamicBackdropProducerBoundaries.removeAll {
+            $0.capture == capture
+        }
+        lock.unlock()
+
+        func snapshot(
+            _ texture: MTLTexture,
+            suffix: String
+        ) -> [String: Any] {
+            var record = carendererOutputSnapshot(
+                texture,
+                commandQueue: commandQueue,
+                capture: "\(capture)-dynamic-backdrop-\(suffix)",
+                outputDirectory: outputDirectory)
+            record["depth"] = texture.depth
+            record["arrayLength"] = texture.arrayLength
+            record["mipmapLevelCount"] =
+                texture.mipmapLevelCount
+            record["sampleCount"] = texture.sampleCount
+            record["textureType"] = texture.textureType.rawValue
+            return record
+        }
+
+        let records: [[String: Any]] =
+            boundaries.enumerated().map { index, boundary in
+                var record: [String: Any] = [
+                    "index": index,
+                    "capturePoint": (
+                        "blit-after-producer-render-before-"
+                        + "copy-base-compute"
+                    ),
+                    "producerEncoder": boundary.producerEncoder,
+                    "producerRenderPassSequence":
+                        boundary.producerRenderPassSequence,
+                    "producerInputBindingSequence":
+                        boundary.producerInputBindingSequence,
+                    "producerInputAddress":
+                        boundary.producerInputAddress,
+                    "producerOutputAddress":
+                        boundary.producerOutputAddress,
+                    "input": snapshot(
+                        boundary.producerInputCopy,
+                        suffix: "producer-input-\(index)"),
+                    "output": snapshot(
+                        boundary.producerOutputCopy,
+                        suffix: "producer-output-\(index)"),
+                ]
+                if let copyBaseEncoder = boundary.copyBaseEncoder {
+                    record["copyBaseEncoder"] = copyBaseEncoder
+                }
+                if let copyBaseBindingSequence =
+                    boundary.copyBaseBindingSequence
+                {
+                    record["copyBaseBindingSequence"] =
+                        copyBaseBindingSequence
+                }
+                return record
+            }
+        return [
+            "schemaVersion": 1,
+            "capture": capture,
+            "boundaryCount": records.count,
+            "records": records,
         ]
     }
 
@@ -15494,6 +15805,16 @@ private func carendererUniformEvidence(
                 capture: capture,
                 outputDirectory: outputDirectory)
             result["output"] = outputSnapshot
+            if capture.hasPrefix(
+                    "transition-background-uniform-")
+            {
+                result["dynamicBackdropProducerBoundary"] =
+                    MetalUniformProbe.shared
+                        .snapshotDynamicBackdropProducerBoundary(
+                            capture: capture,
+                            commandQueue: commandQueue,
+                            outputDirectory: outputDirectory)
+            }
             result["exactPassReplay"] =
                 MetalUniformProbe.shared.replayFinalPass(
                     capture: capture,
@@ -16563,7 +16884,7 @@ private func transitionBackgroundUniformEvidence(
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
-            "schemaVersion": 5,
+            "schemaVersion": 6,
             "requested": true,
             "executed": false,
             "reason": "default Metal device unavailable",
@@ -16574,7 +16895,7 @@ private func transitionBackgroundUniformEvidence(
           !snapshots.isEmpty
     else {
         return [
-            "schemaVersion": 5,
+            "schemaVersion": 6,
             "requested": true,
             "executed": false,
             "reason":
@@ -16715,7 +17036,7 @@ private func transitionBackgroundUniformEvidence(
             device: device,
             requested: matrixBasisRequested)
     return [
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "requested": true,
         "executed": executed == snapshots.count,
         "modelTargetPath": matrixTarget.path,
@@ -17637,7 +17958,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     phase: "after-static-model-carrier")
             } else {
                 dynamicUniformEvidence = [
-                    "schemaVersion": 5,
+                    "schemaVersion": 6,
                     "requested": false,
                     "executed": false,
                     "presentationLayerReplayed": false,

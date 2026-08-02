@@ -1,0 +1,81 @@
+{
+  "liquidGlassDynamicBackdropProducerCapturePreregistrationSchemaVersion": 1,
+  "status": "preregistered-before-apple-capture",
+  "registeredUTCDate": "2026-08-02",
+  "classification": "opened-discovery-calibration",
+  "scope": {
+    "profile": "clear-light-materialize",
+    "sampleIndices": [1, 4, 8, 12, 16, 20, 24, 28, 32],
+    "prospectiveParityHoldout": false,
+    "authorizesProductionIntegration": false,
+    "purpose": [
+      "capture the exact pixels sampled by Apple's dynamic backdrop producer",
+      "capture the exact pixels emitted by that producer before copy-base",
+      "separate recovered continuous arithmetic from crop-allocation policy"
+    ]
+  },
+  "sourceEvidence": {
+    "runId": 30743666804,
+    "commit": "41ebf7e",
+    "artifactTreeSha256": "dee33cbe8dc51c1d31ac7144a8ddf181f94b556a71a674fb8d9d2edd843da6ec",
+    "localAnalysis": {
+      "implementation": "../analysis/liquid_glass_dynamic_backdrop.py",
+      "implementationSha256": "7cb5a946dfb1580934548ec59b20e61c0c90a4f595ccb5b895357e99fc1365eb",
+      "result": "../analysis/results/dynamic-backdrop-30743666804.json",
+      "resultSha256": "ca5cbfd9781b0b9262ab7d287761c06c7e99f3a18348c01bc607fbb0d0189052"
+    },
+    "measuredRawCoverage": {
+      "producerInputStates": 1,
+      "producerOutputStates": 0,
+      "stateCount": 9
+    }
+  },
+  "frozenFindings": {
+    "runtimeScaleLaw": "scale = 1 - k / 2",
+    "dynamicResamplingScale": "q = 1 / scale = 2 / (2 - k)",
+    "effectiveOrigin": "O = producerCropOrigin + copyBaseIntegerOffset",
+    "sourceMapping": "uv = (position / q - O) / allocatedExtent",
+    "producerOrthographicScaleBitsExactEveryState": true,
+    "displacementMatrixScaleBitsExactEveryState": true,
+    "simpleFmaThenDivideMismatchedSourceComponents": 29,
+    "capturedSourceComponentCount": 396,
+    "twoObservedArithmeticCandidatesCoverEveryComponent": true
+  },
+  "unresolvedBeforeCapture": [
+    "the single CPU float-staging rule behind the two observed one-ULP source-coordinate forms",
+    "the independent crop and allocation decision policy",
+    "a byte-exact replay of the producer raster and copy-base boundary",
+    "an unseen geometry/progress holdout after the upstream policy is modeled"
+  ],
+  "captureIntervention": {
+    "schema": "dynamicBackgroundUniforms/6",
+    "capturePoint": "blit-after-producer-render-before-copy-base-compute",
+    "method": [
+      "identify the producer pass from its captured A2Xghfc or TimgA2Xhfc_Isrc draw and 1024x1024 BGRA8 index-3 input",
+      "after that render encoder ends and before the next compute encoder is created, blit producer input and output into dedicated read-only textures",
+      "join the original output address to index 0 of variable_blur_copy_base_mip_compute"
+    ],
+    "forbiddenSubstitute": "post-frame dumping of the original producer input, because that texture is reused as a later render target"
+  },
+  "acceptance": {
+    "requiredStateCount": 9,
+    "requiredBoundaryCountPerState": 1,
+    "requiredPixelFormat": 80,
+    "requiredMipmapLevelCount": 1,
+    "requiredRawProducerInputs": 9,
+    "requiredRawProducerOutputs": 9,
+    "requireUniqueAddressAndEncoderJoin": true,
+    "requireStrictProducerPassInputCopyBaseSequence": true,
+    "requireExistingFinalPassAndPixelReplayGates": true,
+    "retainFailuresAndCounterexamples": true
+  },
+  "interpretation": {
+    "success": "permits bytewise producer and copy-base analysis on these nine opened states",
+    "failure": "falsifies the capture intervention or a frozen structural assumption",
+    "notClaimed": [
+      "universal Apple Liquid Glass parity",
+      "independent crop-allocation recovery",
+      "production shader authorization"
+    ]
+  }
+}
