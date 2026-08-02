@@ -1742,13 +1742,13 @@ All three alpha checkpoints additionally retain a complete RGBA32Uint trace
 of the SDF/source interpolants. The diagnostic pipeline uses an ABI-equivalent
 stage-in vertex over the captured 48-byte vertex records and MVP. It does not
 link Apple's private vertex function to a replacement fragment, a combination
-that the driver accepts but can hang at execution. The first fractional state
-also retains key-only and fill-only fields plus the ten controlled key/fill
+that the driver accepts but can hang at execution. All three alpha checkpoints
+also retain key-only and fill-only fields plus the ten controlled key/fill
 stage interventions. Together these fields separate fractional AGX raster
 setup from SDF, normal, coverage, and band arithmetic without fitting the
-final alpha image. The middle-state alpha holdout omits the larger stage
-matrix and unused auxiliary attachments; the complete settled-highlight
-workflow retains its independent diagnostics.
+final alpha image. CI requires the complete stage matrix at the first
+fractional state, the preregistered middle-state holdout, and the settled
+endpoint; no checkpoint may silently fall back to an alpha-only trace.
 At the settled dynamic endpoint, the same focused leg also loads the exact
 BGRA8 attachment retained immediately before the final draw and replays
 Apple's unmodified `A2Xghfc` function in isolation. Both the captured pipeline

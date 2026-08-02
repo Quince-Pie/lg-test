@@ -28,7 +28,7 @@ jobs:
       (inputs.capture_mode == 'uniform-smoke' &&
       matrix.label == 'profile-clear-light-materialize')) &&
       'macos-26' || 'ubuntu-latest' }}
-    timeout-minutes: 40
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:

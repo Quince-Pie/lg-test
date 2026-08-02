@@ -11928,8 +11928,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     outputDirectory: outputDirectory,
                     includeDiagnostics:
                         capture == "carenderer-local-backdrop"
-                        || (dynamicHighlightTraceRequested
-                            && capture.hasSuffix("-01")),
+                        || dynamicHighlightTraceRequested,
                     includeInterpolant:
                         dynamicHighlightTraceRequested,
                     compositorInput:
