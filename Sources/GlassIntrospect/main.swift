@@ -16159,14 +16159,36 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 carrierWindow.setFrameOrigin(.zero)
                 carrierWindow.makeKeyAndOrderFront(nil)
                 carrierWindow.makeMain()
-                carrierWindow.displayIfNeeded()
-                CATransaction.flush()
-                try? await Task.sleep(
-                    for: .milliseconds(500))
-                carrierWindow.displayIfNeeded()
-                CATransaction.flush()
-                guard let carrierRootLayer =
-                        carrierWindow.contentView?.layer
+                let carrierReadyStarted = CACurrentMediaTime()
+                let carrierReadyDeadline = carrierReadyStarted + 5.0
+                var carrierRootLayer: CALayer?
+                var carrierEndpointSnapshot:
+                    TransitionBackgroundFilterSnapshot?
+                while CACurrentMediaTime() < carrierReadyDeadline {
+                    carrierWindow.contentView?.layoutSubtreeIfNeeded()
+                    carrierWindow.contentView?.displayIfNeeded()
+                    carrierWindow.displayIfNeeded()
+                    CATransaction.flush()
+                    if let rootLayer = carrierWindow.contentView?.layer,
+                       let snapshot =
+                            transitionBackgroundFilterSnapshot(
+                                rootLayer: rootLayer,
+                                sampleIndex: sampleCount - 1,
+                                requestedProgress: 1.0,
+                                presentationLayerSource:
+                                    "static-carrier-endpoint",
+                                modelLayerSource:
+                                    "static-carrier-endpoint")
+                    {
+                        carrierRootLayer = rootLayer
+                        carrierEndpointSnapshot = snapshot
+                        break
+                    }
+                    try? await Task.sleep(
+                        for: .milliseconds(16))
+                }
+                guard let carrierRootLayer,
+                      let carrierEndpointSnapshot
                 else {
                     throw NSError(
                         domain:
@@ -16174,34 +16196,15 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         code: 8,
                         userInfo: [
                             NSLocalizedDescriptionKey:
-                                "fresh static uniform carrier "
-                                + "root unavailable",
+                                "fresh static uniform carrier filters "
+                                + "unavailable after 5 seconds",
                         ])
                 }
                 if !dynamicUniformSnapshots.contains(
                     where: { $0.sampleIndex == sampleCount - 1 }
                 ) {
-                    guard let endpointSnapshot =
-                            transitionBackgroundFilterSnapshot(
-                                rootLayer: carrierRootLayer,
-                                sampleIndex: sampleCount - 1,
-                                requestedProgress: 1.0,
-                                presentationLayerSource:
-                                    "static-carrier-endpoint",
-                                modelLayerSource:
-                                    "static-carrier-endpoint")
-                    else {
-                        throw NSError(
-                            domain:
-                                "LiquidGlassTransitionProbe",
-                            code: 10,
-                            userInfo: [
-                                NSLocalizedDescriptionKey:
-                                    "static carrier endpoint "
-                                    + "snapshot unavailable",
-                            ])
-                    }
-                    dynamicUniformSnapshots.append(endpointSnapshot)
+                    dynamicUniformSnapshots.append(
+                        carrierEndpointSnapshot)
                 }
                 dynamicUniformEvidence =
                     transitionBackgroundUniformEvidence(
