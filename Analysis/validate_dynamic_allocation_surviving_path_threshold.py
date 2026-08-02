@@ -1,0 +1,485 @@
+#!/usr/bin/env python3
+"""Validate the reduced live-baseline deepest-SDF threshold experiment."""
+
+from __future__ import annotations
+
+import argparse
+import copy
+import json
+from collections import Counter
+from collections.abc import Mapping, Sequence
+from pathlib import Path
+from typing import Any
+
+import validate_dynamic_allocation_fixed_state as fixed
+import validate_dynamic_allocation_holdout as holdout
+import validate_dynamic_allocation_path_isolation as original
+
+
+EXPECTED_GEOMETRY = "circle-640-center"
+EXPECTED_SAMPLE_INDICES = tuple(range(1, 33))
+EXPECTED_SOURCE_SAMPLE_INDICES = (25, 31)
+POSITION_PATH = original.POSITION_PATH
+STRONG_DELTAS = original.STRONG_DELTAS
+DENSE_X_VALUES = original.DENSE_X_VALUES
+DENSE_Y_VALUES = original.DENSE_Y_VALUES
+BUFFER_RETENTION_POLICY = original.BUFFER_RETENTION_POLICY
+CLASSIFICATION = (
+    "preregistered-live-baseline-deepest-sdf-position-threshold-calibration"
+)
+INVARIANT_FIELDS = (
+    "cropOrigin",
+    "textureCoordinateClamp",
+    "producerExtent",
+    "destinationExtent",
+    "copyOffset",
+    "effectiveOrigin",
+)
+DECODED_MESH_FIELDS = (
+    "fragmentFunction",
+    "vertexCount",
+    "indexCount",
+    "primaryVertices",
+    "quadBounds",
+    "viewport",
+    "scissor",
+    "sourceScaleComponentCount",
+    "sourceScaleMismatchedComponents",
+    "allSourceScaleComponentCount",
+    "allSourceScaleMismatchedComponents",
+    "inputTexture",
+)
+
+
+def expected_interventions(sample_index: int) -> list[dict[str, Any]]:
+    if sample_index not in EXPECTED_SOURCE_SAMPLE_INDICES:
+        raise ValueError(f"unexpected source sample: {sample_index}")
+    identifier = original.path_name(POSITION_PATH)
+    result: list[dict[str, Any]] = [
+        {
+            "name": "base",
+            "phase": "control",
+            "path": (),
+            "mutation": "base",
+            "delta": (0, 0),
+        }
+    ]
+    result.extend(
+        {
+            "name": f"strong-{identifier}-position-{name}",
+            "phase": "path-isolation",
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": delta,
+        }
+        for name, delta in STRONG_DELTAS
+    )
+    if sample_index != 25:
+        return result
+    result.extend(
+        {
+            "name": (
+                f"dense-{identifier}-position-x-{original.signed_name(value)}"
+            ),
+            "phase": "dense-threshold",
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": (value, 0),
+        }
+        for value in DENSE_X_VALUES
+    )
+    result.extend(
+        {
+            "name": (
+                f"dense-{identifier}-position-y-{original.signed_name(value)}"
+            ),
+            "phase": "dense-threshold",
+            "path": POSITION_PATH,
+            "mutation": "position",
+            "delta": (0, value),
+        }
+        for value in DENSE_Y_VALUES
+    )
+    return result
+
+
+def live_baseline_states(
+    states: Sequence[Any], delta: tuple[int, int]
+) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    target_count = 0
+    for value in states:
+        state = copy.deepcopy(dict(holdout.mapping(value, "live layer state")))
+        path = tuple(
+            int(component)
+            for component in fixed.sequence(state.get("path"), "live layer path")
+        )
+        if path == POSITION_PATH:
+            position = list(fixed.sequence(state.get("position"), "live position"))
+            if len(position) != 2:
+                raise ValueError("deepest SDF position is not a point")
+            position[0] = holdout.numeric(position[0], "position X") + delta[0]
+            position[1] = holdout.numeric(position[1], "position Y") + delta[1]
+            state["position"] = position
+            target_count += 1
+        result.append(state)
+    if target_count != 1:
+        raise ValueError("deepest SDF live target is not unique")
+    return result
+
+
+def decoded_policy_exact(
+    expected: Mapping[str, Any], observed: Mapping[str, Any]
+) -> bool:
+    for field in INVARIANT_FIELDS:
+        if expected.get(field) != observed.get(field):
+            return False
+    expected_mesh = holdout.mapping(expected.get("producerMesh"), "expected mesh")
+    observed_mesh = holdout.mapping(observed.get("producerMesh"), "observed mesh")
+    return all(expected_mesh.get(field) == observed_mesh.get(field) for field in DECODED_MESH_FIELDS)
+
+
+def validate(path: Path) -> dict[str, Any]:
+    base = holdout.validate(
+        path,
+        expected_geometry=EXPECTED_GEOMETRY,
+        expected_sample_indices=EXPECTED_SAMPLE_INDICES,
+        classification=CLASSIFICATION,
+        allowed_geometries=frozenset({EXPECTED_GEOMETRY}),
+        require_primary_source_q_exact=False,
+    )
+    report = holdout.mapping(
+        json.loads(path.read_text(encoding="utf-8")), "transition report"
+    )
+    uniforms = holdout.mapping(
+        report.get("dynamicBackgroundUniforms"), "dynamic background uniforms"
+    )
+    evidence = holdout.mapping(
+        uniforms.get("pathIsolationInterventions"), "surviving-path evidence"
+    )
+    expected_by_sample = {
+        sample: expected_interventions(sample)
+        for sample in EXPECTED_SOURCE_SAMPLE_INDICES
+    }
+    expected_counts = {
+        str(sample): len(interventions)
+        for sample, interventions in expected_by_sample.items()
+    }
+    expected_count = sum(expected_counts.values())
+    if (
+        evidence.get("schemaVersion") != 2
+        or evidence.get("requested") is not True
+        or evidence.get("executed") is not True
+        or evidence.get("sourceSampleIndices") != list(EXPECTED_SOURCE_SAMPLE_INDICES)
+        or evidence.get("sourceInterventionCounts") != expected_counts
+        or evidence.get("expectedRecordCount") != expected_count
+        or evidence.get("executedRecordCount") != expected_count
+        or evidence.get("strongPaths") != [list(POSITION_PATH)]
+        or evidence.get("strongDeltas")
+        != [
+            {"name": name, "delta": list(delta)}
+            for name, delta in STRONG_DELTAS
+        ]
+        or evidence.get("denseSampleIndex") != 25
+        or evidence.get("densePath") != list(POSITION_PATH)
+        or evidence.get("denseMutation") != "position"
+        or evidence.get("denseXValues") != list(DENSE_X_VALUES)
+        or evidence.get("denseYValues") != list(DENSE_Y_VALUES)
+        or evidence.get("liveRenderBoundaryReadback") is not True
+        or evidence.get("maximumRenderAttemptCount") != 3
+        or evidence.get("renderBufferRetentionPolicy") != BUFFER_RETENTION_POLICY
+        or not holdout.no_raw_stage_dumps(evidence)
+    ):
+        raise ValueError("surviving-path evidence header differs")
+
+    records = [
+        holdout.mapping(value, "surviving-path record")
+        for value in fixed.sequence(evidence.get("records"), "surviving-path records")
+    ]
+    if len(records) != expected_count:
+        raise ValueError("surviving-path record count differs")
+    expected_order = [
+        (sample, index, intervention)
+        for sample in EXPECTED_SOURCE_SAMPLE_INDICES
+        for index, intervention in enumerate(expected_by_sample[sample])
+    ]
+    normal_records = {
+        int(holdout.mapping(value, "normal record")["sampleIndex"]): holdout.mapping(
+            value, "normal record"
+        )
+        for value in fixed.sequence(uniforms.get("records"), "normal records")
+    }
+    normal_states = {
+        int(holdout.mapping(value, "normal state")["sampleIndex"]): holdout.mapping(
+            value, "normal state"
+        )
+        for value in fixed.sequence(base.get("states"), "normal states")
+    }
+
+    source_layer_hashes: dict[int, str] = {}
+    source_filter_hashes: dict[int, str] = {}
+    live_bases: dict[int, list[Any]] = {}
+    observed_bases: dict[int, Mapping[str, Any]] = {}
+    selected_attempt_counts: Counter[int] = Counter()
+    topology_counts: Counter[int] = Counter()
+    phase_counts: Counter[str] = Counter()
+    retained_buffer_count = 0
+    q_components = 0
+    q_mismatches = 0
+    invariant_components = 0
+    invariant_mismatches = 0
+    base_decoded_matches = 0
+    base_vertex_hash_matches = 0
+    base_mvp_hash_matches = 0
+    base_index_hash_matches = 0
+    validated_records: list[dict[str, Any]] = []
+
+    for record_index, (record, expected_item) in enumerate(
+        zip(records, expected_order, strict=True)
+    ):
+        sample, intervention_index, intervention = expected_item
+        mutation_path = tuple(
+            int(value)
+            for value in fixed.sequence(record.get("mutationPath"), "mutation path")
+        )
+        translation = tuple(
+            int(value)
+            for value in fixed.sequence(record.get("translation"), "translation")
+        )
+        if (
+            record.get("recordIndex") != record_index
+            or record.get("sampleIndex") != sample
+            or record.get("interventionIndex") != intervention_index
+            or record.get("interventionName") != intervention["name"]
+            or record.get("phase") != intervention["phase"]
+            or record.get("mutation") != intervention["mutation"]
+            or mutation_path != intervention["path"]
+            or translation != intervention["delta"]
+            or record.get("mutationPathOccurrenceCount") != 1
+            or record.get("executed") is not True
+            or record.get("originalProducerInput") is not True
+            or record.get("producerCopyBaseObserved") is not True
+            or record.get("filterInputValuesUnchanged") is not True
+            or record.get("liveLayerStatesStableAcrossRender") is not True
+            or record.get("liveFilterInputsBeforeUnchanged") is not True
+            or record.get("liveFilterInputsAfterUnchanged") is not True
+            or record.get("missingCriticalCarrierPaths") != []
+        ):
+            raise ValueError(
+                f"surviving-path record differs at {sample}/{intervention_index}"
+            )
+
+        normal = normal_records[sample]
+        remaining = holdout.numeric(record.get("remaining"), "remaining")
+        if remaining != holdout.numeric(normal.get("remaining"), "normal remaining"):
+            raise ValueError("surviving-path remaining differs")
+        source_layer_hash = record.get("sourceLayerStatesSHA256")
+        source_filter_hash = record.get("sourceFilterInputValuesSHA256")
+        requested_layer_hash = record.get("requestedLayerStatesSHA256")
+        if (
+            not isinstance(source_layer_hash, str)
+            or len(source_layer_hash) != 64
+            or not isinstance(source_filter_hash, str)
+            or len(source_filter_hash) != 64
+            or not isinstance(requested_layer_hash, str)
+            or len(requested_layer_hash) != 64
+            or record.get("replayedFilterInputValuesSHA256") != source_filter_hash
+            or source_layer_hashes.setdefault(sample, source_layer_hash)
+            != source_layer_hash
+            or source_filter_hashes.setdefault(sample, source_filter_hash)
+            != source_filter_hash
+        ):
+            raise ValueError("surviving-path source identity differs")
+
+        expected_requested = original.requested_layer_states(
+            fixed.sequence(normal.get("capturedLayerStates"), "normal layer states"),
+            intervention,
+        )
+        requested_states = list(
+            fixed.sequence(record.get("requestedLayerStates"), "requested states")
+        )
+        before = holdout.mapping(
+            record.get("liveRenderBoundaryBefore"), "live boundary before"
+        )
+        after = holdout.mapping(
+            record.get("liveRenderBoundaryAfter"), "live boundary after"
+        )
+        before_states = list(
+            fixed.sequence(before.get("layerStates"), "live states before")
+        )
+        after_states = list(
+            fixed.sequence(after.get("layerStates"), "live states after")
+        )
+        captured_states = list(
+            fixed.sequence(record.get("capturedLayerStates"), "captured states")
+        )
+        if intervention["mutation"] == "base":
+            live_bases[sample] = before_states
+        if sample not in live_bases:
+            raise ValueError("surviving-path base does not precede intervention")
+        expected_live = live_baseline_states(live_bases[sample], translation)
+        if (
+            requested_states != expected_requested
+            or before_states != expected_live
+            or after_states != expected_live
+            or captured_states != before_states
+            or before.get("schemaVersion") != 1
+            or before.get("executed") is not True
+            or after.get("schemaVersion") != 1
+            or after.get("executed") is not True
+            or before.get("layerStatesSHA256") != after.get("layerStatesSHA256")
+            or before.get("backgroundFilterPath") != list(holdout.BACKDROP_LAYER_PATH)
+            or after.get("backgroundFilterPath") != list(holdout.BACKDROP_LAYER_PATH)
+            or before.get("backgroundFilterInputValuesSHA256") != source_filter_hash
+            or after.get("backgroundFilterInputValuesSHA256") != source_filter_hash
+        ):
+            raise ValueError("surviving-path live baseline rule differs")
+
+        original.validate_attempts(record)
+        selected_attempt = int(record["selectedRenderAttemptIndex"])
+        selected_attempt_counts[selected_attempt] += 1
+        scale, layer_state_count = holdout.captured_scale(record)
+        if scale != 1.0 - remaining / 2.0:
+            raise ValueError("surviving-path backdrop scale differs")
+        render = holdout.mapping(record.get("render"), "surviving-path render")
+        retained_buffer_count += original.validate_retained_buffers(render)
+        observed = holdout.observed_policy(record, scale=scale)
+        mesh = holdout.mapping(observed.get("producerMesh"), "producer mesh")
+        q_components += int(mesh["sourceScaleComponentCount"])
+        q_mismatches += int(mesh["sourceScaleMismatchedComponents"])
+        topology_counts[int(mesh["vertexCount"])] += 1
+        phase_counts[str(intervention["phase"])] += 1
+
+        if intervention["mutation"] == "base":
+            observed_bases[sample] = observed
+            normal_observed = holdout.mapping(
+                normal_states[sample].get("observed"), "normal observed policy"
+            )
+            base_decoded_matches += decoded_policy_exact(normal_observed, observed)
+            normal_mesh = holdout.mapping(
+                normal_observed.get("producerMesh"), "normal producer mesh"
+            )
+            base_vertex_hash_matches += mesh.get(
+                "vertexDrawConsumedPayloadSHA256"
+            ) == normal_mesh.get("vertexDrawConsumedPayloadSHA256")
+            base_mvp_hash_matches += mesh.get(
+                "mvpDrawConsumedPayloadSHA256"
+            ) == normal_mesh.get("mvpDrawConsumedPayloadSHA256")
+            base_index_hash_matches += mesh.get(
+                "indexDrawConsumedPayloadSHA256"
+            ) == normal_mesh.get("indexDrawConsumedPayloadSHA256")
+        reference = observed_bases.get(sample)
+        if reference is None:
+            raise ValueError("surviving-path observed base is missing")
+        for field in INVARIANT_FIELDS:
+            expected_values = fixed.sequence(reference.get(field), f"base {field}")
+            actual_values = fixed.sequence(observed.get(field), f"observed {field}")
+            if len(expected_values) != len(actual_values):
+                raise ValueError(f"surviving-path invariant length differs: {field}")
+            invariant_components += len(expected_values)
+            invariant_mismatches += sum(
+                expected != actual
+                for expected, actual in zip(
+                    expected_values, actual_values, strict=True
+                )
+            )
+
+        validated_records.append(
+            {
+                "recordIndex": record_index,
+                "sampleIndex": sample,
+                "remaining": remaining,
+                "runtimeScale": scale,
+                "interventionIndex": intervention_index,
+                "interventionName": intervention["name"],
+                "phase": intervention["phase"],
+                "mutationPath": list(intervention["path"]),
+                "mutation": intervention["mutation"],
+                "translation": list(intervention["delta"]),
+                "capturedLayerStateCount": layer_state_count,
+                "selectedRenderAttemptIndex": selected_attempt,
+                "observed": observed,
+            }
+        )
+
+    source_count = len(EXPECTED_SOURCE_SAMPLE_INDICES)
+    if (
+        q_mismatches != 0
+        or invariant_mismatches != 0
+        or base_decoded_matches != source_count
+        or base_mvp_hash_matches != source_count
+        or base_index_hash_matches != source_count
+    ):
+        raise ValueError("surviving-path exact integrity gate failed")
+    return {
+        "dynamicAllocationSurvivingPathThresholdResultSchemaVersion": 1,
+        "classification": CLASSIFICATION,
+        "timeline": str(path),
+        "timelineSHA256": holdout.sha256_file(path),
+        "geometry": report.get("geometry"),
+        "sourceSampleIndices": list(EXPECTED_SOURCE_SAMPLE_INDICES),
+        "aggregate": {
+            "recordCount": len(validated_records),
+            "sourceStateCount": source_count,
+            "sourceInterventionCounts": expected_counts,
+            "phaseRecordCounts": {
+                name: phase_counts[name] for name in sorted(phase_counts)
+            },
+            "primaryProducerSourceQ": {
+                "componentCount": q_components,
+                "mismatchedComponents": q_mismatches,
+                "exact": q_mismatches == 0,
+            },
+            "allocationInvariants": {
+                "componentCount": invariant_components,
+                "mismatchedComponents": invariant_mismatches,
+                "exact": invariant_mismatches == 0,
+            },
+            "producerVertexCountStates": {
+                str(count): topology_counts[count] for count in sorted(topology_counts)
+            },
+            "selectedRenderAttemptCounts": {
+                str(index): selected_attempt_counts[index]
+                for index in sorted(selected_attempt_counts)
+            },
+            "retainedBufferSnapshotCount": retained_buffer_count,
+            "liveBaselinePlusTargetPositionExact": True,
+            "liveLayerStateStableAcrossRender": True,
+            "liveFilterInputsBeforeAndAfterExact": True,
+            "baseDecodedPolicyExact": True,
+            "baseRawDrawHashes": {
+                "vertexExactCount": base_vertex_hash_matches,
+                "mvpExactCount": base_mvp_hash_matches,
+                "indexExactCount": base_index_hash_matches,
+            },
+            "originalProducerInputEveryState": True,
+            "rawStageDumpsAbsent": True,
+        },
+        "records": validated_records,
+        "conclusion": {
+            "captureIntegrityPassed": True,
+            "causalCalibrationOnly": True,
+            "deepestSDFPositionThresholdRequiresPostOpeningAnalysis": True,
+            "requiresUnseenGeometryTransfer": True,
+            "productionShaderAuthorized": False,
+        },
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("report", type=Path)
+    parser.add_argument("--output", type=Path)
+    arguments = parser.parse_args()
+    result = validate(arguments.report)
+    encoded = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    if arguments.output is None:
+        print(encoded, end="")
+    else:
+        arguments.output.write_text(encoded, encoding="utf-8")
+        print(arguments.output)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

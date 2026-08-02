@@ -360,7 +360,7 @@ jobs:
             --output \
               transition-introspection/dynamic-allocation-fixed-state.json
 
-      - name: Validate path-isolation allocation intervention
+      - name: Validate surviving-path allocation threshold
         id: allocation_path_isolation
         if: >-
           env.LG_SELECTED == '1' &&
@@ -369,7 +369,7 @@ jobs:
           steps.capture.outcome == 'success'
         continue-on-error: true
         run: |
-          python3 Analysis/validate_dynamic_allocation_path_isolation.py \
+          python3 Analysis/validate_dynamic_allocation_surviving_path_threshold.py \
             transition-introspection/transition-timeline.json \
             --output \
               transition-introspection/dynamic-allocation-path-isolation.json

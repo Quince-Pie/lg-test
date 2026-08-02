@@ -12,6 +12,16 @@ class InputClampProbeContractTests(unittest.TestCase):
         self.assertEqual(len(clamp.DECODED_CANDIDATES), 6)
         self.assertEqual(len(clamp.EXPECTED_CANDIDATE_NAMES), 24)
         self.assertEqual(len(set(clamp.EXPECTED_CANDIDATE_NAMES)), 24)
+        self.assertEqual(len(clamp.TRANSFER_DECODED_CANDIDATES), 7)
+        self.assertEqual(len(clamp.TRANSFER_CANDIDATE_NAMES), 28)
+        self.assertEqual(
+            clamp.TRANSFER_DECODED_CANDIDATES,
+            tuple(sorted(clamp.TRANSFER_DECODED_CANDIDATES)),
+        )
+        self.assertIn(
+            clamp.RECOVERED_TRANSFER_CANDIDATE,
+            clamp.TRANSFER_CANDIDATE_NAMES,
+        )
 
     def test_float_evidence_checks_binary32_word(self) -> None:
         value, bits = clamp.float_evidence(

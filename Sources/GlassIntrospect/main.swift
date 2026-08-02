@@ -16392,9 +16392,6 @@ private let transitionPathIsolationSampleIndices: Set<Int> = [
     25, 31,
 ]
 
-private let transitionPathIsolationBoundsPaths =
-    transitionFixedStateBoundsAndPositionPaths
-
 private let transitionPathIsolationPositionPath = [
     1, 0, 1, 0, 0, 0, 0,
 ]
@@ -16436,27 +16433,6 @@ private func transitionPathIsolationInterventions(
         path: [],
         mutation: .base,
         delta: .zero)]
-    for path in transitionPathIsolationBoundsPaths {
-        let pathName = transitionPathIdentifier(path)
-        for mutation in [
-            TransitionPathIsolationMutation.boundsOrigin,
-            .position,
-            .boundsOriginAndPosition,
-        ] {
-            for strong in transitionPathIsolationStrongDeltas {
-                interventions.append(
-                    TransitionPathIsolationIntervention(
-                        name:
-                            "strong-" + pathName + "-"
-                            + mutation.rawValue + "-"
-                            + strong.name,
-                        phase: "path-isolation",
-                        path: path,
-                        mutation: mutation,
-                        delta: strong.delta))
-            }
-        }
-    }
     let positionPathName = transitionPathIdentifier(
         transitionPathIsolationPositionPath)
     for strong in transitionPathIsolationStrongDeltas {
@@ -16471,46 +16447,31 @@ private func transitionPathIsolationInterventions(
     }
     guard sampleIndex == 25 else { return interventions }
 
-    let denseTargets: [(
-        path: [Int],
-        mutations: [TransitionPathIsolationMutation]
-    )] = [
-        (
-            [1, 0, 1, 0],
-            [.boundsOrigin, .position, .boundsOriginAndPosition]
-        ),
-        (transitionPathIsolationPositionPath, [.position]),
-    ]
-    for target in denseTargets {
-        let pathName = transitionPathIdentifier(target.path)
-        for mutation in target.mutations {
-            for value in transitionPathIsolationDenseXValues {
-                let sign = value < 0 ? "negative" : "positive"
-                interventions.append(
-                    TransitionPathIsolationIntervention(
-                        name:
-                            "dense-" + pathName + "-"
-                            + mutation.rawValue + "-x-" + sign
-                            + "-" + String(abs(value)),
-                        phase: "dense-threshold",
-                        path: target.path,
-                        mutation: mutation,
-                        delta: CGPoint(x: value, y: 0)))
-            }
-            for value in transitionPathIsolationDenseYValues {
-                let sign = value < 0 ? "negative" : "positive"
-                interventions.append(
-                    TransitionPathIsolationIntervention(
-                        name:
-                            "dense-" + pathName + "-"
-                            + mutation.rawValue + "-y-" + sign
-                            + "-" + String(abs(value)),
-                        phase: "dense-threshold",
-                        path: target.path,
-                        mutation: mutation,
-                        delta: CGPoint(x: 0, y: value)))
-            }
-        }
+    for value in transitionPathIsolationDenseXValues {
+        let sign = value < 0 ? "negative" : "positive"
+        interventions.append(
+            TransitionPathIsolationIntervention(
+                name:
+                    "dense-" + positionPathName
+                    + "-position-x-" + sign
+                    + "-" + String(abs(value)),
+                phase: "dense-threshold",
+                path: transitionPathIsolationPositionPath,
+                mutation: .position,
+                delta: CGPoint(x: value, y: 0)))
+    }
+    for value in transitionPathIsolationDenseYValues {
+        let sign = value < 0 ? "negative" : "positive"
+        interventions.append(
+            TransitionPathIsolationIntervention(
+                name:
+                    "dense-" + positionPathName
+                    + "-position-y-" + sign
+                    + "-" + String(abs(value)),
+                phase: "dense-threshold",
+                path: transitionPathIsolationPositionPath,
+                mutation: .position,
+                delta: CGPoint(x: 0, y: value)))
     }
     return interventions
 }
@@ -18098,6 +18059,9 @@ private func transitionPathIsolationAllocationEvidence(
                 "liveLayerStatesAfterMatchRequested":
                     liveAfterLayerSHA256
                     == requestedLayerSHA256,
+                "liveLayerStatesStableAcrossRender":
+                    liveBeforeLayerSHA256
+                    == liveAfterLayerSHA256,
                 "liveFilterInputsBeforeUnchanged":
                     liveBeforeFilterSHA256
                     == sourceFilterInputSHA256,
@@ -18133,7 +18097,7 @@ private func transitionPathIsolationAllocationEvidence(
         $0["executed"] as? Bool == true
     }.count
     return [
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "requested": true,
         "executed": executedRecordCount == expectedRecordCount,
         "sourceSampleIndices": selectedSnapshots.map(
@@ -18141,8 +18105,7 @@ private func transitionPathIsolationAllocationEvidence(
         "sourceInterventionCounts": sourceInterventionCounts,
         "expectedRecordCount": expectedRecordCount,
         "executedRecordCount": executedRecordCount,
-        "strongPaths": transitionPathIsolationBoundsPaths
-            + [transitionPathIsolationPositionPath],
+        "strongPaths": [transitionPathIsolationPositionPath],
         "strongDeltas": transitionPathIsolationStrongDeltas.map {
             [
                 "name": $0.name,
@@ -18150,6 +18113,9 @@ private func transitionPathIsolationAllocationEvidence(
             ] as [String: Any]
         },
         "denseSampleIndex": 25,
+        "densePath": transitionPathIsolationPositionPath,
+        "denseMutation":
+            TransitionPathIsolationMutation.position.rawValue,
         "denseXValues": transitionPathIsolationDenseXValues,
         "denseYValues": transitionPathIsolationDenseYValues,
         "liveRenderBoundaryReadback": true,
@@ -18158,9 +18124,9 @@ private func transitionPathIsolationAllocationEvidence(
             "index-all-compute-0-vertex-1-or-2",
         "records": records,
         "method":
-            "single-path-single-field-fixed-apple-state-"
-            + "causal-isolation-with-dense-direct-backdrop-"
-            + "and-sdf-position-threshold-scans",
+            "live-baseline-deepest-sdf-position-only-"
+            + "causal-threshold-scan-after-preregistered-"
+            + "broad-path-live-readback-failure",
     ]
 }
 
@@ -18194,6 +18160,22 @@ private func transitionInputClampCGColorDecode(
     return Float(component)
 }
 
+@inline(never)
+private func transitionInputClampFloatMultiply(
+    _ lhs: Float,
+    _ rhs: Float
+) -> Float {
+    lhs * rhs
+}
+
+@inline(never)
+private func transitionInputClampFloatAdd(
+    _ lhs: Float,
+    _ rhs: Float
+) -> Float {
+    lhs + rhs
+}
+
 private func transitionInputClampDecodedCandidates(
     _ encoded: Float
 ) -> [String: Float] {
@@ -18204,6 +18186,13 @@ private func transitionInputClampDecodedCandidates(
             / Double(Float(1.055)))
     let doubleBase =
         (Double(encoded) + 0.055) / 1.055
+    let affineInverse = Float(1) / Float(1.055)
+    let affineOffset = Float(0.055) / Float(1.055)
+    let affineBase = transitionInputClampFloatAdd(
+        transitionInputClampFloatMultiply(
+            encoded,
+            affineInverse),
+        affineOffset)
     var vForceBase = mixedBase
     var vForceExponent = Float(2.4)
     var vForceResult: Float = 0
@@ -18218,6 +18207,8 @@ private func transitionInputClampDecodedCandidates(
             Darwin.powf(floatBase, Float(2.4)),
         "mixed-base-darwin-powf":
             Darwin.powf(mixedBase, Float(2.4)),
+        "affine-expanded-base-darwin-powf":
+            Darwin.powf(affineBase, Float(2.4)),
         "mixed-base-vforce-vvpowf": vForceResult,
         "double-base-darwin-pow-cast-float":
             Float(Darwin.pow(doubleBase, 2.4)),
@@ -18304,14 +18295,15 @@ private func transitionInputClampArithmeticProbe(
         $0["executed"] as? Bool == true
     }.count
     return [
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "requested": true,
         "executed": executedCount == snapshots.count,
         "sampleCount": snapshots.count,
         "executedSampleCount": executedCount,
         "records": records,
         "method":
-            "darwin-powf-pow-vforce-and-coregraphics-"
+            "darwin-powf-pow-vforce-coregraphics-and-"
+            + "preregistered-affine-expanded-base-"
             + "extended-srgb-candidate-enumeration",
     ]
 }

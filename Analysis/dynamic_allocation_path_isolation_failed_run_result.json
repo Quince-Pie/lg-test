@@ -1,0 +1,4735 @@
+{
+  "aggregate": {
+    "allMissingCopyRecordsExhaustedThreeExecutedAttempts": true,
+    "allocationInvariants": {
+      "componentCount": 1596,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "baseDecodedPolicyMatchesNormal": true,
+    "baseDrawConsumedHashes": {
+      "indexExact": true,
+      "mvpExact": true,
+      "vertexExact": false
+    },
+    "denseExtractableRecordCount": 25,
+    "extractableInterventionCount": 114,
+    "extractableRecordPrefix": [
+      0,
+      113
+    ],
+    "firstMissingProducerCopyRecordIndex": 114,
+    "liveFilterExactCount": 114,
+    "livePrePostStateExactCount": 114,
+    "missingProducerCopyCount": 312,
+    "primaryEdges": {
+      "changedComponents": 2,
+      "componentCount": 456,
+      "signedDeltaCounts": {
+        "xLower:+1": 1,
+        "yUpper:-1": 1
+      }
+    },
+    "primarySourceQ": {
+      "componentCount": 912,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "requestedInterventionCount": 426,
+    "requestedStateExactCount": 0,
+    "strongGroupCount": 22,
+    "strongGroupsWithAnyLiveMutation": 1,
+    "topologyMismatchCount": 0
+  },
+  "classification": "post-opening-audit-of-failed-preregistered-live-read-back-path-isolation; not-an-accepted-calibration-or-unseen-transfer",
+  "conclusion": {
+    "captureCeilingObservedAfterRecord114": true,
+    "deepestSDFPositionChangedPrimaryEdges": true,
+    "denseThresholdRecovered": false,
+    "frozenPathIsolationGatePassed": false,
+    "inputClampCandidateRecovered": false,
+    "inputClampPostOpeningAffineExpandedCalibrationExact": true,
+    "inputClampRequiresUnseenTemporalTransfer": true,
+    "onlyDeepestSDFPositionSurvivedStrongControls": true,
+    "productionShaderAuthorized": false,
+    "requestedPresentationStateSurvivedLayout": false,
+    "requiresReducedLiveBaselineThresholdCapture": true,
+    "requiresUnseenGeometryTransfer": true
+  },
+  "dynamicAllocationPathIsolationFailedRunAuditSchemaVersion": 1,
+  "extractableDenseRecords": [
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-128",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 89,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -128,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-96",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 90,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -96,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-92",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 91,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -92,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-91",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 92,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -91,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-90",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 93,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -90,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-89",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 94,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -89,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-88",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 95,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -88,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-64",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 96,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -64,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-32",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 97,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -32,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-16",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 98,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -16,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-8",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 99,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -8,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-4",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 100,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -4,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-2",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 101,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -2,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-negative-1",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 102,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        -1,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-1",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 103,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        1,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-2",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 104,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        2,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-4",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 105,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        4,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-8",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 106,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        8,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-16",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 107,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        16,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-32",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 108,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        32,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-64",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 109,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        64,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-80",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 110,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        80,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-88",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 111,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        88,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-89",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 112,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        89,
+        0
+      ]
+    },
+    {
+      "interventionName": "dense-1-0-1-0-bounds-origin-x-positive-90",
+      "liveTargetDelta": {
+        "boundsOrigin": [
+          0.0,
+          0.0
+        ],
+        "position": [
+          0.0,
+          0.0
+        ],
+        "targetPresentInBaseAndObserved": true
+      },
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "primaryEdgeResponse": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recordIndex": 113,
+      "requestedMutationSurvivedLayout": false,
+      "translation": [
+        90,
+        0
+      ]
+    }
+  ],
+  "inputClamp": {
+    "bestCandidateCounterexamples": [
+      {
+        "candidateBits": "3f815e7c",
+        "observedBits": "3f815e7a",
+        "remaining": 0.03124713897705078,
+        "remainingBits": "3cfffa00",
+        "sampleIndex": 1,
+        "signedBitPatternDelta": 2
+      },
+      {
+        "candidateBits": "3f82c0bd",
+        "observedBits": "3f82c0bb",
+        "remaining": 0.06263542175292969,
+        "remainingBits": "3d804700",
+        "sampleIndex": 2,
+        "signedBitPatternDelta": 2
+      }
+    ],
+    "bestCandidateExactMatchCount": 30,
+    "bestCandidateName": "float-weighted-mix/mixed-base-darwin-powf",
+    "candidateCount": 24,
+    "captureIntegrityPassed": true,
+    "exactEveryStateCandidateNames": [],
+    "exactMatchCounts": {
+      "double-multiply-add-cast-float/coregraphics-extended-srgb-to-linear": 13,
+      "double-multiply-add-cast-float/double-base-darwin-pow-cast-float": 5,
+      "double-multiply-add-cast-float/float-base-darwin-pow-cast-float": 17,
+      "double-multiply-add-cast-float/float-base-darwin-powf": 20,
+      "double-multiply-add-cast-float/mixed-base-darwin-powf": 27,
+      "double-multiply-add-cast-float/mixed-base-vforce-vvpowf": 17,
+      "float-fma/coregraphics-extended-srgb-to-linear": 11,
+      "float-fma/double-base-darwin-pow-cast-float": 4,
+      "float-fma/float-base-darwin-pow-cast-float": 14,
+      "float-fma/float-base-darwin-powf": 15,
+      "float-fma/mixed-base-darwin-powf": 24,
+      "float-fma/mixed-base-vforce-vvpowf": 15,
+      "float-multiply-add/coregraphics-extended-srgb-to-linear": 12,
+      "float-multiply-add/double-base-darwin-pow-cast-float": 5,
+      "float-multiply-add/float-base-darwin-pow-cast-float": 15,
+      "float-multiply-add/float-base-darwin-powf": 17,
+      "float-multiply-add/mixed-base-darwin-powf": 26,
+      "float-multiply-add/mixed-base-vforce-vvpowf": 16,
+      "float-weighted-mix/coregraphics-extended-srgb-to-linear": 12,
+      "float-weighted-mix/double-base-darwin-pow-cast-float": 5,
+      "float-weighted-mix/float-base-darwin-pow-cast-float": 16,
+      "float-weighted-mix/float-base-darwin-powf": 19,
+      "float-weighted-mix/mixed-base-darwin-powf": 30,
+      "float-weighted-mix/mixed-base-vforce-vvpowf": 19
+    },
+    "postOpeningAffineConstants": {
+      "inverseOnePointZeroFiveFiveBits": "3f72a76f",
+      "offsetBits": "3d55891a"
+    },
+    "postOpeningAffineExpandedCandidates": {
+      "double-multiply-add-cast-float": {
+        "exactMatchCount": 29,
+        "records": [
+          {
+            "affineExpandedBaseBits": "3f809194",
+            "encodedBits": "3f809996",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f815e7a",
+            "predictedBits": "3f815e7a",
+            "sampleIndex": 1
+          },
+          {
+            "affineExpandedBaseBits": "3f8123d1",
+            "encodedBits": "3f8133de",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f82c0bb",
+            "predictedBits": "3f82c0bb",
+            "sampleIndex": 2
+          },
+          {
+            "affineExpandedBaseBits": "3f81b4a1",
+            "encodedBits": "3f81cca4",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f8421b3",
+            "predictedBits": "3f8421b3",
+            "sampleIndex": 3
+          },
+          {
+            "affineExpandedBaseBits": "3f824de3",
+            "encodedBits": "3f826e54",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f85999c",
+            "predictedBits": "3f85999c",
+            "sampleIndex": 4
+          },
+          {
+            "affineExpandedBaseBits": "3f82dfe1",
+            "encodedBits": "3f83085a",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8701f5",
+            "predictedBits": "3f8701f5",
+            "sampleIndex": 5
+          },
+          {
+            "affineExpandedBaseBits": "3f836e39",
+            "encodedBits": "3f839e86",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f88636b",
+            "predictedBits": "3f88636b",
+            "sampleIndex": 6
+          },
+          {
+            "affineExpandedBaseBits": "3f840714",
+            "encodedBits": "3f843fc9",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f89e152",
+            "predictedBits": "3f89e152",
+            "sampleIndex": 7
+          },
+          {
+            "affineExpandedBaseBits": "3f84909b",
+            "encodedBits": "3f84d0e1",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8b3b00",
+            "predictedBits": "3f8b3b00",
+            "sampleIndex": 8
+          },
+          {
+            "affineExpandedBaseBits": "3f85251e",
+            "encodedBits": "3f856d8f",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8cb27f",
+            "predictedBits": "3f8cb27f",
+            "sampleIndex": 9
+          },
+          {
+            "affineExpandedBaseBits": "3f85b618",
+            "encodedBits": "3f860682",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8e2346",
+            "predictedBits": "3f8e2346",
+            "sampleIndex": 10
+          },
+          {
+            "affineExpandedBaseBits": "3f864909",
+            "encodedBits": "3f86a188",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8f9b49",
+            "predictedBits": "3f8f9b49",
+            "sampleIndex": 11
+          },
+          {
+            "affineExpandedBaseBits": "3f86d7d8",
+            "encodedBits": "3f873831",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f910ae2",
+            "predictedBits": "3f910ae2",
+            "sampleIndex": 12
+          },
+          {
+            "affineExpandedBaseBits": "3f876df8",
+            "encodedBits": "3f87d693",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f928f9d",
+            "predictedBits": "3f928f9d",
+            "sampleIndex": 13
+          },
+          {
+            "affineExpandedBaseBits": "3f8801e1",
+            "encodedBits": "3f88729f",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9410ea",
+            "predictedBits": "3f9410ed",
+            "sampleIndex": 14
+          },
+          {
+            "affineExpandedBaseBits": "3f889405",
+            "encodedBits": "3f890ccc",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f958fe2",
+            "predictedBits": "3f958fe2",
+            "sampleIndex": 15
+          },
+          {
+            "affineExpandedBaseBits": "3f8921a5",
+            "encodedBits": "3f89a237",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f970527",
+            "predictedBits": "3f970527",
+            "sampleIndex": 16
+          },
+          {
+            "affineExpandedBaseBits": "3f89b671",
+            "encodedBits": "3f8a3f32",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f988f99",
+            "predictedBits": "3f988f99",
+            "sampleIndex": 17
+          },
+          {
+            "affineExpandedBaseBits": "3f8a4198",
+            "encodedBits": "3f8ad200",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9a0299",
+            "predictedBits": "3f9a0299",
+            "sampleIndex": 18
+          },
+          {
+            "affineExpandedBaseBits": "3f8ad30a",
+            "encodedBits": "3f8b6b72",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9b888f",
+            "predictedBits": "3f9b888f",
+            "sampleIndex": 19
+          },
+          {
+            "affineExpandedBaseBits": "3f8b6869",
+            "encodedBits": "3f8c0908",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9d1b61",
+            "predictedBits": "3f9d1b61",
+            "sampleIndex": 20
+          },
+          {
+            "affineExpandedBaseBits": "3f8bf646",
+            "encodedBits": "3f8c9eb2",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f9e9c26",
+            "predictedBits": "3f9e9c26",
+            "sampleIndex": 21
+          },
+          {
+            "affineExpandedBaseBits": "3f8c87e1",
+            "encodedBits": "3f8d384f",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa02949",
+            "predictedBits": "3fa02949",
+            "sampleIndex": 22
+          },
+          {
+            "affineExpandedBaseBits": "3f8d1da7",
+            "encodedBits": "3f8dd652",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa1c426",
+            "predictedBits": "3fa1c426",
+            "sampleIndex": 23
+          },
+          {
+            "affineExpandedBaseBits": "3f8da723",
+            "encodedBits": "3f8e675e",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa33f68",
+            "predictedBits": "3fa33f68",
+            "sampleIndex": 24
+          },
+          {
+            "affineExpandedBaseBits": "3f8e384d",
+            "encodedBits": "3f8f0084",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa4d209",
+            "predictedBits": "3fa4d209",
+            "sampleIndex": 25
+          },
+          {
+            "affineExpandedBaseBits": "3f8ed5b1",
+            "encodedBits": "3f8fa690",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa68921",
+            "predictedBits": "3fa68921",
+            "sampleIndex": 26
+          },
+          {
+            "affineExpandedBaseBits": "3f8f659c",
+            "encodedBits": "3f903e65",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa81cf1",
+            "predictedBits": "3fa81cf4",
+            "sampleIndex": 27
+          },
+          {
+            "affineExpandedBaseBits": "3f8ff66b",
+            "encodedBits": "3f90d72b",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa9b586",
+            "predictedBits": "3fa9b586",
+            "sampleIndex": 28
+          },
+          {
+            "affineExpandedBaseBits": "3f9088dd",
+            "encodedBits": "3f9171ab",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fab5501",
+            "predictedBits": "3fab5501",
+            "sampleIndex": 29
+          },
+          {
+            "affineExpandedBaseBits": "3f9119ad",
+            "encodedBits": "3f920a72",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3facf21c",
+            "predictedBits": "3facf21e",
+            "sampleIndex": 30
+          },
+          {
+            "affineExpandedBaseBits": "3f91a93e",
+            "encodedBits": "3f92a1e9",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fae8dea",
+            "predictedBits": "3fae8dea",
+            "sampleIndex": 31
+          },
+          {
+            "affineExpandedBaseBits": "3f9232f5",
+            "encodedBits": "3f933333",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fb01b04",
+            "predictedBits": "3fb01b04",
+            "sampleIndex": 32
+          }
+        ]
+      },
+      "float-fma": {
+        "exactMatchCount": 26,
+        "records": [
+          {
+            "affineExpandedBaseBits": "3f809194",
+            "encodedBits": "3f809996",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f815e7a",
+            "predictedBits": "3f815e7a",
+            "sampleIndex": 1
+          },
+          {
+            "affineExpandedBaseBits": "3f8123d1",
+            "encodedBits": "3f8133de",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f82c0bb",
+            "predictedBits": "3f82c0bb",
+            "sampleIndex": 2
+          },
+          {
+            "affineExpandedBaseBits": "3f81b4a1",
+            "encodedBits": "3f81cca4",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f8421b3",
+            "predictedBits": "3f8421b3",
+            "sampleIndex": 3
+          },
+          {
+            "affineExpandedBaseBits": "3f824de3",
+            "encodedBits": "3f826e54",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f85999c",
+            "predictedBits": "3f85999c",
+            "sampleIndex": 4
+          },
+          {
+            "affineExpandedBaseBits": "3f82dfe1",
+            "encodedBits": "3f83085a",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8701f5",
+            "predictedBits": "3f8701f5",
+            "sampleIndex": 5
+          },
+          {
+            "affineExpandedBaseBits": "3f836e39",
+            "encodedBits": "3f839e86",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f88636b",
+            "predictedBits": "3f88636b",
+            "sampleIndex": 6
+          },
+          {
+            "affineExpandedBaseBits": "3f840714",
+            "encodedBits": "3f843fc9",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f89e152",
+            "predictedBits": "3f89e152",
+            "sampleIndex": 7
+          },
+          {
+            "affineExpandedBaseBits": "3f84909b",
+            "encodedBits": "3f84d0e1",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8b3b00",
+            "predictedBits": "3f8b3b00",
+            "sampleIndex": 8
+          },
+          {
+            "affineExpandedBaseBits": "3f85251e",
+            "encodedBits": "3f856d8f",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8cb27f",
+            "predictedBits": "3f8cb27f",
+            "sampleIndex": 9
+          },
+          {
+            "affineExpandedBaseBits": "3f85b618",
+            "encodedBits": "3f860682",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8e2346",
+            "predictedBits": "3f8e2346",
+            "sampleIndex": 10
+          },
+          {
+            "affineExpandedBaseBits": "3f864909",
+            "encodedBits": "3f86a188",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8f9b49",
+            "predictedBits": "3f8f9b49",
+            "sampleIndex": 11
+          },
+          {
+            "affineExpandedBaseBits": "3f86d7d8",
+            "encodedBits": "3f873831",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f910ae2",
+            "predictedBits": "3f910ae2",
+            "sampleIndex": 12
+          },
+          {
+            "affineExpandedBaseBits": "3f876df8",
+            "encodedBits": "3f87d693",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f928f9d",
+            "predictedBits": "3f928f9d",
+            "sampleIndex": 13
+          },
+          {
+            "affineExpandedBaseBits": "3f8801e1",
+            "encodedBits": "3f88729f",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9410ea",
+            "predictedBits": "3f9410ed",
+            "sampleIndex": 14
+          },
+          {
+            "affineExpandedBaseBits": "3f889405",
+            "encodedBits": "3f890ccc",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f958fe2",
+            "predictedBits": "3f958fe2",
+            "sampleIndex": 15
+          },
+          {
+            "affineExpandedBaseBits": "3f8921a5",
+            "encodedBits": "3f89a237",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f970527",
+            "predictedBits": "3f970527",
+            "sampleIndex": 16
+          },
+          {
+            "affineExpandedBaseBits": "3f89b671",
+            "encodedBits": "3f8a3f32",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f988f99",
+            "predictedBits": "3f988f99",
+            "sampleIndex": 17
+          },
+          {
+            "affineExpandedBaseBits": "3f8a4197",
+            "encodedBits": "3f8ad1ff",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9a0299",
+            "predictedBits": "3f9a0296",
+            "sampleIndex": 18
+          },
+          {
+            "affineExpandedBaseBits": "3f8ad309",
+            "encodedBits": "3f8b6b71",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9b888f",
+            "predictedBits": "3f9b888c",
+            "sampleIndex": 19
+          },
+          {
+            "affineExpandedBaseBits": "3f8b6869",
+            "encodedBits": "3f8c0908",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9d1b61",
+            "predictedBits": "3f9d1b61",
+            "sampleIndex": 20
+          },
+          {
+            "affineExpandedBaseBits": "3f8bf646",
+            "encodedBits": "3f8c9eb2",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f9e9c26",
+            "predictedBits": "3f9e9c26",
+            "sampleIndex": 21
+          },
+          {
+            "affineExpandedBaseBits": "3f8c87e1",
+            "encodedBits": "3f8d384f",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa02949",
+            "predictedBits": "3fa02949",
+            "sampleIndex": 22
+          },
+          {
+            "affineExpandedBaseBits": "3f8d1da7",
+            "encodedBits": "3f8dd652",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa1c426",
+            "predictedBits": "3fa1c426",
+            "sampleIndex": 23
+          },
+          {
+            "affineExpandedBaseBits": "3f8da722",
+            "encodedBits": "3f8e675d",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa33f68",
+            "predictedBits": "3fa33f65",
+            "sampleIndex": 24
+          },
+          {
+            "affineExpandedBaseBits": "3f8e384d",
+            "encodedBits": "3f8f0084",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa4d209",
+            "predictedBits": "3fa4d209",
+            "sampleIndex": 25
+          },
+          {
+            "affineExpandedBaseBits": "3f8ed5b0",
+            "encodedBits": "3f8fa68f",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa68921",
+            "predictedBits": "3fa6891e",
+            "sampleIndex": 26
+          },
+          {
+            "affineExpandedBaseBits": "3f8f659c",
+            "encodedBits": "3f903e65",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa81cf1",
+            "predictedBits": "3fa81cf4",
+            "sampleIndex": 27
+          },
+          {
+            "affineExpandedBaseBits": "3f8ff66b",
+            "encodedBits": "3f90d72b",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa9b586",
+            "predictedBits": "3fa9b586",
+            "sampleIndex": 28
+          },
+          {
+            "affineExpandedBaseBits": "3f9088dd",
+            "encodedBits": "3f9171ab",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fab5501",
+            "predictedBits": "3fab5501",
+            "sampleIndex": 29
+          },
+          {
+            "affineExpandedBaseBits": "3f9119ac",
+            "encodedBits": "3f920a71",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3facf21c",
+            "predictedBits": "3facf21c",
+            "sampleIndex": 30
+          },
+          {
+            "affineExpandedBaseBits": "3f91a93e",
+            "encodedBits": "3f92a1e9",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fae8dea",
+            "predictedBits": "3fae8dea",
+            "sampleIndex": 31
+          },
+          {
+            "affineExpandedBaseBits": "3f9232f5",
+            "encodedBits": "3f933333",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fb01b04",
+            "predictedBits": "3fb01b04",
+            "sampleIndex": 32
+          }
+        ]
+      },
+      "float-multiply-add": {
+        "exactMatchCount": 28,
+        "records": [
+          {
+            "affineExpandedBaseBits": "3f809194",
+            "encodedBits": "3f809996",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f815e7a",
+            "predictedBits": "3f815e7a",
+            "sampleIndex": 1
+          },
+          {
+            "affineExpandedBaseBits": "3f8123d1",
+            "encodedBits": "3f8133de",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f82c0bb",
+            "predictedBits": "3f82c0bb",
+            "sampleIndex": 2
+          },
+          {
+            "affineExpandedBaseBits": "3f81b4a1",
+            "encodedBits": "3f81cca4",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f8421b3",
+            "predictedBits": "3f8421b3",
+            "sampleIndex": 3
+          },
+          {
+            "affineExpandedBaseBits": "3f824de3",
+            "encodedBits": "3f826e54",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f85999c",
+            "predictedBits": "3f85999c",
+            "sampleIndex": 4
+          },
+          {
+            "affineExpandedBaseBits": "3f82dfe1",
+            "encodedBits": "3f83085a",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8701f5",
+            "predictedBits": "3f8701f5",
+            "sampleIndex": 5
+          },
+          {
+            "affineExpandedBaseBits": "3f836e39",
+            "encodedBits": "3f839e86",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f88636b",
+            "predictedBits": "3f88636b",
+            "sampleIndex": 6
+          },
+          {
+            "affineExpandedBaseBits": "3f840714",
+            "encodedBits": "3f843fc9",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f89e152",
+            "predictedBits": "3f89e152",
+            "sampleIndex": 7
+          },
+          {
+            "affineExpandedBaseBits": "3f84909b",
+            "encodedBits": "3f84d0e1",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8b3b00",
+            "predictedBits": "3f8b3b00",
+            "sampleIndex": 8
+          },
+          {
+            "affineExpandedBaseBits": "3f85251e",
+            "encodedBits": "3f856d8f",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8cb27f",
+            "predictedBits": "3f8cb27f",
+            "sampleIndex": 9
+          },
+          {
+            "affineExpandedBaseBits": "3f85b618",
+            "encodedBits": "3f860682",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8e2346",
+            "predictedBits": "3f8e2346",
+            "sampleIndex": 10
+          },
+          {
+            "affineExpandedBaseBits": "3f864909",
+            "encodedBits": "3f86a188",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8f9b49",
+            "predictedBits": "3f8f9b49",
+            "sampleIndex": 11
+          },
+          {
+            "affineExpandedBaseBits": "3f86d7d8",
+            "encodedBits": "3f873831",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f910ae2",
+            "predictedBits": "3f910ae2",
+            "sampleIndex": 12
+          },
+          {
+            "affineExpandedBaseBits": "3f876df8",
+            "encodedBits": "3f87d693",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f928f9d",
+            "predictedBits": "3f928f9d",
+            "sampleIndex": 13
+          },
+          {
+            "affineExpandedBaseBits": "3f8801e1",
+            "encodedBits": "3f88729f",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9410ea",
+            "predictedBits": "3f9410ed",
+            "sampleIndex": 14
+          },
+          {
+            "affineExpandedBaseBits": "3f889405",
+            "encodedBits": "3f890ccc",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f958fe2",
+            "predictedBits": "3f958fe2",
+            "sampleIndex": 15
+          },
+          {
+            "affineExpandedBaseBits": "3f8921a5",
+            "encodedBits": "3f89a237",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f970527",
+            "predictedBits": "3f970527",
+            "sampleIndex": 16
+          },
+          {
+            "affineExpandedBaseBits": "3f89b671",
+            "encodedBits": "3f8a3f32",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f988f99",
+            "predictedBits": "3f988f99",
+            "sampleIndex": 17
+          },
+          {
+            "affineExpandedBaseBits": "3f8a4198",
+            "encodedBits": "3f8ad200",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9a0299",
+            "predictedBits": "3f9a0299",
+            "sampleIndex": 18
+          },
+          {
+            "affineExpandedBaseBits": "3f8ad30a",
+            "encodedBits": "3f8b6b72",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9b888f",
+            "predictedBits": "3f9b888f",
+            "sampleIndex": 19
+          },
+          {
+            "affineExpandedBaseBits": "3f8b6869",
+            "encodedBits": "3f8c0908",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9d1b61",
+            "predictedBits": "3f9d1b61",
+            "sampleIndex": 20
+          },
+          {
+            "affineExpandedBaseBits": "3f8bf646",
+            "encodedBits": "3f8c9eb2",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f9e9c26",
+            "predictedBits": "3f9e9c26",
+            "sampleIndex": 21
+          },
+          {
+            "affineExpandedBaseBits": "3f8c87e1",
+            "encodedBits": "3f8d384f",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa02949",
+            "predictedBits": "3fa02949",
+            "sampleIndex": 22
+          },
+          {
+            "affineExpandedBaseBits": "3f8d1da7",
+            "encodedBits": "3f8dd652",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa1c426",
+            "predictedBits": "3fa1c426",
+            "sampleIndex": 23
+          },
+          {
+            "affineExpandedBaseBits": "3f8da722",
+            "encodedBits": "3f8e675d",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa33f68",
+            "predictedBits": "3fa33f65",
+            "sampleIndex": 24
+          },
+          {
+            "affineExpandedBaseBits": "3f8e384d",
+            "encodedBits": "3f8f0084",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa4d209",
+            "predictedBits": "3fa4d209",
+            "sampleIndex": 25
+          },
+          {
+            "affineExpandedBaseBits": "3f8ed5b0",
+            "encodedBits": "3f8fa68f",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa68921",
+            "predictedBits": "3fa6891e",
+            "sampleIndex": 26
+          },
+          {
+            "affineExpandedBaseBits": "3f8f659c",
+            "encodedBits": "3f903e65",
+            "exact": false,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa81cf1",
+            "predictedBits": "3fa81cf4",
+            "sampleIndex": 27
+          },
+          {
+            "affineExpandedBaseBits": "3f8ff66b",
+            "encodedBits": "3f90d72b",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa9b586",
+            "predictedBits": "3fa9b586",
+            "sampleIndex": 28
+          },
+          {
+            "affineExpandedBaseBits": "3f9088dd",
+            "encodedBits": "3f9171ab",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fab5501",
+            "predictedBits": "3fab5501",
+            "sampleIndex": 29
+          },
+          {
+            "affineExpandedBaseBits": "3f9119ac",
+            "encodedBits": "3f920a71",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3facf21c",
+            "predictedBits": "3facf21c",
+            "sampleIndex": 30
+          },
+          {
+            "affineExpandedBaseBits": "3f91a93e",
+            "encodedBits": "3f92a1e9",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fae8dea",
+            "predictedBits": "3fae8dea",
+            "sampleIndex": 31
+          },
+          {
+            "affineExpandedBaseBits": "3f9232f5",
+            "encodedBits": "3f933333",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fb01b04",
+            "predictedBits": "3fb01b04",
+            "sampleIndex": 32
+          }
+        ]
+      },
+      "float-weighted-mix": {
+        "exactMatchCount": 32,
+        "records": [
+          {
+            "affineExpandedBaseBits": "3f809194",
+            "encodedBits": "3f809996",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f815e7a",
+            "predictedBits": "3f815e7a",
+            "sampleIndex": 1
+          },
+          {
+            "affineExpandedBaseBits": "3f8123d1",
+            "encodedBits": "3f8133de",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f82c0bb",
+            "predictedBits": "3f82c0bb",
+            "sampleIndex": 2
+          },
+          {
+            "affineExpandedBaseBits": "3f81b4a1",
+            "encodedBits": "3f81cca4",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f8421b3",
+            "predictedBits": "3f8421b3",
+            "sampleIndex": 3
+          },
+          {
+            "affineExpandedBaseBits": "3f824de3",
+            "encodedBits": "3f826e54",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f85999c",
+            "predictedBits": "3f85999c",
+            "sampleIndex": 4
+          },
+          {
+            "affineExpandedBaseBits": "3f82dfe1",
+            "encodedBits": "3f83085a",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8701f5",
+            "predictedBits": "3f8701f5",
+            "sampleIndex": 5
+          },
+          {
+            "affineExpandedBaseBits": "3f836e39",
+            "encodedBits": "3f839e86",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f88636b",
+            "predictedBits": "3f88636b",
+            "sampleIndex": 6
+          },
+          {
+            "affineExpandedBaseBits": "3f840714",
+            "encodedBits": "3f843fc9",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f89e152",
+            "predictedBits": "3f89e152",
+            "sampleIndex": 7
+          },
+          {
+            "affineExpandedBaseBits": "3f84909b",
+            "encodedBits": "3f84d0e1",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8b3b00",
+            "predictedBits": "3f8b3b00",
+            "sampleIndex": 8
+          },
+          {
+            "affineExpandedBaseBits": "3f85251e",
+            "encodedBits": "3f856d8f",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8cb27f",
+            "predictedBits": "3f8cb27f",
+            "sampleIndex": 9
+          },
+          {
+            "affineExpandedBaseBits": "3f85b618",
+            "encodedBits": "3f860682",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8e2346",
+            "predictedBits": "3f8e2346",
+            "sampleIndex": 10
+          },
+          {
+            "affineExpandedBaseBits": "3f864909",
+            "encodedBits": "3f86a188",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f8f9b49",
+            "predictedBits": "3f8f9b49",
+            "sampleIndex": 11
+          },
+          {
+            "affineExpandedBaseBits": "3f86d7d8",
+            "encodedBits": "3f873831",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f910ae2",
+            "predictedBits": "3f910ae2",
+            "sampleIndex": 12
+          },
+          {
+            "affineExpandedBaseBits": "3f876df8",
+            "encodedBits": "3f87d693",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f928f9d",
+            "predictedBits": "3f928f9d",
+            "sampleIndex": 13
+          },
+          {
+            "affineExpandedBaseBits": "3f8801e0",
+            "encodedBits": "3f88729e",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9410ea",
+            "predictedBits": "3f9410ea",
+            "sampleIndex": 14
+          },
+          {
+            "affineExpandedBaseBits": "3f889405",
+            "encodedBits": "3f890ccc",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f958fe2",
+            "predictedBits": "3f958fe2",
+            "sampleIndex": 15
+          },
+          {
+            "affineExpandedBaseBits": "3f8921a5",
+            "encodedBits": "3f89a237",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f970527",
+            "predictedBits": "3f970527",
+            "sampleIndex": 16
+          },
+          {
+            "affineExpandedBaseBits": "3f89b671",
+            "encodedBits": "3f8a3f32",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f988f99",
+            "predictedBits": "3f988f99",
+            "sampleIndex": 17
+          },
+          {
+            "affineExpandedBaseBits": "3f8a4198",
+            "encodedBits": "3f8ad200",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9a0299",
+            "predictedBits": "3f9a0299",
+            "sampleIndex": 18
+          },
+          {
+            "affineExpandedBaseBits": "3f8ad30a",
+            "encodedBits": "3f8b6b72",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9b888f",
+            "predictedBits": "3f9b888f",
+            "sampleIndex": 19
+          },
+          {
+            "affineExpandedBaseBits": "3f8b6869",
+            "encodedBits": "3f8c0908",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3f9d1b61",
+            "predictedBits": "3f9d1b61",
+            "sampleIndex": 20
+          },
+          {
+            "affineExpandedBaseBits": "3f8bf646",
+            "encodedBits": "3f8c9eb2",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3f9e9c26",
+            "predictedBits": "3f9e9c26",
+            "sampleIndex": 21
+          },
+          {
+            "affineExpandedBaseBits": "3f8c87e1",
+            "encodedBits": "3f8d384f",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa02949",
+            "predictedBits": "3fa02949",
+            "sampleIndex": 22
+          },
+          {
+            "affineExpandedBaseBits": "3f8d1da7",
+            "encodedBits": "3f8dd652",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa1c426",
+            "predictedBits": "3fa1c426",
+            "sampleIndex": 23
+          },
+          {
+            "affineExpandedBaseBits": "3f8da723",
+            "encodedBits": "3f8e675e",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa33f68",
+            "predictedBits": "3fa33f68",
+            "sampleIndex": 24
+          },
+          {
+            "affineExpandedBaseBits": "3f8e384d",
+            "encodedBits": "3f8f0084",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa4d209",
+            "predictedBits": "3fa4d209",
+            "sampleIndex": 25
+          },
+          {
+            "affineExpandedBaseBits": "3f8ed5b1",
+            "encodedBits": "3f8fa690",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fa68921",
+            "predictedBits": "3fa68921",
+            "sampleIndex": 26
+          },
+          {
+            "affineExpandedBaseBits": "3f8f659b",
+            "encodedBits": "3f903e64",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa81cf1",
+            "predictedBits": "3fa81cf1",
+            "sampleIndex": 27
+          },
+          {
+            "affineExpandedBaseBits": "3f8ff66b",
+            "encodedBits": "3f90d72b",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fa9b586",
+            "predictedBits": "3fa9b586",
+            "sampleIndex": 28
+          },
+          {
+            "affineExpandedBaseBits": "3f9088dd",
+            "encodedBits": "3f9171ab",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3fab5501",
+            "predictedBits": "3fab5501",
+            "sampleIndex": 29
+          },
+          {
+            "affineExpandedBaseBits": "3f9119ac",
+            "encodedBits": "3f920a71",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "mixed-base-darwin-powf",
+            "observedBits": "3facf21c",
+            "predictedBits": "3facf21c",
+            "sampleIndex": 30
+          },
+          {
+            "affineExpandedBaseBits": "3f91a93e",
+            "encodedBits": "3f92a1e9",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fae8dea",
+            "predictedBits": "3fae8dea",
+            "sampleIndex": 31
+          },
+          {
+            "affineExpandedBaseBits": "3f9232f5",
+            "encodedBits": "3f933333",
+            "exact": true,
+            "measuredDarwinPowfSourceDecoder": "float-base-darwin-powf",
+            "observedBits": "3fb01b04",
+            "predictedBits": "3fb01b04",
+            "sampleIndex": 32
+          }
+        ]
+      }
+    },
+    "postOpeningAffineExpandedFormula": "powf(float32(float32(encoded * float32(1/1.055f)) + float32(0.055f/1.055f)), 2.4f)",
+    "postOpeningExactEncodingName": "float-weighted-mix",
+    "postOpeningExactMatchCount": 32,
+    "sampleCount": 32
+  },
+  "liveSurvivingStrongGroups": [
+    {
+      "changedPrimaryEdgeRecordCount": 2,
+      "liveSurvivingRecordCount": 4,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              -90.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 85,
+          "requestedMutationSurvivedLayout": true,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              90.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 86,
+          "requestedMutationSurvivedLayout": true,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              -134.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 87,
+          "requestedMutationSurvivedLayout": true,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              134.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "recordIndex": 88,
+          "requestedMutationSurvivedLayout": true,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    }
+  ],
+  "runID": 30754929850,
+  "strongGroups": [
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-bounds-origin-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 1,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-bounds-origin-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 2,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-bounds-origin-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 3,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-bounds-origin-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 4,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin-and-position",
+      "mutationPath": [
+        1,
+        0,
+        1
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-bounds-origin-and-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 9,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-bounds-origin-and-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 10,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-bounds-origin-and-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 11,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-bounds-origin-and-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 12,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 5,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 6,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 7,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 8,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-0-bounds-origin-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 13,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-bounds-origin-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 14,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-bounds-origin-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 15,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-bounds-origin-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 16,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin-and-position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-0-bounds-origin-and-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 21,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-bounds-origin-and-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 22,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-bounds-origin-and-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 23,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-bounds-origin-and-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 24,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-0-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 17,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 18,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 19,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 20,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-0-0-bounds-origin-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 25,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-bounds-origin-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 26,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-bounds-origin-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 27,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-bounds-origin-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 28,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin-and-position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-0-0-bounds-origin-and-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 33,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-bounds-origin-and-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 34,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-bounds-origin-and-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 35,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-bounds-origin-and-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 36,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-0-0-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 29,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 30,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 31,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 32,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 2,
+      "liveSurvivingRecordCount": 4,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              -90.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 85,
+          "requestedMutationSurvivedLayout": true,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              90.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 86,
+          "requestedMutationSurvivedLayout": true,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              -134.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 87,
+          "requestedMutationSurvivedLayout": true,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-0-0-0-0-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              134.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "recordIndex": 88,
+          "requestedMutationSurvivedLayout": true,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-bounds-origin-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 37,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-bounds-origin-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 38,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-bounds-origin-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 39,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-bounds-origin-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 40,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin-and-position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-bounds-origin-and-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 45,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-bounds-origin-and-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 46,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-bounds-origin-and-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 47,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-bounds-origin-and-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 48,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 41,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 42,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 43,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 44,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-0-bounds-origin-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 49,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-bounds-origin-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 50,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-bounds-origin-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 51,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-bounds-origin-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 52,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin-and-position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-0-bounds-origin-and-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 57,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-bounds-origin-and-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 58,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-bounds-origin-and-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 59,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-bounds-origin-and-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 60,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-0-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 53,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 54,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 55,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 56,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-0-0-bounds-origin-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 61,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-bounds-origin-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 62,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-bounds-origin-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 63,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-bounds-origin-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 64,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin-and-position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-0-0-bounds-origin-and-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 69,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-bounds-origin-and-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 70,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-bounds-origin-and-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 71,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-bounds-origin-and-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 72,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-1-0-0-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 65,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 66,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 67,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-1-0-0-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": null,
+            "position": null,
+            "targetPresentInBaseAndObserved": false
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 68,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        2
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-2-bounds-origin-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 73,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-bounds-origin-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 74,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-bounds-origin-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 75,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-bounds-origin-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 76,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "bounds-origin-and-position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        2
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-2-bounds-origin-and-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 81,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-bounds-origin-and-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 82,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-bounds-origin-and-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 83,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-bounds-origin-and-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 84,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    },
+    {
+      "changedPrimaryEdgeRecordCount": 0,
+      "liveSurvivingRecordCount": 0,
+      "mutation": "position",
+      "mutationPath": [
+        1,
+        0,
+        1,
+        2
+      ],
+      "recordCount": 4,
+      "records": [
+        {
+          "interventionName": "strong-1-0-1-2-position-x-negative-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 77,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            -90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-position-x-positive-90",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 78,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            90,
+            0
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-position-y-negative-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 79,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            -134
+          ]
+        },
+        {
+          "interventionName": "strong-1-0-1-2-position-y-positive-134",
+          "liveTargetDelta": {
+            "boundsOrigin": [
+              0.0,
+              0.0
+            ],
+            "position": [
+              0.0,
+              0.0
+            ],
+            "targetPresentInBaseAndObserved": true
+          },
+          "primaryEdgeResponse": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recordIndex": 80,
+          "requestedMutationSurvivedLayout": false,
+          "translation": [
+            0,
+            134
+          ]
+        }
+      ],
+      "sampleIndex": 25
+    }
+  ],
+  "timelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30754929850/transition-timeline.json",
+  "timelineSHA256": "85048a08247543053f523eb6e1e9671824f2c2377a1da09ba4a75f28c3090800"
+}

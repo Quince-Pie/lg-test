@@ -27,10 +27,21 @@ DECODED_CANDIDATES = (
     "mixed-base-darwin-powf",
     "mixed-base-vforce-vvpowf",
 )
+TRANSFER_DECODED_CANDIDATES = (
+    "affine-expanded-base-darwin-powf",
+) + DECODED_CANDIDATES
 EXPECTED_CANDIDATE_NAMES = tuple(
     f"{encoded}/{decoded}"
     for encoded in ENCODED_CANDIDATES
     for decoded in DECODED_CANDIDATES
+)
+TRANSFER_CANDIDATE_NAMES = tuple(
+    f"{encoded}/{decoded}"
+    for encoded in ENCODED_CANDIDATES
+    for decoded in TRANSFER_DECODED_CANDIDATES
+)
+RECOVERED_TRANSFER_CANDIDATE = (
+    "float-weighted-mix/affine-expanded-base-darwin-powf"
 )
 EXPECTED_SAMPLE_INDICES = tuple(range(1, 33))
 CLASSIFICATION = (
@@ -69,10 +80,16 @@ def validate(path: Path) -> dict[str, Any]:
     probe = holdout.mapping(
         uniforms.get("inputClampArithmeticProbe"), "inputClamp arithmetic probe"
     )
+    schema_version = probe.get("schemaVersion")
+    if schema_version == 1:
+        expected_candidate_names = EXPECTED_CANDIDATE_NAMES
+    elif schema_version == 2:
+        expected_candidate_names = TRANSFER_CANDIDATE_NAMES
+    else:
+        raise ValueError("inputClamp arithmetic probe schema differs")
     untyped_records = probe.get("records")
     if (
-        probe.get("schemaVersion") != 1
-        or probe.get("requested") is not True
+        probe.get("requested") is not True
         or probe.get("executed") is not True
         or probe.get("sampleCount") != len(EXPECTED_SAMPLE_INDICES)
         or probe.get("executedSampleCount") != len(EXPECTED_SAMPLE_INDICES)
@@ -122,13 +139,13 @@ def validate(path: Path) -> dict[str, Any]:
             raise ValueError("inputClamp probe and captured filter differ")
 
         candidates = holdout.mapping(record.get("candidates"), "inputClamp candidates")
-        if record.get("candidateCount") != len(EXPECTED_CANDIDATE_NAMES) or set(
+        if record.get("candidateCount") != len(expected_candidate_names) or set(
             candidates
-        ) != set(EXPECTED_CANDIDATE_NAMES):
+        ) != set(expected_candidate_names):
             raise ValueError("inputClamp candidate set differs")
         computed_exact: list[str] = []
         candidate_bits: dict[str, str] = {}
-        for name in EXPECTED_CANDIDATE_NAMES:
+        for name in expected_candidate_names:
             candidate = holdout.mapping(candidates.get(name), f"candidate {name}")
             float_evidence(candidate.get("encoded"), f"encoded {name}")
             _, decoded_bits = float_evidence(
@@ -154,28 +171,35 @@ def validate(path: Path) -> dict[str, Any]:
 
     exact_every_state = [
         name
-        for name in EXPECTED_CANDIDATE_NAMES
+        for name in expected_candidate_names
         if match_counts[name] == len(EXPECTED_SAMPLE_INDICES)
     ]
+    recovered_transfer_exact = RECOVERED_TRANSFER_CANDIDATE in exact_every_state
+    if schema_version == 2 and not recovered_transfer_exact:
+        raise ValueError("preregistered inputClamp affine transfer differs")
     return {
         "transitionInputClampProbeResultSchemaVersion": 1,
         "classification": CLASSIFICATION,
         "timeline": str(path),
         "timelineSHA256": holdout.sha256_file(path),
         "sampleIndices": list(EXPECTED_SAMPLE_INDICES),
-        "candidateNames": list(EXPECTED_CANDIDATE_NAMES),
+        "probeSchemaVersion": schema_version,
+        "candidateNames": list(expected_candidate_names),
         "aggregate": {
             "sampleCount": len(records),
-            "candidateCount": len(EXPECTED_CANDIDATE_NAMES),
+            "candidateCount": len(expected_candidate_names),
             "exactMatchCounts": {
-                name: match_counts[name] for name in EXPECTED_CANDIDATE_NAMES
+                name: match_counts[name] for name in expected_candidate_names
             },
             "exactEveryStateCandidateNames": exact_every_state,
+            "recoveredTransferCandidate": RECOVERED_TRANSFER_CANDIDATE,
+            "recoveredTransferCandidateExact": recovered_transfer_exact,
         },
         "records": records,
         "conclusion": {
             "captureIntegrityPassed": True,
             "platformArithmeticCandidateRecovered": bool(exact_every_state),
+            "affineExpandedTransferPassed": recovered_transfer_exact,
             "candidateSelectionOnly": True,
             "requiresUnseenTemporalTransfer": True,
             "productionShaderAuthorized": False,

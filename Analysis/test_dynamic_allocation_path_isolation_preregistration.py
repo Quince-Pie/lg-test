@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -17,10 +18,22 @@ PREREGISTRATION = json.loads(
         ANALYSIS_ROOT / "dynamic_allocation_path_isolation_preregistration.json"
     ).read_text(encoding="utf-8")
 )
+CAPTURE_COMMIT = "d4925578608fd8a25a6bc85bd94593c79cef00b2"
 
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def committed_sha256(path: Path) -> str:
+    relative = path.relative_to(REPOSITORY_ROOT)
+    content = subprocess.run(
+        ["git", "show", f"{CAPTURE_COMMIT}:{relative.as_posix()}"],
+        cwd=REPOSITORY_ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout
+    return hashlib.sha256(content).hexdigest()
 
 
 class PathIsolationPreregistrationTests(unittest.TestCase):
@@ -65,7 +78,6 @@ class PathIsolationPreregistrationTests(unittest.TestCase):
             / "validate_dynamic_allocation_path_isolation.py",
             "pathIsolationValidatorTestSHA256": ANALYSIS_ROOT
             / "test_validate_dynamic_allocation_path_isolation.py",
-            "productionShaderSHA256": REPOSITORY_ROOT.parent / "shaders/frag.glsl",
             "swiftCaptureSHA256": REPOSITORY_ROOT
             / "Sources/GlassIntrospect/main.swift",
             "workflowSHA256": REPOSITORY_ROOT
@@ -73,7 +85,11 @@ class PathIsolationPreregistrationTests(unittest.TestCase):
         }
         for name, path in files.items():
             with self.subTest(name=name):
-                self.assertEqual(sha256(path), expected[name])
+                self.assertEqual(committed_sha256(path), expected[name])
+        self.assertEqual(
+            sha256(REPOSITORY_ROOT.parent / "shaders/frag.glsl"),
+            expected["productionShaderSHA256"],
+        )
 
     def test_preregistration_denies_production_authority(self) -> None:
         self.assertIn(

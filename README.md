@@ -4275,6 +4275,70 @@ capture-integrity gate does not require a convenient result.  Both experiments
 remain calibration and require a separately frozen unseen transfer before any
 production rendering change.
 
+Replacement run `30754929850`, captured from corrected commit `d492557`, did
+not pass that frozen path-isolation gate.  The normal Apple transition and the
+artifact upload completed, but the capture executable failed closed before the
+workflow validators because only 114 of 426 interventions contained an
+extractable producer copy-base pass.  The boundary is exact: records 0 through
+113 succeeded on their first render, while records 114 through 425 each ran all
+three permitted render attempts without a copy-base pass.  This repeats the
+114-record boundary exposed by the preceding fixed-state process; replaying the
+same monolithic matrix would therefore not be new evidence.
+
+The independent live readback changes the causal conclusion materially.  All
+114 extractable records have identical pre-render and post-render live-state
+hashes and unchanged filter hashes, but zero have a live tree equal to the
+pre-layout requested presentation snapshot.  Core Animation rewrites 21 of the
+22 individually tested path/field groups to the same live baseline before the
+draw; every one of those controls has zero live delta and zero primary-edge
+response.  Only `position` at path `[1,0,1,0,0,0,0]` survives all four signed
+controls exactly.  Its `(+90,0)` control moves X lower by one pixel and its
+`(0,+134)` control moves Y upper by minus one pixel; the two opposite controls
+do not cross an edge boundary.  Across the usable prefix, source `q` is exact
+in 912 of 912 components, all 1,596 allocation/copy invariant components are
+exact, topology never changes, and the zero control's decoded policy matches
+the normal Apple record.  Its raw vertex payload hash does not match, so this
+is explicitly not a draw-payload or production-parity pass.  The immutable
+failed-run audit is
+`Analysis/dynamic_allocation_path_isolation_failed_run_result.json`, with
+SHA-256
+`c930748805ba0cb52b0b452f8eb4aa1dbc4057b8bcc78b70f1f202893828d5da`.
+
+The same run produced a valid 32-state `inputClamp` calibration.  None of the
+24 preregistered candidates is exact in every state.  The best original
+candidate, float weighted mix followed by the mixed-base Darwin `powf`, matches
+30 of 32; samples 1 and 2 are each two binary32 words high.  Post-opening
+enumeration of the missing normalization staging recovers one exact expression:
+
+```text
+encoded = float32((1-k)*1.0f + k*1.15f)
+base = float32(float32(encoded * float32(1.0f/1.055f))
+               + float32(0.055f/1.055f))
+inputClamp = Darwin.powf(base, 2.4f)
+```
+
+The reciprocal and offset words are `3f72a76f` and `3d55891a`.  The expanded
+affine base aliases the already measured float-base result in the first two
+states and the measured mixed-base result wherever they later differ, giving
+32 of 32 exact captured words.  The other three encoded stagings give 29, 26,
+and 28 exact states, so the weighted mix distinguishes the result.  This law
+was recovered after opening run `30754929850`; it is calibration, not a
+prospective temporal pass.
+
+The follow-up is frozen before capture in
+`Analysis/dynamic_allocation_surviving_path_threshold_preregistration.json`.
+It removes every path proven dead at the live boundary and retains only the
+deepest SDF position: 67 records at sample 25 (zero, four strong controls, and
+29 X plus 33 Y dense values) and five records at sample 31, or 72 total.  This
+is below the observed 114-record process ceiling.  At each source state the
+zero control defines the complete post-layout live baseline; every later live
+pre/post tree must equal that baseline with only the declared target position
+delta.  The same run directly evaluates the newly frozen
+`float-weighted-mix/affine-expanded-base-darwin-powf` candidate on 32 newly
+timed states.  Both gates use zero tolerance.  Even if both pass, a separately
+frozen unseen native geometry transfer, the remaining shadow/source work, and
+the broader profile/scale gates remain mandatory before Walle integration.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

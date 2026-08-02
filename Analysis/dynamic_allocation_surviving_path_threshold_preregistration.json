@@ -1,0 +1,240 @@
+{
+  "acceptance": {
+    "all72InterventionsMustExecute": true,
+    "allocationAndCopyMetadataMustRemainExactWithinEachSourceState": true,
+    "allowNumericTolerance": false,
+    "baseDecodedProducerPolicyMustMatchNormalCapture": true,
+    "inputClampAffineExpandedCandidateMustMatchAll32States": true,
+    "liveFilterInputsMustMatchSourceBeforeAndAfter": true,
+    "liveLayerStateMustEqualBaseLiveStatePlusOnlyDeclaredTargetPositionDelta": true,
+    "liveLayerStateMustRemainExactAcrossRender": true,
+    "maximumProducerRenderAttempts": 3,
+    "opaqueVertexTailHashIsDiagnosticAndCannotAuthorizeProduction": true,
+    "originalProducerInputRequiredEveryIntervention": true,
+    "primaryProducerSourceQLawMustRemainExact": true,
+    "producerCopyBasePassRequiredEveryIntervention": true,
+    "rawStageDumpsForbidden": true,
+    "zeroNumericTolerance": true
+  },
+  "capture": {
+    "appearance": "light",
+    "baseGeometry": {
+      "center": [
+        512,
+        512
+      ],
+      "name": "circle-640-center",
+      "requestedExtent": [
+        640,
+        640
+      ],
+      "windowExtent": [
+        1024,
+        1024
+      ]
+    },
+    "direction": "materialize",
+    "evidenceMode": "allocation-metadata-v1",
+    "material": "clear",
+    "maximumRenderAttemptCount": 3,
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false,
+    "renderBufferRetentionPolicy": "index-all-compute-0-vertex-1-or-2",
+    "sourceInterventionCounts": {
+      "25": 67,
+      "31": 5
+    },
+    "sourceSampleIndices": [
+      25,
+      31
+    ],
+    "totalInterventionCount": 72,
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-path-isolation"
+    }
+  },
+  "classification": "preregistered reduced live-baseline deepest-SDF position threshold calibration and prospective inputClamp temporal transfer; not an unseen geometry transfer",
+  "frozenAtUtc": "2026-08-02T16:19:37Z",
+  "frozenCausalQuestion": {
+    "denseDecisionRule": "Preserve the exact signed four-edge response at every sampled integer. Report only brackets between adjacent sampled values whose response differs; do not interpolate an unsampled threshold.",
+    "denseMutation": "position",
+    "densePath": [
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "denseSampleIndex": 25,
+    "denseXValues": [
+      -128,
+      -96,
+      -92,
+      -91,
+      -90,
+      -89,
+      -88,
+      -64,
+      -32,
+      -16,
+      -8,
+      -4,
+      -2,
+      -1,
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      80,
+      88,
+      89,
+      90,
+      91,
+      92,
+      96,
+      128
+    ],
+    "denseYValues": [
+      -160,
+      -144,
+      -136,
+      -135,
+      -134,
+      -133,
+      -132,
+      -128,
+      -96,
+      -64,
+      -32,
+      -16,
+      -8,
+      -4,
+      -2,
+      -1,
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      96,
+      120,
+      128,
+      132,
+      133,
+      134,
+      135,
+      136,
+      144,
+      160
+    ],
+    "exactLiveStateRule": "The first intervention at each source state defines the independent post-layout live baseline. Every later pre-render and post-render live tree must equal that complete baseline with only the deepest SDF position translated by the declared signed delta.",
+    "nullOutcome": "If any declared position delta is absent at the live boundary, any undeclared live field changes, the producer copy pass is missing, or the response does not form a deterministic sampled map, the threshold remains unresolved and the run fails.",
+    "objective": "Map the exact primary producer-edge response to the only individually mutated path and field that survived Core Animation layout in failed run 30754929850.",
+    "strongDecisionRule": "At both source states, preserve all four signed controls and their exact four-edge responses while all non-edge allocation metadata remains bit-exact.",
+    "strongDeltas": [
+      {
+        "delta": [
+          -90,
+          0
+        ],
+        "name": "x-negative-90"
+      },
+      {
+        "delta": [
+          90,
+          0
+        ],
+        "name": "x-positive-90"
+      },
+      {
+        "delta": [
+          0,
+          -134
+        ],
+        "name": "y-negative-134"
+      },
+      {
+        "delta": [
+          0,
+          134
+        ],
+        "name": "y-positive-134"
+      }
+    ]
+  },
+  "frozenImplementation": {
+    "failedRunAnalyzerSHA256": "9f8f402064f3fd20e88897bb24d1581789582f3d7122fb7f455595295143987f",
+    "failedRunAnalyzerTestSHA256": "325923092b9f6724f4cadad6bca295a4deb44d5ee8a49428a1ab9830aa05a2dc",
+    "failedRunResultSHA256": "c930748805ba0cb52b0b452f8eb4aa1dbc4057b8bcc78b70f1f202893828d5da",
+    "inputClampValidatorSHA256": "5faecb070194266c699b4e3032a595735fd8fa3ac48bb5ba3ae80bfb1db4ef55",
+    "inputClampValidatorTestSHA256": "42dcb412d2941b06919cf28459e889c3412f5bcd5e1aef99b8462a1711eaa7a0",
+    "lgTestCommitBeforeRegistration": "d4925578608fd8a25a6bc85bd94593c79cef00b2",
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3",
+    "survivingPathAnalyzerSHA256": "cfe37df2c78c83a7f8db064c514b05972fdf979acced64a707154a5cf8143764",
+    "survivingPathAnalyzerTestSHA256": "98ba954c302a51b744fa866c47493565e900bde1c330b469dadaad21651e1c71",
+    "survivingPathValidatorSHA256": "dc475fbe3b91c6ee2998f8bbf69803efff0e417c5d45fde056c644e06024dcb8",
+    "survivingPathValidatorTestSHA256": "a0baf3b224e66493493494c4c4fb70a2641940f8821a6c39e3234b44082192ec",
+    "swiftCaptureSHA256": "fcd8e17136c7412a4e654a6894ca19b28cfba74121a90494b6bb32cf552bab1c",
+    "workflowSHA256": "bc79f75eb6244cda94dc4995164338589396535764b07c61a2d3b6be7570b870"
+  },
+  "inputClampTransfer": {
+    "acceptance": "The named candidate must equal the captured inputClamp binary32 word at all 32 newly timed states. No fallback candidate, ULP tolerance, or fitted correction is accepted.",
+    "candidateName": "float-weighted-mix/affine-expanded-base-darwin-powf",
+    "encodedFormula": "float32(float32(1 - k) * 1.0f + float32(k * 1.15f))",
+    "normalizedBaseFormula": "float32(float32(encoded * float32(1.0f / 1.055f)) + float32(0.055f / 1.055f))",
+    "offsetBits": "3d55891a",
+    "power": "Darwin.powf(base, 2.4f)",
+    "reciprocalBits": "3f72a76f",
+    "retrospectiveCalibrationExactStates": 32,
+    "retrospectiveCalibrationRunID": 30754929850
+  },
+  "notClaimed": [
+    "that failed run 30754929850 passed its frozen 426-record gate",
+    "that pre-layout requested layer state survived Core Animation layout",
+    "that the two changing strong controls recover a universal mesh formula",
+    "an exact threshold outside adjacent sampled brackets",
+    "a native Apple transition at shifted geometry",
+    "an unseen geometry, profile, scale-factor, or Retina transfer",
+    "endpoint crop or mesh recovery",
+    "production Walle parity",
+    "permission to modify or approximate the protected production shader",
+    "permission to trade image quality for memory, throughput, or latency"
+  ],
+  "openedEvidence": {
+    "failedRunID": 30754929850,
+    "failedRunResultSHA256": "c930748805ba0cb52b0b452f8eb4aa1dbc4057b8bcc78b70f1f202893828d5da",
+    "failedRunTimelineSHA256": "85048a08247543053f523eb6e1e9671824f2c2377a1da09ba4a75f28c3090800",
+    "firstMissingProducerCopyRecordIndex": 114,
+    "inputClampOriginalCandidateBestExactStates": 30,
+    "inputClampOriginalCandidateCount": 24,
+    "inputClampOriginalExactEveryStateCandidateCount": 0,
+    "livePrePostStateExactCount": 114,
+    "liveRequestedStateExactCount": 0,
+    "onlySurvivingMutation": {
+      "field": "position",
+      "path": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "strongControlsPresentLive": 4,
+      "strongControlsWithChangedPrimaryEdge": 2
+    },
+    "pathIsolationExtractableInterventionCount": 114,
+    "pathIsolationRequestedInterventionCount": 426,
+    "reasonForReduction": "All records 0 through 113 produced a copy pass and every later record failed after three executed attempts, reproducing the earlier 114-record ceiling. Independent live readback additionally proved that 21 of 22 strong path-field groups were rewritten to the same live baseline before rendering. Only the deepest SDF position survived all four controls, so retaining the dead paths or sharding the 426-record matrix would add cost without causal information."
+  },
+  "schemaVersion": 1
+}
