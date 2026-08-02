@@ -126,7 +126,6 @@ CAPTURE_BACKDROP_OWNER_REGION_WINDOW_OFFSET = 0x200
 CAPTURE_BACKDROP_OWNER_RECORD_OFFSETS = {
     "begin": 0x50,
     "end": 0x58,
-    "capacity": 0x60,
     "recordByteCount": 0xD0,
 }
 CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_OFFSET = 0x18
@@ -136,6 +135,9 @@ CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT = 4096
 CAPTURE_BACKDROP_OWNER_OBJECT_PREFIX_BYTE_COUNT = 768
 CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT = 0xD0
 CAPTURE_BACKDROP_OWNER_RECORD_MAXIMUM_COUNT = 64
+CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_COUNT = 1
+CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_MATCH_COUNT = 1
+CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_SELECTED_INDEX = 0
 CAPTURE_BACKDROP_OWNER_RECORD_VECTOR_BYTE_COUNT = (
     CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT
     * CAPTURE_BACKDROP_OWNER_RECORD_MAXIMUM_COUNT
@@ -954,8 +956,8 @@ def validate_capture_backdrop_operands(
             source_state_window = capture_backdrop_operand_bytes(
                 operands, "sourceStateWindow"
             )
-            record_begin, record_end, record_capacity = struct.unpack_from(
-                "<3Q",
+            record_begin, record_end = struct.unpack_from(
+                "<2Q",
                 owner_object_prefix,
                 CAPTURE_BACKDROP_OWNER_RECORD_OFFSETS["begin"],
             )
@@ -991,9 +993,12 @@ def validate_capture_backdrop_operands(
                 or registers[19 - CAPTURE_BACKDROP_FIRST_REGISTER] == 0
                 or record_begin == 0
                 or record_end <= record_begin
-                or record_capacity < record_end
                 or record_end - record_begin != len(owner_record_vector)
-                or not source_record_match_indices
+                or record_count != CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_COUNT
+                or len(source_record_match_indices)
+                != CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_MATCH_COUNT
+                or selected_record_index
+                != CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_SELECTED_INDEX
                 or cached_record_index != selected_record_index
             ):
                 raise ValueError("capture_backdrop owner record-vector replay differs")
@@ -2183,14 +2188,25 @@ def validate(path: Path) -> dict[str, Any]:
             or (
                 evidence_schema == 8
                 and (
-                    sum(capture_backdrop_owner_record_counts.values()) != expected_count
-                    or any(
-                        not 1 <= count <= CAPTURE_BACKDROP_OWNER_RECORD_MAXIMUM_COUNT
-                        for count in capture_backdrop_owner_record_counts
+                    capture_backdrop_owner_record_counts
+                    != Counter(
+                        {CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_COUNT: (expected_count)}
                     )
-                    or any(
-                        match_count < 1
-                        for match_count in capture_backdrop_owner_record_match_counts
+                    or capture_backdrop_owner_record_match_counts
+                    != Counter(
+                        {
+                            CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_MATCH_COUNT: (
+                                expected_count
+                            )
+                        }
+                    )
+                    or capture_backdrop_owner_selected_record_indices
+                    != Counter(
+                        {
+                            CAPTURE_BACKDROP_OWNER_RECORD_EXPECTED_SELECTED_INDEX: (
+                                expected_count
+                            )
+                        }
                     )
                 )
             )

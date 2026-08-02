@@ -197,11 +197,11 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         source_key = bytes(
             range(surviving.CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT)
         )
-        record_count = 2
+        record_count = 1
         vector = bytearray(
             record_count * surviving.CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT
         )
-        selected_index = 1
+        selected_index = 0
         selected_offset = (
             selected_index * surviving.CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT
         )
@@ -212,9 +212,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         owner_prefix = bytearray(
             surviving.CAPTURE_BACKDROP_OWNER_OBJECT_PREFIX_BYTE_COUNT
         )
-        struct.pack_into(
-            "<3Q", owner_prefix, 0x50, record_begin, record_end, record_end
-        )
+        struct.pack_into("<2Q", owner_prefix, 0x50, record_begin, record_end)
         owner_window = bytearray.fromhex(operands["ownerRegionWindow"]["hex"])
         struct.pack_into("<Q", owner_window, 0x20, selected_index)
         operands["ownerRegionWindow"] = cls.operand_bytes(
@@ -685,11 +683,11 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         )
         self.assertEqual(validated["schemaVersion"], 4)
         self.assertEqual(validated["ownerObjectPrefixByteCount"], 768)
-        self.assertEqual(validated["ownerRecordCount"], 2)
-        self.assertEqual(validated["ownerRecordVectorByteCount"], 2 * 0xD0)
+        self.assertEqual(validated["ownerRecordCount"], 1)
+        self.assertEqual(validated["ownerRecordVectorByteCount"], 0xD0)
         self.assertEqual(validated["sourceStateWindowByteCount"], 40)
-        self.assertEqual(validated["sourceRecordMatchIndices"], [1])
-        self.assertEqual(validated["selectedOwnerRecordIndex"], 1)
+        self.assertEqual(validated["sourceRecordMatchIndices"], [0])
+        self.assertEqual(validated["selectedOwnerRecordIndex"], 0)
         self.assertTrue(validated["ownerRegionWindowEmbeddedInPrefix"])
 
     def test_capture_backdrop_schema_four_cross_checks_the_embedded_window(
@@ -713,12 +711,30 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "record-vector replay differs"):
             surviving.validate_capture_backdrop_operands(operands)
 
+    def test_capture_backdrop_schema_four_requires_the_observed_single_record(
+        self,
+    ) -> None:
+        operands = self.capture_backdrop_owner_record_operands()
+        vector = bytes.fromhex(operands["ownerRecordVector"]["hex"])
+        doubled = vector + vector
+        prefix = bytearray.fromhex(operands["ownerObjectPrefix"]["hex"])
+        begin = struct.unpack_from("<Q", prefix, 0x50)[0]
+        struct.pack_into("<Q", prefix, 0x58, begin + len(doubled))
+        operands["ownerObjectPrefix"] = self.operand_bytes(
+            bytes(prefix), "bounded owner object prefix bytes"
+        )
+        operands["ownerRecordVector"] = self.operand_bytes(
+            doubled, "bounded owner 0xd0-byte record vector"
+        )
+        with self.assertRaisesRegex(ValueError, "record-vector replay differs"):
+            surviving.validate_capture_backdrop_operands(operands)
+
     def test_capture_backdrop_schema_four_requires_the_cached_record_index(
         self,
     ) -> None:
         operands = self.capture_backdrop_owner_record_operands()
         prefix = bytearray.fromhex(operands["ownerObjectPrefix"]["hex"])
-        struct.pack_into("<Q", prefix, 0x220, 0)
+        struct.pack_into("<Q", prefix, 0x220, 1)
         operands["ownerObjectPrefix"] = self.operand_bytes(
             bytes(prefix), "bounded owner object prefix bytes"
         )

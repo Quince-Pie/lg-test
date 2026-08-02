@@ -4788,6 +4788,45 @@ remaining live construction inputs; it still cannot authorize a production
 shader change or claim a public crop rule, unseen transfer, Retina 2x transfer,
 or Walle parity.
 
+Run `30770107772`, from preregistered commit `8998bd5`, correctly fails that
+gate at the first intervention.  It retains no complete owner record vector,
+so it is not promoted to a pass.  Instead, all 114 states retain one bounded
+partial operand with read mask `0x005fffff`: the exact 768-byte owner prefix,
+40-byte source key, dual-owner regions, and every earlier operand are present;
+only the record-vector bit is absent.  There are 342 bounded callback attempts
+and no callback diagnostic substitutes for a live operand.  Replaying each
+partial as the preceding schema-3 payload reproduces all 912 primary-position
+bits, all 912 primary-source bits, all 912 source-`q` components, all 1,596
+allocation/copy components, and all 114 consumed regions exactly.  The
+timeline SHA-256 is
+`eb45b13ebbcfd234b76d7d3940ca08df2ee4d2e8e6feb73fde92c916f602f39a`.
+The immutable failed-run result is
+`Analysis/dynamic_allocation_capture_backdrop_owner_record_failed_run_result.json`,
+with SHA-256
+`8cf021763b99be96efb964c5ed8341a8b180ee3064783af72c7cedc81dc415da`.
+
+The failure falsifies one probe assumption rather than an Apple rendering
+rule.  In every state, owner `+0x50` and `+0x58` delimit exactly `0xd0` bytes,
+while the word at owner `+0x60` equals the begin pointer.  Treating `+0x60` as
+vector capacity therefore rejected every otherwise complete read.  The pinned
+instruction at `capture_backdrop+0x34c` is exactly
+`ldp x28, x8, [x20, #0x50]`: Apple's opened loop consumes only the begin/end
+pair there.  The retry removes the unproven capacity name and comparison;
+`+0x60` remains captured in the owner prefix but is deliberately
+uninterpreted.
+
+The corrected retry is frozen before capture in
+`Analysis/dynamic_allocation_capture_backdrop_owner_record_retry_preregistration.json`.
+Its SHA-256 is
+`df2ce6632f86f77c61ce05d7d8076cd47ec786f7192c1eca14b7c92542fdb3ef`.
+Because the failed run observed one record in 114/114 states, the unchanged
+retry requires exactly one 208-byte record, exactly one source-key match, and
+cached selected index zero in every state.  A changed cardinality fails closed
+instead of being generalized.  A prospective pass will expose the live record
+bytes needed to map its two bounds sets and in-place float bounds to public
+layer paths; it still cannot by itself establish unseen transfer or production
+parity.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

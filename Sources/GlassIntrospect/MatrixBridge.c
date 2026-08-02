@@ -209,7 +209,6 @@ enum {
     LG_CAPTURE_BACKDROP_OWNER_REGION_WINDOW_OFFSET = 0x200,
     LG_CAPTURE_BACKDROP_OWNER_RECORD_BEGIN_OFFSET = 0x50,
     LG_CAPTURE_BACKDROP_OWNER_RECORD_END_OFFSET = 0x58,
-    LG_CAPTURE_BACKDROP_OWNER_RECORD_CAPACITY_OFFSET = 0x60,
     LG_CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_OFFSET = 0x18,
     LG_CAPTURE_BACKDROP_RENDERER_SCALE_OFFSET = 0x30,
     LG_CAPTURE_BACKDROP_RENDERER_REGION_CONTROL_OFFSET = 0xd0,
@@ -434,7 +433,6 @@ static _Unwind_Reason_Code lg_capture_backdrop_unwind_frame(
 
         uint64_t record_begin = 0;
         uint64_t record_end = 0;
-        uint64_t record_capacity = 0;
         memcpy(
             &record_begin,
             output->owner_object_prefix
@@ -445,14 +443,7 @@ static _Unwind_Reason_Code lg_capture_backdrop_unwind_frame(
             output->owner_object_prefix
                 + LG_CAPTURE_BACKDROP_OWNER_RECORD_END_OFFSET,
             sizeof(record_end));
-        memcpy(
-            &record_capacity,
-            output->owner_object_prefix
-                + LG_CAPTURE_BACKDROP_OWNER_RECORD_CAPACITY_OFFSET,
-            sizeof(record_capacity));
-        if (record_begin != 0
-            && record_end > record_begin
-            && record_capacity >= record_end) {
+        if (record_begin != 0 && record_end > record_begin) {
             const uint64_t vector_byte_count = record_end - record_begin;
             if (vector_byte_count <= sizeof(output->owner_record_vector)
                 && vector_byte_count

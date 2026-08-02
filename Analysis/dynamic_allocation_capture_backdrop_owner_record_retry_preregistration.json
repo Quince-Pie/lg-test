@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "frozenAtUtc": "2026-08-02T22:40:05Z",
+  "classification": "preregistered instruction-proven begin/end capture_backdrop owner-record-vector retry; not a public-state crop policy, unseen transfer, or product-parity claim",
+  "openedOwnerRecordEvidence": {
+    "runID": 30770107772,
+    "headSHA": "8998bd56f34a749afa599197c153e58600a20d8f",
+    "workflowConclusion": "failure",
+    "workflowGateError": "capture_backdrop operand capture count differs at 31/0",
+    "prospectiveGatePassed": false,
+    "timelineSHA256": "eb45b13ebbcfd234b76d7d3940ca08df2ee4d2e8e6feb73fde92c916f602f39a",
+    "failedRunAnalysisResultSHA256": "8cf021763b99be96efb964c5ed8341a8b180ee3064783af72c7cedc81dc415da",
+    "recordCount": 114,
+    "completeLiveOperandCaptureCount": 0,
+    "partialOperandCaptureCount": 114,
+    "callbackAttemptCount": 342,
+    "partialReadMaskCounts": {
+      "0x005fffff": 114
+    },
+    "ownerObjectPrefixExactCount": 114,
+    "sourceStateWindowExactCount": 114,
+    "retainedOwnerRecordVectorCount": 0,
+    "beginEndSpanByteCounts": {
+      "208": 114
+    },
+    "ownerWord60EqualsBeginCount": 114,
+    "previousOwnerRegionGateReplayedExactly": true
+  },
+  "openedInstructionEvidence": {
+    "architecture": "arm64e",
+    "captureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "beginEndLoadInstructionOffset": 844,
+    "beginEndLoadInstructionWord": "0xa945229c",
+    "beginEndLoadInstruction": "ldp x28, x8, [x20, #0x50]",
+    "instructionProvenOwnerRecordOffsets": [
+      80,
+      88
+    ],
+    "falsifiedCapacityOffset": 96,
+    "falsifiedCapacityGuard": "owner[+0x60] >= owner[+0x58]",
+    "observedOwnerWord60EqualsBeginEveryState": true,
+    "limitations": [
+      "The failed run retained no owner record bytes, so it cannot be promoted to a record-vector capture.",
+      "Owner +0x60 is retained inside the 768-byte prefix but receives no semantic interpretation in the retry.",
+      "The one-record observation is specific to the unchanged 114-state calibration matrix and is not a universal Core Animation vector cardinality claim.",
+      "Every private offset remains conditional on the exact pinned capture_backdrop code prefix."
+    ]
+  },
+  "frozenQuestion": {
+    "objective": "Repeat the unchanged 114-state sample-31 matrix and retain the complete owner record selected by capture_backdrop using only the instruction-proven begin pointer at owner+0x50 and end pointer at owner+0x58.",
+    "beginEndRule": "Read exactly two uint64 words at owner+0x50 and owner+0x58. Require nonzero begin, end greater than begin, an exact 0xd0-byte multiple, and at most 64 records/13312 bytes. Do not read, compare, name, or interpret owner+0x60 as capacity.",
+    "observedCardinalityRule": "The opened failed run showed end-begin equals exactly 0xd0 in 114/114 states. The retry therefore requires exactly one record, one source-key match, cached selected index zero, and a 208-byte retained vector in every state. A changed cardinality fails the workflow and is evidence rather than being silently generalized.",
+    "sourceSelectionRule": "Capture the exact 40 bytes at x19+0x18, compare them byte-for-byte with record bytes +0x00..+0x27, require exactly one match, and require owner+0x220 to contain selected index zero.",
+    "memoryRule": "Capture exactly 768 checked owner bytes, the complete bounded owner record vector, and exactly 40 checked source-key bytes. Preserve all dual-owner region reads and prefixes. Each checked same-task read may be attempted at most three times; a missing read fails closed.",
+    "callbackRule": "Retain at most eight eligible callback diagnostics with at most 32 symbolized frames before a complete operand capture. A callback diagnostic or partial operand cannot replace a complete live record.",
+    "matrixRule": "Keep geometry, material, appearance, direction, source sample, all 114 interventions, public requested layer states, filter inputs, original Apple producer input, retry policy, and buffer-retention policy unchanged from run 30770107772.",
+    "replayRule": "Require every existing allocation, primary-position, primary-source, source-q, selected-region, dual-owner, callback-provenance, code-prefix, owner-window, source-key, and selected-index check with zero numeric tolerance.",
+    "nullOutcome": "A missing live operand, partial mask, changed record count, source-key mismatch, selected-index mismatch, byte mismatch, wrong fragment or PC, changed code prefix, or one differing replay bit fails the workflow and remains evidence."
+  },
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-path-isolation"
+    },
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-640-center",
+    "sourceSampleIndices": [
+      31
+    ],
+    "totalInterventionCount": 114,
+    "outerCaptureEvidenceSchemaVersion": 8,
+    "operandEvidenceSchemaVersion": 4,
+    "producerCallSiteSchemaVersion": 5,
+    "eligibleProducerFragments": [
+      "A2Xghfc",
+      "TimgA2Xhfc_Isrc"
+    ],
+    "maximumCompleteOperandCaptureCountPerRecord": 1,
+    "maximumUnwindFrameCount": 32,
+    "memoryReadMaximumAttemptCount": 3,
+    "callbackMaximumAttemptCountPerRecord": 8,
+    "callbackMaximumFrameCount": 32,
+    "ownerRegionPrefixMaximumByteCount": 4096,
+    "ownerRegionWindow": [
+      512,
+      256
+    ],
+    "ownerObjectPrefixByteCount": 768,
+    "ownerRecordOffsets": {
+      "begin": 80,
+      "end": 88,
+      "recordByteCount": 208
+    },
+    "ownerWord60CapturedButUninterpreted": true,
+    "ownerRecordByteCount": 208,
+    "ownerRecordMaximumCount": 64,
+    "ownerRecordVectorMaximumByteCount": 13312,
+    "sourceStateWindow": [
+      24,
+      40
+    ],
+    "requiredReadMask": "0x007fffff",
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false
+  },
+  "acceptance": {
+    "all114InterventionsMustExecute": true,
+    "existingSchema7OwnerRegionIntegrityMustPass": true,
+    "outerSchema8Required": true,
+    "operandSchema4Required": true,
+    "operandCaptureCount": 114,
+    "completeRequiredReadMaskCount": 114,
+    "ownerRegionWindowExactCount": 114,
+    "ownerObjectPrefixExactCount": 114,
+    "ownerRecordVectorExactCount": 114,
+    "sourceStateWindowExactCount": 114,
+    "ownerRecordCountExactPerState": 1,
+    "ownerRecordVectorByteCountExactPerState": 208,
+    "sourceKeyMatchCountExactPerState": 1,
+    "selectedOwnerRecordIndexExactPerState": 0,
+    "ownerRegionWindowEmbeddedInPrefixEveryState": true,
+    "ownerWord60SemanticAssumptionAllowed": false,
+    "pinnedCaptureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "pinnedShapeIteratorPrefixSHA256": "faf2c7f536d2c76dbac26b3d7af7aeb7a498b1c50a20ecb152d8d896c616bcc6",
+    "selectedRegionConsumedRectangleExactCount": 114,
+    "owner248PackedHandleCount": 114,
+    "owner270PackedHandleCount": 112,
+    "owner270PointerHandleCount": 2,
+    "selectedEqualsOwner248Count": 114,
+    "selectedEqualsOwner270Count": 111,
+    "primaryPositionComponentCount": 912,
+    "primaryPositionMismatchedComponents": 0,
+    "primarySourceComponentCount": 912,
+    "primarySourceMismatchedComponents": 0,
+    "primarySourceQComponentCount": 912,
+    "primarySourceQMismatchedComponents": 0,
+    "allocationInvariantComponentCount": 1596,
+    "allocationInvariantMismatchedComponents": 0,
+    "callbackAttemptMayReplaceLiveOperands": false,
+    "allowNumericTolerance": false,
+    "productionShaderAuthorized": false
+  },
+  "analysisPlan": {
+    "recordInventory": "Decode all 208 bytes of the single live record in every state by integer, binary32, binary64, pointer-identity, and raw-byte lanes; map +0x30..+0x4f, +0x50..+0x6f, and the in-place +0x90..+0xaf values through the pinned capture_backdrop instruction flow.",
+    "policyReplay": "Map the selected record key and both bounds sets to captured public layer paths and replay Apple's exact float/double conversion and union order across all 114 states without record-index cases or fitted tolerances.",
+    "nextGate": "Only after a single public-state construction rule reproduces the record, owner bounds, private regions, allocation, copy-base, mesh, and pixels may it be frozen against unseen native geometries, temporal states, materials, appearances, directions, and physical Retina 2x output.",
+    "qualityRule": "No failed or calibration result authorizes a Walle shader edit, approximation, quality tradeoff, or parity claim."
+  },
+  "frozenImplementation": {
+    "lgTestCommitBeforeRegistration": "8998bd56f34a749afa599197c153e58600a20d8f",
+    "matrixBridgeHeaderSHA256": "38a447731761f3032bb46fd20d0b9d27c9d598e8a242303a53405fa1416dfc02",
+    "matrixBridgeSourceSHA256": "8db4e99f0bf6cdafc65e9ae827968a1388288fd2a73cc277ada3f6e5a2d4cc08",
+    "swiftCaptureSHA256": "86598f6c0b85f46ab8acdf335aa1c5e995a666e745173ae3e7dab5f8dea020ff",
+    "workflowSHA256": "bc79f75eb6244cda94dc4995164338589396535764b07c61a2d3b6be7570b870",
+    "holdoutValidatorSHA256": "2c950f74630193d9a6059bdcb76e0e4c55998ffbf15d58dbfd58eb2d24319efb",
+    "validatorSHA256": "3ef27da151eb30e9b2ea1de3ef23f521c37001cd11104de60933977bddff5292",
+    "validatorTestSHA256": "40c0e891227ef32c1a8b3438e6704b83c0c829ac2fed84de2ec212ee2e8372d6",
+    "failedRunAnalyzerSHA256": "463ef3a685adebbda9874c0a1142a58eae88aaeaf825cb02078ee540baf6d19a",
+    "failedRunAnalyzerTestSHA256": "a89a45f3ca5c30e9cbac392962dc44e9602865803fbebd189b66ebcbc01e23c6",
+    "failedRunResultSHA256": "8cf021763b99be96efb964c5ed8341a8b180ee3064783af72c7cedc81dc415da",
+    "ownerRegionResultSHA256": "a9fa4206d52aa890f51208adf6c61593f4137181c09aa1d9685b20906d10bc57",
+    "ownerRecordPreregistrationSHA256": "dd8b04528b4678bf1ce5605ff0582498471e7f46da9155c34ec9aa4dc43c028d",
+    "ownerRecordPreregistrationTestSHA256": "aa432be30bcaacfffb51d4d6ca2fb61fe5cbef5084d769c060bc9f627fff83fa",
+    "ownerRecordRetryPreregistrationTestSHA256": "7a0dc3efad900aed8d6a12774bef8616b2fb28737b3dd6b84f875f3c92852803",
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "notClaimed": [
+    "a prospective pass for run 30770107772",
+    "a retained owner record vector from run 30770107772",
+    "a universal meaning for owner+0x60",
+    "a universal Core Animation owner-record cardinality",
+    "a public-state-only owner-region construction policy",
+    "a universal crop, damage-region, allocation, or primary-mesh policy",
+    "an unseen native Apple geometry or temporal transfer",
+    "a profile, material, appearance, direction, endpoint, backing-scale, or physical Retina 2x transfer",
+    "production Walle parity",
+    "permission to modify or approximate the protected production shader",
+    "permission to trade image quality for memory, throughput, or latency"
+  ]
+}

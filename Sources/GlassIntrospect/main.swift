@@ -4373,7 +4373,6 @@ private let captureBackdropOwnerRegion270Offset = 0x270
 private let captureBackdropOwnerRegionWindowOffset = 0x200
 private let captureBackdropOwnerRecordBeginOffset = 0x50
 private let captureBackdropOwnerRecordEndOffset = 0x58
-private let captureBackdropOwnerRecordCapacityOffset = 0x60
 private let captureBackdropSourceStateWindowOffset = 0x18
 private let captureBackdropRendererScaleOffset = 0x30
 private let captureBackdropRendererRegionControlOffset = 0xD0
@@ -4696,7 +4695,6 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
         "ownerRecordOffsets": [
             "begin": captureBackdropOwnerRecordBeginOffset,
             "end": captureBackdropOwnerRecordEndOffset,
-            "capacity": captureBackdropOwnerRecordCapacityOffset,
             "recordByteCount":
                 Int(LG_CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT),
         ],

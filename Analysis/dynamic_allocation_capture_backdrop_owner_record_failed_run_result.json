@@ -1,0 +1,83 @@
+{
+  "aggregate": {
+    "beginEndSpanByteCounts": {
+      "208": 114
+    },
+    "callbackAttemptCount": 342,
+    "completeLiveOperandCaptureCount": 0,
+    "distinctOwnerObjectPrefixCount": 114,
+    "distinctSourceStateWindowCount": 1,
+    "downgradedOwnerRegionGate": {
+      "allocationInvariants": {
+        "componentCount": 1596,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "allowNumericTolerance": false,
+      "owner248HandleClassCounts": {
+        "packed": 114
+      },
+      "owner270HandleClassCounts": {
+        "packed": 112,
+        "pointer": 2
+      },
+      "primaryPositionComponentCount": 912,
+      "primaryPositionMismatchedComponents": 0,
+      "primarySourceComponentCount": 912,
+      "primarySourceMismatchedComponents": 0,
+      "primarySourceQ": {
+        "componentCount": 912,
+        "exact": true,
+        "mismatchedComponents": 0
+      },
+      "selectedEqualsOwner248Count": 114,
+      "selectedEqualsOwner270Count": 111,
+      "selectedRegionConsumedRectangleExactCount": 114
+    },
+    "ownerObjectPrefixByteCount": 768,
+    "ownerObjectPrefixExactCount": 114,
+    "ownerRegionWindowEmbeddedInPrefixCount": 114,
+    "ownerWord60EqualsBeginCount": 114,
+    "partialOperandCaptureCount": 114,
+    "partialReadMaskCounts": {
+      "0x005fffff": 114
+    },
+    "recordCount": 114,
+    "retainedOwnerRecordVectorCount": 0,
+    "sourceStateWindowByteCount": 40,
+    "sourceStateWindowExactCount": 114
+  },
+  "classification": "post-opening-audit-of-failed-preregistered-capture-backdrop-owner-record-vector-replay; not-a-prospective-pass-public-crop-policy-or-parity-claim",
+  "conclusion": {
+    "failureIsolatedToUnprovenCapacityGuard": true,
+    "frozenOwnerRecordGatePassed": false,
+    "ownerRecordVectorCaptured": false,
+    "previousOwnerRegionGateReplaysExactly": true,
+    "productionShaderAuthorized": false,
+    "publicLayerStateCropRuleRecovered": false,
+    "requiresInstructionProvenBeginEndRetry": true,
+    "requiresUnseenGeometryTransfer": true
+  },
+  "dynamicAllocationCaptureBackdropOwnerRecordFailedRunAnalysisSchemaVersion": 1,
+  "frozenGateError": "capture_backdrop operand capture count differs at 31/0",
+  "headSHA": "8998bd56f34a749afa599197c153e58600a20d8f",
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30770107772/transition-timeline.json",
+  "inputTimelineSHA256": "eb45b13ebbcfd234b76d7d3940ca08df2ee4d2e8e6feb73fde92c916f602f39a",
+  "openedFacts": {
+    "beginEndLoadInstruction": "ldp x28, x8, [x20, #0x50]",
+    "beginEndLoadInstructionOffset": 844,
+    "beginEndLoadInstructionWord": "0xa945229c",
+    "captureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "falsifiedCapacityOffset": 96,
+    "falsifiedGuard": "owner[+0x60] >= owner[+0x58]",
+    "instructionProvenOwnerRecordOffsets": [
+      80,
+      88
+    ],
+    "observedOwnerWord60EqualsBeginEveryState": true,
+    "observedRecordCountEveryState": 1
+  },
+  "prospectiveGatePassed": false,
+  "runID": 30770107772,
+  "workflowConclusion": "failure"
+}
