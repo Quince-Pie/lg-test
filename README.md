@@ -3769,6 +3769,15 @@ Failure to link either private-vertex candidate is retained as evidence; it
 must not be replaced by the fallback trace or described as an original-path
 interpolant measurement.
 
+Run `30733125214` showed that link success is insufficient. The descriptive
+private-vertex candidate built at every traced sample, while both private
+functions reported empty `stageInputAttributes`, but every attempted draw
+ended with `kIOGPUCommandBufferCallbackErrorHang`. No interpolant bytes were
+produced, and the failed enforcement correctly rejected the trace after the
+artifact was uploaded. The generic `locn0`/`locn1` candidate is therefore
+attempted first in the next isolated probe; the hanging named candidate is
+retained only as a negative control.
+
 The v2.11 through v2.19 artifacts are measurement inputs, not proof that Walle
 already matches.
 The next pass should:

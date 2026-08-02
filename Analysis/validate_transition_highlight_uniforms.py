@@ -198,8 +198,8 @@ def validate_interpolant_trace(
     )
     candidates = pipeline.get("candidates")
     expected_candidate_order = [
-        "captured-private-vertex-named",
         "captured-private-vertex-locations",
+        "captured-private-vertex-named",
         "custom-stage-in-vertex",
     ]
     if (

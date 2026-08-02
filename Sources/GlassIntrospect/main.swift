@@ -9756,11 +9756,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     descriptor: MTLRenderPipelineDescriptor
                 )] = []
                 for (name, candidateFragment) in [
-                    ("captured-private-vertex-named", fragment),
                     (
                         "captured-private-vertex-locations",
                         locationFragment
                     ),
+                    ("captured-private-vertex-named", fragment),
                 ] {
                     guard capturedDescriptor.vertexFunction != nil,
                           let descriptor = capturedDescriptor.copy()
