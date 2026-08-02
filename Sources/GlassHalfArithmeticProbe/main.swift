@@ -43,9 +43,9 @@ kernel void exhaustive_half_division(
     records[base + 0u] = as_type<ushort>(
         numerator / denominator);
     records[base + 1u] = as_type<ushort>(
-        fast::divide(numerator, denominator));
+        half(fast::divide(numerator, denominator)));
     records[base + 2u] = as_type<ushort>(
-        precise::divide(numerator, denominator));
+        half(precise::divide(numerator, denominator)));
     records[base + 3u] = as_type<ushort>(
         low_numerator / low_denominator);
     records[base + 4u] = as_type<ushort>(
