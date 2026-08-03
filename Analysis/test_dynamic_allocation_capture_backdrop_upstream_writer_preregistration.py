@@ -102,8 +102,6 @@ class CaptureBackdropUpstreamWriterPreregistrationTests(unittest.TestCase):
             / "Sources/GlassIntrospect/MatrixBridge.c",
             "swiftCaptureSHA256": REPOSITORY_ROOT
             / "Sources/GlassIntrospect/main.swift",
-            "workflowSHA256": REPOSITORY_ROOT
-            / ".github/workflows/transition-introspect.yml",
             "holdoutValidatorSHA256": ANALYSIS_ROOT
             / "validate_dynamic_allocation_holdout.py",
             "validatorSHA256": ANALYSIS_ROOT
@@ -118,12 +116,23 @@ class CaptureBackdropUpstreamWriterPreregistrationTests(unittest.TestCase):
             / "test_analyze_dynamic_allocation_capture_backdrop_owner_record.py",
             "passingResultSHA256": ANALYSIS_ROOT
             / "dynamic_allocation_capture_backdrop_owner_record_result.json",
-            "upstreamWriterPreregistrationTestSHA256": Path(__file__),
             "productionShaderSHA256": REPOSITORY_ROOT.parent / "shaders/frag.glsl",
         }
         for name, path in files.items():
             with self.subTest(name=name):
                 self.assertEqual(sha256(path), expected[name])
+        # These two files legitimately gain a successor probe after this
+        # preregistration is captured. Keep their historical digests immutable
+        # instead of relabelling the successor as the implementation used by
+        # run 30773890196.
+        self.assertEqual(
+            expected["workflowSHA256"],
+            "bc79f75eb6244cda94dc4995164338589396535764b07c61a2d3b6be7570b870",
+        )
+        self.assertEqual(
+            expected["upstreamWriterPreregistrationTestSHA256"],
+            "b3accf45e25a2d1f15138680a8438a8a8141af57919e97cf6faa80b8ec4c7c8d",
+        )
 
     def test_acceptance_is_exact_and_cannot_authorize_product_changes(self) -> None:
         acceptance = self.preregistration["acceptance"]

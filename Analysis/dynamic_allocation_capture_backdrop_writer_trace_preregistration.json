@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "frozenAtUtc": "2026-08-03T02:41:00Z",
+  "classification": "preregistered bounded LLDB hardware-watchpoint trace of the earlier private crop writers; not an opened writer semantic, public crop law, unseen transfer, or product-parity claim",
+  "openedUpstreamEvidence": {
+    "runID": 30773890196,
+    "headSHA": "c90825a4c2302ca9af98749c3a9ffc24342edeac",
+    "workflowConclusion": "success",
+    "prospectiveGatePassed": true,
+    "timelineSHA256": "d9001c6b9b99988a5932755e40a2ca30e4cf089e9a204994a9d399d05963df82",
+    "upstreamWriterAnalysisResultSHA256": "6834a0c1979d0ebf9f8e789ab6857a1e7d136ca34b4bc88256028c2d36892b1f",
+    "completeLiveOperandCaptureCount": 114,
+    "requiredReadMask": "0x3fffffff",
+    "selectedRectangleCrossObjectExactCount": 114,
+    "selectedRectangleLocations": [
+      "CA::Render::BackdropState +0x50 as four signed int32 words",
+      "layer state +0xb0 as four signed int32 words",
+      "CA::Render::BackdropGroup +0xe0 as four binary64 words",
+      "single owner record +0x70 as four binary64 words",
+      "CA::Render::BackdropGroup +0x248 as the consumed packed Shape"
+    ],
+    "distinctLayerStateInputBoundsAtA0": 83,
+    "distinctSelectedRectanglesAtB0": 9,
+    "sameInputWithMultipleObservedOutputs": 0,
+    "distinctLayerStateAddresses": 14,
+    "distinctNestedAuxiliaryAddresses": 73,
+    "primaryPositionComponentCount": 912,
+    "primaryPositionMismatchedComponents": 0,
+    "primarySourceComponentCount": 912,
+    "primarySourceMismatchedComponents": 0,
+    "primarySourceQComponentCount": 912,
+    "primarySourceQMismatchedComponents": 0,
+    "allocationInvariantComponentCount": 1596,
+    "allocationInvariantMismatchedComponents": 0
+  },
+  "openedInstructionEvidence": {
+    "architecture": "arm64e",
+    "captureBackdropSymbol": "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE",
+    "captureBackdropSymbolPrefixByteCount": 16384,
+    "captureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "lateRegionSelectionRange": [
+      6052,
+      6084
+    ],
+    "lateRegionSelectionConclusion": "capture_backdrop selects and loads an already-constructed owner+0x248 or owner+0x270 Shape handle; it does not construct that selected handle in this byte-gated range",
+    "owner270DirectClearPaths": [
+      [
+        320,
+        332
+      ],
+      [
+        456,
+        468
+      ],
+      [
+        15232,
+        15244
+      ]
+    ],
+    "openedDirectCallTargets": [
+      {
+        "sourceOffset": 256,
+        "targetImageOffset": "0xa939c",
+        "symbol": "CA::Render::BackdropGroup::layer_item(CA::Render::BackdropState*, unsigned int)",
+        "targetCodeSHA256": "cd11ac525009b9695b6193c363a4dabf8f9407934f33329a6b937a0b40790934"
+      },
+      {
+        "sourceOffset": 3036,
+        "targetImageOffset": "0x312044",
+        "symbol": "collect_surfaces(CA::OGL::Surface*, CA::OGL::Surface**, CA::Bounds*, bool, bool&)",
+        "targetCodeSHA256": "4b2b191d2626a787cbc695b88321819cf7b4ed4ef4f8ab134e90554dd6a264fd"
+      },
+      {
+        "sourceOffset": 3188,
+        "targetImageOffset": "0x312184",
+        "symbol": "desired_src_edge_replication(CA::Render::BackdropGroup const*, CA::OGL::Layer const*, CA::OGL::Context&, CA::Rect*, CA::Vec2<float>*, bool*, bool*, bool*, bool*)",
+        "targetCodeSHA256": "192a97ee95eb6d82a5f67cc2cd21439fc838ef989fdb2f6f32d0dca3dd8b2be9",
+        "openedBodyEndOffset": 724,
+        "conclusion": "surface and single-record scan plus edge-replication output writer; not an owner-region constructor",
+        "capturedNestedAuxiliaryByteCount": 96,
+        "nestedAuxiliaryReadOffset": 96,
+        "nestedAuxiliaryReadCovered": false
+      }
+    ],
+    "limitation": "The retained 0x4000 bytes are a bounded prefix because dladdr supplies no complete capture_backdrop function size. Negative claims remain limited to the byte-gated instructions and opened helper bodies."
+  },
+  "frozenQuestion": {
+    "objective": "Capture the exact Apple instruction PCs and call stacks that change the already-proven private crop fields, beginning with the stable BackdropState and BackdropGroup objects and the periodically reused layer-state object.",
+    "entryRule": "Set one pending breakpoint by the exact capture_backdrop symbol. On its first hit, read exactly 0x4000 bytes from the symbol address and require SHA-256 14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2 before setting a one-shot breakpoint at symbol+0x2b58.",
+    "objectRule": "At symbol+0x2b58 require source=x19, owner=x20, layer=x24, layerState=*(layer+0x10), *(source+0x48)=owner, *(layerState+0x120)=source, and exact equality of source+0x50, layerState+0xb0, and owner+0xe0 after their fixed int32/binary64 decoding.",
+    "watchpointRule": "Arm exactly four 8-byte hardware write-on-modify watchpoints: source+0x50, owner+0xe0, owner+0x248, and the currently live layerState+0xb0. Retain at most six changed-value events per watchpoint and at most 24 events total. A debugger callback never mutates target memory and returns false to resume the target.",
+    "eventRule": "For each event retain the exact before and after eight bytes, stop PC, thread ID, at most 32 frames, all six private post-write fields, and one deduplicated mapped code window. A resolved writer symbol retains exactly 0x1000 bytes from its symbol start; an unresolved writer retains exactly 0x400 bytes beginning 0x200 bytes before the stop PC.",
+    "integrityRule": "Require exactly four distinct hardware watchpoint indices, at least one changed QuartzCore event for every preregistered field, contiguous per-field hit indices, exact code-window hashes, zero LLDB failures, and a finalized raw trace. No event may be discarded because its writer looks irrelevant.",
+    "semanticSeal": "The CI validator may prove only trace integrity and writer-PC capture. Function semantics, writer order, arithmetic, and the public layer-state crop rule remain sealed until the artifact is opened after the run.",
+    "nullOutcome": "A missing symbol, changed code hash, partial object chain, unavailable hardware slot, missing field event, non-QuartzCore writer, partial code window, callback failure, or target failure fails closed and remains an uploaded artifact."
+  },
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-path-isolation"
+    },
+    "runner": "macos-26",
+    "debugger": "xcrun lldb --batch",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-640-center",
+    "sourceSampleIndices": [
+      31
+    ],
+    "totalInterventionCount": 114,
+    "dynamicBackgroundUniformEvidenceSchemaVersion": 9,
+    "outerCaptureEvidenceSchemaVersion": 9,
+    "operandEvidenceSchemaVersion": 5,
+    "producerCallSiteSchemaVersion": 6,
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false,
+    "shaderMutation": false
+  },
+  "acceptance": {
+    "existingSchema9IntegrityMustPass": true,
+    "inputClampArithmeticProbeMustPass": true,
+    "captureBackdropCodeHashExact": true,
+    "objectChainExact": true,
+    "hardwareWatchpointCount": 4,
+    "hardwareWatchpointIndicesDistinct": true,
+    "watchpointByteCount": 8,
+    "minimumChangedQuartzCoreEventsPerField": 1,
+    "maximumHitsPerWatchpoint": 6,
+    "maximumTotalEventCount": 24,
+    "maximumBacktraceFrameCount": 32,
+    "maximumResolvedSymbolCodeWindowByteCount": 4096,
+    "fallbackCodeWindowByteCount": 1024,
+    "callbackFailureCount": 0,
+    "allowNumericTolerance": false,
+    "publicCropRuleRecoveredByCaptureAlone": false,
+    "productionShaderAuthorized": false
+  },
+  "postOpeningPlan": {
+    "writerInventory": "Group exact stop PCs by watched field and writer stack, open every retained writer window, and recover the write order without intervention-name cases.",
+    "constructionReplay": "Trace the earliest captured writer backward to public layer state and implement only instruction-ordered integer, binary32, binary64, and Shape operations observed in opened code.",
+    "exactGate": "Require one public-input-only rule to reproduce layerState+0xb0, BackdropState+0x50, BackdropGroup+0xe0/+0x248/+0x270, and the consumed rectangle in all 114 states with zero tolerance.",
+    "nextHoldouts": "Only after that exact gate, freeze a multi-record case and untouched geometries before temporal, material, appearance, direction, and physical Retina 2x transfer.",
+    "qualityRule": "No failed, calibration, private-state-only, or writer-PC-only result authorizes a Walle shader edit, approximation, quality tradeoff, or parity claim."
+  },
+  "frozenImplementation": {
+    "lgTestCommitBeforeRegistration": "c90825a4c2302ca9af98749c3a9ffc24342edeac",
+    "postOpeningAnalyzerSHA256": "ce38ec2c89378bf0622c62900cd214df93619b006e8be804864819b8bb9af350",
+    "postOpeningResultSHA256": "6834a0c1979d0ebf9f8e789ab6857a1e7d136ca34b4bc88256028c2d36892b1f",
+    "postOpeningAnalyzerTestSHA256": "de3cfe77db8f702104f7f027cb74a7ded5258a43d71f06a934f42adf8e2b5bbe",
+    "lldbTraceHarnessSHA256": "fc221eb2646842cb3bfa65ae79506c2a71514864ecba736ce8d79096cd48f310",
+    "sealedTraceValidatorSHA256": "10a9df9d86d5996759ee7bcaa8a009b270982aa5573e7953e8d4c7232e996928",
+    "sealedTraceValidatorTestSHA256": "eddcd3e294fde9206334041df806ef0c02787ab286cdef47fe61810434272fc2",
+    "workflowSHA256": "9f679b1b1f189ed3f2f99de683c888d8e1c70dc3f7dd401e9c4958830291649d",
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "notClaimed": [
+    "that any watched field is the first public-state crop constructor",
+    "that a stop PC alone determines the writer's semantic role",
+    "that desired_src_edge_replication constructs an owner region",
+    "that layerState+0xa0 alone is sufficient outside the observed matrix",
+    "that the owner+0x270 policy is recovered",
+    "that the dormant multi-record path is exercised",
+    "that any unseen geometry, temporal sample, material, appearance, direction, profile, or physical Retina 2x case transfers",
+    "that Walle may change its production shader",
+    "that Apple Liquid Glass parity has been achieved"
+  ]
+}

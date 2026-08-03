@@ -5059,3 +5059,73 @@ precision for a compact portable implementation. This artifact is discovery
 calibration, not a parity pass. Any recovered law must be frozen before a new
 unseen transition capture, and production remains unauthorized until that
 holdout is bit-exact with no protected quality regression.
+
+### Latest private crop-writer checkpoint
+
+Run `30773890196`, from commit `c90825a`, is the successful prospective capture
+for the upstream owner-region probe. Its 178,943,865-byte timeline has SHA-256
+`d9001c6b9b99988a5932755e40a2ca30e4cf089e9a204994a9d399d05963df82`.
+All 114 live operands carry the complete `0x3fffffff` read mask. The earlier
+exact gates remain unchanged: 912/912 primary-position words, 912/912
+primary-source words, 912/912 source-`q` words, 1,596/1,596 allocation words,
+and 114/114 consumed rectangles match with zero tolerance. The dynamic scale
+law already recorded above remains `q = 2 / (2 - k)`; this run neither changes
+nor weakens that result.
+
+The selected private crop rectangle is now identified exactly at five live
+locations in every state:
+
+1. `CA::Render::BackdropState+0x50`, as four signed int32 words;
+2. layer state `+0xb0`, as four signed int32 words;
+3. `CA::Render::BackdropGroup+0xe0`, as four binary64 words;
+4. the single owner record `+0x70`, as four binary64 words; and
+5. `CA::Render::BackdropGroup+0x248`, as the packed Shape consumed by the draw.
+
+The adjacent layer-state `+0xa0` bounds have 83 distinct values and the private
+`+0xb0` crop has nine. No identical `+0xa0` input has two different outputs in
+this corpus. That is a useful determinism check, not the construction law: the
+matrix does not reveal the hidden state or exact instruction sequence that
+turns public geometry into `+0xa0`, `+0xb0`, or the occasional alternate
+owner-`+0x270` Shape.
+
+The opened first words identify the stable objects as
+`CA::Render::BackdropState`, `CA::Render::BackdropGroup`,
+`CA::OGL::MetalContext`, and `CA::Render::Layer`. The seven retained direct-call
+targets are also resolved and byte-gated. In particular, the target at
+`capture_backdrop+0xc74` is
+`desired_src_edge_replication(...)`, whose complete opened body ends at
+`+0x2d4`. It scans owner surfaces and the one-record vector, dispatches surface
+virtual methods, and writes edge-replication outputs; it does not construct an
+owner region. Its read at nested auxiliary `+0x60` lies exactly one byte beyond
+the 96-byte nested prefix, so that input remains explicitly uncaptured rather
+than guessed.
+
+The corrected `capture_backdrop` interpretation is narrower. Its late
+`+0x17a4...+0x17c0` path selects and loads an already-built `+0x248` or `+0x270`
+Shape. Three byte-gated invalidation paths load, release, and clear
+owner-`+0x270`, including the two early paths at `+0x140...+0x14c` and
+`+0x1c8...+0x1d4`; therefore the 16 KiB prefix must not be described as having
+no owner-region store. It still does not expose the earlier writer that builds
+the selected crop. The immutable post-opening result is
+`Analysis/dynamic_allocation_capture_backdrop_upstream_writer_result.json`,
+with SHA-256
+`6834a0c1979d0ebf9f8e789ab6857a1e7d136ca34b4bc88256028c2d36892b1f`.
+
+The next capture is frozen before execution in
+`Analysis/dynamic_allocation_capture_backdrop_writer_trace_preregistration.json`.
+The unchanged 114-state Apple run executes under LLDB. Only after the exact
+16 KiB `capture_backdrop` hash and live x19/x20/x24 object chain pass does it
+arm four 8-byte hardware write watchpoints: source `+0x50`, owner `+0xe0`, owner
+`+0x248`, and the current layer-state `+0xb0`. It retains at most six changed
+events per field and 24 total, with at most 32 frames and one bounded code
+window per distinct writer site. Every callback returns false to resume the
+target; it does not patch data or alter Apple inputs. CI may validate only the
+raw trace integrity. Writer meaning and arithmetic remain sealed until the
+artifact is opened.
+
+This checkpoint does not establish parity or authorize a Walle shader change.
+After the writer arithmetic is reproduced bit for bit, the remaining gates are
+the dormant multi-record path, untouched geometries and transition states,
+material/appearance/direction transfer, physical Retina 2x evidence, and then
+Walle endpoint comparison plus VRAM/throughput/latency measurement under the
+unchanged quality lock.

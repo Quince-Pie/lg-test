@@ -233,6 +233,11 @@ jobs:
       LG_TRANSITION_ALLOCATION_PATH_ISOLATION: >-
         ${{ inputs.capture_mode == 'allocation-path-isolation' &&
         matrix.label == 'mesh-640-center-materialize' && '1' || '0' }}
+      LG_CAPTURE_BACKDROP_WRITER_TRACE: >-
+        ${{ inputs.capture_mode == 'allocation-path-isolation' &&
+        matrix.label == 'mesh-640-center-materialize' && '1' || '0' }}
+      LG_CAPTURE_BACKDROP_WRITER_TRACE_OUTPUT: >-
+        transition-introspection/capture-backdrop-writer-trace.json
       LG_TRANSITION_HIGHLIGHT_TRACE: >-
         ${{ inputs.capture_mode == 'uniform-smoke' &&
         matrix.label == 'profile-clear-light-materialize' && '1' || '0' }}
@@ -294,9 +299,20 @@ jobs:
           steps.build.outcome == 'success'
         continue-on-error: true
         run: |
-          ./glass-transition-introspect transition-introspection \
-            > transition-introspection/runtime-stdout.log \
-            2> transition-introspection/runtime-stderr.log
+          if [[ "$LG_CAPTURE_BACKDROP_WRITER_TRACE" == "1" ]]; then
+            xcrun lldb --batch \
+              -o 'settings set target.output-path transition-introspection/runtime-stdout.log' \
+              -o 'settings set target.error-path transition-introspection/runtime-stderr.log' \
+              -o 'command script import Analysis/capture_backdrop_writer_trace_lldb.py' \
+              -o run \
+              -o 'script capture_backdrop_writer_trace_lldb.finalize()' \
+              -- ./glass-transition-introspect transition-introspection \
+              > transition-introspection/lldb-writer-trace.log 2>&1
+          else
+            ./glass-transition-introspect transition-introspection \
+              > transition-introspection/runtime-stdout.log \
+              2> transition-introspection/runtime-stderr.log
+          fi
 
       - name: Validate prospective allocation holdout
         id: allocation_holdout
@@ -388,6 +404,20 @@ jobs:
             --output \
               transition-introspection/input-clamp-arithmetic-probe.json
 
+      - name: Validate bounded crop-writer watchpoint trace
+        id: backdrop_writer_trace
+        if: >-
+          env.LG_SELECTED == '1' &&
+          env.LG_CAPTURE_BACKDROP_WRITER_TRACE == '1' &&
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_capture_backdrop_writer_trace.py \
+            transition-introspection/capture-backdrop-writer-trace.json \
+            --output \
+              transition-introspection/capture-backdrop-writer-trace-validation.json
+
       - name: Upload transition introspection
         if: always() && env.LG_SELECTED == '1'
         uses: actions/upload-artifact@v4
@@ -406,6 +436,7 @@ jobs:
             if [[ "$LG_TRANSITION_ALLOCATION_PATH_ISOLATION" == "1" ]]; then
               test "${{ steps.allocation_path_isolation.outcome }}" = success
               test "${{ steps.input_clamp_probe.outcome }}" = success
+              test "${{ steps.backdrop_writer_trace.outcome }}" = success
             elif [[ "$LG_TRANSITION_ALLOCATION_FIXED_STATE" == "1" ]]; then
               test "${{ steps.allocation_fixed_state.outcome }}" = success
             elif [[ "$LG_TRANSITION_ALLOCATION_MESH_CALIBRATION" == "1" ]]; then

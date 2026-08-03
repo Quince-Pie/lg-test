@@ -1,0 +1,354 @@
+{
+  "aggregate": {
+    "allocationInvariants": {
+      "componentCount": 1596,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "completeLiveOperandCaptureCount": 114,
+    "completeReadMask": "0x3fffffff",
+    "primaryPositionReplay": {
+      "allowNumericTolerance": false,
+      "componentCount": 912,
+      "mismatchedComponents": 0
+    },
+    "primarySourceQ": {
+      "componentCount": 912,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "primarySourceReplay": {
+      "allowNumericTolerance": false,
+      "componentCount": 912,
+      "mismatchedComponents": 0
+    },
+    "recordCount": 114,
+    "selectedEqualsOwner248Count": 114,
+    "selectedEqualsOwner270Count": 111,
+    "selectedRegionConsumedRectangleExactCount": 114
+  },
+  "classification": "post-opening-analysis-of-prospectively-passing-upstream-object-capture; private-field-map-and-writer-exclusion-not-a-public-crop-policy-unseen-transfer-or-product-parity-claim",
+  "conclusion": {
+    "desiredSourceEdgeReplicationIsRegionWriter": false,
+    "frozenUpstreamObjectGatePassed": true,
+    "lateCaptureBackdropPathConsumesPrebuiltRegion": true,
+    "layerStateA0ToB0ConstructionRuleRecovered": false,
+    "privateSelectedRectangleMappedAcrossFiveLocations": true,
+    "productionShaderAuthorized": false,
+    "requiresEarlierWriterTrace": true,
+    "requiresUnseenGeometryTransfer": true
+  },
+  "dynamicAllocationCaptureBackdropUpstreamWriterAnalysisSchemaVersion": 1,
+  "headSHA": "c90825a4c2302ca9af98749c3a9ffc24342edeac",
+  "inputTimelineArtifact": "liquid-glass-transition-introspection-mesh-640-center-materialize-30773890196/transition-timeline.json",
+  "inputTimelineSHA256": "d9001c6b9b99988a5932755e40a2ca30e4cf089e9a204994a9d399d05963df82",
+  "openedObjectChain": {
+    "distinctLayerAddressCount": 1,
+    "distinctLayerStateAddressCount": 14,
+    "distinctNestedAuxiliaryAddressCount": 73,
+    "distinctOwnerAddressCount": 1,
+    "distinctRenderContextAddressCount": 1,
+    "distinctSourceAddressCount": 1,
+    "firstWordSymbolExactCountPerResolvedClass": 114,
+    "layerAuxiliaryClass": "CA::Render::Layer",
+    "ownerClass": "CA::Render::BackdropGroup",
+    "renderContextClass": "CA::OGL::MetalContext",
+    "sourceClass": "CA::Render::BackdropState"
+  },
+  "openedPrivateRectangleIdentity": {
+    "distinctLayerStateInputBoundsCount": 83,
+    "distinctSelectedRectangleCount": 9,
+    "encodingMap": [
+      {
+        "encoding": "four little-endian signed int32 words",
+        "object": "CA::Render::BackdropState",
+        "offset": 80
+      },
+      {
+        "encoding": "four little-endian signed int32 words",
+        "object": "layer state",
+        "offset": 176
+      },
+      {
+        "encoding": "four little-endian binary64 words",
+        "object": "CA::Render::BackdropGroup",
+        "offset": 224
+      },
+      {
+        "encoding": "four little-endian binary64 words",
+        "object": "single owner record",
+        "offset": 112
+      },
+      {
+        "encoding": "packed Shape handle consumed as the same rectangle",
+        "object": "CA::Render::BackdropGroup",
+        "offset": 584
+      }
+    ],
+    "exactCrossObjectCount": 114,
+    "inputBoundsWithMultipleObservedOutputsCount": 0,
+    "layerStateInputBoundsOffset": 160,
+    "publicConstructionRuleRecovered": false,
+    "selectedRectangleFrequency": [
+      {
+        "count": 8,
+        "rect": [
+          199,
+          172,
+          644,
+          653
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          199,
+          172,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 5,
+        "rect": [
+          199,
+          173,
+          645,
+          652
+        ]
+      },
+      {
+        "count": 14,
+        "rect": [
+          200,
+          172,
+          644,
+          653
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          642,
+          651
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          200,
+          173,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 68,
+        "rect": [
+          200,
+          173,
+          643,
+          651
+        ]
+      },
+      {
+        "count": 2,
+        "rect": [
+          200,
+          174,
+          643,
+          650
+        ]
+      },
+      {
+        "count": 1,
+        "rect": [
+          201,
+          173,
+          642,
+          651
+        ]
+      }
+    ]
+  },
+  "openedTargetCode": {
+    "captureBackdropByteGatedWords": [
+      {
+        "offset": 320,
+        "word": "0xf9413a80"
+      },
+      {
+        "offset": 332,
+        "word": "0xf9013a9f"
+      },
+      {
+        "offset": 456,
+        "word": "0xf9413a80"
+      },
+      {
+        "offset": 468,
+        "word": "0xf9013a9f"
+      },
+      {
+        "offset": 6052,
+        "word": "0x52804e08"
+      },
+      {
+        "offset": 6056,
+        "word": "0x52804909"
+      },
+      {
+        "offset": 6060,
+        "word": "0x9a881128"
+      },
+      {
+        "offset": 6076,
+        "word": "0xf8686a80"
+      },
+      {
+        "offset": 6080,
+        "word": "0xf90153e0"
+      },
+      {
+        "offset": 15232,
+        "word": "0xf9413a80"
+      },
+      {
+        "offset": 15244,
+        "word": "0xf9013a9f"
+      }
+    ],
+    "captureBackdropCompleteFunctionSizeKnown": false,
+    "captureBackdropRetainedByteCount": 16384,
+    "captureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "desiredSourceEdgeReplication": {
+      "byteGatedWords": [
+        {
+          "offset": 80,
+          "word": "0xf9414c09"
+        },
+        {
+          "offset": 128,
+          "word": "0xa9452009"
+        },
+        {
+          "offset": 136,
+          "word": "0xf103411f"
+        },
+        {
+          "offset": 144,
+          "word": "0xf94046a8"
+        },
+        {
+          "offset": 152,
+          "word": "0xf9403109"
+        },
+        {
+          "offset": 484,
+          "word": "0x390002e0"
+        },
+        {
+          "offset": 516,
+          "word": "0x390002c8"
+        },
+        {
+          "offset": 668,
+          "word": "0xfd000260"
+        },
+        {
+          "offset": 724,
+          "word": "0xd65f0fff"
+        }
+      ],
+      "capturedNestedAuxiliaryByteCount": 96,
+      "constructsOwnerRegion": false,
+      "functionBodyEndOffset": 724,
+      "nestedAuxiliaryReadOffset": 96,
+      "nestedReadCoveredByCapture": false,
+      "role": "scans owner surfaces and the one-record vector, dispatches surface virtual methods, and writes edge-replication outputs",
+      "targetImageOffset": "0x312184"
+    },
+    "directCalls": [
+      {
+        "sourceInstructionOffset": 256,
+        "targetCodeByteCount": 4096,
+        "targetCodeSHA256": "cd11ac525009b9695b6193c363a4dabf8f9407934f33329a6b937a0b40790934",
+        "targetImageOffset": "0xa939c",
+        "targetSymbol": "_ZN2CA6Render13BackdropGroup10layer_itemEPNS0_13BackdropStateEj"
+      },
+      {
+        "sourceInstructionOffset": 3036,
+        "targetCodeByteCount": 4096,
+        "targetCodeSHA256": "4b2b191d2626a787cbc695b88321819cf7b4ed4ef4f8ab134e90554dd6a264fd",
+        "targetImageOffset": "0x312044",
+        "targetSymbol": "_ZN2CA3OGL12_GLOBAL__N_116collect_surfacesEPNS0_7SurfaceEPS3_PNS_6BoundsEbRb"
+      },
+      {
+        "sourceInstructionOffset": 3188,
+        "targetCodeByteCount": 4096,
+        "targetCodeSHA256": "192a97ee95eb6d82a5f67cc2cd21439fc838ef989fdb2f6f32d0dca3dd8b2be9",
+        "targetImageOffset": "0x312184",
+        "targetSymbol": "_ZN2CA3OGL12_GLOBAL__N_128desired_src_edge_replicationEPKNS_6Render13BackdropGroupEPKNS0_5LayerERNS0_7ContextEPNS_4RectEPNS_4Vec2IfEEPbSG_SG_SG_"
+      },
+      {
+        "sourceInstructionOffset": 6136,
+        "targetCodeByteCount": 4096,
+        "targetCodeSHA256": "dcd3839424f0d2dfef75e2d6a805744af7f73fbfaaab59529433eaea3c001468",
+        "targetImageOffset": "0x52f68",
+        "targetSymbol": "_ZN2CA6Bounds12set_exteriorERKNS_4RectE"
+      },
+      {
+        "sourceInstructionOffset": 6148,
+        "targetCodeByteCount": 4096,
+        "targetCodeSHA256": "4c67a83ab7e9cac50ab6a3823f99678c2a36ee5d44af02be56f83f594f726f46",
+        "targetImageOffset": "0x8f688",
+        "targetSymbol": "_ZNK2CA5Shape9intersectERKNS_6BoundsE"
+      },
+      {
+        "sourceInstructionOffset": 6192,
+        "targetCodeByteCount": 4096,
+        "targetCodeSHA256": "2452f1b2740fd32d4f8e1a741bc54a7db54f4143dbf4ec9a0dd178996fc65e92",
+        "targetImageOffset": "0x2d5c0c",
+        "targetSymbol": "_ZN2CA11shape_scaleEPPNS_5ShapeEii"
+      },
+      {
+        "sourceInstructionOffset": 6204,
+        "targetCodeByteCount": 4096,
+        "targetCodeSHA256": "cdd6f255674004721e41e6541d5b03b66b11b396e6b2f32c358db8d2a3c9bd4c",
+        "targetImageOffset": "0x2d5998",
+        "targetSymbol": "_ZNK2CA5Shape9translateEii"
+      }
+    ],
+    "lateRegionSelection": {
+      "candidateOwnerOffsets": [
+        584,
+        624
+      ],
+      "constructsSelectedRegion": false,
+      "instructionRange": [
+        6052,
+        6084
+      ],
+      "operation": "select and load an already-constructed Shape handle"
+    },
+    "owner270DirectClearPaths": [
+      [
+        320,
+        332
+      ],
+      [
+        456,
+        468
+      ],
+      [
+        15232,
+        15244
+      ]
+    ]
+  },
+  "prospectiveGatePassed": true,
+  "runID": 30773890196,
+  "workflowConclusion": "success"
+}
