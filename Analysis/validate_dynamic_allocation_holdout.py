@@ -783,7 +783,7 @@ def validate(
         or report.get("direction") != "materialize"
         or geometry.get("name") != expected_geometry
         or geometry.get("shape") != "circle"
-        or uniforms.get("schemaVersion") not in {7, 8}
+        or uniforms.get("schemaVersion") not in {7, 8, 9}
         or uniforms.get("requested") is not True
         or uniforms.get("executed") is not True
         or uniforms.get("evidenceMode") != "allocation-metadata-v1"

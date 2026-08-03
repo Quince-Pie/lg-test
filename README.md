@@ -4872,6 +4872,48 @@ separate multi-record case if Apple emits one), followed by an unseen geometry
 transfer.  This pass does not authorize a production shader change or a Walle
 parity claim.
 
+The upstream owner-region writer probe is frozen before capture in
+`Analysis/dynamic_allocation_capture_backdrop_upstream_writer_preregistration.json`.
+It leaves the successful 114-state sample-31 matrix and every prior bitwise
+gate unchanged, advances the path-isolation evidence to schema 9, the live
+operand record to schema 5, and the producer call site to schema 6.  The
+complete read mask is `0x3fffffff`; a callback diagnostic, partial read, or
+same-state repeat still cannot replace a complete live operand.
+
+This probe follows the object chain already fixed by the pinned
+`capture_backdrop` instructions rather than adding another raster grid.  It
+requires `source=x19`, `owner=x20`, `renderContext=x22`, and `layer=x24`, then
+cross-checks `source+0x48=owner`, `layer+0x10=layerState`,
+`layer+0x18=layerAuxiliary`, and `layerState+0x120=source`.  Per state it retains
+only bounded checked prefixes: 256 source bytes, 64 layer bytes, 320
+layer-state bytes, 160 layer-auxiliary bytes, at most 96 bytes behind the
+auxiliary `+0x88` pointer, and 2,048 render-context bytes.  A null nested
+pointer is recorded as a zero-length classified payload; a nonnull pointer
+requires the full 96-byte read.
+
+The strongest instruction-directed candidate is the direct call at
+`capture_backdrop+0xc74` (QuartzCore image offset `0x312184`).  Its live
+arguments are the owner, layer auxiliary object, and render context, and its
+eight output addresses cover `SP+0x334...0x35f`.  The probe therefore retains
+the aligned 64-byte stack window `SP+0x330...0x36f` at the existing late
+`+0x2b58` hook.  This is downstream state, not a pristine helper-return
+snapshot: the pinned body later clears `SP+0x335` at `+0x122c` and `+0x1a14`
+and consumes other fields before the hook.  It does not preregister the call
+as *the* writer; that semantic conclusion must come from opened code and exact
+state differentials.
+
+To avoid another blind follow-up, the same one-shot call-site record retains
+exactly 4 KiB at seven preselected direct-call targets: source offsets
+`0x100`, `0xbdc`, `0xc74`, `0x17f8`, `0x1804`, `0x1830`, and `0x183c`.  Their
+already decoded QuartzCore image offsets are respectively `0xa939c`,
+`0x312044`, `0x312184`, `0x52f68`, `0x8f688`, `0x2d5c0c`, and `0x2d5998`.
+Every target is rederived from the exact 16 KiB symbol prefix and live image
+base; missing bytes or a changed call instruction fail closed.  A pass will
+expose the exact inputs, downstream stack state, and code needed to identify the
+upstream region construction.  It will still not establish a public crop
+policy, exercise the dormant multi-record branch, validate unseen geometry or
+physical Retina 2x, authorize a shader change, or establish Walle parity.
+
 The same opened run `30750570327` also exposes a much narrower temporal-input
 problem than the earlier ledger implied.  The immutable retrospective audit
 in `Analysis/analyze_dynamic_background_filter_law.py` covers all 128 states

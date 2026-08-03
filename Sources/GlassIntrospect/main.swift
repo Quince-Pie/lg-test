@@ -4356,6 +4356,16 @@ private let captureBackdropCodeByteCount = 0x4000
 private let captureBackdropDecisionCallLowerBound = 0x2000
 private let captureBackdropDecisionCallUpperBound = 0x2B58
 private let captureBackdropDirectCallTargetCodeByteCount = 0x400
+private let captureBackdropUpstreamDirectCallOffsets = [
+    0x100,
+    0xBDC,
+    0xC74,
+    0x17F8,
+    0x1804,
+    0x1830,
+    0x183C,
+]
+private let captureBackdropUpstreamDirectCallTargetCodeByteCount = 0x1000
 private let captureBackdropVertexBindingReturnOffset = 0x2B58
 private let captureBackdropFramePointerToStackPointer = 0xA50
 private let captureBackdropOriginPointerStackOffset = 0x190
@@ -4374,6 +4384,12 @@ private let captureBackdropOwnerRegionWindowOffset = 0x200
 private let captureBackdropOwnerRecordBeginOffset = 0x50
 private let captureBackdropOwnerRecordEndOffset = 0x58
 private let captureBackdropSourceStateWindowOffset = 0x18
+private let captureBackdropSourceOwnerPointerOffset = 0x48
+private let captureBackdropLayerStatePointerOffset = 0x10
+private let captureBackdropLayerAuxiliaryPointerOffset = 0x18
+private let captureBackdropLayerStateSourcePointerOffset = 0x120
+private let captureBackdropLayerAuxiliaryNestedPointerOffset = 0x88
+private let captureBackdropRegionBuilderOutputStackOffset = 0x330
 private let captureBackdropRendererScaleOffset = 0x30
 private let captureBackdropRendererRegionControlOffset = 0xD0
 private let captureBackdropMemoryReadMaximumAttemptCount = 3
@@ -4452,111 +4468,142 @@ private func arm64BranchLinkTarget(
     return (instruction, UInt(targetAddress))
 }
 
+private func captureBackdropDirectCallEvidence(
+    code: [UInt8],
+    symbolAddress: UInt,
+    imageBase: UInt,
+    instructionOffset: Int,
+    targetCodeByteCount: Int
+) -> [String: Any]? {
+    guard let decoded = arm64BranchLinkTarget(
+            code: code,
+            instructionOffset: instructionOffset,
+            symbolAddress: symbolAddress)
+    else {
+        return nil
+    }
+    var call: [String: Any] = [
+        "sourceInstructionOffset": instructionOffset,
+        "sourceInstruction": String(
+            format: "%08x",
+            decoded.instruction),
+        "sourceInstructionAddress": String(
+            format: "0x%016llx",
+            UInt64(symbolAddress + UInt(instructionOffset))),
+        "targetAddress": String(
+            format: "0x%016llx",
+            UInt64(decoded.target)),
+    ]
+    guard let targetPointer = UnsafeRawPointer(
+            bitPattern: decoded.target)
+    else {
+        call["targetCodeError"] = "invalid direct-call target"
+        return call
+    }
+    var targetInfo = Dl_info()
+    guard dladdr(targetPointer, &targetInfo) != 0 else {
+        call["targetCodeError"] = "dladdr failed"
+        return call
+    }
+    if let targetPath = targetInfo.dli_fname {
+        call["targetImagePath"] = String(cString: targetPath)
+    }
+    if let targetImageBasePointer = targetInfo.dli_fbase {
+        let targetImageBase = UInt(bitPattern: targetImageBasePointer)
+        call["targetImageBase"] = String(
+            format: "0x%016llx",
+            UInt64(targetImageBase))
+        if decoded.target >= targetImageBase {
+            call["targetImageOffset"] = String(
+                format: "0x%llx",
+                UInt64(decoded.target - targetImageBase))
+        }
+    }
+    if let targetName = targetInfo.dli_sname {
+        call["targetSymbol"] = String(cString: targetName)
+    }
+    if let targetSymbolPointer = targetInfo.dli_saddr {
+        let targetSymbolAddress = UInt(
+            bitPattern: targetSymbolPointer)
+        call["targetSymbolAddress"] = String(
+            format: "0x%016llx",
+            UInt64(targetSymbolAddress))
+        if decoded.target >= targetSymbolAddress {
+            call["targetSymbolOffset"] = String(
+                format: "0x%llx",
+                UInt64(decoded.target - targetSymbolAddress))
+        }
+    }
+    guard let targetImageBasePointer = targetInfo.dli_fbase,
+          UInt(bitPattern: targetImageBasePointer) == imageBase,
+          (call["targetImagePath"] as? String)?.contains(
+              "/QuartzCore.framework/") == true
+    else {
+        call["targetCodeError"] =
+            "direct-call target is outside the mapped QuartzCore image"
+        return call
+    }
+    let targetBytes = Array(UnsafeRawBufferPointer(
+        start: targetPointer,
+        count: targetCodeByteCount))
+    call["targetCode"] = [
+        "class": "mapped arm64e QuartzCore direct-call target prefix",
+        "startAddress": String(
+            format: "0x%016llx",
+            UInt64(decoded.target)),
+        "requestedByteCount": targetCodeByteCount,
+        "lengthBytes": targetBytes.count,
+        "hex": Data(targetBytes).map {
+            String(format: "%02x", $0)
+        }.joined(),
+        "sha256": transitionSHA256(Data(targetBytes)),
+    ]
+    return call
+}
+
 private func captureBackdropCodeEvidence(
     symbolPointer: UnsafeRawPointer,
     imageBase: UInt
 ) -> (
     record: [String: Any],
     directCallCount: Int,
-    targetCodeCaptureCount: Int
+    targetCodeCaptureCount: Int,
+    upstreamDirectCallCount: Int,
+    upstreamTargetCodeCaptureCount: Int
 ) {
     let symbolAddress = UInt(bitPattern: symbolPointer)
     let symbolBytes = Array(UnsafeRawBufferPointer(
         start: symbolPointer,
         count: captureBackdropCodeByteCount))
-    var targetCodeCaptureCount = 0
     let directCalls: [[String: Any]] = stride(
         from: captureBackdropDecisionCallLowerBound,
         to: captureBackdropDecisionCallUpperBound,
         by: 4
     ).compactMap { offset in
-        guard let decoded = arm64BranchLinkTarget(
-                code: symbolBytes,
-                instructionOffset: offset,
-                symbolAddress: symbolAddress)
-        else {
-            return nil
-        }
-        var call: [String: Any] = [
-            "sourceInstructionOffset": offset,
-            "sourceInstruction": String(
-                format: "%08x",
-                decoded.instruction),
-            "sourceInstructionAddress": String(
-                format: "0x%016llx",
-                UInt64(symbolAddress + UInt(offset))),
-            "targetAddress": String(
-                format: "0x%016llx",
-                UInt64(decoded.target)),
-        ]
-        guard let targetPointer = UnsafeRawPointer(
-                bitPattern: decoded.target)
-        else {
-            call["targetCodeError"] = "invalid direct-call target"
-            return call
-        }
-        var targetInfo = Dl_info()
-        guard dladdr(targetPointer, &targetInfo) != 0 else {
-            call["targetCodeError"] = "dladdr failed"
-            return call
-        }
-        if let targetPath = targetInfo.dli_fname {
-            call["targetImagePath"] = String(cString: targetPath)
-        }
-        if let targetImageBasePointer = targetInfo.dli_fbase {
-            let targetImageBase = UInt(bitPattern: targetImageBasePointer)
-            call["targetImageBase"] = String(
-                format: "0x%016llx",
-                UInt64(targetImageBase))
-            if decoded.target >= targetImageBase {
-                call["targetImageOffset"] = String(
-                    format: "0x%llx",
-                    UInt64(decoded.target - targetImageBase))
-            }
-        }
-        if let targetName = targetInfo.dli_sname {
-            call["targetSymbol"] = String(cString: targetName)
-        }
-        if let targetSymbolPointer = targetInfo.dli_saddr {
-            let targetSymbolAddress = UInt(
-                bitPattern: targetSymbolPointer)
-            call["targetSymbolAddress"] = String(
-                format: "0x%016llx",
-                UInt64(targetSymbolAddress))
-            if decoded.target >= targetSymbolAddress {
-                call["targetSymbolOffset"] = String(
-                    format: "0x%llx",
-                    UInt64(decoded.target - targetSymbolAddress))
-            }
-        }
-        guard let targetImageBasePointer = targetInfo.dli_fbase,
-              UInt(bitPattern: targetImageBasePointer) == imageBase,
-              (call["targetImagePath"] as? String)?.contains(
-                  "/QuartzCore.framework/") == true
-        else {
-            call["targetCodeError"] =
-                "direct-call target is outside the mapped QuartzCore image"
-            return call
-        }
-        let targetBytes = Array(UnsafeRawBufferPointer(
-            start: targetPointer,
-            count: captureBackdropDirectCallTargetCodeByteCount))
-        call["targetCode"] = [
-            "class": "mapped arm64e QuartzCore direct-call target prefix",
-            "startAddress": String(
-                format: "0x%016llx",
-                UInt64(decoded.target)),
-            "requestedByteCount":
-                captureBackdropDirectCallTargetCodeByteCount,
-            "lengthBytes": targetBytes.count,
-            "hex": Data(targetBytes).map {
-                String(format: "%02x", $0)
-            }.joined(),
-            "sha256": transitionSHA256(Data(targetBytes)),
-        ]
-        targetCodeCaptureCount += 1
-        return call
+        captureBackdropDirectCallEvidence(
+            code: symbolBytes,
+            symbolAddress: symbolAddress,
+            imageBase: imageBase,
+            instructionOffset: offset,
+            targetCodeByteCount:
+                captureBackdropDirectCallTargetCodeByteCount)
     }
+    let targetCodeCaptureCount = directCalls.filter {
+        $0["targetCode"] != nil
+    }.count
+    let upstreamDirectCalls = captureBackdropUpstreamDirectCallOffsets
+        .compactMap { offset in
+            captureBackdropDirectCallEvidence(
+                code: symbolBytes,
+                symbolAddress: symbolAddress,
+                imageBase: imageBase,
+                instructionOffset: offset,
+                targetCodeByteCount:
+                    captureBackdropUpstreamDirectCallTargetCodeByteCount)
+        }
+    let upstreamTargetCodeCaptureCount = upstreamDirectCalls.filter {
+        $0["targetCode"] != nil
+    }.count
     return (
         [
             "class": "mapped arm64e QuartzCore symbol prefix and direct calls",
@@ -4579,10 +4626,67 @@ private func captureBackdropCodeEvidence(
             ],
             "decisionDirectCallCount": directCalls.count,
             "directCalls": directCalls,
+            "upstreamDirectCallOffsets":
+                captureBackdropUpstreamDirectCallOffsets,
+            "upstreamDirectCallCount": upstreamDirectCalls.count,
+            "upstreamDirectCallTargetCodeByteCount":
+                captureBackdropUpstreamDirectCallTargetCodeByteCount,
+            "upstreamDirectCalls": upstreamDirectCalls,
         ],
         directCalls.count,
-        targetCodeCaptureCount
+        targetCodeCaptureCount,
+        upstreamDirectCalls.count,
+        upstreamTargetCodeCaptureCount
     )
+}
+
+private func captureBackdropPointerSymbolEvidence(
+    _ rawAddress: UInt64
+) -> [String: Any] {
+    var result: [String: Any] = [
+        "address": String(format: "0x%016llx", rawAddress),
+        "resolved": false,
+    ]
+    guard rawAddress != 0,
+          let pointer = UnsafeRawPointer(
+              bitPattern: UInt(rawAddress))
+    else {
+        return result
+    }
+    var info = Dl_info()
+    guard dladdr(pointer, &info) != 0 else {
+        return result
+    }
+    result["resolved"] = true
+    if let imagePath = info.dli_fname {
+        result["imagePath"] = String(cString: imagePath)
+    }
+    if let imageBasePointer = info.dli_fbase {
+        let imageBase = UInt(bitPattern: imageBasePointer)
+        result["imageBase"] = String(
+            format: "0x%016llx",
+            UInt64(imageBase))
+        if UInt(rawAddress) >= imageBase {
+            result["imageOffset"] = String(
+                format: "0x%llx",
+                UInt64(UInt(rawAddress) - imageBase))
+        }
+    }
+    if let symbolName = info.dli_sname {
+        result["symbol"] = String(cString: symbolName)
+    }
+    if let symbolPointer = info.dli_saddr {
+        let symbolAddress = UInt(bitPattern: symbolPointer)
+        result["symbolAddress"] = String(
+            format: "0x%016llx",
+            UInt64(symbolAddress))
+        if UInt(rawAddress) >= symbolAddress {
+            result["symbolOffset"] = String(
+                format: "0x%llx",
+                UInt64(UInt(rawAddress) - symbolAddress))
+        }
+    }
+    return result
 }
 
 private func captureBackdropOperandEvidence() -> [String: Any]? {
@@ -4621,13 +4725,24 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
         ]
     }
 
+    func firstWord<T>(_ value: inout T) -> UInt64 {
+        Swift.withUnsafeBytes(of: &value) { bytes in
+            bytes.prefix(MemoryLayout<UInt64>.size)
+                .enumerated()
+                .reduce(UInt64(0)) { word, pair in
+                    word | UInt64(pair.element)
+                        << UInt64(pair.offset * 8)
+                }
+        }
+    }
+
     let address: (UInt64) -> String = {
         String(format: "0x%016llx", $0)
     }
     let requiredReadMask = UInt32(
         LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK)
     return [
-        "schemaVersion": 4,
+        "schemaVersion": 5,
         "executed": true,
         "class": "bounded live capture_backdrop unwind operands",
         "completeRead": operands.read_mask == requiredReadMask,
@@ -4700,6 +4815,32 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
         ],
         "sourceStateWindowOffset":
             captureBackdropSourceStateWindowOffset,
+        "upstreamObjectOffsets": [
+            "sourceOwnerPointer":
+                captureBackdropSourceOwnerPointerOffset,
+            "layerStatePointer":
+                captureBackdropLayerStatePointerOffset,
+            "layerAuxiliaryPointer":
+                captureBackdropLayerAuxiliaryPointerOffset,
+            "layerStateSourcePointer":
+                captureBackdropLayerStateSourcePointerOffset,
+            "layerAuxiliaryNestedPointer":
+                captureBackdropLayerAuxiliaryNestedPointerOffset,
+        ],
+        "upstreamObjectPointers": [
+            "source": address(operands.source_object_pointer),
+            "owner": address(operands.owner_pointer),
+            "layer": address(operands.layer_pointer),
+            "renderContext": address(
+                operands.render_context_pointer),
+            "layerState": address(operands.layer_state_pointer),
+            "layerAuxiliary": address(
+                operands.layer_auxiliary_pointer),
+            "layerAuxiliaryNested": address(
+                operands.layer_auxiliary_nested_pointer),
+        ],
+        "regionBuilderOutputStackOffset":
+            captureBackdropRegionBuilderOutputStackOffset,
         "rendererOffsets": [
             "scale": captureBackdropRendererScaleOffset,
             "regionControl": captureBackdropRendererRegionControlOffset,
@@ -4762,6 +4903,59 @@ private func captureBackdropOperandEvidence() -> [String: Any]? {
             className: "five little-endian source-state key words",
             byteCount: Int(
                 operands.source_state_window_length)),
+        "sourceObjectPrefix": serialized(
+            &operands.source_object_prefix,
+            className: "bounded source-object prefix bytes",
+            byteCount: Int(
+                operands.source_object_prefix_length)),
+        "layerObjectPrefix": serialized(
+            &operands.layer_object_prefix,
+            className: "bounded layer-object prefix bytes",
+            byteCount: Int(
+                operands.layer_object_prefix_length)),
+        "layerStatePrefix": serialized(
+            &operands.layer_state_prefix,
+            className: "bounded layer-state prefix bytes",
+            byteCount: Int(
+                operands.layer_state_prefix_length)),
+        "layerAuxiliaryPrefix": serialized(
+            &operands.layer_auxiliary_prefix,
+            className: "bounded layer-auxiliary prefix bytes",
+            byteCount: Int(
+                operands.layer_auxiliary_prefix_length)),
+        "layerAuxiliaryNestedPrefix": serialized(
+            &operands.layer_auxiliary_nested_prefix,
+            className: "bounded nested layer-auxiliary prefix bytes",
+            byteCount: Int(
+                operands.layer_auxiliary_nested_prefix_length)),
+        "renderContextPrefix": serialized(
+            &operands.render_context_prefix,
+            className: "bounded capture_backdrop render-context prefix bytes",
+            byteCount: Int(
+                operands.render_context_prefix_length)),
+        "regionBuilderOutput": serialized(
+            &operands.region_builder_output,
+            className:
+                "bounded downstream capture_backdrop region-builder stack-state bytes",
+            byteCount: Int(
+                operands.region_builder_output_length)),
+        "upstreamObjectFirstWordSymbols": [
+            "source": captureBackdropPointerSymbolEvidence(
+                firstWord(&operands.source_object_prefix)),
+            "owner": captureBackdropPointerSymbolEvidence(
+                firstWord(&operands.owner_object_prefix)),
+            "layer": captureBackdropPointerSymbolEvidence(
+                firstWord(&operands.layer_object_prefix)),
+            "renderContext": captureBackdropPointerSymbolEvidence(
+                firstWord(&operands.render_context_prefix)),
+            "layerState": captureBackdropPointerSymbolEvidence(
+                firstWord(&operands.layer_state_prefix)),
+            "layerAuxiliary": captureBackdropPointerSymbolEvidence(
+                firstWord(&operands.layer_auxiliary_prefix)),
+            "layerAuxiliaryNested": captureBackdropPointerSymbolEvidence(
+                firstWord(
+                    &operands.layer_auxiliary_nested_prefix)),
+        ],
     ]
 }
 
@@ -4904,6 +5098,8 @@ private func glassUniformCallSiteEvidence(
     var captureBackdropCodeCaptures = 0
     var captureBackdropDecisionDirectCalls = 0
     var captureBackdropDirectCallTargetCodeCaptures = 0
+    var captureBackdropUpstreamDirectCalls = 0
+    var captureBackdropUpstreamDirectCallTargetCodeCaptures = 0
     let frames: [[String: Any]] = returnAddresses.enumerated().map {
         index, number in
         let addressValue = UInt(truncating: number)
@@ -5157,6 +5353,10 @@ private func glassUniformCallSiteEvidence(
                     evidence.directCallCount
                 captureBackdropDirectCallTargetCodeCaptures +=
                     evidence.targetCodeCaptureCount
+                captureBackdropUpstreamDirectCalls +=
+                    evidence.upstreamDirectCallCount
+                captureBackdropUpstreamDirectCallTargetCodeCaptures +=
+                    evidence.upstreamTargetCodeCaptureCount
             }
         }
 
@@ -5214,6 +5414,10 @@ private func glassUniformCallSiteEvidence(
             captureBackdropDecisionDirectCalls,
         "captureBackdropDirectCallTargetCodeCaptureCount":
             captureBackdropDirectCallTargetCodeCaptures,
+        "captureBackdropUpstreamDirectCallCount":
+            captureBackdropUpstreamDirectCalls,
+        "captureBackdropUpstreamDirectCallTargetCodeCaptureCount":
+            captureBackdropUpstreamDirectCallTargetCodeCaptures,
         "frames": frames,
     ]
 }
@@ -5579,7 +5783,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return nil
         }
         producerGeometryCallSiteCaptured = true
-        evidence["schemaVersion"] = 5
+        evidence["schemaVersion"] = 6
         evidence["purpose"] =
             "producer-primary-mesh-vertex-buffer-binding"
         return evidence
@@ -18720,7 +18924,7 @@ private func transitionPathIsolationAllocationEvidence(
         $0["executed"] as? Bool == true
     }.count
     return [
-        "schemaVersion": 8,
+        "schemaVersion": 9,
         "requested": true,
         "executed": executedRecordCount == expectedRecordCount,
         "sourceSampleIndices": selectedSnapshots.map(
@@ -18773,14 +18977,36 @@ private func transitionPathIsolationAllocationEvidence(
             captureBackdropSourceStateWindowOffset,
         "captureBackdropSourceStateWindowByteCount":
             Int(LG_CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT),
+        "captureBackdropSourceObjectPrefixByteCount":
+            Int(LG_CAPTURE_BACKDROP_SOURCE_OBJECT_PREFIX_BYTE_COUNT),
+        "captureBackdropLayerObjectPrefixByteCount":
+            Int(LG_CAPTURE_BACKDROP_LAYER_OBJECT_PREFIX_BYTE_COUNT),
+        "captureBackdropLayerStatePrefixByteCount":
+            Int(LG_CAPTURE_BACKDROP_LAYER_STATE_PREFIX_BYTE_COUNT),
+        "captureBackdropLayerAuxiliaryPrefixByteCount":
+            Int(LG_CAPTURE_BACKDROP_LAYER_AUXILIARY_PREFIX_BYTE_COUNT),
+        "captureBackdropLayerAuxiliaryNestedPrefixByteCount":
+            Int(
+                LG_CAPTURE_BACKDROP_LAYER_AUXILIARY_NESTED_PREFIX_BYTE_COUNT),
+        "captureBackdropRenderContextPrefixByteCount":
+            Int(LG_CAPTURE_BACKDROP_RENDER_CONTEXT_PREFIX_BYTE_COUNT),
+        "captureBackdropRegionBuilderOutputStackOffset":
+            captureBackdropRegionBuilderOutputStackOffset,
+        "captureBackdropRegionBuilderOutputByteCount":
+            Int(LG_CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_BYTE_COUNT),
+        "captureBackdropUpstreamDirectCallOffsets":
+            captureBackdropUpstreamDirectCallOffsets,
+        "captureBackdropUpstreamDirectCallTargetCodeByteCount":
+            captureBackdropUpstreamDirectCallTargetCodeByteCount,
         "captureBackdropRequiredReadMask": String(
             format: "0x%08x",
             UInt32(LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK)),
         "records": records,
         "method":
             "live-baseline-sample31-unit-scan-with-dual-owner-region-"
-            + "prefixes-bounded-owner-record-vector-source-key-callback-"
-            + "provenance-and-late-same-process-repeat-controls",
+            + "prefixes-bounded-owner-record-vector-source-key-upstream-"
+            + "object-chain-region-builder-output-direct-call-targets-"
+            + "callback-provenance-and-late-same-process-repeat-controls",
     ]
 }
 
@@ -18974,7 +19200,7 @@ private func transitionBackgroundUniformEvidence(
 ) -> [String: Any] {
     guard let device = MTLCreateSystemDefaultDevice() else {
         return [
-            "schemaVersion": 8,
+            "schemaVersion": 9,
             "requested": true,
             "executed": false,
             "reason": "default Metal device unavailable",
@@ -18985,7 +19211,7 @@ private func transitionBackgroundUniformEvidence(
           !snapshots.isEmpty
     else {
         return [
-            "schemaVersion": 8,
+            "schemaVersion": 9,
             "requested": true,
             "executed": false,
             "reason":
@@ -19176,7 +19402,7 @@ private func transitionBackgroundUniformEvidence(
             + "layer-state-on-fresh-static-model-tree-with-controlled-"
             + "producer-input"
     return [
-        "schemaVersion": 8,
+        "schemaVersion": 9,
         "requested": true,
         "executed":
             executed == snapshots.count
@@ -20253,7 +20479,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     phase: "after-static-model-carrier")
             } else {
                 dynamicUniformEvidence = [
-                    "schemaVersion": 8,
+                    "schemaVersion": 9,
                     "requested": false,
                     "executed": false,
                     "evidenceMode": "disabled",

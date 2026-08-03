@@ -249,6 +249,124 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         )
         return operands
 
+    @classmethod
+    def capture_backdrop_upstream_writer_operands(cls) -> dict[str, object]:
+        operands = cls.capture_backdrop_owner_record_operands()
+        registers = list(
+            struct.unpack(
+                f"<{surviving.CAPTURE_BACKDROP_REGISTER_COUNT}Q",
+                bytes.fromhex(operands["registers"]["hex"]),
+            )
+        )
+        source_pointer = registers[19 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER]
+        owner_pointer = registers[20 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER]
+        render_context_pointer = 0xA000
+        layer_pointer = 0xB000
+        layer_state_pointer = 0xC000
+        layer_auxiliary_pointer = 0xD000
+        layer_auxiliary_nested_pointer = 0
+        registers[22 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER] = (
+            render_context_pointer
+        )
+        registers[24 - surviving.CAPTURE_BACKDROP_FIRST_REGISTER] = layer_pointer
+
+        source_prefix = bytearray(
+            surviving.CAPTURE_BACKDROP_SOURCE_OBJECT_PREFIX_BYTE_COUNT
+        )
+        source_key = bytes.fromhex(operands["sourceStateWindow"]["hex"])
+        source_prefix[0x18:0x40] = source_key
+        struct.pack_into("<Q", source_prefix, 0x48, owner_pointer)
+        layer_prefix = bytearray(
+            surviving.CAPTURE_BACKDROP_LAYER_OBJECT_PREFIX_BYTE_COUNT
+        )
+        struct.pack_into(
+            "<2Q", layer_prefix, 0x10, layer_state_pointer, layer_auxiliary_pointer
+        )
+        layer_state_prefix = bytearray(
+            surviving.CAPTURE_BACKDROP_LAYER_STATE_PREFIX_BYTE_COUNT
+        )
+        struct.pack_into("<Q", layer_state_prefix, 0x120, source_pointer)
+        layer_auxiliary_prefix = bytearray(
+            surviving.CAPTURE_BACKDROP_LAYER_AUXILIARY_PREFIX_BYTE_COUNT
+        )
+        struct.pack_into(
+            "<Q", layer_auxiliary_prefix, 0x88, layer_auxiliary_nested_pointer
+        )
+        render_context_prefix = bytes(
+            surviving.CAPTURE_BACKDROP_RENDER_CONTEXT_PREFIX_BYTE_COUNT
+        )
+        region_builder_output = bytes(
+            surviving.CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_BYTE_COUNT
+        )
+        first_word_symbols = {
+            name: {"address": "0x0000000000000000", "resolved": False}
+            for name in (
+                "source",
+                "owner",
+                "layer",
+                "renderContext",
+                "layerState",
+                "layerAuxiliary",
+                "layerAuxiliaryNested",
+            )
+        }
+        operands.update(
+            {
+                "schemaVersion": 5,
+                "readMask": "0x3fffffff",
+                "requiredReadMask": "0x3fffffff",
+                "registers": cls.operand_bytes(
+                    struct.pack(
+                        f"<{surviving.CAPTURE_BACKDROP_REGISTER_COUNT}Q",
+                        *registers,
+                    ),
+                    "little-endian x19-through-x29 words",
+                ),
+                "upstreamObjectOffsets": surviving.CAPTURE_BACKDROP_UPSTREAM_OBJECT_OFFSETS,
+                "upstreamObjectPointers": {
+                    "source": f"0x{source_pointer:016x}",
+                    "owner": f"0x{owner_pointer:016x}",
+                    "layer": f"0x{layer_pointer:016x}",
+                    "renderContext": f"0x{render_context_pointer:016x}",
+                    "layerState": f"0x{layer_state_pointer:016x}",
+                    "layerAuxiliary": f"0x{layer_auxiliary_pointer:016x}",
+                    "layerAuxiliaryNested": (
+                        f"0x{layer_auxiliary_nested_pointer:016x}"
+                    ),
+                },
+                "regionBuilderOutputStackOffset": (
+                    surviving.CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_STACK_OFFSET
+                ),
+                "sourceObjectPrefix": cls.operand_bytes(
+                    bytes(source_prefix), "bounded source-object prefix bytes"
+                ),
+                "layerObjectPrefix": cls.operand_bytes(
+                    bytes(layer_prefix), "bounded layer-object prefix bytes"
+                ),
+                "layerStatePrefix": cls.operand_bytes(
+                    bytes(layer_state_prefix), "bounded layer-state prefix bytes"
+                ),
+                "layerAuxiliaryPrefix": cls.operand_bytes(
+                    bytes(layer_auxiliary_prefix),
+                    "bounded layer-auxiliary prefix bytes",
+                ),
+                "layerAuxiliaryNestedPrefix": cls.operand_bytes(
+                    b"", "bounded nested layer-auxiliary prefix bytes"
+                ),
+                "renderContextPrefix": cls.operand_bytes(
+                    render_context_prefix,
+                    "bounded capture_backdrop render-context prefix bytes",
+                ),
+                "regionBuilderOutput": cls.operand_bytes(
+                    region_builder_output,
+                    "bounded downstream capture_backdrop region-builder "
+                    "stack-state bytes",
+                ),
+                "upstreamObjectFirstWordSymbols": first_word_symbols,
+            }
+        )
+        return operands
+
     @staticmethod
     def producer_call_site() -> dict[str, object]:
         payload = bytes(0x800)
@@ -360,6 +478,66 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         )
         return call_site
 
+    @classmethod
+    def producer_call_site_with_upstream_targets(cls) -> dict[str, object]:
+        call_site = cls.producer_call_site_with_capture_backdrop()
+        call_site["schemaVersion"] = 6
+        call_site["captureBackdropUpstreamDirectCallCount"] = len(
+            surviving.CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS
+        )
+        call_site["captureBackdropUpstreamDirectCallTargetCodeCaptureCount"] = len(
+            surviving.CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS
+        )
+        frame = call_site["frames"][0]
+        capture = frame["captureBackdropCode"]
+        symbol_address = int(capture["startAddress"], 16)
+        image_base = int(frame["imageBase"], 16)
+        symbol_payload = bytearray.fromhex(capture["hex"])
+        instruction = 0x9400_0001
+        upstream_calls = []
+        for offset in surviving.CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS:
+            symbol_payload[offset : offset + 4] = instruction.to_bytes(4, "little")
+            target_address = symbol_address + offset + 4
+            target_payload = bytes(
+                surviving.CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+            )
+            upstream_calls.append(
+                {
+                    "sourceInstructionOffset": offset,
+                    "sourceInstruction": f"{instruction:08x}",
+                    "sourceInstructionAddress": (f"0x{symbol_address + offset:016x}"),
+                    "targetAddress": f"0x{target_address:016x}",
+                    "targetImageBase": f"0x{image_base:016x}",
+                    "targetImageOffset": f"0x{target_address - image_base:x}",
+                    "targetImagePath": (
+                        "/System/Library/Frameworks/QuartzCore.framework/QuartzCore"
+                    ),
+                    "targetCode": {
+                        "class": ("mapped arm64e QuartzCore direct-call target prefix"),
+                        "startAddress": f"0x{target_address:016x}",
+                        "requestedByteCount": len(target_payload),
+                        "lengthBytes": len(target_payload),
+                        "hex": target_payload.hex(),
+                        "sha256": hashlib.sha256(target_payload).hexdigest(),
+                    },
+                }
+            )
+        capture.update(
+            {
+                "hex": symbol_payload.hex(),
+                "sha256": hashlib.sha256(symbol_payload).hexdigest(),
+                "upstreamDirectCallOffsets": list(
+                    surviving.CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS
+                ),
+                "upstreamDirectCallCount": len(upstream_calls),
+                "upstreamDirectCallTargetCodeByteCount": (
+                    surviving.CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+                ),
+                "upstreamDirectCalls": upstream_calls,
+            }
+        )
+        return call_site
+
     def test_matrix_stays_below_observed_capture_ceiling(self) -> None:
         self.assertEqual(len(surviving.expected_interventions(25)), 67)
         self.assertEqual(len(surviving.expected_interventions(31)), 5)
@@ -430,7 +608,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             list(surviving.SAMPLE31_REPEAT_Y_VALUES),
         )
 
-    def test_swift_uses_schema_eight_for_the_owner_record_replay(self) -> None:
+    def test_swift_uses_schema_nine_for_the_upstream_writer_replay(self) -> None:
         source = (
             Path(__file__).parents[1] / "Sources" / "GlassIntrospect" / "main.swift"
         ).read_text(encoding="utf-8")
@@ -443,7 +621,7 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertIn('"schemaVersion": 2', fixed_block)
         self.assertNotIn('"schemaVersion": 3', fixed_block)
         self.assertNotIn('"schemaVersion": 4', fixed_block)
-        self.assertIn('"schemaVersion": 8', path_block)
+        self.assertIn('"schemaVersion": 9', path_block)
         self.assertNotIn('"schemaVersion": 3', path_block)
         self.assertNotIn('"schemaVersion": 4', path_block)
         self.assertIn('"scanXValues"', path_block)
@@ -493,6 +671,19 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
         self.assertEqual(capture["decisionDirectCallCount"], 1)
         self.assertEqual(capture["decisionDirectCallOffsets"], [0x2B54])
         self.assertEqual(capture["directCallTargetCodeCaptureCount"], 1)
+
+    def test_capture_backdrop_upstream_direct_calls_are_byte_validated(self) -> None:
+        summary = surviving.validate_producer_geometry_call_site(
+            self.producer_call_site_with_upstream_targets()
+        )
+        capture = summary["captureBackdrop"]
+        self.assertEqual(summary["schemaVersion"], 6)
+        self.assertEqual(
+            capture["upstreamDirectCallOffsets"],
+            list(surviving.CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS),
+        )
+        self.assertEqual(capture["upstreamDirectCallCount"], 7)
+        self.assertEqual(capture["upstreamDirectCallTargetCodeCaptureCount"], 7)
 
     def test_capture_backdrop_distinguishes_return_and_symbol_image_offsets(
         self,
@@ -748,6 +939,31 @@ class SurvivingPathThresholdValidatorTests(unittest.TestCase):
             vector, "bounded owner 0xd0-byte record vector"
         )
         with self.assertRaisesRegex(ValueError, "ownerRecordVector"):
+            surviving.validate_capture_backdrop_operands(operands)
+
+    def test_capture_backdrop_schema_five_replays_the_upstream_chain(self) -> None:
+        validated = surviving.validate_capture_backdrop_operands(
+            self.capture_backdrop_upstream_writer_operands()
+        )
+        self.assertEqual(validated["schemaVersion"], 5)
+        self.assertTrue(validated["upstreamObjectChainExact"])
+        self.assertEqual(validated["sourcePointer"], 0x8000)
+        self.assertEqual(validated["ownerPointer"], 0x6000)
+        self.assertEqual(validated["layerPointer"], 0xB000)
+        self.assertEqual(validated["renderContextPointer"], 0xA000)
+        self.assertEqual(validated["layerStatePointer"], 0xC000)
+        self.assertEqual(validated["layerAuxiliaryPointer"], 0xD000)
+        self.assertEqual(validated["layerAuxiliaryNestedPointer"], 0)
+        self.assertEqual(len(bytes.fromhex(validated["regionBuilderOutputHex"])), 64)
+
+    def test_capture_backdrop_schema_five_rejects_a_broken_owner_link(self) -> None:
+        operands = self.capture_backdrop_upstream_writer_operands()
+        source_prefix = bytearray.fromhex(operands["sourceObjectPrefix"]["hex"])
+        struct.pack_into("<Q", source_prefix, 0x48, 0xDEAD)
+        operands["sourceObjectPrefix"] = self.operand_bytes(
+            bytes(source_prefix), "bounded source-object prefix bytes"
+        )
+        with self.assertRaisesRegex(ValueError, "upstream object-chain replay differs"):
             surviving.validate_capture_backdrop_operands(operands)
 
     def test_callback_attempt_retains_bounded_symbol_offsets_without_addresses(

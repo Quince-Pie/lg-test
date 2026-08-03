@@ -51,6 +51,10 @@ CAPTURE_BACKDROP_OWNER_REGION_CLASSIFICATION = (
 CAPTURE_BACKDROP_OWNER_RECORD_CLASSIFICATION = (
     "preregistered-live-capture-backdrop-owner-record-vector-and-source-key-replay"
 )
+CAPTURE_BACKDROP_UPSTREAM_WRITER_CLASSIFICATION = (
+    "preregistered-live-capture-backdrop-upstream-owner-region-writer-chain-and-"
+    "direct-call-replay"
+)
 SAMPLE31_REPEAT_SOURCE_SAMPLE_INDICES = (31,)
 FINE_X_VALUES = tuple(range(80, 89))
 FINE_Y_VALUES = tuple(range(64, 97))
@@ -65,6 +69,16 @@ CAPTURE_BACKDROP_CODE_BYTE_COUNT = 0x4000
 CAPTURE_BACKDROP_DECISION_CALL_RANGE = (0x2000, 0x2B58)
 CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET = 0x2B54
 CAPTURE_BACKDROP_DIRECT_CALL_TARGET_CODE_BYTE_COUNT = 0x400
+CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS = (
+    0x100,
+    0xBDC,
+    0xC74,
+    0x17F8,
+    0x1804,
+    0x1830,
+    0x183C,
+)
+CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_TARGET_CODE_BYTE_COUNT = 0x1000
 CAPTURE_BACKDROP_VERTEX_BINDING_RETURN_OFFSET = 0x2B58
 CAPTURE_BACKDROP_REGION_ITERATE_CALL_OFFSET = 0x2334
 CAPTURE_BACKDROP_REGION_ITERATE_SYMBOL = "_ZN2CA13ShapeIterator7iterateERNS_6BoundsE"
@@ -78,6 +92,7 @@ CAPTURE_BACKDROP_V1_REQUIRED_READ_MASK = 0xFF
 CAPTURE_BACKDROP_V2_REQUIRED_READ_MASK = 0x1FFFF
 CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0xFFFFF
 CAPTURE_BACKDROP_OWNER_RECORD_REQUIRED_READ_MASK = 0x7FFFFF
+CAPTURE_BACKDROP_UPSTREAM_WRITER_REQUIRED_READ_MASK = 0x3FFFFFFF
 CAPTURE_BACKDROP_MEMORY_READ_MAXIMUM_ATTEMPT_COUNT = 3
 CAPTURE_BACKDROP_CALLBACK_MAXIMUM_FRAME_COUNT = 32
 CAPTURE_BACKDROP_CALLBACK_MAXIMUM_ATTEMPT_COUNT = 8
@@ -90,6 +105,12 @@ CAPTURE_BACKDROP_OWNER_RECORD_METHOD = (
     "live-baseline-sample31-unit-scan-with-dual-owner-region-prefixes-bounded-"
     "owner-record-vector-source-key-callback-provenance-and-late-same-process-"
     "repeat-controls"
+)
+CAPTURE_BACKDROP_UPSTREAM_WRITER_METHOD = (
+    "live-baseline-sample31-unit-scan-with-dual-owner-region-prefixes-bounded-"
+    "owner-record-vector-source-key-upstream-object-chain-region-builder-output-"
+    "direct-call-targets-callback-provenance-and-late-same-process-repeat-"
+    "controls"
 )
 CAPTURE_BACKDROP_EXPECTED_SYMBOL_PREFIX_SHA256 = (
     "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2"
@@ -129,6 +150,14 @@ CAPTURE_BACKDROP_OWNER_RECORD_OFFSETS = {
     "recordByteCount": 0xD0,
 }
 CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_OFFSET = 0x18
+CAPTURE_BACKDROP_UPSTREAM_OBJECT_OFFSETS = {
+    "sourceOwnerPointer": 0x48,
+    "layerStatePointer": 0x10,
+    "layerAuxiliaryPointer": 0x18,
+    "layerStateSourcePointer": 0x120,
+    "layerAuxiliaryNestedPointer": 0x88,
+}
+CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_STACK_OFFSET = 0x330
 CAPTURE_BACKDROP_RENDERER_OFFSETS = {"scale": 0x30, "regionControl": 0xD0}
 CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT = 256
 CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT = 4096
@@ -143,6 +172,13 @@ CAPTURE_BACKDROP_OWNER_RECORD_VECTOR_BYTE_COUNT = (
     * CAPTURE_BACKDROP_OWNER_RECORD_MAXIMUM_COUNT
 )
 CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT = 40
+CAPTURE_BACKDROP_SOURCE_OBJECT_PREFIX_BYTE_COUNT = 256
+CAPTURE_BACKDROP_LAYER_OBJECT_PREFIX_BYTE_COUNT = 64
+CAPTURE_BACKDROP_LAYER_STATE_PREFIX_BYTE_COUNT = 320
+CAPTURE_BACKDROP_LAYER_AUXILIARY_PREFIX_BYTE_COUNT = 160
+CAPTURE_BACKDROP_LAYER_AUXILIARY_NESTED_PREFIX_BYTE_COUNT = 96
+CAPTURE_BACKDROP_RENDER_CONTEXT_PREFIX_BYTE_COUNT = 2048
+CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_BYTE_COUNT = 64
 CAPTURE_BACKDROP_OPERAND_LAYOUTS = {
     "registers": (
         "little-endian x19-through-x29 words",
@@ -176,6 +212,30 @@ CAPTURE_BACKDROP_OPERAND_LAYOUTS = {
     "sourceStateWindow": (
         "five little-endian source-state key words",
         CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT,
+    ),
+    "sourceObjectPrefix": (
+        "bounded source-object prefix bytes",
+        CAPTURE_BACKDROP_SOURCE_OBJECT_PREFIX_BYTE_COUNT,
+    ),
+    "layerObjectPrefix": (
+        "bounded layer-object prefix bytes",
+        CAPTURE_BACKDROP_LAYER_OBJECT_PREFIX_BYTE_COUNT,
+    ),
+    "layerStatePrefix": (
+        "bounded layer-state prefix bytes",
+        CAPTURE_BACKDROP_LAYER_STATE_PREFIX_BYTE_COUNT,
+    ),
+    "layerAuxiliaryPrefix": (
+        "bounded layer-auxiliary prefix bytes",
+        CAPTURE_BACKDROP_LAYER_AUXILIARY_PREFIX_BYTE_COUNT,
+    ),
+    "renderContextPrefix": (
+        "bounded capture_backdrop render-context prefix bytes",
+        CAPTURE_BACKDROP_RENDER_CONTEXT_PREFIX_BYTE_COUNT,
+    ),
+    "regionBuilderOutput": (
+        "bounded downstream capture_backdrop region-builder stack-state bytes",
+        CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_BYTE_COUNT,
     ),
 }
 SCAN_VALUES_BY_SAMPLE = {
@@ -462,6 +522,84 @@ def capture_backdrop_owner_record_vector_bytes(
     ):
         raise ValueError("capture_backdrop ownerRecordVector operand metadata differs")
     return payload
+
+
+def capture_backdrop_optional_prefix_bytes(
+    operands: Mapping[str, Any],
+    *,
+    field: str,
+    class_name: str,
+    pointer: int,
+    pointer_byte_count: int,
+) -> bytes:
+    record = holdout.mapping(operands.get(field), f"capture_backdrop {field} operands")
+    payload = hexadecimal_bytes(record, f"capture_backdrop {field} operands")
+    expected_length = pointer_byte_count if pointer != 0 else 0
+    if (
+        record.get("class") != class_name
+        or record.get("lengthBytes") != expected_length
+        or len(payload) != expected_length
+        or record.get("sha256") != hashlib.sha256(payload).hexdigest()
+    ):
+        raise ValueError(f"capture_backdrop {field} operand metadata differs")
+    return payload
+
+
+def validate_capture_backdrop_pointer_symbol(
+    untyped_evidence: Any,
+    *,
+    expected_address: int,
+    label: str,
+) -> dict[str, Any]:
+    evidence = holdout.mapping(untyped_evidence, label)
+    address = hexadecimal_address(evidence.get("address"), f"{label} address")
+    resolved = evidence.get("resolved")
+    if address != expected_address or not isinstance(resolved, bool):
+        raise ValueError(f"{label} metadata differs")
+    result: dict[str, Any] = {
+        "address": address,
+        "resolved": resolved,
+    }
+    if not resolved:
+        if set(evidence) != {"address", "resolved"}:
+            raise ValueError(f"{label} unresolved metadata differs")
+        return result
+    image_path = evidence.get("imagePath")
+    image_base = hexadecimal_address(evidence.get("imageBase"), f"{label} image base")
+    image_offset = hexadecimal_address(
+        evidence.get("imageOffset"), f"{label} image offset"
+    )
+    if (
+        not isinstance(image_path, str)
+        or not image_path
+        or address != image_base + image_offset
+    ):
+        raise ValueError(f"{label} resolved metadata differs")
+    result.update(
+        {
+            "imagePath": image_path,
+            "imageBase": image_base,
+            "imageOffset": image_offset,
+        }
+    )
+    if "symbol" in evidence:
+        symbol = evidence.get("symbol")
+        symbol_address = hexadecimal_address(
+            evidence.get("symbolAddress"), f"{label} symbol address"
+        )
+        symbol_offset = hexadecimal_address(
+            evidence.get("symbolOffset"), f"{label} symbol offset"
+        )
+        if not isinstance(symbol, str) or address != symbol_address + symbol_offset:
+            raise ValueError(f"{label} symbol metadata differs")
+        result.update(
+            {
+                "symbol": symbol,
+                "symbolAddress": symbol_address,
+                "symbolOffset": symbol_offset,
+            }
+        )
+    return result
 
 
 def capture_backdrop_region_prefix_bytes(
@@ -792,13 +930,14 @@ def validate_capture_backdrop_operands(
 ) -> dict[str, Any]:
     operands = holdout.mapping(untyped_operands, "capture_backdrop operand evidence")
     operand_schema = operands.get("schemaVersion")
-    if operand_schema not in {1, 2, 3, 4}:
+    if operand_schema not in {1, 2, 3, 4, 5}:
         raise ValueError("capture_backdrop operand schema differs")
     expected_read_mask = {
         1: CAPTURE_BACKDROP_V1_REQUIRED_READ_MASK,
         2: CAPTURE_BACKDROP_V2_REQUIRED_READ_MASK,
         3: CAPTURE_BACKDROP_REQUIRED_READ_MASK,
         4: CAPTURE_BACKDROP_OWNER_RECORD_REQUIRED_READ_MASK,
+        5: CAPTURE_BACKDROP_UPSTREAM_WRITER_REQUIRED_READ_MASK,
     }[operand_schema]
     expected_stack_offsets = (
         CAPTURE_BACKDROP_V1_STACK_OFFSETS
@@ -873,7 +1012,7 @@ def validate_capture_backdrop_operands(
         or operands.get("stackOffsets") != expected_stack_offsets
         or operands.get("contextScaleOffset") != CAPTURE_BACKDROP_CONTEXT_SCALE_OFFSET
         or (
-            operand_schema in {3, 4}
+            operand_schema in {3, 4, 5}
             and (
                 operands.get("completeRead") is not True
                 or operands.get("memoryReadMaximumAttemptCount")
@@ -891,7 +1030,7 @@ def validate_capture_backdrop_operands(
     ):
         raise ValueError("capture_backdrop operand metadata differs")
     region_summary: dict[str, Any] = {}
-    if operand_schema in {2, 3, 4}:
+    if operand_schema in {2, 3, 4, 5}:
         renderer_pointer = hexadecimal_address(
             operands.get("rendererPointer"),
             "capture_backdrop renderer pointer",
@@ -927,7 +1066,7 @@ def validate_capture_backdrop_operands(
                 prefix_byte_count=CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT,
                 minimum_prefix_byte_count=CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT,
             )
-            if operand_schema in {3, 4}
+            if operand_schema in {3, 4, 5}
             else b""
         )
         owner_region_270_prefix = (
@@ -939,16 +1078,17 @@ def validate_capture_backdrop_operands(
                 prefix_byte_count=CAPTURE_BACKDROP_OWNER_REGION_PREFIX_BYTE_COUNT,
                 minimum_prefix_byte_count=CAPTURE_BACKDROP_REGION_PREFIX_BYTE_COUNT,
             )
-            if operand_schema in {3, 4}
+            if operand_schema in {3, 4, 5}
             else b""
         )
         owner_region_window = (
             capture_backdrop_operand_bytes(operands, "ownerRegionWindow")
-            if operand_schema in {3, 4}
+            if operand_schema in {3, 4, 5}
             else b""
         )
         owner_record_summary: dict[str, Any] = {}
-        if operand_schema == 4:
+        upstream_writer_summary: dict[str, Any] = {}
+        if operand_schema in {4, 5}:
             owner_object_prefix = capture_backdrop_operand_bytes(
                 operands, "ownerObjectPrefix"
             )
@@ -1026,6 +1166,170 @@ def validate_capture_backdrop_operands(
                 ].hex(),
                 "ownerRegionWindowEmbeddedInPrefix": True,
             }
+        if operand_schema == 5:
+            upstream_pointers = holdout.mapping(
+                operands.get("upstreamObjectPointers"),
+                "capture_backdrop upstream object pointers",
+            )
+            source_pointer = hexadecimal_address(
+                upstream_pointers.get("source"),
+                "capture_backdrop upstream source pointer",
+            )
+            owner_pointer = hexadecimal_address(
+                upstream_pointers.get("owner"),
+                "capture_backdrop upstream owner pointer",
+            )
+            layer_pointer = hexadecimal_address(
+                upstream_pointers.get("layer"),
+                "capture_backdrop upstream layer pointer",
+            )
+            render_context_pointer = hexadecimal_address(
+                upstream_pointers.get("renderContext"),
+                "capture_backdrop upstream render-context pointer",
+            )
+            layer_state_pointer = hexadecimal_address(
+                upstream_pointers.get("layerState"),
+                "capture_backdrop upstream layer-state pointer",
+            )
+            layer_auxiliary_pointer = hexadecimal_address(
+                upstream_pointers.get("layerAuxiliary"),
+                "capture_backdrop upstream layer-auxiliary pointer",
+            )
+            layer_auxiliary_nested_pointer = hexadecimal_address(
+                upstream_pointers.get("layerAuxiliaryNested"),
+                "capture_backdrop upstream nested auxiliary pointer",
+            )
+            source_object_prefix = capture_backdrop_operand_bytes(
+                operands, "sourceObjectPrefix"
+            )
+            layer_object_prefix = capture_backdrop_operand_bytes(
+                operands, "layerObjectPrefix"
+            )
+            layer_state_prefix = capture_backdrop_operand_bytes(
+                operands, "layerStatePrefix"
+            )
+            layer_auxiliary_prefix = capture_backdrop_operand_bytes(
+                operands, "layerAuxiliaryPrefix"
+            )
+            layer_auxiliary_nested_prefix = capture_backdrop_optional_prefix_bytes(
+                operands,
+                field="layerAuxiliaryNestedPrefix",
+                class_name="bounded nested layer-auxiliary prefix bytes",
+                pointer=layer_auxiliary_nested_pointer,
+                pointer_byte_count=(
+                    CAPTURE_BACKDROP_LAYER_AUXILIARY_NESTED_PREFIX_BYTE_COUNT
+                ),
+            )
+            render_context_prefix = capture_backdrop_operand_bytes(
+                operands, "renderContextPrefix"
+            )
+            region_builder_output = capture_backdrop_operand_bytes(
+                operands, "regionBuilderOutput"
+            )
+            pointer_prefixes = {
+                "source": source_object_prefix,
+                "owner": owner_object_prefix,
+                "layer": layer_object_prefix,
+                "renderContext": render_context_prefix,
+                "layerState": layer_state_prefix,
+                "layerAuxiliary": layer_auxiliary_prefix,
+                "layerAuxiliaryNested": layer_auxiliary_nested_prefix,
+            }
+            first_word_evidence = holdout.mapping(
+                operands.get("upstreamObjectFirstWordSymbols"),
+                "capture_backdrop upstream first-word symbols",
+            )
+            if set(first_word_evidence) != set(pointer_prefixes):
+                raise ValueError(
+                    "capture_backdrop upstream first-word inventory differs"
+                )
+            first_word_summaries = {
+                name: validate_capture_backdrop_pointer_symbol(
+                    first_word_evidence[name],
+                    expected_address=(
+                        int.from_bytes(prefix[:8], "little") if prefix else 0
+                    ),
+                    label=f"capture_backdrop {name} first-word symbol",
+                )
+                for name, prefix in pointer_prefixes.items()
+            }
+            if (
+                set(upstream_pointers)
+                != {
+                    "source",
+                    "owner",
+                    "layer",
+                    "renderContext",
+                    "layerState",
+                    "layerAuxiliary",
+                    "layerAuxiliaryNested",
+                }
+                or operands.get("upstreamObjectOffsets")
+                != CAPTURE_BACKDROP_UPSTREAM_OBJECT_OFFSETS
+                or operands.get("regionBuilderOutputStackOffset")
+                != CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_STACK_OFFSET
+                or source_pointer != registers[19 - CAPTURE_BACKDROP_FIRST_REGISTER]
+                or owner_pointer != registers[20 - CAPTURE_BACKDROP_FIRST_REGISTER]
+                or render_context_pointer
+                != registers[22 - CAPTURE_BACKDROP_FIRST_REGISTER]
+                or layer_pointer != registers[24 - CAPTURE_BACKDROP_FIRST_REGISTER]
+                or 0
+                in {
+                    source_pointer,
+                    owner_pointer,
+                    layer_pointer,
+                    render_context_pointer,
+                    layer_state_pointer,
+                    layer_auxiliary_pointer,
+                }
+                or int.from_bytes(source_object_prefix[0x48:0x50], "little")
+                != owner_pointer
+                or source_object_prefix[0x18:0x40] != source_state_window
+                or int.from_bytes(layer_object_prefix[0x10:0x18], "little")
+                != layer_state_pointer
+                or int.from_bytes(layer_object_prefix[0x18:0x20], "little")
+                != layer_auxiliary_pointer
+                or int.from_bytes(layer_state_prefix[0x120:0x128], "little")
+                != source_pointer
+                or int.from_bytes(layer_auxiliary_prefix[0x88:0x90], "little")
+                != layer_auxiliary_nested_pointer
+            ):
+                raise ValueError(
+                    "capture_backdrop upstream object-chain replay differs"
+                )
+            upstream_writer_summary = {
+                "sourcePointer": source_pointer,
+                "ownerPointer": owner_pointer,
+                "layerPointer": layer_pointer,
+                "renderContextPointer": render_context_pointer,
+                "layerStatePointer": layer_state_pointer,
+                "layerAuxiliaryPointer": layer_auxiliary_pointer,
+                "layerAuxiliaryNestedPointer": layer_auxiliary_nested_pointer,
+                "sourceObjectPrefixSHA256": hashlib.sha256(
+                    source_object_prefix
+                ).hexdigest(),
+                "layerObjectPrefixSHA256": hashlib.sha256(
+                    layer_object_prefix
+                ).hexdigest(),
+                "layerStatePrefixSHA256": hashlib.sha256(
+                    layer_state_prefix
+                ).hexdigest(),
+                "layerAuxiliaryPrefixSHA256": hashlib.sha256(
+                    layer_auxiliary_prefix
+                ).hexdigest(),
+                "layerAuxiliaryNestedPrefixSHA256": hashlib.sha256(
+                    layer_auxiliary_nested_prefix
+                ).hexdigest(),
+                "renderContextPrefixSHA256": hashlib.sha256(
+                    render_context_prefix
+                ).hexdigest(),
+                "regionBuilderOutputSHA256": hashlib.sha256(
+                    region_builder_output
+                ).hexdigest(),
+                "regionBuilderOutputHex": region_builder_output.hex(),
+                "upstreamObjectChainExact": True,
+                "firstWordSymbols": first_word_summaries,
+            }
         region_iterator = list(struct.unpack("<3Q", region_iterator_payload))
         renderer_scale = struct.unpack("<d", renderer_scale_payload)[0]
         origin_bounds = list(struct.unpack("<4i", origin_bounds_payload))
@@ -1042,20 +1346,20 @@ def validate_capture_backdrop_operands(
             capture_backdrop_first_region_rect(
                 owner_region_248, owner_region_248_prefix
             )
-            if operand_schema in {3, 4}
+            if operand_schema in {3, 4, 5}
             else None
         )
         owner_region_270_rect = (
             capture_backdrop_first_region_rect(
                 owner_region_270, owner_region_270_prefix
             )
-            if operand_schema in {3, 4}
+            if operand_schema in {3, 4, 5}
             else None
         )
         if (
             operands.get("regionOwnerOffsets") != CAPTURE_BACKDROP_REGION_OWNER_OFFSETS
             or (
-                operand_schema in {3, 4}
+                operand_schema in {3, 4, 5}
                 and (
                     operands.get("ownerRegionWindowOffset")
                     != CAPTURE_BACKDROP_OWNER_REGION_WINDOW_OFFSET
@@ -1073,7 +1377,7 @@ def validate_capture_backdrop_operands(
             or len(renderer_region_control_payload) != 16
             or origin_bounds[:2] != origin
             or consumed_region_rect != rect
-            or (operand_schema in {3, 4} and region_handle != owner_region_248)
+            or (operand_schema in {3, 4, 5} and region_handle != owner_region_248)
         ):
             raise ValueError("capture_backdrop selected-region replay differs")
         region_summary = {
@@ -1111,7 +1415,7 @@ def validate_capture_backdrop_operands(
                     "selectedEqualsOwner248": region_handle == owner_region_248,
                     "selectedEqualsOwner270": region_handle == owner_region_270,
                 }
-                if operand_schema in {3, 4}
+                if operand_schema in {3, 4, 5}
                 else {}
             ),
             "regionIterator": region_iterator,
@@ -1122,6 +1426,7 @@ def validate_capture_backdrop_operands(
             != selected_region_rect,
             "consumedRegionRectExact": True,
             **owner_record_summary,
+            **upstream_writer_summary,
         }
     predicted_position_bits = capture_backdrop_primary_position_bits(
         rect=rect,
@@ -1238,6 +1543,7 @@ def validate_capture_backdrop_operand_attempt(
         expected_partial_read_mask = {
             3: CAPTURE_BACKDROP_REQUIRED_READ_MASK,
             4: CAPTURE_BACKDROP_OWNER_RECORD_REQUIRED_READ_MASK,
+            5: CAPTURE_BACKDROP_UPSTREAM_WRITER_REQUIRED_READ_MASK,
         }.get(partial_schema)
         if (
             expected_partial_read_mask is None
@@ -1416,6 +1722,96 @@ def validate_capture_backdrop_code(
 
     if CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET not in call_offsets:
         raise ValueError("capture_backdrop producer binding call is absent")
+    upstream_call_summaries: list[dict[str, Any]] = []
+    if "upstreamDirectCalls" in capture:
+        upstream_offsets = tuple(
+            int(value)
+            for value in fixed.sequence(
+                capture.get("upstreamDirectCallOffsets"),
+                "capture_backdrop upstream direct-call offsets",
+            )
+        )
+        upstream_calls = [
+            holdout.mapping(value, "capture_backdrop upstream direct call")
+            for value in fixed.sequence(
+                capture.get("upstreamDirectCalls"),
+                "capture_backdrop upstream direct calls",
+            )
+        ]
+        if (
+            upstream_offsets != CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS
+            or capture.get("upstreamDirectCallCount") != len(upstream_calls)
+            or capture.get("upstreamDirectCallTargetCodeByteCount")
+            != CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+            or len(upstream_calls) != len(upstream_offsets)
+        ):
+            raise ValueError("capture_backdrop upstream direct-call inventory differs")
+        for call, offset in zip(upstream_calls, upstream_offsets, strict=True):
+            instruction = int.from_bytes(payload[offset : offset + 4], "little")
+            target = arm64_branch_link_target(instruction, symbol_address + offset)
+            target_code = holdout.mapping(
+                call.get("targetCode"),
+                "capture_backdrop upstream direct-call target code",
+            )
+            target_payload = hexadecimal_bytes(
+                target_code,
+                "capture_backdrop upstream direct-call target code",
+            )
+            target_path = call.get("targetImagePath")
+            if (
+                target is None
+                or call.get("sourceInstructionOffset") != offset
+                or call.get("sourceInstruction") != f"{instruction:08x}"
+                or hexadecimal_address(
+                    call.get("sourceInstructionAddress"),
+                    "capture_backdrop upstream source instruction address",
+                )
+                != symbol_address + offset
+                or hexadecimal_address(
+                    call.get("targetAddress"),
+                    "capture_backdrop upstream target address",
+                )
+                != target
+                or hexadecimal_address(
+                    call.get("targetImageBase"),
+                    "capture_backdrop upstream target image base",
+                )
+                != image_base
+                or hexadecimal_address(
+                    call.get("targetImageOffset"),
+                    "capture_backdrop upstream target image offset",
+                )
+                != target - image_base
+                or not isinstance(target_path, str)
+                or "/QuartzCore.framework/" not in target_path
+                or target_code.get("class")
+                != "mapped arm64e QuartzCore direct-call target prefix"
+                or hexadecimal_address(
+                    target_code.get("startAddress"),
+                    "capture_backdrop upstream target-code start address",
+                )
+                != target
+                or target_code.get("requestedByteCount")
+                != CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+                or target_code.get("lengthBytes") != len(target_payload)
+                or len(target_payload)
+                != CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+                or target_code.get("sha256")
+                != hashlib.sha256(target_payload).hexdigest()
+            ):
+                raise ValueError(
+                    "capture_backdrop upstream direct-call metadata differs"
+                )
+            upstream_call_summaries.append(
+                {
+                    "sourceInstructionOffset": offset,
+                    "targetAddress": target,
+                    "targetImageOffset": target - image_base,
+                    "targetCodeSHA256": hashlib.sha256(target_payload).hexdigest(),
+                    "targetSymbol": call.get("targetSymbol"),
+                    "targetSymbolOffset": call.get("targetSymbolOffset"),
+                }
+            )
     return {
         "symbol": CAPTURE_BACKDROP_SYMBOL,
         "symbolAddress": symbol_address,
@@ -1430,6 +1826,12 @@ def validate_capture_backdrop_code(
         "directCallTargetCodeCaptureCount": len(target_code_hashes),
         "directCallTargetCodeSHA256": target_code_hashes,
         "directCalls": call_summaries,
+        "upstreamDirectCallCount": len(upstream_call_summaries),
+        "upstreamDirectCallOffsets": [
+            summary["sourceInstructionOffset"] for summary in upstream_call_summaries
+        ],
+        "upstreamDirectCallTargetCodeCaptureCount": len(upstream_call_summaries),
+        "upstreamDirectCalls": upstream_call_summaries,
         "producerVertexBindingCallOffset": (
             CAPTURE_BACKDROP_VERTEX_BINDING_CALL_OFFSET
         ),
@@ -1476,7 +1878,7 @@ def validate_producer_geometry_call_site(
         code_window_hashes.append(digest)
     schema_version = call_site.get("schemaVersion")
     if (
-        schema_version not in {4, 5}
+        schema_version not in {4, 5, 6}
         or call_site.get("executed") is not True
         or call_site.get("capture") != "transition-path-isolation-31-000"
         or call_site.get("purpose") != "producer-primary-mesh-vertex-buffer-binding"
@@ -1484,7 +1886,7 @@ def validate_producer_geometry_call_site(
         or call_site.get("quartzCoreCodeWindowCount") != code_window_count
     ):
         raise ValueError("producer geometry call-site evidence differs")
-    if schema_version == 5:
+    if schema_version in {5, 6}:
         if (
             len(capture_backdrop_records) != 1
             or call_site.get("captureBackdropCodeCaptureCount") != 1
@@ -1496,6 +1898,20 @@ def validate_producer_geometry_call_site(
             != capture_backdrop_records[0]["directCallTargetCodeCaptureCount"]
         ):
             raise ValueError("capture_backdrop code-capture summary differs")
+        upstream_count = capture_backdrop_records[0]["upstreamDirectCallCount"]
+        upstream_target_count = capture_backdrop_records[0][
+            "upstreamDirectCallTargetCodeCaptureCount"
+        ]
+        if schema_version == 6 and (
+            call_site.get("captureBackdropUpstreamDirectCallCount") != upstream_count
+            or call_site.get("captureBackdropUpstreamDirectCallTargetCodeCaptureCount")
+            != upstream_target_count
+            or upstream_count != len(CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS)
+            or upstream_target_count != upstream_count
+        ):
+            raise ValueError("capture_backdrop upstream code-capture summary differs")
+        if schema_version == 5 and upstream_count != 0:
+            raise ValueError("schema-5 call-site unexpectedly contains upstream code")
     elif capture_backdrop_records:
         raise ValueError("schema-4 call-site unexpectedly contains schema-5 code")
     return {
@@ -1540,15 +1956,16 @@ def validate(path: Path) -> dict[str, Any]:
         result_schema = 2
         intervention_builder = fine_scan_interventions
         source_sample_indices = EXPECTED_SOURCE_SAMPLE_INDICES
-    elif evidence_schema in {4, 5, 6, 7, 8}:
+    elif evidence_schema in {4, 5, 6, 7, 8, 9}:
         classification = {
             4: SAMPLE31_REPEAT_CLASSIFICATION,
             5: CAPTURE_BACKDROP_OPERAND_CLASSIFICATION,
             6: CAPTURE_BACKDROP_REGION_CLASSIFICATION,
             7: CAPTURE_BACKDROP_OWNER_REGION_CLASSIFICATION,
             8: CAPTURE_BACKDROP_OWNER_RECORD_CLASSIFICATION,
+            9: CAPTURE_BACKDROP_UPSTREAM_WRITER_CLASSIFICATION,
         }[evidence_schema]
-        result_schema = {4: 3, 5: 4, 6: 5, 7: 6, 8: 7}[evidence_schema]
+        result_schema = {4: 3, 5: 4, 6: 5, 7: 6, 8: 7, 9: 8}[evidence_schema]
         intervention_builder = sample31_repeat_interventions
         source_sample_indices = SAMPLE31_REPEAT_SOURCE_SAMPLE_INDICES
     else:
@@ -1611,7 +2028,7 @@ def validate(path: Path) -> dict[str, Any]:
         }
     ):
         raise ValueError("surviving-path schema-3 matrix header differs")
-    elif evidence_schema in {4, 5, 6, 7, 8} and (
+    elif evidence_schema in {4, 5, 6, 7, 8, 9} and (
         evidence.get("scanPath") != list(POSITION_PATH)
         or evidence.get("scanMutation") != "position"
         or evidence.get("scanSampleIndex") != 31
@@ -1623,7 +2040,7 @@ def validate(path: Path) -> dict[str, Any]:
         or evidence.get("repeatXValues") != list(SAMPLE31_REPEAT_X_VALUES)
         or evidence.get("repeatYValues") != list(SAMPLE31_REPEAT_Y_VALUES)
         or (
-            evidence_schema in {7, 8}
+            evidence_schema in {7, 8, 9}
             and (
                 evidence.get("captureBackdropOperandFragments")
                 != sorted(CAPTURE_BACKDROP_OPERAND_FRAGMENTS)
@@ -1648,7 +2065,7 @@ def validate(path: Path) -> dict[str, Any]:
                     )
                 )
                 or (
-                    evidence_schema == 8
+                    evidence_schema in {8, 9}
                     and (
                         evidence.get("captureBackdropOwnerObjectPrefixByteCount")
                         != CAPTURE_BACKDROP_OWNER_OBJECT_PREFIX_BYTE_COUNT
@@ -1665,9 +2082,53 @@ def validate(path: Path) -> dict[str, Any]:
                         or evidence.get("captureBackdropSourceStateWindowByteCount")
                         != CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT
                         or evidence.get("captureBackdropRequiredReadMask")
-                        != "0x007fffff"
+                        != ("0x3fffffff" if evidence_schema == 9 else "0x007fffff")
                         or evidence.get("method")
-                        != CAPTURE_BACKDROP_OWNER_RECORD_METHOD
+                        != (
+                            CAPTURE_BACKDROP_UPSTREAM_WRITER_METHOD
+                            if evidence_schema == 9
+                            else CAPTURE_BACKDROP_OWNER_RECORD_METHOD
+                        )
+                    )
+                )
+                or (
+                    evidence_schema == 9
+                    and (
+                        evidence.get("captureBackdropSourceObjectPrefixByteCount")
+                        != CAPTURE_BACKDROP_SOURCE_OBJECT_PREFIX_BYTE_COUNT
+                        or evidence.get("captureBackdropLayerObjectPrefixByteCount")
+                        != CAPTURE_BACKDROP_LAYER_OBJECT_PREFIX_BYTE_COUNT
+                        or evidence.get("captureBackdropLayerStatePrefixByteCount")
+                        != CAPTURE_BACKDROP_LAYER_STATE_PREFIX_BYTE_COUNT
+                        or evidence.get("captureBackdropLayerAuxiliaryPrefixByteCount")
+                        != CAPTURE_BACKDROP_LAYER_AUXILIARY_PREFIX_BYTE_COUNT
+                        or evidence.get(
+                            "captureBackdropLayerAuxiliaryNestedPrefixByteCount"
+                        )
+                        != (CAPTURE_BACKDROP_LAYER_AUXILIARY_NESTED_PREFIX_BYTE_COUNT)
+                        or evidence.get("captureBackdropRenderContextPrefixByteCount")
+                        != CAPTURE_BACKDROP_RENDER_CONTEXT_PREFIX_BYTE_COUNT
+                        or evidence.get("captureBackdropRegionBuilderOutputStackOffset")
+                        != CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_STACK_OFFSET
+                        or evidence.get("captureBackdropRegionBuilderOutputByteCount")
+                        != CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_BYTE_COUNT
+                        or tuple(
+                            fixed.sequence(
+                                evidence.get(
+                                    "captureBackdropUpstreamDirectCallOffsets"
+                                ),
+                                "capture_backdrop upstream direct-call offsets",
+                            )
+                        )
+                        != CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS
+                        or evidence.get(
+                            "captureBackdropUpstreamDirectCallTargetCodeByteCount"
+                        )
+                        != (
+                            CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+                        )
+                        or evidence.get("captureBackdropRequiredReadMask")
+                        != "0x3fffffff"
                     )
                 )
             )
@@ -1738,6 +2199,15 @@ def validate(path: Path) -> dict[str, Any]:
     capture_backdrop_owner_object_prefix_hashes: set[str] = set()
     capture_backdrop_owner_record_vector_hashes: set[str] = set()
     capture_backdrop_source_state_window_hashes: set[str] = set()
+    capture_backdrop_upstream_chain_count = 0
+    capture_backdrop_source_object_prefix_hashes: set[str] = set()
+    capture_backdrop_layer_object_prefix_hashes: set[str] = set()
+    capture_backdrop_layer_state_prefix_hashes: set[str] = set()
+    capture_backdrop_layer_auxiliary_prefix_hashes: set[str] = set()
+    capture_backdrop_layer_auxiliary_nested_prefix_hashes: set[str] = set()
+    capture_backdrop_render_context_prefix_hashes: set[str] = set()
+    capture_backdrop_region_builder_output_hashes: set[str] = set()
+    capture_backdrop_layer_auxiliary_nested_pointer_classes: Counter[str] = Counter()
     capture_backdrop_callback_attempt_count = 0
     capture_backdrop_callback_attempt_fragments: Counter[str] = Counter()
     capture_backdrop_callback_symbol_offsets: Counter[str] = Counter()
@@ -1873,7 +2343,7 @@ def validate(path: Path) -> dict[str, Any]:
                 record_operand_attempt_payloads.append(
                     snapshot["captureBackdropOperandAttempt"]
                 )
-        if evidence_schema in {5, 6, 7, 8}:
+        if evidence_schema in {5, 6, 7, 8, 9}:
             if len(record_operand_payloads) != 1:
                 raise ValueError(
                     "capture_backdrop operand capture count differs at "
@@ -1888,7 +2358,7 @@ def validate(path: Path) -> dict[str, Any]:
             )
         else:
             capture_backdrop_operands = None
-        if evidence_schema in {7, 8}:
+        if evidence_schema in {7, 8, 9}:
             capture_backdrop_operand_attempts = [
                 validate_capture_backdrop_operand_attempt(payload)
                 for payload in record_operand_attempt_payloads
@@ -1982,14 +2452,14 @@ def validate(path: Path) -> dict[str, Any]:
             capture_backdrop_transform_branches[
                 str(capture_backdrop_operands["transformBranch"])
             ] += 1
-            if evidence_schema in {6, 7, 8}:
+            if evidence_schema in {6, 7, 8, 9}:
                 if capture_backdrop_operands.get("consumedRegionRectExact") is not True:
                     raise ValueError("capture_backdrop selected-region replay differs")
                 capture_backdrop_region_replay_count += 1
                 capture_backdrop_region_handle_classes[
                     str(capture_backdrop_operands["regionHandleClass"])
                 ] += 1
-            if evidence_schema in {7, 8}:
+            if evidence_schema in {7, 8, 9}:
                 capture_backdrop_owner_248_handle_classes[
                     str(capture_backdrop_operands["ownerRegion248Class"])
                 ] += 1
@@ -2011,7 +2481,7 @@ def validate(path: Path) -> dict[str, Any]:
                 capture_backdrop_selected_equals_owner_270 += bool(
                     capture_backdrop_operands["selectedEqualsOwner270"]
                 )
-            if evidence_schema == 8:
+            if evidence_schema in {8, 9}:
                 owner_record_count = int(capture_backdrop_operands["ownerRecordCount"])
                 capture_backdrop_owner_record_counts[owner_record_count] += 1
                 capture_backdrop_owner_record_vector_byte_counts[
@@ -2032,6 +2502,39 @@ def validate(path: Path) -> dict[str, Any]:
                 capture_backdrop_source_state_window_hashes.add(
                     str(capture_backdrop_operands["sourceStateWindowSHA256"])
                 )
+            if evidence_schema == 9:
+                if (
+                    capture_backdrop_operands.get("upstreamObjectChainExact")
+                    is not True
+                ):
+                    raise ValueError("capture_backdrop upstream object chain differs")
+                capture_backdrop_upstream_chain_count += 1
+                capture_backdrop_source_object_prefix_hashes.add(
+                    str(capture_backdrop_operands["sourceObjectPrefixSHA256"])
+                )
+                capture_backdrop_layer_object_prefix_hashes.add(
+                    str(capture_backdrop_operands["layerObjectPrefixSHA256"])
+                )
+                capture_backdrop_layer_state_prefix_hashes.add(
+                    str(capture_backdrop_operands["layerStatePrefixSHA256"])
+                )
+                capture_backdrop_layer_auxiliary_prefix_hashes.add(
+                    str(capture_backdrop_operands["layerAuxiliaryPrefixSHA256"])
+                )
+                capture_backdrop_layer_auxiliary_nested_prefix_hashes.add(
+                    str(capture_backdrop_operands["layerAuxiliaryNestedPrefixSHA256"])
+                )
+                capture_backdrop_render_context_prefix_hashes.add(
+                    str(capture_backdrop_operands["renderContextPrefixSHA256"])
+                )
+                capture_backdrop_region_builder_output_hashes.add(
+                    str(capture_backdrop_operands["regionBuilderOutputSHA256"])
+                )
+                capture_backdrop_layer_auxiliary_nested_pointer_classes[
+                    "nonzero"
+                    if capture_backdrop_operands["layerAuxiliaryNestedPointer"] != 0
+                    else "null"
+                ] += 1
             capture_backdrop_symbol_addresses.add(
                 int(capture_backdrop_operands["symbolAddress"])
             )
@@ -2103,7 +2606,7 @@ def validate(path: Path) -> dict[str, Any]:
                             capture_backdrop_operand_attempts
                         )
                     }
-                    if evidence_schema in {7, 8}
+                    if evidence_schema in {7, 8, 9}
                     else {}
                 ),
             }
@@ -2134,7 +2637,7 @@ def validate(path: Path) -> dict[str, Any]:
         if producer_geometry_call_sites
         else {"captured": False}
     )
-    if evidence_schema in {5, 6, 7, 8}:
+    if evidence_schema in {5, 6, 7, 8, 9}:
         capture_backdrop_code = holdout.mapping(
             producer_geometry_call_site.get("captureBackdrop"),
             "capture_backdrop validated code summary",
@@ -2160,7 +2663,8 @@ def validate(path: Path) -> dict[str, Any]:
         )
         if (
             len(producer_geometry_call_sites) != 1
-            or producer_geometry_call_site.get("schemaVersion") != 5
+            or producer_geometry_call_site.get("schemaVersion")
+            != (6 if evidence_schema == 9 else 5)
             or capture_backdrop_code.get("symbolPrefixSHA256")
             != CAPTURE_BACKDROP_EXPECTED_SYMBOL_PREFIX_SHA256
             or capture_backdrop_code.get("operandFramePrologueExact") is not True
@@ -2168,14 +2672,14 @@ def validate(path: Path) -> dict[str, Any]:
             or capture_backdrop_position_mismatches != 0
             or capture_backdrop_source_mismatches != 0
             or (
-                evidence_schema in {6, 7, 8}
+                evidence_schema in {6, 7, 8, 9}
                 and (
                     capture_backdrop_region_replay_count != expected_count
                     or not region_iterate_exact
                 )
             )
             or (
-                evidence_schema in {7, 8}
+                evidence_schema in {7, 8, 9}
                 and (
                     capture_backdrop_owner_248_handle_classes
                     != Counter({"packed": 114})
@@ -2186,7 +2690,7 @@ def validate(path: Path) -> dict[str, Any]:
                 )
             )
             or (
-                evidence_schema == 8
+                evidence_schema in {8, 9}
                 and (
                     capture_backdrop_owner_record_counts
                     != Counter(
@@ -2208,6 +2712,20 @@ def validate(path: Path) -> dict[str, Any]:
                             )
                         }
                     )
+                )
+            )
+            or (
+                evidence_schema == 9
+                and (
+                    capture_backdrop_upstream_chain_count != expected_count
+                    or tuple(capture_backdrop_code.get("upstreamDirectCallOffsets", []))
+                    != CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS
+                    or capture_backdrop_code.get("upstreamDirectCallCount")
+                    != len(CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS)
+                    or capture_backdrop_code.get(
+                        "upstreamDirectCallTargetCodeCaptureCount"
+                    )
+                    != len(CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS)
                 )
             )
             or len(capture_backdrop_symbol_addresses) != 1
@@ -2300,7 +2818,7 @@ def validate(path: Path) -> dict[str, Any]:
                         "allowNumericTolerance": False,
                     }
                 }
-                if evidence_schema in {5, 6, 7, 8}
+                if evidence_schema in {5, 6, 7, 8, 9}
                 else {}
             ),
             **(
@@ -2328,7 +2846,7 @@ def validate(path: Path) -> dict[str, Any]:
                         "allowNumericTolerance": False,
                     }
                 }
-                if evidence_schema in {6, 7, 8}
+                if evidence_schema in {6, 7, 8, 9}
                 else {}
             ),
             **(
@@ -2396,7 +2914,7 @@ def validate(path: Path) -> dict[str, Any]:
                         ),
                     },
                 }
-                if evidence_schema in {7, 8}
+                if evidence_schema in {7, 8, 9}
                 else {}
             ),
             **(
@@ -2450,7 +2968,61 @@ def validate(path: Path) -> dict[str, Any]:
                         "allowNumericTolerance": False,
                     }
                 }
-                if evidence_schema == 8
+                if evidence_schema in {8, 9}
+                else {}
+            ),
+            **(
+                {
+                    "captureBackdropUpstreamWriterReplay": {
+                        "captureCount": capture_backdrop_upstream_chain_count,
+                        "expectedCaptureCount": expected_count,
+                        "objectChainExact": (
+                            capture_backdrop_upstream_chain_count == expected_count
+                        ),
+                        "distinctSourceObjectPrefixCount": len(
+                            capture_backdrop_source_object_prefix_hashes
+                        ),
+                        "distinctLayerObjectPrefixCount": len(
+                            capture_backdrop_layer_object_prefix_hashes
+                        ),
+                        "distinctLayerStatePrefixCount": len(
+                            capture_backdrop_layer_state_prefix_hashes
+                        ),
+                        "distinctLayerAuxiliaryPrefixCount": len(
+                            capture_backdrop_layer_auxiliary_prefix_hashes
+                        ),
+                        "distinctLayerAuxiliaryNestedPrefixCount": len(
+                            capture_backdrop_layer_auxiliary_nested_prefix_hashes
+                        ),
+                        "distinctRenderContextPrefixCount": len(
+                            capture_backdrop_render_context_prefix_hashes
+                        ),
+                        "distinctRegionBuilderOutputCount": len(
+                            capture_backdrop_region_builder_output_hashes
+                        ),
+                        "layerAuxiliaryNestedPointerClassCounts": {
+                            name: (
+                                capture_backdrop_layer_auxiliary_nested_pointer_classes[
+                                    name
+                                ]
+                            )
+                            for name in sorted(
+                                capture_backdrop_layer_auxiliary_nested_pointer_classes
+                            )
+                        },
+                        "regionBuilderOutputStackOffset": (
+                            CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_STACK_OFFSET
+                        ),
+                        "upstreamDirectCallOffsets": list(
+                            CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_OFFSETS
+                        ),
+                        "upstreamDirectCallTargetCodeByteCount": (
+                            CAPTURE_BACKDROP_UPSTREAM_DIRECT_CALL_TARGET_CODE_BYTE_COUNT
+                        ),
+                        "allowNumericTolerance": False,
+                    }
+                }
+                if evidence_schema == 9
                 else {}
             ),
             "liveBaselinePlusTargetPositionExact": True,
@@ -2477,6 +3049,7 @@ def validate(path: Path) -> dict[str, Any]:
                 6: "captureBackdropSelectedRegionsRequirePostOpeningPolicyMapping",
                 7: "captureBackdropOwnerRegionsRequirePostOpeningConstructionMapping",
                 8: "captureBackdropOwnerRecordsRequirePostOpeningConstructionReplay",
+                9: "captureBackdropUpstreamWriterRequiresPostOpeningConstructionReplay",
             }[evidence_schema]: True,
             "requiresUnseenGeometryTransfer": True,
             "productionShaderAuthorized": False,

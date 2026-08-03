@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "frozenAtUtc": "2026-08-02T23:50:04Z",
+  "classification": "preregistered instruction-directed capture_backdrop upstream owner-region construction probe; not an opened public crop policy, unseen transfer, or product-parity claim",
+  "openedOwnerRecordEvidence": {
+    "runID": 30771308161,
+    "headSHA": "a326be3a0887e9fe661ada3a66e5437e954956e4",
+    "workflowConclusion": "success",
+    "prospectiveGatePassed": true,
+    "timelineSHA256": "38d660532faba98af0e24cab22b5fe7d3e34379d1916b85440dd96d36f83e2d6",
+    "ownerRecordAnalysisResultSHA256": "c954f29e91b7546d505a45fb821f659f1936cb705c5fe798f211cf82cd457b75",
+    "recordCount": 114,
+    "completeLiveOperandCaptureCount": 114,
+    "ownerRecordCountStates": {
+      "1": 114
+    },
+    "sourceKeyMatchCountStates": {
+      "1": 114
+    },
+    "selectedOwnerRecordIndexStates": {
+      "0": 114
+    },
+    "owner248PackedHandleCount": 114,
+    "owner270PackedHandleCount": 112,
+    "owner270PointerHandleCount": 2,
+    "selectedEqualsOwner248Count": 114,
+    "selectedEqualsOwner270Count": 111,
+    "primaryPositionComponentCount": 912,
+    "primaryPositionMismatchedComponents": 0,
+    "primarySourceComponentCount": 912,
+    "primarySourceMismatchedComponents": 0,
+    "primarySourceQComponentCount": 912,
+    "primarySourceQMismatchedComponents": 0,
+    "allocationInvariantComponentCount": 1596,
+    "allocationInvariantMismatchedComponents": 0
+  },
+  "openedInstructionEvidence": {
+    "architecture": "arm64e",
+    "captureBackdropSymbolImageOffset": "0xa5218",
+    "captureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "entryObjectChain": [
+      "x24 = layer argument x1",
+      "layerState = *(x24 + 0x10)",
+      "x19 = *(layerState + 0x120)",
+      "x20 = *(x19 + 0x48)",
+      "x22 = **renderer argument x0"
+    ],
+    "regionBuilderCandidateCall": {
+      "sourceInstructionOffset": 3188,
+      "sourceInstructionWord": "0x9409b0be",
+      "targetImageOffset": "0x312184",
+      "arguments": [
+        "x0 = x20 owner",
+        "x1 = *(x24 + 0x18) layer auxiliary",
+        "x2 = x22 render context",
+        "x3 = SP + 0x340",
+        "x4 = SP + 0x338",
+        "x5 = SP + 0x337",
+        "x6 = SP + 0x336",
+        "x7 = SP + 0x335",
+        "stack argument = SP + 0x334"
+      ],
+      "retainedLateStackWindow": [
+        816,
+        64
+      ],
+      "lateCaptureDisclosure": "The live operand hook is at capture_backdrop+0x2b58, not immediately after this call. The pinned body reads the returned byte at SP+0x334, later clears SP+0x335 at +0x122c and +0x1a14, and consumes other fields downstream. The retained window is therefore late downstream stack state, not an unmodified helper-return payload.",
+      "rolePreCapture": "instruction-directed candidate only; neither this target alone nor the late stack window is assumed to construct owner+0x248 or owner+0x270"
+    },
+    "targetedDirectCalls": [
+      {
+        "sourceInstructionOffset": 256,
+        "sourceInstructionWord": "0x94001021",
+        "targetImageOffset": "0xa939c"
+      },
+      {
+        "sourceInstructionOffset": 3036,
+        "sourceInstructionWord": "0x9409b094",
+        "targetImageOffset": "0x312044"
+      },
+      {
+        "sourceInstructionOffset": 3188,
+        "sourceInstructionWord": "0x9409b0be",
+        "targetImageOffset": "0x312184"
+      },
+      {
+        "sourceInstructionOffset": 6136,
+        "sourceInstructionWord": "0x97feb156",
+        "targetImageOffset": "0x52f68"
+      },
+      {
+        "sourceInstructionOffset": 6148,
+        "sourceInstructionWord": "0x97ffa31b",
+        "targetImageOffset": "0x8f688"
+      },
+      {
+        "sourceInstructionOffset": 6192,
+        "sourceInstructionWord": "0x9408bc71",
+        "targetImageOffset": "0x2d5c0c"
+      },
+      {
+        "sourceInstructionOffset": 6204,
+        "sourceInstructionWord": "0x9408bbd1",
+        "targetImageOffset": "0x2d5998"
+      }
+    ],
+    "limitations": [
+      "The opened capture_backdrop body reads owner+0x248 and owner+0x270 but contains no direct store to either field in its late selection path.",
+      "A direct call is not assigned a semantic name from proximity or register use; code bytes and live inputs must be opened first.",
+      "Raw private object prefixes are conditional on the exact pinned QuartzCore code prefix and macOS runner build.",
+      "The one-record branch leaves the record+0x28 multi-record helper path dormant."
+    ]
+  },
+  "frozenQuestion": {
+    "objective": "Capture the exact live private object chain, late downstream stack state, and bounded direct-call code targets surrounding owner-region construction, then determine which instruction sequence produces owner+0x248 and owner+0x270 from captured public layer state.",
+    "objectChainRule": "Require source=x19, owner=x20, renderContext=x22, and layer=x24. Require source+0x48=owner, layer+0x10=layerState, layer+0x18=layerAuxiliary, layerState+0x120=source, and layerAuxiliary+0x88=layerAuxiliaryNested by exact uint64 words.",
+    "memoryRule": "At the existing +0x2b58 hook, retain exactly 256 source bytes, 64 layer bytes, 320 layer-state bytes, 160 layer-auxiliary bytes, 2048 render-context bytes, and 64 downstream stack-state bytes at SP+0x330. Do not classify that late window as the immediate +0xc74 return payload. If the nested auxiliary pointer is nonzero, retain exactly 96 nested bytes; if it is null, retain an exact zero-length classified payload. Every same-task read may be attempted at most three times and otherwise fails closed.",
+    "codeRule": "Retain exactly 4096 mapped QuartzCore bytes at each of the seven preregistered BL targets. Derive every target from the pinned 16 KiB capture_backdrop prefix and live symbol/image bases; no symbol-name substitution or nearby-function scan is allowed.",
+    "metadataRule": "Attempt dladdr only on each retained object prefix's first uint64 word. Resolution is diagnostic and may be false; it cannot replace the raw pointer word or prefix bytes.",
+    "matrixRule": "Keep geometry, material, appearance, direction, source sample, all 114 interventions, public requested layer states, filter inputs, original Apple producer input, retry policy, and buffer-retention policy unchanged from run 30771308161.",
+    "replayRule": "Require every existing allocation, primary-position, primary-source, source-q, selected-region, dual-owner, owner-record, callback-provenance, and code-prefix check with zero numeric tolerance before accepting the new object-chain evidence.",
+    "nullOutcome": "A missing live operand, partial mask, broken pointer identity, absent target prefix, changed call instruction, changed prior replay bit, or wrong fragment/return PC fails the workflow and remains evidence."
+  },
+  "capture": {
+    "workflow": ".github/workflows/transition-introspect.yml",
+    "workflowInput": {
+      "capture_mode": "allocation-path-isolation"
+    },
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-640-center",
+    "sourceSampleIndices": [
+      31
+    ],
+    "totalInterventionCount": 114,
+    "dynamicBackgroundUniformEvidenceSchemaVersion": 9,
+    "outerCaptureEvidenceSchemaVersion": 9,
+    "operandEvidenceSchemaVersion": 5,
+    "producerCallSiteSchemaVersion": 6,
+    "eligibleProducerFragments": [
+      "A2Xghfc",
+      "TimgA2Xhfc_Isrc"
+    ],
+    "maximumCompleteOperandCaptureCountPerRecord": 1,
+    "memoryReadMaximumAttemptCount": 3,
+    "callbackMaximumAttemptCountPerRecord": 8,
+    "callbackMaximumFrameCount": 32,
+    "sourceObjectPrefixByteCount": 256,
+    "layerObjectPrefixByteCount": 64,
+    "layerStatePrefixByteCount": 320,
+    "layerAuxiliaryPrefixByteCount": 160,
+    "layerAuxiliaryNestedPrefixMaximumByteCount": 96,
+    "renderContextPrefixByteCount": 2048,
+    "regionBuilderOutput": [
+      816,
+      64
+    ],
+    "upstreamObjectOffsets": {
+      "sourceOwnerPointer": 72,
+      "layerStatePointer": 16,
+      "layerAuxiliaryPointer": 24,
+      "layerStateSourcePointer": 288,
+      "layerAuxiliaryNestedPointer": 136
+    },
+    "upstreamDirectCallOffsets": [
+      256,
+      3036,
+      3188,
+      6136,
+      6148,
+      6192,
+      6204
+    ],
+    "upstreamDirectCallTargetCodeByteCount": 4096,
+    "upstreamDirectCallTargetMaximumTotalByteCount": 28672,
+    "requiredReadMask": "0x3fffffff",
+    "producerInput": "unmodified Apple input",
+    "rawStageDumps": false
+  },
+  "acceptance": {
+    "all114InterventionsMustExecute": true,
+    "existingSchema8OwnerRecordIntegrityMustPass": true,
+    "dynamicBackgroundUniformSchema9Required": true,
+    "outerSchema9Required": true,
+    "operandSchema5Required": true,
+    "producerCallSiteSchema6Required": true,
+    "operandCaptureCount": 114,
+    "completeRequiredReadMaskCount": 114,
+    "upstreamObjectChainExactCount": 114,
+    "upstreamDirectCallTargetCaptureCount": 7,
+    "upstreamDirectCallTargetByteCountEach": 4096,
+    "pinnedCaptureBackdropSymbolPrefixSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "pinnedShapeIteratorPrefixSHA256": "faf2c7f536d2c76dbac26b3d7af7aeb7a498b1c50a20ecb152d8d896c616bcc6",
+    "ownerRecordCountExactPerState": 1,
+    "sourceKeyMatchCountExactPerState": 1,
+    "selectedOwnerRecordIndexExactPerState": 0,
+    "selectedRegionConsumedRectangleExactCount": 114,
+    "owner248PackedHandleCount": 114,
+    "owner270PackedHandleCount": 112,
+    "owner270PointerHandleCount": 2,
+    "selectedEqualsOwner248Count": 114,
+    "selectedEqualsOwner270Count": 111,
+    "primaryPositionComponentCount": 912,
+    "primaryPositionMismatchedComponents": 0,
+    "primarySourceComponentCount": 912,
+    "primarySourceMismatchedComponents": 0,
+    "primarySourceQComponentCount": 912,
+    "primarySourceQMismatchedComponents": 0,
+    "allocationInvariantComponentCount": 1596,
+    "allocationInvariantMismatchedComponents": 0,
+    "callbackAttemptMayReplaceLiveOperands": false,
+    "allowNumericTolerance": false,
+    "productionShaderAuthorized": false
+  },
+  "analysisPlan": {
+    "callTargetInventory": "Disassemble all seven exact target prefixes and inventory every owner, layer-auxiliary, render-context, stack-output, and region-handle load/store with instruction offsets and branch conditions.",
+    "stateDifferential": "Normalize pointer identities and generation counters, then compare all 114 raw prefixes and the 64-byte late downstream stack state against the nine exact selected rectangles and the three owner+0x270 disagreement states.",
+    "constructionReplay": "Implement only instruction-ordered integer, binary32, binary64, and region operations observed in the opened targets; require one input-only rule to reproduce both owner regions in all 114 states without intervention-name cases or tolerance.",
+    "nextGate": "After a public-state construction rule passes, freeze untouched geometries and the multi-record path separately before temporal, profile, appearance, direction, and physical Retina 2x transfer.",
+    "qualityRule": "No failed, calibration, or private-state-only result authorizes a Walle shader edit, approximation, quality tradeoff, or parity claim."
+  },
+  "frozenImplementation": {
+    "lgTestCommitBeforeRegistration": "2b60b6221272ef565df9f9cc5cbe2e6df1bf0320",
+    "matrixBridgeHeaderSHA256": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
+    "matrixBridgeSourceSHA256": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
+    "swiftCaptureSHA256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518",
+    "workflowSHA256": "bc79f75eb6244cda94dc4995164338589396535764b07c61a2d3b6be7570b870",
+    "holdoutValidatorSHA256": "a5f56250f9ddfb54fd738b64f45dd5054685d7b4dd635eedecd0901a948a39ce",
+    "validatorSHA256": "8cf65641bcf73a87df54e4ee0a129526f37c6b4cab18e9d79f8230dd4b7c799b",
+    "validatorTestSHA256": "3a2936b12411d5dc026182580dea4436bb661c0d85048f4f44d0b27247cbed6a",
+    "historicalRetryTestSHA256": "40b986851574b612ed3749eb5c1f3d57f7514ca6aefb5d51212c8017c459a0e4",
+    "passingAnalyzerSHA256": "1350c444aadfd1e969143b67f533c70e26ae3734833e8c1c7ecf3a9c48400c99",
+    "passingAnalyzerTestSHA256": "428cfcbc11c63304682dda77f40fb4b2fe27d66fb278608304c0977b2cd7f4c6",
+    "passingResultSHA256": "c954f29e91b7546d505a45fb821f659f1936cb705c5fe798f211cf82cd457b75",
+    "upstreamWriterPreregistrationTestSHA256": "b3accf45e25a2d1f15138680a8438a8a8141af57919e97cf6faa80b8ec4c7c8d",
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "notClaimed": [
+    "that capture_backdrop+0xc74 alone constructs either owner region",
+    "a semantic name for any private object or field from address proximity",
+    "a public-state-only owner-region construction policy",
+    "a universal multi-record transform or union rule",
+    "a universal crop, damage-region, allocation, or primary-mesh policy",
+    "an unseen native Apple geometry or temporal transfer",
+    "a profile, material, appearance, direction, endpoint, backing-scale, or physical Retina 2x transfer",
+    "production Walle parity",
+    "permission to modify or approximate the protected production shader",
+    "permission to trade image quality for memory, throughput, or latency"
+  ]
+}

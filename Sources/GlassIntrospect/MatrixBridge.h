@@ -25,6 +25,13 @@ enum {
         LG_CAPTURE_BACKDROP_OWNER_RECORD_BYTE_COUNT
         * LG_CAPTURE_BACKDROP_OWNER_RECORD_MAXIMUM_COUNT,
     LG_CAPTURE_BACKDROP_SOURCE_STATE_WINDOW_BYTE_COUNT = 40,
+    LG_CAPTURE_BACKDROP_SOURCE_OBJECT_PREFIX_BYTE_COUNT = 256,
+    LG_CAPTURE_BACKDROP_LAYER_OBJECT_PREFIX_BYTE_COUNT = 64,
+    LG_CAPTURE_BACKDROP_LAYER_STATE_PREFIX_BYTE_COUNT = 320,
+    LG_CAPTURE_BACKDROP_LAYER_AUXILIARY_PREFIX_BYTE_COUNT = 160,
+    LG_CAPTURE_BACKDROP_LAYER_AUXILIARY_NESTED_PREFIX_BYTE_COUNT = 96,
+    LG_CAPTURE_BACKDROP_RENDER_CONTEXT_PREFIX_BYTE_COUNT = 2048,
+    LG_CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_BYTE_COUNT = 64,
 };
 
 typedef struct {
@@ -58,7 +65,14 @@ enum {
     LG_CAPTURE_BACKDROP_READ_OWNER_OBJECT_PREFIX = 1u << 20,
     LG_CAPTURE_BACKDROP_READ_OWNER_RECORD_VECTOR = 1u << 21,
     LG_CAPTURE_BACKDROP_READ_SOURCE_STATE_WINDOW = 1u << 22,
-    LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0x7fffff,
+    LG_CAPTURE_BACKDROP_READ_SOURCE_OBJECT_PREFIX = 1u << 23,
+    LG_CAPTURE_BACKDROP_READ_LAYER_OBJECT_PREFIX = 1u << 24,
+    LG_CAPTURE_BACKDROP_READ_LAYER_STATE_PREFIX = 1u << 25,
+    LG_CAPTURE_BACKDROP_READ_LAYER_AUXILIARY_PREFIX = 1u << 26,
+    LG_CAPTURE_BACKDROP_READ_LAYER_AUXILIARY_NESTED_PREFIX = 1u << 27,
+    LG_CAPTURE_BACKDROP_READ_RENDER_CONTEXT_PREFIX = 1u << 28,
+    LG_CAPTURE_BACKDROP_READ_REGION_BUILDER_OUTPUT = 1u << 29,
+    LG_CAPTURE_BACKDROP_REQUIRED_READ_MASK = 0x3fffffff,
 };
 
 typedef struct {
@@ -114,6 +128,35 @@ typedef struct {
     uint32_t owner_record_vector_length;
     uint32_t source_state_window_length;
     uint32_t owner_record_reserved;
+    uint64_t source_object_pointer;
+    uint64_t owner_pointer;
+    uint64_t layer_pointer;
+    uint64_t render_context_pointer;
+    uint64_t layer_state_pointer;
+    uint64_t layer_auxiliary_pointer;
+    uint64_t layer_auxiliary_nested_pointer;
+    unsigned char source_object_prefix[
+        LG_CAPTURE_BACKDROP_SOURCE_OBJECT_PREFIX_BYTE_COUNT];
+    unsigned char layer_object_prefix[
+        LG_CAPTURE_BACKDROP_LAYER_OBJECT_PREFIX_BYTE_COUNT];
+    unsigned char layer_state_prefix[
+        LG_CAPTURE_BACKDROP_LAYER_STATE_PREFIX_BYTE_COUNT];
+    unsigned char layer_auxiliary_prefix[
+        LG_CAPTURE_BACKDROP_LAYER_AUXILIARY_PREFIX_BYTE_COUNT];
+    unsigned char layer_auxiliary_nested_prefix[
+        LG_CAPTURE_BACKDROP_LAYER_AUXILIARY_NESTED_PREFIX_BYTE_COUNT];
+    unsigned char render_context_prefix[
+        LG_CAPTURE_BACKDROP_RENDER_CONTEXT_PREFIX_BYTE_COUNT];
+    unsigned char region_builder_output[
+        LG_CAPTURE_BACKDROP_REGION_BUILDER_OUTPUT_BYTE_COUNT];
+    uint32_t source_object_prefix_length;
+    uint32_t layer_object_prefix_length;
+    uint32_t layer_state_prefix_length;
+    uint32_t layer_auxiliary_prefix_length;
+    uint32_t layer_auxiliary_nested_prefix_length;
+    uint32_t render_context_prefix_length;
+    uint32_t region_builder_output_length;
+    uint32_t upstream_reserved;
 } lg_capture_backdrop_operands;
 
 int lg_ca_color_matrix_make_saturation(
