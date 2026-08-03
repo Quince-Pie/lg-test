@@ -5123,6 +5123,21 @@ target; it does not patch data or alter Apple inputs. CI may validate only the
 raw trace integrity. Writer meaning and arithmetic remain sealed until the
 artifact is opened.
 
+The first execution of that trace, run `30776569148` from commit `7c1ba6d`,
+did not produce writer evidence. The unchanged Apple capture completed and all
+114 states passed the existing exact path-isolation gates, but the LLDB helper
+stopped at `capture_backdrop` entry before arming a watchpoint: Apple's bundled
+LLDB exposes the two-output-buffer form of `SBFileSpec.GetPath`, while the
+preregistered helper used the newer zero-argument form. The raw diagnostic is
+frozen in
+`Analysis/dynamic_allocation_capture_backdrop_writer_trace_failed_run_result.json`;
+it records zero events and must not be interpreted as a crop-writer result. The
+retry is separately frozen in
+`Analysis/dynamic_allocation_capture_backdrop_writer_trace_retry_preregistration.json`.
+Its only trace-harness change obtains the module directory and filename through
+the portable accessors; the Apple inputs, object-chain checks, watched bytes,
+event bounds, code-window bounds, and acceptance conditions are unchanged.
+
 This checkpoint does not establish parity or authorize a Walle shader change.
 After the writer arithmetic is reproduced bit for bit, the remaining gates are
 the dormant multi-record path, untouched geometries and transition states,

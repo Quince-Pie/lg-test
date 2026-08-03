@@ -1,0 +1,73 @@
+{
+  "captureBackdropWriterTraceFailedRunAnalysisSchemaVersion": 1,
+  "classification": "opened failed first LLDB writer-trace run; Apple capture integrity passed but no writer event was captured",
+  "runID": 30776569148,
+  "headSHA": "7c1ba6d8a6d81243b6dee85e4e62fb4802f661b6",
+  "workflowConclusion": "failure",
+  "captureStepConclusion": "success",
+  "existingPathIsolationValidatorConclusion": "success",
+  "inputClampValidatorConclusion": "success",
+  "writerTraceValidatorConclusion": "failure",
+  "inputArtifacts": {
+    "transitionTimelineByteCount": 178934947,
+    "transitionTimelineSHA256": "7364d4dba0885e42128d7ea8bf9bc5910cfcfc01aa0a1e2406fab7de374b710e",
+    "rawWriterTraceByteCount": 1621,
+    "rawWriterTraceSHA256": "1ba551ec138d5b59f461a9a86daae1c292b9eb2735d05a41534ca4314dce2585",
+    "lldbLogByteCount": 679,
+    "lldbLogSHA256": "135044617f94f30297707fe417f64ca000f820026461c5e128ba0835fc4f9bd4",
+    "localPathIsolationValidationSHA256": "bf0f727a26e985d6e0e89e1076a81f424acef5b391c06f9224528f5bdae2547e"
+  },
+  "preservedAppleCaptureGate": {
+    "captureEvidenceSchemaVersion": 9,
+    "recordCount": 114,
+    "completeUpstreamObjectChainCount": 114,
+    "primaryPositionComponentCount": 912,
+    "primaryPositionMismatchedComponents": 0,
+    "primarySourceComponentCount": 912,
+    "primarySourceMismatchedComponents": 0,
+    "primarySourceQComponentCount": 912,
+    "primarySourceQMismatchedComponents": 0,
+    "allocationInvariantComponentCount": 1596,
+    "allocationInvariantMismatchedComponents": 0,
+    "selectedRegionConsumedRectangleExactCount": 114,
+    "selectedEqualsOwner248Count": 114,
+    "selectedEqualsOwner270Count": 111,
+    "productionShaderAuthorized": false
+  },
+  "openedFailure": {
+    "rawTraceStatus": "finalized",
+    "statusBeforeFinalization": "initialized",
+    "failureCount": 1,
+    "failureStage": "capture_backdrop-entry",
+    "failureMessage": "GetPath() missing 2 required positional arguments: 'dst_path' and 'dst_len'",
+    "captureBackdropMetadataCommitted": false,
+    "objectChainCommitted": false,
+    "watchpointCount": 0,
+    "eventCount": 0,
+    "codeWindowCount": 0,
+    "cause": "Apple's bundled LLDB Python SBFileSpec.GetPath binding requires destination and length arguments, unlike the zero-argument upstream LLVM 21 binding used by the local smoke test.",
+    "failureOccurredWhileFormattingDiagnosticModulePath": true,
+    "targetMemoryMutatedByHarness": false
+  },
+  "retryBoundary": {
+    "allowedImplementationChange": "Replace only SBFileSpec.GetPath() with GetDirectory()/GetFilename() path assembly and add its source-level compatibility test.",
+    "captureMatrixUnchanged": true,
+    "captureSchemaUnchanged": true,
+    "watchSpecsUnchanged": true,
+    "watchpointBoundsUnchanged": true,
+    "semanticSealUnchanged": true,
+    "productionShaderUnchanged": true
+  },
+  "conclusion": {
+    "AppleCaptureIntegrityPassed": true,
+    "lldbHarnessReachedCaptureBackdropEntry": true,
+    "captureBackdropCodeHashProspectivelyProven": false,
+    "hardwareWatchpointsArmed": false,
+    "privateWriterPCsCaptured": false,
+    "publicLayerStateCropRuleRecovered": false,
+    "requiresUnchangedCompatibilityRetry": true,
+    "requiresUnseenGeometryTransfer": true,
+    "productionShaderAuthorized": false,
+    "appleLiquidGlassParityAchieved": false
+  }
+}

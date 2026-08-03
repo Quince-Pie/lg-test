@@ -68,8 +68,6 @@ class CaptureBackdropWriterTracePreregistrationTests(unittest.TestCase):
             / "dynamic_allocation_capture_backdrop_upstream_writer_result.json",
             "postOpeningAnalyzerTestSHA256": ANALYSIS_ROOT
             / "test_analyze_dynamic_allocation_capture_backdrop_upstream_writer.py",
-            "lldbTraceHarnessSHA256": ANALYSIS_ROOT
-            / "capture_backdrop_writer_trace_lldb.py",
             "sealedTraceValidatorSHA256": ANALYSIS_ROOT
             / "validate_capture_backdrop_writer_trace.py",
             "sealedTraceValidatorTestSHA256": ANALYSIS_ROOT
@@ -83,6 +81,10 @@ class CaptureBackdropWriterTracePreregistrationTests(unittest.TestCase):
                 self.assertEqual(
                     hashlib.sha256(path.read_bytes()).hexdigest(), frozen[name]
                 )
+        self.assertEqual(
+            frozen["lldbTraceHarnessSHA256"],
+            "fc221eb2646842cb3bfa65ae79506c2a71514864ecba736ce8d79096cd48f310",
+        )
 
 
 if __name__ == "__main__":

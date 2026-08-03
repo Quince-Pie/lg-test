@@ -128,13 +128,26 @@ def _register(frame, name):
     return value.GetValueAsUnsigned(0)
 
 
+def _file_spec_path(file_spec):
+    """Use the SBFileSpec API shared by Apple's and upstream LLDB bindings."""
+    directory = file_spec.GetDirectory()
+    filename = file_spec.GetFilename()
+    if directory and filename:
+        return str(Path(directory) / filename)
+    if filename:
+        return str(filename)
+    if directory:
+        return str(directory)
+    return ""
+
+
 def _module_record(module, target):
     if not module.IsValid():
         return {"valid": False}
     header = module.GetObjectFileHeaderAddress().GetLoadAddress(target)
     return {
         "valid": True,
-        "path": module.GetFileSpec().GetPath(),
+        "path": _file_spec_path(module.GetFileSpec()),
         "loadAddress": None if header == lldb.LLDB_INVALID_ADDRESS else header,
     }
 
