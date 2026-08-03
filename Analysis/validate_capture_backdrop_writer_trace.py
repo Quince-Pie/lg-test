@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 
-EXPECTED_TRACE_SCHEMA_VERSION = 2
+EXPECTED_TRACE_SCHEMA_VERSION = 3
 EXPECTED_CAPTURE_BACKDROP_SYMBOL = (
     "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
 )
@@ -30,6 +30,10 @@ EXPECTED_WATCH_SPECS = {
 EXPECTED_CLASSIFICATION = (
     "preregistered-bounded-lldb-hardware-watchpoint-trace-of-private-crop-"
     "writers; not-a-public-crop-law-unseen-transfer-or-product-parity-claim"
+)
+EXPECTED_WATCHPOINT_IDENTITY_RULE = (
+    "distinct SBWatchpoint IDs and exact addresses; deprecated "
+    "GetHardwareIndex returns -1"
 )
 MAXIMUM_EVENT_COUNT = 24
 MAXIMUM_HITS_PER_WATCHPOINT = 6
@@ -164,6 +168,8 @@ def validate(trace_path: Path) -> dict[str, Any]:
         != EXPECTED_CAPTURE_BACKDROP_CODE_SHA256
         or configuration.get("lateInstructionOffset") != 0x2B58
         or configuration.get("watchpointByteCount") != 8
+        or configuration.get("watchpointIdentityRule")
+        != EXPECTED_WATCHPOINT_IDENTITY_RULE
         or configuration.get("maximumHitsPerWatchpoint") != MAXIMUM_HITS_PER_WATCHPOINT
         or configuration.get("maximumTotalHits") != MAXIMUM_EVENT_COUNT
         or configuration.get("maximumBacktraceFrameCount")
@@ -226,7 +232,6 @@ def validate(trace_path: Path) -> dict[str, Any]:
                 or layer_state == 0
                 or diagnostic.get("sourceOwner") != diagnostic["owner"]
                 or diagnostic.get("layerStateSource") != diagnostic["source"]
-                or diagnostic.get("mirroredRectangleIdentityExact") is not False
             ):
                 raise ValueError("late candidate pointer chain differs")
             rectangles = mapping(
@@ -280,10 +285,27 @@ def validate(trace_path: Path) -> dict[str, Any]:
                     ),
                 )
             )
-            if layer_state_rectangle == source_rectangle and owner_rectangle == [
-                float(value) for value in source_rectangle
-            ]:
-                raise ValueError("late candidate rectangle identity differs")
+            source_equals_layer_state = source_rectangle == layer_state_rectangle
+            owner_equals_layer_state = owner_rectangle == [
+                float(value) for value in layer_state_rectangle
+            ]
+            mirrored_identity_exact = (
+                source_equals_layer_state and owner_equals_layer_state
+            )
+            preconvergence_exact = (
+                owner_equals_layer_state and not source_equals_layer_state
+            )
+            if (
+                diagnostic.get("sourceEqualsLayerStateRectangle")
+                is not source_equals_layer_state
+                or diagnostic.get("ownerEqualsLayerStateRectangle")
+                is not owner_equals_layer_state
+                or diagnostic.get("mirroredRectangleIdentityExact")
+                is not mirrored_identity_exact
+                or diagnostic.get("preconvergenceExact") is not preconvergence_exact
+                or preconvergence_exact
+            ):
+                raise ValueError("late candidate rectangle classification differs")
 
     object_chain = mapping(trace.get("objectChain"), "object chain")
     addresses = mapping(object_chain.get("addresses"), "object addresses")
@@ -310,11 +332,48 @@ def validate(trace_path: Path) -> dict[str, Any]:
     initial = private_fields(
         object_chain.get("initialPrivateFields"), "initial private fields"
     )
-    selected = initial["sourceSelectedRectI32"]
-    if initial["layerStateSelectedRectI32"] != selected or initial[
-        "ownerSelectedRectF64"
-    ] != [float(value) for value in selected]:
-        raise ValueError("initial selected rectangle identity differs")
+    source_selected = initial["sourceSelectedRectI32"]
+    layer_state_selected = initial["layerStateSelectedRectI32"]
+    owner_selected = initial["ownerSelectedRectF64"]
+    source_equals_layer_state = source_selected == layer_state_selected
+    owner_equals_layer_state = owner_selected == [
+        float(value) for value in layer_state_selected
+    ]
+    selected_rectangles = mapping(
+        object_chain.get("selectedMirroredRectangles"),
+        "selected mirrored rectangles",
+    )
+    selected_source_bytes = hexadecimal_payload(
+        selected_rectangles.get("sourceSelectedRectI32Hex"),
+        16,
+        "selected source rectangle bytes",
+    )
+    selected_layer_state_bytes = hexadecimal_payload(
+        selected_rectangles.get("layerStateSelectedRectI32Hex"),
+        16,
+        "selected layer-state rectangle bytes",
+    )
+    selected_owner_bytes = hexadecimal_payload(
+        selected_rectangles.get("ownerSelectedRectF64Hex"),
+        32,
+        "selected owner rectangle bytes",
+    )
+    if (
+        object_chain.get("pointerChainExact") is not True
+        or object_chain.get("selectedMirroredRectangleIdentityExact") is not False
+        or object_chain.get("selectedOwnerEqualsLayerStateRectangle") is not True
+        or object_chain.get("selectedSourceEqualsLayerStateRectangle") is not False
+        or object_chain.get("selectedPreconvergenceExact") is not True
+        or source_equals_layer_state
+        or not owner_equals_layer_state
+        or list(struct.unpack("<4i", selected_source_bytes)) != source_selected
+        or list(struct.unpack("<4i", selected_layer_state_bytes))
+        != layer_state_selected
+        or list(struct.unpack("<4d", selected_owner_bytes)) != owner_selected
+        or selected_rectangles.get("sourceSelectedRectI32") != source_selected
+        or selected_rectangles.get("layerStateSelectedRectI32") != layer_state_selected
+    ):
+        raise ValueError("initial preconvergence rectangle state differs")
 
     watchpoints = [
         mapping(value, "watchpoint")
@@ -323,18 +382,17 @@ def validate(trace_path: Path) -> dict[str, Any]:
     if len(watchpoints) != len(EXPECTED_WATCH_SPECS):
         raise ValueError("writer watchpoint count differs")
     watchpoint_by_id: dict[int, Mapping[str, Any]] = {}
-    hardware_indices: set[int] = set()
     for watchpoint in watchpoints:
         identifier = integer(watchpoint.get("id"), "watchpoint ID")
-        hardware_index = integer(
-            watchpoint.get("hardwareIndex"), "watchpoint hardware index"
+        deprecated_hardware_index = integer(
+            watchpoint.get("deprecatedHardwareIndex"),
+            "deprecated watchpoint hardware index",
         )
         name = watchpoint.get("name")
         if (
             identifier <= 0
             or identifier in watchpoint_by_id
-            or hardware_index < 0
-            or hardware_index in hardware_indices
+            or deprecated_hardware_index != -1
             or name not in EXPECTED_WATCH_SPECS
             or watchpoint.get("byteCount") != 8
         ):
@@ -344,7 +402,6 @@ def validate(trace_path: Path) -> dict[str, Any]:
             raise ValueError("writer watchpoint address differs")
         hexadecimal_payload(watchpoint.get("initialHex"), 8, "initial watch value")
         watchpoint_by_id[identifier] = watchpoint
-        hardware_indices.add(hardware_index)
     if {item["name"] for item in watchpoints} != set(EXPECTED_WATCH_SPECS):
         raise ValueError("writer watchpoint name inventory differs")
 
@@ -435,7 +492,7 @@ def validate(trace_path: Path) -> dict[str, Any]:
             raise ValueError(f"{name} prospective writer evidence differs")
 
     return {
-        "captureBackdropWriterTraceValidationSchemaVersion": 1,
+        "captureBackdropWriterTraceValidationSchemaVersion": 2,
         "classification": (
             "prospective-integrity-gate-for-bounded-private-writer-trace; "
             "semantics-remain-sealed"
@@ -446,7 +503,10 @@ def validate(trace_path: Path) -> dict[str, Any]:
         "inputTraceSHA256": trace_sha256,
         "aggregate": {
             "watchpointCount": len(watchpoints),
-            "distinctHardwareWatchpointCount": len(hardware_indices),
+            "distinctWatchpointIDCount": len(watchpoint_by_id),
+            "deprecatedHardwareIndexValues": sorted(
+                {item["deprecatedHardwareIndex"] for item in watchpoints}
+            ),
             "eventCount": len(events),
             "codeWindowCount": len(code_windows),
             "eventCountsByWatchpoint": dict(sorted(hit_counts.items())),

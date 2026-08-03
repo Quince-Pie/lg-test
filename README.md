@@ -5165,6 +5165,46 @@ whose `source+0x50`, `layerState+0xb0`, and `owner+0xe0` rectangles are exactly
 identical may arm the same four watchpoints. Exhausting the bound, or any later
 trace-integrity failure, remains a failed uploaded artifact.
 
+Run `30779563755`, from bounded-candidate commit `8d3805a`, proves that the
+candidate scanner works and exposes why terminal equality is too late for a
+writer trace. All 14 observed late invocations pass the exact pointer chain.
+In all 14, owner `+0xe0` equals layer-state `+0xb0`; source `+0x50` differs in
+the first 13 and converges only at candidate 14. The source alternates between
+two addresses, while the candidate-one layer-state address reappears at
+candidate 11. Candidate one is `[499,-127,644,652]` at the source and
+`[499,0,525,525]` at layer state/owner; candidate 14 is
+`[369,3,644,652]` at all three. These are exact retained values and object
+identities, not a fitted interpolation law.
+
+Candidate 14 passed the old terminal identity gate and all four watchpoints
+were installed. The target then stopped on the first actual watchpoint hit
+before the harness could record an event: Apple's LLDB wrapper passed three
+callback arguments, while the Python function accepted two. The raw stop was
+watchpoint 4 in `CA::Render::LayerNode::delete_node+604`, changing the first
+eight watched bytes from `0000000300000171` to `2222222222222222`. It is not
+classified as a crop writer. Because the wrapper raised before entering the
+callback, the raw trace contains zero events and zero harness failure records;
+the process remained stopped and no transition timeline was finalized. The
+immutable opened result is
+`Analysis/dynamic_allocation_capture_backdrop_writer_trace_callback_failure_result.json`.
+
+The same run also falsifies the distinct `GetHardwareIndex` gate. All four
+successfully created watchpoints report `-1`. This is the documented LLDB
+contract: [`SBWatchpoint.GetHardwareIndex` is deprecated and always returns
+`-1`](https://lldb.llvm.org/python_api/lldb.SBWatchpoint.html). The replacement
+gate requires four distinct positive watchpoint IDs, exact addresses and
+eight-byte sizes, and actual changed-value callbacks at every address; it does
+not invent hardware-register identities that LLDB cannot expose.
+
+The corrected retry is frozen in
+`Analysis/dynamic_allocation_capture_backdrop_writer_trace_preconvergence_retry_preregistration.json`.
+It accepts Apple's third callback argument without reading it and arms only at
+the first exact preconvergence state: pointer chain exact, owner equal to layer
+state, and source still different. The watched candidate-one source alternates
+back into the sequence and its layer-state address is reused at candidate 11,
+so this moves the existing watchpoints before the observed updates. Event,
+stack, code-window, and semantic bounds remain unchanged.
+
 This checkpoint does not establish parity or authorize a Walle shader change.
 After the writer arithmetic is reproduced bit for bit, the remaining gates are
 the dormant multi-record path, untouched geometries and transition states,

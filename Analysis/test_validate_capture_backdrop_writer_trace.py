@@ -16,7 +16,7 @@ def private_fields():
     return {
         "layerStateInputBoundsI32": [-11, -11, 651, 659],
         "layerStateSelectedRectI32": [200, 173, 643, 651],
-        "sourceSelectedRectI32": [200, 173, 643, 651],
+        "sourceSelectedRectI32": [200, 160, 643, 664],
         "ownerSelectedRectF64": [200.0, 173.0, 643.0, 651.0],
         "ownerRegion248Handle": 0x00C8_00AD_0506_0A2D,
         "ownerRegion270Handle": 0x00C8_00AD_0506_0A2D,
@@ -42,7 +42,7 @@ def frame(pc):
 
 
 def rejected_late_candidate(addresses):
-    source_rectangle = [200, 173, 643, 650]
+    source_rectangle = [200, 173, 643, 651]
     layer_state_rectangle = [200, 173, 643, 651]
     owner_rectangle = [200.0, 173.0, 643.0, 651.0]
     return {
@@ -54,8 +54,11 @@ def rejected_late_candidate(addresses):
         "sourceOwner": addresses["owner"],
         "layerStateSource": addresses["source"],
         "pointerChainExact": True,
-        "mirroredRectangleIdentityExact": False,
-        "rejection": "selected rectangle identity differs",
+        "mirroredRectangleIdentityExact": True,
+        "ownerEqualsLayerStateRectangle": True,
+        "sourceEqualsLayerStateRectangle": True,
+        "preconvergenceExact": False,
+        "rejection": "preconvergence rectangle state differs",
         "mirroredRectangles": {
             "sourceSelectedRectI32": source_rectangle,
             "sourceSelectedRectI32Hex": struct.pack("<4i", *source_rectangle).hex(),
@@ -65,6 +68,22 @@ def rejected_late_candidate(addresses):
             ).hex(),
             "ownerSelectedRectF64Hex": struct.pack("<4d", *owner_rectangle).hex(),
         },
+    }
+
+
+def selected_mirrored_rectangles():
+    fields = private_fields()
+    source_rectangle = fields["sourceSelectedRectI32"]
+    layer_state_rectangle = fields["layerStateSelectedRectI32"]
+    owner_rectangle = fields["ownerSelectedRectF64"]
+    return {
+        "sourceSelectedRectI32": source_rectangle,
+        "sourceSelectedRectI32Hex": struct.pack("<4i", *source_rectangle).hex(),
+        "layerStateSelectedRectI32": layer_state_rectangle,
+        "layerStateSelectedRectI32Hex": struct.pack(
+            "<4i", *layer_state_rectangle
+        ).hex(),
+        "ownerSelectedRectF64Hex": struct.pack("<4d", *owner_rectangle).hex(),
     }
 
 
@@ -84,7 +103,7 @@ def passing_trace():
         watchpoints.append(
             {
                 "id": identifier,
-                "hardwareIndex": identifier - 1,
+                "deprecatedHardwareIndex": -1,
                 "name": name,
                 "address": addresses[base] + offset,
                 "byteCount": 8,
@@ -113,7 +132,7 @@ def passing_trace():
         hit_counts[name] = 1
     code = bytes(0x400)
     return {
-        "captureBackdropWriterTraceSchemaVersion": 2,
+        "captureBackdropWriterTraceSchemaVersion": 3,
         "classification": validator.EXPECTED_CLASSIFICATION,
         "status": "finalized",
         "statusBeforeFinalization": "watchpoints-armed",
@@ -125,6 +144,7 @@ def passing_trace():
             ),
             "lateInstructionOffset": 0x2B58,
             "watchpointByteCount": 8,
+            "watchpointIdentityRule": validator.EXPECTED_WATCHPOINT_IDENTITY_RULE,
             "maximumHitsPerWatchpoint": 6,
             "maximumTotalHits": 24,
             "maximumBacktraceFrameCount": 32,
@@ -155,7 +175,13 @@ def passing_trace():
         "objectChain": {
             "addresses": addresses,
             "exact": True,
+            "pointerChainExact": True,
             "selectedLateCandidateIndex": 2,
+            "selectedMirroredRectangleIdentityExact": False,
+            "selectedOwnerEqualsLayerStateRectangle": True,
+            "selectedSourceEqualsLayerStateRectangle": False,
+            "selectedPreconvergenceExact": True,
+            "selectedMirroredRectangles": selected_mirrored_rectangles(),
             "initialPrivateFields": private_fields(),
         },
         "watchpoints": watchpoints,
@@ -191,6 +217,8 @@ class CaptureBackdropWriterTraceTests(unittest.TestCase):
         self.assertEqual(result["conclusion"], "success")
         self.assertTrue(result["prospectiveGatePassed"])
         self.assertEqual(result["aggregate"]["watchpointCount"], 4)
+        self.assertEqual(result["aggregate"]["distinctWatchpointIDCount"], 4)
+        self.assertEqual(result["aggregate"]["deprecatedHardwareIndexValues"], [-1])
         self.assertEqual(result["aggregate"]["eventCount"], 4)
         self.assertEqual(result["aggregate"]["distinctWriterSiteCount"], 4)
         self.assertTrue(result["sealedConclusion"]["privateWriterPCsCaptured"])
@@ -226,6 +254,12 @@ class CaptureBackdropWriterTraceTests(unittest.TestCase):
         trace = passing_trace()
         trace["objectChain"]["selectedLateCandidateIndex"] = 1
         with self.assertRaisesRegex(ValueError, "selected late candidate"):
+            self.validate(trace)
+
+    def test_deprecated_hardware_index_is_not_an_identity_fails_closed(self):
+        trace = passing_trace()
+        trace["watchpoints"][0]["deprecatedHardwareIndex"] = 0
+        with self.assertRaisesRegex(ValueError, "watchpoint identity"):
             self.validate(trace)
 
     def test_debugger_failure_is_retained_as_failure(self):

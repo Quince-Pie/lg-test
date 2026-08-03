@@ -16,7 +16,7 @@ from pathlib import Path
 import lldb
 
 
-TRACE_SCHEMA_VERSION = 2
+TRACE_SCHEMA_VERSION = 3
 CAPTURE_BACKDROP_SYMBOL = "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
 CAPTURE_BACKDROP_CODE_BYTE_COUNT = 0x4000
 CAPTURE_BACKDROP_CODE_SHA256 = (
@@ -73,6 +73,10 @@ def _new_trace():
             "captureBackdropCodeSHA256": CAPTURE_BACKDROP_CODE_SHA256,
             "lateInstructionOffset": CAPTURE_BACKDROP_LATE_OFFSET,
             "watchpointByteCount": WATCHPOINT_BYTE_COUNT,
+            "watchpointIdentityRule": (
+                "distinct SBWatchpoint IDs and exact addresses; deprecated "
+                "GetHardwareIndex returns -1"
+            ),
             "maximumHitsPerWatchpoint": MAXIMUM_HITS_PER_WATCHPOINT,
             "maximumTotalHits": MAXIMUM_TOTAL_HITS,
             "maximumBacktraceFrameCount": MAXIMUM_BACKTRACE_FRAME_COUNT,
@@ -436,10 +440,18 @@ def capture_backdrop_late(frame, _breakpoint_location, _internal_dict):
         selected = list(struct.unpack("<4i", source_rectangle_bytes))
         layer_state_selected = list(struct.unpack("<4i", layer_state_rectangle_bytes))
         owner_selected = list(struct.unpack("<4d", owner_rectangle_bytes))
-        identity_exact = layer_state_selected == selected and owner_selected == [
-            float(value) for value in selected
+        layer_state_equals_source = layer_state_selected == selected
+        owner_equals_layer_state = owner_selected == [
+            float(value) for value in layer_state_selected
         ]
+        identity_exact = layer_state_equals_source and owner_equals_layer_state
+        preconvergence_exact = (
+            owner_equals_layer_state and not layer_state_equals_source
+        )
         candidate["mirroredRectangleIdentityExact"] = identity_exact
+        candidate["ownerEqualsLayerStateRectangle"] = owner_equals_layer_state
+        candidate["sourceEqualsLayerStateRectangle"] = layer_state_equals_source
+        candidate["preconvergenceExact"] = preconvergence_exact
         candidate["mirroredRectangles"] = {
             "sourceSelectedRectI32": selected,
             "sourceSelectedRectI32Hex": source_rectangle_bytes.hex(),
@@ -447,8 +459,8 @@ def capture_backdrop_late(frame, _breakpoint_location, _internal_dict):
             "layerStateSelectedRectI32Hex": layer_state_rectangle_bytes.hex(),
             "ownerSelectedRectF64Hex": owner_rectangle_bytes.hex(),
         }
-        if not identity_exact:
-            candidate["rejection"] = "selected rectangle identity differs"
+        if not preconvergence_exact:
+            candidate["rejection"] = "preconvergence rectangle state differs"
             _reject_late_candidate(candidate)
             return False
         initial = _snapshot_private_fields(process)
@@ -456,7 +468,13 @@ def capture_backdrop_late(frame, _breakpoint_location, _internal_dict):
         _state["trace"]["objectChain"] = {
             "addresses": dict(_state["objectAddresses"]),
             "exact": True,
+            "pointerChainExact": True,
             "selectedLateCandidateIndex": _state["lateCandidateCount"],
+            "selectedMirroredRectangleIdentityExact": identity_exact,
+            "selectedOwnerEqualsLayerStateRectangle": owner_equals_layer_state,
+            "selectedSourceEqualsLayerStateRectangle": layer_state_equals_source,
+            "selectedPreconvergenceExact": preconvergence_exact,
+            "selectedMirroredRectangles": candidate["mirroredRectangles"],
             "initialPrivateFields": initial,
         }
         for name, base, offset in WATCH_SPECS:
@@ -474,7 +492,7 @@ def capture_backdrop_late(frame, _breakpoint_location, _internal_dict):
             _state["trace"]["watchpoints"].append(
                 {
                     "id": watchpoint.GetID(),
-                    "hardwareIndex": watchpoint.GetHardwareIndex(),
+                    "deprecatedHardwareIndex": watchpoint.GetHardwareIndex(),
                     "name": name,
                     "address": address,
                     "byteCount": WATCHPOINT_BYTE_COUNT,
@@ -491,7 +509,7 @@ def capture_backdrop_late(frame, _breakpoint_location, _internal_dict):
     return False
 
 
-def capture_writer_watchpoint(frame, watchpoint):
+def capture_writer_watchpoint(frame, watchpoint, _internal_dict):
     """Record one changed value, writer stack, and deduplicated code window."""
     try:
         identifier = watchpoint.GetID()

@@ -1,0 +1,149 @@
+{
+  "captureBackdropWriterTraceCallbackFailureAnalysisSchemaVersion": 1,
+  "classification": "opened failed third LLDB writer-trace run; bounded candidate selection and watchpoint installation succeeded, but Apple's three-argument watchpoint callback ABI stopped the target before the first event was recorded",
+  "runID": 30779563755,
+  "headSHA": "8d3805af5ba0b59039adb140ccec27335d211b86",
+  "workflowConclusion": "failure",
+  "captureShellStepConclusion": "success",
+  "captureTargetExitedNormally": false,
+  "existingPathIsolationValidatorOutcome": "failure",
+  "inputClampValidatorOutcome": "failure",
+  "writerTraceValidatorOutcome": "failure",
+  "artifactUploadConclusion": "success",
+  "inputArtifacts": {
+    "artifactArchiveByteCount": 93192243,
+    "transitionTimelinePresent": false,
+    "transitionFrameImageCount": 33,
+    "transitionProgressByteCount": 152,
+    "transitionProgressSHA256": "0901d9c1a90e179c94d97ad49c0665bea8b042b4106fb83bceeb3db4b8890cc5",
+    "transitionProgressPhase": "before-static-model-carrier",
+    "rawWriterTraceByteCount": 14873,
+    "rawWriterTraceSHA256": "1cb05e9494d164a3d8d7d26ca8ae996a9cbc4e1e83b302f31e23587f27ac12c2",
+    "lldbLogByteCount": 1416,
+    "lldbLogSHA256": "099fcb95b0d0b5a0e641976986b873a85c85f04d08c037f2cb49c8cefe6b92a0",
+    "runtimeStderrByteCount": 7142,
+    "runtimeStderrSHA256": "41ef0318bbffa0f22be694d327d2ef455a305d2151bb480f4b980aacd3f28ecb"
+  },
+  "openedTrace": {
+    "traceSchemaVersion": 2,
+    "rawTraceStatus": "finalized",
+    "statusBeforeFinalization": "watchpoints-armed",
+    "captureBackdropCodeByteCount": 16384,
+    "captureBackdropCodeSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "captureBackdropCodeHashProspectivelyProven": true,
+    "lateCandidateCount": 14,
+    "rejectedLateCandidateDiagnosticCount": 13,
+    "selectedLateCandidateIndex": 14,
+    "selectedPointerChainExact": true,
+    "selectedMirroredRectangleIdentityExact": true,
+    "watchpointCount": 4,
+    "distinctWatchpointIDCount": 4,
+    "reportedHardwareIndicesAtInstallation": [
+      -1,
+      -1,
+      -1,
+      -1
+    ],
+    "eventCount": 0,
+    "codeWindowCount": 0,
+    "rawTraceFailureCount": 0,
+    "whyRawTraceHasNoFailure": "The LLDB-generated wrapper raised TypeError before entering capture_writer_watchpoint, so the harness could not append its own failure record.",
+    "targetMemoryMutatedByHarness": false
+  },
+  "candidateSequence": {
+    "pointerChainExactCount": 14,
+    "ownerEqualsLayerStateRectangleCount": 14,
+    "sourceEqualsLayerStateRectangleCount": 1,
+    "firstSourceEqualsLayerStateCandidateIndex": 14,
+    "distinctSourceAddressCount": 2,
+    "sourceAddressesAlternateEveryCandidate": true,
+    "distinctLayerStateAddressCount": 13,
+    "candidateOneLayerStateReappearsAtCandidate": 11,
+    "sourceRectangleCandidateOne": [
+      499,
+      -127,
+      644,
+      652
+    ],
+    "layerStateAndOwnerRectangleCandidateOne": [
+      499,
+      0,
+      525,
+      525
+    ],
+    "sourceMinusLayerStateCandidateOne": [
+      0,
+      -127,
+      119,
+      127
+    ],
+    "sourceRectangleCandidateFourteen": [
+      369,
+      3,
+      644,
+      652
+    ],
+    "layerStateAndOwnerRectangleCandidateFourteen": [
+      369,
+      3,
+      644,
+      652
+    ],
+    "sourceMinusLayerStateCandidateFourteen": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretationBoundary": "The exact sequence proves convergence and object reuse in this run. It does not yet identify the instructions that wrote the fields or establish a public crop formula."
+  },
+  "openedCallbackFailure": {
+    "message": "capture_writer_watchpoint() takes 2 positional arguments but 3 were given",
+    "AppleLLDBCallbackArgumentCount": 3,
+    "harnessCallbackArgumentCount": 2,
+    "firstStoppedWatchpointID": 4,
+    "firstStoppedWatchpointName": "layerStateSelectedRectI32",
+    "firstStopPC": 6701297488,
+    "firstStopFunction": "CA::Render::LayerNode::delete_node(CA::Render::LayerNode*)",
+    "firstStopFunctionOffset": 604,
+    "firstStopOldHex": "0000000300000171",
+    "firstStopNewHex": "2222222222222222",
+    "firstStopClassifiedAsCropWriter": false,
+    "processRemainedStoppedAfterCallbackError": true,
+    "finalizeWasInvokedOnStoppedProcess": true
+  },
+  "hardwareIndexFinding": {
+    "observedGetHardwareIndexValueForEveryInstalledWatchpoint": -1,
+    "distinctInstallationHardwareIndexGateFalsified": true,
+    "officialLLDBContract": "SBWatchpoint.GetHardwareIndex is deprecated and always returns -1 because gdb-remote cannot reliably expose the hardware register index.",
+    "replacementIntegrityEvidence": "Require four distinct positive SBWatchpoint IDs, exact preregistered addresses and sizes, successful WatchAddress results, and at least one changed-value callback hit at each address. Do not treat the deprecated -1 value as a watchpoint identity."
+  },
+  "nextTraceBoundary": {
+    "allowedImplementationChanges": [
+      "Accept Apple's third callback argument without reading or mutating it.",
+      "Replace the falsified distinct GetHardwareIndex gate with distinct watchpoint IDs, exact address/size checks, and actual changed-value hits.",
+      "Arm on the first exact pointer chain whose owner and layer-state rectangles are identical while the source rectangle is still different, rather than waiting until all three converge."
+    ],
+    "captureMatrixUnchanged": true,
+    "captureBackdropCodeHashGateUnchanged": true,
+    "objectPointerChainGateUnchanged": true,
+    "preconvergenceRectangleGateAdded": true,
+    "watchSpecsUnchanged": true,
+    "watchpointAddressesAndSizesUnchanged": true,
+    "eventCountBoundsUnchanged": true,
+    "semanticSealUnchanged": true,
+    "productionShaderUnchanged": true
+  },
+  "conclusion": {
+    "boundedCandidateSelectionWorked": true,
+    "allFourWatchpointsInstalled": true,
+    "firstActualWatchpointStopObserved": true,
+    "firstActualWatchpointEventRecorded": false,
+    "privateWriterPCsCaptured": false,
+    "publicLayerStateCropRuleRecovered": false,
+    "requiresPreconvergenceCallbackRetry": true,
+    "requiresUnseenGeometryTransfer": true,
+    "productionShaderAuthorized": false,
+    "appleLiquidGlassParityAchieved": false
+  }
+}

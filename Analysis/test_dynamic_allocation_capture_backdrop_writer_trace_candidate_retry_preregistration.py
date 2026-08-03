@@ -71,14 +71,6 @@ class CaptureBackdropWriterTraceCandidateRetryPreregistrationTests(unittest.Test
         files = {
             "lateMismatchResultSHA256": ANALYSIS_ROOT
             / "dynamic_allocation_capture_backdrop_writer_trace_late_mismatch_result.json",
-            "lldbTraceHarnessSHA256": ANALYSIS_ROOT
-            / "capture_backdrop_writer_trace_lldb.py",
-            "lldbTraceHarnessSourceTestSHA256": ANALYSIS_ROOT
-            / "test_capture_backdrop_writer_trace_lldb_source.py",
-            "sealedTraceValidatorSHA256": ANALYSIS_ROOT
-            / "validate_capture_backdrop_writer_trace.py",
-            "sealedTraceValidatorTestSHA256": ANALYSIS_ROOT
-            / "test_validate_capture_backdrop_writer_trace.py",
             "workflowSHA256": REPOSITORY_ROOT
             / ".github/workflows/transition-introspect.yml",
             "productionShaderSHA256": REPOSITORY_ROOT.parent / "shaders/frag.glsl",
@@ -88,6 +80,15 @@ class CaptureBackdropWriterTraceCandidateRetryPreregistrationTests(unittest.Test
                 self.assertEqual(
                     hashlib.sha256(path.read_bytes()).hexdigest(), frozen[name]
                 )
+        historical_hashes = {
+            "lldbTraceHarnessSHA256": "a197b1461e33cc7630e9bc408f78a557ab101b87a823414be5a07502942ff42d",
+            "lldbTraceHarnessSourceTestSHA256": "a3aa51bde9bd584d437dcf044246fc95a141f38873e803e183ce5509f937ab1b",
+            "sealedTraceValidatorSHA256": "ae4448603b15cac2c3d9f169c3c6b936cd86052e4c29303efe74e12a1eba8e3f",
+            "sealedTraceValidatorTestSHA256": "86578201b1cb71581ba4f23f5db6c90a55180078ed1aa47eb34f1bdee3120455",
+        }
+        for name, digest in historical_hashes.items():
+            with self.subTest(name=name):
+                self.assertEqual(frozen[name], digest)
 
     def test_parity_and_public_crop_rule_remain_unclaimed(self):
         unclaimed = PREREGISTRATION["notClaimed"]

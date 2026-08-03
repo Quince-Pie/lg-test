@@ -2,6 +2,7 @@
 """Portable source-level tests for the LLDB callback module."""
 
 import importlib.util
+import inspect
 import sys
 import types
 import unittest
@@ -73,7 +74,7 @@ class CaptureBackdropWriterTraceLLDBSourceTests(unittest.TestCase):
         self.assertEqual(self.module._file_spec_path(FileSpec(None, None)), "")
 
     def test_harness_keeps_the_exact_trace_bounds(self):
-        self.assertEqual(self.module.TRACE_SCHEMA_VERSION, 2)
+        self.assertEqual(self.module.TRACE_SCHEMA_VERSION, 3)
         self.assertEqual(self.module.CAPTURE_BACKDROP_CODE_BYTE_COUNT, 0x4000)
         self.assertEqual(self.module.CAPTURE_BACKDROP_LATE_OFFSET, 0x2B58)
         self.assertEqual(self.module.WATCHPOINT_BYTE_COUNT, 8)
@@ -82,6 +83,12 @@ class CaptureBackdropWriterTraceLLDBSourceTests(unittest.TestCase):
         self.assertEqual(self.module.MAXIMUM_LATE_CANDIDATE_COUNT, 512)
         self.assertEqual(self.module.MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT, 16)
         self.assertEqual(len(self.module.WATCH_SPECS), 4)
+
+    def test_watchpoint_callback_accepts_apple_lldbs_three_arguments(self):
+        self.assertEqual(
+            list(inspect.signature(self.module.capture_writer_watchpoint).parameters),
+            ["frame", "watchpoint", "_internal_dict"],
+        )
 
 
 if __name__ == "__main__":
