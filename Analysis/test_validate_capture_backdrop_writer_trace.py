@@ -4,6 +4,7 @@
 import copy
 import hashlib
 import json
+import struct
 import tempfile
 import unittest
 from pathlib import Path
@@ -36,6 +37,33 @@ def frame(pc):
                 "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore"
             ),
             "loadAddress": 0x1900_0000_0,
+        },
+    }
+
+
+def rejected_late_candidate(addresses):
+    source_rectangle = [200, 173, 643, 650]
+    layer_state_rectangle = [200, 173, 643, 651]
+    owner_rectangle = [200.0, 173.0, 643.0, 651.0]
+    return {
+        "lateCandidateIndex": 1,
+        "source": addresses["source"],
+        "owner": addresses["owner"],
+        "layer": addresses["layer"],
+        "layerState": addresses["layerState"],
+        "sourceOwner": addresses["owner"],
+        "layerStateSource": addresses["source"],
+        "pointerChainExact": True,
+        "mirroredRectangleIdentityExact": False,
+        "rejection": "selected rectangle identity differs",
+        "mirroredRectangles": {
+            "sourceSelectedRectI32": source_rectangle,
+            "sourceSelectedRectI32Hex": struct.pack("<4i", *source_rectangle).hex(),
+            "layerStateSelectedRectI32": layer_state_rectangle,
+            "layerStateSelectedRectI32Hex": struct.pack(
+                "<4i", *layer_state_rectangle
+            ).hex(),
+            "ownerSelectedRectF64Hex": struct.pack("<4d", *owner_rectangle).hex(),
         },
     }
 
@@ -85,7 +113,7 @@ def passing_trace():
         hit_counts[name] = 1
     code = bytes(0x400)
     return {
-        "captureBackdropWriterTraceSchemaVersion": 1,
+        "captureBackdropWriterTraceSchemaVersion": 2,
         "classification": validator.EXPECTED_CLASSIFICATION,
         "status": "finalized",
         "statusBeforeFinalization": "watchpoints-armed",
@@ -100,6 +128,8 @@ def passing_trace():
             "maximumHitsPerWatchpoint": 6,
             "maximumTotalHits": 24,
             "maximumBacktraceFrameCount": 32,
+            "maximumLateCandidateCount": 512,
+            "maximumLateCandidateDiagnosticCount": 16,
             "symbolCodeWindowByteCount": 0x1000,
             "fallbackCodeWindowByteCount": 0x400,
             "watchSpecs": [
@@ -120,9 +150,12 @@ def passing_trace():
                 "loadAddress": 0x1900_0000_0,
             },
         },
+        "lateCandidateCount": 2,
+        "lateCandidateDiagnostics": [rejected_late_candidate(addresses)],
         "objectChain": {
             "addresses": addresses,
             "exact": True,
+            "selectedLateCandidateIndex": 2,
             "initialPrivateFields": private_fields(),
         },
         "watchpoints": watchpoints,
@@ -181,6 +214,18 @@ class CaptureBackdropWriterTraceTests(unittest.TestCase):
         trace = passing_trace()
         trace["codeWindows"][0]["hex"] = "01" + trace["codeWindows"][0]["hex"][2:]
         with self.assertRaisesRegex(ValueError, "code-window identity"):
+            self.validate(trace)
+
+    def test_late_candidate_diagnostic_tampering_fails_closed(self):
+        trace = passing_trace()
+        trace["lateCandidateDiagnostics"][0]["sourceOwner"] += 8
+        with self.assertRaisesRegex(ValueError, "late candidate pointer chain"):
+            self.validate(trace)
+
+    def test_selected_late_candidate_index_fails_closed(self):
+        trace = passing_trace()
+        trace["objectChain"]["selectedLateCandidateIndex"] = 1
+        with self.assertRaisesRegex(ValueError, "selected late candidate"):
             self.validate(trace)
 
     def test_debugger_failure_is_retained_as_failure(self):

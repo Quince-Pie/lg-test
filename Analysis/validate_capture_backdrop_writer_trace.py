@@ -7,13 +7,14 @@ import argparse
 import hashlib
 import json
 import math
+import struct
 from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
 
-EXPECTED_TRACE_SCHEMA_VERSION = 1
+EXPECTED_TRACE_SCHEMA_VERSION = 2
 EXPECTED_CAPTURE_BACKDROP_SYMBOL = (
     "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
 )
@@ -33,6 +34,8 @@ EXPECTED_CLASSIFICATION = (
 MAXIMUM_EVENT_COUNT = 24
 MAXIMUM_HITS_PER_WATCHPOINT = 6
 MAXIMUM_BACKTRACE_FRAME_COUNT = 32
+MAXIMUM_LATE_CANDIDATE_COUNT = 512
+MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT = 16
 QUARTZ_CORE_PATH_FRAGMENT = "/QuartzCore.framework/"
 
 
@@ -165,6 +168,10 @@ def validate(trace_path: Path) -> dict[str, Any]:
         or configuration.get("maximumTotalHits") != MAXIMUM_EVENT_COUNT
         or configuration.get("maximumBacktraceFrameCount")
         != MAXIMUM_BACKTRACE_FRAME_COUNT
+        or configuration.get("maximumLateCandidateCount")
+        != MAXIMUM_LATE_CANDIDATE_COUNT
+        or configuration.get("maximumLateCandidateDiagnosticCount")
+        != MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT
         or configuration.get("symbolCodeWindowByteCount") != 0x1000
         or configuration.get("fallbackCodeWindowByteCount") != 0x400
         or configuration.get("watchSpecs") != expected_watch_specs
@@ -181,6 +188,103 @@ def validate(trace_path: Path) -> dict[str, Any]:
     ):
         raise ValueError("capture_backdrop byte gate differs")
 
+    late_candidate_count = integer(
+        trace.get("lateCandidateCount"), "late candidate count"
+    )
+    late_candidate_diagnostics = [
+        mapping(value, "late candidate diagnostic")
+        for value in sequence(
+            trace.get("lateCandidateDiagnostics"), "late candidate diagnostics"
+        )
+    ]
+    if (
+        not 1 <= late_candidate_count <= MAXIMUM_LATE_CANDIDATE_COUNT
+        or len(late_candidate_diagnostics) > MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT
+    ):
+        raise ValueError("late candidate bounds differ")
+    for expected_index, diagnostic in enumerate(late_candidate_diagnostics, start=1):
+        if (
+            diagnostic.get("lateCandidateIndex") != expected_index
+            or not isinstance(diagnostic.get("rejection"), str)
+            or not diagnostic["rejection"]
+            or not isinstance(diagnostic.get("pointerChainExact"), bool)
+        ):
+            raise ValueError("late candidate diagnostic identity differs")
+        for name in ("source", "owner", "layer"):
+            integer(diagnostic.get(name), f"late candidate {name}")
+        if diagnostic["pointerChainExact"]:
+            layer_state = integer(
+                diagnostic.get("layerState"), "late candidate layer state"
+            )
+            if (
+                0
+                in (
+                    diagnostic["source"],
+                    diagnostic["owner"],
+                    diagnostic["layer"],
+                )
+                or layer_state == 0
+                or diagnostic.get("sourceOwner") != diagnostic["owner"]
+                or diagnostic.get("layerStateSource") != diagnostic["source"]
+                or diagnostic.get("mirroredRectangleIdentityExact") is not False
+            ):
+                raise ValueError("late candidate pointer chain differs")
+            rectangles = mapping(
+                diagnostic.get("mirroredRectangles"),
+                "late candidate mirrored rectangles",
+            )
+            source_rectangle = numeric_vector(
+                rectangles.get("sourceSelectedRectI32"),
+                4,
+                "late candidate source rectangle",
+                integral=True,
+            )
+            layer_state_rectangle = numeric_vector(
+                rectangles.get("layerStateSelectedRectI32"),
+                4,
+                "late candidate layer-state rectangle",
+                integral=True,
+            )
+            if (
+                list(
+                    struct.unpack(
+                        "<4i",
+                        hexadecimal_payload(
+                            rectangles.get("sourceSelectedRectI32Hex"),
+                            16,
+                            "late candidate source rectangle bytes",
+                        ),
+                    )
+                )
+                != source_rectangle
+                or list(
+                    struct.unpack(
+                        "<4i",
+                        hexadecimal_payload(
+                            rectangles.get("layerStateSelectedRectI32Hex"),
+                            16,
+                            "late candidate layer-state rectangle bytes",
+                        ),
+                    )
+                )
+                != layer_state_rectangle
+            ):
+                raise ValueError("late candidate rectangle bytes differ")
+            owner_rectangle = list(
+                struct.unpack(
+                    "<4d",
+                    hexadecimal_payload(
+                        rectangles.get("ownerSelectedRectF64Hex"),
+                        32,
+                        "late candidate owner rectangle bytes",
+                    ),
+                )
+            )
+            if layer_state_rectangle == source_rectangle and owner_rectangle == [
+                float(value) for value in source_rectangle
+            ]:
+                raise ValueError("late candidate rectangle identity differs")
+
     object_chain = mapping(trace.get("objectChain"), "object chain")
     addresses = mapping(object_chain.get("addresses"), "object addresses")
     if object_chain.get("exact") is not True or set(addresses) != {
@@ -193,6 +297,16 @@ def validate(trace_path: Path) -> dict[str, Any]:
     for name, address in addresses.items():
         if integer(address, f"{name} address") == 0:
             raise ValueError("writer-trace object address differs")
+    selected_late_candidate_index = integer(
+        object_chain.get("selectedLateCandidateIndex"),
+        "selected late candidate index",
+    )
+    if selected_late_candidate_index != late_candidate_count or len(
+        late_candidate_diagnostics
+    ) != min(
+        selected_late_candidate_index - 1, MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT
+    ):
+        raise ValueError("selected late candidate differs")
     initial = private_fields(
         object_chain.get("initialPrivateFields"), "initial private fields"
     )

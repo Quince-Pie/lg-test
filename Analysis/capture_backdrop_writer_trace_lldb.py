@@ -16,7 +16,7 @@ from pathlib import Path
 import lldb
 
 
-TRACE_SCHEMA_VERSION = 1
+TRACE_SCHEMA_VERSION = 2
 CAPTURE_BACKDROP_SYMBOL = "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
 CAPTURE_BACKDROP_CODE_BYTE_COUNT = 0x4000
 CAPTURE_BACKDROP_CODE_SHA256 = (
@@ -27,6 +27,8 @@ WATCHPOINT_BYTE_COUNT = 8
 MAXIMUM_HITS_PER_WATCHPOINT = 6
 MAXIMUM_TOTAL_HITS = 24
 MAXIMUM_BACKTRACE_FRAME_COUNT = 32
+MAXIMUM_LATE_CANDIDATE_COUNT = 512
+MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT = 16
 SYMBOL_CODE_WINDOW_BYTE_COUNT = 0x1000
 FALLBACK_CODE_WINDOW_BYTE_COUNT = 0x400
 FALLBACK_CODE_WINDOW_BACKTRACK = 0x200
@@ -47,6 +49,7 @@ _state = {
     "objectAddresses": {},
     "watchpoints": {},
     "lastValues": {},
+    "lateCandidateCount": 0,
     "trace": None,
 }
 
@@ -73,6 +76,10 @@ def _new_trace():
             "maximumHitsPerWatchpoint": MAXIMUM_HITS_PER_WATCHPOINT,
             "maximumTotalHits": MAXIMUM_TOTAL_HITS,
             "maximumBacktraceFrameCount": MAXIMUM_BACKTRACE_FRAME_COUNT,
+            "maximumLateCandidateCount": MAXIMUM_LATE_CANDIDATE_COUNT,
+            "maximumLateCandidateDiagnosticCount": (
+                MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT
+            ),
             "symbolCodeWindowByteCount": SYMBOL_CODE_WINDOW_BYTE_COUNT,
             "fallbackCodeWindowByteCount": FALLBACK_CODE_WINDOW_BYTE_COUNT,
             "watchSpecs": [
@@ -81,6 +88,8 @@ def _new_trace():
             ],
         },
         "captureBackdrop": {},
+        "lateCandidateCount": 0,
+        "lateCandidateDiagnostics": [],
         "objectChain": {},
         "watchpoints": [],
         "codeWindows": [],
@@ -342,37 +351,112 @@ def _install_watchpoint(target, name, address):
     return watchpoint
 
 
+def _reject_late_candidate(candidate):
+    trace = _state["trace"]
+    trace["lateCandidateCount"] = _state["lateCandidateCount"]
+    diagnostics = trace["lateCandidateDiagnostics"]
+    if len(diagnostics) < MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT:
+        diagnostics.append(candidate)
+    if _state["lateCandidateCount"] >= MAXIMUM_LATE_CANDIDATE_COUNT:
+        _failure(
+            "capture_backdrop-late-candidate-limit",
+            "no exact late candidate within %d invocations"
+            % MAXIMUM_LATE_CANDIDATE_COUNT,
+        )
+        _state["lateBreakpoint"].SetEnabled(False)
+    else:
+        _write_trace()
+
+
 def capture_backdrop_late(frame, _breakpoint_location, _internal_dict):
-    """Validate the x19/x20/x24 chain and arm four bounded watchpoints."""
+    """Select an exact x19/x20/x24 state and arm four bounded watchpoints."""
     try:
         process = frame.GetThread().GetProcess()
         target = process.GetTarget()
         source = _register(frame, "x19")
         owner = _register(frame, "x20")
         layer = _register(frame, "x24")
+        _state["lateCandidateCount"] += 1
+        candidate = {
+            "lateCandidateIndex": _state["lateCandidateCount"],
+            "source": source,
+            "owner": owner,
+            "layer": layer,
+        }
+        if 0 in (source, owner, layer):
+            candidate["rejection"] = "null primary object pointer"
+            candidate["pointerChainExact"] = False
+            _reject_late_candidate(candidate)
+            return False
         layer_state = _read_u64(process, layer + 0x10, "layer-state pointer")
-        if (
-            0 in (source, owner, layer, layer_state)
-            or _read_u64(process, source + 0x48, "source owner pointer") != owner
-            or _read_u64(process, layer_state + 0x120, "layer-state source pointer")
-            != source
-        ):
-            raise RuntimeError("late capture_backdrop object chain differs")
+        candidate["layerState"] = layer_state
+        if layer_state == 0:
+            candidate["rejection"] = "null layer-state pointer"
+            candidate["pointerChainExact"] = False
+            _reject_late_candidate(candidate)
+            return False
+        source_owner = _read_u64(process, source + 0x48, "source owner pointer")
+        layer_state_source = _read_u64(
+            process,
+            layer_state + 0x120,
+            "layer-state source pointer",
+        )
+        candidate["sourceOwner"] = source_owner
+        candidate["layerStateSource"] = layer_state_source
+        pointer_chain_exact = source_owner == owner and layer_state_source == source
+        candidate["pointerChainExact"] = pointer_chain_exact
+        if not pointer_chain_exact:
+            candidate["rejection"] = "object pointer chain differs"
+            _reject_late_candidate(candidate)
+            return False
         _state["objectAddresses"] = {
             "source": source,
             "owner": owner,
             "layer": layer,
             "layerState": layer_state,
         }
+        source_rectangle_bytes = _read_memory(
+            process,
+            source + 0x50,
+            16,
+            "source selected rectangle candidate",
+        )
+        layer_state_rectangle_bytes = _read_memory(
+            process,
+            layer_state + 0xB0,
+            16,
+            "layer-state selected rectangle candidate",
+        )
+        owner_rectangle_bytes = _read_memory(
+            process,
+            owner + 0xE0,
+            32,
+            "owner selected rectangle candidate",
+        )
+        selected = list(struct.unpack("<4i", source_rectangle_bytes))
+        layer_state_selected = list(struct.unpack("<4i", layer_state_rectangle_bytes))
+        owner_selected = list(struct.unpack("<4d", owner_rectangle_bytes))
+        identity_exact = layer_state_selected == selected and owner_selected == [
+            float(value) for value in selected
+        ]
+        candidate["mirroredRectangleIdentityExact"] = identity_exact
+        candidate["mirroredRectangles"] = {
+            "sourceSelectedRectI32": selected,
+            "sourceSelectedRectI32Hex": source_rectangle_bytes.hex(),
+            "layerStateSelectedRectI32": layer_state_selected,
+            "layerStateSelectedRectI32Hex": layer_state_rectangle_bytes.hex(),
+            "ownerSelectedRectF64Hex": owner_rectangle_bytes.hex(),
+        }
+        if not identity_exact:
+            candidate["rejection"] = "selected rectangle identity differs"
+            _reject_late_candidate(candidate)
+            return False
         initial = _snapshot_private_fields(process)
-        selected = initial["sourceSelectedRectI32"]
-        if initial["layerStateSelectedRectI32"] != selected or initial[
-            "ownerSelectedRectF64"
-        ] != [float(value) for value in selected]:
-            raise RuntimeError("late selected rectangle identity differs")
+        _state["trace"]["lateCandidateCount"] = _state["lateCandidateCount"]
         _state["trace"]["objectChain"] = {
             "addresses": dict(_state["objectAddresses"]),
             "exact": True,
+            "selectedLateCandidateIndex": _state["lateCandidateCount"],
             "initialPrivateFields": initial,
         }
         for name, base, offset in WATCH_SPECS:

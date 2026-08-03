@@ -68,10 +68,6 @@ class CaptureBackdropWriterTracePreregistrationTests(unittest.TestCase):
             / "dynamic_allocation_capture_backdrop_upstream_writer_result.json",
             "postOpeningAnalyzerTestSHA256": ANALYSIS_ROOT
             / "test_analyze_dynamic_allocation_capture_backdrop_upstream_writer.py",
-            "sealedTraceValidatorSHA256": ANALYSIS_ROOT
-            / "validate_capture_backdrop_writer_trace.py",
-            "sealedTraceValidatorTestSHA256": ANALYSIS_ROOT
-            / "test_validate_capture_backdrop_writer_trace.py",
             "workflowSHA256": REPOSITORY_ROOT
             / ".github/workflows/transition-introspect.yml",
             "productionShaderSHA256": REPOSITORY_ROOT.parent / "shaders/frag.glsl",
@@ -84,6 +80,14 @@ class CaptureBackdropWriterTracePreregistrationTests(unittest.TestCase):
         self.assertEqual(
             frozen["lldbTraceHarnessSHA256"],
             "fc221eb2646842cb3bfa65ae79506c2a71514864ecba736ce8d79096cd48f310",
+        )
+        self.assertEqual(
+            frozen["sealedTraceValidatorSHA256"],
+            "10a9df9d86d5996759ee7bcaa8a009b270982aa5573e7953e8d4c7232e996928",
+        )
+        self.assertEqual(
+            frozen["sealedTraceValidatorTestSHA256"],
+            "eddcd3e294fde9206334041df806ef0c02787ab286cdef47fe61810434272fc2",
         )
 
 

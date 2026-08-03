@@ -73,11 +73,14 @@ class CaptureBackdropWriterTraceLLDBSourceTests(unittest.TestCase):
         self.assertEqual(self.module._file_spec_path(FileSpec(None, None)), "")
 
     def test_harness_keeps_the_exact_trace_bounds(self):
+        self.assertEqual(self.module.TRACE_SCHEMA_VERSION, 2)
         self.assertEqual(self.module.CAPTURE_BACKDROP_CODE_BYTE_COUNT, 0x4000)
         self.assertEqual(self.module.CAPTURE_BACKDROP_LATE_OFFSET, 0x2B58)
         self.assertEqual(self.module.WATCHPOINT_BYTE_COUNT, 8)
         self.assertEqual(self.module.MAXIMUM_HITS_PER_WATCHPOINT, 6)
         self.assertEqual(self.module.MAXIMUM_TOTAL_HITS, 24)
+        self.assertEqual(self.module.MAXIMUM_LATE_CANDIDATE_COUNT, 512)
+        self.assertEqual(self.module.MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT, 16)
         self.assertEqual(len(self.module.WATCH_SPECS), 4)
 
 

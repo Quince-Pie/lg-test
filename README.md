@@ -5138,6 +5138,33 @@ Its only trace-harness change obtains the module directory and filename through
 the portable accessors; the Apple inputs, object-chain checks, watched bytes,
 event bounds, code-window bounds, and acceptance conditions are unchanged.
 
+Run `30778280502`, from compatibility commit `b295d73`, proves that the Apple
+LLDB API correction works but still does not contain writer evidence. Its
+178,917,035-byte timeline has SHA-256
+`a0fee30ca5d136d62d68f16d1276fd2bf90565d85ebdb85c133d05ee6ea6f842`;
+the unchanged path-isolation and input-clamp validators pass, including all 114
+complete object records and every prior zero-tolerance arithmetic gate. The raw
+writer trace also proves the exact 16 KiB `capture_backdrop` hash. It then fails
+closed at the first `capture_backdrop+0x2b58` invocation with `late selected
+rectangle identity differs`. The pointer chain had passed, but the harness did
+not commit the differing rectangle values before rejecting them. It armed zero
+watchpoints and retained zero events. The green step presentation in the
+Actions summary reflects `continue-on-error`; the final enforcement step and
+the raw trace correctly classify the writer validator outcome as failure. The
+immutable opened result is
+`Analysis/dynamic_allocation_capture_backdrop_writer_trace_late_mismatch_result.json`.
+
+That result falsifies only the one-shot timing assumption: the first late
+invocation is not guaranteed to be one of the exact filtered operand states.
+It does not identify which mirror differed or why. The next retry is frozen in
+`Analysis/dynamic_allocation_capture_backdrop_writer_trace_candidate_retry_preregistration.json`.
+It keeps the exact code, pointer-chain, mirrored-rectangle, watchpoint, and
+semantic gates. The late breakpoint may inspect at most 512 invocations and
+retains raw diagnostics for the first 16 rejections. Only the first candidate
+whose `source+0x50`, `layerState+0xb0`, and `owner+0xe0` rectangles are exactly
+identical may arm the same four watchpoints. Exhausting the bound, or any later
+trace-integrity failure, remains a failed uploaded artifact.
+
 This checkpoint does not establish parity or authorize a Walle shader change.
 After the writer arithmetic is reproduced bit for bit, the remaining gates are
 the dormant multi-record path, untouched geometries and transition states,
