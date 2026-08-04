@@ -5466,3 +5466,57 @@ crop rule, unseen-state transfer, and production-shader authority. Once the
 artifact passes, the complete bytes and actual write stop make it possible to
 enumerate every direct `x19+656` write and relevant call and decode the live
 writer without another guessed branch.
+
+Run `30957433164`, from full-path commit `e67f506`, did not capture that
+writer. The target exited normally, both inherited allocation validators
+passed, source candidate one passed the exact pointer and preconvergence
+gates, and all 40,128 bytes of `prepare_layer` were retained with SHA-256
+`fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c`.
+All five earlier 4 KiB windows and the 404-byte `union_bounds` identity also
+match. The early `+0x31dc` through `+0x3458` markers remain at zero, while the
+four later sites execute 129, 129, 129, and 18 times. The prospective path
+gate fails correctly because three streams exceed their fixed 128-record cap
+by one.
+
+More importantly, the retrospectively chosen marker belonged to an expired
+stack frame. Its role base was `6171891120` and its captured origin was
+`501.0`, but by source-selection time the watched bytes at that address were
+zero and the first live selected marker used role base `6171889152`. The
+hardware watchpoint stopped 24 times and six payloads changed, but the changed
+writes were four `_os_log_fmt_flatten_object_impl` events and two
+`mach_get_times` events. None had `prepare_layer` in its backtrace. Those are
+unrelated stack reuse, not Apple crop-writer evidence. The immutable negative
+result is
+`Analysis/dynamic_allocation_prepare_layer_full_path_stale_watchpoint_result.json`.
+
+The complete function narrows direct static references without pretending
+that static presence proves execution. Stores overlapping `x19+656` occur at
+`+0xb58`, `+0xb5c`, `+0x33f0`, `+0x3970`, and `+0x6748`. Direct calls to the
+exact `union_bounds` helper with destination `x19+656` occur at `+0xcf8`,
+`+0x14f0`, `+0x1e84`, `+0x1f24`, `+0x23ec`, `+0x24ec`, `+0x32c0`, and
+`+0x6d64`. Calls through other aliases may also mutate the containing role.
+
+The successor contract is frozen in
+`Analysis/dynamic_allocation_prepare_layer_live_writer_preregistration.json`
+and runs separately in `prepare-layer-live-writer-introspect.yml`. It removes
+retrospective arming. The watchpoint is installed only at the first
+source-known live `prepare_layer+0x3ef0` marker whose `x28` equals the
+independently selected source, and the marker's aggregate bytes must equal the
+watchpoint's initial bytes. A hardware stop qualifies only when its live
+backtrace contains the exact hashed `prepare_layer` frame with unwound `x19`
+equal to the watched role base and unwound `x28` equal to the selected source.
+Unrelated reuse has a separate 8,192-hit bound and bounded diagnostics, so it
+cannot consume the 24-event qualified-writer budget. Direct and helper writers
+retain the top frame, exact parent `prepare_layer` frame and registers, role,
+objects, private fields, stack, scalar and SIMD operands, pointer probes, and
+a PC-containing code window.
+
+The already-opened backdrop relationship remains exactly the structural law
+documented above: `q = 2/(2-k)`, a glass UV span of `q` times the allocated
+backdrop extent, and origin from the producer-pass crop transform plus the
+copy-base integer offset. The missing boundary is no longer that resampling
+law. It is the live CPU writer and dependency slice that choose the aggregate
+feeding the discrete crop/allocation policy, followed by prospective unseen
+geometry, scale, appearance, material, direction, and physical-Retina
+transfer. No production shader change or Liquid Glass parity claim is
+authorized before those gates pass.

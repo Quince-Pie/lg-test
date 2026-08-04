@@ -1,0 +1,142 @@
+{
+  "prepareLayerFullPathStaleWatchpointResultSchemaVersion": 1,
+  "openedAtUtc": "2026-08-04T23:04:00Z",
+  "classification": "opened failed-closed Apple prepare_layer full-path run; the complete function and selected later path were captured, but three marker streams exceeded their preregistered record cap and the retrospectively armed stack watchpoint observed unrelated post-frame stack reuse rather than an active selected prepare_layer frame; not an aggregate-writer, complete public crop rule, unseen-transfer, or product-parity claim",
+  "run": {
+    "runID": 30957433164,
+    "jobID": 92153648545,
+    "headSHA": "e67f506a425ac07b39f49720a882bd1eec940601",
+    "workflowConclusion": "failure",
+    "durationSeconds": 419,
+    "buildStepOutcome": "success",
+    "captureStepOutcome": "success",
+    "captureTargetExitedNormally": true,
+    "pathIsolationValidatorOutcome": "success",
+    "inputClampValidatorOutcome": "success",
+    "fullPathValidatorOutcome": "failure",
+    "artifactUploadOutcome": "success",
+    "enforcementOutcome": "failure",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/30957433164"
+  },
+  "inputArtifacts": {
+    "artifactID": 8911752203,
+    "artifactArchiveByteCount": 100129688,
+    "artifactArchiveDigest": "sha256:a6d457be9a7bbb71439172a1f53db014686c9f7358c69710604f865912487db6",
+    "transitionFrameImageCount": 33,
+    "transitionTimelineByteCount": 178710811,
+    "transitionTimelineSHA256": "ab93d5c979788c9afd8031fe83b372cfee49831b9d28ea16d40ea94df87ae319",
+    "rawFullPathTraceByteCount": 8709431,
+    "rawFullPathTraceSHA256": "d482a496b71b945ca49be1d2ac831dfdeb7fb0ca6baeacda60fa29ef6ec86cf2",
+    "pathIsolationResultSHA256": "2569a376a77a4001165b3137f3c05e52ce7f18a04f9b2c97ce60973d92fdd160",
+    "inputClampResultSHA256": "13a1abb196d6e085e60c60b673f4a167d30391045a79fed94cba50a5cf406e49",
+    "lldbLogSHA256": "a12248b70e7a9e3264f44bbc8750de9accc8d58aca03006e7f005e7544c34361",
+    "runtimeStderrSHA256": "5c0e7471f2a1b144726d21dad14d35cce1445eee4761937cb534a3c0cb08583f",
+    "transitionProgressSHA256": "64aa3e064246688c7e45ddfc426015fb8caa96629f1f731862e86e919a5bac98",
+    "buildLogSHA256": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af"
+  },
+  "successfulStaticAndSelectionGates": {
+    "prepareLayerCallbackPCEqualsSymbolStart": true,
+    "prepareLayerBreakpointLocationEqualsSymbolStart": true,
+    "prepareLayerSymbolByteCount": 40128,
+    "prepareLayerFullCodeSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+    "allFivePriorCodeWindowsExact": true,
+    "unionHelperSymbolName": "CA::Render::Updater::LayerShapes::union_bounds(CA::Rect const&, bool)",
+    "unionHelperSymbolByteCount": 404,
+    "unionHelperSymbolSHA256": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7",
+    "markerBreakpointIDRange": [3, 15],
+    "captureBackdropLateBreakpointID": 16,
+    "markersInstalledBeforeSourceSelection": true,
+    "selectedLateCandidateIndex": 1,
+    "selectedObjectChainExact": true,
+    "selectedSourceAddressInRun": 41053814784,
+    "selectedSourceRectangle": [500, -128, 644, 652],
+    "selectedLayerStateRectangle": [500, 0, 524, 524],
+    "selectedOwnerRectangle": [500.0, 0.0, 524.0, 524.0],
+    "selectedPreconvergenceExact": true,
+    "rawTraceFailureCount": 0
+  },
+  "openedPathOutcome": {
+    "earlyConstructionMarkerHitCounts": {
+      "constructionWindowEntry": 0,
+      "preSelectorCall": 0,
+      "postSelectorBranch": 0,
+      "directLabel": 0,
+      "directUnionCall": 0,
+      "alternateLabel": 0,
+      "alternateSourceLoad": 0,
+      "alternateAggregateStore": 0,
+      "constructionJoin": 0
+    },
+    "laterMarkerHitCounts": {
+      "sourceLaterHandle": 129,
+      "sourceLaterOwnerRectangle": 129,
+      "sourceLaterIntegerOrigin": 129,
+      "sourceLaterIntegerTail": 18
+    },
+    "retainedMarkerRecordCount": 402,
+    "selectedMarkerRecordCount": 402,
+    "discardedMarkerCounts": {
+      "sourceLaterHandle": 1,
+      "sourceLaterOwnerRectangle": 1,
+      "sourceLaterIntegerOrigin": 1
+    },
+    "localValidatorFailure": "sourceLaterIntegerOrigin marker accounting differs",
+    "conclusion": "The selected workload bypasses the entire opened +0x31dc-through-+0x3458 construction region and repeatedly reaches all four later selected-source observation sites. The prospective gate fails because three 128-record streams truncate on their 129th hit; the path evidence is opened only as a failed result."
+  },
+  "openedWatchpointOutcome": {
+    "armMode": "retrospective-source-selection",
+    "armMarkerName": "sourceLaterIntegerOrigin",
+    "armMarkerRecordIndex": 2,
+    "armRoleBase": 6171891120,
+    "watchedAddress": 6171891776,
+    "armMarkerAggregateOriginHex": "0000000000507f40",
+    "watchpointInitialHexAtLaterSourceSelection": "0000000000000000",
+    "firstLiveSelectedMarkerRoleBase": 6171889152,
+    "firstLiveRoleBaseDiffersFromRetrospectiveRoleBase": true,
+    "rawWatchpointEventCount": 24,
+    "rawChangedEventCount": 6,
+    "changedEventFunctions": {
+      "_os_log_fmt_flatten_object_impl": 4,
+      "mach_get_times": 2
+    },
+    "eventWithPrepareLayerInBacktraceCount": 0,
+    "actualSelectedAggregateWriterCaptured": false,
+    "conclusion": "The retained marker belonged to a prepare_layer stack frame that had returned before source selection. Its nonzero aggregate origin had already become zero, the next live selected invocation used a different x19 base, and every watchpoint event was unrelated renderer or telemetry stack reuse without prepare_layer in its backtrace. Changed watched bytes alone are therefore not writer evidence."
+  },
+  "openedCompleteCodeBoundary": {
+    "directOverlappingStoreInstructionOffsets": [2904, 2908, 13296, 14704, 26440],
+    "directOverlappingStoreGroups": [
+      {"name": "zeroInitialization", "instructionOffsets": [2904, 2908], "afterOffset": 2912},
+      {"name": "alternateAggregateCopy", "instructionOffsets": [13296], "afterOffset": 13300},
+      {"name": "rangeClampStore", "instructionOffsets": [14704], "afterOffset": 14708},
+      {"name": "singleOriginStore", "instructionOffsets": [26440], "afterOffset": 26444}
+    ],
+    "directUnionBoundsCallOffsetsWithX19Plus656Destination": [3320, 5360, 7812, 7972, 9196, 9452, 12992, 28004],
+    "directUnionBoundsTargetRelativeToPrepareLayer": -2720,
+    "scope": "These are exact static references in the newly captured function. Static presence does not prove which sites execute for the selected source, and calls receiving other aliases may also mutate the containing LayerShapes."
+  },
+  "nextEvidenceBoundary": {
+    "objective": "Arm only from the first live exact-source later marker after source selection, then retain a hardware hit only when an exact active prepare_layer frame in its backtrace has x19 equal to the watched role base and x28 equal to the independently selected source.",
+    "requiredChanges": [
+      "leave the failed full-path harness, validator, workflow, preregistration, raw artifact, and this opened result immutable",
+      "freeze the newly captured full prepare_layer SHA-256 and exact symbol length before the successor run",
+      "remove retrospective watchpoint arming entirely",
+      "arm from the first source-known marker whose live x28 exactly equals the selected source and require the marker's aggregate bytes to equal the watchpoint initial bytes",
+      "do not count unrelated stack-reuse stops toward the bounded qualified-event ceiling; retain bounded diagnostics and exact total accounting for them",
+      "qualify direct and helper writers only through an exact prepare_layer backtrace frame whose unwound x19 and x28 match the watched role and selected source",
+      "capture the top writer frame plus the exact parent prepare_layer frame and registers, full scalar and SIMD operands, stack, selected objects, role state, private fields, and a PC-containing code window",
+      "disable the one live-arm marker immediately after successful arming so marker truncation cannot recur"
+    ],
+    "productionShaderAuthorized": false
+  },
+  "notClaimed": [
+    "that run 30957433164 passed its prospective full-path gate",
+    "that any of the six changed watchpoint events came from prepare_layer",
+    "that the actual selected aggregate writer instruction is known",
+    "that any statically present mutation site executes for the selected source",
+    "that the complete public crop-construction rule is recovered",
+    "that unseen transfer has passed",
+    "that Walle may change its production shader",
+    "that Apple Liquid Glass parity has been achieved"
+  ]
+}
