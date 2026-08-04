@@ -5389,14 +5389,15 @@ boolean argument is enabled and the secondary handle at destination `+0x48`
 exists, the function also applies Apple's already-opened floor/ceil integer
 enclosure and calls a secondary union helper.
 
-Zero call-site hits identify a temporal instrumentation error, not absent Apple
-behavior: the probe installed `prepare_layer+0x32c0` only after the downstream
-`capture_backdrop+0x2b58` selector ran, but initial `prepare_layer` construction
-had already returned. The amended probe must arm at the first `prepare_layer`
-entry, retain a bounded preselection prefix, and classify its `x28` identities
-after source selection. It must also capture the dynamic alternate branch at
-`+0x33f0`, where `x19+1312` is copied to aggregate state `x19+656`; that branch
-is the likely source of the later changing samples and remains unopened.
+The first interpretation of those zero hits was a temporal-instrumentation
+hypothesis: the probe installed `prepare_layer+0x32c0` only after the downstream
+`capture_backdrop+0x2b58` selector ran, so the initial construction might have
+already returned. That was not established Apple behavior. The prospective
+amendment below was designed to test it by arming at the first exact
+`prepare_layer` entry, retaining a bounded preselection prefix, and classifying
+its `x28` identities only after source selection. It also covered the alternate
+store at `+0x33f0`, where the opened static bytes copy `x19+1312` to aggregate
+state `x19+656`.
 
 That amendment is prospectively frozen in
 `Analysis/dynamic_allocation_layer_shapes_construction_preregistration.json`
@@ -5422,3 +5423,46 @@ implementation hashes were fixed before dispatch. Passing this gate will open
 the captured operands for analysis; it will not by itself recover the
 alternate producer, establish unseen-state transfer, authorize a Walle shader
 change, or claim Liquid Glass parity.
+
+Run `30953581966`, from early-arm commit `56459f0`, falsifies that temporal-only
+explanation. The app exits normally; the unchanged 114-record path-isolation
+gate and 32-sample input-clamp gate pass; source candidate one is selected with
+the exact pointer chain and preconvergence rectangles; and the raw trace has
+zero callback failures. The four construction breakpoints have IDs 3 through
+6, while the independently installed `capture_backdrop+0x2b58` selector has a
+later ID. The construction sites were therefore armed before source selection,
+not after it. Nevertheless, the entire 33-frame workload records zero hits at
+both `prepare_layer+0x32c0` and `+0x33f0`. The prospective branch-pair validator
+fails closed with `direct record bounds differ`, and final workflow enforcement
+fails. The immutable opened result is
+`Analysis/dynamic_allocation_layer_shapes_construction_bypass_result.json`.
+
+This result proves only that the selected clear/light/circle-640-center,
+allocation-only workload reaches the observed aggregate through some other
+`prepare_layer` path. It does not prove either site globally unreachable, and
+it does not identify the writer. In particular, the README's former statement
+that zero hits *identified* late arming was wrong.
+
+The replacement prospective contract is frozen in
+`Analysis/dynamic_allocation_prepare_layer_full_path_preregistration.json` and
+runs in `prepare-layer-full-path-introspect.yml`. It requires the exact callback
+PC and breakpoint location to equal the start of the 40,128-byte
+`prepare_layer` symbol, retains the complete function bytes while revalidating
+all five previously captured 4 KiB windows, and installs thirteen path markers
+before the first invocation resumes. Four markers are the already observed
+later selected-source sites at `+0x3ef0`, `+0x4e18`, `+0x530c`, and `+0x5310`.
+At source selection, the probe first looks backward through those retained
+markers and, when possible, arms from the most recent record whose `x28` is the
+exact selected source. If no such early record exists, the first later live
+exact-`x28` marker arms it. Either route places one eight-byte hardware write
+watchpoint on the floating aggregate origin at `x19+656`.
+
+The gate requires all four selected later sites, at least three distinct
+aggregate payloads, and at least one changed watchpoint event with the exact
+writer stop PC, a containing 4 KiB code window, all general and SIMD registers,
+the stack, object state, register-pointer probes, and every readable 2 KiB
+callee-saved role. It still seals instruction semantics, the complete public
+crop rule, unseen-state transfer, and production-shader authority. Once the
+artifact passes, the complete bytes and actual write stop make it possible to
+enumerate every direct `x19+656` write and relevant call and decode the live
+writer without another guessed branch.

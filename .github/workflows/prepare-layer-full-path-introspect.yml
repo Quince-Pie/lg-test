@@ -1,0 +1,190 @@
+name: Introspect full prepare_layer path and writer
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: prepare-layer-full-path-introspect-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare-layer-full-path:
+    name: full-path-640-center-materialize
+    runs-on: macos-26
+    timeout-minutes: 90
+    env:
+      LG_GLASS_MATERIAL: clear
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-640-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "1"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_FULL_PATH_TRACE_OUTPUT: >-
+        transition-introspection/prepare-layer-full-path-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Build transition introspection probe
+        id: build
+        continue-on-error: true
+        run: |
+          mkdir -p transition-introspection
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-introspection/MatrixBridge.o 2>&1 |
+            tee transition-introspection/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-introspection/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-introspection/build.log
+
+      - name: Capture full prepare_layer path, writer, and real pixels
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-introspection/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-introspection/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_full_path_trace_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_full_path_trace_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-introspection \
+            > transition-introspection/lldb-prepare-layer-full-path.log 2>&1
+
+      - name: Validate surviving-path allocation threshold
+        id: allocation_path_isolation
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_dynamic_allocation_surviving_path_threshold.py \
+            transition-introspection/transition-timeline.json \
+            --output \
+              transition-introspection/dynamic-allocation-path-isolation.json
+
+      - name: Validate inputClamp platform arithmetic probe
+        id: input_clamp_probe
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_transition_input_clamp_probe.py \
+            transition-introspection/transition-timeline.json \
+            --output \
+              transition-introspection/input-clamp-arithmetic-probe.json
+
+      - name: Validate full prepare_layer path and writer trace
+        id: prepare_layer_full_path
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_full_path_trace.py \
+            transition-introspection/prepare-layer-full-path-trace.json \
+            --output \
+              transition-introspection/prepare-layer-full-path-trace-validation.json
+
+      - name: Upload full prepare_layer path evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-prepare-layer-full-path-${{ github.run_id }}
+          path: transition-introspection
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce full prepare_layer path evidence
+        if: always()
+        run: |
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.allocation_path_isolation.outcome }}" = success
+          test "${{ steps.input_clamp_probe.outcome }}" = success
+          test "${{ steps.prepare_layer_full_path.outcome }}" = success
+          test -s transition-introspection/transition-timeline.json
+          test -s transition-introspection/prepare-layer-full-path-trace.json
+          test -s transition-introspection/prepare-layer-full-path-trace-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("transition-introspection")
+          timeline = json.loads(
+              (root / "transition-timeline.json").read_text(encoding="utf-8")
+          )
+          if (
+              timeline.get("schemaVersion") != 5
+              or timeline.get("material") != "clear"
+              or timeline.get("appearance") != "light"
+              or timeline.get("direction") != "materialize"
+              or timeline.get("geometry", {}).get("name")
+                  != "circle-640-center"
+              or timeline.get("animationCurve") != "linear"
+              or timeline.get("samplingMethod")
+                  != "real-presentation-state-plus-own-window-pixels"
+              or timeline.get("captureBackend")
+                  != "CGWindowListCreateImage"
+              or timeline.get("sampleCount") != 33
+              or timeline.get("failedSamples") != 0
+              or len(timeline.get("samples", [])) != 33
+          ):
+              raise SystemExit("transition timeline metadata differs")
+          expected_progress = [index / 32 for index in range(33)]
+          if [sample.get("progress") for sample in timeline["samples"]] != expected_progress:
+              raise SystemExit("transition progress grid differs")
+          images = sorted(root.glob("transition-materialize-*-rgba8.png"))
+          if len(images) != 33 or any(path.stat().st_size == 0 for path in images):
+              raise SystemExit("transition image inventory differs")
+          validation = json.loads(
+              (root / "prepare-layer-full-path-trace-validation.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          if (
+              validation.get("conclusion") != "success"
+              or validation.get("prospectiveGatePassed") is not True
+              or validation.get("sealedConclusion", {}).get(
+                  "productionShaderAuthorized"
+              ) is not False
+          ):
+              raise SystemExit("full prepare_layer validation differs")
+          PY
