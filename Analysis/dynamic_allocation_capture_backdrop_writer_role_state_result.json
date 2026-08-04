@@ -1,0 +1,317 @@
+{
+  "captureBackdropWriterRoleStateResultSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-04T06:41:44Z",
+  "classification": "opened successful Apple prepare_layer role-state trace; three independently sampled public carrier positions join bit for bit to the private aggregate bounds, integer enclosure, optional one-pixel border, and selected crop rectangles, while the recursive LayerShapes merge implementation and unseen transfer remain unopened; not a complete public crop law or product-parity claim",
+  "run": {
+    "runID": 30883442714,
+    "jobID": 91909437561,
+    "headSHA": "c80f4b518fd270d51edcbd5ae716e607193a1bd7",
+    "workflowConclusion": "success",
+    "captureStepOutcome": "success",
+    "captureTargetExitedNormally": true,
+    "pathIsolationValidatorOutcome": "success",
+    "inputClampValidatorOutcome": "success",
+    "writerTraceValidatorOutcome": "success",
+    "artifactUploadOutcome": "success",
+    "enforcementOutcome": "success",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/30883442714"
+  },
+  "inputArtifacts": {
+    "artifactID": 8882248743,
+    "artifactArchiveByteCount": 99928472,
+    "transitionFrameImageCount": 33,
+    "transitionTimelineByteCount": 178939266,
+    "transitionTimelineSHA256": "2f7cf72bb6fe2b489006b19309bf24eab3af1aba764fbf76bc03cebc94b2dfeb",
+    "rawWriterTraceByteCount": 1417684,
+    "rawWriterTraceSHA256": "2ea3e431a3339f5b6f0ec2ce947816e175cee2cb4510b655aa79ed5b9d3a4b5b",
+    "writerValidationByteCount": 5369,
+    "writerValidationSHA256": "433271e4b5b4c28e6d8cba45dc40f9ae352faeb24790d69055c7d7990bc7d347",
+    "localWriterValidationSHA256": "433271e4b5b4c28e6d8cba45dc40f9ae352faeb24790d69055c7d7990bc7d347",
+    "pathIsolationResultSHA256": "27be036c13375ec2a8695826f4284b302d216d12da71c7f5f642727bc72f45df",
+    "inputClampResultSHA256": "e7195cbae2935cfcf257ee15012e315883531e484f69870edeb626495cc32e6c",
+    "lldbLogSHA256": "01386423de1a8ee8664293fc4c17519e75ef33a0805e5be003e6fc3799930bf6",
+    "runtimeStderrSHA256": "c2f8cd0f2a05976721b010e1e83c49ff98e4c1088f39afad73410edd28ef804c",
+    "transitionProgressSHA256": "09f5300fa56fd8b19e41942c8359d234fcb1472d3db79795d7cd69f2afec631c"
+  },
+  "unchangedEvidenceGates": {
+    "captureBackdropCodeByteCount": 16384,
+    "captureBackdropCodeSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "completePathIsolationRecordCount": 114,
+    "captureBackdropObjectChainExactCount": 114,
+    "captureBackdropConsumedRegionExactCount": 114,
+    "inputClampRecoveredCandidate": "float-weighted-mix/affine-expanded-base-darwin-powf",
+    "inputClampExactSampleCount": 32,
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "rawTraceAggregate": {
+    "rawTraceSchemaVersion": 5,
+    "sealedValidatorSchemaVersion": 4,
+    "statusBeforeFinalization": "bounded-event-limit-reached",
+    "failureCount": 0,
+    "eventCount": 24,
+    "changedWatchedByteEventCount": 16,
+    "unchangedWatchedByteEventCount": 8,
+    "codeWindowCount": 12,
+    "prepareLayerEventCount": 7,
+    "changedPrepareLayerEventCount": 6,
+    "prepareLayerRoleProbeSuccessCount": 52,
+    "prepareLayerRoleProbeFailureCount": 0,
+    "requiredX19RoleSnapshotCount": 6,
+    "eventCountsByWatchpoint": {
+      "layerStateSelectedRectI32": 6,
+      "ownerRegion248Handle": 6,
+      "ownerSelectedRectF64": 6,
+      "sourceSelectedRectI32": 6
+    },
+    "changedPrepareLayerOffsetsByWatchpoint": {
+      "layerStateSelectedRectI32": [21956],
+      "ownerRegion248Handle": [16112],
+      "ownerSelectedRectF64": [19992],
+      "sourceSelectedRectI32": [21260, 21264]
+    }
+  },
+  "openedRoleState": {
+    "roleRegister": "x19",
+    "snapshotByteCount": 2048,
+    "fieldLayout": {
+      "visibleIntegerRectangle": [608, 624],
+      "workingIntegerRectangle": [624, 640],
+      "aggregateOriginF64": [656, 672],
+      "aggregateSizeF64": [672, 688],
+      "viewportOriginF64": [752, 768],
+      "viewportSizeF64": [768, 784],
+      "recursiveChildLayerShapesF64": [1568, 1600]
+    },
+    "records": [
+      {
+        "eventIndices": [6],
+        "watchpointNames": ["layerStateSelectedRectI32"],
+        "stopOffsets": [21956],
+        "x19": 6171886992,
+        "valueChanged": true,
+        "visibleIntegerRectangle": [0, 0, 0, 0],
+        "workingIntegerRectangle": [174, 174, 676, 676],
+        "aggregateOriginF64": [174.0, 174.0],
+        "aggregateSizeF64": [676.0, 676.0],
+        "viewportOriginF64": [0.0, 0.0],
+        "viewportSizeF64": [1024.0, 1024.0],
+        "recursiveChildLayerShapesF64": [0.0, 0.0, 0.0, 0.0]
+      },
+      {
+        "eventIndices": [7, 8],
+        "watchpointNames": ["sourceSelectedRectI32", "sourceSelectedRectI32"],
+        "stopOffsets": [21260, 21264],
+        "x19": 6171889104,
+        "valueChanged": true,
+        "visibleIntegerRectangle": [489, 0, 535, 535],
+        "workingIntegerRectangle": [489, -117, 644, 652],
+        "aggregateOriginF64": [490.0, -115.9420166015625],
+        "aggregateSizeF64": [641.9420166015625, 649.9420166015625],
+        "aggregateF64LittleEndianHex": "0000000000a07e40000000004afc5cc000000040890f844000000040894f8440",
+        "viewportOriginF64": [0.0, 0.0],
+        "viewportSizeF64": [1024.0, 1024.0],
+        "recursiveChildLayerShapesF64": [491.9420166015625, -107.9420166015625, 640.0, 640.0]
+      },
+      {
+        "eventIndices": [17],
+        "watchpointNames": ["layerStateSelectedRectI32"],
+        "stopOffsets": [14812],
+        "x19": 6171887136,
+        "valueChanged": false,
+        "visibleIntegerRectangle": [0, 0, 0, 0],
+        "workingIntegerRectangle": [0, 1083179008, 0, 1083179008],
+        "aggregateOriginF64": [0.0, 0.0],
+        "aggregateSizeF64": [0.0, 0.0],
+        "viewportOriginF64": [0.0, 0.0],
+        "viewportSizeF64": [1024.0, 1024.0],
+        "recursiveChildLayerShapesF64": [652.9301908333334, 0.0, 0.0, 0.0],
+        "interpretation": "retained unchanged hardware stop; not used as a crop-construction sample"
+      },
+      {
+        "eventIndices": [18, 19],
+        "watchpointNames": ["ownerRegion248Handle", "ownerSelectedRectF64"],
+        "stopOffsets": [16112, 19992],
+        "x19": 6171889104,
+        "valueChanged": true,
+        "visibleIntegerRectangle": [479, 0, 545, 545],
+        "workingIntegerRectangle": [479, -107, 644, 652],
+        "aggregateOriginF64": [480.0, -105.9871826171875],
+        "aggregateSizeF64": [641.9871826171875, 649.9871826171875],
+        "aggregateF64LittleEndianHex": "0000000000007e40000000002e7f5ac0000000c0e50f8440000000c0e54f8440",
+        "viewportOriginF64": [0.0, 0.0],
+        "viewportSizeF64": [1024.0, 1024.0],
+        "recursiveChildLayerShapesF64": [0.0, -0.0, 640.0, 648.0]
+      },
+      {
+        "eventIndices": [23],
+        "watchpointNames": ["ownerSelectedRectF64"],
+        "stopOffsets": [19992],
+        "x19": 6171889104,
+        "valueChanged": true,
+        "visibleIntegerRectangle": [459, 0, 565, 565],
+        "workingIntegerRectangle": [459, -87, 644, 652],
+        "aggregateOriginF64": [460.0, -85.9932861328125],
+        "aggregateSizeF64": [641.9932861328125, 649.9932861328125],
+        "aggregateF64LittleEndianHex": "0000000000c07c4000000000927f55c000000040f20f844000000040f24f8440",
+        "viewportOriginF64": [0.0, 0.0],
+        "viewportSizeF64": [1024.0, 1024.0],
+        "recursiveChildLayerShapesF64": [0.0, -0.0, 640.0, 648.0]
+      }
+    ]
+  },
+  "openedUpstreamConstruction": {
+    "prepareLayerSymbolStart": 6687308412,
+    "codeWindow": {
+      "symbolOffsetStart": 12764,
+      "symbolOffsetEndExclusive": 16860,
+      "byteCount": 4096,
+      "sha256": "91fbe43da3533d7cd4578195b77c5a1aa0844105493c70635687e76adb7af768"
+    },
+    "recursiveChildCall": {
+      "instructionOffset": 12888,
+      "encodingWordHex": "97fff36a",
+      "instruction": "bl prepare_layer",
+      "arguments": {
+        "x0": "x21 global state",
+        "x1": "x27 local state",
+        "x2": "x25 child LayerNode",
+        "x3": "x19+1568 child LayerShapes output",
+        "x4": "x19+1128 child flags output"
+      },
+      "consequence": "The recursive child prepare_layer invocation constructs the LayerShapes record later consumed at x19+1568."
+    },
+    "directMergeBranch": {
+      "instructionOffsets": [12980, 12984, 12988, 12992, 12996],
+      "instructions": [
+        "add x0, x19, #656",
+        "add x1, x19, #1568",
+        "mov w2, #1",
+        "bl prepare_layer_symbol_start-2720",
+        "b prepare_layer+13368"
+      ],
+      "callInstructionRawLittleEndianHex": "a8f0ff97",
+      "callInstructionWordHex": "97fff0a8",
+      "signedBranchDisplacement": -15712,
+      "targetRelation": "prepare_layer symbol start - 2720",
+      "targetAddressInRun": 6687305692,
+      "quartzCoreImageOffsetInRun": 1781724,
+      "targetCodeCaptured": false,
+      "preAndPostOperandsCaptured": false
+    },
+    "alternateMergeBranch": {
+      "range": [12996, 13300],
+      "finalStoreOffset": 13296,
+      "finalStoreInstruction": "stp q0, q1, [x19, #656]",
+      "source": "x19+1312 after virtual LayerNode operations",
+      "semanticsFullyOpened": false
+    }
+  },
+  "openedPublicPrivateJoin": {
+    "publicCoordinateSystem": {
+      "canvasSize": [1024.0, 1024.0],
+      "carrierLayerPath": [1],
+      "carrierAnchorPoint": [0.0, 0.0],
+      "sdfLayerPath": [1, 0],
+      "sdfLayerSize": [640.0, 640.0],
+      "backdropLayerPath": [1, 0, 1, 0],
+      "glassBackgroundInputShadowOffset": [0.0, 8.0],
+      "inputShadowOffsetRawLittleEndianHex": "00000000000000000000000000002040"
+    },
+    "threeSampleRule": {
+      "scope": "exact for the three opened samples only",
+      "definitions": [
+        "P is the public path-[1] x/y position",
+        "L = floor(P) - 1",
+        "aggregate origin x = L",
+        "aggregate origin y = 1024 - P - 640 - 8",
+        "aggregate width = P + 640 - L",
+        "aggregate height = P + 640 + 8 - L",
+        "integer enclosure uses floor(origin) and ceil(origin + size)",
+        "the observed enabled branch expands the enclosed rectangle by one pixel on every edge"
+      ],
+      "binary64AggregateMatchCount": 3,
+      "binary64AggregateMismatchCount": 0,
+      "integerCropMatchCount": 3,
+      "integerCropMismatchCount": 0
+    },
+    "samples": [
+      {
+        "timelineSampleIndex": 2,
+        "requestedProgress": 0.0625,
+        "actualProgress": 0.06285194062500069,
+        "carrierPositionP": 491.9420166015625,
+        "carrierPositionBinary64LittleEndianHex": "0000008012bf7e40",
+        "carrierBoundsExtent": 40.115966796875,
+        "backdropScale": 0.9686594009399414,
+        "metalChildRectangle": [491.9420166015625, -107.9420166015625, 640.0, 640.0],
+        "metalChildRectangleDirectlyObservedAtX19Plus1568": true,
+        "predictedAggregateF64": [490.0, -115.9420166015625, 641.9420166015625, 649.9420166015625],
+        "observedAggregateF64": [490.0, -115.9420166015625, 641.9420166015625, 649.9420166015625],
+        "aggregateBinary64BitwiseExact": true,
+        "integerEnclosure": [490, -116, 642, 650],
+        "onePixelBorderResult": [489, -117, 644, 652],
+        "observedWorkingIntegerRectangle": [489, -117, 644, 652],
+        "integerCropExact": true
+      },
+      {
+        "timelineSampleIndex": 3,
+        "requestedProgress": 0.09375,
+        "actualProgress": 0.09395704097222127,
+        "carrierPositionP": 481.9871826171875,
+        "carrierPositionBinary64LittleEndianHex": "00000080cb1f7e40",
+        "carrierBoundsExtent": 60.025634765625,
+        "backdropScale": 0.9531049728393555,
+        "metalChildRectangle": [481.9871826171875, -97.9871826171875, 640.0, 640.0],
+        "metalChildRectangleDirectlyObservedAtX19Plus1568": false,
+        "predictedAggregateF64": [480.0, -105.9871826171875, 641.9871826171875, 649.9871826171875],
+        "observedAggregateF64": [480.0, -105.9871826171875, 641.9871826171875, 649.9871826171875],
+        "aggregateBinary64BitwiseExact": true,
+        "integerEnclosure": [480, -106, 642, 650],
+        "onePixelBorderResult": [479, -107, 644, 652],
+        "observedWorkingIntegerRectangle": [479, -107, 644, 652],
+        "integerCropExact": true
+      },
+      {
+        "timelineSampleIndex": 5,
+        "requestedProgress": 0.15625,
+        "actualProgress": 0.15645547673611115,
+        "carrierPositionP": 461.9932861328125,
+        "carrierPositionBinary64LittleEndianHex": "00000080e4df7c40",
+        "carrierBoundsExtent": 100.013427734375,
+        "backdropScale": 0.9218645095825195,
+        "metalChildRectangle": [461.9932861328125, -77.9932861328125, 640.0, 640.0],
+        "metalChildRectangleDirectlyObservedAtX19Plus1568": false,
+        "predictedAggregateF64": [460.0, -85.9932861328125, 641.9932861328125, 649.9932861328125],
+        "observedAggregateF64": [460.0, -85.9932861328125, 641.9932861328125, 649.9932861328125],
+        "aggregateBinary64BitwiseExact": true,
+        "integerEnclosure": [460, -86, 642, 650],
+        "onePixelBorderResult": [459, -87, 644, 652],
+        "observedWorkingIntegerRectangle": [459, -87, 644, 652],
+        "integerCropExact": true
+      }
+    ],
+    "interpretationBoundary": "This is a bitwise public/private bridge for three observed normal-transition states. It is stronger than a fitted tolerance model but does not establish the recursive merge policy, its alternate branch, or transfer to another geometry."
+  },
+  "nextEvidenceBoundary": {
+    "objective": "Capture the exact direct LayerShapes merge call at prepare_layer+12992 before and after execution, capture its decoded QuartzCore target implementation, and retain enough selected-source calls to test the public/private rule across substantially more timeline states.",
+    "requiredEvidence": [
+      "byte-gate the already-opened 4096-byte prepare_layer window and decode the AArch64 BL target without symbol-name assumptions",
+      "capture x0 == x19+656, x1 == x19+1568, w2 == 1, the selected source identity, and complete bounded pre/post bytes at the exact call and return PCs",
+      "retain the helper target code with exact address, module, byte count, payload hash, and bytes",
+      "require multiple structurally distinct complete call pairs while keeping their semantic contents sealed until the run passes",
+      "after opening, test exact transfer over additional normal states before designing unseen geometry and Retina gates"
+    ],
+    "recursiveLayerShapesMergeRecovered": false,
+    "completePublicCropConstructionRuleRecovered": false,
+    "unseenGeometryTransferPassed": false,
+    "productionShaderAuthorized": false
+  },
+  "notClaimed": [
+    "that the three-sample public/private identity is a universal crop-allocation law",
+    "that the direct LayerShapes helper target or its branch behavior is known",
+    "that the alternate virtual-call branch is semantically equivalent to the direct helper",
+    "that multi-record or unseen geometry, temporal, material, appearance, direction, or physical Retina 2x transfer passed",
+    "that Walle may change its production shader",
+    "that Apple Liquid Glass parity has been achieved"
+  ]
+}

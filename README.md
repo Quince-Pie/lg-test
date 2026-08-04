@@ -5304,3 +5304,68 @@ live callee-saved role pointer from `x19` through `x28`. The sealed validator
 requires a successful `x19` role snapshot at every preregistered changed
 construction site. It still opens no new arithmetic and gives no
 production-shader authority.
+
+Run `30883442714`, from role-state commit `c80f4b5`, passes that prospective
+contract. The target exits normally, the trace reaches its preregistered
+24-event bound with zero failures, all 52 attempted role reads succeed, and
+all six required changed-site `x19` snapshots are complete. The raw trace
+SHA-256 is
+`2ea3e431a3339f5b6f0ec2ce947816e175cee2cb4510b655aa79ed5b9d3a4b5b`;
+the timeline SHA-256 is
+`2f7cf72bb6fe2b489006b19309bf24eab3af1aba764fbf76bc03cebc94b2dfeb`;
+and the CI/local byte-identical validation SHA-256 is
+`433271e4b5b4c28e6d8cba45dc40f9ae352faeb24790d69055c7d7990bc7d347`.
+The immutable opened result is
+`Analysis/dynamic_allocation_capture_backdrop_writer_role_state_result.json`.
+
+The role bytes close the earlier operand-range gap. At the relevant source
+invocations, `x19+656`/`+672` holds the floating aggregate bounds,
+`x19+752`/`+768` is the exact `[0,0,1024,1024]` viewport, `x19+624` is the
+unclipped working crop, and `x19+608` is its viewport-clipped visible
+rectangle. Three independent private aggregates contain the exact binary64
+carrier positions exposed by public presentation-layer path `[1]` at timeline
+samples 2, 3, and 5: `491.9420166015625`, `481.9871826171875`, and
+`461.9932861328125`. The public SDF child at path `[1,0]` is exactly
+`640x640`, and the real `glassBackground` filter reports an exact
+`inputShadowOffset` of `[0,8]`.
+
+For each of those three states, let `P` be that public carrier position and
+`L = floor(P) - 1`. The captured private aggregate is bit-for-bit equal to
+
+```
+[L, 1024 - P - 640 - 8, P + 640 - L, P + 640 + 8 - L]
+```
+
+with zero binary64 mismatches. Apple's already-opened integer enclosure then
+produces `[490,-116,642,650]`, `[480,-106,642,650]`, and
+`[460,-86,642,650]`; the observed enabled border branch expands each edge by
+one pixel, reproducing the private working crops `[489,-117,644,652]`,
+`[479,-107,644,652]`, and `[459,-87,644,652]` exactly. This is a real
+public/private bitwise bridge, not a tolerance fit, but its scope is still only
+the three opened states.
+
+The same code window narrows the remaining constructor gap to one concrete
+branch. `prepare_layer+0x3258` recursively fills the child `LayerShapes` at
+`x19+1568`. The direct branch then calls an unsymbolized QuartzCore target at
+`prepare_layer+0x32c0` with `x0=x19+656`, `x1=x19+1568`, and `w2=1`; decoding
+the retained AArch64 `BL` word `0x97fff0a8` places that target exactly 2,720
+bytes before the `prepare_layer` symbol. The target implementation and its
+pre/post operands were not retained. The alternate branch instead performs
+virtual layer operations and writes a result from `x19+1312`. Until those
+branches and unseen-state transfer are captured, this remains an opened
+three-sample identity rather than the complete public crop-allocation policy,
+and it does not authorize a production shader change.
+
+The next prospective contract is frozen in
+`Analysis/dynamic_allocation_layer_shapes_merge_preregistration.json` and runs
+in the separate `layer-shapes-merge-introspect.yml` workflow, leaving the
+successful schema-5 harness and workflow byte-for-byte unchanged. It gates the
+opened `prepare_layer` window, decodes the `BL` target arithmetically, retains
+4 KiB of previously unseen target code, and captures exact 32-byte aggregate
+and child `LayerShapes` plus the containing 2 KiB role state immediately before
+and after the call. Only calls whose `x28` is the independently selected source
+and whose live aliases are `x0=x19+656`, `x1=x19+1568`, and `x2=1` qualify.
+The sealed validator requires at least 16 complete pairs, at least eight
+distinct input pairs, no pending return, and exact callback accounting. It may
+prove capture integrity only; helper semantics stay sealed until the resulting
+artifact passes and is opened.
