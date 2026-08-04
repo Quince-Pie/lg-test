@@ -1,0 +1,140 @@
+{
+  "layerShapesMergeLateArmResultSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-04T21:06:56Z",
+  "classification": "opened failed-closed Apple LayerShapes merge run; the exact union_bounds target implementation was captured and decoded, while zero call pairs prove that arming the call breakpoint only after downstream capture_backdrop source selection is temporally too late; not a successful operand trace, complete public crop law, unseen transfer, or product-parity claim",
+  "run": {
+    "runID": 30950358261,
+    "jobID": 92130608772,
+    "headSHA": "22f436ac2b4fd0416a2776ea3b7a386fa67fb185",
+    "workflowConclusion": "failure",
+    "buildStepOutcome": "success",
+    "captureStepOutcome": "success",
+    "captureTargetExitedNormally": true,
+    "pathIsolationValidatorOutcome": "success",
+    "inputClampValidatorOutcome": "success",
+    "mergeTraceValidatorOutcome": "failure",
+    "artifactUploadOutcome": "success",
+    "enforcementOutcome": "failure",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/30950358261"
+  },
+  "inputArtifacts": {
+    "artifactID": 8908962460,
+    "artifactArchiveByteCount": 99734475,
+    "artifactArchiveDigest": "sha256:af4fd28736e6aa2f5b0023120cec4399e1cd999470d9fc3c3122dd52dc4d7836",
+    "transitionFrameImageCount": 33,
+    "transitionTimelineByteCount": 178938514,
+    "transitionTimelineSHA256": "307cb28a563d659b75fbee452f5dc83a454a5974538f9e6bc43da2ce1b93d439",
+    "rawMergeTraceByteCount": 21648,
+    "rawMergeTraceSHA256": "89565ced2f5703bdfc94f57b02224879fb2ab4fc02eceecd01ef5f88394c96c6",
+    "pathIsolationResultSHA256": "bf4063ba3aa28f911ae6935b135324218d0238d869bc6db7d7d4ca33cf5de3c2",
+    "inputClampResultSHA256": "aa6ec7fb4876e042ca92ff731295a37aebe7b7dab858456fe68f4a82f428a043",
+    "lldbLogSHA256": "4f146193b101064fcde03c959eb9e32c79ef63d55fa46404201cc499a3bebf0d",
+    "runtimeStderrSHA256": "80cae31e37dd1995ad2b209ac4875cdf0410cd8ad6f76784ca7a9c0606c4e09a",
+    "transitionProgressSHA256": "37bfe0816f8dc145965be71a0f8103b3c830c53b511ef1e4cb219a834eb851e5"
+  },
+  "successfulStaticGates": {
+    "captureBackdropCodeByteCount": 16384,
+    "captureBackdropCodeSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "prepareLayerSymbolByteCount": 40128,
+    "prepareLayerCodeWindowOffset": 12764,
+    "prepareLayerCodeWindowByteCount": 4096,
+    "prepareLayerCodeWindowSHA256": "91fbe43da3533d7cd4578195b77c5a1aa0844105493c70635687e76adb7af768",
+    "mergeCallOffset": 12992,
+    "mergeCallRawLittleEndianHex": "a8f0ff97",
+    "mergeCallWordHex": "97fff0a8",
+    "mergeCallDisplacement": -15712,
+    "mergeTargetRelativeToPrepareLayer": -2720,
+    "selectedObjectChainExact": true,
+    "selectedLateCandidateIndex": 1,
+    "rawTraceFailureCount": 0
+  },
+  "openedMergeHelper": {
+    "resolvedName": "CA::Render::Updater::LayerShapes::union_bounds(CA::Rect const&, bool)",
+    "module": "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore",
+    "loadAddressInRun": 6779908060,
+    "symbolEndAddressInRun": 6779908464,
+    "symbolByteCount": 404,
+    "symbolCodeSHA256": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7",
+    "capturedCodeWindowByteCount": 4096,
+    "capturedCodeWindowSHA256": "6ef1454472d8fe5754253f26faa8db1f5473396b9879b74dcbe16fb7ffd4d10b",
+    "arguments": {
+      "x0": "mutable destination LayerShapes",
+      "x1": "const CA::Rect input",
+      "w2": "boolean secondary-bounds propagation gate"
+    },
+    "floatingRectangleUnion": {
+      "instructionRange": [44, 132],
+      "inputLayout": "four binary64 values [originX, originY, width, height] at x1+0",
+      "destinationLayout": "four binary64 values [originX, originY, width, height] at x0+0",
+      "validPairOperationOrder": [
+        "classify nonpositive input and destination extents through exact SIMD comparisons",
+        "when one rectangle is empty, preserve or copy the nonempty rectangle according to the opened branch table",
+        "for two nonempty rectangles, compute both far edges with binary64 fadd",
+        "take fminnm of both origins",
+        "take fmaxnm of both far edges",
+        "subtract the selected origin from the selected far edge",
+        "store the resulting four binary64 values to the destination"
+      ],
+      "decisiveInstructions": [
+        {"offset": 44, "instruction": "ldp q0, q1, [x1]"},
+        {"offset": 48, "instruction": "ldr q2, [x0, #16]"},
+        {"offset": 108, "instruction": "ldr q3, [x20]"},
+        {"offset": 112, "instruction": "fadd v2.2d, v3.2d, v2.2d"},
+        {"offset": 116, "instruction": "fadd v1.2d, v0.2d, v1.2d"},
+        {"offset": 120, "instruction": "fminnm v0.2d, v3.2d, v0.2d"},
+        {"offset": 124, "instruction": "fmaxnm v1.2d, v2.2d, v1.2d"},
+        {"offset": 128, "instruction": "fsub v1.2d, v1.2d, v0.2d"},
+        {"offset": 132, "instruction": "stp q0, q1, [x20]"}
+      ]
+    },
+    "secondaryIntegerBounds": {
+      "gateRange": [132, 268],
+      "gate": "w2 is nonzero and destination+0x48 contains a non-null secondary-bounds handle",
+      "operation": "apply the already-opened clamped floor-origin/ceil-far-edge integer enclosure to the input rectangle, then call the secondary union helper with destination+0x48 and that stack rectangle",
+      "integerEnclosureRange": [148, 252],
+      "nestedHelperCallOffset": 264,
+      "nestedHelperSemanticsFullyOpened": false
+    },
+    "tailBoundsPropagation": {
+      "range": [268, 404],
+      "gate": "destination+0x30 is non-null and its byte at +0x10 has bit zero clear",
+      "observedPreparation": "load input origin and size, add them to form far edges, then tail-call a second helper using destination+0x30+8",
+      "tailTargetSemanticsFullyOpened": false
+    },
+    "coreFloatingUnionRecoveredFromInstructions": true,
+    "selectedSourcePreAndPostReplayAvailable": false
+  },
+  "failedProspectiveGate": {
+    "statusBeforeFinalization": "merge-breakpoints-armed",
+    "rawFailureCount": 0,
+    "mergeCallSiteHitCount": 0,
+    "selectedSourceCallCount": 0,
+    "completeRecordCount": 0,
+    "pendingRecordCount": 0,
+    "validatorFailure": "merge record bounds differ",
+    "rootCause": "The harness waited for the downstream capture_backdrop+0x2b58 preconvergence selector before installing prepare_layer+0x32c0/+0x32c4 breakpoints. The direct union_bounds call belongs to earlier initial prepare_layer construction, so every relevant call had already returned before the source identity became available.",
+    "consequence": "The run opens the exact helper target and core floating union implementation, but contains no before/after operand pair and cannot validate the selected source's initial aggregate construction."
+  },
+  "nextEvidenceBoundary": {
+    "objective": "Arm construction breakpoints at the first prepare_layer entry, retain bounded preselection records, classify them retrospectively after the exact capture_backdrop source chain is known, and capture the alternate dynamic aggregate store as well as the one-time direct union call.",
+    "requiredChanges": [
+      "leave the failed run, its preregistration, harness, validator, tests, and workflow immutable",
+      "at prepare_layer entry, install the direct call/return breakpoints before the current invocation executes",
+      "retain bounded direct union call pairs even before source selection and mark exact x28 source identity after selection",
+      "also pair prepare_layer+0x33f0 before-store and +0x33f4 after-store state, including x19+656, x19+1312, q0, q1, and the 2 KiB role state",
+      "after source selection, retain only exact selected-source dynamic store records while preserving the bounded preselection prefix",
+      "require at least one complete selected-source direct pair and multiple distinct selected-source alternate-store pairs before opening semantics"
+    ],
+    "productionShaderAuthorized": false
+  },
+  "notClaimed": [
+    "that run 30950358261 passed its prospective operand-pair gate",
+    "that union_bounds was observed with the selected source's live operands",
+    "that the helper's secondary integer or tail targets are semantically complete",
+    "that the alternate prepare_layer branch constructing x19+1312 is known",
+    "that the complete public crop-construction rule is recovered",
+    "that unseen transfer has passed",
+    "that Walle may change its production shader",
+    "that Apple Liquid Glass parity has been achieved"
+  ]
+}

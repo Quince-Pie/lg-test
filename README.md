@@ -5369,3 +5369,56 @@ The sealed validator requires at least 16 complete pairs, at least eight
 distinct input pairs, no pending return, and exact callback accounting. It may
 prove capture integrity only; helper semantics stay sealed until the resulting
 artifact passes and is opened.
+
+Run `30950358261`, from helper-probe commit `22f436a`, fails that operand-pair
+gate correctly while opening the previously unseen call target. The app exits
+normally, both existing allocation validators pass, the raw trace has zero
+internal failures, and artifact upload succeeds; final enforcement fails only
+because the merge trace contains zero call pairs. The immutable opened null
+result is
+`Analysis/dynamic_allocation_layer_shapes_merge_late_arm_result.json`.
+
+The decoded target is the 404-byte QuartzCore symbol
+`CA::Render::Updater::LayerShapes::union_bounds(CA::Rect const&, bool)`. Its
+exact symbol SHA-256 is
+`246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7`.
+The core path loads two binary64 rectangles, handles nonpositive extents,
+computes both far edges, applies `fminnm` to origins and `fmaxnm` to far edges,
+subtracts to recover extents, and stores the four resulting values. When its
+boolean argument is enabled and the secondary handle at destination `+0x48`
+exists, the function also applies Apple's already-opened floor/ceil integer
+enclosure and calls a secondary union helper.
+
+Zero call-site hits identify a temporal instrumentation error, not absent Apple
+behavior: the probe installed `prepare_layer+0x32c0` only after the downstream
+`capture_backdrop+0x2b58` selector ran, but initial `prepare_layer` construction
+had already returned. The amended probe must arm at the first `prepare_layer`
+entry, retain a bounded preselection prefix, and classify its `x28` identities
+after source selection. It must also capture the dynamic alternate branch at
+`+0x33f0`, where `x19+1312` is copied to aggregate state `x19+656`; that branch
+is the likely source of the later changing samples and remains unopened.
+
+That amendment is prospectively frozen in
+`Analysis/dynamic_allocation_layer_shapes_construction_preregistration.json`
+and runs in the separate
+`layer-shapes-construction-introspect.yml` workflow. At the first exact
+`prepare_layer` entry it revalidates the opened symbol and code hashes, then
+arms both branch pairs before the current invocation proceeds. The direct pair
+at `+0x32c0/+0x32c4` retains at most 64 early calls and classifies each live
+`x28` retrospectively against the independently selected `capture_backdrop`
+source. The alternate pair at `+0x33f0/+0x33f4` retains a bounded preselection
+prefix and, after selection, only exact `x28` matches.
+
+The alternate instruction identity is already fixed by the opened bytes:
+`ldr q0,[x19,#0x520]`, `ldr q1,[x19,#0x530]`, then the raw word
+`0xad148660` (`608614ad` in memory) stores both vectors to
+`[x19,#0x290]`. The prospective validator therefore requires the two SIMD
+registers to equal all 32 bytes at `x19+1312`, and the post-instruction bytes at
+`x19+656` to equal that source exactly. It also requires at least one complete
+selected-source direct pair whose aggregate changes, eight complete selected
+alternate pairs, eight distinct alternate source payloads, no pending pair,
+exact callback accounting, and zero trace failures. Those thresholds and all
+implementation hashes were fixed before dispatch. Passing this gate will open
+the captured operands for analysis; it will not by itself recover the
+alternate producer, establish unseen-state transfer, authorize a Walle shader
+change, or claim Liquid Glass parity.
