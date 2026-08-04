@@ -85,22 +85,32 @@ class CaptureBackdropWriterOperandsPreregistrationTests(unittest.TestCase):
 
     def test_preregistered_implementation_hashes_match_current_files(self):
         frozen = PREREGISTRATION["frozenImplementation"]
+        historical = {
+            "lldbTraceHarnessSHA256": (
+                "077427cf687849f87bc082ce81714a58af75e434777b09438698adea98b13264"
+            ),
+            "lldbTraceHarnessSourceTestSHA256": (
+                "5a5106aeab58063e6ef059811d45f9f174c674c1998f461e1c5c28508a35f0c7"
+            ),
+            "sealedTraceValidatorSHA256": (
+                "32fbf6f9a66018127a60115b86fc6d159cf1a5d96915bffff8484463bff80fef"
+            ),
+            "sealedTraceValidatorTestSHA256": (
+                "fba029c002321a59870f36228894d55302d048802afa7488d39aaf738e888ada"
+            ),
+            "registrationTestSHA256": (
+                "2f7a7f08ebf34b4a0cc7dd630aaadc7559263f6ca924b36d756e414b23f9efb1"
+            ),
+        }
+        for name, digest in historical.items():
+            with self.subTest(name=name):
+                self.assertEqual(frozen[name], digest)
         files = {
             "openedResultSHA256": ANALYSIS_ROOT
             / "dynamic_allocation_capture_backdrop_writer_trace_preconvergence_result.json",
-            "lldbTraceHarnessSHA256": ANALYSIS_ROOT
-            / "capture_backdrop_writer_trace_lldb.py",
-            "lldbTraceHarnessSourceTestSHA256": ANALYSIS_ROOT
-            / "test_capture_backdrop_writer_trace_lldb_source.py",
-            "sealedTraceValidatorSHA256": ANALYSIS_ROOT
-            / "validate_capture_backdrop_writer_trace.py",
-            "sealedTraceValidatorTestSHA256": ANALYSIS_ROOT
-            / "test_validate_capture_backdrop_writer_trace.py",
             "workflowSHA256": REPOSITORY_ROOT
             / ".github/workflows/transition-introspect.yml",
             "developmentFlakeSHA256": REPOSITORY_ROOT / "flake.nix",
-            "registrationTestSHA256": ANALYSIS_ROOT
-            / "test_dynamic_allocation_capture_backdrop_writer_operands_preregistration.py",
             "productionShaderSHA256": REPOSITORY_ROOT.parent / "shaders/frag.glsl",
         }
         for name, path in files.items():

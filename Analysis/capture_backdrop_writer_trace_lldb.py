@@ -16,8 +16,13 @@ from pathlib import Path
 import lldb
 
 
-TRACE_SCHEMA_VERSION = 4
+TRACE_SCHEMA_VERSION = 5
 CAPTURE_BACKDROP_SYMBOL = "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
+PREPARE_LAYER_FUNCTION = (
+    "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, "
+    "CA::Render::Updater::LocalState&, CA::Render::LayerNode*, "
+    "CA::Render::Updater::LayerShapes&, unsigned long long&)"
+)
 CAPTURE_BACKDROP_CODE_BYTE_COUNT = 0x4000
 CAPTURE_BACKDROP_CODE_SHA256 = (
     "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2"
@@ -44,6 +49,8 @@ SIMD_REGISTER_NAMES = tuple("v%d" % index for index in range(32)) + (
     "fpcr",
 )
 POINTER_PROBE_REGISTER_NAMES = tuple("x%d" % index for index in range(29))
+PREPARE_LAYER_ROLE_REGISTER_NAMES = tuple("x%d" % index for index in range(19, 29))
+PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT = 0x800
 MINIMUM_POINTER_PROBE_ADDRESS = 0x1_0000_0000
 MAXIMUM_POINTER_PROBE_ADDRESS = 0x0000_FFFF_FFFF_FFFF
 OBJECT_SNAPSHOT_SPECS = (
@@ -116,6 +123,11 @@ def _new_trace():
                 MINIMUM_POINTER_PROBE_ADDRESS,
                 MAXIMUM_POINTER_PROBE_ADDRESS,
             ],
+            "prepareLayerFunction": PREPARE_LAYER_FUNCTION,
+            "prepareLayerRoleRegisterNames": list(PREPARE_LAYER_ROLE_REGISTER_NAMES),
+            "prepareLayerRoleSnapshotByteCount": (
+                PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT
+            ),
             "objectSnapshotSpecs": [
                 {"base": base, "byteCount": byte_count}
                 for base, byte_count in OBJECT_SNAPSHOT_SPECS
@@ -281,6 +293,44 @@ def _operand_snapshot(frame):
                 "hex": payload.hex(),
             }
         )
+    role_registers = {}
+    if frame.GetFunctionName() == PREPARE_LAYER_FUNCTION:
+        for name in PREPARE_LAYER_ROLE_REGISTER_NAMES:
+            address = general_by_name[name]["unsignedValue"]
+            if (
+                MINIMUM_POINTER_PROBE_ADDRESS
+                <= address
+                <= MAXIMUM_POINTER_PROBE_ADDRESS
+            ):
+                role_registers.setdefault(address, []).append(name)
+    role_probes = []
+    role_probe_failures = []
+    for address, names in sorted(role_registers.items()):
+        payload, error = _try_read_memory(
+            process,
+            address,
+            PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT,
+        )
+        if payload is None:
+            role_probe_failures.append(
+                {
+                    "registerNames": names,
+                    "registerValue": address,
+                    "address": address,
+                    "message": error,
+                }
+            )
+            continue
+        role_probes.append(
+            {
+                "registerNames": names,
+                "registerValue": address,
+                "address": address,
+                "byteCount": PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT,
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "hex": payload.hex(),
+            }
+        )
     return {
         "registers": registers,
         "stack": _memory_snapshot(
@@ -293,6 +343,9 @@ def _operand_snapshot(frame):
         "registerPointerProbeCount": len(pointer_registers),
         "registerPointerProbes": pointer_probes,
         "registerPointerProbeFailures": pointer_probe_failures,
+        "prepareLayerRoleProbeCount": len(role_registers),
+        "prepareLayerRoleProbes": role_probes,
+        "prepareLayerRoleProbeFailures": role_probe_failures,
     }
 
 

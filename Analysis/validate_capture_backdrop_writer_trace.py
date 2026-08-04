@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 
-EXPECTED_TRACE_SCHEMA_VERSION = 4
+EXPECTED_TRACE_SCHEMA_VERSION = 5
 EXPECTED_CAPTURE_BACKDROP_SYMBOL = (
     "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
 )
@@ -55,6 +55,8 @@ SIMD_REGISTER_NAMES = tuple(f"v{index}" for index in range(32)) + (
     "fpcr",
 )
 POINTER_PROBE_REGISTER_NAMES = tuple(f"x{index}" for index in range(29))
+PREPARE_LAYER_ROLE_REGISTER_NAMES = tuple(f"x{index}" for index in range(19, 29))
+PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT = 0x800
 MINIMUM_POINTER_PROBE_ADDRESS = 0x1_0000_0000
 MAXIMUM_POINTER_PROBE_ADDRESS = 0x0000_FFFF_FFFF_FFFF
 OBJECT_SNAPSHOT_SPECS = {
@@ -157,7 +159,9 @@ def operand_snapshot(
     value: Any,
     label: str,
     addresses: Mapping[str, Any],
-) -> Mapping[str, Any]:
+    *,
+    is_prepare_layer: bool,
+) -> tuple[Mapping[str, Any], frozenset[str]]:
     snapshot = mapping(value, label)
     registers = mapping(snapshot.get("registers"), f"{label} registers")
     general_values = list(sequence(registers.get("general"), f"{label} general"))
@@ -253,7 +257,75 @@ def operand_snapshot(
             raise ValueError(f"{label} pointer failure differs")
     if observed_groups != dict(expected_groups):
         raise ValueError(f"{label} pointer inventory differs")
-    return snapshot
+
+    role_probes = [
+        mapping(item, f"{label} prepare_layer role probe")
+        for item in sequence(
+            snapshot.get("prepareLayerRoleProbes"),
+            f"{label} prepare_layer role probes",
+        )
+    ]
+    role_failures = [
+        mapping(item, f"{label} prepare_layer role failure")
+        for item in sequence(
+            snapshot.get("prepareLayerRoleProbeFailures"),
+            f"{label} prepare_layer role failures",
+        )
+    ]
+    role_probe_count = integer(
+        snapshot.get("prepareLayerRoleProbeCount"),
+        f"{label} prepare_layer role probe count",
+    )
+    if role_probe_count != len(role_probes) + len(role_failures):
+        raise ValueError(f"{label} prepare_layer role probe count differs")
+
+    expected_role_groups: defaultdict[int, list[str]] = defaultdict(list)
+    if is_prepare_layer:
+        for name in PREPARE_LAYER_ROLE_REGISTER_NAMES:
+            address = general[name]["unsignedValue"]
+            if (
+                MINIMUM_POINTER_PROBE_ADDRESS
+                <= address
+                <= MAXIMUM_POINTER_PROBE_ADDRESS
+            ):
+                expected_role_groups[address].append(name)
+    observed_role_groups = {}
+    successful_role_registers = set()
+    for item, succeeded in [
+        *((probe, True) for probe in role_probes),
+        *((failure, False) for failure in role_failures),
+    ]:
+        address = integer(item.get("address"), f"{label} prepare_layer role address")
+        register_value = integer(
+            item.get("registerValue"),
+            f"{label} prepare_layer role register value",
+        )
+        names = list(
+            sequence(
+                item.get("registerNames"),
+                f"{label} prepare_layer role registers",
+            )
+        )
+        if (
+            address in observed_role_groups
+            or register_value != address
+            or names != expected_role_groups.get(address)
+        ):
+            raise ValueError(f"{label} prepare_layer role identity differs")
+        observed_role_groups[address] = names
+        if succeeded:
+            memory_snapshot(
+                item,
+                f"{label} prepare_layer role memory",
+                expected_address=address,
+                expected_byte_count=PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT,
+            )
+            successful_role_registers.update(names)
+        elif not isinstance(item.get("message"), str) or not item["message"]:
+            raise ValueError(f"{label} prepare_layer role failure differs")
+    if observed_role_groups != dict(expected_role_groups):
+        raise ValueError(f"{label} prepare_layer role inventory differs")
+    return snapshot, frozenset(successful_role_registers)
 
 
 def numeric_vector(
@@ -376,6 +448,11 @@ def validate(trace_path: Path) -> dict[str, Any]:
         != list(POINTER_PROBE_REGISTER_NAMES)
         or configuration.get("pointerProbeAddressRange")
         != [MINIMUM_POINTER_PROBE_ADDRESS, MAXIMUM_POINTER_PROBE_ADDRESS]
+        or configuration.get("prepareLayerFunction") != EXPECTED_PREPARE_LAYER_FUNCTION
+        or configuration.get("prepareLayerRoleRegisterNames")
+        != list(PREPARE_LAYER_ROLE_REGISTER_NAMES)
+        or configuration.get("prepareLayerRoleSnapshotByteCount")
+        != PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT
         or configuration.get("objectSnapshotSpecs")
         != [
             {"base": base, "byteCount": byte_count}
@@ -647,6 +724,9 @@ def validate(trace_path: Path) -> dict[str, Any]:
     changed_events: Counter[str] = Counter()
     changed_quartz_core_events: Counter[str] = Counter()
     changed_prepare_layer_offsets: defaultdict[str, set[int]] = defaultdict(set)
+    prepare_layer_role_probe_success_count = 0
+    prepare_layer_role_probe_failure_count = 0
+    required_x19_role_snapshot_count = 0
     writer_sites: Counter[tuple[str | None, int | None, int]] = Counter()
     for event_index, event in enumerate(events):
         if event.get("eventIndex") != event_index:
@@ -700,7 +780,27 @@ def validate(trace_path: Path) -> dict[str, Any]:
         ):
             raise ValueError("event code window does not contain stop PC")
         private_fields(event.get("privateFieldsAfter"), "event private fields")
-        operand_snapshot(event.get("operandSnapshot"), "event operands", addresses)
+        is_prepare_layer = frame.get("function") == EXPECTED_PREPARE_LAYER_FUNCTION
+        raw_operands = mapping(event.get("operandSnapshot"), "event operands")
+        _, successful_role_registers = operand_snapshot(
+            raw_operands,
+            "event operands",
+            addresses,
+            is_prepare_layer=is_prepare_layer,
+        )
+        if is_prepare_layer:
+            prepare_layer_role_probe_success_count += len(
+                sequence(
+                    raw_operands.get("prepareLayerRoleProbes"),
+                    "event prepare_layer role probes",
+                )
+            )
+            prepare_layer_role_probe_failure_count += len(
+                sequence(
+                    raw_operands.get("prepareLayerRoleProbeFailures"),
+                    "event prepare_layer role failures",
+                )
+            )
         hit_counts[name] += 1
         hit_indices[name].append(hit_index)
         module_path = str(mapping(frame["module"], "event module")["path"])
@@ -710,10 +810,17 @@ def validate(trace_path: Path) -> dict[str, Any]:
             changed_events[name] += 1
             if QUARTZ_CORE_PATH_FRAGMENT in module_path:
                 changed_quartz_core_events[name] += 1
-            if frame.get("function") == EXPECTED_PREPARE_LAYER_FUNCTION:
-                changed_prepare_layer_offsets[name].add(
-                    integer(frame.get("symbolOffset"), "prepare_layer symbol offset")
+            if is_prepare_layer:
+                prepare_layer_offset = integer(
+                    frame.get("symbolOffset"), "prepare_layer symbol offset"
                 )
+                changed_prepare_layer_offsets[name].add(prepare_layer_offset)
+                if prepare_layer_offset in EXPECTED_CHANGED_PREPARE_LAYER_OFFSETS[name]:
+                    if "x19" not in successful_role_registers:
+                        raise ValueError(
+                            f"{name} prepare_layer x19 role snapshot differs"
+                        )
+                    required_x19_role_snapshot_count += 1
         writer_sites[(frame.get("function"), frame.get("symbolOffset"), stop_pc)] += 1
 
     final_hit_counts = mapping(trace.get("watchpointHitCounts"), "final hit counts")
@@ -732,10 +839,10 @@ def validate(trace_path: Path) -> dict[str, Any]:
             raise ValueError(f"{name} prospective writer evidence differs")
 
     return {
-        "captureBackdropWriterTraceValidationSchemaVersion": 3,
+        "captureBackdropWriterTraceValidationSchemaVersion": 4,
         "classification": (
-            "prospective-integrity-gate-for-bounded-private-writer-trace; "
-            "semantics-remain-sealed"
+            "prospective-integrity-gate-for-bounded-private-writer-role-state-"
+            "trace; semantics-remain-sealed"
         ),
         "conclusion": "success",
         "prospectiveGatePassed": True,
@@ -765,6 +872,13 @@ def validate(trace_path: Path) -> dict[str, Any]:
                 name: sorted(changed_prepare_layer_offsets[name])
                 for name in sorted(changed_prepare_layer_offsets)
             },
+            "prepareLayerRoleProbeSuccessCount": (
+                prepare_layer_role_probe_success_count
+            ),
+            "prepareLayerRoleProbeFailureCount": (
+                prepare_layer_role_probe_failure_count
+            ),
+            "requiredX19RoleSnapshotCount": required_x19_role_snapshot_count,
             "distinctWriterSiteCount": len(writer_sites),
             "writerSites": [
                 {
@@ -781,6 +895,7 @@ def validate(trace_path: Path) -> dict[str, Any]:
         "sealedConclusion": {
             "privateWriterPCsCaptured": True,
             "writerInstructionsAndOperandsCaptured": True,
+            "prepareLayerRoleStateCaptured": True,
             "writerSemanticsOpened": False,
             "publicLayerStateCropRuleRecovered": False,
             "unseenGeometryTransferPassed": False,

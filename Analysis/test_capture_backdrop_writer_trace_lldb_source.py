@@ -96,6 +96,32 @@ class RegisterFrame:
         return self.registers[name]
 
 
+class MemoryProcess:
+    def ReadMemory(self, address, byte_count, _error):
+        return bytes((address + offset) & 0xFF for offset in range(byte_count))
+
+
+class MemoryThread:
+    def __init__(self, process):
+        self.process = process
+
+    def GetProcess(self):
+        return self.process
+
+
+class OperandFrame(RegisterFrame):
+    def __init__(self, registers, function):
+        super().__init__(registers)
+        self.thread = MemoryThread(MemoryProcess())
+        self.function = function
+
+    def GetThread(self):
+        return self.thread
+
+    def GetFunctionName(self):
+        return self.function
+
+
 class CaptureBackdropWriterTraceLLDBSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -125,7 +151,7 @@ class CaptureBackdropWriterTraceLLDBSourceTests(unittest.TestCase):
         self.assertEqual(self.module._file_spec_path(FileSpec(None, None)), "")
 
     def test_harness_keeps_the_exact_trace_bounds(self):
-        self.assertEqual(self.module.TRACE_SCHEMA_VERSION, 4)
+        self.assertEqual(self.module.TRACE_SCHEMA_VERSION, 5)
         self.assertEqual(self.module.CAPTURE_BACKDROP_CODE_BYTE_COUNT, 0x4000)
         self.assertEqual(self.module.CAPTURE_BACKDROP_LATE_OFFSET, 0x2B58)
         self.assertEqual(self.module.WATCHPOINT_BYTE_COUNT, 8)
@@ -138,6 +164,11 @@ class CaptureBackdropWriterTraceLLDBSourceTests(unittest.TestCase):
         self.assertEqual(self.module.STACK_SNAPSHOT_BYTE_COUNT, 0x800)
         self.assertEqual(self.module.REGISTER_POINTER_SNAPSHOT_BYTE_COUNT, 0x100)
         self.assertEqual(self.module.REGISTER_POINTER_SNAPSHOT_BACKTRACK, 0x40)
+        self.assertEqual(self.module.PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT, 0x800)
+        self.assertEqual(
+            self.module.PREPARE_LAYER_ROLE_REGISTER_NAMES,
+            tuple(f"x{index}" for index in range(19, 29)),
+        )
         self.assertEqual(len(self.module.GENERAL_REGISTER_NAMES), 34)
         self.assertEqual(len(self.module.SIMD_REGISTER_NAMES), 34)
         self.assertEqual(len(self.module.WATCH_SPECS), 4)
@@ -157,6 +188,81 @@ class CaptureBackdropWriterTraceLLDBSourceTests(unittest.TestCase):
         self.assertEqual(record["byteCount"], 16)
         self.assertEqual(record["hex"], payload.hex())
         self.assertNotIn("unsignedValue", record)
+
+    def test_prepare_layer_role_snapshots_group_exact_register_values(self):
+        addresses = {
+            "source": 0x10_0000_0000,
+            "owner": 0x20_0000_0000,
+            "layer": 0x30_0000_0000,
+            "layerState": 0x40_0000_0000,
+        }
+        values = {name: 0 for name in self.module.GENERAL_REGISTER_NAMES}
+        values.update(
+            {
+                "x0": addresses["source"],
+                "x1": addresses["owner"],
+                "x2": addresses["layer"],
+                "x3": addresses["layerState"],
+                "sp": 0x50_0000_0000,
+                "pc": 0x60_0000_0000,
+            }
+        )
+        for index, name in enumerate(
+            self.module.PREPARE_LAYER_ROLE_REGISTER_NAMES, start=1
+        ):
+            values[name] = 0x70_0000_0000 + index * 0x1000
+        values["x20"] = values["x19"]
+        registers = {
+            name: Register(values[name].to_bytes(4 if name == "cpsr" else 8, "little"))
+            for name in self.module.GENERAL_REGISTER_NAMES
+        }
+        registers.update(
+            {
+                name: Register(bytes(4 if name in {"fpsr", "fpcr"} else 16))
+                for name in self.module.SIMD_REGISTER_NAMES
+            }
+        )
+        self.module._state["objectAddresses"] = addresses
+        snapshot = self.module._operand_snapshot(
+            OperandFrame(registers, self.module.PREPARE_LAYER_FUNCTION)
+        )
+        self.assertEqual(snapshot["prepareLayerRoleProbeCount"], 9)
+        self.assertEqual(snapshot["prepareLayerRoleProbeFailures"], [])
+        grouped = next(
+            probe
+            for probe in snapshot["prepareLayerRoleProbes"]
+            if probe["registerNames"] == ["x19", "x20"]
+        )
+        self.assertEqual(grouped["registerValue"], values["x19"])
+        self.assertEqual(
+            grouped["byteCount"], self.module.PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT
+        )
+
+    def test_non_prepare_layer_event_has_no_role_snapshots(self):
+        addresses = {
+            "source": 0x10_0000_0000,
+            "owner": 0x20_0000_0000,
+            "layer": 0x30_0000_0000,
+            "layerState": 0x40_0000_0000,
+        }
+        registers = {
+            name: Register(bytes(4 if name == "cpsr" else 8))
+            for name in self.module.GENERAL_REGISTER_NAMES
+        }
+        registers.update(
+            {
+                name: Register(bytes(4 if name in {"fpsr", "fpcr"} else 16))
+                for name in self.module.SIMD_REGISTER_NAMES
+            }
+        )
+        registers["sp"] = Register((0x50_0000_0000).to_bytes(8, "little"))
+        self.module._state["objectAddresses"] = addresses
+        snapshot = self.module._operand_snapshot(
+            OperandFrame(registers, "CA::Render::LayerNode::delete_node()")
+        )
+        self.assertEqual(snapshot["prepareLayerRoleProbeCount"], 0)
+        self.assertEqual(snapshot["prepareLayerRoleProbes"], [])
+        self.assertEqual(snapshot["prepareLayerRoleProbeFailures"], [])
 
 
 if __name__ == "__main__":

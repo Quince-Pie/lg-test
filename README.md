@@ -5259,3 +5259,48 @@ arm64 windows can be disassembled without a hard-coded Nix store path. The
 Apple capture matrix and workflow are unchanged, and the production shader
 remains locked at SHA-256
 `11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3`.
+
+Run `30881161586`, from operand-capture commit `4a862fa`, passes the entire
+prospective contract. The target exits normally, all three validators and final
+enforcement pass, and the raw schema-4 trace contains 24 bounded events, 12
+PC-containing windows, the five required changed `prepare_layer` stops, exact
+general/SIMD/stack/object operands, and zero LLDB failures. Its timeline
+SHA-256 is
+`5da42909bf334152ddd4995aaacddeac96e9376b5770a50814a6a0016f8062ae`;
+the raw trace SHA-256 is
+`dda7888f8e1ea07b1fb5c83a14d0c2e2e2620290ebb4913828a294a85e8ef67e`;
+and the byte-identical local/CI writer-validation SHA-256 is
+`f94d48b72ea5e210d2d68a464708b6d81f5c5fece30701dc3f794949e2d797b9`.
+The immutable opened result is
+`Analysis/dynamic_allocation_capture_backdrop_writer_operands_result.json`.
+
+The trace resolves the stopped-PC ambiguity exactly. On this arm64 target the
+hardware-watchpoint callback reports the instruction after the overlapping
+store. The coherent stores are `str x0, [x25,#584]` at reported
+`prepare_layer+0x3ef0`, `str q0, [x24,#112]` at `+0x4e18`, `str w22,
+[x28,#80]` at `+0x530c`, `stur d0, [x28,#84]` at `+0x5310`, and `str q0,
+[x28,#176]` at `+0x55c4`. Their retained source registers reproduce the
+observed handle and rectangle bytes exactly. In the first coherent reused
+sequence, Apple writes owner `[490.0,0.0,534.0,534.0]` and source
+`[490,-118,644,652]` component by component.
+
+The containing bytes also open two exact constructor primitives without
+fitting. `prepare_layer+0x5360..+0x53c4` loads a binary64 origin and size,
+clamps them to `[-536870911,536870912]`, takes `floor(origin)` and
+`ceil(origin+size)`, subtracts to form integer extents, and packs
+`[x,y,width,height]`. `+0x53f8..+0x5424` intersects that rectangle with the
+working integer rectangle at `x19+624` using signed maximum origins, signed
+minimum far edges, and exact integer subtraction. Later conditional helper
+calls can replace or mutate the same working rectangle before `+0x55bc` loads
+it for the layer-state store.
+
+This is not yet the complete public crop policy. The generic pointer snapshot
+starts 64 bytes before a register and spans 256 bytes, so it reaches only 192
+bytes forward. The decoded constructor reads `x19+624`, `x19+752`,
+`x19+768`, and `x19+1568`; none of those input ranges is present in run
+`30881161586`. Schema 5 therefore keeps every successful gate unchanged and,
+for `prepare_layer` events only, adds bounded 2 KiB forward snapshots of every
+live callee-saved role pointer from `x19` through `x28`. The sealed validator
+requires a successful `x19` role snapshot at every preregistered changed
+construction site. It still opens no new arithmetic and gives no
+production-shader authority.

@@ -46,12 +46,22 @@ def raw_register(name, byte_count, unsigned):
     return record
 
 
-def operand_snapshot(addresses, pc):
+def operand_snapshot(addresses, pc, *, is_prepare_layer=True):
     register_values = {
         "x0": addresses["source"],
         "x1": addresses["owner"],
         "x2": addresses["layer"],
         "x3": addresses["layerState"],
+        "x19": addresses["source"],
+        "x20": addresses["owner"],
+        "x21": addresses["owner"],
+        "x22": addresses["layer"],
+        "x23": addresses["layerState"],
+        "x24": addresses["layer"],
+        "x25": addresses["owner"],
+        "x26": addresses["layer"],
+        "x27": addresses["layerState"],
+        "x28": addresses["source"],
         "sp": 0x70_0000_0000,
         "pc": pc,
     }
@@ -63,10 +73,19 @@ def operand_snapshot(addresses, pc):
     for index, name in enumerate(validator.SIMD_REGISTER_NAMES):
         byte_count = 4 if name in {"fpsr", "fpcr"} else 16
         simd.append(raw_register(name, byte_count, index))
-    pointer_probes = []
-    for index, name in enumerate(("x0", "x1", "x2", "x3"), start=1):
-        address = register_values[name]
+    pointer_groups = {}
+    for name in validator.POINTER_PROBE_REGISTER_NAMES:
+        address = register_values.get(name, 0)
+        if not (
+            validator.MINIMUM_POINTER_PROBE_ADDRESS
+            <= address
+            <= validator.MAXIMUM_POINTER_PROBE_ADDRESS
+        ):
+            continue
         start = address - validator.REGISTER_POINTER_SNAPSHOT_BACKTRACK
+        pointer_groups.setdefault(start, []).append(name)
+    pointer_probes = []
+    for index, (start, names) in enumerate(sorted(pointer_groups.items()), start=1):
         probe = raw_snapshot(
             start,
             validator.REGISTER_POINTER_SNAPSHOT_BYTE_COUNT,
@@ -74,11 +93,30 @@ def operand_snapshot(addresses, pc):
         )
         probe.update(
             {
-                "registerNames": [name],
-                "registerValue": address,
+                "registerNames": names,
+                "registerValue": start + validator.REGISTER_POINTER_SNAPSHOT_BACKTRACK,
             }
         )
         pointer_probes.append(probe)
+    role_groups = {}
+    if is_prepare_layer:
+        for name in validator.PREPARE_LAYER_ROLE_REGISTER_NAMES:
+            address = register_values[name]
+            role_groups.setdefault(address, []).append(name)
+    role_probes = []
+    for index, (address, names) in enumerate(sorted(role_groups.items()), start=1):
+        probe = raw_snapshot(
+            address,
+            validator.PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT,
+            index + 16,
+        )
+        probe.update(
+            {
+                "registerNames": names,
+                "registerValue": address,
+            }
+        )
+        role_probes.append(probe)
     return {
         "registers": {"general": general, "simd": simd},
         "stack": raw_snapshot(
@@ -93,6 +131,9 @@ def operand_snapshot(addresses, pc):
         "registerPointerProbeCount": len(pointer_probes),
         "registerPointerProbes": pointer_probes,
         "registerPointerProbeFailures": [],
+        "prepareLayerRoleProbeCount": len(role_probes),
+        "prepareLayerRoleProbes": role_probes,
+        "prepareLayerRoleProbeFailures": [],
     }
 
 
@@ -230,7 +271,7 @@ def passing_trace():
             )
         hit_counts[name] = len(offsets)
     return {
-        "captureBackdropWriterTraceSchemaVersion": 4,
+        "captureBackdropWriterTraceSchemaVersion": 5,
         "classification": validator.EXPECTED_CLASSIFICATION,
         "status": "finalized",
         "statusBeforeFinalization": "watchpoints-armed",
@@ -268,6 +309,13 @@ def passing_trace():
                 validator.MINIMUM_POINTER_PROBE_ADDRESS,
                 validator.MAXIMUM_POINTER_PROBE_ADDRESS,
             ],
+            "prepareLayerFunction": validator.EXPECTED_PREPARE_LAYER_FUNCTION,
+            "prepareLayerRoleRegisterNames": list(
+                validator.PREPARE_LAYER_ROLE_REGISTER_NAMES
+            ),
+            "prepareLayerRoleSnapshotByteCount": (
+                validator.PREPARE_LAYER_ROLE_SNAPSHOT_BYTE_COUNT
+            ),
             "objectSnapshotSpecs": [
                 {"base": base, "byteCount": byte_count}
                 for base, byte_count in validator.OBJECT_SNAPSHOT_SPECS.items()
@@ -337,6 +385,8 @@ class CaptureBackdropWriterTraceTests(unittest.TestCase):
         self.assertTrue(
             result["sealedConclusion"]["writerInstructionsAndOperandsCaptured"]
         )
+        self.assertTrue(result["sealedConclusion"]["prepareLayerRoleStateCaptured"])
+        self.assertEqual(result["aggregate"]["requiredX19RoleSnapshotCount"], 5)
         self.assertFalse(
             result["sealedConclusion"]["publicLayerStateCropRuleRecovered"]
         )
@@ -402,6 +452,33 @@ class CaptureBackdropWriterTraceTests(unittest.TestCase):
             "00" * 8
         )
         with self.assertRaisesRegex(ValueError, "raw value"):
+            self.validate(trace)
+
+    def test_missing_required_x19_role_snapshot_fails_closed(self):
+        trace = passing_trace()
+        operands = trace["events"][0]["operandSnapshot"]
+        probe = next(
+            item
+            for item in operands["prepareLayerRoleProbes"]
+            if "x19" in item["registerNames"]
+        )
+        operands["prepareLayerRoleProbes"].remove(probe)
+        operands["prepareLayerRoleProbeFailures"].append(
+            {
+                "registerNames": probe["registerNames"],
+                "registerValue": probe["registerValue"],
+                "address": probe["address"],
+                "message": "synthetic role read failure",
+            }
+        )
+        with self.assertRaisesRegex(ValueError, "x19 role snapshot"):
+            self.validate(trace)
+
+    def test_prepare_layer_role_memory_tampering_fails_closed(self):
+        trace = passing_trace()
+        probe = trace["events"][0]["operandSnapshot"]["prepareLayerRoleProbes"][0]
+        probe["hex"] = "00" + probe["hex"][2:]
+        with self.assertRaisesRegex(ValueError, "role memory identity"):
             self.validate(trace)
 
     def test_late_candidate_diagnostic_tampering_fails_closed(self):
