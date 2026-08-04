@@ -43,6 +43,7 @@
               ))
               imagemagick
               gh # download artifacts: gh run download -n liquid-glass-captures-<run id>
+              llvmPackages_latest.llvm # disassemble captured Apple arm64 code windows
               ruff
             ];
           };

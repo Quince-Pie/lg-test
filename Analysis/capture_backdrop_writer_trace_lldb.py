@@ -16,7 +16,7 @@ from pathlib import Path
 import lldb
 
 
-TRACE_SCHEMA_VERSION = 3
+TRACE_SCHEMA_VERSION = 4
 CAPTURE_BACKDROP_SYMBOL = "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
 CAPTURE_BACKDROP_CODE_BYTE_COUNT = 0x4000
 CAPTURE_BACKDROP_CODE_SHA256 = (
@@ -29,9 +29,29 @@ MAXIMUM_TOTAL_HITS = 24
 MAXIMUM_BACKTRACE_FRAME_COUNT = 32
 MAXIMUM_LATE_CANDIDATE_COUNT = 512
 MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT = 16
-SYMBOL_CODE_WINDOW_BYTE_COUNT = 0x1000
-FALLBACK_CODE_WINDOW_BYTE_COUNT = 0x400
-FALLBACK_CODE_WINDOW_BACKTRACK = 0x200
+PC_CENTERED_CODE_WINDOW_BYTE_COUNT = 0x1000
+PC_CENTERED_CODE_WINDOW_BACKTRACK = 0x800
+STACK_SNAPSHOT_BYTE_COUNT = 0x800
+REGISTER_POINTER_SNAPSHOT_BYTE_COUNT = 0x100
+REGISTER_POINTER_SNAPSHOT_BACKTRACK = 0x40
+GENERAL_REGISTER_NAMES = tuple("x%d" % index for index in range(31)) + (
+    "sp",
+    "pc",
+    "cpsr",
+)
+SIMD_REGISTER_NAMES = tuple("v%d" % index for index in range(32)) + (
+    "fpsr",
+    "fpcr",
+)
+POINTER_PROBE_REGISTER_NAMES = tuple("x%d" % index for index in range(29))
+MINIMUM_POINTER_PROBE_ADDRESS = 0x1_0000_0000
+MAXIMUM_POINTER_PROBE_ADDRESS = 0x0000_FFFF_FFFF_FFFF
+OBJECT_SNAPSHOT_SPECS = (
+    ("source", 0x180),
+    ("owner", 0x300),
+    ("layer", 0x200),
+    ("layerState", 0x180),
+)
 TRACE_OUTPUT_ENVIRONMENT = "LG_CAPTURE_BACKDROP_WRITER_TRACE_OUTPUT"
 DEFAULT_TRACE_OUTPUT = "transition-introspection/capture-backdrop-writer-trace.json"
 WATCH_SPECS = (
@@ -84,8 +104,22 @@ def _new_trace():
             "maximumLateCandidateDiagnosticCount": (
                 MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT
             ),
-            "symbolCodeWindowByteCount": SYMBOL_CODE_WINDOW_BYTE_COUNT,
-            "fallbackCodeWindowByteCount": FALLBACK_CODE_WINDOW_BYTE_COUNT,
+            "pcCenteredCodeWindowByteCount": PC_CENTERED_CODE_WINDOW_BYTE_COUNT,
+            "pcCenteredCodeWindowBacktrack": PC_CENTERED_CODE_WINDOW_BACKTRACK,
+            "stackSnapshotByteCount": STACK_SNAPSHOT_BYTE_COUNT,
+            "registerPointerSnapshotByteCount": (REGISTER_POINTER_SNAPSHOT_BYTE_COUNT),
+            "registerPointerSnapshotBacktrack": (REGISTER_POINTER_SNAPSHOT_BACKTRACK),
+            "generalRegisterNames": list(GENERAL_REGISTER_NAMES),
+            "simdRegisterNames": list(SIMD_REGISTER_NAMES),
+            "pointerProbeRegisterNames": list(POINTER_PROBE_REGISTER_NAMES),
+            "pointerProbeAddressRange": [
+                MINIMUM_POINTER_PROBE_ADDRESS,
+                MAXIMUM_POINTER_PROBE_ADDRESS,
+            ],
+            "objectSnapshotSpecs": [
+                {"base": base, "byteCount": byte_count}
+                for base, byte_count in OBJECT_SNAPSHOT_SPECS
+            ],
             "watchSpecs": [
                 {"name": name, "base": base, "offset": offset}
                 for name, base, offset in WATCH_SPECS
@@ -134,11 +168,132 @@ def _read_u64(process, address, label):
     return struct.unpack("<Q", _read_memory(process, address, 8, label))[0]
 
 
+def _try_read_memory(process, address, byte_count):
+    error = lldb.SBError()
+    payload = process.ReadMemory(address, byte_count, error)
+    if not error.Success() or payload is None or len(payload) != byte_count:
+        return None, error.GetCString() or "partial memory read"
+    return bytes(payload), None
+
+
 def _register(frame, name):
     value = frame.FindRegister(name)
     if not value.IsValid():
         raise RuntimeError("missing register %s" % name)
     return value.GetValueAsUnsigned(0)
+
+
+def _register_record(frame, name):
+    value = frame.FindRegister(name)
+    if not value.IsValid():
+        raise RuntimeError("missing register %s" % name)
+    byte_count = value.GetByteSize()
+    data = value.GetData()
+    if byte_count <= 0 or not data.IsValid() or data.GetByteSize() != byte_count:
+        raise RuntimeError("register %s data is unavailable" % name)
+    error = lldb.SBError()
+    payload = bytearray()
+    for offset in range(byte_count):
+        payload.append(data.GetUnsignedInt8(error, offset))
+        if not error.Success():
+            raise RuntimeError(
+                "register %s byte %d failed: %s"
+                % (name, offset, error.GetCString() or "unknown SBData error")
+            )
+    record = {
+        "name": name,
+        "byteCount": byte_count,
+        "hex": bytes(payload).hex(),
+        "valueString": value.GetValue(),
+    }
+    if byte_count <= 8:
+        record["unsignedValue"] = value.GetValueAsUnsigned(0)
+    return record
+
+
+def _register_snapshot(frame):
+    return {
+        "general": [_register_record(frame, name) for name in GENERAL_REGISTER_NAMES],
+        "simd": [_register_record(frame, name) for name in SIMD_REGISTER_NAMES],
+    }
+
+
+def _memory_snapshot(process, address, byte_count, label):
+    payload = _read_memory(process, address, byte_count, label)
+    return {
+        "address": address,
+        "byteCount": byte_count,
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "hex": payload.hex(),
+    }
+
+
+def _operand_snapshot(frame):
+    process = frame.GetThread().GetProcess()
+    registers = _register_snapshot(frame)
+    general_by_name = {item["name"]: item for item in registers["general"]}
+    stack_pointer = general_by_name["sp"]["unsignedValue"]
+    objects = {
+        base: _memory_snapshot(
+            process,
+            _state["objectAddresses"][base],
+            byte_count,
+            base + " operand object snapshot",
+        )
+        for base, byte_count in OBJECT_SNAPSHOT_SPECS
+    }
+    pointer_registers = {}
+    for name in POINTER_PROBE_REGISTER_NAMES:
+        address = general_by_name[name]["unsignedValue"]
+        if (
+            not MINIMUM_POINTER_PROBE_ADDRESS
+            <= address
+            <= MAXIMUM_POINTER_PROBE_ADDRESS
+        ):
+            continue
+        start = address - REGISTER_POINTER_SNAPSHOT_BACKTRACK
+        pointer_registers.setdefault(start, []).append(name)
+    pointer_probes = []
+    pointer_probe_failures = []
+    for start, names in sorted(pointer_registers.items()):
+        payload, error = _try_read_memory(
+            process,
+            start,
+            REGISTER_POINTER_SNAPSHOT_BYTE_COUNT,
+        )
+        if payload is None:
+            pointer_probe_failures.append(
+                {
+                    "registerNames": names,
+                    "registerValue": start + REGISTER_POINTER_SNAPSHOT_BACKTRACK,
+                    "address": start,
+                    "message": error,
+                }
+            )
+            continue
+        pointer_probes.append(
+            {
+                "registerNames": names,
+                "registerValue": start + REGISTER_POINTER_SNAPSHOT_BACKTRACK,
+                "address": start,
+                "byteCount": REGISTER_POINTER_SNAPSHOT_BYTE_COUNT,
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "hex": payload.hex(),
+            }
+        )
+    return {
+        "registers": registers,
+        "stack": _memory_snapshot(
+            process,
+            stack_pointer,
+            STACK_SNAPSHOT_BYTE_COUNT,
+            "writer stack operand snapshot",
+        ),
+        "objects": objects,
+        "registerPointerProbeCount": len(pointer_registers),
+        "registerPointerProbes": pointer_probes,
+        "registerPointerProbeFailures": pointer_probe_failures,
+    }
 
 
 def _file_spec_path(file_spec):
@@ -259,19 +414,9 @@ def _snapshot_private_fields(process):
 
 def _code_window(frame):
     process = frame.GetThread().GetProcess()
-    target = process.GetTarget()
     pc = frame.GetPC()
-    symbol = frame.GetSymbol()
-    start = lldb.LLDB_INVALID_ADDRESS
-    if symbol.IsValid():
-        start = symbol.GetStartAddress().GetLoadAddress(target)
-    if start == lldb.LLDB_INVALID_ADDRESS or start > pc:
-        start = max(0, pc - FALLBACK_CODE_WINDOW_BACKTRACK)
-        byte_count = FALLBACK_CODE_WINDOW_BYTE_COUNT
-        source = "pc-centered fallback"
-    else:
-        byte_count = SYMBOL_CODE_WINDOW_BYTE_COUNT
-        source = "resolved symbol start"
+    start = max(0, pc - PC_CENTERED_CODE_WINDOW_BACKTRACK)
+    byte_count = PC_CENTERED_CODE_WINDOW_BYTE_COUNT
     payload = _read_memory(process, start, byte_count, "writer code window")
     key = (start, hashlib.sha256(payload).hexdigest())
     windows = _state["trace"]["codeWindows"]
@@ -282,7 +427,9 @@ def _code_window(frame):
         {
             "startAddress": start,
             "byteCount": byte_count,
-            "source": source,
+            "source": "pc-centered",
+            "stopPCOffset": pc - start,
+            "containsStopPC": start <= pc < start + byte_count,
             "sha256": key[1],
             "hex": payload.hex(),
         }
@@ -510,7 +657,7 @@ def capture_backdrop_late(frame, _breakpoint_location, _internal_dict):
 
 
 def capture_writer_watchpoint(frame, watchpoint, _internal_dict):
-    """Record one changed value, writer stack, and deduplicated code window."""
+    """Record one bounded hardware stop with its exact code and operands."""
     try:
         identifier = watchpoint.GetID()
         spec = _state["watchpoints"].get(identifier)
@@ -525,6 +672,7 @@ def capture_writer_watchpoint(frame, watchpoint, _internal_dict):
         )
         before = _state["lastValues"][spec["name"]]
         spec["hitCount"] += 1
+        value_changed = before != after
         event = {
             "eventIndex": len(_state["trace"]["events"]),
             "watchpointID": identifier,
@@ -534,11 +682,15 @@ def capture_writer_watchpoint(frame, watchpoint, _internal_dict):
             "stopPC": frame.GetPC(),
             "beforeHex": before.hex(),
             "afterHex": after.hex(),
-            "valueChanged": before != after,
+            "valueChanged": value_changed,
+            "hardwareStopKind": (
+                "watched-bytes-changed" if value_changed else "watched-bytes-unchanged"
+            ),
             "frame": _frame_record(frame, process.GetTarget()),
             "backtrace": _backtrace(frame.GetThread()),
             "codeWindowIndex": _code_window(frame),
             "privateFieldsAfter": _snapshot_private_fields(process),
+            "operandSnapshot": _operand_snapshot(frame),
         }
         _state["trace"]["events"].append(event)
         _state["lastValues"][spec["name"]] = after

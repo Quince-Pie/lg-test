@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 
-EXPECTED_TRACE_SCHEMA_VERSION = 3
+EXPECTED_TRACE_SCHEMA_VERSION = 4
 EXPECTED_CAPTURE_BACKDROP_SYMBOL = (
     "_ZN2CA3OGL16capture_backdropERNS0_8RendererEPKNS0_5LayerE"
 )
@@ -40,6 +40,40 @@ MAXIMUM_HITS_PER_WATCHPOINT = 6
 MAXIMUM_BACKTRACE_FRAME_COUNT = 32
 MAXIMUM_LATE_CANDIDATE_COUNT = 512
 MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT = 16
+PC_CENTERED_CODE_WINDOW_BYTE_COUNT = 0x1000
+PC_CENTERED_CODE_WINDOW_BACKTRACK = 0x800
+STACK_SNAPSHOT_BYTE_COUNT = 0x800
+REGISTER_POINTER_SNAPSHOT_BYTE_COUNT = 0x100
+REGISTER_POINTER_SNAPSHOT_BACKTRACK = 0x40
+GENERAL_REGISTER_NAMES = tuple(f"x{index}" for index in range(31)) + (
+    "sp",
+    "pc",
+    "cpsr",
+)
+SIMD_REGISTER_NAMES = tuple(f"v{index}" for index in range(32)) + (
+    "fpsr",
+    "fpcr",
+)
+POINTER_PROBE_REGISTER_NAMES = tuple(f"x{index}" for index in range(29))
+MINIMUM_POINTER_PROBE_ADDRESS = 0x1_0000_0000
+MAXIMUM_POINTER_PROBE_ADDRESS = 0x0000_FFFF_FFFF_FFFF
+OBJECT_SNAPSHOT_SPECS = {
+    "source": 0x180,
+    "owner": 0x300,
+    "layer": 0x200,
+    "layerState": 0x180,
+}
+EXPECTED_PREPARE_LAYER_FUNCTION = (
+    "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, "
+    "CA::Render::Updater::LocalState&, CA::Render::LayerNode*, "
+    "CA::Render::Updater::LayerShapes&, unsigned long long&)"
+)
+EXPECTED_CHANGED_PREPARE_LAYER_OFFSETS = {
+    "sourceSelectedRectI32": {0x530C, 0x5310},
+    "ownerSelectedRectF64": {0x4E18},
+    "ownerRegion248Handle": {0x3EF0},
+    "layerStateSelectedRectI32": {0x55C4},
+}
 QUARTZ_CORE_PATH_FRAGMENT = "/QuartzCore.framework/"
 
 
@@ -71,6 +105,155 @@ def hexadecimal_payload(value: Any, byte_count: int, label: str) -> bytes:
     if len(payload) != byte_count:
         raise ValueError(f"{label} differs")
     return payload
+
+
+def memory_snapshot(
+    value: Any,
+    label: str,
+    *,
+    expected_address: int | None = None,
+    expected_byte_count: int,
+) -> Mapping[str, Any]:
+    snapshot = mapping(value, label)
+    address = integer(snapshot.get("address"), f"{label} address")
+    byte_count = integer(snapshot.get("byteCount"), f"{label} byte count")
+    if (
+        address == 0
+        or byte_count != expected_byte_count
+        or (expected_address is not None and address != expected_address)
+    ):
+        raise ValueError(f"{label} bounds differ")
+    payload = hexadecimal_payload(snapshot.get("hex"), byte_count, label)
+    if snapshot.get("sha256") != hashlib.sha256(payload).hexdigest():
+        raise ValueError(f"{label} identity differs")
+    return snapshot
+
+
+def register_record(
+    value: Any,
+    expected_name: str,
+    expected_byte_count: int,
+    label: str,
+) -> Mapping[str, Any]:
+    record = mapping(value, label)
+    if (
+        record.get("name") != expected_name
+        or record.get("byteCount") != expected_byte_count
+        or record.get("valueString") is not None
+        and not isinstance(record.get("valueString"), str)
+    ):
+        raise ValueError(f"{label} identity differs")
+    payload = hexadecimal_payload(record.get("hex"), expected_byte_count, label)
+    if expected_byte_count <= 8:
+        unsigned = integer(record.get("unsignedValue"), f"{label} unsigned value")
+        if unsigned != int.from_bytes(payload, "little"):
+            raise ValueError(f"{label} raw value differs")
+    elif "unsignedValue" in record:
+        raise ValueError(f"{label} oversized unsigned value differs")
+    return record
+
+
+def operand_snapshot(
+    value: Any,
+    label: str,
+    addresses: Mapping[str, Any],
+) -> Mapping[str, Any]:
+    snapshot = mapping(value, label)
+    registers = mapping(snapshot.get("registers"), f"{label} registers")
+    general_values = list(sequence(registers.get("general"), f"{label} general"))
+    simd_values = list(sequence(registers.get("simd"), f"{label} SIMD"))
+    if len(general_values) != len(GENERAL_REGISTER_NAMES) or len(simd_values) != len(
+        SIMD_REGISTER_NAMES
+    ):
+        raise ValueError(f"{label} register inventory differs")
+    general = {}
+    for name, record_value in zip(GENERAL_REGISTER_NAMES, general_values, strict=True):
+        byte_count = 4 if name == "cpsr" else 8
+        general[name] = register_record(
+            record_value,
+            name,
+            byte_count,
+            f"{label} register {name}",
+        )
+    for name, record_value in zip(SIMD_REGISTER_NAMES, simd_values, strict=True):
+        byte_count = 4 if name in {"fpsr", "fpcr"} else 16
+        register_record(
+            record_value,
+            name,
+            byte_count,
+            f"{label} register {name}",
+        )
+
+    memory_snapshot(
+        snapshot.get("stack"),
+        f"{label} stack",
+        expected_address=general["sp"]["unsignedValue"],
+        expected_byte_count=STACK_SNAPSHOT_BYTE_COUNT,
+    )
+    objects = mapping(snapshot.get("objects"), f"{label} objects")
+    if set(objects) != set(OBJECT_SNAPSHOT_SPECS):
+        raise ValueError(f"{label} object inventory differs")
+    for base, byte_count in OBJECT_SNAPSHOT_SPECS.items():
+        memory_snapshot(
+            objects.get(base),
+            f"{label} object {base}",
+            expected_address=integer(addresses.get(base), f"{base} address"),
+            expected_byte_count=byte_count,
+        )
+
+    pointer_probes = [
+        mapping(item, f"{label} pointer probe")
+        for item in sequence(
+            snapshot.get("registerPointerProbes"), f"{label} pointer probes"
+        )
+    ]
+    pointer_failures = [
+        mapping(item, f"{label} pointer failure")
+        for item in sequence(
+            snapshot.get("registerPointerProbeFailures"),
+            f"{label} pointer failures",
+        )
+    ]
+    probe_count = integer(
+        snapshot.get("registerPointerProbeCount"), f"{label} pointer probe count"
+    )
+    if probe_count != len(pointer_probes) + len(pointer_failures):
+        raise ValueError(f"{label} pointer probe count differs")
+
+    expected_groups: defaultdict[int, list[str]] = defaultdict(list)
+    for name in POINTER_PROBE_REGISTER_NAMES:
+        address = general[name]["unsignedValue"]
+        if MINIMUM_POINTER_PROBE_ADDRESS <= address <= MAXIMUM_POINTER_PROBE_ADDRESS:
+            expected_groups[address - REGISTER_POINTER_SNAPSHOT_BACKTRACK].append(name)
+    observed_groups = {}
+    for item, succeeded in [
+        *((probe, True) for probe in pointer_probes),
+        *((failure, False) for failure in pointer_failures),
+    ]:
+        start = integer(item.get("address"), f"{label} pointer start")
+        register_value = integer(
+            item.get("registerValue"), f"{label} pointer register value"
+        )
+        names = list(sequence(item.get("registerNames"), f"{label} pointer registers"))
+        if (
+            start in observed_groups
+            or register_value != start + REGISTER_POINTER_SNAPSHOT_BACKTRACK
+            or names != expected_groups.get(start)
+        ):
+            raise ValueError(f"{label} pointer identity differs")
+        observed_groups[start] = names
+        if succeeded:
+            memory_snapshot(
+                item,
+                f"{label} pointer memory",
+                expected_address=start,
+                expected_byte_count=REGISTER_POINTER_SNAPSHOT_BYTE_COUNT,
+            )
+        elif not isinstance(item.get("message"), str) or not item["message"]:
+            raise ValueError(f"{label} pointer failure differs")
+    if observed_groups != dict(expected_groups):
+        raise ValueError(f"{label} pointer inventory differs")
+    return snapshot
 
 
 def numeric_vector(
@@ -178,8 +361,26 @@ def validate(trace_path: Path) -> dict[str, Any]:
         != MAXIMUM_LATE_CANDIDATE_COUNT
         or configuration.get("maximumLateCandidateDiagnosticCount")
         != MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT
-        or configuration.get("symbolCodeWindowByteCount") != 0x1000
-        or configuration.get("fallbackCodeWindowByteCount") != 0x400
+        or configuration.get("pcCenteredCodeWindowByteCount")
+        != PC_CENTERED_CODE_WINDOW_BYTE_COUNT
+        or configuration.get("pcCenteredCodeWindowBacktrack")
+        != PC_CENTERED_CODE_WINDOW_BACKTRACK
+        or configuration.get("stackSnapshotByteCount") != STACK_SNAPSHOT_BYTE_COUNT
+        or configuration.get("registerPointerSnapshotByteCount")
+        != REGISTER_POINTER_SNAPSHOT_BYTE_COUNT
+        or configuration.get("registerPointerSnapshotBacktrack")
+        != REGISTER_POINTER_SNAPSHOT_BACKTRACK
+        or configuration.get("generalRegisterNames") != list(GENERAL_REGISTER_NAMES)
+        or configuration.get("simdRegisterNames") != list(SIMD_REGISTER_NAMES)
+        or configuration.get("pointerProbeRegisterNames")
+        != list(POINTER_PROBE_REGISTER_NAMES)
+        or configuration.get("pointerProbeAddressRange")
+        != [MINIMUM_POINTER_PROBE_ADDRESS, MAXIMUM_POINTER_PROBE_ADDRESS]
+        or configuration.get("objectSnapshotSpecs")
+        != [
+            {"base": base, "byteCount": byte_count}
+            for base, byte_count in OBJECT_SNAPSHOT_SPECS.items()
+        ]
         or configuration.get("watchSpecs") != expected_watch_specs
     ):
         raise ValueError("writer-trace prospective configuration differs")
@@ -415,7 +616,16 @@ def validate(trace_path: Path) -> dict[str, Any]:
     for window in code_windows:
         start = integer(window.get("startAddress"), "code-window start")
         byte_count = integer(window.get("byteCount"), "code-window byte count")
-        if start == 0 or byte_count not in {0x400, 0x1000}:
+        stop_pc_offset = integer(
+            window.get("stopPCOffset"), "code-window stop-PC offset"
+        )
+        if (
+            start == 0
+            or byte_count != PC_CENTERED_CODE_WINDOW_BYTE_COUNT
+            or window.get("source") != "pc-centered"
+            or window.get("containsStopPC") is not True
+            or stop_pc_offset != PC_CENTERED_CODE_WINDOW_BACKTRACK
+        ):
             raise ValueError("writer code-window bounds differ")
         payload = hexadecimal_payload(window.get("hex"), byte_count, "code window")
         digest = hashlib.sha256(payload).hexdigest()
@@ -434,6 +644,9 @@ def validate(trace_path: Path) -> dict[str, Any]:
     hit_counts: Counter[str] = Counter()
     hit_indices: defaultdict[str, list[int]] = defaultdict(list)
     quartz_core_events: Counter[str] = Counter()
+    changed_events: Counter[str] = Counter()
+    changed_quartz_core_events: Counter[str] = Counter()
+    changed_prepare_layer_offsets: defaultdict[str, set[int]] = defaultdict(set)
     writer_sites: Counter[tuple[str | None, int | None, int]] = Counter()
     for event_index, event in enumerate(events):
         if event.get("eventIndex") != event_index:
@@ -447,15 +660,20 @@ def validate(trace_path: Path) -> dict[str, Any]:
         hit_index = integer(event.get("watchpointHitIndex"), "event hit index")
         integer(event.get("threadID"), "event thread ID")
         stop_pc = integer(event.get("stopPC"), "event stop PC")
+        value_changed = event.get("valueChanged")
         if (
             hit_index < 1
             or hit_index > MAXIMUM_HITS_PER_WATCHPOINT
             or stop_pc == 0
-            or event.get("valueChanged") is not True
+            or not isinstance(value_changed, bool)
+            or event.get("hardwareStopKind")
+            != ("watched-bytes-changed" if value_changed else "watched-bytes-unchanged")
         ):
             raise ValueError("writer event bounds differ")
-        hexadecimal_payload(event.get("beforeHex"), 8, "event before value")
-        hexadecimal_payload(event.get("afterHex"), 8, "event after value")
+        before = hexadecimal_payload(event.get("beforeHex"), 8, "event before value")
+        after = hexadecimal_payload(event.get("afterHex"), 8, "event after value")
+        if (before != after) is not value_changed:
+            raise ValueError("writer event value-change classification differs")
         frame = frame_record(event.get("frame"), "event frame")
         if frame["pc"] != stop_pc:
             raise ValueError("writer stop PC differs")
@@ -473,12 +691,29 @@ def validate(trace_path: Path) -> dict[str, Any]:
         )
         if not 0 <= code_window_index < len(code_windows):
             raise ValueError("event code-window reference differs")
+        code_window = code_windows[code_window_index]
+        if (
+            stop_pc != code_window["startAddress"] + code_window["stopPCOffset"]
+            or not code_window["startAddress"]
+            <= stop_pc
+            < code_window["startAddress"] + code_window["byteCount"]
+        ):
+            raise ValueError("event code window does not contain stop PC")
         private_fields(event.get("privateFieldsAfter"), "event private fields")
+        operand_snapshot(event.get("operandSnapshot"), "event operands", addresses)
         hit_counts[name] += 1
         hit_indices[name].append(hit_index)
         module_path = str(mapping(frame["module"], "event module")["path"])
         if QUARTZ_CORE_PATH_FRAGMENT in module_path:
             quartz_core_events[name] += 1
+        if value_changed:
+            changed_events[name] += 1
+            if QUARTZ_CORE_PATH_FRAGMENT in module_path:
+                changed_quartz_core_events[name] += 1
+            if frame.get("function") == EXPECTED_PREPARE_LAYER_FUNCTION:
+                changed_prepare_layer_offsets[name].add(
+                    integer(frame.get("symbolOffset"), "prepare_layer symbol offset")
+                )
         writer_sites[(frame.get("function"), frame.get("symbolOffset"), stop_pc)] += 1
 
     final_hit_counts = mapping(trace.get("watchpointHitCounts"), "final hit counts")
@@ -486,13 +721,18 @@ def validate(trace_path: Path) -> dict[str, Any]:
         if (
             hit_counts[name] < 1
             or quartz_core_events[name] < 1
+            or changed_events[name] < 1
+            or changed_quartz_core_events[name] < 1
+            or not EXPECTED_CHANGED_PREPARE_LAYER_OFFSETS[name].issubset(
+                changed_prepare_layer_offsets[name]
+            )
             or hit_indices[name] != list(range(1, hit_counts[name] + 1))
             or final_hit_counts.get(name) != hit_counts[name]
         ):
             raise ValueError(f"{name} prospective writer evidence differs")
 
     return {
-        "captureBackdropWriterTraceValidationSchemaVersion": 2,
+        "captureBackdropWriterTraceValidationSchemaVersion": 3,
         "classification": (
             "prospective-integrity-gate-for-bounded-private-writer-trace; "
             "semantics-remain-sealed"
@@ -510,9 +750,21 @@ def validate(trace_path: Path) -> dict[str, Any]:
             "eventCount": len(events),
             "codeWindowCount": len(code_windows),
             "eventCountsByWatchpoint": dict(sorted(hit_counts.items())),
+            "changedEventCountsByWatchpoint": dict(sorted(changed_events.items())),
+            "unchangedEventCountsByWatchpoint": {
+                name: hit_counts[name] - changed_events[name]
+                for name in sorted(hit_counts)
+            },
             "quartzCoreEventCountsByWatchpoint": dict(
                 sorted(quartz_core_events.items())
             ),
+            "changedQuartzCoreEventCountsByWatchpoint": dict(
+                sorted(changed_quartz_core_events.items())
+            ),
+            "changedPrepareLayerOffsetsByWatchpoint": {
+                name: sorted(changed_prepare_layer_offsets[name])
+                for name in sorted(changed_prepare_layer_offsets)
+            },
             "distinctWriterSiteCount": len(writer_sites),
             "writerSites": [
                 {
@@ -528,6 +780,7 @@ def validate(trace_path: Path) -> dict[str, Any]:
         },
         "sealedConclusion": {
             "privateWriterPCsCaptured": True,
+            "writerInstructionsAndOperandsCaptured": True,
             "writerSemanticsOpened": False,
             "publicLayerStateCropRuleRecovered": False,
             "unseenGeometryTransferPassed": False,

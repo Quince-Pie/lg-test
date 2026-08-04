@@ -5211,3 +5211,51 @@ the dormant multi-record path, untouched geometries and transition states,
 material/appearance/direction transfer, physical Retina 2x evidence, and then
 Walle endpoint comparison plus VRAM/throughput/latency measurement under the
 unchanged quality lock.
+
+Run `30780736839`, from preconvergence commit `b8f9bea`, is the first bounded
+trace to record all four live watchpoints while the target completes normally.
+The unchanged 114-record path-isolation gate and the 32-sample input-clamp gate
+both pass. The raw trace selects candidate one with the exact pointer chain:
+source `[500,-128,644,652]`, layer state `[500,0,524,524]`, and owner
+`[500.0,0.0,524.0,524.0]`. It reaches the preregistered 24-event ceiling with
+six callbacks at every watched address and zero LLDB failures. The timeline
+SHA-256 is
+`86610a7ba024db1acd63cda6d3560b84b10746b4d5addd61e5002169e0759be7`;
+the raw writer-trace SHA-256 is
+`791580bc5c594bd8e9faa3611a0b6fc5d395108444471e0a53270b5cdc5919ff`.
+
+The writer validator nevertheless fails closed with `writer event bounds
+differ`, and final workflow enforcement fails. That result is correct. Nineteen
+callbacks changed the watched eight bytes, while five retained identical
+before/after bytes. Apple hardware watchpoints can therefore stop on a wider or
+adjacent write even when this particular eight-byte snapshot is unchanged; the
+old rule that rejected every such callback was false. The immutable opened
+result is
+`Analysis/dynamic_allocation_capture_backdrop_writer_trace_preconvergence_result.json`.
+
+Opening the event order isolates six exact offsets in
+`CA::Render::Updater::prepare_layer`: `+0x3ef0`, `+0x4e18`, `+0x530c`,
+`+0x5310`, `+0x55c4`, plus one unchanged-byte stop at `+0x39dc`. The first
+coherent reused-storage sequence is especially useful: `+0x4e18` starts owner
+rectangle `x=489`; by the `+0x530c` source write the full owner rectangle is
+`[489.0,0.0,535.0,535.0]`; and the following `+0x5310` stop leaves source
+`[489,-117,644,0]` before its last component is written. These are observed
+write stops on reused storage, not yet a decoded public crop law.
+
+The trace also falsifies its old code-window rule. `prepare_layer` is 40,128
+bytes long, but the harness retained only its first 4,096 bytes. All nine
+observed `prepare_layer` stops lie at offsets 14,812 through 21,956, so none of
+their referenced windows contains the stop PC. The next prospective contract
+is frozen in
+`Analysis/dynamic_allocation_capture_backdrop_writer_operands_preregistration.json`.
+Schema 4 retains unchanged-byte stops, requires changed events at the five
+opened construction sites, captures 4 KiB centered on every stop PC, and
+retains raw `x0`-`x30`, SIMD, stack, object-prefix, and bounded register-pointer
+operands. Its validator still opens no instruction semantics; it only proves
+that the bytes needed for a bit-exact replay were captured intact.
+
+The development flake now supplies LLVM through `nix develop`, so captured
+arm64 windows can be disassembled without a hard-coded Nix store path. The
+Apple capture matrix and workflow are unchanged, and the production shader
+remains locked at SHA-256
+`11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3`.

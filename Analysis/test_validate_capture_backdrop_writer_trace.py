@@ -23,14 +23,87 @@ def private_fields():
     }
 
 
-def frame(pc):
+def raw_snapshot(address, byte_count, fill):
+    payload = bytes([fill]) * byte_count
+    return {
+        "address": address,
+        "byteCount": byte_count,
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "hex": payload.hex(),
+    }
+
+
+def raw_register(name, byte_count, unsigned):
+    payload = unsigned.to_bytes(byte_count, "little")
+    record = {
+        "name": name,
+        "byteCount": byte_count,
+        "hex": payload.hex(),
+        "valueString": f"0x{unsigned:0{byte_count * 2}x}",
+    }
+    if byte_count <= 8:
+        record["unsignedValue"] = unsigned
+    return record
+
+
+def operand_snapshot(addresses, pc):
+    register_values = {
+        "x0": addresses["source"],
+        "x1": addresses["owner"],
+        "x2": addresses["layer"],
+        "x3": addresses["layerState"],
+        "sp": 0x70_0000_0000,
+        "pc": pc,
+    }
+    general = []
+    for name in validator.GENERAL_REGISTER_NAMES:
+        byte_count = 4 if name == "cpsr" else 8
+        general.append(raw_register(name, byte_count, register_values.get(name, 0)))
+    simd = []
+    for index, name in enumerate(validator.SIMD_REGISTER_NAMES):
+        byte_count = 4 if name in {"fpsr", "fpcr"} else 16
+        simd.append(raw_register(name, byte_count, index))
+    pointer_probes = []
+    for index, name in enumerate(("x0", "x1", "x2", "x3"), start=1):
+        address = register_values[name]
+        start = address - validator.REGISTER_POINTER_SNAPSHOT_BACKTRACK
+        probe = raw_snapshot(
+            start,
+            validator.REGISTER_POINTER_SNAPSHOT_BYTE_COUNT,
+            index,
+        )
+        probe.update(
+            {
+                "registerNames": [name],
+                "registerValue": address,
+            }
+        )
+        pointer_probes.append(probe)
+    return {
+        "registers": {"general": general, "simd": simd},
+        "stack": raw_snapshot(
+            register_values["sp"], validator.STACK_SNAPSHOT_BYTE_COUNT, 0x55
+        ),
+        "objects": {
+            base: raw_snapshot(addresses[base], byte_count, index)
+            for index, (base, byte_count) in enumerate(
+                validator.OBJECT_SNAPSHOT_SPECS.items(), start=1
+            )
+        },
+        "registerPointerProbeCount": len(pointer_probes),
+        "registerPointerProbes": pointer_probes,
+        "registerPointerProbeFailures": [],
+    }
+
+
+def frame(pc, function="CA::Render::writer()", symbol_offset=4):
     return {
         "frameIndex": 0,
         "pc": pc,
-        "function": "CA::Render::writer()",
-        "symbolStart": pc - 4,
+        "function": function,
+        "symbolStart": pc - symbol_offset,
         "symbolEnd": pc + 64,
-        "symbolOffset": 4,
+        "symbolOffset": symbol_offset,
         "module": {
             "valid": True,
             "path": (
@@ -89,13 +162,14 @@ def selected_mirrored_rectangles():
 
 def passing_trace():
     addresses = {
-        "source": 0x1000_0000,
-        "owner": 0x2000_0000,
-        "layer": 0x3000_0000,
-        "layerState": 0x4000_0000,
+        "source": 0x10_0000_0000,
+        "owner": 0x20_0000_0000,
+        "layer": 0x30_0000_0000,
+        "layerState": 0x40_0000_0000,
     }
     watchpoints = []
     events = []
+    code_windows = []
     hit_counts = {}
     for identifier, (name, (base, offset)) in enumerate(
         validator.EXPECTED_WATCH_SPECS.items(), start=1
@@ -110,29 +184,53 @@ def passing_trace():
                 "initialHex": "00" * 8,
             }
         )
-        pc = 0x1901_0000_0 + identifier * 0x100
-        writer_frame = frame(pc)
-        events.append(
-            {
-                "eventIndex": identifier - 1,
-                "watchpointID": identifier,
-                "watchpointName": name,
-                "watchpointHitIndex": 1,
-                "threadID": 7,
-                "stopPC": pc,
-                "beforeHex": "00" * 8,
-                "afterHex": "%02x" % identifier + "00" * 7,
-                "valueChanged": True,
-                "frame": writer_frame,
-                "backtrace": [writer_frame],
-                "codeWindowIndex": 0,
-                "privateFieldsAfter": private_fields(),
-            }
-        )
-        hit_counts[name] = 1
-    code = bytes(0x400)
+        offsets = sorted(validator.EXPECTED_CHANGED_PREPARE_LAYER_OFFSETS[name])
+        for hit_index, symbol_offset in enumerate(offsets, start=1):
+            event_index = len(events)
+            pc = 0x1901_0000_0 + (event_index + 1) * 0x100
+            writer_frame = frame(
+                pc,
+                validator.EXPECTED_PREPARE_LAYER_FUNCTION,
+                symbol_offset,
+            )
+            code = bytes([event_index + 1]) * (
+                validator.PC_CENTERED_CODE_WINDOW_BYTE_COUNT
+            )
+            code_windows.append(
+                {
+                    "startAddress": pc - validator.PC_CENTERED_CODE_WINDOW_BACKTRACK,
+                    "byteCount": len(code),
+                    "source": "pc-centered",
+                    "stopPCOffset": validator.PC_CENTERED_CODE_WINDOW_BACKTRACK,
+                    "containsStopPC": True,
+                    "sha256": hashlib.sha256(code).hexdigest(),
+                    "hex": code.hex(),
+                }
+            )
+            before = bytes([hit_index - 1]) + bytes(7)
+            after = bytes([hit_index]) + bytes(7)
+            events.append(
+                {
+                    "eventIndex": event_index,
+                    "watchpointID": identifier,
+                    "watchpointName": name,
+                    "watchpointHitIndex": hit_index,
+                    "threadID": 7,
+                    "stopPC": pc,
+                    "beforeHex": before.hex(),
+                    "afterHex": after.hex(),
+                    "valueChanged": True,
+                    "hardwareStopKind": "watched-bytes-changed",
+                    "frame": writer_frame,
+                    "backtrace": [writer_frame],
+                    "codeWindowIndex": event_index,
+                    "privateFieldsAfter": private_fields(),
+                    "operandSnapshot": operand_snapshot(addresses, pc),
+                }
+            )
+        hit_counts[name] = len(offsets)
     return {
-        "captureBackdropWriterTraceSchemaVersion": 3,
+        "captureBackdropWriterTraceSchemaVersion": 4,
         "classification": validator.EXPECTED_CLASSIFICATION,
         "status": "finalized",
         "statusBeforeFinalization": "watchpoints-armed",
@@ -150,8 +248,30 @@ def passing_trace():
             "maximumBacktraceFrameCount": 32,
             "maximumLateCandidateCount": 512,
             "maximumLateCandidateDiagnosticCount": 16,
-            "symbolCodeWindowByteCount": 0x1000,
-            "fallbackCodeWindowByteCount": 0x400,
+            "pcCenteredCodeWindowByteCount": (
+                validator.PC_CENTERED_CODE_WINDOW_BYTE_COUNT
+            ),
+            "pcCenteredCodeWindowBacktrack": (
+                validator.PC_CENTERED_CODE_WINDOW_BACKTRACK
+            ),
+            "stackSnapshotByteCount": validator.STACK_SNAPSHOT_BYTE_COUNT,
+            "registerPointerSnapshotByteCount": (
+                validator.REGISTER_POINTER_SNAPSHOT_BYTE_COUNT
+            ),
+            "registerPointerSnapshotBacktrack": (
+                validator.REGISTER_POINTER_SNAPSHOT_BACKTRACK
+            ),
+            "generalRegisterNames": list(validator.GENERAL_REGISTER_NAMES),
+            "simdRegisterNames": list(validator.SIMD_REGISTER_NAMES),
+            "pointerProbeRegisterNames": list(validator.POINTER_PROBE_REGISTER_NAMES),
+            "pointerProbeAddressRange": [
+                validator.MINIMUM_POINTER_PROBE_ADDRESS,
+                validator.MAXIMUM_POINTER_PROBE_ADDRESS,
+            ],
+            "objectSnapshotSpecs": [
+                {"base": base, "byteCount": byte_count}
+                for base, byte_count in validator.OBJECT_SNAPSHOT_SPECS.items()
+            ],
             "watchSpecs": [
                 {"name": name, "base": base, "offset": offset}
                 for name, (base, offset) in validator.EXPECTED_WATCH_SPECS.items()
@@ -185,15 +305,7 @@ def passing_trace():
             "initialPrivateFields": private_fields(),
         },
         "watchpoints": watchpoints,
-        "codeWindows": [
-            {
-                "startAddress": 0x1901_0000_0,
-                "byteCount": len(code),
-                "source": "pc-centered fallback",
-                "sha256": hashlib.sha256(code).hexdigest(),
-                "hex": code.hex(),
-            }
-        ],
+        "codeWindows": code_windows,
         "events": events,
         "failures": [],
         "finalEventCount": len(events),
@@ -219,13 +331,47 @@ class CaptureBackdropWriterTraceTests(unittest.TestCase):
         self.assertEqual(result["aggregate"]["watchpointCount"], 4)
         self.assertEqual(result["aggregate"]["distinctWatchpointIDCount"], 4)
         self.assertEqual(result["aggregate"]["deprecatedHardwareIndexValues"], [-1])
-        self.assertEqual(result["aggregate"]["eventCount"], 4)
-        self.assertEqual(result["aggregate"]["distinctWriterSiteCount"], 4)
+        self.assertEqual(result["aggregate"]["eventCount"], 5)
+        self.assertEqual(result["aggregate"]["distinctWriterSiteCount"], 5)
         self.assertTrue(result["sealedConclusion"]["privateWriterPCsCaptured"])
+        self.assertTrue(
+            result["sealedConclusion"]["writerInstructionsAndOperandsCaptured"]
+        )
         self.assertFalse(
             result["sealedConclusion"]["publicLayerStateCropRuleRecovered"]
         )
         self.assertFalse(result["sealedConclusion"]["productionShaderAuthorized"])
+
+    def test_unchanged_watched_bytes_are_retained_but_not_changed_evidence(self):
+        trace = passing_trace()
+        event = copy.deepcopy(trace["events"][0])
+        event["eventIndex"] = len(trace["events"])
+        event["watchpointHitIndex"] = 3
+        event["beforeHex"] = event["afterHex"]
+        event["valueChanged"] = False
+        event["hardwareStopKind"] = "watched-bytes-unchanged"
+        trace["events"].append(event)
+        trace["finalEventCount"] += 1
+        trace["watchpointHitCounts"][event["watchpointName"]] = 3
+        result = self.validate(trace)
+        self.assertEqual(
+            result["aggregate"]["unchangedEventCountsByWatchpoint"][
+                event["watchpointName"]
+            ],
+            1,
+        )
+
+    def test_field_with_only_unchanged_watched_bytes_fails_closed(self):
+        trace = passing_trace()
+        name = "ownerSelectedRectF64"
+        for event in trace["events"]:
+            if event["watchpointName"] != name:
+                continue
+            event["afterHex"] = event["beforeHex"]
+            event["valueChanged"] = False
+            event["hardwareStopKind"] = "watched-bytes-unchanged"
+        with self.assertRaisesRegex(ValueError, name):
+            self.validate(trace)
 
     def test_missing_layer_state_writer_fails_closed(self):
         trace = passing_trace()
@@ -240,8 +386,22 @@ class CaptureBackdropWriterTraceTests(unittest.TestCase):
 
     def test_code_window_tampering_fails_closed(self):
         trace = passing_trace()
-        trace["codeWindows"][0]["hex"] = "01" + trace["codeWindows"][0]["hex"][2:]
+        trace["codeWindows"][0]["hex"] = "00" + trace["codeWindows"][0]["hex"][2:]
         with self.assertRaisesRegex(ValueError, "code-window identity"):
+            self.validate(trace)
+
+    def test_code_window_must_contain_the_stop_pc(self):
+        trace = passing_trace()
+        trace["codeWindows"][0]["startAddress"] += 4
+        with self.assertRaisesRegex(ValueError, "code window"):
+            self.validate(trace)
+
+    def test_operand_snapshot_tampering_fails_closed(self):
+        trace = passing_trace()
+        trace["events"][0]["operandSnapshot"]["registers"]["general"][0]["hex"] = (
+            "00" * 8
+        )
+        with self.assertRaisesRegex(ValueError, "raw value"):
             self.validate(trace)
 
     def test_late_candidate_diagnostic_tampering_fails_closed(self):

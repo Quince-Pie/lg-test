@@ -86,19 +86,28 @@ class CaptureBackdropWriterTracePreconvergenceRetryTests(unittest.TestCase):
         self.assertFalse(acceptance["publicCropRuleRecoveredByCaptureAlone"])
         self.assertFalse(acceptance["productionShaderAuthorized"])
 
-    def test_retry_implementation_hashes_match_current_files(self):
+    def test_retry_implementation_snapshot_and_unchanged_inputs(self):
         frozen = PREREGISTRATION["frozenImplementation"]
+        historical = {
+            "lldbTraceHarnessSHA256": (
+                "749c4f33d909c482609e1ce9a247c0e0f02d2c5b45882e04a452ba968201ac5c"
+            ),
+            "lldbTraceHarnessSourceTestSHA256": (
+                "527e17de02b0e7a4826251ebc0bcb029befdc24f70022ac9601493eb17fd5218"
+            ),
+            "sealedTraceValidatorSHA256": (
+                "8e19b714831040ad72908f85c7dbcd115a1d6d0bb22050795a3546244c169f2c"
+            ),
+            "sealedTraceValidatorTestSHA256": (
+                "0bc935e876f14ab26ccbfc6d299be0143db396f232e11f938c7a5d6d0b4e188c"
+            ),
+        }
+        for name, digest in historical.items():
+            with self.subTest(name=name):
+                self.assertEqual(frozen[name], digest)
         files = {
             "callbackFailureResultSHA256": ANALYSIS_ROOT
             / "dynamic_allocation_capture_backdrop_writer_trace_callback_failure_result.json",
-            "lldbTraceHarnessSHA256": ANALYSIS_ROOT
-            / "capture_backdrop_writer_trace_lldb.py",
-            "lldbTraceHarnessSourceTestSHA256": ANALYSIS_ROOT
-            / "test_capture_backdrop_writer_trace_lldb_source.py",
-            "sealedTraceValidatorSHA256": ANALYSIS_ROOT
-            / "validate_capture_backdrop_writer_trace.py",
-            "sealedTraceValidatorTestSHA256": ANALYSIS_ROOT
-            / "test_validate_capture_backdrop_writer_trace.py",
             "workflowSHA256": REPOSITORY_ROOT
             / ".github/workflows/transition-introspect.yml",
             "productionShaderSHA256": REPOSITORY_ROOT.parent / "shaders/frag.glsl",

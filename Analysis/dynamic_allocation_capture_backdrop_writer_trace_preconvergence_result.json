@@ -1,0 +1,181 @@
+{
+  "captureBackdropWriterTracePreconvergenceResultSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-03T03:13:10Z",
+  "classification": "opened failed preconvergence writer trace; four live Apple watchpoints captured bounded lifecycle and CA::Render::Updater::prepare_layer write sites, while unchanged watched-byte stops and non-containing symbol-start windows falsified two sealed integrity assumptions; not a public crop law, unseen transfer, or product-parity claim",
+  "run": {
+    "runID": 30780736839,
+    "jobID": 91584717875,
+    "headSHA": "b8f9bead8374971af29cbb62eb89de95c9f9a2d9",
+    "workflowConclusion": "failure",
+    "captureStepOutcome": "success",
+    "captureTargetExitedNormally": true,
+    "pathIsolationValidatorOutcome": "success",
+    "inputClampValidatorOutcome": "success",
+    "writerTraceValidatorOutcome": "failure",
+    "writerTraceValidatorError": "ValueError: writer event bounds differ",
+    "artifactUploadOutcome": "success",
+    "enforcementOutcome": "failure",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/30780736839"
+  },
+  "inputArtifacts": {
+    "artifactArchiveByteCount": 99781083,
+    "transitionFrameImageCount": 33,
+    "transitionTimelineByteCount": 178941580,
+    "transitionTimelineSHA256": "86610a7ba024db1acd63cda6d3560b84b10746b4d5addd61e5002169e0759be7",
+    "rawWriterTraceByteCount": 354736,
+    "rawWriterTraceSHA256": "791580bc5c594bd8e9faa3611a0b6fc5d395108444471e0a53270b5cdc5919ff",
+    "lldbLogSHA256": "cc72f6a91c26c597f3edff823854b3177c15b68672ac1266ccbdff0ea2380347",
+    "runtimeStderrSHA256": "7ef5c4bf108c01663e9f51a0b99e35d81b03e39a2202d9c065d06e3ccf9dd005",
+    "transitionProgressSHA256": "dbe46bcc895cb14fe3ebdec0b27f97c407d628731751f493600bb548221e2367",
+    "pathIsolationResultSHA256": "fa5434c643ba83e9714188107344d254128eb1fb313bf1a1c43266bf7664f2e9",
+    "inputClampResultSHA256": "f1d46feeee7afea7ccce1f65b2498f9edfd1b7c61bc792b5f0e36427bdd67b43",
+    "localPathIsolationValidationSHA256": "2e25503e80582f0e8a3e66b91168b28d32e88e1a45ba083d2d1dee1d41d330b8",
+    "localInputClampValidationSHA256": "4376735c988e785c2d29522bd781efb183032d087e91534f43605547d6605ef0"
+  },
+  "unchangedEvidenceGates": {
+    "captureBackdropCodeByteCount": 16384,
+    "captureBackdropCodeSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "completePathIsolationRecordCount": 114,
+    "captureBackdropObjectChainExactCount": 114,
+    "captureBackdropConsumedRegionExactCount": 114,
+    "inputClampRecoveredCandidate": "float-weighted-mix/affine-expanded-base-darwin-powf",
+    "inputClampExactSampleCount": 32,
+    "productionShaderSHA256": "11f3dd2ab07bf41230f9b53fc4db7a9b788bd5300695a9d8a62b0ef741c9a2f3"
+  },
+  "selectedPreconvergenceObjectChain": {
+    "lateCandidateIndex": 1,
+    "pointerChainExact": true,
+    "ownerEqualsLayerStateRectangle": true,
+    "sourceEqualsLayerStateRectangle": false,
+    "sourceSelectedRectI32": [500, -128, 644, 652],
+    "layerStateSelectedRectI32": [500, 0, 524, 524],
+    "ownerSelectedRectF64": [500.0, 0.0, 524.0, 524.0],
+    "watchpointCount": 4,
+    "distinctPositiveWatchpointIDCount": 4,
+    "deprecatedHardwareIndexValues": [-1]
+  },
+  "rawTraceAggregate": {
+    "statusBeforeFinalization": "bounded-event-limit-reached",
+    "failureCount": 0,
+    "eventCount": 24,
+    "eventCountsByWatchpoint": {
+      "layerStateSelectedRectI32": 6,
+      "ownerRegion248Handle": 6,
+      "ownerSelectedRectF64": 6,
+      "sourceSelectedRectI32": 6
+    },
+    "changedWatchedByteEventCount": 19,
+    "unchangedWatchedByteEventCount": 5,
+    "codeWindowCount": 6,
+    "eventWindowContainsStopPCCount": 15,
+    "prepareLayerEventCount": 9,
+    "prepareLayerChangedWatchedByteEventCount": 8,
+    "prepareLayerEventWindowContainsStopPCCount": 0
+  },
+  "openedWriterSites": {
+    "function": "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes&, unsigned long long&)",
+    "symbolStart": 6698498684,
+    "symbolEnd": 6698538812,
+    "symbolByteCount": 40128,
+    "observedSites": [
+      {
+        "symbolOffset": 14812,
+        "watchpointName": "layerStateSelectedRectI32",
+        "eventCount": 1,
+        "changedWatchedByteEventCount": 0
+      },
+      {
+        "symbolOffset": 16112,
+        "watchpointName": "ownerRegion248Handle",
+        "eventCount": 2,
+        "changedWatchedByteEventCount": 2
+      },
+      {
+        "symbolOffset": 19992,
+        "watchpointName": "ownerSelectedRectF64",
+        "eventCount": 3,
+        "changedWatchedByteEventCount": 3
+      },
+      {
+        "symbolOffset": 21260,
+        "watchpointName": "sourceSelectedRectI32",
+        "eventCount": 1,
+        "changedWatchedByteEventCount": 1
+      },
+      {
+        "symbolOffset": 21264,
+        "watchpointName": "sourceSelectedRectI32",
+        "eventCount": 1,
+        "changedWatchedByteEventCount": 1
+      },
+      {
+        "symbolOffset": 21956,
+        "watchpointName": "layerStateSelectedRectI32",
+        "eventCount": 1,
+        "changedWatchedByteEventCount": 1
+      }
+    ],
+    "firstCoherentReusedCropSequence": [
+      {
+        "eventIndex": 9,
+        "symbolOffset": 19992,
+        "watchpointName": "ownerSelectedRectF64",
+        "beforeHex": "0000000000000000",
+        "afterHex": "0000000000907e40",
+        "ownerSelectedRectF64After": [489.0, 0.0, 0.0, 0.0]
+      },
+      {
+        "eventIndex": 10,
+        "symbolOffset": 21260,
+        "watchpointName": "sourceSelectedRectI32",
+        "beforeHex": "0000000000000000",
+        "afterHex": "e901000000000000",
+        "ownerSelectedRectF64After": [489.0, 0.0, 535.0, 535.0],
+        "sourceSelectedRectI32After": [489, 0, 0, 0]
+      },
+      {
+        "eventIndex": 11,
+        "symbolOffset": 21264,
+        "watchpointName": "sourceSelectedRectI32",
+        "beforeHex": "e901000000000000",
+        "afterHex": "e90100008bffffff",
+        "ownerSelectedRectF64After": [489.0, 0.0, 535.0, 535.0],
+        "sourceSelectedRectI32After": [489, -117, 644, 0]
+      }
+    ],
+    "interpretationBoundary": "These PCs are exact observed write stops on storage reused after the selected object lifetime. prepare_layer and the coherent component sequence make them construction candidates, but the current trace lacks the containing instructions and live operands required to prove the arithmetic or bind every site to the public crop policy."
+  },
+  "falsifiedSealedAssumptions": [
+    {
+      "assumption": "Every callback from a write-on-modify watchpoint changes the watched eight-byte snapshot.",
+      "observation": "Five of 24 callbacks retained identical before/after bytes, including broad or adjacent writes in BackdropGroup::retain_group_common, BackdropLayer::commit_layer, and Updater::prepare_layer.",
+      "consequence": "The current prospective validator fails closed at writer event bounds. A subsequent preregistration must retain and classify unchanged-byte hardware stops instead of rejecting or silently deleting them."
+    },
+    {
+      "assumption": "A 4096-byte window from a resolved symbol start contains every writer stop in that symbol.",
+      "observation": "prepare_layer is 40128 bytes; all nine observed prepare_layer stops are at offsets 14812 through 21956, so zero of nine lie in the retained first 4096 bytes.",
+      "consequence": "The next trace must retain a fixed PC-centered window whose range is required to contain the stop PC and nearby writer instruction."
+    }
+  ],
+  "nextEvidenceBoundary": {
+    "objective": "Capture the exact AArch64 instructions and live operands at the isolated prepare_layer sites, then replay their crop construction without numeric tolerance.",
+    "requiredChanges": [
+      "Retain bounded unchanged-byte hardware stops as distinct events and require at least one changed QuartzCore event per watched field.",
+      "Capture a fixed PC-centered code window for every event and require that it contains the stop PC.",
+      "Capture exact general-purpose and SIMD register values plus bounded stack/object memory needed to decode the writer operands.",
+      "Keep the capture_backdrop code hash, preconvergence pointer chain, watched addresses, Apple input matrix, and production shader unchanged."
+    ],
+    "publicCropConstructionRuleRecovered": false,
+    "productionShaderAuthorized": false
+  },
+  "notClaimed": [
+    "that the failed prospective validator passed",
+    "that lifecycle memset, allocation, or deletion stops are crop constructors",
+    "that every prepare_layer stop belongs to the originally selected object rather than later storage reuse",
+    "that the stopped PC is necessarily the writing instruction rather than the following AArch64 instruction",
+    "that the public layer-state crop allocation rule is recovered",
+    "that multi-record or unseen geometry, temporal, material, appearance, direction, or physical Retina 2x transfer passed",
+    "that Walle may change its production shader",
+    "that Apple Liquid Glass parity has been achieved"
+  ]
+}
