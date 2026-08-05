@@ -96,6 +96,29 @@ def scopes() -> dict[str, dict[str, object]]:
     }
 
 
+def manual_marker(
+    index: int, hit: int, x28: int, result: str
+) -> dict[str, object]:
+    value: dict[str, object] = {
+        "manualSelectionMarkerIndex": index,
+        "markerHitIndex": hit,
+        "pc": 0x1_9000_0000 + validator.SELECTION_MARKER_OFFSET,
+        "threadID": IDENTITY["threadID"],
+        "framePointer": IDENTITY["framePointer"],
+        "observedRoleBase": IDENTITY["roleBase"],
+        "observedX28": x28,
+        "selectedSource": 0xA_BEEF_0000,
+        "selectedIdentity": dict(IDENTITY),
+        "prepareRecursionDepth": validator.TARGET_PREPARE_RECURSION_DEPTH,
+        "frameIdentityMatches": True,
+        "sourceRegisterMatches": x28 == 0xA_BEEF_0000,
+        "result": result,
+    }
+    if result == "selected":
+        value["callbackSequence"] = 99
+    return value
+
+
 class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
     def test_known_bitwise_state_sequence_passes(self):
         result = validator._known_state_sequence(known_states())
@@ -256,6 +279,39 @@ class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "envelope differs"):
                 validator.validate_documents(trace, {})
         inherited.assert_not_called()
+
+    def test_manual_trace_crosses_rejected_marker_before_exact_source(self):
+        document = {
+            "manualSelectionMarkers": [
+                manual_marker(0, 2, 0xA_BAD_0000, "rejected"),
+                manual_marker(1, 3, 0xA_BEEF_0000, "selected"),
+            ]
+        }
+        self.assertEqual(
+            validator._manual_selection_markers(
+                document,
+                {99: "selected-instruction-path-closed"},
+                0x1_9000_0000,
+                IDENTITY,
+                0xA_BEEF_0000,
+            ),
+            (1, 99),
+        )
+
+    def test_manual_trace_cannot_reject_the_exact_source_identity(self):
+        document = {
+            "manualSelectionMarkers": [
+                manual_marker(0, 2, 0xA_BEEF_0000, "rejected")
+            ]
+        }
+        with self.assertRaisesRegex(ValueError, "rejection differs"):
+            validator._manual_selection_markers(
+                document,
+                {},
+                0x1_9000_0000,
+                IDENTITY,
+                0xA_BEEF_0000,
+            )
 
     def test_configuration_never_authorizes_product_changes(self):
         self.assertIn(

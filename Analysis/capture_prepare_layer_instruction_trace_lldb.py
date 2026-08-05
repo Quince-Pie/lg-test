@@ -2,11 +2,12 @@
 
 The preceding hardware-watch experiment proved that one LLDB watch callback
 does not imply one architectural store on Apple silicon.  This successor uses
-no hardware watchpoints.  It stops at the prospectively fixed selected epoch,
-disables every software breakpoint, and advances the selected thread one
-instruction at a time through ``prepare_layer`` and the six already opened
-QuartzCore helpers.  Calls outside that frozen scope are stepped out as named
-boundaries and must not change the aggregate for the gate to pass.
+no hardware watchpoints.  It stops at the first source-known depth-four epoch,
+disables every software breakpoint, and advances the selected thread across
+every same-frame loop until the exact-source marker, one instruction at a time
+through ``prepare_layer`` and the six already opened QuartzCore helpers. Calls
+outside that frozen scope are stepped out as named boundaries and must not
+change the aggregate for the gate to pass.
 """
 
 import hashlib
@@ -26,7 +27,7 @@ import capture_prepare_layer_frame_correlated_writer_trace_lldb as frame_base  #
 
 capture_base = frame_base.capture_base
 
-TRACE_SCHEMA_VERSION = 1
+TRACE_SCHEMA_VERSION = 2
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
 )
@@ -37,7 +38,7 @@ SELECTION_MARKER_NAME = "sourceLaterHandle"
 SELECTION_MARKER_OFFSET = 0x3EF0
 SELECTION_MARKER_INSTRUCTION_HEX = "28330b91"
 TARGET_PREPARE_RECURSION_DEPTH = 4
-TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL = 7
+TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL = 1
 MAXIMUM_EPOCH_MARKER_HIT_COUNT = 4096
 MAXIMUM_EPOCH_RECORD_COUNT = 128
 MAXIMUM_SELECTION_MARKER_HIT_COUNT = 4096
@@ -204,9 +205,10 @@ def _new_trace():
     return {
         "prepareLayerInstructionTraceSchemaVersion": TRACE_SCHEMA_VERSION,
         "classification": (
-            "preregistered-selected-epoch-software-instruction-trace; "
-            "hardware-watch-callback-coalescing-eliminated; crop-policy-"
-            "generalization-unseen-transfer-and-product-parity-remain-sealed"
+            "preregistered-first-source-known-epoch-software-instruction-"
+            "trace; observer-dependent-later-ordinal-selection-eliminated; "
+            "crop-policy-generalization-unseen-transfer-and-product-parity-"
+            "remain-sealed"
         ),
         "status": "initialized",
         "configuration": {
@@ -261,9 +263,10 @@ def _new_trace():
             "frameTraceOutputEnvironment": frame_base.TRACE_OUTPUT_ENVIRONMENT,
             "frameTraceSchemaVersion": frame_base.TRACE_SCHEMA_VERSION,
             "selectionRule": (
-                "stop only at the seventh source-known exact-depth-four zero "
-                "epoch fixed by run 31034880031, then require the same live "
-                "thread/x19/x29 identity and future x28 source at +0x3ef0"
+                "stop at the first source-known exact-depth-four zero epoch, "
+                "then single-step the same live thread/x19/x29 frame across "
+                "every later loop until the first +0x3ef0 whose x28 equals "
+                "the independently selected source"
             ),
             "steppingRule": (
                 "disable every software breakpoint before stepping; execute one "
@@ -299,6 +302,7 @@ def _new_trace():
         "instructionSteps": [],
         "aggregateTransitions": [],
         "opaqueCalleeBoundaries": [],
+        "manualSelectionMarkers": [],
         "selectedFrame": {},
         "terminalProcess": {},
         "failures": [],
@@ -869,7 +873,7 @@ def prepare_layer_entry(frame, breakpoint_location, _internal_dict):
 
 
 def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
-    """Stop only at the prospectively fixed selected-depth epoch ordinal."""
+    """Stop at the first source-known exact-depth-four zero epoch."""
     try:
         _state["epochMarkerHitCount"] += 1
         if _state["epochMarkerHitCount"] > MAXIMUM_EPOCH_MARKER_HIT_COUNT:
@@ -1010,11 +1014,61 @@ def _selected_marker(frame, exact, aggregate):
     pending = _state["pendingCandidate"]
     identity = pending["identity"]
     source = pending["selectedSource"]
-    if frame.GetFP() != identity["framePointer"]:
-        return False
+    _state["selectionMarkerHitCount"] += 1
+    marker_hit_index = _state["selectionMarkerHitCount"]
     x28 = capture_base._register(frame, "x28")
+    identity_matches = (
+        frame.GetThread().GetThreadID() == identity["threadID"]
+        and frame.GetFP() == identity["framePointer"]
+        and capture_base._register(frame, "x19") == identity["roleBase"]
+    )
+    record = {
+        "manualSelectionMarkerIndex": len(
+            _state["trace"]["manualSelectionMarkers"]
+        ),
+        "markerHitIndex": marker_hit_index,
+        "pc": frame.GetPC(),
+        "threadID": frame.GetThread().GetThreadID(),
+        "framePointer": frame.GetFP(),
+        "observedRoleBase": capture_base._register(frame, "x19"),
+        "observedX28": x28,
+        "selectedSource": source,
+        "selectedIdentity": dict(identity),
+        "prepareRecursionDepth": len(exact),
+        "frameIdentityMatches": identity_matches,
+        "sourceRegisterMatches": x28 == source,
+        "result": "rejected",
+    }
+    if len(_state["trace"]["manualSelectionMarkers"]) >= (
+        MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT
+    ):
+        raise RuntimeError("manual selection marker record bound exceeded")
+    if not identity_matches:
+        _state["rejectedSelectionMarkerHitCount"] += 1
+        _state["trace"]["manualSelectionMarkers"].append(record)
+        _record_marker_rejection(
+            "selection",
+            frame,
+            "selected-frame-identity-differs-during-manual-trace",
+            exact,
+            source=source,
+            x28=x28,
+        )
+        _write_trace()
+        return False
     if x28 != source:
-        raise RuntimeError("prospective epoch reached marker with different source")
+        _state["rejectedSelectionMarkerHitCount"] += 1
+        _state["trace"]["manualSelectionMarkers"].append(record)
+        _record_marker_rejection(
+            "selection",
+            frame,
+            "source-register-differs-during-manual-trace",
+            exact,
+            source=source,
+            x28=x28,
+        )
+        _write_trace()
+        return False
     # Reuse the inherited marker recorder directly while the physical
     # breakpoint remains disabled.  This closes its independent source/frame
     # context without reintroducing a stop collision.
@@ -1041,9 +1095,13 @@ def _selected_marker(frame, exact, aggregate):
         frame, SELECTION_FRAME_REGISTER_NAMES
     )
     sequence = _next_sequence("selected-instruction-path-closed")
+    record["result"] = "selected"
+    record["callbackSequence"] = sequence
+    _state["trace"]["manualSelectionMarkers"].append(record)
     _state["trace"]["selectedFrame"] = {
         "callbackSequence": sequence,
-        "markerHitIndex": _state["selectionMarkerHitCount"] + 1,
+        "markerHitIndex": marker_hit_index,
+        "manualSelectionMarkerIndex": record["manualSelectionMarkerIndex"],
         "pc": frame.GetPC(),
         "frame": capture_base._frame_record(frame, process.GetTarget()),
         "backtrace": capture_base._backtrace(frame.GetThread()),
@@ -1063,7 +1121,6 @@ def _selected_marker(frame, exact, aggregate):
             json.dumps(frame_base._state["trace"]["objectChain"])
         ),
     }
-    _state["selectionMarkerHitCount"] += 1
     _state["manualTraceFinished"] = True
     _state["trace"]["status"] = "selected-software-instruction-path-closed"
     _write_trace()
@@ -1191,7 +1248,7 @@ def _continue_to_terminal(process):
 
 
 def trace_selected_path():
-    """Drive the stopped selected epoch to its exact-source marker."""
+    """Drive the first qualifying epoch across loops to its exact marker."""
     trace = _state["trace"]
     if trace is None:
         return
@@ -1301,6 +1358,9 @@ def finalize():
     trace["finalAggregateTransitionCount"] = len(trace["aggregateTransitions"])
     trace["finalOpaqueCalleeBoundaryCount"] = len(
         trace["opaqueCalleeBoundaries"]
+    )
+    trace["finalManualSelectionMarkerRecordCount"] = len(
+        trace["manualSelectionMarkers"]
     )
     trace["finalChangedOpaqueCalleeBoundaryCount"] = sum(
         item["aggregateChanged"] for item in trace["opaqueCalleeBoundaries"]

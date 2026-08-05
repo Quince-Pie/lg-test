@@ -84,15 +84,19 @@ class PrepareLayerInstructionTraceSourceTests(unittest.TestCase):
             self.assertEqual(item["byteCount"] % 4, 0)
             self.assertEqual(item["relativeToPrepareLayer"] % 4, 0)
 
-    def test_selected_epoch_ordinal_is_frozen_from_prior_run(self):
+    def test_first_source_known_epoch_is_observer_count_independent(self):
         self.assertEqual(
-            self.module.TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL, 7
+            self.module.TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL, 1
         )
         source = inspect.getsource(self.module.prepare_layer_epoch_marker)
         self.assertIn("sourceKnownDepthFourEpochCount", source)
         self.assertIn("prospectiveTraceTarget", source)
         self.assertIn("return True", source)
         self.assertNotIn("WatchAddress", source)
+        self.assertIn(
+            "stop at the first source-known exact-depth-four zero epoch",
+            self.module._new_trace()["configuration"]["selectionRule"],
+        )
 
     def test_structural_depth_does_not_depend_on_unwound_registers(self):
         source = inspect.getsource(self.module._exact_prepare_frames)
@@ -116,11 +120,62 @@ class PrepareLayerInstructionTraceSourceTests(unittest.TestCase):
         source = inspect.getsource(self.module._selected_marker)
         self.assertIn('x28 = capture_base._register(frame, "x28")', source)
         self.assertIn("x28 != source", source)
+        self.assertIn('record["result"] = "selected"', source)
+        self.assertIn('"source-register-differs-during-manual-trace"', source)
+        self.assertIn('"manualSelectionMarkers"', source)
         self.assertIn("frame_base.live_selection_marker", source)
         self.assertLess(
             source.index("frame_base.live_selection_marker"),
             source.index('"selectedFrame"'),
         )
+
+    def test_manual_marker_with_other_source_is_retained_and_tracing_continues(self):
+        class FakeThread:
+            def GetThreadID(self):
+                return 0x1_7000_0042
+
+        class FakeFrame:
+            def GetThread(self):
+                return FakeThread()
+
+            def GetFP(self):
+                return 0x1_7000_A000
+
+            def GetPC(self):
+                return 0x1_9000_3EF0
+
+        module = self.module
+        module._state["pendingCandidate"] = {
+            "identity": {
+                "threadID": 0x1_7000_0042,
+                "roleBase": 0x1_7000_8000,
+                "framePointer": 0x1_7000_A000,
+            },
+            "selectedSource": 0xA_BEEF_0000,
+        }
+        observed = {"x19": 0x1_7000_8000, "x28": 0xA_BAD_0000}
+        with (
+            mock.patch.object(
+                module.capture_base,
+                "_register",
+                side_effect=lambda _frame, name: observed[name],
+            ),
+            mock.patch.object(module, "_record_marker_rejection") as rejection,
+            mock.patch.object(module, "_write_trace"),
+        ):
+            self.assertFalse(module._selected_marker(FakeFrame(), [], bytes(32)))
+        self.assertEqual(module._state["selectionMarkerHitCount"], 1)
+        self.assertEqual(module._state["rejectedSelectionMarkerHitCount"], 1)
+        self.assertEqual(
+            module._state["trace"]["manualSelectionMarkers"][0]["result"],
+            "rejected",
+        )
+        self.assertFalse(
+            module._state["trace"]["manualSelectionMarkers"][0][
+                "sourceRegisterMatches"
+            ]
+        )
+        rejection.assert_called_once()
 
     def test_changed_lane_detection_is_bit_exact(self):
         before = bytes(32)

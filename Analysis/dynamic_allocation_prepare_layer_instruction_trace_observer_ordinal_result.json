@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "classification": "opened-negative-result-later-epoch-ordinal-is-observer-dependent",
+  "run": {
+    "runID": 31038371480,
+    "jobID": 92416265252,
+    "headSHA": "4db3ebadc0d4bebd3a5de1c3399c71bfb143655d",
+    "workflowConclusion": "failure",
+    "durationSeconds": 398,
+    "captureTargetExitedNormally": true,
+    "timelineSampleCount": 33,
+    "timelineFailedSampleCount": 0,
+    "pathIsolationGatePassed": true,
+    "inputClampGatePassed": true
+  },
+  "artifact": {
+    "artifactID": 8943717644,
+    "name": "liquid-glass-prepare-layer-instruction-trace-31038371480",
+    "sizeBytes": 100138871,
+    "digest": "sha256:d62b4c3b2c7d687a744b0aee93fbf421269f1fb480059cbd2adc8681a8936aa8"
+  },
+  "fileSHA256": {
+    "instructionTrace": "e5d6d72c2aba28e9391c748ac9e6e02e51fc0915cf78948c8e403cd4adf76b53",
+    "inheritedFrameTrace": "892e155d67ccf8c992ec05e1920ae607b752de6d0dbd1af7c81215dc1dd2b8b0",
+    "timeline": "53201417aec04517f2323c662554eac74f7b292584068da78466e007e9768909",
+    "lldbLog": "237d5c7bc909f1834ff409e7eedea9b4029d2cb9a25a107480ab92e69f131b9b",
+    "pathIsolation": "c132c5fb9951303ab035827f91b8cc5a051a4c34be59265accf1f38397707423",
+    "inputClamp": "869fda5eef951cc9acc4310d2de262e1db4c9c3d2fb457c17682761093d5787c",
+    "contracts": "537e693fd999c9c7b21bf5fe721bb28af32637ac8296d68e3187ffff5357bc72",
+    "build": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af",
+    "runtimeStderr": "b1ec016d2898d769b0d914d8205cdbdb9d6ce5842cb298d593267fbcad4fce9c"
+  },
+  "sourceSelection": {
+    "selectedLateCandidateIndex": 1,
+    "pointerChainExact": true,
+    "sourceSelectedRectI32": [500, -128, 644, 652],
+    "layerStateSelectedRectI32": [500, 0, 524, 524],
+    "ownerSelectedRectF64": [500.0, 0.0, 524.0, 524.0],
+    "sourceEqualsLayerStateRectangle": false,
+    "ownerEqualsLayerStateRectangle": true
+  },
+  "selectedInvocation": {
+    "threadID": 64424509442,
+    "roleBase": 6171889024,
+    "framePointer": 6171890976,
+    "selectedSource": 43406802944,
+    "prepareRecursionDepth": 4,
+    "exactSourceMarkerHitIndex": 2,
+    "sourceKnownDepthFourEpochCountBeforeMarker": 3,
+    "sourceKnownDepthFourEpochMarkerHitIndices": [17, 21, 23],
+    "allSourceKnownEpochsShareSelectedFrameIdentity": true,
+    "carrierP": 492.0177001953125,
+    "integerOriginL": 491,
+    "finalAggregateF64": [
+      491.0,
+      -116.0177001953125,
+      641.0177001953125,
+      649.0177001953125
+    ]
+  },
+  "preregisteredSelectionOutcome": {
+    "requiredSourceKnownDepthFourEpochOrdinal": 7,
+    "observedCountBeforeExactSourceMarker": 3,
+    "requiredOrdinalReached": false,
+    "manualInstructionTraceStarted": false,
+    "instructionStepCount": 0,
+    "aggregateTransitionCount": 0,
+    "captureFailure": "exact-source marker preceded prospective epoch",
+    "validatorFailure": "instruction trace envelope differs",
+    "adaptiveSameRunFallbackUsed": false
+  },
+  "crossRunComparison": {
+    "precedingRunID": 31034880031,
+    "precedingObserver": "four hardware watchpoints replaced at every source-known depth-four epoch",
+    "precedingSourceKnownDepthFourEpochCountBeforeExactMarker": 7,
+    "currentObserver": "no hardware watchpoints and non-epoch sampled breakpoints retired after source selection",
+    "currentSourceKnownDepthFourEpochCountBeforeExactMarker": 3,
+    "sameSelectedLateCandidateIndex": true,
+    "sameSourceLayerAndOwnerRectangleRelation": true,
+    "sameMainThreadID": true,
+    "laterEpochOrdinalStableAcrossObservers": false
+  },
+  "successorSelection": {
+    "startOrdinal": 1,
+    "rule": "Stop at the first source-known exact-depth-four zero epoch and single-step that same thread, role base, and frame pointer across every later loop until the first selection marker whose x28 equals the independently selected source.",
+    "whyObserverIndependent": "Every qualifying run has a first source-known epoch; the rule does not assume how many later loop epochs occur before the exact-source marker.",
+    "rejectedMarkerHandling": "Retain every manually crossed selection marker and continue when either the selected frame identity or x28 differs; accept only the first exact identity and source match.",
+    "sameRunAdaptiveSelectionForbidden": true
+  },
+  "conclusion": {
+    "laterEpochOrdinalIsStableSelector": false,
+    "firstSourceKnownEpochIsProspectiveStart": true,
+    "architecturalWriterInstructionsCaptured": false,
+    "completeCropAllocationPolicyOpened": false,
+    "unseenGeometryTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

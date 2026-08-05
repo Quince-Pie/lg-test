@@ -46,8 +46,19 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
 
     def test_epoch_selection_is_prospective_not_adaptive(self) -> None:
         selection = self.document["selection"]
-        self.assertEqual(selection["prospectiveEpochOrdinal"], 7)
+        correction = self.document["observerOrdinalCorrection"]
+        self.assertEqual(correction["sourceRunID"], 31038371480)
+        self.assertEqual(correction["registeredLaterEpochOrdinal"], 7)
+        self.assertEqual(
+            correction["observedSourceKnownDepthFourEpochCountBeforeExactMarker"],
+            3,
+        )
+        self.assertFalse(correction["laterEpochOrdinalStableAcrossObservers"])
+        result_path = REPOSITORY_ROOT / correction["sourceResultPath"]
+        self.assertEqual(sha256(result_path), correction["sourceResultSHA256"])
+        self.assertEqual(selection["prospectiveEpochOrdinal"], 1)
         self.assertTrue(selection["adaptiveEpochSelectionForbidden"])
+        self.assertTrue(selection["observerDependentLaterOrdinalForbidden"])
         self.assertEqual(selection["earlyIdentity"], ["threadID", "x19", "x29"])
         self.assertIn("x28", selection["futureIdentity"])
         self.assertEqual(
@@ -86,6 +97,7 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         self.assertTrue(
             instrumentation["allSoftwareBreakpointsDisabledBeforeFirstInstructionStep"]
         )
+        self.assertTrue(instrumentation["manualSelectionMarkersRetained"])
         self.assertEqual(
             instrumentation["selectedThreadStepAPI"],
             "SBThread.StepInstruction(false, SBError)",
@@ -126,6 +138,10 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
             self.assertEqual(sha256(shader), PRODUCTION_SHADER_SHA256)
         paths = (
             (integrity["coalescingResultPath"], "coalescingResultSHA256"),
+            (
+                integrity["observerOrdinalResultPath"],
+                "observerOrdinalResultSHA256",
+            ),
             (integrity["captureProgramPath"], "captureProgramSHA256"),
             (integrity["validatorPath"], "validatorSHA256"),
             (integrity["captureSourceTestPath"], "captureSourceTestSHA256"),
@@ -140,8 +156,14 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
                 )
         self.assertFalse(integrity["productionShaderModifiedByExperiment"])
 
-    def test_runtime_outcome_is_null_before_dispatch(self) -> None:
-        self.assertIsNone(self.document["runtimeOutcomeFrozenBeforeRun"])
+    def test_first_attempt_is_frozen_and_retry_is_null_before_dispatch(self) -> None:
+        outcome = self.document["firstAttemptRuntimeOutcome"]
+        self.assertEqual(outcome["runID"], 31038371480)
+        self.assertEqual(outcome["registeredEpochOrdinal"], 7)
+        self.assertEqual(outcome["observedEpochCountBeforeExactMarker"], 3)
+        self.assertFalse(outcome["instructionTraceStarted"])
+        self.assertFalse(outcome["productionShaderAuthorized"])
+        self.assertIsNone(self.document["retryRuntimeOutcomeFrozenBeforeRun"])
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 {
-  "schemaVersion": 1,
-  "classification": "prospective-selected-epoch-software-instruction-state-trace",
+  "schemaVersion": 2,
+  "classification": "prospective-first-source-known-epoch-software-instruction-state-trace",
   "registeredDate": "2026-08-05",
-  "researchQuestion": "Which exact architectural instructions produce every observed 32-byte prepare_layer aggregate transition from the selected zero epoch through the exact-source marker when hardware watchpoint callback coalescing is removed?",
+  "researchQuestion": "Which exact architectural instructions produce every observed 32-byte prepare_layer aggregate transition from the first source-known exact-depth-four zero epoch through the first later exact-source marker when both hardware callback coalescing and observer-dependent later-ordinal selection are removed?",
   "openedEvidenceBoundary": {
     "sourceRunID": 31034880031,
     "sourceHeadSHA": "06d717ecbf269b7cc2d54df0332f45d0e8502f2c",
@@ -19,8 +19,21 @@
     "knownPublicResamplingLaw": "q = 2 / (2 - k)",
     "completeCropAllocationPolicyProved": false
   },
+  "observerOrdinalCorrection": {
+    "sourceRunID": 31038371480,
+    "sourceHeadSHA": "4db3ebadc0d4bebd3a5de1c3399c71bfb143655d",
+    "sourceResultPath": "Analysis/dynamic_allocation_prepare_layer_instruction_trace_observer_ordinal_result.json",
+    "sourceResultSHA256": "ee19e2256afca44f6c04f9c26cab775567bf490b77e5283313d3dd9f942c99af",
+    "registeredLaterEpochOrdinal": 7,
+    "observedSourceKnownDepthFourEpochCountBeforeExactMarker": 3,
+    "manualInstructionTraceStarted": false,
+    "sameRunAdaptiveFallbackUsed": false,
+    "laterEpochOrdinalStableAcrossObservers": false,
+    "replacementStartOrdinal": 1,
+    "replacementRule": "Trace the first source-known exact-depth-four epoch across every same-frame loop and reject each manually crossed +0x3ef0 until x28 equals the independently selected source."
+  },
   "prospectiveHypothesis": {
-    "primary": "Single-stepping the prospectively selected invocation with all software breakpoints disabled will expose a continuous bitwise aggregate state chain and assign each changed boundary to one exact instruction in a frozen QuartzCore scope.",
+    "primary": "Single-stepping from the first source-known exact-depth-four epoch across every later loop of the same invocation with all software breakpoints disabled will expose a continuous bitwise aggregate state chain and assign each changed boundary to one exact instruction in a frozen QuartzCore scope.",
     "opaqueBoundary": "Calls outside the seven frozen scopes will not change the selected aggregate across their entry-to-return boundary. Any changed opaque boundary is a null outcome and must open a separately preregistered successor scope.",
     "knownTransfer": "The continuous state chain contains zero, [P,1024-P-640,640,640], [P,1024-P-640-8,640,648], and [floor(P)-1,1024-P-640-8,P+640-(floor(P)-1),P+648-(floor(P)-1)] bit-for-bit and in order.",
     "semanticSeal": "Passing opens exact changed instruction bytes, operands, and before/after state only. Instruction semantics, the complete crop policy, unseen transfer, shader authority, and parity remain sealed."
@@ -30,13 +43,16 @@
     "frameSelection": "Accept exact prepare_layer function name and frozen symbol bounds only when the bounded live ancestry has exactly four exact prepare_layer frames and the top SBFrame.GetFP equals x29.",
     "earlyIdentity": ["threadID", "x19", "x29"],
     "futureIdentity": "At +0x3ef0 require x28 to equal the independently selected source while threadID/x19/x29 still equal the stopped epoch identity.",
-    "prospectiveEpochOrdinal": 7,
+    "prospectiveEpochOrdinal": 1,
+    "manualMarkerRule": "Retain every +0x3ef0 crossed during instruction stepping; continue when threadID/x19/x29 or x28 differs and accept only the first exact identity and independently selected source match.",
+    "observerDependentLaterOrdinalForbidden": true,
     "adaptiveEpochSelectionForbidden": true
   },
   "instrumentation": {
     "hardwareWatchpointsUsed": false,
     "sampledWriterBreakpointsRetiredAfterSourceSelection": true,
     "allSoftwareBreakpointsDisabledBeforeFirstInstructionStep": true,
+    "manualSelectionMarkersRetained": true,
     "selectedThreadStepAPI": "SBThread.StepInstruction(false, SBError)",
     "opaqueCalleeAPI": "SBThread.StepOut(SBError)",
     "debuggerModeBeforeStepping": "SBDebugger.SetAsync(false) with GetAsync() readback false",
@@ -107,7 +123,7 @@
   },
   "acceptance": {
     "existingFrameSourceMarkerContextMustPass": true,
-    "sourceKnownDepthFourEpochCountAtStop": 7,
+    "sourceKnownDepthFourEpochCountAtStop": 1,
     "selectedEpochAggregateMustBeAllZero": true,
     "allBreakpointReadbacksDisabledDuringStepping": true,
     "zeroHardwareWatchpointsRequired": true,
@@ -131,7 +147,8 @@
     "liquidGlassParityMayBeClaimed": false
   },
   "nullOutcome": [
-    "the seventh source-known exact-depth-four epoch is absent or is not the future exact-source invocation",
+    "the first source-known exact-depth-four epoch is absent",
+    "the selected frame identity returns before any later +0x3ef0 has x28 equal to the independent source",
     "any breakpoint remains enabled during instruction stepping",
     "the target frame returns before +0x3ef0",
     "the instruction-step bound is reached",
@@ -166,23 +183,33 @@
     "productionShaderModifiedByExperiment": false,
     "coalescingResultPath": "Analysis/dynamic_allocation_prepare_layer_active_frame_watch_coalescing_result.json",
     "coalescingResultSHA256": "8099a078bff021c638802f142a884f61a77c5c3d05e5b7b0436739b1e39d412d",
+    "observerOrdinalResultPath": "Analysis/dynamic_allocation_prepare_layer_instruction_trace_observer_ordinal_result.json",
+    "observerOrdinalResultSHA256": "ee19e2256afca44f6c04f9c26cab775567bf490b77e5283313d3dd9f942c99af",
     "captureProgramPath": "Analysis/capture_prepare_layer_instruction_trace_lldb.py",
-    "captureProgramSHA256": "1b9c13d727fbb3ca4aae1a3a988401971e2911ebb7855bad923bf2d067a87e2d",
+    "captureProgramSHA256": "7091a696f535f6bcb62dd508ff092185c4ccc9cbb57d07c1e6bdd509381f0873",
     "validatorPath": "Analysis/validate_prepare_layer_instruction_trace.py",
-    "validatorSHA256": "0922a4f116c0d30863f2ecc67838e4b0704f4d4c5a3d7dd8e0f4f80700e776c9",
+    "validatorSHA256": "7afe054b91eca6d41b6b2c2d6b5e837bcf2ff5f9320e1b5b55aa8276f2c36fe7",
     "captureSourceTestPath": "Analysis/test_capture_prepare_layer_instruction_trace_lldb_source.py",
-    "captureSourceTestSHA256": "69f3a75e6ccf58307be5e84dfcd21b3509a223c97a74b513e4b65c11f157b7ec",
+    "captureSourceTestSHA256": "e5cdaa6ce92414b4056aae19695c97a188326e7100be983d7f84de6835b7407b",
     "validatorTestPath": "Analysis/test_validate_prepare_layer_instruction_trace.py",
-    "validatorTestSHA256": "2a85d2aca6506e5cf22447365a8acdf52c65d5271fdefd6836da045f232cfb0c",
+    "validatorTestSHA256": "9a4f7b94242850f0b73121ad5384f0d9e8c1536112e1da4272b9f77d56ddb50e",
     "workflowPath": ".github/workflows/prepare-layer-instruction-trace-introspect.yml",
-    "workflowSHA256": "a67c08baee85b7d75505a0d2c4387c06f531ab30dec965990707fe7cd1738a0b",
+    "workflowSHA256": "5b6327152086c5c6baad06b98987937e1c12293dcdc5c2a49f1685949cb70e3c",
     "preregistrationTestPath": "Analysis/test_dynamic_allocation_prepare_layer_instruction_trace_preregistration.py",
-    "preregistrationTestSHA256": "e2e89e0b50723139aefccc3baa66d1d64c6a5eda219a0ca0a5abaf5a07c282d7"
+    "preregistrationTestSHA256": "4fbdd78c4ebc9e9afa4d2fbe61f30eed0390eec9723af92930b6857218c71812"
   },
-  "runtimeOutcomeFrozenBeforeRun": null,
+  "firstAttemptRuntimeOutcome": {
+    "runID": 31038371480,
+    "outcome": "negative-later-epoch-ordinal-observer-dependent",
+    "registeredEpochOrdinal": 7,
+    "observedEpochCountBeforeExactMarker": 3,
+    "instructionTraceStarted": false,
+    "productionShaderAuthorized": false
+  },
+  "retryRuntimeOutcomeFrozenBeforeRun": null,
   "notAuthorizedBeforeAcceptance": [
     "treating one hardware watch callback as one architectural store",
-    "adaptively choosing a different epoch after observing this run",
+    "adaptively choosing a later epoch after observing a run instead of tracing prospectively from the first qualifying epoch",
     "ignoring or interpolating a changed opaque boundary",
     "claiming writer instruction semantics from bytes and operands alone",
     "claiming the complete crop-allocation producer is recovered",

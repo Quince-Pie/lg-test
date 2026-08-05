@@ -5855,3 +5855,37 @@ final equality with both independent marker copies. Passing opens exact
 changed instruction evidence only. Decoding the instructions into the full
 crop policy, transferring it to unseen geometry and raster cases, changing
 Walle's shader, and claiming Liquid Glass parity remain later gates.
+
+Run `31038371480`, from instruction-trace commit `4db3eba`, rejects the frozen
+seventh-epoch selector before any manual instruction step. The native target,
+all 33 image captures, path-isolation gate, and input-clamp gate complete
+normally, but the exact-source `+0x3ef0` marker arrives after only three
+source-known exact-depth-four `+0xb60` epochs. The preregistered seventh epoch
+is therefore absent; the trace retains failures `exact-source marker preceded
+prospective epoch` and `prospective selected epoch was not reached`, and the
+validator correctly rejects the envelope. No fallback epoch is selected in
+that run. The artifact is `8943717644`, with GitHub digest
+`sha256:d62b4c3b2c7d687a744b0aee93fbf421269f1fb480059cbd2adc8681a8936aa8`;
+the immutable result is
+`Analysis/dynamic_allocation_prepare_layer_instruction_trace_observer_ordinal_result.json`.
+
+This is an observer-selection failure, not an Apple-arithmetic failure. Both
+the preceding watchpoint run and this no-watchpoint run select late candidate
+one with the exact same source `[500,-128,644,652]`, layer-state
+`[500,0,524,524]`, and owner `[500,0,524,524]` relationship. Yet the exact
+marker follows seven qualifying epochs with the former observer and three
+with the latter. A later epoch ordinal is therefore not invariant under the
+debugger observer. The new marker aggregate is exactly
+`[491,-116.0177001953125,641.0177001953125,649.0177001953125]`, consistent
+with the already opened law at `P=492.0177001953125`; no instruction chain was
+captured in this failed attempt.
+
+Schema 2 removes the unstable count rather than changing `7` to `3`. It stops
+prospectively at the first source-known exact-depth-four zero epoch, which
+exists independently of how many later loops the observer induces. With all
+breakpoints and watchpoints disabled, it single-steps the same
+`(threadID,x19,x29)` frame across every later loop. Every manually crossed
+`+0x3ef0` is retained; a differing frame identity or `x28` is an explicit
+rejection, and only the first marker whose `x28` equals the independently
+selected source closes the trace. This preserves a predetermined selection
+rule while covering both the observed three-epoch and seven-epoch paths.

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: prepare-layer-instruction-trace-v1-${{ github.ref }}
+  group: prepare-layer-instruction-trace-v2-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -95,7 +95,7 @@ jobs:
             -o glass-transition-introspect 2>&1 |
             tee -a transition-introspection/build.log
 
-      - name: Single-step the prospective selected aggregate path
+      - name: Single-step from the first source-known aggregate epoch
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true

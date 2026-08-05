@@ -18,11 +18,11 @@ import validate_prepare_layer_frame_correlated_writer_trace as frame_validator
 full_base = frame_validator.full_base
 merge_base = frame_validator.merge_base
 
-EXPECTED_TRACE_SCHEMA_VERSION = 1
-VALIDATION_SCHEMA_VERSION = 1
+EXPECTED_TRACE_SCHEMA_VERSION = 2
+VALIDATION_SCHEMA_VERSION = 2
 EXPECTED_CLASSIFICATION = (
-    "preregistered-selected-epoch-software-instruction-trace; "
-    "hardware-watch-callback-coalescing-eliminated; crop-policy-"
+    "preregistered-first-source-known-epoch-software-instruction-trace; "
+    "observer-dependent-later-ordinal-selection-eliminated; crop-policy-"
     "generalization-unseen-transfer-and-product-parity-remain-sealed"
 )
 EXPECTED_VALIDATION_CLASSIFICATION = (
@@ -39,7 +39,7 @@ SELECTION_MARKER_NAME = "sourceLaterHandle"
 SELECTION_MARKER_OFFSET = 0x3EF0
 SELECTION_MARKER_INSTRUCTION_HEX = "28330b91"
 TARGET_PREPARE_RECURSION_DEPTH = 4
-TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL = 7
+TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL = 1
 MAXIMUM_EPOCH_MARKER_HIT_COUNT = 4096
 MAXIMUM_EPOCH_RECORD_COUNT = 128
 MAXIMUM_SELECTION_MARKER_HIT_COUNT = 4096
@@ -192,9 +192,10 @@ EXPECTED_CONFIGURATION = {
     "frameTraceOutputEnvironment": FRAME_TRACE_OUTPUT_ENVIRONMENT,
     "frameTraceSchemaVersion": frame_validator.EXPECTED_TRACE_SCHEMA_VERSION,
     "selectionRule": (
-        "stop only at the seventh source-known exact-depth-four zero epoch fixed "
-        "by run 31034880031, then require the same live thread/x19/x29 identity "
-        "and future x28 source at +0x3ef0"
+        "stop at the first source-known exact-depth-four zero epoch, then "
+        "single-step the same live thread/x19/x29 frame across every later "
+        "loop until the first +0x3ef0 whose x28 equals the independently "
+        "selected source"
     ),
     "steppingRule": (
         "disable every software breakpoint before stepping; execute one "
@@ -791,6 +792,80 @@ def _steps_and_transitions(
     return states, transitions
 
 
+def _manual_selection_markers(
+    trace: Mapping[str, Any],
+    order: Mapping[int, str],
+    prepare_start: int,
+    identity: Mapping[str, int],
+    selected_source: int,
+) -> tuple[int, int]:
+    values = list(
+        sequence(trace.get("manualSelectionMarkers"), "manual selection markers")
+    )
+    if not values or len(values) > MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT:
+        raise ValueError("manual selection marker inventory differs")
+    previous_hit = 0
+    selected_index = -1
+    selected_callback = -1
+    for index, raw in enumerate(values):
+        label = f"manual selection marker {index}"
+        item = mapping(raw, label)
+        marker_identity = _identity(item.get("selectedIdentity"), f"{label} identity")
+        marker_hit = integer(item.get("markerHitIndex"), f"{label} hit")
+        thread_id = integer(item.get("threadID"), f"{label} thread")
+        frame_pointer = integer(item.get("framePointer"), f"{label} frame pointer")
+        role_base = integer(item.get("observedRoleBase"), f"{label} role")
+        observed_x28 = integer(item.get("observedX28"), f"{label} x28")
+        identity_matches = (
+            thread_id == identity["threadID"]
+            and frame_pointer == identity["framePointer"]
+            and role_base == identity["roleBase"]
+        )
+        source_matches = observed_x28 == selected_source
+        if (
+            item.get("manualSelectionMarkerIndex") != index
+            or marker_hit <= previous_hit
+            or item.get("pc") != prepare_start + SELECTION_MARKER_OFFSET
+            or marker_identity != identity
+            or item.get("selectedSource") != selected_source
+            or integer(
+                item.get("prepareRecursionDepth"), f"{label} recursion depth"
+            )
+            <= 0
+            or item.get("frameIdentityMatches") is not identity_matches
+            or item.get("sourceRegisterMatches") is not source_matches
+        ):
+            raise ValueError(f"{label} differs")
+        result = item.get("result")
+        if result == "selected":
+            if (
+                index != len(values) - 1
+                or not identity_matches
+                or not source_matches
+                or item.get("prepareRecursionDepth")
+                != TARGET_PREPARE_RECURSION_DEPTH
+            ):
+                raise ValueError(f"{label} selected identity differs")
+            selected_callback = _require_callback(
+                order,
+                item.get("callbackSequence"),
+                "selected-instruction-path-closed",
+                label,
+            )
+            selected_index = index
+        elif result == "rejected":
+            if identity_matches and source_matches:
+                raise ValueError(f"{label} rejection differs")
+            if item.get("callbackSequence") is not None:
+                raise ValueError(f"{label} rejected callback differs")
+        else:
+            raise ValueError(f"{label} result differs")
+        previous_hit = marker_hit
+    if selected_index < 0:
+        raise ValueError("manual selected marker is absent")
+    return selected_index, selected_callback
+
+
 def validate_documents(
     trace: Mapping[str, Any], inherited_trace: Mapping[str, Any]
 ) -> dict[str, Any]:
@@ -840,6 +915,9 @@ def validate_documents(
         trace, order, scopes, identity, zero, addresses
     )
     known = _known_state_sequence(states)
+    manual_marker_index, manual_selected_callback = _manual_selection_markers(
+        trace, order, prepare_start, identity, selected_source
+    )
 
     selected = mapping(trace.get("selectedFrame"), "selected frame")
     selected_callback = _require_callback(
@@ -853,9 +931,12 @@ def validate_documents(
         selected.get("roleStateAtMarker"), "selected marker role", identity
     )
     if (
-        selected_callback <= start_callback
+        selected_callback != manual_selected_callback
+        or selected_callback <= start_callback
         or selected_callback != len(order)
         or selected.get("pc") != marker_pc
+        or selected.get("markerHitIndex") != trace.get("selectionMarkerHitCount")
+        or selected.get("manualSelectionMarkerIndex") != manual_marker_index
         or selected.get("prepareRecursionDepth") != TARGET_PREPARE_RECURSION_DEPTH
         or _identity(selected.get("frameIdentity"), "selected identity") != identity
         or selected.get("selectedSource") != selected_source
@@ -918,12 +999,14 @@ def validate_documents(
         or trace.get("finalAggregateTransitionCount") != len(transitions)
         or trace.get("finalOpaqueCalleeBoundaryCount")
         != len(trace.get("opaqueCalleeBoundaries", []))
+        or trace.get("finalManualSelectionMarkerRecordCount")
+        != len(trace.get("manualSelectionMarkers", []))
         or trace.get("finalChangedOpaqueCalleeBoundaryCount") != 0
         or trace.get("finalDistinctAggregateStateCount") != len(set(states))
         or len(transitions) < 3
         or len(set(states)) < 4
-        or trace.get("selectionMarkerHitCount") != 1
-        or trace.get("rejectedSelectionMarkerHitCount", 0) < 0
+        or trace.get("selectionMarkerHitCount")
+        != trace.get("rejectedSelectionMarkerHitCount", 0) + 1
     ):
         raise ValueError("final instruction accounting differs")
 
