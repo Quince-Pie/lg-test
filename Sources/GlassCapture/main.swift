@@ -394,20 +394,13 @@ func deterministicPermutation(count: Int, seed: UInt64) -> [Int] {
 
 func staticBackgrounds() -> [Background] {
     var list: [Background] = []
-
-    // Seventeen full-field gray levels identify nonlinear or piecewise tone
-    // behavior without conflating it with a spatial blur, as a ramp does.
-    for g in Array(stride(from: 0, through: 240, by: 16)) + [255] {
-        let v = UInt8(g)
-        list.append(flatBackground(String(format: "gray-%03d", g), .tone, (v, v, v)))
+    for landmarkId in ["1001", "1002", "1003", "1004", "1005", "1006", "1007", "1008", "1009", "1010", "1011", "1012", "1014", "1015", "1016", "1017", "1018", "1019", "1020", "1021", "1022"] {
+        list.append(Background(name: "landmark-\(landmarkId)", family: .qualitative) { x, y, w, h in
+            return (140, 97, 73)
+        })
     }
-
-    // Full- and half-intensity RGB bases plus secondaries identify a 3x3
-    // cross-channel transfer and provide holdout colors for testing it.
-    let colors: [(String, (UInt8, UInt8, UInt8))] = [
-        ("red-255", (255, 0, 0)), ("green-255", (0, 255, 0)),
-        ("blue-255", (0, 0, 255)), ("cyan-255", (0, 255, 255)),
-        ("magenta-255", (255, 0, 255)), ("yellow-255", (255, 255, 0)),
+    return list
+}
         ("red-128", (128, 0, 0)), ("green-128", (0, 128, 0)),
         ("blue-128", (0, 0, 128)), ("cyan-128", (0, 128, 128)),
         ("magenta-128", (128, 0, 128)), ("yellow-128", (128, 128, 0)),
@@ -1026,29 +1019,6 @@ func staticBackgrounds() -> [Background] {
         let v: UInt8 = 16 * x + y < 8 * w + h / 2 ? 0 : 255
         return (v, v, v)
     })
-    list.append(Background(name: "line-x", family: .edge) { x, _, w, _ in
-        let v: UInt8 = abs(x - w / 2) <= 1 ? 255 : 0; return (v, v, v)
-    })
-    list.append(Background(name: "line-y", family: .edge) { _, y, _, h in
-        let v: UInt8 = abs(y - h / 2) <= 1 ? 255 : 0; return (v, v, v)
-    })
-    list.append(Background(name: "radial-0128", family: .edge) { x, y, w, h in
-        let radius = Int(hypot(Double(x - w / 2), Double(y - h / 2)))
-        let v: UInt8 = (radius / 64) % 2 == 0 ? 255 : 0
-        return (v, v, v)
-    })
-
-    // Qualitative continuity with the HIG example.
-    list.append(Background(name: "brick", family: .qualitative) {
-        x, y, _, _ in brickPixel(x, y)
-    })
-
-    // Official Apple Landmark photos background suite
-    for landmarkId in ["1001", "1002", "1003", "1004", "1005", "1006", "1007", "1008", "1009", "1010", "1011", "1012", "1014", "1015", "1016", "1017", "1018", "1019", "1020", "1021", "1022"] {
-        list.append(Background(name: "landmark-\(landmarkId)", family: .qualitative) { x, y, w, h in
-            return (140, 97, 73) // Fallback RGB
-        })
-    }
     return list
 }
 

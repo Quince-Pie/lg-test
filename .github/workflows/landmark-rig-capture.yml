@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - landmark-rig
   workflow_dispatch:
 
 jobs:
