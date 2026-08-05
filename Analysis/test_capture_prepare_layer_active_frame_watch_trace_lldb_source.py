@@ -112,7 +112,36 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         source = inspect.getsource(getattr(self.module, "__lldb_init_module"))
         finalize = inspect.getsource(self.module.finalize)
         self.assertIn("frame_base.__lldb_init_module", source)
+        self.assertIn('frame_base._state["prepareEntryBreakpoint"]', source)
+        self.assertNotIn("BreakpointCreateByName", source)
         self.assertIn("frame_base.finalize()", finalize)
+
+    def test_shared_breakpoint_callbacks_are_multiplexed_base_first(self):
+        pairs = (
+            (
+                self.module.multiplexed_prepare_layer_entry,
+                "frame_base.prepare_layer_entry",
+                "prepare_layer_entry(frame",
+            ),
+            (
+                self.module.multiplexed_epoch_marker,
+                "frame_base.writer_site",
+                "prepare_layer_epoch_marker",
+            ),
+            (
+                self.module.multiplexed_selection_marker,
+                "frame_base.live_selection_marker",
+                "prepare_layer_selection_marker",
+            ),
+        )
+        for callback, inherited, active in pairs:
+            with self.subTest(callback=callback.__name__):
+                source = inspect.getsource(callback)
+                self.assertLess(source.index(inherited), source.rindex(active))
+        entry = inspect.getsource(self.module.prepare_layer_entry)
+        self.assertIn('frame_base._state["writerBreakpoints"]', entry)
+        self.assertIn('frame_base._state["selectionMarkerBreakpoint"]', entry)
+        self.assertEqual(entry.count("_address_breakpoint("), 1)
 
 
 if __name__ == "__main__":

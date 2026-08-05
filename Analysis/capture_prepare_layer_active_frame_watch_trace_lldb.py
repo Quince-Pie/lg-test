@@ -182,6 +182,11 @@ def _new_trace():
                 "selected source, require the active identity and latest epoch to "
                 "match and close the contiguous full-aggregate chain at the marker"
             ),
+            "callbackMultiplexingRule": (
+                "reuse the inherited prepare entry, +0xb60 epoch, and +0x3ef0 "
+                "selection breakpoints; at each shared address run the inherited "
+                "callback first and the active-watch callback second"
+            ),
         },
         "callbackOrder": [],
         "prepareLayer": {},
@@ -462,6 +467,27 @@ def _install_watch_group(frame, epoch_record, aggregate):
         raise
 
 
+def multiplexed_prepare_layer_entry(frame, breakpoint_location, internal_dict):
+    """Run both entry callbacks on the inherited single physical breakpoint."""
+    frame_base.prepare_layer_entry(frame, breakpoint_location, internal_dict)
+    prepare_layer_entry(frame, breakpoint_location, internal_dict)
+    return False
+
+
+def multiplexed_epoch_marker(frame, breakpoint_location, internal_dict):
+    """Retain the inherited sampled epoch before arming active hardware watches."""
+    frame_base.writer_site(frame, breakpoint_location, internal_dict)
+    prepare_layer_epoch_marker(frame, breakpoint_location, internal_dict)
+    return False
+
+
+def multiplexed_selection_marker(frame, breakpoint_location, internal_dict):
+    """Close inherited sampling before closing the active hardware chain."""
+    frame_base.live_selection_marker(frame, breakpoint_location, internal_dict)
+    prepare_layer_selection_marker(frame, breakpoint_location, internal_dict)
+    return False
+
+
 def prepare_layer_entry(frame, breakpoint_location, _internal_dict):
     """Freeze complete code and install epoch, return, and selection markers."""
     try:
@@ -495,23 +521,36 @@ def prepare_layer_entry(frame, breakpoint_location, _internal_dict):
         }
         if any(code[offset : offset + 4].hex() != raw for offset, raw in frozen.items()):
             raise RuntimeError("active watch marker instruction bytes differ")
-        epoch = _address_breakpoint(
-            target,
-            start + EPOCH_MARKER_OFFSET,
-            "prepare_layer_epoch_marker",
-            "active watch zero epoch",
+        epoch = frame_base._state["writerBreakpoints"].get(EPOCH_MARKER_NAME)
+        selection = frame_base._state["selectionMarkerBreakpoint"]
+        if (
+            epoch is None
+            or not epoch.IsValid()
+            or epoch.GetNumLocations() != 1
+            or epoch.GetLocationAtIndex(0).GetAddress().GetLoadAddress(target)
+            != start + EPOCH_MARKER_OFFSET
+            or selection is None
+            or not selection.IsValid()
+            or selection.GetNumLocations() != 1
+            or selection.GetLocationAtIndex(0).GetAddress().GetLoadAddress(target)
+            != start + SELECTION_MARKER_OFFSET
+        ):
+            raise RuntimeError("inherited shared active watch breakpoints differ")
+        _set_callback(
+            epoch,
+            "multiplexed_epoch_marker",
+            "shared active watch zero epoch",
+        )
+        _set_callback(
+            selection,
+            "multiplexed_selection_marker",
+            "shared active watch source selection",
         )
         returned = _address_breakpoint(
             target,
             start + RETURN_MARKER_OFFSET,
             "prepare_layer_return_marker",
             "active watch recursive return",
-        )
-        selection = _address_breakpoint(
-            target,
-            start + SELECTION_MARKER_OFFSET,
-            "prepare_layer_selection_marker",
-            "active watch source selection",
         )
         sequence = _next_sequence("prepare-layer-entry")
         prepare = {
@@ -926,12 +965,18 @@ def __lldb_init_module(debugger, internal_dict):
     _reset_state()
     _state["debugger"] = debugger
     _state["trace"] = _new_trace()
-    target = debugger.GetSelectedTarget()
-    prepare = target.BreakpointCreateByName(capture_base.PREPARE_LAYER_FUNCTION)
-    if not prepare.IsValid():
-        _failure("initialization", "active watch prepare_layer breakpoint is invalid")
+    prepare = frame_base._state["prepareEntryBreakpoint"]
+    if prepare is None or not prepare.IsValid():
+        _failure(
+            "initialization",
+            "inherited active watch prepare_layer breakpoint is invalid",
+        )
         return
-    _set_callback(prepare, "prepare_layer_entry", "active watch prepare_layer entry")
+    _set_callback(
+        prepare,
+        "multiplexed_prepare_layer_entry",
+        "shared active watch prepare_layer entry",
+    )
     _state["prepareEntryBreakpoint"] = prepare
     _state["trace"]["prepareLayerEntryBreakpointID"] = prepare.GetID()
     _write_trace()

@@ -174,7 +174,7 @@ def passing_documents():
             {"sequence": 7, "kind": "live-selected-active-frame-watch-closed"},
             {"sequence": 8, "kind": "active-watch-group-retired"},
         ],
-        "prepareLayerEntryBreakpointID": 1,
+        "prepareLayerEntryBreakpointID": 2,
         "prepareLayer": {
             "callbackSequence": 1,
             "callbackPC": PREPARE_START,
@@ -187,12 +187,12 @@ def passing_documents():
             "symbolByteCount": validator.full_base.PREPARE_LAYER_SYMBOL_BYTE_COUNT,
             "fullCodeSHA256": validator.PREPARE_LAYER_FULL_CODE_SHA256,
             "module": MODULE,
-            "epochMarker": {"address": epoch_pc, "breakpointID": 2},
+            "epochMarker": {"address": epoch_pc, "breakpointID": 9},
             "returnMarker": {
                 "address": PREPARE_START + validator.RETURN_MARKER_OFFSET,
-                "breakpointID": 3,
+                "breakpointID": 13,
             },
-            "selectionMarker": {"address": marker_pc, "breakpointID": 4},
+            "selectionMarker": {"address": marker_pc, "breakpointID": 12},
         },
         "epochRecords": [
             {
@@ -316,6 +316,12 @@ class ActiveFrameWatchValidatorTests(unittest.TestCase):
         document, base = passing_documents()
         document["watchpointGroups"][0]["watchpoints"].pop()
         with self.assertRaisesRegex(ValueError, "watchpoint group 0 differs"):
+            self.validate_documents(document, base)
+
+    def test_duplicate_shared_breakpoint_identity_fails_closed(self):
+        document, base = passing_documents()
+        document["prepareLayer"]["epochMarker"]["breakpointID"] = 14
+        with self.assertRaisesRegex(ValueError, "breakpoint identities differ"):
             self.validate_documents(document, base)
 
     def test_discontinuous_full_aggregate_chain_fails_closed(self):

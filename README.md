@@ -5646,3 +5646,21 @@ scientific outcome. The preregistration records the correction explicitly:
 standalone CI checks the frozen production-shader digest, a colocated Walle
 checkout additionally hashes the real shader bytes, and contract output is
 created before the build so future pre-capture failures remain downloadable.
+
+Replacement run `31025574711` at commit `4283d47` passed that contract and
+the build, but exposed a debugger-composition error before any crop epoch or
+hardware writer event. LLDB stopped at `prepare_layer` with reason
+`breakpoint 2.1 3.1`: the inherited and active harnesses had installed two
+physical breakpoints at the same entry address. Only the active callback ran,
+the target did not resume, and the later validation failures are consequences
+of the absent timeline. Artifact `8938534854` has GitHub digest
+`sha256:e354d1bf1e73bd079b19de520b5fefa4000ecb1e6e79aab9da08bfcc90d4b7af`;
+the exact failure hashes and null causal outcome are frozen in the active-watch
+preregistration.
+
+The corrected composition has one physical breakpoint at every shared site.
+It reuses the inherited entry, `+0xb60`, and `+0x3ef0` breakpoints and runs the
+immutable inherited handler first, then the active-watch handler. Only the
+`+0x2a68` live-frame retirement breakpoint is new. The sealed validator now
+requires the three shared breakpoint IDs to equal the inherited IDs, preventing
+the duplicate-stop failure from passing locally or in CI.

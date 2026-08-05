@@ -124,6 +124,11 @@ EXPECTED_CONFIGURATION = {
         "source, require the active identity and latest epoch to match and close "
         "the contiguous full-aggregate chain at the marker"
     ),
+    "callbackMultiplexingRule": (
+        "reuse the inherited prepare entry, +0xb60 epoch, and +0x3ef0 "
+        "selection breakpoints; at each shared address run the inherited callback "
+        "first and the active-watch callback second"
+    ),
 }
 
 
@@ -228,7 +233,32 @@ def _static_gate(
     entry_id = integer(
         trace.get("prepareLayerEntryBreakpointID"), "active watch entry breakpoint"
     )
-    if len(breakpoint_ids) != 3 or entry_id in breakpoint_ids or entry_id <= 0:
+    base_sites = {
+        mapping(value, "base writer site").get("name"): mapping(
+            value, "base writer site"
+        )
+        for value in sequence(base_prepare.get("writerSites"), "base writer sites")
+    }
+    base_epoch = mapping(
+        base_sites.get(EPOCH_MARKER_NAME), "base zero epoch writer site"
+    )
+    base_selection = mapping(
+        base_prepare.get("liveSelectionMarker"), "base selection marker"
+    )
+    if (
+        len(breakpoint_ids) != 3
+        or entry_id in breakpoint_ids
+        or entry_id <= 0
+        or entry_id != base_prepare.get("entryBreakpointID")
+        or mapping(prepare.get("epochMarker"), "shared epoch marker").get(
+            "breakpointID"
+        )
+        != base_epoch.get("breakpointID")
+        or mapping(prepare.get("selectionMarker"), "shared selection marker").get(
+            "breakpointID"
+        )
+        != base_selection.get("breakpointID")
+    ):
         raise ValueError("active watch breakpoint identities differ")
     return start, prepare_module
 

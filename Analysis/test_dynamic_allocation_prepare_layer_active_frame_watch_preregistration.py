@@ -45,6 +45,10 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertEqual(covered, set(range(32)))
         self.assertTrue(acceptance["allFourHardwareWatchpointsRequired"])
         self.assertTrue(acceptance["fullThirtyTwoByteCoverageRequired"])
+        self.assertTrue(
+            acceptance["singlePhysicalBreakpointPerSharedAddressRequired"]
+        )
+        self.assertTrue(acceptance["inheritedCallbackMustRunBeforeActiveCallback"])
 
     def test_early_identity_excludes_future_x28(self) -> None:
         acceptance = self.document["acceptance"]
@@ -119,6 +123,15 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertFalse(correction["captureAttempted"])
         self.assertFalse(correction["appleRuntimeObserved"])
         self.assertFalse(correction["artifactProduced"])
+        duplicate = self.document["duplicateBreakpointCaptureCorrection"]
+        self.assertEqual(duplicate["runID"], 31025574711)
+        self.assertEqual(
+            duplicate["captureTargetStopReason"],
+            "breakpoint 2.1 3.1 at exact prepare_layer entry",
+        )
+        self.assertTrue(duplicate["completePrepareLayerCodeHashMatched"])
+        self.assertFalse(duplicate["hardwareWatchpointInstalled"])
+        self.assertFalse(duplicate["causalWriterOutcomeObserved"])
         self.assertIsNone(self.document["runtimeOutcomeFrozenBeforeRun"])
         forbidden = "\n".join(self.document["notAuthorizedBeforeAcceptance"])
         self.assertIn("production shader", forbidden)

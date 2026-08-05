@@ -149,8 +149,8 @@ jobs:
         id: active_frame_watch
         if: >-
           steps.build.outcome == 'success' &&
-          steps.capture.outcome == 'success' &&
-          steps.inherited_frame_writer.outcome == 'success'
+          steps.capture.outcome == 'success'
+        continue-on-error: true
         run: |
           python3 Analysis/validate_prepare_layer_active_frame_watch_trace.py \
             transition-introspection/prepare-layer-active-frame-watch-trace.json \
