@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: prepare-layer-active-frame-watch-v1-${{ github.ref }}
+  group: prepare-layer-active-frame-watch-v2-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

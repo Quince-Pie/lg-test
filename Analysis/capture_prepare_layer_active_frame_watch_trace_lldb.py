@@ -24,7 +24,7 @@ import capture_prepare_layer_frame_correlated_writer_trace_lldb as frame_base  #
 
 capture_base = frame_base.capture_base
 
-TRACE_SCHEMA_VERSION = 1
+TRACE_SCHEMA_VERSION = 2
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
 )
@@ -47,8 +47,10 @@ MAXIMUM_SELECTION_MARKER_HIT_COUNT = 4096
 MAXIMUM_RAW_WATCHPOINT_HIT_COUNT = 4096
 MAXIMUM_QUALIFIED_WATCHPOINT_EVENT_COUNT = 512
 MAXIMUM_IGNORED_WATCHPOINT_DIAGNOSTIC_COUNT = 64
+MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT = 64
 MINIMUM_SELECTED_CHANGED_TRANSITION_COUNT = 3
-PREPARE_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "x30", "sp", "pc")
+IDENTITY_FRAME_REGISTER_NAMES = ("x19", "x29", "pc")
+SELECTION_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "pc")
 TRACE_OUTPUT_ENVIRONMENT = "LG_PREPARE_LAYER_ACTIVE_FRAME_WATCH_TRACE_OUTPUT"
 DEFAULT_TRACE_OUTPUT = (
     "transition-introspection/prepare-layer-active-frame-watch-trace.json"
@@ -76,6 +78,7 @@ def _fresh_state():
         "qualifiedWatchpointHitCount": 0,
         "ignoredWatchpointHitCount": 0,
         "unretainedIgnoredWatchpointHitCount": 0,
+        "unretainedRejectedMarkerDiagnosticCount": 0,
         "ignoredWatchpointGroups": {},
         "activeGroup": None,
         "watchSpecByID": {},
@@ -139,16 +142,19 @@ def _new_trace():
             "maximumIgnoredWatchpointDiagnosticCount": (
                 MAXIMUM_IGNORED_WATCHPOINT_DIAGNOSTIC_COUNT
             ),
+            "maximumRejectedMarkerDiagnosticCount": (
+                MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT
+            ),
             "minimumSelectedChangedTransitionCount": (
                 MINIMUM_SELECTED_CHANGED_TRANSITION_COUNT
             ),
-            "prepareFrameRegisterNames": list(PREPARE_FRAME_REGISTER_NAMES),
+            "identityFrameRegisterNames": list(IDENTITY_FRAME_REGISTER_NAMES),
+            "selectionFrameRegisterNames": list(SELECTION_FRAME_REGISTER_NAMES),
+            "structuralFramePointerSource": "SBFrame.GetFP",
             "knownSampledWriterAfterOffsets": sorted(
                 site["relativeToPrepareLayer"] for site in frame_base.WRITER_SITES
             ),
-            "frameTraceOutputEnvironment": (
-                frame_base.TRACE_OUTPUT_ENVIRONMENT
-            ),
+            "frameTraceOutputEnvironment": (frame_base.TRACE_OUTPUT_ENVIRONMENT),
             "frameTraceSchemaVersion": frame_base.TRACE_SCHEMA_VERSION,
             "maximumBacktraceFrameCount": capture_base.MAXIMUM_BACKTRACE_FRAME_COUNT,
             "pcCenteredCodeWindowByteCount": (
@@ -169,13 +175,15 @@ def _new_trace():
             "armRule": (
                 "after source selection, arm four aligned 8-byte write watches "
                 "at +0xb60 only when the bounded live backtrace contains exactly "
-                "four exact prepare_layer frames; identify the current frame by "
-                "thread ID, x19 role base, and x29 frame pointer"
+                "four exact prepare_layer frames independent of register "
+                "availability; identify the current frame by thread ID, top-frame "
+                "x19 role base, and x29 frame pointer, cross-checking x29 against "
+                "SBFrame.GetFP"
             ),
             "retirementRule": (
                 "at recursive return +0x2a68, delete all four watches as soon as "
-                "the watched thread/x19/x29 frame is absent from the exact live "
-                "prepare_layer ancestry"
+                "the watched thread/frame-pointer pair is absent from the exact "
+                "live prepare_layer ancestry"
             ),
             "selectionRule": (
                 "at the first +0x3ef0 frame whose x28 equals the independently "
@@ -199,6 +207,7 @@ def _new_trace():
         "retirementRecords": [],
         "qualifiedWatchpointEvents": [],
         "ignoredWatchpointDiagnostics": [],
+        "rejectedMarkerDiagnostics": [],
         "codeWindows": [],
         "selectedFrame": {},
         "selectedWriterEventIndices": [],
@@ -221,18 +230,14 @@ def _write_trace():
 
 
 def _failure(stage, error):
-    _state["trace"]["failures"].append(
-        {"stage": str(stage), "message": str(error)}
-    )
+    _state["trace"]["failures"].append({"stage": str(stage), "message": str(error)})
     _write_trace()
 
 
 def _next_sequence(kind):
     _state["callbackSequence"] += 1
     sequence = _state["callbackSequence"]
-    _state["trace"]["callbackOrder"].append(
-        {"sequence": sequence, "kind": str(kind)}
-    )
+    _state["trace"]["callbackOrder"].append({"sequence": sequence, "kind": str(kind)})
     return sequence
 
 
@@ -266,6 +271,7 @@ def _identity(thread_id, role_base, frame_pointer):
 
 
 def _exact_prepare_frames(thread):
+    """Return exact structural frames without making depth depend on registers."""
     target = thread.GetProcess().GetTarget()
     start = _state["prepareLayer"]["symbolStart"]
     end = _state["prepareLayer"]["symbolEnd"]
@@ -284,27 +290,59 @@ def _exact_prepare_frames(thread):
             or symbol.GetEndAddress().GetLoadAddress(target) != end
         ):
             continue
-        try:
-            registers = capture_base._register_snapshot(
-                candidate, PREPARE_FRAME_REGISTER_NAMES
-            )
-            values = {
-                item["name"]: item["unsignedValue"] for item in registers
-            }
-        except Exception:
-            continue
+        frame_pointer = candidate.GetFP()
+        if frame_pointer in (0, lldb.LLDB_INVALID_ADDRESS):
+            frame_pointer = None
         records.append(
             {
                 "frame": candidate,
                 "frameIndex": index,
-                "registers": registers,
-                "values": values,
-                "identity": _identity(
-                    thread.GetThreadID(), values["x19"], values["x29"]
-                ),
+                "framePointer": frame_pointer,
             }
         )
     return records
+
+
+def _public_prepare_frames(exact, target):
+    return [
+        {
+            "frameIndex": item["frameIndex"],
+            "frame": capture_base._frame_record(item["frame"], target),
+            "unwindFramePointer": item["framePointer"],
+        }
+        for item in exact
+    ]
+
+
+def _record_marker_rejection(marker, frame, reason, exact, source=None, x28=None):
+    diagnostics = _state["trace"]["rejectedMarkerDiagnostics"]
+    if len(diagnostics) >= MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT:
+        _state["unretainedRejectedMarkerDiagnosticCount"] += 1
+        if _state["unretainedRejectedMarkerDiagnosticCount"] == 1:
+            _write_trace()
+        return
+    target = frame.GetThread().GetProcess().GetTarget()
+    hit_index = (
+        _state["epochMarkerHitCount"]
+        if marker == "epoch"
+        else _state["selectionMarkerHitCount"]
+    )
+    diagnostics.append(
+        {
+            "diagnosticIndex": len(diagnostics),
+            "marker": marker,
+            "reason": reason,
+            "markerHitIndex": hit_index,
+            "threadID": frame.GetThread().GetThreadID(),
+            "pc": frame.GetPC(),
+            "selectedSource": source,
+            "observedX28": x28,
+            "structuralPrepareRecursionDepth": len(exact),
+            "backtrace": capture_base._backtrace(frame.GetThread()),
+            "prepareFrames": _public_prepare_frames(exact, target),
+        }
+    )
+    _write_trace()
 
 
 def _memory_payload(process, address, byte_count, label):
@@ -420,9 +458,9 @@ def _install_watch_group(frame, epoch_record, aggregate):
                     % (lane_offset, error.GetCString() or "invalid watchpoint")
                 )
             result = lldb.SBCommandReturnObject()
-            command = (
-                "watchpoint command add -F %s.aggregate_lane_watchpoint %d"
-                % (__name__, watchpoint.GetID())
+            command = "watchpoint command add -F %s.aggregate_lane_watchpoint %d" % (
+                __name__,
+                watchpoint.GetID(),
             )
             _state["debugger"].GetCommandInterpreter().HandleCommand(command, result)
             if not result.Succeeded():
@@ -457,8 +495,7 @@ def _install_watch_group(frame, epoch_record, aggregate):
         }
         _state["activeGroup"] = active
         _state["watchSpecByID"] = {
-            spec["id"]: {**spec, "groupIndex": group_index}
-            for spec in specs
+            spec["id"]: {**spec, "groupIndex": group_index} for spec in specs
         }
         epoch_record["watchpointGroupIndex"] = group_index
         _state["trace"]["status"] = "depth-four-active-watch-group-armed"
@@ -552,7 +589,9 @@ def prepare_layer_entry(frame, breakpoint_location, _internal_dict):
             RETURN_MARKER_OFFSET: RETURN_MARKER_INSTRUCTION_HEX,
             SELECTION_MARKER_OFFSET: SELECTION_MARKER_INSTRUCTION_HEX,
         }
-        if any(code[offset : offset + 4].hex() != raw for offset, raw in frozen.items()):
+        if any(
+            code[offset : offset + 4].hex() != raw for offset, raw in frozen.items()
+        ):
             raise RuntimeError("active watch marker instruction bytes differ")
         epoch = frame_base._state["writerBreakpoints"].get(EPOCH_MARKER_NAME)
         selection = frame_base._state["selectionMarkerBreakpoint"]
@@ -637,20 +676,38 @@ def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
         _state["epochMarkerHitCount"] += 1
         if _state["epochMarkerHitCount"] > MAXIMUM_EPOCH_MARKER_HIT_COUNT:
             raise RuntimeError("active watch epoch marker hit bound exceeded")
+        exact = _exact_prepare_frames(frame.GetThread())
         source = _selected_source()
         if source is None:
             _state["sourceUnknownEpochCount"] += 1
+            _record_marker_rejection("epoch", frame, "source-unknown", exact)
             return False
-        exact = _exact_prepare_frames(frame.GetThread())
         if len(exact) != TARGET_PREPARE_RECURSION_DEPTH or exact[0]["frameIndex"] != 0:
             _state["rejectedEpochDepthCount"] += 1
+            _record_marker_rejection(
+                "epoch",
+                frame,
+                "structural-depth-differs",
+                exact,
+                source=source,
+            )
             return False
         records = _state["trace"]["epochRecords"]
         if len(records) >= MAXIMUM_EPOCH_RECORD_COUNT:
             _state["discardedEpochRecordCount"] += 1
             raise RuntimeError("active watch epoch record bound exceeded")
         process = frame.GetThread().GetProcess()
-        identity = exact[0]["identity"]
+        registers = capture_base._register_snapshot(
+            frame, IDENTITY_FRAME_REGISTER_NAMES
+        )
+        values = {item["name"]: item["unsignedValue"] for item in registers}
+        identity = _identity(
+            frame.GetThread().GetThreadID(), values["x19"], values["x29"]
+        )
+        if exact[0]["framePointer"] != identity["framePointer"]:
+            raise RuntimeError(
+                "active watch top x29 and structural frame pointer differ"
+            )
         role, role_record = _memory_payload(
             process,
             identity["roleBase"],
@@ -671,17 +728,8 @@ def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
             "frame": capture_base._frame_record(frame, process.GetTarget()),
             "backtrace": capture_base._backtrace(frame.GetThread()),
             "prepareRecursionDepth": len(exact),
-            "prepareFrames": [
-                {
-                    "frameIndex": item["frameIndex"],
-                    "frame": capture_base._frame_record(
-                        item["frame"], process.GetTarget()
-                    ),
-                    "registers": item["registers"],
-                    "identity": item["identity"],
-                }
-                for item in exact
-            ],
+            "prepareFrames": _public_prepare_frames(exact, process.GetTarget()),
+            "registers": registers,
             "identity": identity,
             "selectedSourceKnown": source,
             "roleStateAtEpoch": role_record,
@@ -697,9 +745,11 @@ def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
     return False
 
 
-def _matching_identity(exact, identity):
+def _matching_identity(exact, identity, thread_id):
+    if thread_id != identity["threadID"]:
+        return None, None
     for ordinal, item in enumerate(exact):
-        if item["identity"] == identity:
+        if item["framePointer"] == identity["framePointer"]:
             return ordinal, item
     return None, None
 
@@ -758,7 +808,9 @@ def aggregate_lane_watchpoint(frame, watchpoint, _internal_dict):
         before = group["lastAggregate"]
         group["lastAggregate"] = after
         exact = _exact_prepare_frames(frame.GetThread())
-        ordinal, prepare = _matching_identity(exact, group["identity"])
+        ordinal, prepare = _matching_identity(
+            exact, group["identity"], frame.GetThread().GetThreadID()
+        )
         if prepare is None:
             _record_ignored_watchpoint(frame, spec, before, after, exact)
             return False
@@ -806,15 +858,13 @@ def aggregate_lane_watchpoint(frame, watchpoint, _internal_dict):
             "prepareFrame": capture_base._frame_record(
                 prepare["frame"], process.GetTarget()
             ),
-            "prepareFrameRegisters": prepare["registers"],
+            "prepareFramePointer": prepare["framePointer"],
             "frameIdentity": dict(group["identity"]),
             "roleStateAfter": role_record,
             "codeWindowIndex": _code_window(frame),
         }
         if changed:
-            event["privateFieldsAfter"] = capture_base._snapshot_private_fields(
-                process
-            )
+            event["privateFieldsAfter"] = capture_base._snapshot_private_fields(process)
             event["operandSnapshot"] = capture_base._operand_snapshot(frame)
         _state["trace"]["qualifiedWatchpointEvents"].append(event)
         _state["trace"]["status"] = "qualified-active-frame-writer-captured"
@@ -836,7 +886,9 @@ def prepare_layer_return_marker(frame, _breakpoint_location, _internal_dict):
         if group is None:
             return False
         exact = _exact_prepare_frames(frame.GetThread())
-        _ordinal, matched = _matching_identity(exact, group["identity"])
+        _ordinal, matched = _matching_identity(
+            exact, group["identity"], frame.GetThread().GetThreadID()
+        )
         if matched is None:
             _retire_active_group("watched-prepare-frame-returned", frame.GetThread())
             _state["trace"]["status"] = "active-watch-group-retired-with-frame"
@@ -854,16 +906,40 @@ def prepare_layer_selection_marker(frame, _breakpoint_location, _internal_dict):
         _state["selectionMarkerHitCount"] += 1
         if _state["selectionMarkerHitCount"] > MAXIMUM_SELECTION_MARKER_HIT_COUNT:
             raise RuntimeError("active watch selection marker hit bound exceeded")
+        exact = _exact_prepare_frames(frame.GetThread())
         source = _selected_source()
         x28 = capture_base._register(frame, "x28")
         if source is None or x28 != source:
             _state["rejectedSelectionMarkerHitCount"] += 1
+            _record_marker_rejection(
+                "selection",
+                frame,
+                "source-register-differs",
+                exact,
+                source=source,
+                x28=x28,
+            )
             return False
-        exact = _exact_prepare_frames(frame.GetThread())
         if len(exact) != TARGET_PREPARE_RECURSION_DEPTH or exact[0]["frameIndex"] != 0:
             _state["rejectedSelectionMarkerHitCount"] += 1
+            _record_marker_rejection(
+                "selection",
+                frame,
+                "structural-depth-differs",
+                exact,
+                source=source,
+                x28=x28,
+            )
             return False
-        identity = exact[0]["identity"]
+        registers = capture_base._register_snapshot(
+            frame, SELECTION_FRAME_REGISTER_NAMES
+        )
+        values = {item["name"]: item["unsignedValue"] for item in registers}
+        identity = _identity(
+            frame.GetThread().GetThreadID(), values["x19"], values["x29"]
+        )
+        if exact[0]["framePointer"] != identity["framePointer"]:
+            raise RuntimeError("selected top x29 and structural frame pointer differ")
         group = _state["activeGroup"]
         if group is None or group["identity"] != identity:
             raise RuntimeError("selected active watch group identity differs")
@@ -896,7 +972,7 @@ def prepare_layer_selection_marker(frame, _breakpoint_location, _internal_dict):
             "pc": frame.GetPC(),
             "frame": capture_base._frame_record(frame, process.GetTarget()),
             "backtrace": capture_base._backtrace(frame.GetThread()),
-            "registers": exact[0]["registers"],
+            "registers": registers,
             "prepareRecursionDepth": len(exact),
             "frameIdentity": identity,
             "selectedSource": source,
@@ -964,17 +1040,19 @@ def finalize():
     trace["finalEpochRecordCount"] = len(trace["epochRecords"])
     trace["returnMarkerHitCount"] = _state["returnMarkerHitCount"]
     trace["selectionMarkerHitCount"] = _state["selectionMarkerHitCount"]
-    trace["rejectedSelectionMarkerHitCount"] = _state[
-        "rejectedSelectionMarkerHitCount"
-    ]
+    trace["rejectedSelectionMarkerHitCount"] = _state["rejectedSelectionMarkerHitCount"]
     trace["rawWatchpointHitCount"] = _state["rawWatchpointHitCount"]
-    trace["qualifiedWatchpointHitCount"] = _state[
-        "qualifiedWatchpointHitCount"
-    ]
+    trace["qualifiedWatchpointHitCount"] = _state["qualifiedWatchpointHitCount"]
     trace["ignoredWatchpointHitCount"] = _state["ignoredWatchpointHitCount"]
     trace["unretainedIgnoredWatchpointHitCount"] = _state[
         "unretainedIgnoredWatchpointHitCount"
     ]
+    trace["unretainedRejectedMarkerDiagnosticCount"] = _state[
+        "unretainedRejectedMarkerDiagnosticCount"
+    ]
+    trace["finalRejectedMarkerDiagnosticCount"] = len(
+        trace["rejectedMarkerDiagnostics"]
+    )
     trace["finalQualifiedWatchpointEventCount"] = len(
         trace["qualifiedWatchpointEvents"]
     )
@@ -984,16 +1062,16 @@ def finalize():
     selected = trace["selectedWriterEventIndices"]
     trace["finalSelectedWriterEventCount"] = len(selected)
     trace["finalSelectedChangedTransitionCount"] = sum(
-        trace["qualifiedWatchpointEvents"][index]["valueChanged"]
-        for index in selected
+        trace["qualifiedWatchpointEvents"][index]["valueChanged"] for index in selected
     )
     selected_states = []
     if selected:
         epoch_index = trace["selectedFrame"]["selectedEpochRecordIndex"]
-        selected_states.append(trace["epochRecords"][epoch_index]["aggregateAtEpochHex"])
+        selected_states.append(
+            trace["epochRecords"][epoch_index]["aggregateAtEpochHex"]
+        )
         selected_states.extend(
-            trace["qualifiedWatchpointEvents"][index]["afterHex"]
-            for index in selected
+            trace["qualifiedWatchpointEvents"][index]["afterHex"] for index in selected
         )
     trace["finalSelectedDistinctAggregateCount"] = len(set(selected_states))
     _write_trace()

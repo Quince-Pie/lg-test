@@ -79,6 +79,21 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         self.assertIn("len(exact) != TARGET_PREPARE_RECURSION_DEPTH", source)
         self.assertEqual(self.module.TARGET_PREPARE_RECURSION_DEPTH, 4)
 
+    def test_structural_depth_never_depends_on_unwound_register_reads(self):
+        source = inspect.getsource(self.module._exact_prepare_frames)
+        self.assertIn("candidate.GetFunctionName()", source)
+        self.assertIn("candidate.GetSymbol()", source)
+        self.assertIn("candidate.GetFP()", source)
+        self.assertNotIn("_register", source)
+        self.assertNotIn("except Exception", source)
+
+    def test_live_membership_uses_thread_and_unwind_frame_pointer(self):
+        source = inspect.getsource(self.module._matching_identity)
+        self.assertIn('thread_id != identity["threadID"]', source)
+        self.assertIn('item["framePointer"] == identity["framePointer"]', source)
+        self.assertNotIn("x19", source)
+        self.assertNotIn("x28", source)
+
     def test_identity_does_not_require_future_x28_value(self):
         identity_source = inspect.getsource(self.module._identity)
         epoch_source = inspect.getsource(self.module.prepare_layer_epoch_marker)
@@ -86,6 +101,14 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         self.assertNotIn('values["x28"] == source', epoch_source)
         self.assertIn('"roleBase"', identity_source)
         self.assertIn('"framePointer"', identity_source)
+        self.assertEqual(
+            self.module.IDENTITY_FRAME_REGISTER_NAMES,
+            ("x19", "x29", "pc"),
+        )
+        self.assertEqual(
+            self.module.SELECTION_FRAME_REGISTER_NAMES,
+            ("x19", "x28", "x29", "pc"),
+        )
 
     def test_return_marker_deletes_watches_with_live_frame(self):
         retirement = inspect.getsource(self.module.prepare_layer_return_marker)
@@ -99,7 +122,9 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         after = bytearray(before)
         after[8] = 1
         after[31] = 1
-        self.assertEqual(self.module._changed_lane_offsets(before, bytes(after)), [8, 24])
+        self.assertEqual(
+            self.module._changed_lane_offsets(before, bytes(after)), [8, 24]
+        )
 
     def test_selected_marker_requires_contiguous_active_group(self):
         source = inspect.getsource(self.module.prepare_layer_selection_marker)
@@ -107,6 +132,15 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         self.assertIn('group["identity"] != identity', source)
         self.assertIn("selected active watch epoch has no qualified writes", source)
         self.assertIn("selected-marker-closed", source)
+
+    def test_every_ordinary_marker_rejection_is_retained(self):
+        epoch = inspect.getsource(self.module.prepare_layer_epoch_marker)
+        selection = inspect.getsource(self.module.prepare_layer_selection_marker)
+        diagnostics = inspect.getsource(self.module._record_marker_rejection)
+        self.assertEqual(epoch.count("_record_marker_rejection("), 2)
+        self.assertEqual(selection.count("_record_marker_rejection("), 2)
+        self.assertIn('"prepareFrames"', diagnostics)
+        self.assertIn("_public_prepare_frames", diagnostics)
 
     def test_immutable_sampled_harness_is_reused_not_rewritten(self):
         source = inspect.getsource(getattr(self.module, "__lldb_init_module"))
@@ -145,15 +179,9 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         self.assertEqual(entry.count("_address_breakpoint("), 1)
 
     def test_all_nested_inherited_callbacks_are_exported_by_active_module(self):
-        initialization = inspect.getsource(
-            getattr(self.module, "__lldb_init_module")
-        )
-        capture_entry = inspect.getsource(
-            self.module.forwarded_capture_backdrop_entry
-        )
-        capture_late = inspect.getsource(
-            self.module.forwarded_capture_backdrop_late
-        )
+        initialization = inspect.getsource(getattr(self.module, "__lldb_init_module"))
+        capture_entry = inspect.getsource(self.module.forwarded_capture_backdrop_entry)
+        capture_late = inspect.getsource(self.module.forwarded_capture_backdrop_late)
         writer = inspect.getsource(self.module.forwarded_writer_site)
         entry = inspect.getsource(self.module.prepare_layer_entry)
         self.assertIn('"forwarded_capture_backdrop_entry"', initialization)
@@ -162,7 +190,7 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         self.assertIn("frame_base.capture_backdrop_late", capture_late)
         self.assertIn("frame_base.writer_site", writer)
         self.assertIn('"forwarded_writer_site"', entry)
-        self.assertIn('name != EPOCH_MARKER_NAME', entry)
+        self.assertIn("name != EPOCH_MARKER_NAME", entry)
 
 
 if __name__ == "__main__":

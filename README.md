@@ -5683,3 +5683,43 @@ loaded active command-script module. Shared entry, epoch, and selection sites
 remain base-first multiplexers. Thus every inherited LLDB callback now has a
 registered outer-module name, including callbacks that do not exist until a
 prior breakpoint runs.
+
+Run `31026802793`, from callback-forwarding commit `9198a32`, proves that the
+forwarders work end to end but does **not** open the causal writer chain. The
+target exits normally in 410 seconds, all 33 real image samples are present,
+and the inherited frame-writer, path-isolation, and input-clamp gates pass.
+Artifact `8939170118` has GitHub digest
+`sha256:97e3a917a55c91b47c2ac4bd591b5e76cd1f31c7b7c5d756d499c8a2f052b8a9`.
+The active trace has SHA-256
+`a16251936d21f6d418f1ba1c9da258ccbeedf13bf4349f6c02aa56f53d6a04ae`;
+the independently successful inherited trace has SHA-256
+`c282258da43facf849c7b7abdb82e803ecb9c73cb0489cdf9e388c6008572de1`.
+
+The failure is in the active measurement helper, not in the Apple crop path.
+It observes 26 zero markers, including 13 after independent source selection,
+and two selection markers, but rejects every one as the wrong recursion depth.
+It therefore installs no hardware watchpoint. In the same process, the
+inherited trace's selected zero event 77 contains four exact `prepare_layer`
+frames at indices 0, 1, 2, and 3. Its selected identity is thread
+`64424509442`, role `6171888992`, frame pointer `6171890944`, and source
+`30789976256`; the final aggregate is exactly
+`[491,-116.0311279296875,641.0311279296875,649.0311279296875]`.
+
+The discrepancy is deterministic in the source. The active
+`_exact_prepare_frames` helper formerly attempted to serialize
+`x19/x28/x29/x30/sp/pc` for every unwound frame and silently removed that frame
+from the structural recursion count if any register record was unavailable.
+The inherited probe needs those registers only on its nearest live frame, so
+it correctly preserves the four-frame backtrace. This run is a null causal
+outcome: it says nothing new about the crop-allocation algorithm.
+
+The version-2 successor separates those concerns. Exact function name and
+frozen symbol bounds alone determine structural recursion depth. Each exact
+frame retains `SBFrame.GetFP` without being filtered by register availability.
+Only the live top epoch frame must expose `x19/x29/pc`, with `x29` checked
+against `GetFP`; future `x28` is read separately only at `+0x3ef0`. Hardware
+events and retirement match the armed thread plus unwind frame pointer. Every
+ordinary source or depth rejection now retains a bounded structural diagnostic,
+and zero unretained diagnostics remains mandatory. The full correction,
+artifact hashes, and unchanged semantic seals are recorded in
+`Analysis/dynamic_allocation_prepare_layer_active_frame_watch_preregistration.json`.

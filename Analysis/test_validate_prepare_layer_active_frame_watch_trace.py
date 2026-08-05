@@ -29,6 +29,16 @@ def identity(role_base=ROLE_BASE, frame_pointer=FRAME_POINTER):
     }
 
 
+def active_registers(names, role_base, source, frame_pointer, pc):
+    available = {
+        item["name"]: item
+        for item in frame_fixture.prepare_registers(
+            role_base, source, frame_pointer, pc
+        )
+    }
+    return [available[name] for name in names]
+
+
 def prepare_frames(pc):
     result = []
     for ordinal in range(validator.TARGET_PREPARE_RECURSION_DEPTH):
@@ -41,13 +51,7 @@ def prepare_frames(pc):
             {
                 "frameIndex": ordinal,
                 "frame": frame_fixture.prepare_frame(item_pc, frame_index=ordinal),
-                "registers": frame_fixture.prepare_registers(
-                    item_identity["roleBase"],
-                    0x1_E000_0000,
-                    item_identity["framePointer"],
-                    item_pc,
-                ),
-                "identity": item_identity,
+                "unwindFramePointer": item_identity["framePointer"],
             }
         )
     return result
@@ -56,6 +60,7 @@ def prepare_frames(pc):
 def active_event(index, callback, stop_offset, before, after, addresses, lane):
     stop_pc = PREPARE_START + stop_offset
     top = frame_fixture.prepare_frame(stop_pc)
+    structural = prepare_frames(stop_pc)
     changed_lanes = [
         offset
         for offset in validator.WATCH_LANE_OFFSETS
@@ -78,14 +83,12 @@ def active_event(index, callback, stop_offset, before, after, addresses, lane):
         "valueChanged": before != after,
         "changedLaneOffsets": changed_lanes,
         "frame": top,
-        "backtrace": [top],
+        "backtrace": [item["frame"] for item in structural],
         "prepareFrameOrdinal": 0,
         "prepareFrameCount": validator.TARGET_PREPARE_RECURSION_DEPTH,
         "prepareFrameIndex": 0,
         "prepareFrame": top,
-        "prepareFrameRegisters": frame_fixture.prepare_registers(
-            ROLE_BASE, 0x1_E000_0000, FRAME_POINTER, stop_pc
-        ),
+        "prepareFramePointer": FRAME_POINTER,
         "frameIdentity": identity(),
         "roleStateAfter": frame_fixture.memory_snapshot(
             ROLE_BASE, frame_fixture.role_state(after)
@@ -123,15 +126,15 @@ def passing_documents():
         for index, (before, after) in enumerate(states)
     ]
     windows = [
-        frame_fixture.code_window(
-            event["stopPC"], "01020304", 0x30 + index
-        )
+        frame_fixture.code_window(event["stopPC"], "01020304", 0x30 + index)
         for index, event in enumerate(events)
     ]
     epoch_pc = PREPARE_START + validator.EPOCH_MARKER_OFFSET
     marker_pc = PREPARE_START + validator.SELECTION_MARKER_OFFSET
     epoch_frame = frame_fixture.prepare_frame(epoch_pc)
     marker_frame = frame_fixture.prepare_frame(marker_pc)
+    epoch_prepare_frames = prepare_frames(epoch_pc)
+    marker_prepare_frames = prepare_frames(marker_pc)
     group = {
         "groupIndex": 0,
         "callbackSequence": 3,
@@ -202,9 +205,16 @@ def passing_documents():
                 "threadID": THREAD_ID,
                 "pc": epoch_pc,
                 "frame": epoch_frame,
-                "backtrace": [epoch_frame],
+                "backtrace": [item["frame"] for item in epoch_prepare_frames],
                 "prepareRecursionDepth": validator.TARGET_PREPARE_RECURSION_DEPTH,
-                "prepareFrames": prepare_frames(epoch_pc),
+                "prepareFrames": epoch_prepare_frames,
+                "registers": active_registers(
+                    validator.IDENTITY_FRAME_REGISTER_NAMES,
+                    ROLE_BASE,
+                    source,
+                    FRAME_POINTER,
+                    epoch_pc,
+                ),
                 "identity": identity(),
                 "selectedSourceKnown": source,
                 "roleStateAtEpoch": frame_fixture.memory_snapshot(
@@ -228,6 +238,7 @@ def passing_documents():
         ],
         "qualifiedWatchpointEvents": events,
         "ignoredWatchpointDiagnostics": [],
+        "rejectedMarkerDiagnostics": [],
         "codeWindows": windows,
         "selectedFrame": {
             "callbackSequence": 7,
@@ -235,9 +246,13 @@ def passing_documents():
             "threadID": THREAD_ID,
             "pc": marker_pc,
             "frame": marker_frame,
-            "backtrace": [marker_frame],
-            "registers": frame_fixture.prepare_registers(
-                ROLE_BASE, source, FRAME_POINTER, marker_pc
+            "backtrace": [item["frame"] for item in marker_prepare_frames],
+            "registers": active_registers(
+                validator.SELECTION_FRAME_REGISTER_NAMES,
+                ROLE_BASE,
+                source,
+                FRAME_POINTER,
+                marker_pc,
             ),
             "prepareRecursionDepth": validator.TARGET_PREPARE_RECURSION_DEPTH,
             "frameIdentity": identity(),
@@ -267,6 +282,8 @@ def passing_documents():
         "qualifiedWatchpointHitCount": 3,
         "ignoredWatchpointHitCount": 0,
         "unretainedIgnoredWatchpointHitCount": 0,
+        "unretainedRejectedMarkerDiagnosticCount": 0,
+        "finalRejectedMarkerDiagnosticCount": 0,
         "finalQualifiedWatchpointEventCount": 3,
         "finalChangedQualifiedWatchpointEventCount": 3,
         "finalSelectedWriterEventCount": 3,
@@ -365,6 +382,50 @@ class ActiveFrameWatchValidatorTests(unittest.TestCase):
         document["selectedFrame"]["frameIdentity"]["framePointer"] += 8
         with self.assertRaisesRegex(ValueError, "selected identity differs"):
             self.validate_documents(document, base)
+
+    def test_duplicate_structural_frame_pointer_fails_closed(self):
+        document, base = passing_documents()
+        frames = document["epochRecords"][0]["prepareFrames"]
+        frames[1]["unwindFramePointer"] = frames[0]["unwindFramePointer"]
+        with self.assertRaisesRegex(ValueError, "prepare frame pointers differ"):
+            self.validate_documents(document, base)
+
+    def test_event_must_match_armed_unwind_frame_pointer(self):
+        document, base = passing_documents()
+        document["qualifiedWatchpointEvents"][0]["prepareFramePointer"] += 8
+        with self.assertRaisesRegex(ValueError, "prepare ancestry differs"):
+            self.validate_documents(document, base)
+
+    def test_rejection_counter_without_diagnostic_fails_closed(self):
+        document, base = passing_documents()
+        document["rejectedEpochDepthCount"] = 1
+        with self.assertRaisesRegex(ValueError, "diagnostic accounting differs"):
+            self.validate_documents(document, base)
+
+    def test_source_unknown_rejection_is_retained_without_affecting_result(self):
+        document, base = passing_documents()
+        epoch_pc = PREPARE_START + validator.EPOCH_MARKER_OFFSET
+        structural = prepare_frames(epoch_pc)[:3]
+        document["sourceUnknownEpochCount"] = 1
+        document["epochMarkerHitCount"] = 2
+        document["rejectedMarkerDiagnostics"] = [
+            {
+                "diagnosticIndex": 0,
+                "marker": "epoch",
+                "reason": "source-unknown",
+                "markerHitIndex": 1,
+                "threadID": THREAD_ID,
+                "pc": epoch_pc,
+                "selectedSource": None,
+                "observedX28": None,
+                "structuralPrepareRecursionDepth": 3,
+                "backtrace": [item["frame"] for item in structural],
+                "prepareFrames": structural,
+            }
+        ]
+        document["finalRejectedMarkerDiagnosticCount"] = 1
+        result = self.validate_documents(document, base)
+        self.assertEqual(result["conclusion"], "success")
 
 
 if __name__ == "__main__":

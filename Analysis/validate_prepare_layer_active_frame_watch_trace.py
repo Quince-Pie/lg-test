@@ -15,8 +15,8 @@ import validate_prepare_layer_frame_correlated_writer_trace as frame_validator
 
 full_base = frame_validator.full_base
 
-EXPECTED_TRACE_SCHEMA_VERSION = 1
-VALIDATION_SCHEMA_VERSION = 1
+EXPECTED_TRACE_SCHEMA_VERSION = 2
+VALIDATION_SCHEMA_VERSION = 2
 EXPECTED_CLASSIFICATION = (
     "preregistered-live-depth-qualified-four-lane-prepare-layer-aggregate-"
     "watch-trace; complete-causal-writer-list-semantics-public-crop-policy-"
@@ -48,8 +48,10 @@ MAXIMUM_SELECTION_MARKER_HIT_COUNT = 4096
 MAXIMUM_RAW_WATCHPOINT_HIT_COUNT = 4096
 MAXIMUM_QUALIFIED_WATCHPOINT_EVENT_COUNT = 512
 MAXIMUM_IGNORED_WATCHPOINT_DIAGNOSTIC_COUNT = 64
+MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT = 64
 MINIMUM_SELECTED_CHANGED_TRANSITION_COUNT = 3
-PREPARE_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "x30", "sp", "pc")
+IDENTITY_FRAME_REGISTER_NAMES = ("x19", "x29", "pc")
+SELECTION_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "pc")
 FRAME_TRACE_OUTPUT_ENVIRONMENT = "LG_PREPARE_LAYER_FRAME_WRITER_TRACE_OUTPUT"
 KNOWN_SAMPLED_WRITER_AFTER_OFFSETS = tuple(
     sorted(site["relativeToPrepareLayer"] for site in frame_validator.WRITER_SITES)
@@ -64,17 +66,13 @@ EXPECTED_CONFIGURATION = {
     "roleStateByteCount": full_base.ROLE_STATE_BYTE_COUNT,
     "epochMarkerName": EPOCH_MARKER_NAME,
     "epochMarkerOffset": EPOCH_MARKER_OFFSET,
-    "epochPrecedingInstructionRawLittleEndianHex": (
-        EPOCH_PRECEDING_INSTRUCTION_HEX
-    ),
+    "epochPrecedingInstructionRawLittleEndianHex": (EPOCH_PRECEDING_INSTRUCTION_HEX),
     "returnMarkerName": RETURN_MARKER_NAME,
     "returnMarkerOffset": RETURN_MARKER_OFFSET,
     "returnMarkerInstructionRawLittleEndianHex": RETURN_MARKER_INSTRUCTION_HEX,
     "selectionMarkerName": SELECTION_MARKER_NAME,
     "selectionMarkerOffset": SELECTION_MARKER_OFFSET,
-    "selectionMarkerInstructionRawLittleEndianHex": (
-        SELECTION_MARKER_INSTRUCTION_HEX
-    ),
+    "selectionMarkerInstructionRawLittleEndianHex": (SELECTION_MARKER_INSTRUCTION_HEX),
     "targetPrepareRecursionDepth": TARGET_PREPARE_RECURSION_DEPTH,
     "watchLaneOffsets": list(WATCH_LANE_OFFSETS),
     "watchLaneByteCount": WATCH_LANE_BYTE_COUNT,
@@ -83,16 +81,17 @@ EXPECTED_CONFIGURATION = {
     "maximumReturnMarkerHitCount": MAXIMUM_RETURN_MARKER_HIT_COUNT,
     "maximumSelectionMarkerHitCount": MAXIMUM_SELECTION_MARKER_HIT_COUNT,
     "maximumRawWatchpointHitCount": MAXIMUM_RAW_WATCHPOINT_HIT_COUNT,
-    "maximumQualifiedWatchpointEventCount": (
-        MAXIMUM_QUALIFIED_WATCHPOINT_EVENT_COUNT
-    ),
+    "maximumQualifiedWatchpointEventCount": (MAXIMUM_QUALIFIED_WATCHPOINT_EVENT_COUNT),
     "maximumIgnoredWatchpointDiagnosticCount": (
         MAXIMUM_IGNORED_WATCHPOINT_DIAGNOSTIC_COUNT
     ),
+    "maximumRejectedMarkerDiagnosticCount": (MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT),
     "minimumSelectedChangedTransitionCount": (
         MINIMUM_SELECTED_CHANGED_TRANSITION_COUNT
     ),
-    "prepareFrameRegisterNames": list(PREPARE_FRAME_REGISTER_NAMES),
+    "identityFrameRegisterNames": list(IDENTITY_FRAME_REGISTER_NAMES),
+    "selectionFrameRegisterNames": list(SELECTION_FRAME_REGISTER_NAMES),
+    "structuralFramePointerSource": "SBFrame.GetFP",
     "knownSampledWriterAfterOffsets": list(KNOWN_SAMPLED_WRITER_AFTER_OFFSETS),
     "frameTraceOutputEnvironment": FRAME_TRACE_OUTPUT_ENVIRONMENT,
     "frameTraceSchemaVersion": frame_validator.EXPECTED_TRACE_SCHEMA_VERSION,
@@ -103,20 +102,19 @@ EXPECTED_CONFIGURATION = {
     "registerPointerSnapshotByteCount": (
         full_base.REGISTER_POINTER_SNAPSHOT_BYTE_COUNT
     ),
-    "registerPointerSnapshotBacktrack": (
-        full_base.REGISTER_POINTER_SNAPSHOT_BACKTRACK
-    ),
+    "registerPointerSnapshotBacktrack": (full_base.REGISTER_POINTER_SNAPSHOT_BACKTRACK),
     "generalRegisterNames": list(full_base.GENERAL_REGISTER_NAMES),
     "simdRegisterNames": list(full_base.SIMD_REGISTER_NAMES),
     "armRule": (
         "after source selection, arm four aligned 8-byte write watches at "
         "+0xb60 only when the bounded live backtrace contains exactly four "
-        "exact prepare_layer frames; identify the current frame by thread ID, "
-        "x19 role base, and x29 frame pointer"
+        "exact prepare_layer frames independent of register availability; "
+        "identify the current frame by thread ID, top-frame x19 role base, and "
+        "x29 frame pointer, cross-checking x29 against SBFrame.GetFP"
     ),
     "retirementRule": (
         "at recursive return +0x2a68, delete all four watches as soon as the "
-        "watched thread/x19/x29 frame is absent from the exact live "
+        "watched thread/frame-pointer pair is absent from the exact live "
         "prepare_layer ancestry"
     ),
     "selectionRule": (
@@ -181,16 +179,45 @@ def _role_aggregate(value: Any, label: str, role_base: int) -> bytes:
     ]
 
 
-def _prepare_registers(value: Any, label: str, identity: Mapping[str, int]) -> dict[str, int]:
-    registers = frame_validator._registers(
-        value, PREPARE_FRAME_REGISTER_NAMES, label
-    )
+def _identity_registers(
+    value: Any, label: str, identity: Mapping[str, int]
+) -> dict[str, int]:
+    registers = frame_validator._registers(value, IDENTITY_FRAME_REGISTER_NAMES, label)
     if (
         registers["x19"] != identity["roleBase"]
         or registers["x29"] != identity["framePointer"]
     ):
         raise ValueError(f"{label} identity differs")
     return registers
+
+
+def _selection_registers(
+    value: Any, label: str, identity: Mapping[str, int]
+) -> dict[str, int]:
+    registers = frame_validator._registers(value, SELECTION_FRAME_REGISTER_NAMES, label)
+    if (
+        registers["x19"] != identity["roleBase"]
+        or registers["x29"] != identity["framePointer"]
+    ):
+        raise ValueError(f"{label} identity differs")
+    return registers
+
+
+def _structural_prepare_frames(
+    backtrace: Sequence[Mapping[str, Any]],
+    *,
+    prepare_start: int,
+    prepare_module: Mapping[str, Any],
+) -> list[Mapping[str, Any]]:
+    return [
+        frame
+        for frame in backtrace
+        if frame.get("function") == merge_base.PREPARE_LAYER_FUNCTION
+        and frame.get("symbolStart") == prepare_start
+        and frame.get("symbolEnd")
+        == prepare_start + full_base.PREPARE_LAYER_SYMBOL_BYTE_COUNT
+        and frame.get("module") == prepare_module
+    ]
 
 
 def _static_gate(
@@ -325,38 +352,59 @@ def _epochs_and_groups(
         )
         if frame != backtrace[0]:
             raise ValueError(f"{label} backtrace head differs")
+        structural_frames = _structural_prepare_frames(
+            backtrace,
+            prepare_start=prepare_start,
+            prepare_module=prepare_module,
+        )
+        registers = _identity_registers(
+            epoch.get("registers"), f"{label} registers", identity
+        )
+        if registers["pc"] != prepare_start + EPOCH_MARKER_OFFSET:
+            raise ValueError(f"{label} registers differ")
         prepare_frames = list(
             sequence(epoch.get("prepareFrames"), f"{label} prepare frames")
         )
-        if len(prepare_frames) != TARGET_PREPARE_RECURSION_DEPTH:
+        if (
+            len(prepare_frames) != TARGET_PREPARE_RECURSION_DEPTH
+            or len(structural_frames) != TARGET_PREPARE_RECURSION_DEPTH
+        ):
             raise ValueError(f"{label} prepare depth differs")
+        frame_pointers = []
+        frame_indices = []
         for ordinal, frame_value in enumerate(prepare_frames):
             item = mapping(frame_value, f"{label} prepare frame {ordinal}")
-            item_identity = _identity(
-                item.get("identity"), f"{label} prepare identity {ordinal}"
-            )
             frame_record = mapping(
                 item.get("frame"), f"{label} prepare frame record {ordinal}"
             )
             frame_index = integer(
                 item.get("frameIndex"), f"{label} prepare frame index {ordinal}"
             )
+            frame_pointer = integer(
+                item.get("unwindFramePointer"),
+                f"{label} prepare frame pointer {ordinal}",
+            )
             if (
-                frame_record.get("function") != merge_base.PREPARE_LAYER_FUNCTION
+                frame_pointer <= 0
+                or frame_record.get("function") != merge_base.PREPARE_LAYER_FUNCTION
                 or frame_record.get("symbolStart") != prepare_start
                 or frame_record.get("symbolEnd")
                 != prepare_start + full_base.PREPARE_LAYER_SYMBOL_BYTE_COUNT
                 or frame_record.get("module") != prepare_module
                 or frame_record.get("frameIndex") != frame_index
-                or ordinal == 0
-                and item_identity != identity
+                or frame_record != structural_frames[ordinal]
+                or (ordinal == 0 and frame_pointer != identity["framePointer"])
             ):
                 raise ValueError(f"{label} prepare frame {ordinal} differs")
-            _prepare_registers(
-                item.get("registers"),
-                f"{label} prepare registers {ordinal}",
-                item_identity,
-            )
+            frame_pointers.append(frame_pointer)
+            frame_indices.append(frame_index)
+        if (
+            frame_indices != sorted(frame_indices)
+            or frame_indices[0] != 0
+            or len(set(frame_indices)) != TARGET_PREPARE_RECURSION_DEPTH
+            or len(set(frame_pointers)) != TARGET_PREPARE_RECURSION_DEPTH
+        ):
+            raise ValueError(f"{label} prepare frame pointers differ")
         aggregate = _role_aggregate(
             epoch.get("roleStateAtEpoch"), f"{label} role", identity["roleBase"]
         )
@@ -418,9 +466,7 @@ def _epochs_and_groups(
         ):
             raise ValueError(f"watchpoint group {index} differs")
         previous_callback = callback
-    retirements = list(
-        sequence(trace.get("retirementRecords"), "retirement records")
-    )
+    retirements = list(sequence(trace.get("retirementRecords"), "retirement records"))
     if len(retirements) != len(groups):
         raise ValueError("watchpoint retirement count differs")
     seen_groups = set()
@@ -452,6 +498,144 @@ def _epochs_and_groups(
             raise ValueError(f"retirement {index} differs")
         seen_groups.add(group_index)
     return epochs, groups
+
+
+def _rejected_marker_diagnostics(
+    trace: Mapping[str, Any],
+    *,
+    prepare_start: int,
+    prepare_module: Mapping[str, Any],
+) -> None:
+    diagnostics = list(
+        sequence(
+            trace.get("rejectedMarkerDiagnostics"),
+            "rejected marker diagnostics",
+        )
+    )
+    source_unknown = integer(
+        trace.get("sourceUnknownEpochCount"), "source-unknown epoch count"
+    )
+    rejected_epoch = integer(
+        trace.get("rejectedEpochDepthCount"), "rejected epoch depth count"
+    )
+    rejected_selection = integer(
+        trace.get("rejectedSelectionMarkerHitCount"),
+        "rejected selection marker count",
+    )
+    unretained = integer(
+        trace.get("unretainedRejectedMarkerDiagnosticCount"),
+        "unretained rejected marker diagnostic count",
+    )
+    if (
+        len(diagnostics) > MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT
+        or unretained != 0
+        or trace.get("finalRejectedMarkerDiagnosticCount") != len(diagnostics)
+        or len(diagnostics) != source_unknown + rejected_epoch + rejected_selection
+    ):
+        raise ValueError("rejected marker diagnostic accounting differs")
+    expected = {
+        ("epoch", "source-unknown"),
+        ("epoch", "structural-depth-differs"),
+        ("selection", "source-register-differs"),
+        ("selection", "structural-depth-differs"),
+    }
+    for index, value in enumerate(diagnostics):
+        label = f"rejected marker diagnostic {index}"
+        item = mapping(value, label)
+        marker = item.get("marker")
+        reason = item.get("reason")
+        frames = list(sequence(item.get("prepareFrames"), f"{label} frames"))
+        backtrace = frame_validator._backtrace(
+            item.get("backtrace"), f"{label} backtrace"
+        )
+        structural_frames = _structural_prepare_frames(
+            backtrace,
+            prepare_start=prepare_start,
+            prepare_module=prepare_module,
+        )
+        depth = integer(item.get("structuralPrepareRecursionDepth"), f"{label} depth")
+        marker_hit = integer(item.get("markerHitIndex"), f"{label} marker hit")
+        thread_id = integer(item.get("threadID"), f"{label} thread")
+        selected_source = item.get("selectedSource")
+        observed_x28 = item.get("observedX28")
+        marker_hit_bound = integer(
+            trace.get(
+                "epochMarkerHitCount"
+                if marker == "epoch"
+                else "selectionMarkerHitCount"
+            ),
+            f"{label} marker hit bound",
+        )
+        expected_pc = prepare_start + (
+            EPOCH_MARKER_OFFSET if marker == "epoch" else SELECTION_MARKER_OFFSET
+        )
+        if (
+            item.get("diagnosticIndex") != index
+            or (marker, reason) not in expected
+            or depth != len(frames)
+            or depth != len(structural_frames)
+            or marker_hit <= 0
+            or marker_hit > marker_hit_bound
+            or thread_id <= 0
+            or item.get("pc") != expected_pc
+        ):
+            raise ValueError(f"{label} envelope differs")
+        reason_fields_differ = False
+        if reason == "source-unknown":
+            reason_fields_differ = (
+                selected_source is not None or observed_x28 is not None
+            )
+        elif marker == "epoch":
+            reason_fields_differ = (
+                not isinstance(selected_source, int)
+                or selected_source <= 0
+                or observed_x28 is not None
+            )
+        elif reason == "source-register-differs":
+            reason_fields_differ = (
+                not isinstance(observed_x28, int)
+                or observed_x28 <= 0
+                or selected_source == observed_x28
+            )
+        else:
+            reason_fields_differ = (
+                not isinstance(selected_source, int)
+                or selected_source <= 0
+                or observed_x28 != selected_source
+            )
+        if reason_fields_differ:
+            raise ValueError(f"{label} reason differs")
+        for ordinal, frame_value in enumerate(frames):
+            frame_item = mapping(frame_value, f"{label} frame {ordinal}")
+            frame_record = mapping(
+                frame_item.get("frame"), f"{label} frame record {ordinal}"
+            )
+            frame_index = integer(
+                frame_item.get("frameIndex"), f"{label} frame index {ordinal}"
+            )
+            frame_pointer = frame_item.get("unwindFramePointer")
+            if frame_pointer is not None:
+                frame_pointer = integer(
+                    frame_pointer, f"{label} frame pointer {ordinal}"
+                )
+            if (
+                frame_record.get("function") != merge_base.PREPARE_LAYER_FUNCTION
+                or frame_record.get("symbolStart") != prepare_start
+                or frame_record.get("symbolEnd")
+                != prepare_start + full_base.PREPARE_LAYER_SYMBOL_BYTE_COUNT
+                or frame_record.get("module") != prepare_module
+                or frame_record.get("frameIndex") != frame_index
+                or frame_record != structural_frames[ordinal]
+                or (frame_pointer is not None and frame_pointer <= 0)
+            ):
+                raise ValueError(f"{label} frame {ordinal} differs")
+        if (
+            reason == "structural-depth-differs"
+            and depth == TARGET_PREPARE_RECURSION_DEPTH
+            and frames
+            and frames[0].get("frameIndex") == 0
+        ):
+            raise ValueError(f"{label} structural rejection differs")
 
 
 def _events(
@@ -550,10 +734,13 @@ def _events(
         backtrace = frame_validator._backtrace(
             event.get("backtrace"), f"{label} backtrace"
         )
-        if (
-            top != backtrace[0]
-            or top.get("pc") != stop_pc
-        ):
+        epoch_frame = mapping(epochs[epoch_index].get("frame"), "epoch frame")
+        structural_frames = _structural_prepare_frames(
+            backtrace,
+            prepare_start=epoch_frame.get("symbolStart"),
+            prepare_module=epoch_frame.get("module"),
+        )
+        if top != backtrace[0] or top.get("pc") != stop_pc:
             raise ValueError(f"{label} top frame differs")
         prepare_count = integer(
             event.get("prepareFrameCount"), f"{label} prepare count"
@@ -565,23 +752,20 @@ def _events(
             event.get("prepareFrameIndex"), f"{label} prepare index"
         )
         prepare_frame = mapping(event.get("prepareFrame"), f"{label} prepare frame")
-        registers = _prepare_registers(
-            event.get("prepareFrameRegisters"),
-            f"{label} prepare registers",
-            identity,
+        prepare_frame_pointer = integer(
+            event.get("prepareFramePointer"), f"{label} prepare frame pointer"
         )
         if (
-            prepare_count < TARGET_PREPARE_RECURSION_DEPTH
+            prepare_count != len(structural_frames)
+            or prepare_count < TARGET_PREPARE_RECURSION_DEPTH
             or not 0 <= prepare_ordinal < prepare_count
+            or prepare_ordinal >= len(structural_frames)
             or prepare_frame.get("frameIndex") != prepare_index
+            or prepare_frame != structural_frames[prepare_ordinal]
             or prepare_frame.get("function") != merge_base.PREPARE_LAYER_FUNCTION
-            or prepare_frame.get("symbolStart")
-            != mapping(epochs[epoch_index].get("frame"), "epoch frame").get(
-                "symbolStart"
-            )
-            or prepare_frame.get("module")
-            != mapping(epochs[epoch_index].get("frame"), "epoch frame").get("module")
-            or registers["pc"] != prepare_frame.get("pc")
+            or prepare_frame.get("symbolStart") != epoch_frame.get("symbolStart")
+            or prepare_frame.get("module") != epoch_frame.get("module")
+            or prepare_frame_pointer != identity["framePointer"]
         ):
             raise ValueError(f"{label} prepare ancestry differs")
         window_index = integer(event.get("codeWindowIndex"), f"{label} window")
@@ -679,11 +863,18 @@ def _selection(
     backtrace = frame_validator._backtrace(
         selected.get("backtrace"), "active watch selected backtrace"
     )
-    registers = _prepare_registers(
+    structural_frames = _structural_prepare_frames(
+        backtrace,
+        prepare_start=prepare_start,
+        prepare_module=prepare_module,
+    )
+    registers = _selection_registers(
         selected.get("registers"), "active watch selected registers", identity
     )
     if (
         frame != backtrace[0]
+        or len(structural_frames) != TARGET_PREPARE_RECURSION_DEPTH
+        or structural_frames[0] != frame
         or registers["x28"] != source
         or registers["pc"] != prepare_start + SELECTION_MARKER_OFFSET
         or mapping(selected.get("objectChain"), "active watch object chain")
@@ -806,6 +997,11 @@ def validate(trace_path: Path, frame_trace_path: Path) -> dict[str, Any]:
         raise ValueError("active watch trace envelope differs")
     order = _callback_order(trace)
     prepare_start, prepare_module = _static_gate(trace, base_trace, order)
+    _rejected_marker_diagnostics(
+        trace,
+        prepare_start=prepare_start,
+        prepare_module=prepare_module,
+    )
     selected_source = integer(
         mapping(base_trace.get("objectChain"), "base object chain")
         .get("addresses", {})
@@ -819,6 +1015,12 @@ def validate(trace_path: Path, frame_trace_path: Path) -> dict[str, Any]:
         prepare_module=prepare_module,
         selected_source=selected_source,
     )
+    if trace.get("epochMarkerHitCount") != len(epochs) + trace.get(
+        "sourceUnknownEpochCount"
+    ) + trace.get("rejectedEpochDepthCount") or trace.get(
+        "selectionMarkerHitCount"
+    ) != 1 + trace.get("rejectedSelectionMarkerHitCount"):
+        raise ValueError("active watch marker accounting differs")
     if (
         integer(trace.get("epochMarkerHitCount"), "epoch marker hits")
         > MAXIMUM_EPOCH_MARKER_HIT_COUNT
@@ -866,9 +1068,7 @@ def validate(trace_path: Path, frame_trace_path: Path) -> dict[str, Any]:
         "inputTrace": trace_path.name,
         "inputTraceSHA256": hashlib.sha256(trace_bytes).hexdigest(),
         "inheritedFrameTrace": frame_trace_path.name,
-        "inheritedFrameTraceSHA256": hashlib.sha256(
-            frame_trace_bytes
-        ).hexdigest(),
+        "inheritedFrameTraceSHA256": hashlib.sha256(frame_trace_bytes).hexdigest(),
         "conclusion": "success",
         "prospectiveGatePassed": True,
         "aggregate": {

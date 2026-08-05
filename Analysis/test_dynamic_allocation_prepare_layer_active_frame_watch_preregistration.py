@@ -22,9 +22,7 @@ def sha256(path: Path) -> str:
 class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.document = json.loads(
-            PREREGISTRATION_PATH.read_text(encoding="utf-8")
-        )
+        cls.document = json.loads(PREREGISTRATION_PATH.read_text(encoding="utf-8"))
 
     def test_opened_boundary_is_exact_and_does_not_overclaim(self) -> None:
         boundary = self.document["openedEvidenceBoundary"]
@@ -45,9 +43,7 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertEqual(covered, set(range(32)))
         self.assertTrue(acceptance["allFourHardwareWatchpointsRequired"])
         self.assertTrue(acceptance["fullThirtyTwoByteCoverageRequired"])
-        self.assertTrue(
-            acceptance["singlePhysicalBreakpointPerSharedAddressRequired"]
-        )
+        self.assertTrue(acceptance["singlePhysicalBreakpointPerSharedAddressRequired"])
         self.assertTrue(acceptance["inheritedCallbackMustRunBeforeActiveCallback"])
         self.assertTrue(
             acceptance["everyInheritedCallbackMustBeExportedByLoadedModule"]
@@ -56,12 +52,21 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
     def test_early_identity_excludes_future_x28(self) -> None:
         acceptance = self.document["acceptance"]
         self.assertEqual(acceptance["earlyIdentityFields"], ["threadID", "x19", "x29"])
+        self.assertTrue(
+            acceptance["structuralDepthIndependentOfRegisterAvailabilityRequired"]
+        )
+        self.assertEqual(
+            acceptance["liveFrameMembershipFields"],
+            ["threadID", "SBFrame.GetFP"],
+        )
+        self.assertTrue(acceptance["topX29MustEqualSBFrameGetFP"])
         self.assertTrue(acceptance["futureX28IdentityForbiddenAtEpoch"])
         self.assertTrue(acceptance["watchRetirementWithLiveFrameRequired"])
 
     def test_sealed_acceptance_requires_new_contiguous_writer_evidence(self) -> None:
         acceptance = self.document["acceptance"]
         self.assertTrue(acceptance["zeroIgnoredWatchpointHitsRequired"])
+        self.assertTrue(acceptance["allOrdinaryMarkerRejectionsMustBeRetained"])
         self.assertTrue(acceptance["contiguousFullAggregateChainRequired"])
         self.assertEqual(acceptance["minimumSelectedChangedTransitionCount"], 3)
         self.assertEqual(acceptance["minimumSelectedDistinctAggregateCount"], 4)
@@ -72,9 +77,7 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
 
     def test_input_program_hashes_are_frozen(self) -> None:
         integrity = self.document["inputProgramIntegrity"]
-        self.assertEqual(
-            integrity["productionShaderSHA256"], PRODUCTION_SHADER_SHA256
-        )
+        self.assertEqual(integrity["productionShaderSHA256"], PRODUCTION_SHADER_SHA256)
         production_shader = WALLE_ROOT / "shaders/frag.glsl"
         if production_shader.is_file():
             self.assertEqual(sha256(production_shader), PRODUCTION_SHADER_SHA256)
@@ -145,6 +148,23 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertEqual(forwarding["activeEpochMarkerHitCount"], 3)
         self.assertFalse(forwarding["hardwareWatchpointInstalled"])
         self.assertFalse(forwarding["causalWriterOutcomeObserved"])
+        unwind = self.document["unwoundRegisterDepthCaptureCorrection"]
+        self.assertEqual(unwind["runID"], 31026802793)
+        self.assertTrue(unwind["captureTargetExitedNormally"])
+        self.assertTrue(unwind["inheritedFrameWriterGatePassed"])
+        self.assertEqual(unwind["inheritedSelectedStructuralPrepareDepth"], 4)
+        self.assertEqual(unwind["inheritedSelectedPrepareFrameIndices"], [0, 1, 2, 3])
+        self.assertEqual(unwind["rejectedEpochDepthCount"], 13)
+        self.assertFalse(unwind["hardwareWatchpointInstalled"])
+        self.assertFalse(unwind["causalWriterOutcomeObserved"])
+        contract = self.document["traceContract"]
+        self.assertEqual(contract["rawTraceSchemaVersion"], 2)
+        self.assertEqual(contract["sealedValidatorSchemaVersion"], 2)
+        self.assertEqual(contract["identityFrameRegisterNames"], ["x19", "x29", "pc"])
+        self.assertEqual(
+            contract["selectionFrameRegisterNames"],
+            ["x19", "x28", "x29", "pc"],
+        )
         self.assertIsNone(self.document["runtimeOutcomeFrozenBeforeRun"])
         forbidden = "\n".join(self.document["notAuthorizedBeforeAcceptance"])
         self.assertIn("production shader", forbidden)
