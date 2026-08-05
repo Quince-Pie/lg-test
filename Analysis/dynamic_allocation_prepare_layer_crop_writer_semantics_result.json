@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "classification": "opened successful Apple prepare_layer background-filter-call and inline integer-crop semantic decode; the selected finite-input enclosure and enabled one-pixel-border path are replayable while general floating-rectangle production, unseen transfer, shader authority, and product parity remain sealed",
+  "run": {
+    "runID": 31048753297,
+    "jobID": 92450687152,
+    "headSHA": "9780f93745efa4c59dc7f8751154453de45a75f8",
+    "workflowConclusion": "success",
+    "durationSeconds": 422,
+    "captureTargetExitedNormally": true,
+    "timelineSampleCount": 33,
+    "timelineFailedSampleCount": 0,
+    "pathIsolationGatePassed": true,
+    "inputClampGatePassed": true,
+    "instructionTraceGatePassed": true,
+    "finalEnforcementPassed": true
+  },
+  "artifact": {
+    "artifactID": 8947713091,
+    "name": "liquid-glass-prepare-layer-instruction-trace-31048753297",
+    "sizeBytes": 100595687,
+    "digest": "sha256:4858ee27b4e8c110ab10efd4b2533ce7f9a3a4d46aeae93c6c9f9623c7008cf4"
+  },
+  "fileSHA256": {
+    "instructionTrace": "7cb1aa0f9f205bf57c4cea01539a2ac0860137b8be9c53112c0989e7488b51e5",
+    "inheritedFrameTrace": "66327f2c3aa2188f968b4a9af94890669080d58a2a705934b6e8b03e0ab0fada",
+    "timeline": "8f9a76797f086bc756c1841beba8b948d9c04d4dabd3a6731b83c370fbe323ef",
+    "validation": "5a0f5715f8c2b341ac2b1a5f86b74e3d3fa1c8d88bc9141e2c1a3d6e51cf5fe7",
+    "semanticAnalysis": "95607d105c46e59442b4bd7de396c3df3b5cf2db1dffb033a58c6c5e52ec913a",
+    "lldbLog": "44468c6760e8c9699f290e48f9b70e44c40a123d4f2a39291863b04a1f715cb5",
+    "pathIsolation": "ca0401e84c5da77a7907b9d0c87e1261c739a9a6607ac72e26b8785d9db61add",
+    "inputClamp": "e38953ccb5ecf943880dffe2c52faa58e51c01991bc2c4001f5c5ec8158a7e3d",
+    "contracts": "b549468759c477ddf71d726c0000f56b0636e5e1682d08d4797b6e16ecaeeea6",
+    "build": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af",
+    "runtimeStderr": "1932fd69fa011122374bebea6c16515e211dff46a587191a37533b2a35a0fdb7"
+  },
+  "selectedInvocation": {
+    "selectedSource": 42786095104,
+    "selectedEpochRecordIndex": 2,
+    "selectedSourceKnownDepthFourOrdinal": 3,
+    "threadID": 64424509442,
+    "roleBase": 6171889024,
+    "framePointer": 6171890976,
+    "instructionStepCount": 7532,
+    "cropInvocationCount": 4,
+    "cropInstructionStateCount": 180,
+    "cropOpaqueBoundaryCount": 0,
+    "changedOpaqueCropTargetBoundaryCount": 0
+  },
+  "openedCorrection": {
+    "previousHypothesis": "CA::Render::Updater::add_background_filters_ mutates the live x5 rectangle or delegates that mutation to a deeper helper",
+    "outcome": "falsified on the selected path",
+    "function": "CA::Render::Updater::add_background_filters_(CA::Render::Updater::GlobalState*, CA::Render::Updater::LocalState*, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes*, CA::Rect const*, CA::Rect const*)",
+    "invocationCount": 4,
+    "executedInstructionCountPerInvocation": 45,
+    "executedPathSHA256": "728b94ddbc42a06a9c19a96b38541726fbdb40533361367d21690f6f6fbc2930",
+    "pathPredicates": [
+      {
+        "loadOffset": 80,
+        "branchOffset": 84,
+        "instruction": "ldr x24,[x8,#0x58]; cbz x24",
+        "loadedValue": 0
+      },
+      {
+        "loadOffset": 112,
+        "branchOffset": 116,
+        "instruction": "ldr x19,[x8,#0x68]; cbz x19",
+        "loadedValue": 0
+      },
+      {
+        "branchOffset": 496,
+        "instruction": "tbz w14,#0",
+        "testedBitValue": 0
+      }
+    ],
+    "opaqueCalleeCount": 0,
+    "argumentMemoryChangedInvocationCount": 0,
+    "callerRoleChangedInvocationCount": 0,
+    "x5TargetChangedInvocationCount": 0,
+    "interpretation": "The function is an exact no-op on all four selected invocations. The crop is constructed inline in prepare_layer after each return."
+  },
+  "openedInlineCropArithmetic": {
+    "inputAddress": "caller role x19+0x290",
+    "outputAddress": "caller role x19+0x270",
+    "inputType": "four little-endian binary64 values [x,y,width,height]",
+    "outputType": "four little-endian signed 32-bit values [x,y,width,height]",
+    "inputInstructionStateSHA256": "5f71ba4be5311ea395b65aea35c02b7f62aa1f872c3e8b06e3132007353010cc",
+    "corePathSHA256": "5d358df726c0f49cfc5ac1223d13c7b3b2c668650bc77c7a112328c4a26949af",
+    "fractionalGuardPathSHA256": "ef71cf0f1a90688723ad84b7fd08cbac4d7042859b9fc05f40392e2efc7618d3",
+    "paddingPathSHA256": "726ffd99e83a643414af48d3e773a930e5f8ccca97ee9d0e3b00aedcaf9ce844",
+    "lowerClamp": {
+      "bitsHex": "000000ffffffbfc1",
+      "value": -536870911.0,
+      "valueHex": "-0x1.fffffff000000p+28"
+    },
+    "upperClamp": {
+      "bitsHex": "000000000000c041",
+      "value": 536870912.0,
+      "valueHex": "0x1.0000000000000p+29"
+    },
+    "finiteClampRule": "origin=max(origin,-536870911); size=min(size,536870912-origin), componentwise",
+    "integerEnclosureRule": "lower=floor(origin); extent=ceil(origin+size)-lower, componentwise",
+    "integerConversionInstructions": [
+      {
+        "relativeOffset": 14784,
+        "rawLittleEndianHex": "42b8614e",
+        "instruction": "fcvtms.2d v2,v2"
+      },
+      {
+        "relativeOffset": 14788,
+        "rawLittleEndianHex": "63a8e14e",
+        "instruction": "fcvtps.2d v3,v3"
+      },
+      {
+        "relativeOffset": 14792,
+        "rawLittleEndianHex": "6384e26e",
+        "instruction": "sub.2d v3,v3,v2"
+      },
+      {
+        "relativeOffset": 14796,
+        "rawLittleEndianHex": "4218834e",
+        "instruction": "uzp1.4s v2,v2,v3"
+      },
+      {
+        "relativeOffset": 14800,
+        "rawLittleEndianHex": "629e803d",
+        "instruction": "str q2,[x19,#0x270]"
+      }
+    ],
+    "fractionalGuardRule": "convert the signed integer enclosure back to binary64 and compare it componentwise with the clamped [origin,size]; on this enabled branch, any mismatch continues to the remaining flag and extent guards",
+    "selectedOnePixelBorderRule": "origin-=1; extent+=2, componentwise",
+    "borderStoreInstructions": [
+      "str w12,[x19,#0x270]",
+      "str w11,[x19,#0x274]",
+      "str w10,[x19,#0x278]",
+      "str w9,[x19,#0x27c]"
+    ],
+    "instructionDerived": true,
+    "toleranceFit": false
+  },
+  "invocations": [
+    {
+      "invocationIndex": 0,
+      "callerRoleBase": 6171882944,
+      "inputRectF64": [
+        491.993896484375,
+        167.50625610351562,
+        356.84995422363284,
+        364.4998474121094
+      ],
+      "inputRectValueHex": [
+        "0x1.ebfe700000000p+8",
+        "0x1.4f03340000000p+7",
+        "0x1.64d996999999ap+8",
+        "0x1.6c7ff60000000p+8"
+      ],
+      "integerEnclosureI32": [491, 167, 358, 366],
+      "fractionalComponentMismatch": [true, true, true, true],
+      "onePixelBorderExecuted": true,
+      "replayedWorkingCropI32": [490, 166, 360, 368],
+      "observedDownstreamCropI32": [490, 166, 360, 368],
+      "storeStepIndex": 5261,
+      "unionStepIndex": 5428,
+      "bitExactReplayPassed": true
+    },
+    {
+      "invocationIndex": 1,
+      "callerRoleBase": 6171884912,
+      "inputRectF64": [490.0, 166.0, 360.0, 368.0],
+      "inputRectValueHex": [
+        "0x1.ea00000000000p+8",
+        "0x1.4c00000000000p+7",
+        "0x1.6800000000000p+8",
+        "0x1.7000000000000p+8"
+      ],
+      "integerEnclosureI32": [490, 166, 360, 368],
+      "fractionalComponentMismatch": [false, false, false, false],
+      "onePixelBorderExecuted": false,
+      "replayedWorkingCropI32": [490, 166, 360, 368],
+      "observedDownstreamCropI32": [490, 166, 360, 368],
+      "storeStepIndex": 5970,
+      "unionStepIndex": 6134,
+      "bitExactReplayPassed": true
+    },
+    {
+      "invocationIndex": 2,
+      "callerRoleBase": 6171886960,
+      "inputRectF64": [490.0, 166.0, 360.0, 368.0],
+      "inputRectValueHex": [
+        "0x1.ea00000000000p+8",
+        "0x1.4c00000000000p+7",
+        "0x1.6800000000000p+8",
+        "0x1.7000000000000p+8"
+      ],
+      "integerEnclosureI32": [490, 166, 360, 368],
+      "fractionalComponentMismatch": [false, false, false, false],
+      "onePixelBorderExecuted": false,
+      "replayedWorkingCropI32": [490, 166, 360, 368],
+      "observedDownstreamCropI32": [490, 166, 360, 368],
+      "storeStepIndex": 6686,
+      "unionStepIndex": 6853,
+      "bitExactReplayPassed": true
+    },
+    {
+      "invocationIndex": 3,
+      "callerRoleBase": 6171889024,
+      "inputRectF64": [
+        490.0,
+        -115.993896484375,
+        641.993896484375,
+        649.993896484375
+      ],
+      "inputRectValueHex": [
+        "0x1.ea00000000000p+8",
+        "-0x1.cff9c00000000p+6",
+        "0x1.40ff380000000p+9",
+        "0x1.44ff380000000p+9"
+      ],
+      "integerEnclosureI32": [490, -116, 642, 650],
+      "fractionalComponentMismatch": [false, true, true, true],
+      "onePixelBorderExecuted": true,
+      "replayedWorkingCropI32": [489, -117, 644, 652],
+      "observedDownstreamCropI32": null,
+      "instructionDerivedOnly": true
+    }
+  ],
+  "remainingBoundary": {
+    "selectedNestedCropProductionDecoded": true,
+    "selectedRootWorkingCropInstructionDerived": true,
+    "generalFloatingRectangleProductionDecoded": false,
+    "allPaddingGuardModesDecoded": false,
+    "unseenGeometryAndBoundaryTransferPassed": false,
+    "materialAppearanceDirectionTransferPassed": false,
+    "retina2xTransferPassed": false,
+    "endToEndWallePixelParityPassed": false,
+    "interpretation": "The selected finite integerization is no longer unknown. The next causal boundary is the general public-state-to-x19+0x290 floating rectangle and alternate guard behavior, followed by prospective transfer and rendering/color gates."
+  },
+  "conclusion": {
+    "composedValidatorRepassed": true,
+    "addBackgroundFiltersIsCropWriterOnSelectedPath": false,
+    "inlineFiniteCropEnclosureDecoded": true,
+    "selectedPaddingBranchDecoded": true,
+    "firstThreeDownstreamCropsReplayedBitExactly": true,
+    "generalCropAllocationPolicyOpened": false,
+    "unseenGeometryTransferPassed": false,
+    "retina2xTransferPassed": false,
+    "materialAppearanceDirectionTransferPassed": false,
+    "endToEndPixelParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

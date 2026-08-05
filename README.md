@@ -6160,3 +6160,74 @@ Passing schema 6 will authorize offline decoding of this selected-path crop
 writer only. It will not by itself prove the general crop-allocation policy,
 unseen geometry or boundary transfer, material/appearance/direction transfer,
 Retina 2x behavior, production-shader authority, or Liquid Glass parity.
+
+Run `31048753297`, from schema-6 commit `9780f93`, passes every prospective
+gate in 422 seconds. The macOS target exits normally; all 33 images, both
+inherited allocation validators, the composed schema-6 instruction validator,
+artifact upload, and final enforcement succeed. Artifact `8947713091` has
+GitHub digest
+`sha256:4858ee27b4e8c110ab10efd4b2533ce7f9a3a4d46aeae93c6c9f9623c7008cf4`.
+The instruction trace has SHA-256
+`7cb1aa0f9f205bf57c4cea01539a2ac0860137b8be9c53112c0989e7488b51e5`;
+the inherited frame trace has SHA-256
+`66327f2c3aa2188f968b4a9af94890669080d58a2a705934b6e8b03e0ab0fada`;
+the validation has SHA-256
+`5a0f5715f8c2b341ac2b1a5f86b74e3d3fa1c8d88bc9141e2c1a3d6e51cf5fe7`;
+and the deterministic offline semantic analysis has SHA-256
+`95607d105c46e59442b4bd7de396c3df3b5cf2db1dffb033a58c6c5e52ec913a`.
+The immutable opened result is
+`Analysis/dynamic_allocation_prepare_layer_crop_writer_semantics_result.json`.
+
+The result corrects the schema-6 isolation hypothesis rather than fitting it.
+All four `add_background_filters_` invocations execute the same 45-instruction
+path, cross no opaque callee, and change none of the captured argument memory,
+2 KiB caller role, or 32-byte `x5` target. The path loads zero at `+0x50`,
+loads zero again at `+0x70`, and takes the zero-bit branch at `+0x1f0` into its
+epilogue. Thus `add_background_filters_` is an exact no-op on this selected
+path. It does not return or construct the crop. The actual writer is inline in
+`prepare_layer` immediately after each call.
+
+That inline arithmetic is now instruction-derived for the selected finite
+inputs. The four binary64 values at caller role `x19+0x290` are clamped with
+exact limits `-536870911` and `536870912`, then `fcvtms.2d` and `fcvtps.2d`
+implement, componentwise,
+
+```
+origin = max(origin, -536870911)
+size = min(size, 536870912 - origin)
+lower = floor(origin)
+extent = ceil(origin + size) - lower
+```
+
+`uzp1.4s` packs `[lower.x,lower.y,extent.x,extent.y]`, and
+`str q2,[x19,#0x270]` stores the signed 32-bit crop. Apple then converts that
+integer enclosure back to binary64 and compares all four components with the
+clamped floating rectangle. On the enabled selected branch, a mismatch that
+passes the retained flag and extent guards executes the exact one-pixel border
+rule `origin -= 1; extent += 2`.
+
+The first floating rectangle is exactly
+`[491.993896484375,167.50625610351562,356.84995422363284,
+364.4998474121094]`. Its base enclosure is `[491,167,358,366]`; all four
+component comparisons differ, so the observed border path produces
+`[490,166,360,368]`. The following two floating inputs are already exactly
+`[490,166,360,368]`; their mismatch masks are zero, the border path is skipped,
+and both remain `[490,166,360,368]`. All three outputs match the later
+`prepare_layer+0x55c0` stores and `+0x8570` union inputs bit for bit.
+
+The selected root floating rectangle is
+`[490,-115.993896484375,641.993896484375,649.993896484375]`. The same opened
+instructions form `[490,-116,642,650]` and execute the border stores, deriving
+root working crop `[489,-117,644,652]`. Schema 6 did not retain a later direct
+snapshot of that fourth output, so the result labels it instruction-derived
+rather than falsely calling it an independently observed downstream join.
+
+This closes the selected nested integerization, not Liquid Glass parity. The
+remaining crop boundary is the general public-state-to-`x19+0x290` floating
+rectangle and alternate flag/guard behavior across unseen geometry and
+boundaries. After that must come prospective geometry and temporal transfer;
+clear/regular material, light/dark appearance, and both-direction transfer;
+physical Retina 2x and color/pixel-format transfer; and finally end-to-end
+zero-byte-difference Walle frames. The production shader remains unchanged at
+SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
