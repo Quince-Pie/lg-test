@@ -1,0 +1,166 @@
+{
+  "prepareLayerLiveWriterX28TimingResultSchemaVersion": 1,
+  "openedAtUtc": "2026-08-05T00:02:00Z",
+  "classification": "opened failed-closed Apple prepare_layer live-watchpoint run; the exact live role was watched and real prepare_layer/union_bounds writer PCs were exposed, but the simultaneous x19/x28 qualification rule rejected every write because x28 is not yet the independently selected source at the early direct writes; not a selected writer dependency-slice, complete crop rule, unseen-transfer, or product-parity claim",
+  "run": {
+    "runID": 30960697537,
+    "jobID": 92163765090,
+    "headSHA": "65bc6a5d56f80fa65032a0b68524039c4e9bf5cc",
+    "workflowConclusion": "failure",
+    "durationSeconds": 507,
+    "contractStepOutcome": "success",
+    "buildStepOutcome": "success",
+    "captureStepOutcome": "success",
+    "captureTargetExitedNormally": true,
+    "captureTargetExitStatus": 0,
+    "pathIsolationValidatorOutcome": "success",
+    "inputClampValidatorOutcome": "success",
+    "liveWriterValidatorOutcome": "failure",
+    "artifactUploadOutcome": "success",
+    "enforcementOutcome": "failure",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/30960697537"
+  },
+  "inputArtifacts": {
+    "artifactID": 8912973080,
+    "artifactArchiveByteCount": 99754458,
+    "artifactArchiveDigest": "sha256:7f5a9866ffc0815d7b078acbb0aaa23fb309cafedd5e9d863b5db27a9527b48d",
+    "transitionFrameImageCount": 33,
+    "transitionTimelineByteCount": 178820194,
+    "transitionTimelineSHA256": "8b212a5831700e79f04eacd7ff38af63dc1a97eda4ff6b314088d56d8e15ba00",
+    "rawLiveWriterTraceByteCount": 149746,
+    "rawLiveWriterTraceSHA256": "fa5af50b42e248b87d1d5f000266f0be80c18b92a4bb303b7b33cc746d256b2d",
+    "pathIsolationResultSHA256": "a0862bc84fe713d02a68ab9a1fbbf3121c1d6af2b464aa220b8afdd43beacc96",
+    "inputClampResultSHA256": "cf9e5f45590660ec6bf6ef945912127376821ea04371010aeca80e64c2cd5cad",
+    "lldbLogSHA256": "e8f92fec15821a9b30d525681ff07b9efe910c2402fe4b8e6b6cb23e5ed8f031",
+    "runtimeStderrSHA256": "2ed3ee902b6ff6bb9ab7ca1cc076e8fd049f54aae9f3db7d725681e34e1c2208",
+    "buildLogSHA256": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af"
+  },
+  "successfulStaticSelectionAndArmGates": {
+    "prepareLayerSymbolByteCount": 40128,
+    "prepareLayerFullCodeSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+    "captureBackdropCodeSHA256": "14f25960556bec9e88ba8ade176ee7f1d39b84726226ade3eb1b0f1be00b70d2",
+    "unionHelperSymbolSHA256": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7",
+    "selectedLateCandidateIndex": 1,
+    "selectedObjectChainExact": true,
+    "selectedSourceAddressInRun": 33339949056,
+    "selectedSourceRectangle": [499, -127, 644, 652],
+    "selectedLayerStateRectangle": [499, 0, 525, 525],
+    "selectedOwnerRectangle": [499.0, 0.0, 525.0, 525.0],
+    "selectedPreconvergenceExact": true,
+    "markerHitCount": 2,
+    "rejectedMarkerHitCount": 0,
+    "discardedMarkerHitCount": 0,
+    "preselectionMarkerRoleBase": 6171891120,
+    "liveSelectedMarkerRoleBase": 6171889152,
+    "liveSelectedMarkerFramePointer": 6171891104,
+    "liveSelectedMarkerSource": 33339949056,
+    "liveSelectedMarkerAggregateOriginHex": "0000000000b07e40",
+    "watchpointAddress": 6171889808,
+    "watchpointInitialHex": "0000000000b07e40",
+    "markerAndWatchpointInitialExact": true
+  },
+  "openedWatchpointOutcome": {
+    "rawWatchpointHitCount": 8193,
+    "maximumRawWatchpointHitCount": 8192,
+    "ignoredWatchpointHitCount": 8192,
+    "ignoredDiagnosticGroupCount": 57,
+    "ignoredDiagnosticHitSum": 8192,
+    "unretainedIgnoredWatchpointHitCount": 0,
+    "ignoredPrepareFrameSeenCount": 196,
+    "qualifiedWatchpointHitCount": 0,
+    "changedQualifiedWatchpointHitCount": 0,
+    "rawTraceFailure": "raw watchpoint hit bound exceeded",
+    "localValidatorFailure": "trace envelope differs",
+    "conclusion": "The live arm itself is exact, but a hardware watchpoint on a stack address outlives the frame and attracts thousands of unrelated later writes. Unlike the predecessor, this run also exposes 196 stops with an exact prepare_layer frame; all fail only the combined role/source predicate."
+  },
+  "openedPrepareAncestryWriterGroups": [
+    {
+      "function": "CA::Rect::apply_transform(CA::SimpleTransform const&)",
+      "stopPCRelativeToPrepareLayer": -1207012,
+      "hitCount": 13,
+      "changedCount": 13
+    },
+    {
+      "function": "CA::Rect::unapply_transform(CA::SimpleTransform const&)",
+      "stopPCRelativeToPrepareLayer": -1202604,
+      "hitCount": 13,
+      "changedCount": 13
+    },
+    {
+      "function": "CA::OGL::GlassBackgroundFilter::DOD(CA::Render::Filter const*, CA::Render::Layer const*, CA::Rect&) const",
+      "stopPCRelativeToPrepareLayer": -90080,
+      "hitCount": 13,
+      "changedCount": 0
+    },
+    {
+      "function": "CA::OGL::GlassBackgroundFilter::DOD(CA::Render::Filter const*, CA::Render::Layer const*, CA::Rect&) const",
+      "stopPCRelativeToPrepareLayer": -89720,
+      "hitCount": 13,
+      "changedCount": 13
+    },
+    {
+      "function": "CA::OGL::GlassBackgroundFilter::DOD(CA::Render::Filter const*, CA::Render::Layer const*, CA::Rect&) const",
+      "stopPCRelativeToPrepareLayer": -89512,
+      "hitCount": 13,
+      "changedCount": 13
+    },
+    {
+      "function": "CA::Render::Updater::LayerShapes::union_bounds(CA::Rect const&, bool)",
+      "stopPCRelativeToPrepareLayer": -2588,
+      "stopPCRelativeToUnionHelper": 132,
+      "hitCount": 52,
+      "changedCount": 39
+    },
+    {
+      "function": "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes&, unsigned long long&)",
+      "stopPCRelativeToPrepareLayer": 2912,
+      "precedingWriterInstructionOffset": 2908,
+      "precedingWriterInstructionRawLittleEndianHex": "60a6803d",
+      "precedingWriterInstruction": "str q0, [x19, #656]",
+      "hitCount": 53,
+      "changedCount": 40
+    },
+    {
+      "function": "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes&, unsigned long long&)",
+      "stopPCRelativeToPrepareLayer": 14708,
+      "precedingWriterInstructionOffset": 14704,
+      "precedingWriterInstructionRawLittleEndianHex": "608614ad",
+      "precedingWriterInstruction": "stp q0, q1, [x19, #656]",
+      "hitCount": 26,
+      "changedCount": 0
+    }
+  ],
+  "openedTimingConclusion": {
+    "directWriterX19EqualsWatchedRoleAtStop": true,
+    "basis": "The two direct instructions use x19+656 as their architectural store address. A hardware stop at the watched roleBase+656 therefore proves that top-frame x19 equals the watched role base at those stops.",
+    "combinedQualificationStillFailed": true,
+    "directWriterX28DiffersFromSelectedSourceAtStop": true,
+    "selectedSourcePresentLaterAtMarker": true,
+    "conclusion": "For the direct +0xb5c and +0x3970 writes, x19 necessarily matches the watched role, yet the exact-frame matcher rejected the event. Therefore x28 is not the independently selected source at those early writes. At the later +0x3ef0 marker in the live frame, x28 is the selected source. Simultaneous x19/x28 matching at the write is an invalid temporal identity rule."
+  },
+  "nextEvidenceBoundary": {
+    "objective": "Correlate early writer records to the later exact-source marker while the same prepare_layer invocation is still live, using thread ID plus stable x19 role base and x29 frame pointer rather than requiring x28 to have its later value at the write.",
+    "requiredChanges": [
+      "leave the failed live-watchpoint harness, validator, workflow, preregistration, raw artifact, and this opened result immutable",
+      "install exact writer-site breakpoints before the first prepare_layer invocation resumes, avoiding a long-lived stack-address watchpoint",
+      "capture the opened +0xb60 direct-zero after-site, union_bounds+0x84 store after-site, +0x33f4 alternate-copy after-site, and +0x3974 range-store after-site with exact code identities",
+      "for helper stops, retain the exact parent prepare_layer frame and its x19/x28/x29 registers",
+      "retain bounded preselection writer records with the top frame, parent frame, scalar and SIMD registers, stack, pointer probes, and complete 2 KiB role state",
+      "at the source-known +0x3ef0 marker, select only the current invocation's writer suffix whose thread ID, x19 role base, and x29 frame pointer exactly match the still-live marker",
+      "use the latest +0xb60 zero-initialization record as the selected invocation epoch boundary so reuse of the same stack addresses by an older invocation cannot enter the suffix",
+      "capture selected objects and private fields at the live marker and fail if no correlated writer suffix or no changing aggregate stages exist"
+    ],
+    "productionShaderAuthorized": false
+  },
+  "notClaimed": [
+    "that run 30960697537 passed its prospective live-writer gate",
+    "that any rejected prepare-ancestry event is already correlated to the selected invocation",
+    "that every opened stop PC contributes to the final selected aggregate",
+    "that the selected writer dependency slice is captured",
+    "that the complete public crop-construction rule is recovered",
+    "that unseen transfer has passed",
+    "that Walle may change its production shader",
+    "that Apple Liquid Glass parity has been achieved",
+    "that a fixed number of later CI runs will be sufficient"
+  ]
+}
