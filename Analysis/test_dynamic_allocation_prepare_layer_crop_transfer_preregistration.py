@@ -15,6 +15,13 @@ REGISTRATION_PATH = (
     / "dynamic_allocation_prepare_layer_crop_transfer_preregistration.json"
 )
 REGISTRATION = json.loads(REGISTRATION_PATH.read_text(encoding="utf-8"))
+RETRY_REGISTRATION_PATH = (
+    ANALYSIS_ROOT
+    / "dynamic_allocation_prepare_layer_crop_transfer_retry_preregistration.json"
+)
+RETRY_REGISTRATION = json.loads(
+    RETRY_REGISTRATION_PATH.read_text(encoding="utf-8")
+)
 
 
 def sha256(path):
@@ -88,15 +95,69 @@ class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
 
     def test_frozen_implementation_hashes_match(self):
         frozen = REGISTRATION["frozenImplementation"]
+        retry = RETRY_REGISTRATION["frozenRetryImplementation"]
         pairs = (
-            (frozen["captureHarness"], frozen["captureHarnessSHA256"]),
             (frozen["validator"], frozen["validatorSHA256"]),
-            (frozen["captureHarnessTest"], frozen["captureHarnessTestSHA256"]),
             (frozen["validatorTest"], frozen["validatorTestSHA256"]),
             (frozen["workflow"], frozen["workflowSHA256"]),
+            (retry["captureHarness"], retry["captureHarnessSHA256"]),
+            (retry["captureHarnessTest"], retry["captureHarnessTestSHA256"]),
         )
         for relative, expected in pairs:
             self.assertEqual(sha256(REPOSITORY_ROOT / relative), expected)
+
+    def test_retry_is_chained_to_the_immutable_failed_attempt(self):
+        retry = RETRY_REGISTRATION
+        original = retry["originalPreregistration"]
+        failed = retry["failedAttempt"]
+        correction = retry["retryCorrection"]
+        acceptance = retry["acceptance"]
+        self.assertEqual(
+            retry["prepareLayerCropTransferRetryPreregistrationSchemaVersion"],
+            1,
+        )
+        self.assertEqual(sha256(REGISTRATION_PATH), original["sha256"])
+        self.assertEqual(
+            original["captureHarnessSHA256"],
+            REGISTRATION["frozenImplementation"]["captureHarnessSHA256"],
+        )
+        self.assertEqual(
+            original["captureHarnessTestSHA256"],
+            REGISTRATION["frozenImplementation"]["captureHarnessTestSHA256"],
+        )
+        self.assertEqual(failed["runID"], 31052255187)
+        self.assertEqual(failed["failedJobCount"], 8)
+        self.assertEqual(len(failed["artifactInventory"]), 8)
+        self.assertEqual(
+            len({record["artifactID"] for record in failed["artifactInventory"]}),
+            8,
+        )
+        self.assertTrue(
+            all(
+                record["digest"].startswith("sha256:")
+                and is_sha256(record["digest"].removeprefix("sha256:"))
+                for record in failed["artifactInventory"]
+            )
+        )
+        self.assertFalse(
+            failed["openedFailureFixture"]["privateCropOutcomeObserved"]
+        )
+        self.assertEqual(
+            failed["openedFailureFixture"]["failureMessage"],
+            "register x30 data is unavailable",
+        )
+        self.assertEqual(correction["affectedArchitecturalRegister"], "x30")
+        self.assertFalse(correction["selectionChanged"])
+        self.assertFalse(correction["cropBytesReadDuringSelection"])
+        self.assertFalse(correction["ordinalJoinChanged"])
+        self.assertFalse(correction["appleCaptureProgramChanged"])
+        self.assertTrue(
+            acceptance["allOriginalProspectiveCaptureRequirementsRemainRequired"]
+        )
+        self.assertTrue(acceptance["x30ScalarViewsMustAgreeWhenFallbackIsUsed"])
+        self.assertFalse(acceptance["generalCropPolicyMayBeClaimedByRetryAlone"])
+        self.assertFalse(acceptance["productionShaderMayChange"])
+        self.assertIsNone(retry["retryRuntimeOutcomeFrozenBeforeDispatch"])
 
     def test_external_walle_companion_hashes_are_frozen_and_match_when_present(self):
         frozen = REGISTRATION["frozenImplementation"]

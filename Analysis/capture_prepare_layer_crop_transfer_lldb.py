@@ -62,6 +62,8 @@ POINTER_REGISTER_NAMES = (
     "x28",
 )
 PREPARE_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "x30", "sp", "pc")
+REGISTER_ALIASES = {"x30": ("lr",)}
+SCALAR_VALUE_FALLBACK_REGISTER_NAMES = frozenset(("x30",))
 DIRECT_TIMELINE_CALLER_FRAGMENT = "transitionBackgroundUniformEvidence("
 REQUIRED_CALLER_FRAGMENTS = (
     "carendererUniformEvidence(",
@@ -291,6 +293,67 @@ def _register_values(records):
     }
 
 
+def _register_record(frame, name):
+    """Read one exact scalar register, including LLDB's arm64 LR quirk."""
+    candidates = (name,) + REGISTER_ALIASES.get(name, ())
+    scalar_candidates = []
+    data_failures = []
+    for candidate in candidates:
+        value = frame.FindRegister(candidate)
+        if not value.IsValid():
+            continue
+        scalar_candidates.append((candidate, value))
+        try:
+            record = capture_base._register_record(frame, candidate)
+        except RuntimeError as error:
+            expected = "register %s data is unavailable" % candidate
+            if str(error) != expected:
+                raise
+            data_failures.append(str(error))
+            continue
+        if candidate != name:
+            record["name"] = name
+            record["sourceRegisterName"] = candidate
+        return record
+
+    if name not in SCALAR_VALUE_FALLBACK_REGISTER_NAMES:
+        if data_failures:
+            raise RuntimeError(data_failures[0])
+        raise RuntimeError("missing register %s" % name)
+
+    for candidate, value in scalar_candidates:
+        byte_count = value.GetByteSize()
+        value_string = value.GetValue()
+        if byte_count != 8 or not isinstance(value_string, str):
+            continue
+        try:
+            parsed = int(value_string, 0)
+        except ValueError:
+            continue
+        unsigned = value.GetValueAsUnsigned(0)
+        mask = (1 << (byte_count * 8)) - 1
+        if unsigned != (parsed & mask):
+            continue
+        payload = unsigned.to_bytes(byte_count, "little")
+        return {
+            "name": name,
+            "sourceRegisterName": candidate,
+            "acquisition": "lldb-canonical-scalar-value-after-sbdata-unavailable",
+            "byteCount": byte_count,
+            "hex": payload.hex(),
+            "valueString": value_string,
+            "unsignedValue": unsigned,
+        }
+    raise RuntimeError(
+        "register %s has neither exact SBData nor a self-consistent scalar value"
+        % name
+    )
+
+
+def _register_snapshot(frame, names):
+    return [_register_record(frame, name) for name in names]
+
+
 def _pointer_snapshots(process, registers):
     snapshots = []
     values = _register_values(registers)
@@ -333,9 +396,7 @@ def _pointer_snapshots(process, registers):
 
 def _prepare_frame_snapshot(process, target, item):
     frame = item["frame"]
-    registers = capture_base._register_snapshot(
-        frame, PREPARE_FRAME_REGISTER_NAMES
-    )
+    registers = _register_snapshot(frame, PREPARE_FRAME_REGISTER_NAMES)
     values = _register_values(registers)
     role_base = values["x19"]
     role = capture_base._memory_snapshot(
@@ -451,7 +512,7 @@ def crop_transfer_marker(frame, breakpoint_location, _internal_dict):
         if len(_state["trace"]["qualifiedRecords"]) >= MAXIMUM_QUALIFIED_RECORD_COUNT:
             _state["discardedQualifiedRecordCount"] += 1
             raise RuntimeError("qualified crop transfer record bound exceeded")
-        registers = capture_base._register_snapshot(frame, GENERAL_REGISTER_NAMES)
+        registers = _register_snapshot(frame, GENERAL_REGISTER_NAMES)
         values = _register_values(registers)
         role_base = values["x19"]
         source = values["x28"]

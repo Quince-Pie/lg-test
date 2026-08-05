@@ -6279,3 +6279,37 @@ the capture, validator, and workflow are respectively
 `.github/workflows/prepare-layer-crop-transfer-introspect.yml`. The Apple
 capture program is unchanged. The Walle shader remains untouched at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+The first schema-7 dispatch, run `31052082100` at commit `a88939e`, stopped
+before build because the preregistration contract attempted to hash Walle's
+external `../shaders/frag.glsl` in GitHub's standalone `lg-test` checkout. It
+observed no Apple runtime state. Commit `5588a4c` keeps the expected external
+shader and flake digests frozen, verifies their real bytes whenever a
+colocated Walle checkout exists, and permits the standalone CI checkout to
+verify the repository-owned inputs without inventing a Nix-store path.
+
+Replacement run `31052255187` reached the Apple runtime in all eight jobs.
+Every contract and build passed, every target exited normally, and every job
+uploaded an artifact, but no job passed the final validator. The opened
+640-center artifact `8948924471`, with GitHub digest
+`sha256:a5199628bd500e35e9ca97410c8679fa2965602a897bde1db068f6ce336d568f`,
+contains one retained depth-three rejection followed by the intended
+depth-four stop. Payload capture then failed before retaining a record because
+LLDB exposed `x30` as a valid register but did not expose its `SBData` bytes.
+The process still exited zero. The trace has SHA-256
+`bf01fbe5089fc67284b378cf8142c3c4c9bf09f34739552a1286fd66cbc01b25`;
+it contains zero qualified private-crop records and therefore has no crop-law
+outcome.
+
+The retry correction is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_transfer_retry_preregistration.json`.
+It changes scalar-register serialization only. Canonical `x30` `SBData` stays
+first choice, the architectural `lr` alias is second, and only `x30` may fall
+back to an eight-byte little-endian scalar when LLDB's unsigned API and an
+independent parse of its value string agree modulo 64 bits. Any other missing
+register or any disagreement still fails closed. Selection, role/source/stack
+byte counts, four-ancestor retention, ordinal join, the 256-state matrix, the
+Apple capture program, and the production shader are unchanged. The retry is
+still discovery evidence only; even a complete pass cannot itself establish
+unseen transfer, authorize a Walle shader change, or establish Liquid Glass
+parity.

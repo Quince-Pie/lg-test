@@ -106,6 +106,90 @@ class PrepareLayerCropTransferSourceTests(unittest.TestCase):
         self.assertNotIn("_register", source)
         self.assertNotIn("ReadMemory", source)
 
+    def test_x30_uses_self_consistent_scalar_bytes_when_sbdata_is_unavailable(self):
+        class Value:
+            def IsValid(self):
+                return True
+
+            def GetByteSize(self):
+                return 8
+
+            def GetValue(self):
+                return "0x1122334455667788"
+
+            def GetValueAsUnsigned(self, _failure):
+                return 0x1122334455667788
+
+        class Frame:
+            def FindRegister(self, name):
+                return Value() if name == "x30" else InvalidValue()
+
+        class InvalidValue:
+            def IsValid(self):
+                return False
+
+        original = self.module.capture_base._register_record
+        self.module.capture_base._register_record = lambda _frame, name: (
+            (_ for _ in ()).throw(
+                RuntimeError("register %s data is unavailable" % name)
+            )
+        )
+        try:
+            record = self.module._register_record(Frame(), "x30")
+        finally:
+            self.module.capture_base._register_record = original
+        self.assertEqual(record["name"], "x30")
+        self.assertEqual(record["sourceRegisterName"], "x30")
+        self.assertEqual(record["byteCount"], 8)
+        self.assertEqual(record["hex"], "8877665544332211")
+        self.assertEqual(record["unsignedValue"], 0x1122334455667788)
+        self.assertIn("sbdata-unavailable", record["acquisition"])
+
+    def test_x30_prefers_exact_lr_alias_sbdata(self):
+        class Value:
+            def __init__(self, valid):
+                self.valid = valid
+
+            def IsValid(self):
+                return self.valid
+
+        class Frame:
+            def FindRegister(self, name):
+                return Value(name in {"x30", "lr"})
+
+        original = self.module.capture_base._register_record
+
+        def record(_frame, name):
+            if name == "x30":
+                raise RuntimeError("register x30 data is unavailable")
+            return {
+                "name": "lr",
+                "byteCount": 8,
+                "hex": "0807060504030201",
+                "valueString": "0x0102030405060708",
+                "unsignedValue": 0x0102030405060708,
+            }
+
+        self.module.capture_base._register_record = record
+        try:
+            observed = self.module._register_record(Frame(), "x30")
+        finally:
+            self.module.capture_base._register_record = original
+        self.assertEqual(observed["name"], "x30")
+        self.assertEqual(observed["sourceRegisterName"], "lr")
+        self.assertEqual(observed["hex"], "0807060504030201")
+
+    def test_scalar_fallback_is_restricted_to_x30_and_checks_two_views(self):
+        source = inspect.getsource(self.module._register_record)
+        self.assertEqual(
+            self.module.SCALAR_VALUE_FALLBACK_REGISTER_NAMES,
+            frozenset(("x30",)),
+        )
+        self.assertEqual(self.module.REGISTER_ALIASES, {"x30": ("lr",)})
+        self.assertIn("GetValueAsUnsigned", source)
+        self.assertIn("int(value_string, 0)", source)
+        self.assertIn("unsigned != (parsed & mask)", source)
+
     def test_hardware_watchpoints_and_instruction_stepping_are_absent(self):
         source = MODULE_PATH.read_text(encoding="utf-8")
         self.assertNotIn("WatchAddress", source)
