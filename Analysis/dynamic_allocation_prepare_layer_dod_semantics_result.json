@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "classification": "opened-successful-selected-glass-dod-complete-register-state-and-exact-semantic-decode; selected DOD arithmetic is replayable while upstream integer crop production, unseen transfer, shader authority, and product parity remain sealed",
+  "run": {
+    "runID": 31044659120,
+    "jobID": 92437136123,
+    "headSHA": "ad04e7d167787e19ac12e1a7d645868bd81bb621",
+    "workflowConclusion": "success",
+    "durationSeconds": 482,
+    "captureTargetExitedNormally": true,
+    "timelineSampleCount": 33,
+    "timelineFailedSampleCount": 0,
+    "pathIsolationGatePassed": true,
+    "inputClampGatePassed": true,
+    "instructionTraceGatePassed": true,
+    "finalEnforcementPassed": true
+  },
+  "artifact": {
+    "artifactID": 8946171977,
+    "name": "liquid-glass-prepare-layer-instruction-trace-31044659120",
+    "sizeBytes": 100525121,
+    "digest": "sha256:b200e1a803396b8e656182030f2cb2e36749f7dd4da29a6aedbcf6cfee03d24f"
+  },
+  "fileSHA256": {
+    "instructionTrace": "397a6926bb75bb053b1f5797c9e2de4a93c47440812f47e1a221a51ea94756fe",
+    "inheritedFrameTrace": "9e44de48f3a582107e2bcdbb860e30d3e54a6bfc635adcacef7c2518274fb6a2",
+    "timeline": "c9e254e54449f9172dfddd1f11d7c2444c44c691e5d5f8834b09479d8614a798",
+    "validation": "7ef96daa02124650fdf752c6eaa960fd82ad35b284de5f33e849c908f9d49f7a",
+    "semanticAnalysis": "946e111dd9be7ad36762bdfea578ceeca73f78d21a1f4a72bab6d37f0a4d9c4e",
+    "lldbLog": "30e903015da5116d5462a5dac7d1534ac2b6fc5aa9226af37ac9bf6c8125586e",
+    "pathIsolation": "d4940317f4e5a802b009523c9a1236c71416d16de3f6c466855f4a356e6bc0ed",
+    "inputClamp": "34b73fe53cc05c91aa3e5002af99b13d5ca1c4d850045286723b9161eaa5b5d4",
+    "contracts": "90ea317c3d957771b3ed4e937d893b6278e95d7d9a7c5d8bf2ee2d499303dd62",
+    "build": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af",
+    "runtimeStderr": "94f8153f12dc0a60e2bb88e715629a147f73fe5f1a1d16cd39e29cf67a00d7f1"
+  },
+  "selectedInvocation": {
+    "selectedSource": 51991773376,
+    "selectedEpochRecordIndex": 2,
+    "selectedSourceKnownDepthFourOrdinal": 3,
+    "threadID": 64424509442,
+    "roleBase": 6171889024,
+    "framePointer": 6171890976,
+    "targetAggregateAddress": 6171889680,
+    "entryRecordIndex": 0,
+    "entryStepIndex": 715,
+    "returnStepIndex": 990,
+    "instructionStateCount": 267,
+    "instructionStatesSHA256": "1fc16d9aabcfb677fcef9cbd1cd789c120ed0cd14ef9dcb7ee4286eef20c70c3",
+    "opaqueHelperReturnCount": 9,
+    "aggregateWriterCount": 4
+  },
+  "openedLiveReturns": {
+    "key356": {
+      "timelineName": "inputBlurRadius",
+      "bitsHex": "00000000100eb03f",
+      "valueHex": "0x1.00e1000000000p-4",
+      "value": 0.0627145767211914
+    },
+    "shadowOffset": {
+      "value": [
+        0.0,
+        8.0
+      ],
+      "valueHex": [
+        "0x0.0p+0",
+        "0x1.0000000000000p+3"
+      ]
+    },
+    "zeroTerms": {
+      "key430": 0.0,
+      "key429": 0.0,
+      "key428": 0.0,
+      "gaussianExpansionFactor": 0.0,
+      "bleedBlurRadius": 0.0
+    },
+    "key395": {
+      "timelineName": "inputOuterRefractionAmount",
+      "bitsHex": "00600ebb5e6e2040",
+      "valueHex": "0x1.06e5ebb0e6000p+3",
+      "value": 8.215566487793694
+    },
+    "backdropBounds": [
+      2.842170943040401e-14,
+      2.842170943040401e-14,
+      640.0,
+      640.0
+    ]
+  },
+  "openedDODArithmetic": {
+    "blurRadius": 0.0627145767211914,
+    "doubledBlurRadius": 0.1254291534423828,
+    "bleedBlurRadius": 0.0,
+    "expansionInputRule": "r = max(2 * blurRadius, bleedBlurRadius)",
+    "expansionInput": 0.1254291534423828,
+    "originConstant": {
+      "bitsHex": "66666666666606c0",
+      "value": -2.8
+    },
+    "sizeConstant": {
+      "bitsHex": "6666666666661640",
+      "value": 5.6
+    },
+    "expansionRule": "e = 2.8 * r",
+    "expansion": 0.35120162963867185,
+    "sizeIncrementRule": "deltaSize = 2 * e = 5.6 * r",
+    "sizeIncrement": 0.7024032592773437,
+    "expandedRectangle": [
+      -0.35120162963867185,
+      -0.35120162963867185,
+      640.7024032592774,
+      640.7024032592774
+    ],
+    "shadowUnionRectangle": [
+      -0.35120162963867185,
+      -0.35120162963867185,
+      640.7024032592774,
+      648.3512016296387
+    ],
+    "clampedRectangle": [
+      2.842170943040401e-14,
+      2.842170943040401e-14,
+      640.0,
+      648.0
+    ],
+    "instructionDerived": true,
+    "toleranceFit": false
+  },
+  "remainingBoundary": {
+    "carrierP": 491.93133544921875,
+    "integerOriginL": 490,
+    "finalNestedLayerInputI32": [
+      490,
+      166,
+      360,
+      368
+    ],
+    "finalAggregateF64": [
+      490.0,
+      -115.93133544921875,
+      641.9313354492188,
+      649.9313354492188
+    ],
+    "interpretation": "Glass DOD is decoded. The unresolved producer is the upstream policy that constructs the live nested signed-int rectangle consumed by the final union."
+  },
+  "conclusion": {
+    "composedValidatorRepassed": true,
+    "selectedGlassDODExactDynamicEffectsDecoded": true,
+    "opaqueHelperArgumentsAndReturnsOpened": true,
+    "generalCropAllocationPolicyOpened": false,
+    "unseenGeometryTransferPassed": false,
+    "retina2xTransferPassed": false,
+    "materialAppearanceDirectionTransferPassed": false,
+    "endToEndPixelParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

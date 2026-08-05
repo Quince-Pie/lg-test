@@ -6068,3 +6068,67 @@ unseen geometry and Retina transfer, production-shader changes, and Liquid
 Glass parity remain separate fail-closed gates. The production shader remains
 unchanged at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+Run `31044659120`, from schema-5 commit `ad04e7d`, passes that gate. The native
+target, all 33 image captures, both inherited allocation validators, the
+composed semantic validator, artifact upload, and final enforcement complete
+successfully. Artifact `8946171977` has GitHub digest
+`sha256:b200e1a803396b8e656182030f2cb2e36749f7dd4da29a6aedbcf6cfee03d24f`.
+The instruction trace has SHA-256
+`397a6926bb75bb053b1f5797c9e2de4a93c47440812f47e1a221a51ea94756fe`;
+the inherited frame trace has SHA-256
+`9e44de48f3a582107e2bcdbb860e30d3e54a6bfc635adcacef7c2518274fb6a2`;
+the timeline has SHA-256
+`c9e254e54449f9172dfddd1f11d7c2444c44c691e5d5f8834b09479d8614a798`;
+and the byte-identical local/CI validation has SHA-256
+`7ef96daa02124650fdf752c6eaa960fd82ad35b284de5f33e849c908f9d49f7a`.
+The immutable opened result is
+`Analysis/dynamic_allocation_prepare_layer_dod_semantics_result.json`, with
+SHA-256
+`95cf0116bbf7075aee611bf0a20733f2919aa1b04eb2cdc4df8c683608c7714d`.
+
+The selected invocation contains exactly 267 retained instruction states,
+nine opaque helper returns, four aggregate writers, and no missing state. Its
+canonical state digest is
+`1fc16d9aabcfb677fcef9cbd1cd789c120ed0cd14ef9dcb7ee4286eef20c70c3`.
+The offline decoder revalidates the two input files before interpreting any
+state; its generated report has SHA-256
+`946e111dd9be7ad36762bdfea578ceeca73f78d21a1f4a72bab6d37f0a4d9c4e`.
+
+The first exact semantic decode closes the selected Glass DOD arithmetic.
+Key 356, the timeline's `inputBlurRadius`, returns binary64
+`0x1.00e1000000000p-4` (`0.0627145767211914`). The shadow offset is exactly
+`[0,8]`; keys 430, 429, and 428, the Gaussian expansion helper, and the bleed
+blur helper all return zero on this invocation. Key 395, the timeline's
+`inputOuterRefractionAmount`, returns
+`0x1.06e5ebb0e6000p+3` (`8.215566487793694`). These are live post-call
+register values, not values fitted from the resulting rectangle.
+
+Let `b` be key 356 and let `g` be the returned bleed blur radius. The executed
+instructions compute, bit for bit,
+
+```
+r = max(2*b, g)
+e = 2.8*r
+origin -= e
+size += 2*e
+```
+
+The loaded binary64 constants are exactly `-2.8` and `5.6`. Here
+`r=0.1254291534423828`, `e=0.35120162963867185`, and the size increment is
+`0.7024032592773437`. The aggregate therefore progresses through
+`[-e,-e,640+2e,640+2e]`, the exact `[0,8]` shadow union extends its height to
+`648+e`, and the backdrop-bounds intersection produces
+`[2^-45,2^-45,640,648]`. Every value agrees with the four architectural
+aggregate stores; this is instruction-derived replay, not a tolerance fit.
+
+This result moves the parity boundary upstream. In this run the final union
+loads the live signed-int nested-layer rectangle `[490,166,360,368]` from
+`x28+0xb0`, sign-extends it, converts it to binary64, and unions it with the
+transformed DOD rectangle. What remains unknown is the complete policy that
+constructs that integer rectangle from public geometry and dynamic state.
+After that producer is reproduced exactly, the fail-closed gates still require
+unseen geometry and temporal transfer, material/appearance/direction transfer,
+physical Retina 2x evidence, and end-to-end Walle image equality before any
+production shader change or Liquid Glass parity claim. The shader quality lock
+and SHA-256 above remain unchanged.
