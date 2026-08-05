@@ -37,7 +37,7 @@ jobs:
       - name: Capture Native Apple macOS 26 Landmark Framebuffer
         run: |
           mkdir -p artifacts/landmark_captures
-          ./glasscap --suite static --out-dir artifacts/landmark_captures
+          ./glasscap --out artifacts/landmark_captures --suite static --width 3200 --height 2000
 
       - name: Upload Landmark Artifacts
         uses: actions/upload-artifact@v4
