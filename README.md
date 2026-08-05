@@ -5579,3 +5579,61 @@ What remains unknown is the complete crop-allocation producer that feeds that
 known resampling law, followed by unseen-state transfer. The frame-correlated
 run may open the selected writer suffix, but it cannot by itself authorize a
 Walle shader change or establish Liquid Glass parity.
+
+Run `31022198697`, from frame-writer commit `620b04c`, passes every workflow
+step in 444 seconds. The artifact has GitHub digest
+`sha256:1ec704e13558bb3e859f9edf533c32dd5b78cebfe50d1df161b6c10322b7ee39`;
+the 6,809,606-byte raw trace has SHA-256
+`2429aea6ea9e7afd6b2516de7ab623b9e785b7c71b53070c25483f6665fe4019`;
+and the 178,582,959-byte timeline has SHA-256
+`c07d189b3846f78fd9dd06ac02bb30d288d4b0ddc1a6f5f2279189e37e228e16`.
+Local validation is byte-for-byte identical to CI. The immutable opened
+result is
+`Analysis/dynamic_allocation_prepare_layer_frame_writer_result.json`.
+
+The selected identity is thread `64424509442`, role base `6171889136`,
+aggregate address `6171889792`, frame pointer `6171891088`, and exact
+`prepare_layer` recursion depth four. Seven selected samples start at zero,
+pass through four distinct aggregate states with three changes, and close all
+32 marker bytes exactly. With `P=481.1912841796875` and
+`L=floor(P)-1=480`, the final aggregate is exactly
+`[L, 1024-P-640-8, P+640-L, P+640+8-L]`, or
+`[480,-105.1912841796875,641.1912841796875,649.1912841796875]`. This is a
+fourth exact sample of the already recorded public relationship. It does not
+change the exact resampling law `q = 2/(2-k)` or its provenance: the UV span
+is `q` times allocated backdrop width, and UV origin is the producer crop
+transform plus the copy-base signed integer offset.
+
+The positive sampled gate also exposes why it is not yet a causal writer
+trace. Both sampled `apply_transform` callbacks target temporary rectangles
+at aggregate offsets `+912` and `+752`; the sampled `unapply_transform`
+callback also targets the temporary at `+912`. The two `union_bounds`
+callbacks genuinely use the aggregate as `x0`, but the aggregate changes
+from `[481.1912841796875,-97.1912841796875,640,640]` at callback 141 to
+`[481.1912841796875,-105.1912841796875,640,648]` at callback 142 even though
+callback 142's architectural destination is not the aggregate. No sampled
+callback occurs between them. Therefore frame identity and final closure are
+proved, while at least one causal writer remains outside the nine sampled
+sites.
+
+The prospective successor is frozen in
+`Analysis/dynamic_allocation_prepare_layer_active_frame_watch_preregistration.json`
+and runs separately in
+`prepare-layer-active-frame-watch-introspect.yml`. It reuses the immutable
+sampled harness and adds four aligned 8-byte write watchpoints covering every
+byte of the 32-byte aggregate. They arm only at a source-known `+0xb60` epoch
+whose live ancestry contains exactly four exact `prepare_layer` frames. The
+early identity remains `(thread ID,x19,x29)`; `x28` is not required until the
+later exact-source marker. At recursive return `+0x2a68`, all four watches are
+deleted as soon as that identity leaves the live backtrace, so stale stack
+reuse cannot enter the trace.
+
+The new sealed gate allows no ignored hardware hit. It requires a contiguous
+full-aggregate chain from an all-zero epoch through at least three changed
+transitions and four distinct states to both exact marker copies, plus at
+least one changed stop PC outside the sampled nine-site set. Passing opens the
+complete causal writer-PC sequence, not the instructions' semantics. Until
+those instructions are decoded and prospectively transferred across unseen
+geometry, scale, appearance, material, direction, and physical-Retina cases,
+the complete crop policy, production-shader authority, and Liquid Glass
+parity remain explicitly unclaimed.

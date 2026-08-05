@@ -1,0 +1,365 @@
+#!/usr/bin/env python3
+"""Adversarial tests for the four-lane active-frame writer gate."""
+
+import copy
+import json
+import struct
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+import test_validate_capture_backdrop_writer_trace as writer_fixture
+import test_validate_prepare_layer_frame_correlated_writer_trace as frame_fixture
+import validate_prepare_layer_active_frame_watch_trace as validator
+
+
+PREPARE_START = frame_fixture.PREPARE_START
+MODULE = frame_fixture.MODULE
+ROLE_BASE = frame_fixture.ROLE_BASE
+FRAME_POINTER = frame_fixture.FRAME_POINTER
+THREAD_ID = frame_fixture.THREAD_ID
+
+
+def identity(role_base=ROLE_BASE, frame_pointer=FRAME_POINTER):
+    return {
+        "threadID": THREAD_ID,
+        "roleBase": role_base,
+        "framePointer": frame_pointer,
+    }
+
+
+def prepare_frames(pc):
+    result = []
+    for ordinal in range(validator.TARGET_PREPARE_RECURSION_DEPTH):
+        item_identity = identity(
+            ROLE_BASE + ordinal * 0x2000,
+            FRAME_POINTER + ordinal * 0x2000,
+        )
+        item_pc = pc if ordinal == 0 else PREPARE_START + validator.RETURN_MARKER_OFFSET
+        result.append(
+            {
+                "frameIndex": ordinal,
+                "frame": frame_fixture.prepare_frame(item_pc, frame_index=ordinal),
+                "registers": frame_fixture.prepare_registers(
+                    item_identity["roleBase"],
+                    0x1_E000_0000,
+                    item_identity["framePointer"],
+                    item_pc,
+                ),
+                "identity": item_identity,
+            }
+        )
+    return result
+
+
+def active_event(index, callback, stop_offset, before, after, addresses, lane):
+    stop_pc = PREPARE_START + stop_offset
+    top = frame_fixture.prepare_frame(stop_pc)
+    changed_lanes = [
+        offset
+        for offset in validator.WATCH_LANE_OFFSETS
+        if before[offset : offset + validator.WATCH_LANE_BYTE_COUNT]
+        != after[offset : offset + validator.WATCH_LANE_BYTE_COUNT]
+    ]
+    return {
+        "eventIndex": index,
+        "callbackSequence": callback,
+        "groupIndex": 0,
+        "epochRecordIndex": 0,
+        "watchpointID": 10 + validator.WATCH_LANE_OFFSETS.index(lane),
+        "triggeredLaneOffset": lane,
+        "threadID": THREAD_ID,
+        "stopPC": stop_pc,
+        "watchedAddress": ROLE_BASE + validator.full_base.AGGREGATE_OFFSET + lane,
+        "aggregateAddress": ROLE_BASE + validator.full_base.AGGREGATE_OFFSET,
+        "beforeHex": before.hex(),
+        "afterHex": after.hex(),
+        "valueChanged": before != after,
+        "changedLaneOffsets": changed_lanes,
+        "frame": top,
+        "backtrace": [top],
+        "prepareFrameOrdinal": 0,
+        "prepareFrameCount": validator.TARGET_PREPARE_RECURSION_DEPTH,
+        "prepareFrameIndex": 0,
+        "prepareFrame": top,
+        "prepareFrameRegisters": frame_fixture.prepare_registers(
+            ROLE_BASE, 0x1_E000_0000, FRAME_POINTER, stop_pc
+        ),
+        "frameIdentity": identity(),
+        "roleStateAfter": frame_fixture.memory_snapshot(
+            ROLE_BASE, frame_fixture.role_state(after)
+        ),
+        "codeWindowIndex": index,
+        "privateFieldsAfter": writer_fixture.private_fields(),
+        "operandSnapshot": frame_fixture.top_operands(
+            stop_pc, ROLE_BASE, FRAME_POINTER, addresses
+        ),
+    }
+
+
+def passing_documents():
+    base, _full_hash, _known_windows, _configuration = frame_fixture.passing_trace()
+    base_selected = base["selectedFrame"]
+    addresses = base["objectChain"]["addresses"]
+    source = addresses["source"]
+    zero = bytes(validator.full_base.AGGREGATE_BYTE_COUNT)
+    state_one = struct.pack("<4d", 481.25, -97.25, 640.0, 640.0)
+    state_two = struct.pack("<4d", 481.25, -105.25, 640.0, 648.0)
+    final = bytes.fromhex(base_selected["aggregateAtMarkerHex"])
+    offsets = [0x3974, 0x2504, 0x2604]
+    states = [(zero, state_one), (state_one, state_two), (state_two, final)]
+    lanes = [0, 8, 0]
+    events = [
+        active_event(
+            index,
+            4 + index,
+            offsets[index],
+            before,
+            after,
+            addresses,
+            lanes[index],
+        )
+        for index, (before, after) in enumerate(states)
+    ]
+    windows = [
+        frame_fixture.code_window(
+            event["stopPC"], "01020304", 0x30 + index
+        )
+        for index, event in enumerate(events)
+    ]
+    epoch_pc = PREPARE_START + validator.EPOCH_MARKER_OFFSET
+    marker_pc = PREPARE_START + validator.SELECTION_MARKER_OFFSET
+    epoch_frame = frame_fixture.prepare_frame(epoch_pc)
+    marker_frame = frame_fixture.prepare_frame(marker_pc)
+    group = {
+        "groupIndex": 0,
+        "callbackSequence": 3,
+        "epochRecordIndex": 0,
+        "identity": identity(),
+        "initialAggregateHex": zero.hex(),
+        "watchpoints": [
+            {
+                "id": 10 + index,
+                "deprecatedHardwareIndex": index,
+                "laneOffset": lane,
+                "address": ROLE_BASE + validator.full_base.AGGREGATE_OFFSET + lane,
+                "byteCount": validator.WATCH_LANE_BYTE_COUNT,
+            }
+            for index, lane in enumerate(validator.WATCH_LANE_OFFSETS)
+        ],
+        "retiredCallbackSequence": 8,
+        "retirementReason": "selected-marker-closed",
+        "lastAggregateHex": final.hex(),
+    }
+    document = {
+        "prepareLayerActiveFrameWatchTraceSchemaVersion": (
+            validator.EXPECTED_TRACE_SCHEMA_VERSION
+        ),
+        "classification": validator.EXPECTED_CLASSIFICATION,
+        "status": "finalized",
+        "statusBeforeFinalization": "live-selected-active-frame-watch-closed",
+        "configuration": copy.deepcopy(validator.EXPECTED_CONFIGURATION),
+        "callbackOrder": [
+            {"sequence": 1, "kind": "prepare-layer-entry"},
+            {"sequence": 2, "kind": "depth-four-zero-epoch"},
+            {"sequence": 3, "kind": "active-watch-group-armed"},
+            *[
+                {
+                    "sequence": 4 + index,
+                    "kind": "qualified-active-frame-watchpoint-hit",
+                }
+                for index in range(3)
+            ],
+            {"sequence": 7, "kind": "live-selected-active-frame-watch-closed"},
+            {"sequence": 8, "kind": "active-watch-group-retired"},
+        ],
+        "prepareLayerEntryBreakpointID": 1,
+        "prepareLayer": {
+            "callbackSequence": 1,
+            "callbackPC": PREPARE_START,
+            "callbackLocationAddress": PREPARE_START,
+            "function": validator.merge_base.PREPARE_LAYER_FUNCTION,
+            "symbolStart": PREPARE_START,
+            "symbolEnd": (
+                PREPARE_START + validator.full_base.PREPARE_LAYER_SYMBOL_BYTE_COUNT
+            ),
+            "symbolByteCount": validator.full_base.PREPARE_LAYER_SYMBOL_BYTE_COUNT,
+            "fullCodeSHA256": validator.PREPARE_LAYER_FULL_CODE_SHA256,
+            "module": MODULE,
+            "epochMarker": {"address": epoch_pc, "breakpointID": 2},
+            "returnMarker": {
+                "address": PREPARE_START + validator.RETURN_MARKER_OFFSET,
+                "breakpointID": 3,
+            },
+            "selectionMarker": {"address": marker_pc, "breakpointID": 4},
+        },
+        "epochRecords": [
+            {
+                "recordIndex": 0,
+                "callbackSequence": 2,
+                "markerHitIndex": 1,
+                "threadID": THREAD_ID,
+                "pc": epoch_pc,
+                "frame": epoch_frame,
+                "backtrace": [epoch_frame],
+                "prepareRecursionDepth": validator.TARGET_PREPARE_RECURSION_DEPTH,
+                "prepareFrames": prepare_frames(epoch_pc),
+                "identity": identity(),
+                "selectedSourceKnown": source,
+                "roleStateAtEpoch": frame_fixture.memory_snapshot(
+                    ROLE_BASE, frame_fixture.role_state(zero)
+                ),
+                "aggregateAtEpochHex": zero.hex(),
+                "watchpointGroupIndex": 0,
+            }
+        ],
+        "watchpointGroups": [group],
+        "retirementRecords": [
+            {
+                "recordIndex": 0,
+                "callbackSequence": 8,
+                "groupIndex": 0,
+                "epochRecordIndex": 0,
+                "reason": "selected-marker-closed",
+                "identity": identity(),
+                "lastAggregateHex": final.hex(),
+            }
+        ],
+        "qualifiedWatchpointEvents": events,
+        "ignoredWatchpointDiagnostics": [],
+        "codeWindows": windows,
+        "selectedFrame": {
+            "callbackSequence": 7,
+            "markerHitIndex": 1,
+            "threadID": THREAD_ID,
+            "pc": marker_pc,
+            "frame": marker_frame,
+            "backtrace": [marker_frame],
+            "registers": frame_fixture.prepare_registers(
+                ROLE_BASE, source, FRAME_POINTER, marker_pc
+            ),
+            "prepareRecursionDepth": validator.TARGET_PREPARE_RECURSION_DEPTH,
+            "frameIdentity": identity(),
+            "selectedSource": source,
+            "selectedEpochRecordIndex": 0,
+            "selectedWatchpointGroupIndex": 0,
+            "selectedWriterEventCount": 3,
+            "roleStateAtMarker": frame_fixture.memory_snapshot(
+                ROLE_BASE, frame_fixture.role_state(final)
+            ),
+            "aggregateAtMarkerHex": final.hex(),
+            "objectChain": copy.deepcopy(base["objectChain"]),
+        },
+        "selectedWriterEventIndices": [0, 1, 2],
+        "failures": [],
+        "finalFailureCount": 0,
+        "finalCallbackSequence": 8,
+        "epochMarkerHitCount": 1,
+        "rejectedEpochDepthCount": 0,
+        "sourceUnknownEpochCount": 0,
+        "discardedEpochRecordCount": 0,
+        "finalEpochRecordCount": 1,
+        "returnMarkerHitCount": 1,
+        "selectionMarkerHitCount": 1,
+        "rejectedSelectionMarkerHitCount": 0,
+        "rawWatchpointHitCount": 3,
+        "qualifiedWatchpointHitCount": 3,
+        "ignoredWatchpointHitCount": 0,
+        "unretainedIgnoredWatchpointHitCount": 0,
+        "finalQualifiedWatchpointEventCount": 3,
+        "finalChangedQualifiedWatchpointEventCount": 3,
+        "finalSelectedWriterEventCount": 3,
+        "finalSelectedChangedTransitionCount": 3,
+        "finalSelectedDistinctAggregateCount": 4,
+    }
+    return document, base
+
+
+class ActiveFrameWatchValidatorTests(unittest.TestCase):
+    def validate_documents(self, document, base):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            trace_path = root / "active-watch.json"
+            base_path = root / "frame-writer.json"
+            trace_path.write_text(
+                json.dumps(document, sort_keys=True, allow_nan=False) + "\n",
+                encoding="utf-8",
+            )
+            base_path.write_text(
+                json.dumps(base, sort_keys=True, allow_nan=False) + "\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(
+                validator.frame_validator,
+                "validate",
+                return_value={"conclusion": "success", "prospectiveGatePassed": True},
+            ):
+                return validator.validate(trace_path, base_path)
+
+    def test_passing_trace_opens_complete_PC_chain_only(self):
+        document, base = passing_documents()
+        result = self.validate_documents(document, base)
+        self.assertEqual(result["conclusion"], "success")
+        self.assertEqual(result["aggregate"]["selectedChangedTransitionCount"], 3)
+        self.assertEqual(result["aggregate"]["selectedDistinctAggregateCount"], 4)
+        self.assertEqual(
+            result["aggregate"]["newlyOpenedChangedWriterOffsets"],
+            [0x2504, 0x2604],
+        )
+        sealed = result["sealedConclusion"]
+        self.assertTrue(sealed["completeCausalWriterPCSequenceCaptured"])
+        self.assertFalse(sealed["writerInstructionSemanticsOpened"])
+        self.assertFalse(sealed["productionShaderAuthorized"])
+
+    def test_missing_hardware_lane_fails_closed(self):
+        document, base = passing_documents()
+        document["watchpointGroups"][0]["watchpoints"].pop()
+        with self.assertRaisesRegex(ValueError, "watchpoint group 0 differs"):
+            self.validate_documents(document, base)
+
+    def test_discontinuous_full_aggregate_chain_fails_closed(self):
+        document, base = passing_documents()
+        document["qualifiedWatchpointEvents"][1]["beforeHex"] = bytes(32).hex()
+        with self.assertRaisesRegex(ValueError, "event 1 chain differs"):
+            self.validate_documents(document, base)
+
+    def test_marker_must_match_last_hardware_state_bit_for_bit(self):
+        document, base = passing_documents()
+        altered = struct.pack("<4d", 491.0, -115.0, 642.0, 650.0)
+        selected = document["selectedFrame"]
+        selected["aggregateAtMarkerHex"] = altered.hex()
+        selected["roleStateAtMarker"] = frame_fixture.memory_snapshot(
+            ROLE_BASE, frame_fixture.role_state(altered)
+        )
+        with self.assertRaisesRegex(ValueError, "marker closure differs"):
+            self.validate_documents(document, base)
+
+    def test_any_ignored_watchpoint_hit_fails_closed(self):
+        document, base = passing_documents()
+        document["ignoredWatchpointHitCount"] = 1
+        document["rawWatchpointHitCount"] = 4
+        with self.assertRaisesRegex(ValueError, "bounded accounting differs"):
+            self.validate_documents(document, base)
+
+    def test_no_new_changed_writer_PC_fails_closed(self):
+        document, base = passing_documents()
+        with (
+            mock.patch.object(
+                validator,
+                "KNOWN_SAMPLED_WRITER_AFTER_OFFSETS",
+                (*validator.KNOWN_SAMPLED_WRITER_AFTER_OFFSETS, 0x2504, 0x2604),
+            ),
+            self.assertRaisesRegex(ValueError, "selected causal chain differs"),
+        ):
+            self.validate_documents(document, base)
+
+    def test_wrong_selected_frame_pointer_fails_closed(self):
+        document, base = passing_documents()
+        document["selectedFrame"]["frameIdentity"]["framePointer"] += 8
+        with self.assertRaisesRegex(ValueError, "selected identity differs"):
+            self.validate_documents(document, base)
+
+
+if __name__ == "__main__":
+    unittest.main()

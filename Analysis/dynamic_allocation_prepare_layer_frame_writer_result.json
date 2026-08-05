@@ -1,0 +1,193 @@
+{
+  "prepareLayerFrameWriterResultSchemaVersion": 1,
+  "openedAtUtc": "2026-08-05T16:05:30Z",
+  "classification": "opened successful Apple prepare_layer same-frame sampled-writer run; exact frame identity, zero epoch, four aggregate states, and final 32-byte marker closure passed prospectively, while operand addresses prove the sampled transform callbacks are temporary-rectangle operations and reveal an uninstrumented mutation between sampled sites; not a complete causal writer list, complete crop-allocation policy, unseen-transfer result, shader authorization, or product-parity claim",
+  "run": {
+    "runID": 31022198697,
+    "jobID": 92361499387,
+    "headSHA": "620b04cbfb185722bfa36dd19958964b9f5a61e7",
+    "workflowConclusion": "success",
+    "durationSeconds": 444,
+    "contractStepOutcome": "success",
+    "buildStepOutcome": "success",
+    "captureStepOutcome": "success",
+    "pathIsolationValidatorOutcome": "success",
+    "inputClampValidatorOutcome": "success",
+    "frameWriterValidatorOutcome": "success",
+    "artifactUploadOutcome": "success",
+    "enforcementOutcome": "success",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31022198697"
+  },
+  "inputArtifacts": {
+    "artifactID": 8937312686,
+    "artifactArchiveByteCount": 100427497,
+    "artifactArchiveDigest": "sha256:1ec704e13558bb3e859f9edf533c32dd5b78cebfe50d1df161b6c10322b7ee39",
+    "transitionFrameImageCount": 33,
+    "transitionTimelineByteCount": 178582959,
+    "transitionTimelineSHA256": "c07d189b3846f78fd9dd06ac02bb30d288d4b0ddc1a6f5f2279189e37e228e16",
+    "rawFrameWriterTraceByteCount": 6809606,
+    "rawFrameWriterTraceSHA256": "2429aea6ea9e7afd6b2516de7ab623b9e785b7c71b53070c25483f6665fe4019",
+    "frameWriterValidationByteCount": 1452,
+    "frameWriterValidationSHA256": "4852d4d58b163438fbf542d6237721bd0612338ec8f7d735f1b00e712591e780",
+    "localValidationByteIdenticalToCI": true,
+    "pathIsolationResultSHA256": "a65a027df8b74d20ef554a1ba2e3f2f571dc59b1155e519073bcadfd987f12ea",
+    "inputClampResultSHA256": "b5b434436edadcdf477498671b877a5ddae2e14d4e67f15b2ca893c560889928",
+    "lldbLogSHA256": "42bba3ba3ef0aabc9cc5317e2e6952a9ac8bba9fa528518bacb8fd2f83b7473c",
+    "runtimeStderrSHA256": "1a5e005ccecace96e3a01cbc9080e5ee261b095f3726f54d425c6073b826c136",
+    "buildLogSHA256": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af"
+  },
+  "prospectiveGate": {
+    "conclusion": "success",
+    "prepareLayerFullCodeByteCount": 40128,
+    "prepareLayerFullCodeSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+    "writerCandidateEventCount": 156,
+    "selectedWriterEventCount": 7,
+    "selectedDistinctAggregateCount": 4,
+    "selectedChangingTransitionCount": 3,
+    "selectedWriterSites": [
+      "rangeClampStoreAfter",
+      "rectApplyTransformAfter",
+      "rectUnapplyTransformAfter",
+      "unionBoundsStoreAfter",
+      "zeroInitializationAfter"
+    ],
+    "sameInvocationFrameCorrelationProved": true,
+    "selectedAggregateChainClosedAtMarker": true,
+    "longLivedStackWatchpointUsed": false,
+    "writerInstructionSemanticsOpened": false,
+    "productionShaderAuthorized": false
+  },
+  "selectedIdentity": {
+    "threadID": 64424509442,
+    "roleBase": 6171889136,
+    "aggregateAddress": 6171889792,
+    "framePointer": 6171891088,
+    "prepareLayerRecursionDepth": 4,
+    "selectedSource": 44585684928,
+    "selectedSourceRectangle": [
+      500,
+      -128,
+      644,
+      652
+    ],
+    "selectedLayerStateRectangle": [
+      500,
+      0,
+      524,
+      524
+    ],
+    "selectedOwnerRectangle": [
+      500.0,
+      0.0,
+      524.0,
+      524.0
+    ],
+    "latestZeroEpochEventIndex": 133,
+    "selectedMarkerHitIndex": 3,
+    "selectedMarkerCallbackSequence": 160
+  },
+  "sampledAggregateChain": [
+    {
+      "eventIndex": 133,
+      "callbackSequence": 137,
+      "site": "zeroInitializationAfter",
+      "aggregateF64": [0.0, 0.0, 0.0, 0.0],
+      "changedFromPreviousSample": null
+    },
+    {
+      "eventIndex": 134,
+      "callbackSequence": 138,
+      "site": "rectApplyTransformAfter",
+      "aggregateF64": [0.0, 0.0, 0.0, 0.0],
+      "changedFromPreviousSample": false
+    },
+    {
+      "eventIndex": 135,
+      "callbackSequence": 139,
+      "site": "unionBoundsStoreAfter",
+      "aggregateF64": [481.1912841796875, -97.1912841796875, 640.0, 640.0],
+      "changedFromPreviousSample": true
+    },
+    {
+      "eventIndex": 136,
+      "callbackSequence": 140,
+      "site": "rectApplyTransformAfter",
+      "aggregateF64": [481.1912841796875, -97.1912841796875, 640.0, 640.0],
+      "changedFromPreviousSample": false
+    },
+    {
+      "eventIndex": 137,
+      "callbackSequence": 141,
+      "site": "unionBoundsStoreAfter",
+      "aggregateF64": [481.1912841796875, -97.1912841796875, 640.0, 640.0],
+      "changedFromPreviousSample": false
+    },
+    {
+      "eventIndex": 138,
+      "callbackSequence": 142,
+      "site": "rectUnapplyTransformAfter",
+      "aggregateF64": [481.1912841796875, -105.1912841796875, 640.0, 648.0],
+      "changedFromPreviousSample": true
+    },
+    {
+      "eventIndex": 155,
+      "callbackSequence": 159,
+      "site": "rangeClampStoreAfter",
+      "aggregateF64": [480.0, -105.1912841796875, 641.1912841796875, 649.1912841796875],
+      "changedFromPreviousSample": true
+    }
+  ],
+  "causalAddressAudit": {
+    "aggregateAddress": 6171889792,
+    "firstApplyDestination": 6171890704,
+    "firstApplyDestinationDeltaFromAggregate": 912,
+    "firstUnionDestination": 6171889792,
+    "firstUnionInput": 6171890704,
+    "secondApplyDestination": 6171890544,
+    "secondApplyDestinationDeltaFromAggregate": 752,
+    "secondUnionDestination": 6171889792,
+    "secondUnionInput": 6171890544,
+    "sampledUnapplyDestination": 6171890704,
+    "sampledUnapplyDestinationDeltaFromAggregate": 912,
+    "unionCallbacksCausallyTargetAggregate": true,
+    "sampledTransformCallbacksCausallyTargetAggregate": false,
+    "hiddenMutationProved": true,
+    "basis": "The aggregate changes between callbacks 141 and 142, yet callback 142 is inside Rect::unapply_transform with top-frame x0 equal to aggregate+912. No instrumented callback occurs between them, and the sampled helper cannot write aggregate+0 through an x0 destination at aggregate+912. The sampled-site list is therefore not a complete causal writer list even though its final snapshot closes exactly at the marker."
+  },
+  "fourthExactPublicRuleSample": {
+    "publicCarrierP": 481.1912841796875,
+    "integerOriginL": 480,
+    "integerOriginRule": "L = floor(P) - 1",
+    "canvasExtent": 1024,
+    "publicSDFExtent": 640,
+    "shadowOffset": 8,
+    "expectedAggregateRule": "[L, 1024 - P - 640 - 8, P + 640 - L, P + 640 + 8 - L]",
+    "expectedAggregateF64": [480.0, -105.1912841796875, 641.1912841796875, 649.1912841796875],
+    "observedAggregateF64": [480.0, -105.1912841796875, 641.1912841796875, 649.1912841796875],
+    "bitExact": true,
+    "alreadyProvenResamplingLawUnchanged": "q = 2 / (2 - k)"
+  },
+  "nextEvidenceBoundary": {
+    "objective": "Catch every architectural write to all 32 bytes of x19+656 while the proven recursion-depth-4 prepare_layer frame is live, then select the exact epoch whose thread, role base, and frame pointer equal the later exact-source marker.",
+    "requiredChanges": [
+      "leave this opened result, the successful sampled harness, its validator, preregistration, and raw artifact immutable",
+      "arm four aligned 8-byte write watchpoints at the latest source-known +0xb60 epoch only when the live backtrace contains exactly four exact prepare_layer frames",
+      "retain thread ID, x19 role base, and x29 frame pointer as the early identity; do not require the future x28 source value",
+      "retire the watchpoints as soon as the watched frame disappears from the exact live backtrace, preventing stale stack reuse",
+      "capture every qualified stop with the full 32-byte before/after aggregate, changed lanes, exact top and prepare frames, complete registers, stack, pointer probes, role state, and PC-containing code window",
+      "at the exact-source +0x3ef0 marker, select the latest matching epoch and require a contiguous hardware-observed chain from its initial aggregate to all 32 marker bytes",
+      "require the hardware trace to expose at least one changed writer PC outside the nine sampled after-sites"
+    ],
+    "productionShaderAuthorized": false
+  },
+  "notClaimed": [
+    "that the seven sampled callbacks are seven causal writes to the aggregate",
+    "that the sampled transform callbacks mutate x19+656",
+    "that every aggregate mutation has been located",
+    "that the complete crop-allocation producer is recovered",
+    "that unseen geometry or raster transfer has passed",
+    "that Walle may change its production shader",
+    "that Apple Liquid Glass parity has been achieved",
+    "that a fixed number of later CI runs will be sufficient"
+  ]
+}
