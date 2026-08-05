@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "classification": "opened-negative-result-first-source-known-epoch-is-an-earlier-reused-frame",
+  "run": {
+    "runID": 31039587304,
+    "jobID": 92420331393,
+    "headSHA": "382cd7af7f54c56b20aa33d1484dc0a177646293",
+    "workflowConclusion": "failure",
+    "durationSeconds": 471,
+    "captureTargetExitedNormally": true,
+    "timelineSampleCount": 33,
+    "timelineFailedSampleCount": 0,
+    "pathIsolationGatePassed": true,
+    "inputClampGatePassed": true
+  },
+  "artifact": {
+    "artifactID": 8944231791,
+    "name": "liquid-glass-prepare-layer-instruction-trace-31039587304",
+    "sizeBytes": 100295288,
+    "digest": "sha256:c9b502e04844fb54b878124ae45dcbe1be987957d7291bfd77bca7c762aa4117"
+  },
+  "fileSHA256": {
+    "instructionTrace": "92b7b048fdecaa4f6166d759c4101d41ad7c516e664ba3e3b7c3571cc65010fd",
+    "inheritedFrameTrace": "c89e3df26643b5bf79c6ee08d09d350a66552d324496667ac4439a31a5fef182",
+    "timeline": "15ec2de101851d78d1175cef31a7cf4ff96d947abd4c06bbc032334fd8d55022",
+    "lldbLog": "ff9ea51a9f01021733faf1b7341aacf97827c5d2304fdfef8dde7a0889352379",
+    "pathIsolation": "71a68716017495dcb7809365bbd57406baf36b25888583404895de8fdf88822d",
+    "inputClamp": "ec0633cecde3462340652525dfdf650946644d8bfb68379b00be4466ed32a06d",
+    "contracts": "080e24cc48c9028481c1ee766c81926a688c231eec2d17a62832f2cbbb7a26a6",
+    "build": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af",
+    "runtimeStderr": "13677d2c496637da5260ed9709cd15ce5145ac8c18af64a0b8046ab1803ea366"
+  },
+  "sourceSelection": {
+    "selectedLateCandidateIndex": 1,
+    "selectedSource": 39670087680,
+    "pointerChainExact": true,
+    "sourceSelectedRectI32": [499, -127, 644, 652],
+    "layerStateSelectedRectI32": [499, 0, 525, 525],
+    "ownerSelectedRectF64": [499.0, 0.0, 525.0, 525.0],
+    "sourceEqualsLayerStateRectangle": false,
+    "ownerEqualsLayerStateRectangle": true
+  },
+  "tracedEpoch": {
+    "inheritedWriterEventIndex": 55,
+    "sourceKnownDepthFourOrdinal": 1,
+    "threadID": 64424509442,
+    "roleBase": 6171889024,
+    "framePointer": 6171890976,
+    "aggregateAtEpochHex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "sourceLinkCells": [
+      {
+        "baseRegister": "x10",
+        "baseValue": 4624352328,
+        "signedOffset": 128,
+        "address": 4624352456,
+        "littleEndianHex": "0000000000000000",
+        "observedValue": 0,
+        "selectedSourceMatches": false
+      },
+      {
+        "baseRegister": "x20",
+        "baseValue": 39681772352,
+        "signedOffset": -24,
+        "address": 39681772328,
+        "littleEndianHex": "8026383d09000000",
+        "observedValue": 39681795712,
+        "selectedSourceMatches": false
+      }
+    ],
+    "dualSourceLinkPassed": false,
+    "instructionStepCount": 5669,
+    "opaqueCalleeBoundaryCount": 75,
+    "changedOpaqueCalleeBoundaryCount": 0,
+    "manualSelectionMarkerCount": 0,
+    "frameReturnedBeforeExactSourceMarker": true,
+    "captureFailure": "selected prepare frame returned before marker"
+  },
+  "openedInstruction": {
+    "transitionIndex": 0,
+    "stepIndex": 4756,
+    "scope": "unionBounds",
+    "scopeOffset": 128,
+    "relativeToPrepareLayer": -2592,
+    "rawLittleEndianHex": "800600ad",
+    "mnemonic": "stp",
+    "operands": "q0, q1, [x20]",
+    "aggregateBeforeF64": [0.0, 0.0, 0.0, 0.0],
+    "aggregateAfterF64": [174.0, 174.0, 676.0, 676.0],
+    "allFourLanesChanged": true,
+    "selectedSourceDependencyProved": false
+  },
+  "frameLifetimeCorrection": {
+    "precedingRunID": 31038371480,
+    "precedingSourceKnownDepthFourEventIndices": [55, 59, 61],
+    "observedRoleBaseAtAllThreeEvents": 6171889024,
+    "observedFramePointerAtAllThreeEvents": 6171890976,
+    "priorSameIdentityInterpretationValid": false,
+    "correctInterpretation": "Successive prepare_layer invocations reuse the same stack addresses. Equal thread, x19 role base, and x29 frame-pointer values do not prove one uninterrupted frame lifetime after an earlier invocation returns.",
+    "proof": "Prospective stepping from the first event executes its epilogue and loses the selected unwind frame before the later exact-source marker, while the target subsequently reaches that marker and exits normally."
+  },
+  "replicatedRetrospectiveSelector": {
+    "rule": "Among source-known exact-depth-four zero epochs, select the first epoch for which the exact uint64 cells at x10+128 and x20-24 both equal the independently selected source address.",
+    "selectionUsesFutureMarker": false,
+    "selectedSourceKnownBeforeEpoch": true,
+    "runs": [
+      {
+        "runID": 31022198697,
+        "inheritedFrameTraceSHA256": "2429aea6ea9e7afd6b2516de7ab623b9e785b7c71b53070c25483f6665fe4019",
+        "selectedSource": 44585684928,
+        "sourceKnownDepthFourZeroEventIndices": [56, 57, 58, 75, 77, 78, 101, 112, 113, 114, 131, 133, 134],
+        "dualSourceLinkEventIndices": [133],
+        "selectedEpochEventIndex": 133
+      },
+      {
+        "runID": 31026802793,
+        "inheritedFrameTraceSHA256": "c282258da43facf849c7b7abdb82e803ecb9c73cb0489cdf9e388c6008572de1",
+        "selectedSource": 30789976256,
+        "sourceKnownDepthFourZeroEventIndices": [56, 57, 58, 75, 77, 78],
+        "dualSourceLinkEventIndices": [77],
+        "selectedEpochEventIndex": 77
+      },
+      {
+        "runID": 31029790210,
+        "inheritedFrameTraceSHA256": "8ef6e4453d781541f0d43502537e00371614b3083a2cf24dc8d484df074d3b3a",
+        "selectedSource": 41851338752,
+        "sourceKnownDepthFourZeroEventIndices": [56, 57, 58, 73, 75, 76],
+        "dualSourceLinkEventIndices": [75],
+        "selectedEpochEventIndex": 75
+      },
+      {
+        "runID": 31034880031,
+        "inheritedFrameTraceSHA256": "2babbc5a3d58e76762c2b7dc5be75f727430d3d15466617e1040e3d7c1c1d6f8",
+        "selectedSource": 32636161408,
+        "sourceKnownDepthFourZeroEventIndices": [55, 59, 61, 65, 69, 73, 75],
+        "dualSourceLinkEventIndices": [75],
+        "selectedEpochEventIndex": 75
+      },
+      {
+        "runID": 31038371480,
+        "inheritedFrameTraceSHA256": "892e155d67ccf8c992ec05e1920ae607b752de6d0dbd1af7c81215dc1dd2b8b0",
+        "selectedSource": 43406802944,
+        "sourceKnownDepthFourZeroEventIndices": [55, 59, 61],
+        "dualSourceLinkEventIndices": [61],
+        "selectedEpochEventIndex": 61
+      }
+    ],
+    "replicatedRunCount": 5,
+    "uniqueExactSelectionInEveryRun": true,
+    "x20Minus24AloneIsSufficient": false,
+    "bothCellsRequired": true
+  },
+  "successorSelection": {
+    "rule": "After independent source selection, retain every source-known exact-depth-four zero epoch and stop only at the first one whose x10+128 and x20-24 uint64 cells both equal that exact source.",
+    "sameRunAdaptiveFallbackUsed": false,
+    "observerDependentOrdinalUsed": false,
+    "laterMarkerUsedToChooseEpoch": false,
+    "allRejectedEpochsRetained": true,
+    "exactCellBytesAndAddressesRetained": true
+  },
+  "conclusion": {
+    "firstSourceKnownEpochIsSelectedInvocation": false,
+    "dualSourceLinkIsReplicatedProspectiveCandidate": true,
+    "selectedArchitecturalWriterChainCaptured": false,
+    "completeCropAllocationPolicyOpened": false,
+    "unseenGeometryTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

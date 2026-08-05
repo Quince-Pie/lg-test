@@ -5889,3 +5889,61 @@ breakpoints and watchpoints disabled, it single-steps the same
 rejection, and only the first marker whose `x28` equals the independently
 selected source closes the trace. This preserves a predetermined selection
 rule while covering both the observed three-epoch and seven-epoch paths.
+
+Run `31039587304`, from schema-2 commit `382cd7a`, falsifies that remaining
+frame-lifetime assumption. The capture really does start software stepping:
+it executes 5,669 architectural steps and crosses 75 opaque callees with zero
+opaque aggregate changes. At step 4,756 it opens an exact transition in
+`LayerShapes::union_bounds` at scope offset `128` (relative `prepare_layer`
+offset `-2592`): raw `800600ad`, decoded as `stp q0, q1, [x20]`, changes the
+aggregate bit-for-bit from zero to `[174,174,676,676]`. That transition belongs
+to an earlier layer, not the selected glass source. The stopped
+`prepare_layer` invocation then executes its epilogue and disappears from the
+live unwind before any exact-source marker, so the trace fails closed with
+`selected prepare frame returned before marker`. The process subsequently
+reaches a selection marker, captures all 33 images, and exits normally.
+
+Artifact `8944231791` has GitHub digest
+`sha256:c9b502e04844fb54b878124ae45dcbe1be987957d7291bfd77bca7c762aa4117`.
+The instruction trace SHA-256 is
+`92b7b048fdecaa4f6166d759c4101d41ad7c516e664ba3e3b7c3571cc65010fd`;
+the inherited frame trace SHA-256 is
+`c89e3df26643b5bf79c6ee08d09d350a66552d324496667ac4439a31a5fef182`;
+and the immutable correction is
+`Analysis/dynamic_allocation_prepare_layer_instruction_trace_frame_reuse_result.json`.
+
+The failure explains why schema 2 could see the same numerical thread, `x19`,
+and `x29` values at several epochs: QuartzCore reuses the same stack addresses
+for successive `prepare_layer` invocations. Equal address triples are valid
+while one frame is live, but they do not prove that two debugger stops belong
+to one uninterrupted frame lifetime after an intervening return. The earlier
+README/result wording that treated those repeated address values as one live
+identity is superseded by this direct epilogue observation.
+
+The already retained operand snapshots expose a prospective replacement. At
+the zero epoch of the eventual selected invocation, the exact uint64 cell at
+`x10+128` and the exact uint64 cell at `x20-24` both equal the independently
+selected source address. The selector does not consult the future `+0x3ef0`
+marker. Retrospective application to five independent source-selected runs
+(`31022198697`, `31026802793`, `31029790210`, `31034880031`, and
+`31038371480`) uniquely selects the frame trace's eventual selected epoch in
+all five. Requiring only `x20-24` is insufficient because a later nested epoch
+can retain that link after `x10+128` has changed; both cells are mandatory.
+The first schema-2 epoch in run `31039587304` has `*(x10+128)=0` and
+`*(x20-24)=39681795712`, while its independently selected source is
+`39670087680`, so it correctly fails the new rule before any stepping.
+
+Schema 3 freezes that dual-source-link test before dispatch. After independent
+`capture_backdrop` source selection, it retains every source-known exact-depth-
+four zero epoch, including both exact eight-byte cells and their addresses. It
+stops only at the first epoch where both little-endian uint64 values equal the
+selected source. Earlier rejects remain in the trace; no ordinal, stack-address
+continuity guess, replay, or same-run adaptive fallback is allowed. Only then
+are all breakpoints disabled and software stepping begun. The bitwise state
+gate remains unchanged: it still requires the full ordered four-state transfer
+and exact marker closure. In particular, the public arithmetic already opened
+by the real captures remains `q = 2 / (2 - k)`, glass UV span equals `q` times
+the allocated backdrop width, and UV origin equals the producer-pass crop
+transform plus the copy-base signed integer offset. The discrete allocation
+policy, unseen transfer, production shader changes, and Liquid Glass parity
+remain sealed until their later gates pass.

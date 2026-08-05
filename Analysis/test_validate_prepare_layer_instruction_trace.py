@@ -2,6 +2,7 @@
 """Adversarial tests for the software-instruction trace gate."""
 
 import copy
+import hashlib
 import struct
 import unittest
 from unittest import mock
@@ -96,9 +97,7 @@ def scopes() -> dict[str, dict[str, object]]:
     }
 
 
-def manual_marker(
-    index: int, hit: int, x28: int, result: str
-) -> dict[str, object]:
+def manual_marker(index: int, hit: int, x28: int, result: str) -> dict[str, object]:
     value: dict[str, object] = {
         "manualSelectionMarkerIndex": index,
         "markerHitIndex": hit,
@@ -119,7 +118,70 @@ def manual_marker(
     return value
 
 
+def source_link_cells(
+    registers: dict[str, int], source: int, *, second_value: int | None = None
+) -> list[dict[str, object]]:
+    result = []
+    for index, spec in enumerate(validator.SOURCE_LINK_CELL_SPECS):
+        base = registers[spec["baseRegister"]]
+        address = base + spec["signedOffset"]
+        observed = source if index == 0 or second_value is None else second_value
+        payload = observed.to_bytes(8, "little")
+        result.append(
+            {
+                **spec,
+                "baseValue": base,
+                "address": address,
+                "memory": {
+                    "address": address,
+                    "byteCount": 8,
+                    "hex": payload.hex(),
+                    "sha256": hashlib.sha256(payload).hexdigest(),
+                },
+                "observedValue": observed,
+                "selectedSourceMatches": observed == source,
+            }
+        )
+    return result
+
+
 class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
+    def test_dual_source_link_requires_both_exact_cells(self):
+        source = 0xA_BEEF_0000
+        registers = {
+            "x10": 0x1_1000_0000,
+            "x20": 0xA_2000_0000,
+        }
+        self.assertTrue(
+            validator._source_link_cells(
+                source_link_cells(registers, source),
+                "epoch",
+                registers,
+                source,
+            )
+        )
+        self.assertFalse(
+            validator._source_link_cells(
+                source_link_cells(registers, source, second_value=0),
+                "epoch",
+                registers,
+                source,
+            )
+        )
+
+    def test_source_link_rejects_missing_or_forged_cell_evidence(self):
+        source = 0xA_BEEF_0000
+        registers = {
+            "x10": 0x1_1000_0000,
+            "x20": 0xA_2000_0000,
+        }
+        values = source_link_cells(registers, source)
+        with self.assertRaisesRegex(ValueError, "inventory differs"):
+            validator._source_link_cells(values[:1], "epoch", registers, source)
+        values[1]["observedValue"] = 0
+        with self.assertRaisesRegex(ValueError, "cell 1 differs"):
+            validator._source_link_cells(values, "epoch", registers, source)
+
     def test_known_bitwise_state_sequence_passes(self):
         result = validator._known_state_sequence(known_states())
         self.assertEqual(result["carrierP"], 481.25)
@@ -151,8 +213,7 @@ class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
         states = known_states()
         document = {
             "instructionSteps": [
-                step(index, states[index], states[index + 1])
-                for index in range(3)
+                step(index, states[index], states[index + 1]) for index in range(3)
             ],
             "aggregateTransitions": [
                 transition(index, states[index], states[index + 1])
@@ -248,9 +309,7 @@ class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
             "opaqueCalleeBoundaries": [],
         }
         document["instructionSteps"][0]["instruction"]["potentialWriter"] = False
-        document["aggregateTransitions"][0]["instruction"][
-            "potentialWriter"
-        ] = False
+        document["aggregateTransitions"][0]["instruction"]["potentialWriter"] = False
         with self.assertRaisesRegex(ValueError, "aggregate transition 0 differs"):
             validator._steps_and_transitions(
                 document,
@@ -300,9 +359,7 @@ class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
 
     def test_manual_trace_cannot_reject_the_exact_source_identity(self):
         document = {
-            "manualSelectionMarkers": [
-                manual_marker(0, 2, 0xA_BEEF_0000, "rejected")
-            ]
+            "manualSelectionMarkers": [manual_marker(0, 2, 0xA_BEEF_0000, "rejected")]
         }
         with self.assertRaisesRegex(ValueError, "rejection differs"):
             validator._manual_selection_markers(
@@ -314,9 +371,7 @@ class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
             )
 
     def test_configuration_never_authorizes_product_changes(self):
-        self.assertIn(
-            "product-parity-remain-sealed", validator.EXPECTED_CLASSIFICATION
-        )
+        self.assertIn("product-parity-remain-sealed", validator.EXPECTED_CLASSIFICATION)
         self.assertIn(
             "no aggregate change",
             validator.EXPECTED_CONFIGURATION["opaqueBoundaryRule"],

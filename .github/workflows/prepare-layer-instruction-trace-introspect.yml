@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: prepare-layer-instruction-trace-v2-${{ github.ref }}
+  group: prepare-layer-instruction-trace-v3-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -95,7 +95,7 @@ jobs:
             -o glass-transition-introspect 2>&1 |
             tee -a transition-introspection/build.log
 
-      - name: Single-step from the first source-known aggregate epoch
+      - name: Single-step from the dual-source-linked aggregate epoch
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
@@ -215,6 +215,7 @@ jobs:
               or sealed.get("hardwareWatchpointsUsed") is not False
               or sealed.get("allSoftwareBreakpointsDisabledDuringStepping") is not True
               or sealed.get("prospectivelySelectedEpochReached") is not True
+              or sealed.get("prospectiveDualSourceLinkSelectorPassed") is not True
               or sealed.get("continuousInstructionStateChainCaptured") is not True
               or sealed.get("zeroOpaqueAggregateMutations") is not True
               or sealed.get("knownAggregateStateTransferPassed") is not True

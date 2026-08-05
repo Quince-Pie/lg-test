@@ -18,16 +18,17 @@ import validate_prepare_layer_frame_correlated_writer_trace as frame_validator
 full_base = frame_validator.full_base
 merge_base = frame_validator.merge_base
 
-EXPECTED_TRACE_SCHEMA_VERSION = 2
-VALIDATION_SCHEMA_VERSION = 2
+EXPECTED_TRACE_SCHEMA_VERSION = 3
+VALIDATION_SCHEMA_VERSION = 3
 EXPECTED_CLASSIFICATION = (
-    "preregistered-first-source-known-epoch-software-instruction-trace; "
-    "observer-dependent-later-ordinal-selection-eliminated; crop-policy-"
-    "generalization-unseen-transfer-and-product-parity-remain-sealed"
+    "preregistered-dual-source-linked-epoch-software-instruction-trace; "
+    "frame-address-reuse-and-observer-dependent-ordinal-selection-eliminated; "
+    "crop-policy-generalization-unseen-transfer-and-product-parity-remain-"
+    "sealed"
 )
 EXPECTED_VALIDATION_CLASSIFICATION = (
-    "prospective-integrity-gate-for-selected-prepare-layer-software-"
-    "instruction-state-transitions; crop-semantics-remain-sealed"
+    "prospective-dual-source-link-integrity-gate-for-selected-prepare-layer-"
+    "software-instruction-state-transitions; crop-semantics-remain-sealed"
 )
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
@@ -39,7 +40,18 @@ SELECTION_MARKER_NAME = "sourceLaterHandle"
 SELECTION_MARKER_OFFSET = 0x3EF0
 SELECTION_MARKER_INSTRUCTION_HEX = "28330b91"
 TARGET_PREPARE_RECURSION_DEPTH = 4
-TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL = 1
+SOURCE_LINK_CELL_SPECS = (
+    {
+        "name": "selectedSourceViaX10",
+        "baseRegister": "x10",
+        "signedOffset": 128,
+    },
+    {
+        "name": "selectedSourceViaX20",
+        "baseRegister": "x20",
+        "signedOffset": -24,
+    },
+)
 MAXIMUM_EPOCH_MARKER_HIT_COUNT = 4096
 MAXIMUM_EPOCH_RECORD_COUNT = 128
 MAXIMUM_SELECTION_MARKER_HIT_COUNT = 4096
@@ -50,7 +62,7 @@ MAXIMUM_UNEXPECTED_TERMINAL_CONTINUE_COUNT = 8
 KNOWN_CANVAS_EXTENT = 1024.0
 KNOWN_GLASS_EXTENT = 640.0
 KNOWN_EDGE_PADDING = 8.0
-IDENTITY_FRAME_REGISTER_NAMES = ("x19", "x29", "pc")
+EPOCH_FRAME_REGISTER_NAMES = ("x10", "x19", "x20", "x29", "pc")
 SELECTION_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "pc")
 RETIRED_INHERITED_WRITER_SITE_NAMES = tuple(
     site["name"]
@@ -155,24 +167,16 @@ EXPECTED_CONFIGURATION = {
     "roleStateByteCount": full_base.ROLE_STATE_BYTE_COUNT,
     "epochMarkerName": EPOCH_MARKER_NAME,
     "epochMarkerOffset": EPOCH_MARKER_OFFSET,
-    "epochPrecedingInstructionRawLittleEndianHex": (
-        EPOCH_PRECEDING_INSTRUCTION_HEX
-    ),
+    "epochPrecedingInstructionRawLittleEndianHex": (EPOCH_PRECEDING_INSTRUCTION_HEX),
     "selectionMarkerName": SELECTION_MARKER_NAME,
     "selectionMarkerOffset": SELECTION_MARKER_OFFSET,
-    "selectionMarkerInstructionRawLittleEndianHex": (
-        SELECTION_MARKER_INSTRUCTION_HEX
-    ),
+    "selectionMarkerInstructionRawLittleEndianHex": (SELECTION_MARKER_INSTRUCTION_HEX),
     "targetPrepareRecursionDepth": TARGET_PREPARE_RECURSION_DEPTH,
-    "targetSourceKnownDepthFourEpochOrdinal": (
-        TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL
-    ),
+    "sourceLinkCells": [dict(spec) for spec in SOURCE_LINK_CELL_SPECS],
     "maximumEpochMarkerHitCount": MAXIMUM_EPOCH_MARKER_HIT_COUNT,
     "maximumEpochRecordCount": MAXIMUM_EPOCH_RECORD_COUNT,
     "maximumSelectionMarkerHitCount": MAXIMUM_SELECTION_MARKER_HIT_COUNT,
-    "maximumRejectedMarkerDiagnosticCount": (
-        MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT
-    ),
+    "maximumRejectedMarkerDiagnosticCount": (MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT),
     "maximumInstructionStepCount": MAXIMUM_INSTRUCTION_STEP_COUNT,
     "maximumOpaqueCalleeCount": MAXIMUM_OPAQUE_CALLEE_COUNT,
     "maximumUnexpectedTerminalContinueCount": (
@@ -181,7 +185,7 @@ EXPECTED_CONFIGURATION = {
     "knownCanvasExtent": KNOWN_CANVAS_EXTENT,
     "knownGlassExtent": KNOWN_GLASS_EXTENT,
     "knownEdgePadding": KNOWN_EDGE_PADDING,
-    "identityFrameRegisterNames": list(IDENTITY_FRAME_REGISTER_NAMES),
+    "epochFrameRegisterNames": list(EPOCH_FRAME_REGISTER_NAMES),
     "selectionFrameRegisterNames": list(SELECTION_FRAME_REGISTER_NAMES),
     "structuralFramePointerSource": "SBFrame.GetFP",
     "retiredInheritedWriterSiteNames": list(RETIRED_INHERITED_WRITER_SITE_NAMES),
@@ -192,10 +196,14 @@ EXPECTED_CONFIGURATION = {
     "frameTraceOutputEnvironment": FRAME_TRACE_OUTPUT_ENVIRONMENT,
     "frameTraceSchemaVersion": frame_validator.EXPECTED_TRACE_SCHEMA_VERSION,
     "selectionRule": (
-        "stop at the first source-known exact-depth-four zero epoch, then "
-        "single-step the same live thread/x19/x29 frame across every later "
-        "loop until the first +0x3ef0 whose x28 equals the independently "
-        "selected source"
+        "stop at the first source-known exact-depth-four zero epoch whose "
+        "uint64 cells at x10+128 and x20-24 both equal the independently "
+        "selected source; then single-step that live thread/x19/x29 frame "
+        "until its exact +0x3ef0 marker"
+    ),
+    "sourceLinkRule": (
+        "retain both exact eight-byte cells and reject every epoch unless "
+        "both decoded uint64 values equal the independently selected source"
     ),
     "steppingRule": (
         "disable every software breakpoint before stepping; execute one "
@@ -207,12 +215,10 @@ EXPECTED_CONFIGURATION = {
         "first SBThread stepping operation"
     ),
     "hardwareWatchpointRule": (
-        "the target must contain zero hardware watchpoints before instruction "
-        "stepping"
+        "the target must contain zero hardware watchpoints before instruction stepping"
     ),
     "opaqueBoundaryRule": (
-        "a passing trace permits no aggregate change across an opaque callee "
-        "boundary"
+        "a passing trace permits no aggregate change across an opaque callee boundary"
     ),
     "knownStateTransferRule": (
         "the continuous instruction state sequence must contain, bit-for-bit "
@@ -342,7 +348,9 @@ def _static_trace(
         raise ValueError("checkpoint scope count differs")
     scopes: dict[str, dict[str, Any]] = {}
     prepare_code = b""
-    for index, (raw, spec) in enumerate(zip(values, CHECKPOINT_SCOPE_SPECS, strict=True)):
+    for index, (raw, spec) in enumerate(
+        zip(values, CHECKPOINT_SCOPE_SPECS, strict=True)
+    ):
         label = f"checkpoint scope {index}"
         item = mapping(raw, label)
         expected_start = start + spec["relativeToPrepareLayer"]
@@ -361,8 +369,7 @@ def _static_trace(
         code = _payload(item.get("hex"), spec["byteCount"], f"{label} code")
         digest = hashlib.sha256(code).hexdigest()
         if item.get("observedSHA256") != digest or (
-            spec["expectedSHA256"] is not None
-            and digest != spec["expectedSHA256"]
+            spec["expectedSHA256"] is not None and digest != spec["expectedSHA256"]
         ):
             raise ValueError(f"{label} digest differs")
         scope_module = _module(item.get("module"), f"{label} module")
@@ -378,9 +385,7 @@ def _static_trace(
     if (
         prepare_code[EPOCH_MARKER_OFFSET - 4 : EPOCH_MARKER_OFFSET].hex()
         != EPOCH_PRECEDING_INSTRUCTION_HEX
-        or prepare_code[
-            SELECTION_MARKER_OFFSET : SELECTION_MARKER_OFFSET + 4
-        ].hex()
+        or prepare_code[SELECTION_MARKER_OFFSET : SELECTION_MARKER_OFFSET + 4].hex()
         != SELECTION_MARKER_INSTRUCTION_HEX
     ):
         raise ValueError("marker instruction bytes differ")
@@ -438,11 +443,61 @@ def _retirement(
         raise ValueError("breakpoint IDs differ")
     epoch = mapping(prepare.get("epochMarker"), "prepare epoch marker")
     selection = mapping(prepare.get("selectionMarker"), "prepare selection marker")
-    if retained[0].get("breakpointID") != epoch.get(
+    if retained[0].get("breakpointID") != epoch.get("breakpointID") or retained[1].get(
         "breakpointID"
-    ) or retained[1].get("breakpointID") != selection.get("breakpointID"):
+    ) != selection.get("breakpointID"):
         raise ValueError("retained control IDs differ")
     return identifiers
+
+
+def _source_link_cells(
+    value: Any,
+    label: str,
+    registers: Mapping[str, int],
+    selected_source: int,
+) -> bool:
+    values = list(sequence(value, f"{label} source-link cells"))
+    if len(values) != len(SOURCE_LINK_CELL_SPECS):
+        raise ValueError(f"{label} source-link inventory differs")
+    matches = []
+    expected_fields = {
+        "name",
+        "baseRegister",
+        "signedOffset",
+        "baseValue",
+        "address",
+        "memory",
+        "observedValue",
+        "selectedSourceMatches",
+    }
+    for index, (raw, spec) in enumerate(
+        zip(values, SOURCE_LINK_CELL_SPECS, strict=True)
+    ):
+        cell_label = f"{label} source-link cell {index}"
+        item = mapping(raw, cell_label)
+        base = registers[spec["baseRegister"]]
+        address = base + spec["signedOffset"]
+        payload = _memory_payload(
+            item.get("memory"),
+            cell_label,
+            expected_address=address,
+            expected_byte_count=8,
+        )
+        observed = int.from_bytes(payload, "little", signed=False)
+        matches_source = observed == selected_source
+        if (
+            set(item) != expected_fields
+            or item.get("name") != spec["name"]
+            or item.get("baseRegister") != spec["baseRegister"]
+            or item.get("signedOffset") != spec["signedOffset"]
+            or item.get("baseValue") != base
+            or item.get("address") != address
+            or item.get("observedValue") != observed
+            or item.get("selectedSourceMatches") is not matches_source
+        ):
+            raise ValueError(f"{cell_label} differs")
+        matches.append(matches_source)
+    return all(matches)
 
 
 def _epoch_records(
@@ -452,7 +507,7 @@ def _epoch_records(
     selected_source: int,
 ) -> tuple[dict[str, int], bytes, int]:
     values = list(sequence(trace.get("epochRecords"), "epoch records"))
-    if len(values) != TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL:
+    if not 1 <= len(values) <= MAXIMUM_EPOCH_RECORD_COUNT:
         raise ValueError("prospective epoch inventory differs")
     zero = bytes(full_base.AGGREGATE_BYTE_COUNT)
     selected_identity: dict[str, int] | None = None
@@ -471,13 +526,18 @@ def _epoch_records(
         aggregate = _role_aggregate(
             item.get("roleStateAtEpoch"), f"{label} role", identity
         )
+        registers = frame_validator._registers(
+            item.get("registers"), EPOCH_FRAME_REGISTER_NAMES, f"{label} registers"
+        )
+        source_linked = _source_link_cells(
+            item.get("sourceLinkCells"), label, registers, selected_source
+        )
         if (
             item.get("recordIndex") != index
             or callback <= previous_callback
             or item.get("sourceKnownDepthFourOrdinal") != index + 1
             or item.get("pc") != prepare_start + EPOCH_MARKER_OFFSET
-            or item.get("prepareRecursionDepth")
-            != TARGET_PREPARE_RECURSION_DEPTH
+            or item.get("prepareRecursionDepth") != TARGET_PREPARE_RECURSION_DEPTH
             or item.get("selectedSourceKnown") != selected_source
             or _payload(
                 item.get("aggregateAtEpochHex"),
@@ -486,13 +546,10 @@ def _epoch_records(
             )
             != aggregate
             or aggregate != zero
-            or item.get("prospectiveTraceTarget")
-            is not (index + 1 == TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL)
+            or item.get("sourceLinkMatched") is not source_linked
+            or item.get("prospectiveTraceTarget") is not source_linked
         ):
             raise ValueError(f"{label} differs")
-        registers = frame_validator._registers(
-            item.get("registers"), IDENTITY_FRAME_REGISTER_NAMES, f"{label} registers"
-        )
         if (
             registers["x19"] != identity["roleBase"]
             or registers["x29"] != identity["framePointer"]
@@ -510,7 +567,11 @@ def _epoch_records(
             != identity["framePointer"]
         ):
             raise ValueError(f"{label} structural frames differ")
-        if item.get("prospectiveTraceTarget") is True:
+        if source_linked:
+            if selected_identity is not None or index != len(values) - 1:
+                raise ValueError(
+                    "source-linked epoch selection is not first or terminal"
+                )
             selected_identity = identity
             selected_index = index
         previous_callback = callback
@@ -518,6 +579,8 @@ def _epoch_records(
         raise ValueError("selected epoch is absent")
     if (
         trace.get("sourceKnownDepthFourEpochCount") != len(values)
+        or trace.get("sourceLinkedDepthFourEpochCount") != 1
+        or trace.get("rejectedSourceLinkEpochCount") != len(values) - 1
         or trace.get("finalEpochRecordCount") != len(values)
         or trace.get("discardedEpochRecordCount") != 0
         or trace.get("epochMarkerHitCount", 0) > MAXIMUM_EPOCH_MARKER_HIT_COUNT
@@ -551,7 +614,9 @@ def _breakpoint_disablement(
         ):
             raise ValueError("software breakpoint was not disabled")
         identifiers.append(identifier)
-    if len(identifiers) != len(set(identifiers)) or not required_ids <= set(identifiers):
+    if len(identifiers) != len(set(identifiers)) or not required_ids <= set(
+        identifiers
+    ):
         raise ValueError("disabled breakpoint inventory differs")
     return callback
 
@@ -620,7 +685,10 @@ def _after_context(
     item = mapping(value, label)
     if not list(sequence(item.get("backtrace"), f"{label} backtrace")):
         raise ValueError(f"{label} backtrace differs")
-    if _role_aggregate(item.get("roleState"), f"{label} role", identity) != expected_aggregate:
+    if (
+        _role_aggregate(item.get("roleState"), f"{label} role", identity)
+        != expected_aggregate
+    ):
         raise ValueError(f"{label} aggregate differs")
     writer_base.private_fields(item.get("privateFields"), f"{label} private fields")
 
@@ -695,10 +763,14 @@ def _steps_and_transitions(
         label = f"instruction step {index}"
         step = mapping(raw, label)
         before = _payload(
-            step.get("aggregateBeforeHex"), full_base.AGGREGATE_BYTE_COUNT, f"{label} before"
+            step.get("aggregateBeforeHex"),
+            full_base.AGGREGATE_BYTE_COUNT,
+            f"{label} before",
         )
         after = _payload(
-            step.get("aggregateAfterHex"), full_base.AGGREGATE_BYTE_COUNT, f"{label} after"
+            step.get("aggregateAfterHex"),
+            full_base.AGGREGATE_BYTE_COUNT,
+            f"{label} after",
         )
         changed = before != after
         expected_lanes = [
@@ -718,13 +790,19 @@ def _steps_and_transitions(
         kind = step.get("kind")
         instruction = None
         if kind == "scope-instruction":
-            instruction = _instruction(step.get("instruction"), f"{label} instruction", scopes)
+            instruction = _instruction(
+                step.get("instruction"), f"{label} instruction", scopes
+            )
             if step.get("opaqueBoundary") is not None:
                 raise ValueError(f"{label} opaque field differs")
         elif kind == "opaque-callee-step-out":
-            if step.get("instruction") is not None or boundary_index >= len(raw_boundaries):
+            if step.get("instruction") is not None or boundary_index >= len(
+                raw_boundaries
+            ):
                 raise ValueError(f"{label} boundary differs")
-            boundary = mapping(raw_boundaries[boundary_index], f"opaque boundary {boundary_index}")
+            boundary = mapping(
+                raw_boundaries[boundary_index], f"opaque boundary {boundary_index}"
+            )
             if (
                 boundary.get("boundaryIndex") != boundary_index
                 or step.get("opaqueBoundary") != boundary
@@ -760,10 +838,7 @@ def _steps_and_transitions(
                 or transition.get("opaqueBoundary") != step.get("opaqueBoundary")
                 or callback <= 0
                 or instruction is None
-                or not (
-                    instruction["potentialWriter"]
-                    or instruction["potentialCall"]
-                )
+                or not (instruction["potentialWriter"] or instruction["potentialCall"])
             ):
                 raise ValueError(f"aggregate transition {transition_index} differs")
             _context(
@@ -785,7 +860,9 @@ def _steps_and_transitions(
             raise ValueError(f"{label} unexpected transition differs")
         previous = after
         states.append(after)
-    if transition_index != len(raw_transitions) or boundary_index != len(raw_boundaries):
+    if transition_index != len(raw_transitions) or boundary_index != len(
+        raw_boundaries
+    ):
         raise ValueError("transition or boundary accounting differs")
     if len(raw_boundaries) > MAXIMUM_OPAQUE_CALLEE_COUNT:
         raise ValueError("opaque boundary bound differs")
@@ -828,9 +905,7 @@ def _manual_selection_markers(
             or item.get("pc") != prepare_start + SELECTION_MARKER_OFFSET
             or marker_identity != identity
             or item.get("selectedSource") != selected_source
-            or integer(
-                item.get("prepareRecursionDepth"), f"{label} recursion depth"
-            )
+            or integer(item.get("prepareRecursionDepth"), f"{label} recursion depth")
             <= 0
             or item.get("frameIdentityMatches") is not identity_matches
             or item.get("sourceRegisterMatches") is not source_matches
@@ -842,8 +917,7 @@ def _manual_selection_markers(
                 index != len(values) - 1
                 or not identity_matches
                 or not source_matches
-                or item.get("prepareRecursionDepth")
-                != TARGET_PREPARE_RECURSION_DEPTH
+                or item.get("prepareRecursionDepth") != TARGET_PREPARE_RECURSION_DEPTH
             ):
                 raise ValueError(f"{label} selected identity differs")
             selected_callback = _require_callback(
@@ -971,9 +1045,7 @@ def validate_documents(
     )
     if (
         len(prepare_frames) != TARGET_PREPARE_RECURSION_DEPTH
-        or mapping(prepare_frames[0], "selected top prepare").get(
-            "unwindFramePointer"
-        )
+        or mapping(prepare_frames[0], "selected top prepare").get("unwindFramePointer")
         != identity["framePointer"]
     ):
         raise ValueError("selected structural frames differ")
@@ -1019,7 +1091,8 @@ def validate_documents(
         "prospectiveGatePassed": True,
         "selectedSource": selected_source,
         "selectedIdentity": identity,
-        "selectedEpochOrdinal": TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL,
+        "selectedEpochOrdinal": epoch_index + 1,
+        "selectedEpochRecordIndex": epoch_index,
         "instructionStepCount": len(states) - 1,
         "aggregateTransitionCount": len(transitions),
         "distinctAggregateStateCount": len(set(states)),
@@ -1046,6 +1119,7 @@ def validate_documents(
             "hardwareWatchpointsUsed": False,
             "allSoftwareBreakpointsDisabledDuringStepping": True,
             "prospectivelySelectedEpochReached": True,
+            "prospectiveDualSourceLinkSelectorPassed": True,
             "continuousInstructionStateChainCaptured": True,
             "zeroOpaqueAggregateMutations": True,
             "knownAggregateStateTransferPassed": True,

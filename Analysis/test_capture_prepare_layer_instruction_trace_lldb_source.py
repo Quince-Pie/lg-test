@@ -84,18 +84,71 @@ class PrepareLayerInstructionTraceSourceTests(unittest.TestCase):
             self.assertEqual(item["byteCount"] % 4, 0)
             self.assertEqual(item["relativeToPrepareLayer"] % 4, 0)
 
-    def test_first_source_known_epoch_is_observer_count_independent(self):
+    def test_dual_source_link_epoch_is_observer_count_independent(self):
         self.assertEqual(
-            self.module.TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL, 1
+            self.module.SOURCE_LINK_CELL_SPECS,
+            validator.SOURCE_LINK_CELL_SPECS,
         )
         source = inspect.getsource(self.module.prepare_layer_epoch_marker)
         self.assertIn("sourceKnownDepthFourEpochCount", source)
+        self.assertIn("_source_link_cells", source)
+        self.assertIn("source_linked", source)
         self.assertIn("prospectiveTraceTarget", source)
         self.assertIn("return True", source)
         self.assertNotIn("WatchAddress", source)
         self.assertIn(
-            "stop at the first source-known exact-depth-four zero epoch",
+            "x10+128 and x20-24 both equal",
             self.module._new_trace()["configuration"]["selectionRule"],
+        )
+
+    def test_dual_source_link_requires_both_exact_uint64_cells(self):
+        module = self.module
+        selected_source = 0xA_BEEF_0000
+        registers = {"x10": 0x1_1000_0000, "x20": 0xA_2000_0000}
+
+        def memory(_process, address, byte_count, label):
+            self.assertEqual(byte_count, 8)
+            expected = {
+                registers["x10"] + 128: selected_source,
+                registers["x20"] - 24: selected_source,
+            }
+            payload = expected[address].to_bytes(8, "little")
+            return payload, {
+                "address": address,
+                "byteCount": 8,
+                "sha256": "0" * 64,
+                "hex": payload.hex(),
+                "label": label,
+            }
+
+        with mock.patch.object(module, "_memory_payload", side_effect=memory):
+            records, matched = module._source_link_cells(
+                None, registers, selected_source
+            )
+        self.assertTrue(matched)
+        self.assertEqual(
+            [item["address"] for item in records],
+            [registers["x10"] + 128, registers["x20"] - 24],
+        )
+        self.assertTrue(all(item["selectedSourceMatches"] for item in records))
+
+        def one_mismatch(_process, address, _byte_count, _label):
+            observed = selected_source if address == registers["x10"] + 128 else 0
+            payload = observed.to_bytes(8, "little")
+            return payload, {
+                "address": address,
+                "byteCount": 8,
+                "sha256": "0" * 64,
+                "hex": payload.hex(),
+            }
+
+        with mock.patch.object(module, "_memory_payload", side_effect=one_mismatch):
+            records, matched = module._source_link_cells(
+                None, registers, selected_source
+            )
+        self.assertFalse(matched)
+        self.assertEqual(
+            [item["selectedSourceMatches"] for item in records], [True, False]
         )
 
     def test_structural_depth_does_not_depend_on_unwound_registers(self):
@@ -171,9 +224,7 @@ class PrepareLayerInstructionTraceSourceTests(unittest.TestCase):
             "rejected",
         )
         self.assertFalse(
-            module._state["trace"]["manualSelectionMarkers"][0][
-                "sourceRegisterMatches"
-            ]
+            module._state["trace"]["manualSelectionMarkers"][0]["sourceRegisterMatches"]
         )
         rejection.assert_called_once()
 

@@ -44,9 +44,10 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         result_path = REPOSITORY_ROOT / boundary["sourceResultPath"]
         self.assertEqual(sha256(result_path), boundary["sourceResultSHA256"])
 
-    def test_epoch_selection_is_prospective_not_adaptive(self) -> None:
+    def test_epoch_selection_is_dual_source_linked_not_adaptive(self) -> None:
         selection = self.document["selection"]
         correction = self.document["observerOrdinalCorrection"]
+        reuse = self.document["frameReuseCorrection"]
         self.assertEqual(correction["sourceRunID"], 31038371480)
         self.assertEqual(correction["registeredLaterEpochOrdinal"], 7)
         self.assertEqual(
@@ -56,14 +57,32 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         self.assertFalse(correction["laterEpochOrdinalStableAcrossObservers"])
         result_path = REPOSITORY_ROOT / correction["sourceResultPath"]
         self.assertEqual(sha256(result_path), correction["sourceResultSHA256"])
-        self.assertEqual(selection["prospectiveEpochOrdinal"], 1)
+        self.assertEqual(reuse["sourceRunID"], 31039587304)
+        self.assertFalse(reuse["firstSourceKnownDepthFourEpochIsSelectedInvocation"])
+        self.assertTrue(reuse["uniqueExactSelectionInEveryRetainedRun"])
+        self.assertFalse(reuse["x20Minus24AloneIsSufficient"])
+        reuse_result_path = REPOSITORY_ROOT / reuse["sourceResultPath"]
+        self.assertEqual(sha256(reuse_result_path), reuse["sourceResultSHA256"])
+        self.assertEqual(
+            selection["prospectiveSourceLinkCells"],
+            [
+                {
+                    "baseRegister": spec["baseRegister"],
+                    "signedOffset": spec["signedOffset"],
+                    "decode": "little-endian uint64",
+                }
+                for spec in validator.SOURCE_LINK_CELL_SPECS
+            ],
+        )
         self.assertTrue(selection["adaptiveEpochSelectionForbidden"])
         self.assertTrue(selection["observerDependentLaterOrdinalForbidden"])
+        self.assertTrue(selection["stackAddressEqualityAloneForbidden"])
+        self.assertTrue(selection["futureMarkerBasedEpochSelectionForbidden"])
         self.assertEqual(selection["earlyIdentity"], ["threadID", "x19", "x29"])
         self.assertIn("x28", selection["futureIdentity"])
         self.assertEqual(
-            self.document["acceptance"]["sourceKnownDepthFourEpochCountAtStop"],
-            validator.TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL,
+            self.document["acceptance"]["sourceLinkedDepthFourEpochCountAtStop"],
+            1,
         )
 
     def test_scope_inventory_matches_capture_and_validator(self) -> None:
@@ -142,6 +161,7 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
                 integrity["observerOrdinalResultPath"],
                 "observerOrdinalResultSHA256",
             ),
+            (integrity["frameReuseResultPath"], "frameReuseResultSHA256"),
             (integrity["captureProgramPath"], "captureProgramSHA256"),
             (integrity["validatorPath"], "validatorSHA256"),
             (integrity["captureSourceTestPath"], "captureSourceTestSHA256"),
@@ -151,19 +171,24 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         )
         for relative, field in paths:
             with self.subTest(path=relative):
-                self.assertEqual(
-                    sha256(REPOSITORY_ROOT / relative), integrity[field]
-                )
+                self.assertEqual(sha256(REPOSITORY_ROOT / relative), integrity[field])
         self.assertFalse(integrity["productionShaderModifiedByExperiment"])
 
-    def test_first_attempt_is_frozen_and_retry_is_null_before_dispatch(self) -> None:
+    def test_two_negative_attempts_are_frozen_and_successor_is_null(self) -> None:
         outcome = self.document["firstAttemptRuntimeOutcome"]
         self.assertEqual(outcome["runID"], 31038371480)
         self.assertEqual(outcome["registeredEpochOrdinal"], 7)
         self.assertEqual(outcome["observedEpochCountBeforeExactMarker"], 3)
         self.assertFalse(outcome["instructionTraceStarted"])
         self.assertFalse(outcome["productionShaderAuthorized"])
-        self.assertIsNone(self.document["retryRuntimeOutcomeFrozenBeforeRun"])
+        retry = self.document["retryRuntimeOutcome"]
+        self.assertEqual(retry["runID"], 31039587304)
+        self.assertTrue(retry["instructionTraceStarted"])
+        self.assertEqual(retry["instructionStepCount"], 5669)
+        self.assertTrue(retry["selectedFrameReturnedBeforeMarker"])
+        self.assertFalse(retry["firstEpochDualSourceLinkPassed"])
+        self.assertFalse(retry["productionShaderAuthorized"])
+        self.assertIsNone(self.document["successorRuntimeOutcomeFrozenBeforeRun"])
 
 
 if __name__ == "__main__":

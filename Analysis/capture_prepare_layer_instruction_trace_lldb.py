@@ -2,12 +2,13 @@
 
 The preceding hardware-watch experiment proved that one LLDB watch callback
 does not imply one architectural store on Apple silicon.  This successor uses
-no hardware watchpoints.  It stops at the first source-known depth-four epoch,
-disables every software breakpoint, and advances the selected thread across
-every same-frame loop until the exact-source marker, one instruction at a time
-through ``prepare_layer`` and the six already opened QuartzCore helpers. Calls
-outside that frozen scope are stepped out as named boundaries and must not
-change the aggregate for the gate to pass.
+no hardware watchpoints.  It stops at the first source-known depth-four epoch
+whose two independently opened source-link cells both equal the selected
+source, disables every software breakpoint, and advances that selected thread
+until the exact-source marker, one instruction at a time through
+``prepare_layer`` and the six already opened QuartzCore helpers. Calls outside
+that frozen scope are stepped out as named boundaries and must not change the
+aggregate for the gate to pass.
 """
 
 import hashlib
@@ -27,7 +28,7 @@ import capture_prepare_layer_frame_correlated_writer_trace_lldb as frame_base  #
 
 capture_base = frame_base.capture_base
 
-TRACE_SCHEMA_VERSION = 2
+TRACE_SCHEMA_VERSION = 3
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
 )
@@ -38,7 +39,18 @@ SELECTION_MARKER_NAME = "sourceLaterHandle"
 SELECTION_MARKER_OFFSET = 0x3EF0
 SELECTION_MARKER_INSTRUCTION_HEX = "28330b91"
 TARGET_PREPARE_RECURSION_DEPTH = 4
-TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL = 1
+SOURCE_LINK_CELL_SPECS = (
+    {
+        "name": "selectedSourceViaX10",
+        "baseRegister": "x10",
+        "signedOffset": 128,
+    },
+    {
+        "name": "selectedSourceViaX20",
+        "baseRegister": "x20",
+        "signedOffset": -24,
+    },
+)
 MAXIMUM_EPOCH_MARKER_HIT_COUNT = 4096
 MAXIMUM_EPOCH_RECORD_COUNT = 128
 MAXIMUM_SELECTION_MARKER_HIT_COUNT = 4096
@@ -49,7 +61,7 @@ MAXIMUM_UNEXPECTED_TERMINAL_CONTINUE_COUNT = 8
 KNOWN_CANVAS_EXTENT = 1024.0
 KNOWN_GLASS_EXTENT = 640.0
 KNOWN_EDGE_PADDING = 8.0
-IDENTITY_FRAME_REGISTER_NAMES = ("x19", "x29", "pc")
+EPOCH_FRAME_REGISTER_NAMES = ("x10", "x19", "x20", "x29", "pc")
 SELECTION_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "pc")
 RETIRED_INHERITED_WRITER_SITE_NAMES = tuple(
     site["name"]
@@ -75,9 +87,7 @@ WRITER_MNEMONIC_PREFIXES = (
 )
 CALL_MNEMONIC_PREFIXES = ("bl",)
 TRACE_OUTPUT_ENVIRONMENT = "LG_PREPARE_LAYER_INSTRUCTION_TRACE_OUTPUT"
-DEFAULT_TRACE_OUTPUT = (
-    "transition-introspection/prepare-layer-instruction-trace.json"
-)
+DEFAULT_TRACE_OUTPUT = "transition-introspection/prepare-layer-instruction-trace.json"
 
 # Every range was fixed from run 31034880031 before this experiment.  A null
 # expected digest means that the prior artifact exposed exact symbol bounds but
@@ -124,9 +134,7 @@ CHECKPOINT_SCOPE_SPECS = (
     },
     {
         "name": "filterApply",
-        "function": (
-            "CA::Render::Updater::FilterOp::apply_filter(CA::Rect&, bool)"
-        ),
+        "function": ("CA::Render::Updater::FilterOp::apply_filter(CA::Rect&, bool)"),
         "relativeToPrepareLayer": -61476,
         "byteCount": 292,
         "expectedSHA256": None,
@@ -165,6 +173,8 @@ def _fresh_state():
         "sourceUnknownEpochCount": 0,
         "rejectedEpochDepthCount": 0,
         "sourceKnownDepthFourEpochCount": 0,
+        "sourceLinkedDepthFourEpochCount": 0,
+        "rejectedSourceLinkEpochCount": 0,
         "discardedEpochRecordCount": 0,
         "selectionMarkerHitCount": 0,
         "rejectedSelectionMarkerHitCount": 0,
@@ -205,10 +215,10 @@ def _new_trace():
     return {
         "prepareLayerInstructionTraceSchemaVersion": TRACE_SCHEMA_VERSION,
         "classification": (
-            "preregistered-first-source-known-epoch-software-instruction-"
-            "trace; observer-dependent-later-ordinal-selection-eliminated; "
-            "crop-policy-generalization-unseen-transfer-and-product-parity-"
-            "remain-sealed"
+            "preregistered-dual-source-linked-epoch-software-instruction-"
+            "trace; frame-address-reuse-and-observer-dependent-ordinal-"
+            "selection-eliminated; crop-policy-generalization-unseen-transfer-"
+            "and-product-parity-remain-sealed"
         ),
         "status": "initialized",
         "configuration": {
@@ -231,9 +241,7 @@ def _new_trace():
                 SELECTION_MARKER_INSTRUCTION_HEX
             ),
             "targetPrepareRecursionDepth": TARGET_PREPARE_RECURSION_DEPTH,
-            "targetSourceKnownDepthFourEpochOrdinal": (
-                TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL
-            ),
+            "sourceLinkCells": [dict(spec) for spec in SOURCE_LINK_CELL_SPECS],
             "maximumEpochMarkerHitCount": MAXIMUM_EPOCH_MARKER_HIT_COUNT,
             "maximumEpochRecordCount": MAXIMUM_EPOCH_RECORD_COUNT,
             "maximumSelectionMarkerHitCount": MAXIMUM_SELECTION_MARKER_HIT_COUNT,
@@ -248,25 +256,28 @@ def _new_trace():
             "knownCanvasExtent": KNOWN_CANVAS_EXTENT,
             "knownGlassExtent": KNOWN_GLASS_EXTENT,
             "knownEdgePadding": KNOWN_EDGE_PADDING,
-            "identityFrameRegisterNames": list(IDENTITY_FRAME_REGISTER_NAMES),
+            "epochFrameRegisterNames": list(EPOCH_FRAME_REGISTER_NAMES),
             "selectionFrameRegisterNames": list(SELECTION_FRAME_REGISTER_NAMES),
             "structuralFramePointerSource": "SBFrame.GetFP",
             "retiredInheritedWriterSiteNames": list(
                 RETIRED_INHERITED_WRITER_SITE_NAMES
             ),
-            "retainedControlBreakpointNames": list(
-                RETAINED_CONTROL_BREAKPOINT_NAMES
-            ),
+            "retainedControlBreakpointNames": list(RETAINED_CONTROL_BREAKPOINT_NAMES),
             "checkpointScopes": _scope_configuration(),
             "writerMnemonicPrefixes": list(WRITER_MNEMONIC_PREFIXES),
             "callMnemonicPrefixes": list(CALL_MNEMONIC_PREFIXES),
             "frameTraceOutputEnvironment": frame_base.TRACE_OUTPUT_ENVIRONMENT,
             "frameTraceSchemaVersion": frame_base.TRACE_SCHEMA_VERSION,
             "selectionRule": (
-                "stop at the first source-known exact-depth-four zero epoch, "
-                "then single-step the same live thread/x19/x29 frame across "
-                "every later loop until the first +0x3ef0 whose x28 equals "
-                "the independently selected source"
+                "stop at the first source-known exact-depth-four zero epoch "
+                "whose uint64 cells at x10+128 and x20-24 both equal the "
+                "independently selected source; then single-step that live "
+                "thread/x19/x29 frame until its exact +0x3ef0 marker"
+            ),
+            "sourceLinkRule": (
+                "retain both exact eight-byte cells and reject every epoch "
+                "unless both decoded uint64 values equal the independently "
+                "selected source"
             ),
             "steppingRule": (
                 "disable every software breakpoint before stepping; execute one "
@@ -324,18 +335,14 @@ def _write_trace():
 
 
 def _failure(stage, error):
-    _state["trace"]["failures"].append(
-        {"stage": str(stage), "message": str(error)}
-    )
+    _state["trace"]["failures"].append({"stage": str(stage), "message": str(error)})
     _write_trace()
 
 
 def _next_sequence(kind):
     _state["callbackSequence"] += 1
     sequence = _state["callbackSequence"]
-    _state["trace"]["callbackOrder"].append(
-        {"sequence": sequence, "kind": str(kind)}
-    )
+    _state["trace"]["callbackOrder"].append({"sequence": sequence, "kind": str(kind)})
     return sequence
 
 
@@ -418,6 +425,31 @@ def _memory_payload(process, address, byte_count, label):
         "sha256": hashlib.sha256(payload).hexdigest(),
         "hex": payload.hex(),
     }
+
+
+def _source_link_cells(process, register_values, selected_source):
+    records = []
+    for spec in SOURCE_LINK_CELL_SPECS:
+        base = register_values[spec["baseRegister"]]
+        address = base + spec["signedOffset"]
+        payload, memory = _memory_payload(
+            process,
+            address,
+            8,
+            "instruction epoch " + spec["name"],
+        )
+        observed = int.from_bytes(payload, "little", signed=False)
+        records.append(
+            {
+                **spec,
+                "baseValue": base,
+                "address": address,
+                "memory": memory,
+                "observedValue": observed,
+                "selectedSourceMatches": observed == selected_source,
+            }
+        )
+    return records, all(item["selectedSourceMatches"] for item in records)
 
 
 def _aggregate(process, identity, label):
@@ -801,9 +833,7 @@ def prepare_layer_entry(frame, breakpoint_location, _internal_dict):
         if (
             code[EPOCH_MARKER_OFFSET - 4 : EPOCH_MARKER_OFFSET].hex()
             != EPOCH_PRECEDING_INSTRUCTION_HEX
-            or code[
-                SELECTION_MARKER_OFFSET : SELECTION_MARKER_OFFSET + 4
-            ].hex()
+            or code[SELECTION_MARKER_OFFSET : SELECTION_MARKER_OFFSET + 4].hex()
             != SELECTION_MARKER_INSTRUCTION_HEX
         ):
             raise RuntimeError("instruction trace marker bytes differ")
@@ -873,7 +903,7 @@ def prepare_layer_entry(frame, breakpoint_location, _internal_dict):
 
 
 def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
-    """Stop at the first source-known exact-depth-four zero epoch."""
+    """Stop at the first exact-depth-four zero epoch linked to the source."""
     try:
         _state["epochMarkerHitCount"] += 1
         if _state["epochMarkerHitCount"] > MAXIMUM_EPOCH_MARKER_HIT_COUNT:
@@ -897,9 +927,7 @@ def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
             _state["discardedEpochRecordCount"] += 1
             raise RuntimeError("instruction epoch record bound exceeded")
         process = frame.GetThread().GetProcess()
-        registers = capture_base._register_snapshot(
-            frame, IDENTITY_FRAME_REGISTER_NAMES
-        )
+        registers = capture_base._register_snapshot(frame, EPOCH_FRAME_REGISTER_NAMES)
         values = {item["name"]: item["unsignedValue"] for item in registers}
         identity = _identity(
             frame.GetThread().GetThreadID(), values["x19"], values["x29"]
@@ -916,6 +944,13 @@ def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
             capture_base.AGGREGATE_OFFSET : capture_base.AGGREGATE_OFFSET
             + capture_base.AGGREGATE_BYTE_COUNT
         ]
+        if aggregate != bytes(capture_base.AGGREGATE_BYTE_COUNT):
+            raise RuntimeError("source-known depth-four epoch aggregate is not zero")
+        source_links, source_linked = _source_link_cells(process, values, source)
+        if source_linked:
+            _state["sourceLinkedDepthFourEpochCount"] += 1
+        else:
+            _state["rejectedSourceLinkEpochCount"] += 1
         sequence = _next_sequence("source-known-depth-four-zero-epoch")
         record = {
             "recordIndex": len(records),
@@ -932,12 +967,14 @@ def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
             "selectedSourceKnown": source,
             "roleStateAtEpoch": role_record,
             "aggregateAtEpochHex": aggregate.hex(),
-            "prospectiveTraceTarget": (
-                ordinal == TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL
-            ),
+            "sourceLinkCells": source_links,
+            "sourceLinkMatched": source_linked,
+            "prospectiveTraceTarget": source_linked,
         }
         records.append(record)
-        if ordinal == TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL:
+        if source_linked:
+            if _state["sourceLinkedDepthFourEpochCount"] != 1:
+                raise RuntimeError("more than one prospective source-linked epoch")
             _state["pendingCandidate"] = {
                 "epochRecordIndex": record["recordIndex"],
                 "identity": identity,
@@ -947,8 +984,6 @@ def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
             _state["trace"]["status"] = "prospective-selected-epoch-stopped"
             _write_trace()
             return True
-        if ordinal > TARGET_SOURCE_KNOWN_DEPTH_FOUR_EPOCH_ORDINAL:
-            raise RuntimeError("prospective selected epoch ordinal was bypassed")
         _write_trace()
     except Exception as error:
         _failure("source-known-depth-four-zero-epoch", error)
@@ -958,7 +993,7 @@ def prepare_layer_epoch_marker(frame, _breakpoint_location, _internal_dict):
 
 
 def prepare_layer_selection_marker(frame, _breakpoint_location, _internal_dict):
-    """Reject any exact-source selection reached before the frozen epoch."""
+    """Reject an exact-source marker reached before its linked zero epoch."""
     try:
         _state["selectionMarkerHitCount"] += 1
         if _state["selectionMarkerHitCount"] > MAXIMUM_SELECTION_MARKER_HIT_COUNT:
@@ -978,7 +1013,7 @@ def prepare_layer_selection_marker(frame, _breakpoint_location, _internal_dict):
             )
             return False
         if not _state["manualTraceStarted"]:
-            raise RuntimeError("exact-source marker preceded prospective epoch")
+            raise RuntimeError("exact-source marker preceded source-linked epoch")
     except Exception as error:
         _failure("pretrace-selection-marker", error)
         if _state["selectionBreakpoint"] is not None:
@@ -1023,9 +1058,7 @@ def _selected_marker(frame, exact, aggregate):
         and capture_base._register(frame, "x19") == identity["roleBase"]
     )
     record = {
-        "manualSelectionMarkerIndex": len(
-            _state["trace"]["manualSelectionMarkers"]
-        ),
+        "manualSelectionMarkerIndex": len(_state["trace"]["manualSelectionMarkers"]),
         "markerHitIndex": marker_hit_index,
         "pc": frame.GetPC(),
         "threadID": frame.GetThread().GetThreadID(),
@@ -1091,9 +1124,7 @@ def _selected_marker(frame, exact, aggregate):
         != aggregate
     ):
         raise RuntimeError("instruction marker aggregate alias differs")
-    registers = capture_base._register_snapshot(
-        frame, SELECTION_FRAME_REGISTER_NAMES
-    )
+    registers = capture_base._register_snapshot(frame, SELECTION_FRAME_REGISTER_NAMES)
     sequence = _next_sequence("selected-instruction-path-closed")
     record["result"] = "selected"
     record["callbackSequence"] = sequence
@@ -1112,9 +1143,7 @@ def _selected_marker(frame, exact, aggregate):
         "selectedSource": source,
         "selectedEpochRecordIndex": pending["epochRecordIndex"],
         "instructionStepCount": len(_state["trace"]["instructionSteps"]),
-        "aggregateTransitionCount": len(
-            _state["trace"]["aggregateTransitions"]
-        ),
+        "aggregateTransitionCount": len(_state["trace"]["aggregateTransitions"]),
         "roleStateAtMarker": role_record,
         "aggregateAtMarkerHex": aggregate.hex(),
         "objectChain": json.loads(
@@ -1198,9 +1227,7 @@ def _trace_opaque_callee(thread, frame, before):
     opaque = {
         "boundaryIndex": len(boundaries),
         "entryFrame": entry,
-        "returnFrame": capture_base._frame_record(
-            result_frame, process.GetTarget()
-        ),
+        "returnFrame": capture_base._frame_record(result_frame, process.GetTarget()),
         "aggregateChanged": before != after,
     }
     boundaries.append(opaque)
@@ -1248,7 +1275,7 @@ def _continue_to_terminal(process):
 
 
 def trace_selected_path():
-    """Drive the first qualifying epoch across loops to its exact marker."""
+    """Drive the first dual-source-linked epoch to its exact marker."""
     trace = _state["trace"]
     if trace is None:
         return
@@ -1258,8 +1285,8 @@ def trace_selected_path():
             raise RuntimeError("selected instruction trace was invoked twice")
         pending = _state["pendingCandidate"]
         if pending is None:
-            raise RuntimeError("prospective selected epoch was not reached")
-        _require_stopped(process, "prospective selected epoch")
+            raise RuntimeError("prospective source-linked epoch was not reached")
+        _require_stopped(process, "prospective source-linked epoch")
         _state["manualTraceStarted"] = True
         _state["debugger"].SetAsync(False)
         if _state["debugger"].GetAsync():
@@ -1289,18 +1316,13 @@ def trace_selected_path():
             if matched is None:
                 raise RuntimeError("selected prepare frame returned before marker")
             frame = thread.GetFrameAtIndex(0)
-            if (
-                frame.GetPC()
-                == _state["prepareLayer"]["symbolStart"]
-                + SELECTION_MARKER_OFFSET
-                and _selected_marker(frame, exact, current)
-            ):
+            if frame.GetPC() == _state["prepareLayer"][
+                "symbolStart"
+            ] + SELECTION_MARKER_OFFSET and _selected_marker(frame, exact, current):
                 break
             scope = _scope_for_pc(frame.GetPC())
             if scope is None:
-                thread, frame, current = _trace_opaque_callee(
-                    thread, frame, current
-                )
+                thread, frame, current = _trace_opaque_callee(thread, frame, current)
             else:
                 thread, frame, current = _trace_one_instruction(
                     thread, frame, scope, current
@@ -1334,15 +1356,13 @@ def finalize():
     trace["epochMarkerHitCount"] = _state["epochMarkerHitCount"]
     trace["sourceUnknownEpochCount"] = _state["sourceUnknownEpochCount"]
     trace["rejectedEpochDepthCount"] = _state["rejectedEpochDepthCount"]
-    trace["sourceKnownDepthFourEpochCount"] = _state[
-        "sourceKnownDepthFourEpochCount"
-    ]
+    trace["sourceKnownDepthFourEpochCount"] = _state["sourceKnownDepthFourEpochCount"]
+    trace["sourceLinkedDepthFourEpochCount"] = _state["sourceLinkedDepthFourEpochCount"]
+    trace["rejectedSourceLinkEpochCount"] = _state["rejectedSourceLinkEpochCount"]
     trace["discardedEpochRecordCount"] = _state["discardedEpochRecordCount"]
     trace["finalEpochRecordCount"] = len(trace["epochRecords"])
     trace["selectionMarkerHitCount"] = _state["selectionMarkerHitCount"]
-    trace["rejectedSelectionMarkerHitCount"] = _state[
-        "rejectedSelectionMarkerHitCount"
-    ]
+    trace["rejectedSelectionMarkerHitCount"] = _state["rejectedSelectionMarkerHitCount"]
     trace["unretainedRejectedMarkerDiagnosticCount"] = _state[
         "unretainedRejectedMarkerDiagnosticCount"
     ]
@@ -1356,9 +1376,7 @@ def finalize():
     trace["manualTraceFinished"] = _state["manualTraceFinished"]
     trace["finalInstructionStepCount"] = len(trace["instructionSteps"])
     trace["finalAggregateTransitionCount"] = len(trace["aggregateTransitions"])
-    trace["finalOpaqueCalleeBoundaryCount"] = len(
-        trace["opaqueCalleeBoundaries"]
-    )
+    trace["finalOpaqueCalleeBoundaryCount"] = len(trace["opaqueCalleeBoundaries"])
     trace["finalManualSelectionMarkerRecordCount"] = len(
         trace["manualSelectionMarkers"]
     )
@@ -1369,9 +1387,7 @@ def finalize():
     pending = _state["pendingCandidate"]
     if pending is not None:
         states.append(pending["initialAggregate"].hex())
-        states.extend(
-            step["aggregateAfterHex"] for step in trace["instructionSteps"]
-        )
+        states.extend(step["aggregateAfterHex"] for step in trace["instructionSteps"])
     trace["finalDistinctAggregateStateCount"] = len(set(states))
     _write_trace()
 
