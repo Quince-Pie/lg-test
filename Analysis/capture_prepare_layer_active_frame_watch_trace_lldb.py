@@ -187,6 +187,10 @@ def _new_trace():
                 "selection breakpoints; at each shared address run the inherited "
                 "callback first and the active-watch callback second"
             ),
+            "inheritedCallbackForwardingRule": (
+                "bind every inherited entry and dynamically created breakpoint "
+                "through a callback exported by this command-script module"
+            ),
         },
         "callbackOrder": [],
         "prepareLayer": {},
@@ -474,6 +478,35 @@ def multiplexed_prepare_layer_entry(frame, breakpoint_location, internal_dict):
     return False
 
 
+def forwarded_capture_backdrop_entry(frame, breakpoint_location, internal_dict):
+    """Run inherited capture entry and export its dynamic late callback."""
+    frame_base.capture_backdrop_entry(frame, breakpoint_location, internal_dict)
+    try:
+        late = frame_base._state["captureLateBreakpoint"]
+        if late is None or not late.IsValid():
+            raise RuntimeError("inherited capture late breakpoint differs")
+        _set_callback(
+            late,
+            "forwarded_capture_backdrop_late",
+            "forwarded inherited capture late",
+        )
+    except Exception as error:
+        _failure("inherited-capture-callback-forwarding", error)
+    return False
+
+
+def forwarded_capture_backdrop_late(frame, breakpoint_location, internal_dict):
+    """Forward the dynamically created independent source selector."""
+    frame_base.capture_backdrop_late(frame, breakpoint_location, internal_dict)
+    return False
+
+
+def forwarded_writer_site(frame, breakpoint_location, internal_dict):
+    """Forward one inherited non-shared sampled writer breakpoint."""
+    frame_base.writer_site(frame, breakpoint_location, internal_dict)
+    return False
+
+
 def multiplexed_epoch_marker(frame, breakpoint_location, internal_dict):
     """Retain the inherited sampled epoch before arming active hardware watches."""
     frame_base.writer_site(frame, breakpoint_location, internal_dict)
@@ -523,6 +556,13 @@ def prepare_layer_entry(frame, breakpoint_location, _internal_dict):
             raise RuntimeError("active watch marker instruction bytes differ")
         epoch = frame_base._state["writerBreakpoints"].get(EPOCH_MARKER_NAME)
         selection = frame_base._state["selectionMarkerBreakpoint"]
+        for name, breakpoint in frame_base._state["writerBreakpoints"].items():
+            if name != EPOCH_MARKER_NAME:
+                _set_callback(
+                    breakpoint,
+                    "forwarded_writer_site",
+                    "forwarded inherited writer site " + name,
+                )
         if (
             epoch is None
             or not epoch.IsValid()
@@ -965,13 +1005,24 @@ def __lldb_init_module(debugger, internal_dict):
     _reset_state()
     _state["debugger"] = debugger
     _state["trace"] = _new_trace()
+    capture = frame_base._state["captureEntryBreakpoint"]
     prepare = frame_base._state["prepareEntryBreakpoint"]
-    if prepare is None or not prepare.IsValid():
+    if (
+        capture is None
+        or not capture.IsValid()
+        or prepare is None
+        or not prepare.IsValid()
+    ):
         _failure(
             "initialization",
-            "inherited active watch prepare_layer breakpoint is invalid",
+            "inherited active watch entry breakpoint is invalid",
         )
         return
+    _set_callback(
+        capture,
+        "forwarded_capture_backdrop_entry",
+        "forwarded inherited capture_backdrop entry",
+    )
     _set_callback(
         prepare,
         "multiplexed_prepare_layer_entry",

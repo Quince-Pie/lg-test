@@ -112,6 +112,7 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         source = inspect.getsource(getattr(self.module, "__lldb_init_module"))
         finalize = inspect.getsource(self.module.finalize)
         self.assertIn("frame_base.__lldb_init_module", source)
+        self.assertIn('frame_base._state["captureEntryBreakpoint"]', source)
         self.assertIn('frame_base._state["prepareEntryBreakpoint"]', source)
         self.assertNotIn("BreakpointCreateByName", source)
         self.assertIn("frame_base.finalize()", finalize)
@@ -142,6 +143,26 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         self.assertIn('frame_base._state["writerBreakpoints"]', entry)
         self.assertIn('frame_base._state["selectionMarkerBreakpoint"]', entry)
         self.assertEqual(entry.count("_address_breakpoint("), 1)
+
+    def test_all_nested_inherited_callbacks_are_exported_by_active_module(self):
+        initialization = inspect.getsource(
+            getattr(self.module, "__lldb_init_module")
+        )
+        capture_entry = inspect.getsource(
+            self.module.forwarded_capture_backdrop_entry
+        )
+        capture_late = inspect.getsource(
+            self.module.forwarded_capture_backdrop_late
+        )
+        writer = inspect.getsource(self.module.forwarded_writer_site)
+        entry = inspect.getsource(self.module.prepare_layer_entry)
+        self.assertIn('"forwarded_capture_backdrop_entry"', initialization)
+        self.assertIn('frame_base._state["captureLateBreakpoint"]', capture_entry)
+        self.assertIn('"forwarded_capture_backdrop_late"', capture_entry)
+        self.assertIn("frame_base.capture_backdrop_late", capture_late)
+        self.assertIn("frame_base.writer_site", writer)
+        self.assertIn('"forwarded_writer_site"', entry)
+        self.assertIn('name != EPOCH_MARKER_NAME', entry)
 
 
 if __name__ == "__main__":

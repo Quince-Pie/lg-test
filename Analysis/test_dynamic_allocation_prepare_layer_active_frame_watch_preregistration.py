@@ -49,6 +49,9 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
             acceptance["singlePhysicalBreakpointPerSharedAddressRequired"]
         )
         self.assertTrue(acceptance["inheritedCallbackMustRunBeforeActiveCallback"])
+        self.assertTrue(
+            acceptance["everyInheritedCallbackMustBeExportedByLoadedModule"]
+        )
 
     def test_early_identity_excludes_future_x28(self) -> None:
         acceptance = self.document["acceptance"]
@@ -132,6 +135,16 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertTrue(duplicate["completePrepareLayerCodeHashMatched"])
         self.assertFalse(duplicate["hardwareWatchpointInstalled"])
         self.assertFalse(duplicate["causalWriterOutcomeObserved"])
+        forwarding = self.document["nestedModuleCallbackCaptureCorrection"]
+        self.assertEqual(forwarding["runID"], 31026257919)
+        self.assertEqual(
+            forwarding["captureTargetStopReason"],
+            "breakpoint 3.1 at CA::Rect::apply_transform +200",
+        )
+        self.assertTrue(forwarding["sharedPrepareEntryWorked"])
+        self.assertEqual(forwarding["activeEpochMarkerHitCount"], 3)
+        self.assertFalse(forwarding["hardwareWatchpointInstalled"])
+        self.assertFalse(forwarding["causalWriterOutcomeObserved"])
         self.assertIsNone(self.document["runtimeOutcomeFrozenBeforeRun"])
         forbidden = "\n".join(self.document["notAuthorizedBeforeAcceptance"])
         self.assertIn("production shader", forbidden)

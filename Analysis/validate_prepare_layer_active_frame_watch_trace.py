@@ -129,6 +129,10 @@ EXPECTED_CONFIGURATION = {
         "selection breakpoints; at each shared address run the inherited callback "
         "first and the active-watch callback second"
     ),
+    "inheritedCallbackForwardingRule": (
+        "bind every inherited entry and dynamically created breakpoint through "
+        "a callback exported by this command-script module"
+    ),
 }
 
 

@@ -5664,3 +5664,22 @@ immutable inherited handler first, then the active-watch handler. Only the
 `+0x2a68` live-frame retirement breakpoint is new. The sealed validator now
 requires the three shared breakpoint IDs to equal the inherited IDs, preventing
 the duplicate-stop failure from passing locally or in CI.
+
+Run `31026257919` at commit `726638f` proved that single-breakpoint
+multiplexing passed the entry collision, then exposed a second composition
+boundary. The active entry and three early zero epochs ran, but their source
+was not yet selected. LLDB then stopped at inherited breakpoint `3.1`,
+`CA::Rect::apply_transform +200`. Callbacks created by the nested imported
+module still named that module as their command-script namespace, while LLDB
+had registered only the outer active module. Consequently the target stopped
+before source selection, no hardware watch was installed, and no crop outcome
+was observed. Artifact `8938817313` has digest
+`sha256:5f2de1fb71ea6dfa3b3085b7ca5db4d467751ac31dc2d4ff360283c81910ed5d`;
+the exact trace and log hashes are frozen in the preregistration.
+
+The successor exports forwarders for the inherited `capture_backdrop` entry,
+its dynamically created late selector, and every non-shared writer site in the
+loaded active command-script module. Shared entry, epoch, and selection sites
+remain base-first multiplexers. Thus every inherited LLDB callback now has a
+registered outer-module name, including callbacks that do not exist until a
+prior breakpoint runs.
