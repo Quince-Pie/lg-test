@@ -392,11 +392,46 @@ func deterministicPermutation(count: Int, seed: UInt64) -> [Int] {
     return values
 }
 
+struct LandmarkImageLoader {
+    static var cache: [String: (pixels: [UInt8], width: Int, height: Int)] = [:]
+    
+    static func getPixel(_ name: String, _ x: Int, _ y: Int, _ w: Int, _ h: Int) -> (UInt8, UInt8, UInt8) {
+        let photoName = name.replacingOccurrences(of: "landmark-", with: "") + "@2x.jpg"
+        if let entry = cache[name] {
+            let px = min(entry.width - 1, max(0, x * entry.width / max(w, 1)))
+            let py = min(entry.height - 1, max(0, y * entry.height / max(h, 1)))
+            let idx = (py * entry.width + px) * 4
+            if idx + 2 < entry.pixels.count {
+                return (entry.pixels[idx], entry.pixels[idx+1], entry.pixels[idx+2])
+            }
+        }
+        let photoPath = URL(fileURLWithPath: "Resources/Landmarks/" + photoName)
+        if let source = CGImageSourceCreateWithURL(photoPath as CFURL, nil),
+           let image = CGImageSourceCreateImageAtIndex(source, 0, nil) {
+            let bw = image.width, bh = image.height
+            var pixels = [UInt8](repeating: 0, count: bw * bh * 4)
+            let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+            if let context = CGContext(
+                data: &pixels, width: bw, height: bh,
+                bitsPerComponent: 8, bytesPerRow: bw * 4,
+                space: colorSpace,
+                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue).rawValue
+            ) {
+                context.draw(image, in: CGRect(x: 0, y: 0, width: bw, height: bh))
+                cache[name] = (pixels, bw, bh)
+                return getPixel(name, x, y, w, h)
+            }
+        }
+        return (140, 97, 73)
+    }
+}
+
 func staticBackgrounds() -> [Background] {
     var list: [Background] = []
     for landmarkId in ["1001", "1002", "1003", "1004", "1005", "1006", "1007", "1008", "1009", "1010", "1011", "1012", "1014", "1015", "1016", "1017", "1018", "1019", "1020", "1021", "1022"] {
-        list.append(Background(name: "landmark-\(landmarkId)", family: .qualitative) { x, y, w, h in
-            return (140, 97, 73)
+        let name = "landmark-\(landmarkId)"
+        list.append(Background(name: name, family: .qualitative) { x, y, w, h in
+            return LandmarkImageLoader.getPixel(name, x, y, w, h)
         })
     }
     return list
