@@ -1,6 +1,9 @@
 name: Capture Landmark Liquid Glass Reference
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       landmark_id:
