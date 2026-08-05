@@ -10,6 +10,9 @@ WALLE_ROOT = REPOSITORY_ROOT.parent
 PREREGISTRATION_PATH = ANALYSIS_ROOT / (
     "dynamic_allocation_prepare_layer_active_frame_watch_preregistration.json"
 )
+PRODUCTION_SHADER_SHA256 = (
+    "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d"
+)
 
 
 def sha256(path: Path) -> str:
@@ -62,8 +65,13 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
 
     def test_input_program_hashes_are_frozen(self) -> None:
         integrity = self.document["inputProgramIntegrity"]
+        self.assertEqual(
+            integrity["productionShaderSHA256"], PRODUCTION_SHADER_SHA256
+        )
+        production_shader = WALLE_ROOT / "shaders/frag.glsl"
+        if production_shader.is_file():
+            self.assertEqual(sha256(production_shader), PRODUCTION_SHADER_SHA256)
         paths = (
-            (WALLE_ROOT / "shaders/frag.glsl", "productionShaderSHA256"),
             (
                 REPOSITORY_ROOT
                 / "Analysis/dynamic_allocation_prepare_layer_frame_writer_result.json",
@@ -94,6 +102,11 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
                 / ".github/workflows/prepare-layer-active-frame-watch-introspect.yml",
                 "workflowSHA256",
             ),
+            (
+                REPOSITORY_ROOT
+                / "Analysis/test_dynamic_allocation_prepare_layer_active_frame_watch_preregistration.py",
+                "preregistrationTestSHA256",
+            ),
         )
         for path, field in paths:
             with self.subTest(path=path):
@@ -101,6 +114,11 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertFalse(integrity["productionShaderModifiedByExperiment"])
 
     def test_runtime_outcome_is_null_and_product_claims_remain_forbidden(self) -> None:
+        correction = self.document["preCaptureContractCorrection"]
+        self.assertEqual(correction["runID"], 31025339792)
+        self.assertFalse(correction["captureAttempted"])
+        self.assertFalse(correction["appleRuntimeObserved"])
+        self.assertFalse(correction["artifactProduced"])
         self.assertIsNone(self.document["runtimeOutcomeFrozenBeforeRun"])
         forbidden = "\n".join(self.document["notAuthorizedBeforeAcceptance"])
         self.assertIn("production shader", forbidden)

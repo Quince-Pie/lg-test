@@ -167,6 +167,7 @@
   "inputProgramIntegrity": {
     "productionShaderPath": "../shaders/frag.glsl",
     "productionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "productionShaderExternalToStandaloneLgTestCheckout": true,
     "productionShaderModifiedByExperiment": false,
     "openedFrameWriterResultPath": "Analysis/dynamic_allocation_prepare_layer_frame_writer_result.json",
     "openedFrameWriterResultSHA256": "f855f60b0881961fe697063e895ea32028c195283ea8b207dbcfbe81bdf46ce1",
@@ -179,7 +180,22 @@
     "validatorTestPath": "Analysis/test_validate_prepare_layer_active_frame_watch_trace.py",
     "validatorTestSHA256": "83377a48937649b694f7c1443cc1f6f07dc50d8cbc246b83a4d17805fc4947f5",
     "workflowPath": ".github/workflows/prepare-layer-active-frame-watch-introspect.yml",
-    "workflowSHA256": "20f91b77f53a2acd39bcc433de2a0d4c2a111317e0f954773567d23d54c13777"
+    "workflowSHA256": "5baee4a69624bde439e21c1fc033fd9c4cd196f54a054de8c995a6f01ab1e650",
+    "preregistrationTestPath": "Analysis/test_dynamic_allocation_prepare_layer_active_frame_watch_preregistration.py",
+    "preregistrationTestSHA256": "fad40335c115d001a3477f58fb599e9c6397309c085cd17659488814231efe23"
+  },
+  "preCaptureContractCorrection": {
+    "runID": 31025339792,
+    "jobID": 92372214370,
+    "headSHA": "a68f484b940ca19b36555f89cc4708459933744b",
+    "workflowConclusion": "failure",
+    "durationSeconds": 10,
+    "captureAttempted": false,
+    "appleRuntimeObserved": false,
+    "artifactProduced": false,
+    "failure": "The standalone lg-test checkout correctly lacked Walle's external ../shaders/frag.glsl, but the preregistration integrity test attempted to read it unconditionally.",
+    "correction": "The standalone contract now verifies the frozen production shader digest literal; when the sibling Walle shader exists, the same test additionally hashes its real bytes. Contract output is created and retained before later workflow steps so any future pre-capture failure remains downloadable.",
+    "scientificOutcomeChanged": false
   },
   "runtimeOutcomeFrozenBeforeRun": null,
   "notAuthorizedBeforeAcceptance": [

@@ -51,14 +51,20 @@ jobs:
         id: contracts
         continue-on-error: true
         run: |
+          mkdir -p transition-introspection
+          set -o pipefail
           python3 -m unittest discover -s Analysis \
-            -p 'test_capture_prepare_layer_active_frame_watch_trace_lldb_source.py' -v
+            -p 'test_capture_prepare_layer_active_frame_watch_trace_lldb_source.py' \
+            -v 2>&1 | tee transition-introspection/contracts.log
           python3 -m unittest discover -s Analysis \
-            -p 'test_validate_prepare_layer_active_frame_watch_trace.py' -v
+            -p 'test_validate_prepare_layer_active_frame_watch_trace.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
           python3 -m unittest discover -s Analysis \
-            -p 'test_dynamic_allocation_prepare_layer_frame_writer_result.py' -v
+            -p 'test_dynamic_allocation_prepare_layer_frame_writer_result.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
           python3 -m unittest discover -s Analysis \
-            -p 'test_dynamic_allocation_prepare_layer_active_frame_watch_preregistration.py' -v
+            -p 'test_dynamic_allocation_prepare_layer_active_frame_watch_preregistration.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
 
       - name: Build transition introspection probe
         id: build

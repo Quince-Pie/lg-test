@@ -5637,3 +5637,12 @@ those instructions are decoded and prospectively transferred across unseen
 geometry, scale, appearance, material, direction, and physical-Retina cases,
 the complete crop policy, production-shader authority, and Liquid Glass
 parity remain explicitly unclaimed.
+
+The first dispatch of that successor, run `31025339792` at commit `a68f484`,
+stopped in its portable contract before build or capture because a test tried
+to read Walle's external sibling `../shaders/frag.glsl` from the standalone
+`lg-test` checkout. It observed no Apple runtime state and produced no
+scientific outcome. The preregistration records the correction explicitly:
+standalone CI checks the frozen production-shader digest, a colocated Walle
+checkout additionally hashes the real shader bytes, and contract output is
+created before the build so future pre-capture failures remain downloadable.
