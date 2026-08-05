@@ -5,31 +5,42 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      landmark_id:
-        description: Landmark asset ID (e.g. 1008, 1001)
-        required: true
-        default: '1008'
 
 jobs:
   capture-landmark:
-    runs-on: macos-15
+    runs-on: macos-26
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Swift
-        run: swift --version
-        
+
+      - name: Runner info
+        run: |
+          sw_vers
+          uname -m
+          xcodebuild -version
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+          sleep 2
+
       - name: Build GlassCapture
         run: |
-          swift build -c release --product GlassCapture
-          
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassCapture/main.swift \
+            -o glasscap
+
       - name: Capture Native Apple macOS 26 Landmark Framebuffer
         run: |
-          .build/release/GlassCapture --landmark ${{ inputs.landmark_id }} --out-dir artifacts/landmark_captures
-          
-      - name: Upload Artifact
+          mkdir -p artifacts/landmark_captures
+          ./glasscap --suite static --out-dir artifacts/landmark_captures
+
+      - name: Upload Landmark Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: landmark-native-capture-${{ inputs.landmark_id }}
+          name: landmark-native-hardware-captures
           path: artifacts/landmark_captures/
