@@ -6231,3 +6231,51 @@ physical Retina 2x and color/pixel-format transfer; and finally end-to-end
 zero-byte-difference Walle frames. The production shader remains unchanged at
 SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+Schema 7 moves to that remaining boundary without another full instruction
+trace. The already opened `prepare_layer+0x3ef0` stop identifies the relevant
+normal CARenderer replay structurally: the backtrace has exactly four exact
+`prepare_layer` frames and the direct
+`transitionBackgroundUniformEvidence -> localTransitionCARendererEvidence ->
+carendererUniformEvidence` caller chain. Matrix, fixed-state, and path-isolation
+callers are excluded. The selector does not read the aggregate, working crop,
+or any eventual output before qualification.
+
+For every qualified normal replay, the new bounded probe retains all scalar
+registers, the complete 2 KiB top role, 384 bytes of the selected source,
+2 KiB of stack, bounded pointer snapshots, the complete backtrace, and register
+plus 2 KiB role snapshots for all four `prepare_layer` frames. Qualified stops
+join one-to-one in callback order to the already ordered
+`dynamicBackgroundUniforms.records`; a missing or duplicate stop fails instead
+of being aligned by crop similarity. There are no hardware watchpoints and no
+instruction stepping.
+
+The prospective discovery matrix contains all 32 normal replay states for each
+of eight regimes: 640-center, 640-integer, both signed half-pixel phase cases,
+256-center, 512-offset, 640-fractional, and 1536 window-clipped. This yields 256
+private/public state pairs in one workflow run. The matrix is deliberately a
+discovery capture: its integrity gate can open those pairs, but it cannot call
+a fitted policy general, authorize a shader change, or claim parity.
+
+One diagnostic law is frozen before the run. On the four already opened
+640-center states, if `P` is public carrier position and `L=floor(P)-1`, the
+root floating rectangle was exactly
+
+```
+[L, 1024-P-640-8, P+640-L, P+640+8-L]
+```
+
+The matrix must report every exact match and residual for that candidate, plus
+integer/half-phase border selection, clipping order, small/oversized geometry,
+and endpoint behavior. It may not promote the relationship from those four
+opened values. After the 256 records are decoded, a separately frozen unseen
+holdout is still required before the crop policy is general.
+
+The immutable design is
+`Analysis/dynamic_allocation_prepare_layer_crop_transfer_preregistration.json`;
+the capture, validator, and workflow are respectively
+`Analysis/capture_prepare_layer_crop_transfer_lldb.py`,
+`Analysis/validate_prepare_layer_crop_transfer.py`, and
+`.github/workflows/prepare-layer-crop-transfer-introspect.yml`. The Apple
+capture program is unchanged. The Walle shader remains untouched at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.

@@ -1,0 +1,156 @@
+{
+  "prepareLayerCropTransferPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-05T22:12:02Z",
+  "classification": "prospective crop-value-independent multi-state public-layer/private-prepare_layer discovery capture; exact selected-path DOD and integerization are opened, while the general public-state producer, unseen transfer, production shader changes, and Liquid Glass parity remain sealed",
+  "objective": "Retain the final private prepare_layer role for every normal dense timeline CARenderer replay across eight geometry/phase regimes, join each stop to its exact public presentation-layer state without consulting crop values during selection, and expose the general public-state-to-floating-crop producer for offline derivation.",
+  "openedEvidenceBoundary": {
+    "runID": 31048753297,
+    "jobID": 92450687152,
+    "artifactID": 8947713091,
+    "artifactDigest": "sha256:4858ee27b4e8c110ab10efd4b2533ce7f9a3a4d46aeae93c6c9f9623c7008cf4",
+    "instructionTraceSHA256": "7cb1aa0f9f205bf57c4cea01539a2ac0860137b8be9c53112c0989e7488b51e5",
+    "timelineSHA256": "8f9a76797f086bc756c1841beba8b948d9c04d4dabd3a6731b83c370fbe323ef",
+    "selectedGeometry": "circle-640-center",
+    "selectedSampleIndex": 2,
+    "selectedPublicCarrierPosition": [491.993896484375, 491.993896484375],
+    "selectedPrivateFloatingCrop": [490.0, -115.993896484375, 641.993896484375, 649.993896484375],
+    "selectedPrivateWorkingCrop": [489, -117, 644, 652],
+    "prepareLayerSymbolByteCount": 40128,
+    "prepareLayerFullCodeSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+    "selectionMarkerOffset": 16112,
+    "selectionMarkerInstructionRawLittleEndianHex": "28330b91",
+    "selectionMarkerPrepareRecursionDepth": 4,
+    "cropWriterSemanticsResultSHA256": "899f349bb8424c39be15e7110b9a004eeb509a5ebcef898d4d15fa78c511a29a",
+    "dodSemanticsResultSHA256": "95cf0116bbf7075aee611bf0a20733f2919aa1b04eb2cdc4df8c683608c7714d"
+  },
+  "alreadyOpenedArithmetic": {
+    "dynamicResamplingScale": "q = 2 / (2 - k)",
+    "glassUVSpan": "q times the allocated backdrop extent",
+    "effectiveUVOrigin": "producer-pass crop-transform origin plus copy-base signed integer offset",
+    "glassDOD": "r = max(2*blur, bleedBlur); e = 2.8*r; origin -= e; size += 2*e, followed by the observed shadow union and backdrop intersection",
+    "floatingToIntegerCrop": "clamp origin to at least -536870911; clamp size to at most 536870912-origin; lower=floor(origin); extent=ceil(origin+size)-lower; on the opened enabled mismatch branch origin-=1 and extent+=2",
+    "scope": "These statements are instruction-derived for the opened path and finite inputs. They do not establish the upstream floating-rectangle producer or alternate guard behavior."
+  },
+  "frozenDiscoveryMatrix": {
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "animationCurve": "linear",
+    "physicalBackingScale": 1,
+    "timelineSampleCount": 33,
+    "normalReplayRecordCountPerGeometry": 32,
+    "denseAllocationEvidence": true,
+    "geometries": [
+      "circle-640-center",
+      "circle-640-integer",
+      "circle-640-phase-0500-even",
+      "circle-640-phase-0500-signed",
+      "circle-256-center",
+      "circle-512-offset",
+      "circle-640-fractional",
+      "circle-1536-center"
+    ],
+    "geometryCount": 8,
+    "prospectivePrivateRecordCount": 256,
+    "dimensions": [
+      "baseline center geometry",
+      "integer and signed half-pixel phase",
+      "small extent",
+      "off-center placement",
+      "fractional placement",
+      "window-clipped extent",
+      "32 non-endpoint and endpoint-adjacent temporal states"
+    ]
+  },
+  "captureDesign": {
+    "entryGate": "At the first exact prepare_layer entry, require the exact symbol start, 40,128-byte extent, complete SHA-256, all five opened code-window hashes, and the exact four bytes at +0x3ef0 before installing the marker.",
+    "selection": "At every +0x3ef0 stop, inspect only the exact structural backtrace. Retain the stop iff there are exactly four exact prepare_layer frames and the direct transitionBackgroundUniformEvidence -> localTransitionCARendererEvidence -> carendererUniformEvidence chain is present, while matrix, fixed-state, and path-isolation callers are absent. Crop and aggregate bytes are not read until after qualification.",
+    "payload": "For every qualified stop retain all scalar registers, 2 KiB top role, 384-byte selected source, 2 KiB stack, bounded pointer snapshots, the complete backtrace, and register plus 2 KiB role snapshots for all four prepare_layer frames.",
+    "join": "Qualified records in callback order join one-to-one to dynamicBackgroundUniforms.records in exact array order. Each direct normal loop iteration performs exactly one CARenderer replay; missing or duplicate depth-four markers fail validation rather than being aligned by numeric crop similarity.",
+    "boundedness": "At most 4,096 marker hits, 128 qualified records, and 64 grouped rejection classes are permitted per job. No qualified record or rejection may be silently discarded.",
+    "hardwareWatchpoints": false,
+    "instructionStepping": false,
+    "captureProgramChanged": false,
+    "productionShaderChanged": false
+  },
+  "acceptance": {
+    "eachMatrixJobMustBuild": true,
+    "eachCaptureTargetMustExitNormally": true,
+    "exactPrepareLayerCodeRequired": true,
+    "cropIndependentSelectionRequired": true,
+    "qualifiedRecordCountPerJob": 32,
+    "oneQualifiedRecordPerNormalReplayRequired": true,
+    "completeTopRoleRequired": true,
+    "allFourAncestorRolesRequired": true,
+    "publicPrivateOrdinalJoinRequired": true,
+    "zeroTraceFailuresRequired": true,
+    "zeroDiscardedQualifiedRecordsRequired": true,
+    "zeroUnretainedRejectionsRequired": true,
+    "formulaFitRequiredForCaptureIntegrity": false,
+    "generalCropPolicyMayBeClaimedByThisCaptureAlone": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenDiagnosticHypotheses": {
+    "baselineOnly": {
+      "domain": "circle-640-center states on the opened selected branch",
+      "definitions": "P is public carrier path [1] x/y position and L=floor(P)-1",
+      "candidateFloatingCrop": "[L, 1024-P-640-8, P+640-L, P+640+8-L]",
+      "status": "retrospectively exact over four opened P values; not accepted prospectively and not generalized to other geometry"
+    },
+    "genericComposition": {
+      "candidateDODRectangle": "for public carrier position (Px,Py), unfiltered SDF extent (W,H), and window height C, [Px, C-Py-H-8, W, H+8] on the opened zero-bleed clear path",
+      "candidateRootComposition": "union the transformed DOD rectangle with a live nested signed-integer layer rectangle before floating-to-integer crop conversion",
+      "discriminators": [
+        "whether nested lower edges equal floor of a public transformed edge minus one",
+        "whether integer, half-even, and signed-half phases select distinct border guards",
+        "whether clipping changes the nested rectangle before or after DOD union",
+        "whether small and oversized geometries change prepare recursion or crop flags",
+        "whether endpoint integer aggregates skip the one-pixel border branch"
+      ],
+      "status": "diagnostic candidates only; offline analysis must report all residuals and freeze a later unseen holdout before generalization"
+    }
+  },
+  "frozenImplementation": {
+    "lgTestCommitBeforeRegistration": "962886ad30c22f1d6614ecf576c1f8716a38d81e",
+    "captureHarness": "Analysis/capture_prepare_layer_crop_transfer_lldb.py",
+    "captureHarnessSHA256": "ae163040e884369c0dbc6c73a9b17750cf7b0ee601a5f45eaa6de3bb3fbc6a80",
+    "validator": "Analysis/validate_prepare_layer_crop_transfer.py",
+    "validatorSHA256": "7f40a1b598f899093be8abd34374823acf52a60ebb15d4c074a5b3a500d40b3e",
+    "captureHarnessTest": "Analysis/test_capture_prepare_layer_crop_transfer_lldb_source.py",
+    "captureHarnessTestSHA256": "e2f50f14a243738e73a5d8eae3dfde035741f149be16eb8af384e8d26b33222a",
+    "validatorTest": "Analysis/test_validate_prepare_layer_crop_transfer.py",
+    "validatorTestSHA256": "0c0384d15ea5f818a26883feb40e271f9452cff2e95338d5a7e79a612e27c54d",
+    "workflow": ".github/workflows/prepare-layer-crop-transfer-introspect.yml",
+    "workflowSHA256": "d768f8e5eb70d9e557b261b44543a1cf6cea254d1617b7adc075c13d2770e9bd",
+    "productionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "developmentFlakeSHA256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01"
+  },
+  "frozenCaptureProgram": [
+    {"path": "Sources/GlassIntrospect/MatrixBridge.c", "sha256": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057"},
+    {"path": "Sources/GlassIntrospect/MatrixBridge.h", "sha256": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c"},
+    {"path": "Sources/GlassIntrospect/HalfBlendProbe.swift", "sha256": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263"},
+    {"path": "Sources/GlassIntrospect/HalfDotProbe.swift", "sha256": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0"},
+    {"path": "Sources/GlassIntrospect/HalfIntrinsicProbe.swift", "sha256": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41"},
+    {"path": "Sources/GlassIntrospect/SDFStageProbe.swift", "sha256": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208"},
+    {"path": "Sources/GlassIntrospect/main.swift", "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"}
+  ],
+  "postRunAnalysisPlan": [
+    "verify GitHub run, job, artifact, and file digests before interpreting any private bytes",
+    "re-run the sealed validator locally and require byte-identical output",
+    "decode every role field at fixed offsets and enumerate all guard/branch state classes without dropping endpoint or clipped records",
+    "evaluate every frozen diagnostic candidate with exact binary64 or integer equality and publish every residual",
+    "derive the smallest public-state composition that replays all 256 private floating and working crops bit for bit",
+    "freeze a separate unseen material/direction/geometry/Retina holdout before authorizing general transfer",
+    "leave the protected production shader unchanged until that holdout and an end-to-end zero-byte Walle gate pass"
+  ],
+  "notClaimed": [
+    "that the prospective workflow has run or passed",
+    "that the baseline floor relationship generalizes",
+    "that alternate crop guards or clipping policy are understood",
+    "that material, appearance, reverse direction, color, or Retina transfer is established",
+    "that the missing exact reference shader has been restored",
+    "that the production Walle shader may change",
+    "that Liquid Glass parity has been achieved"
+  ]
+}
