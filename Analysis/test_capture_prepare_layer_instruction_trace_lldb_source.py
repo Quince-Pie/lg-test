@@ -78,6 +78,7 @@ class PrepareLayerInstructionTraceSourceTests(unittest.TestCase):
                 "filterApplyDOD",
                 "filterApply",
                 "filterMapBounds",
+                "addBackgroundFilters",
                 "unionBounds",
             ],
         )
@@ -299,6 +300,44 @@ class PrepareLayerInstructionTraceSourceTests(unittest.TestCase):
         self.assertIn('"returnStack"', finish)
         self.assertIn("semantic DOD return instruction differs", finish)
         self.assertIn("selected marker preceded semantic DOD closure", marker)
+
+    def test_all_background_filter_crop_invocations_are_retained(self):
+        module = self.module
+        before = inspect.getsource(module._semantic_crop_state_before)
+        finish = inspect.getsource(module._finish_semantic_crop_instruction)
+        marker = inspect.getsource(module._selected_marker)
+        self.assertIn("_semantic_register_and_stack_snapshot", before)
+        self.assertIn('"semanticCropInstructionStates"', before)
+        self.assertIn('arguments["x5"]', before)
+        self.assertIn("SEMANTIC_CROP_CALLER_ROLE_OFFSET", before)
+        self.assertIn("_crop_argument_memory", before)
+        self.assertIn('"instructionStatesSHA256"', finish)
+        self.assertIn("CROP_RETURN_MNEMONICS", finish)
+        self.assertIn("CROP_RETURN_RAW_LITTLE_ENDIAN_HEX", finish)
+        self.assertIn("SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT", marker)
+        self.assertIn("selected marker preceded semantic crop closure", marker)
+
+    def test_crop_store_and_union_links_are_exact_and_bitwise(self):
+        module = self.module
+        store = inspect.getsource(module._crop_store_before)
+        finish = inspect.getsource(module._finish_crop_store)
+        union = inspect.getsource(module._crop_union_input_before)
+        self.assertIn("CROP_STORE_RELATIVE_OFFSET", store)
+        self.assertIn("CROP_STORE_RAW_LITTLE_ENDIAN_HEX", store)
+        self.assertIn('records["x19"]', store)
+        self.assertIn('records["x28"]', store)
+        self.assertIn('"sourceInteger"', store)
+        self.assertIn('"destinationAfter"', finish)
+        self.assertIn("CROP_UNION_INPUT_RELATIVE_OFFSET", union)
+        self.assertIn("CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX", union)
+        self.assertIn('"semanticCropUnionInputs"', union)
+
+    def test_opaque_crop_target_mutations_are_retained(self):
+        source = inspect.getsource(self.module._trace_opaque_callee)
+        self.assertIn('"semanticCropInvocationIndex"', source)
+        self.assertIn('"semanticCropTargetBefore"', source)
+        self.assertIn('"semanticCropTargetAfter"', source)
+        self.assertIn('"semanticCropTargetChanged"', source)
 
     def test_inherited_source_harness_is_reused_and_forwarded(self):
         initialization = inspect.getsource(getattr(self.module, "__lldb_init_module"))

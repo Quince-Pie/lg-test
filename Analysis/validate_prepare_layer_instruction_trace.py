@@ -18,15 +18,27 @@ import validate_prepare_layer_frame_correlated_writer_trace as frame_validator
 full_base = frame_validator.full_base
 merge_base = frame_validator.merge_base
 
-EXPECTED_TRACE_SCHEMA_VERSION = 5
-VALIDATION_SCHEMA_VERSION = 5
-EXPECTED_CLASSIFICATION = (
+LEGACY_TRACE_SCHEMA_VERSION = 5
+LEGACY_VALIDATION_SCHEMA_VERSION = 5
+EXPECTED_TRACE_SCHEMA_VERSION = 6
+VALIDATION_SCHEMA_VERSION = 6
+LEGACY_EXPECTED_CLASSIFICATION = (
     "preregistered-dual-source-linked-selected-glass-dod-full-register-software-"
     "instruction-trace; architectural-writers-opened; crop-policy-generalization-"
     "unseen-transfer-and-product-parity-remain-sealed"
 )
-EXPECTED_VALIDATION_CLASSIFICATION = (
+EXPECTED_CLASSIFICATION = (
+    "preregistered-dual-source-linked-background-filter-crop-full-register-"
+    "software-instruction-trace; selected-glass-dod-and-architectural-writers-"
+    "opened; crop-policy-generalization-unseen-transfer-and-product-parity-"
+    "remain-sealed"
+)
+LEGACY_EXPECTED_VALIDATION_CLASSIFICATION = (
     "prospective-selected-glass-dod-complete-register-state-gate-for-exact-"
+    "dynamic-semantic-replay; crop-policy-generalization-remains-sealed"
+)
+EXPECTED_VALIDATION_CLASSIFICATION = (
+    "prospective-background-filter-crop-complete-register-state-gate-for-exact-"
     "dynamic-semantic-replay; crop-policy-generalization-remains-sealed"
 )
 PREPARE_LAYER_FULL_CODE_SHA256 = (
@@ -64,6 +76,24 @@ SEMANTIC_DOD_ENTRY_OFFSET = 0
 SEMANTIC_DOD_RETURN_OFFSET = 1128
 SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX = "ff0f5fd6"
 SEMANTIC_STACK_BYTE_COUNT = 256
+SEMANTIC_CROP_SCOPE_NAME = "addBackgroundFilters"
+SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT = 4
+SEMANTIC_CROP_MAXIMUM_INVOCATION_COUNT = 8
+SEMANTIC_CROP_TARGET_BYTE_COUNT = 32
+SEMANTIC_CROP_ARGUMENT_MEMORY_BYTE_COUNT = 1024
+SEMANTIC_CROP_CALLER_ROLE_OFFSET = 0x290
+SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT = 2048
+CROP_INTEGER_SOURCE_OFFSET = 0x270
+CROP_INTEGER_BYTE_COUNT = 16
+CROP_DESTINATION_OFFSET = 0xB0
+CROP_STORE_RELATIVE_OFFSET = 0x55C0
+CROP_STORE_RAW_LITTLE_ENDIAN_HEX = "802f803d"
+CROP_UNION_INPUT_RELATIVE_OFFSET = 0x8570
+CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX = "88275729"
+CROP_UNION_STATE_OFFSET = 0xA0
+CROP_UNION_STATE_BYTE_COUNT = 48
+CROP_RETURN_MNEMONICS = ("ret", "retab")
+CROP_RETURN_RAW_LITTLE_ENDIAN_HEX = ("c0035fd6", "ff0f5fd6")
 KNOWN_CANVAS_EXTENT = 1024.0
 KNOWN_GLASS_EXTENT = 640.0
 KNOWN_EDGE_PADDING = 8.0
@@ -159,12 +189,29 @@ CHECKPOINT_SCOPE_SPECS = (
         "expectedSHA256": None,
     },
     {
+        "name": SEMANTIC_CROP_SCOPE_NAME,
+        "function": (
+            "CA::Render::Updater::add_background_filters_("
+            "CA::Render::Updater::GlobalState&, "
+            "CA::Render::Updater::LocalState&, CA::Render::Layer const*, "
+            "CA::Render::LayerNode*, CA::Render::Updater::LocalState*, "
+            "CA::Render::Updater::LayerShapes*)"
+        ),
+        "relativeToPrepareLayer": 40128,
+        "byteCount": 1564,
+        "expectedSHA256": None,
+    },
+    {
         "name": "unionBounds",
         "function": full_base.UNION_HELPER_SYMBOL_NAME,
         "relativeToPrepareLayer": full_base.UNION_HELPER_RELATIVE_TO_PREPARE_LAYER,
         "byteCount": full_base.UNION_HELPER_SYMBOL_BYTE_COUNT,
         "expectedSHA256": full_base.UNION_HELPER_SYMBOL_SHA256,
     },
+)
+
+LEGACY_CHECKPOINT_SCOPE_SPECS = tuple(
+    spec for spec in CHECKPOINT_SCOPE_SPECS if spec["name"] != SEMANTIC_CROP_SCOPE_NAME
 )
 
 
@@ -204,6 +251,24 @@ EXPECTED_CONFIGURATION = {
     "semanticStackByteCount": SEMANTIC_STACK_BYTE_COUNT,
     "semanticGeneralRegisterNames": list(full_base.GENERAL_REGISTER_NAMES),
     "semanticSIMDRegisterNames": list(full_base.SIMD_REGISTER_NAMES),
+    "semanticCropScopeName": SEMANTIC_CROP_SCOPE_NAME,
+    "semanticCropExpectedInvocationCount": SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT,
+    "semanticCropMaximumInvocationCount": SEMANTIC_CROP_MAXIMUM_INVOCATION_COUNT,
+    "semanticCropTargetByteCount": SEMANTIC_CROP_TARGET_BYTE_COUNT,
+    "semanticCropArgumentMemoryByteCount": (SEMANTIC_CROP_ARGUMENT_MEMORY_BYTE_COUNT),
+    "semanticCropCallerRoleOffset": SEMANTIC_CROP_CALLER_ROLE_OFFSET,
+    "semanticCropCallerRoleByteCount": SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT,
+    "cropIntegerSourceOffset": CROP_INTEGER_SOURCE_OFFSET,
+    "cropIntegerByteCount": CROP_INTEGER_BYTE_COUNT,
+    "cropDestinationOffset": CROP_DESTINATION_OFFSET,
+    "cropStoreRelativeOffset": CROP_STORE_RELATIVE_OFFSET,
+    "cropStoreRawLittleEndianHex": CROP_STORE_RAW_LITTLE_ENDIAN_HEX,
+    "cropUnionInputRelativeOffset": CROP_UNION_INPUT_RELATIVE_OFFSET,
+    "cropUnionInputRawLittleEndianHex": CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX,
+    "cropUnionStateOffset": CROP_UNION_STATE_OFFSET,
+    "cropUnionStateByteCount": CROP_UNION_STATE_BYTE_COUNT,
+    "cropReturnMnemonics": list(CROP_RETURN_MNEMONICS),
+    "cropReturnRawLittleEndianHex": list(CROP_RETURN_RAW_LITTLE_ENDIAN_HEX),
     "knownCanvasExtent": KNOWN_CANVAS_EXTENT,
     "knownGlassExtent": KNOWN_GLASS_EXTENT,
     "knownEdgePadding": KNOWN_EDGE_PADDING,
@@ -255,6 +320,52 @@ EXPECTED_CONFIGURATION = {
         "and SIMD register files and 256 bytes at sp before execution, then "
         "retain the complete return state"
     ),
+    "semanticCropInvocationRule": (
+        "retain all four add_background_filters_ entries in execution order; "
+        "require x5=x19+0x290; from each entry through its exact return retain "
+        "every executed opened-scope instruction with complete scalar/SIMD "
+        "registers, 256 stack bytes, and the fixed 32-byte x5 target; retain "
+        "1024 bytes at every entry argument pointer and the complete 2048-byte "
+        "caller role at entry and return"
+    ),
+    "semanticCropLinkRule": (
+        "link the first three invocations by caller x19 to the exact "
+        "prepare_layer +0x55c0 q0 store and then to the exact +0x8570 nested-"
+        "crop union input; require the fourth invocation to target the "
+        "prospectively selected role aggregate"
+    ),
+}
+
+_LEGACY_CONFIGURATION_EXCLUDED_FIELDS = {
+    "semanticCropScopeName",
+    "semanticCropExpectedInvocationCount",
+    "semanticCropMaximumInvocationCount",
+    "semanticCropTargetByteCount",
+    "semanticCropArgumentMemoryByteCount",
+    "semanticCropCallerRoleOffset",
+    "semanticCropCallerRoleByteCount",
+    "cropIntegerSourceOffset",
+    "cropIntegerByteCount",
+    "cropDestinationOffset",
+    "cropStoreRelativeOffset",
+    "cropStoreRawLittleEndianHex",
+    "cropUnionInputRelativeOffset",
+    "cropUnionInputRawLittleEndianHex",
+    "cropUnionStateOffset",
+    "cropUnionStateByteCount",
+    "cropReturnMnemonics",
+    "cropReturnRawLittleEndianHex",
+    "semanticCropInvocationRule",
+    "semanticCropLinkRule",
+}
+LEGACY_EXPECTED_CONFIGURATION = {
+    name: (
+        [dict(spec) for spec in LEGACY_CHECKPOINT_SCOPE_SPECS]
+        if name == "checkpointScopes"
+        else value
+    )
+    for name, value in EXPECTED_CONFIGURATION.items()
+    if name not in _LEGACY_CONFIGURATION_EXCLUDED_FIELDS
 }
 
 
@@ -335,6 +446,7 @@ def _static_trace(
     trace: Mapping[str, Any],
     order: Mapping[int, str],
     inherited: Mapping[str, Any],
+    scope_specs: Sequence[Mapping[str, Any]],
 ) -> tuple[int, dict[str, Any], dict[str, dict[str, Any]], bytes]:
     prepare = mapping(trace.get("prepareLayer"), "prepare layer")
     entry = _require_callback(
@@ -373,13 +485,11 @@ def _static_trace(
         raise ValueError("control marker identity differs")
 
     values = list(sequence(trace.get("checkpointScopes"), "checkpoint scopes"))
-    if len(values) != len(CHECKPOINT_SCOPE_SPECS):
+    if len(values) != len(scope_specs):
         raise ValueError("checkpoint scope count differs")
     scopes: dict[str, dict[str, Any]] = {}
     prepare_code = b""
-    for index, (raw, spec) in enumerate(
-        zip(values, CHECKPOINT_SCOPE_SPECS, strict=True)
-    ):
+    for index, (raw, spec) in enumerate(zip(values, scope_specs, strict=True)):
         label = f"checkpoint scope {index}"
         item = mapping(raw, label)
         expected_start = start + spec["relativeToPrepareLayer"]
@@ -1148,6 +1258,599 @@ def _semantic_dod_trace(
     }
 
 
+def _semantic_simd_payload(value: Any, name: str, label: str) -> bytes:
+    snapshot = mapping(value, label)
+    values = list(sequence(snapshot.get("simd"), f"{label} SIMD"))
+    try:
+        index = full_base.SIMD_REGISTER_NAMES.index(name)
+    except ValueError as error:
+        raise ValueError(f"{label} SIMD register name differs") from error
+    if len(values) != len(full_base.SIMD_REGISTER_NAMES):
+        raise ValueError(f"{label} SIMD inventory differs")
+    byte_count = 4 if name in {"fpsr", "fpcr"} else 16
+    record = writer_base.register_record(
+        values[index], name, byte_count, f"{label} {name}"
+    )
+    return _payload(record.get("hex"), byte_count, f"{label} {name}")
+
+
+def _crop_argument_memory(value: Any, addresses: Mapping[str, int], label: str) -> None:
+    values = list(sequence(value, label))
+    names = ("x0", "x1", "x2", "x3", "x4", "x5")
+    if len(values) != len(names):
+        raise ValueError(f"{label} inventory differs")
+    for index, (raw, name) in enumerate(zip(values, names, strict=True)):
+        item = mapping(raw, f"{label} {index}")
+        if set(item) != {"registerName", "memory"} or item.get("registerName") != name:
+            raise ValueError(f"{label} {index} identity differs")
+        _memory_payload(
+            item.get("memory"),
+            f"{label} {name}",
+            expected_address=addresses[name],
+            expected_byte_count=SEMANTIC_CROP_ARGUMENT_MEMORY_BYTE_COUNT,
+        )
+
+
+def _semantic_crop_trace(
+    trace: Mapping[str, Any],
+    scopes: Mapping[str, Mapping[str, Any]],
+    identity: Mapping[str, int],
+) -> dict[str, Any]:
+    raw_steps = list(sequence(trace.get("instructionSteps"), "instruction steps"))
+    entry_steps = [
+        index
+        for index, raw in enumerate(raw_steps)
+        if isinstance(raw, Mapping)
+        and isinstance(raw.get("instruction"), Mapping)
+        and raw["instruction"].get("scopeName") == SEMANTIC_CROP_SCOPE_NAME
+        and raw["instruction"].get("scopeOffset") == 0
+    ]
+    raw_invocations = list(
+        sequence(trace.get("semanticCropInvocations"), "semantic crop invocations")
+    )
+    if (
+        len(raw_invocations) != SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT
+        or len(raw_invocations) > SEMANTIC_CROP_MAXIMUM_INVOCATION_COUNT
+        or len(entry_steps) != len(raw_invocations)
+    ):
+        raise ValueError("semantic crop invocation inventory differs")
+    raw_states = list(
+        sequence(
+            trace.get("semanticCropInstructionStates"),
+            "semantic crop instruction states",
+        )
+    )
+    expected_invocation_fields = {
+        "invocationIndex",
+        "entryStepIndex",
+        "entryPC",
+        "entryArgumentRegisters",
+        "entryArgumentAddresses",
+        "entryArgumentMemory",
+        "callerRoleBase",
+        "callerRoleAtEntry",
+        "targetAddress",
+        "targetAtEntry",
+        "aggregateAtEntryHex",
+        "instructionStateStartIndex",
+        "storeLinkIndex",
+        "returnStepIndex",
+        "returnInstructionStateIndex",
+        "returnInstructionScopeOffset",
+        "returnInstructionRawLittleEndianHex",
+        "returnInstructionMnemonic",
+        "returnPC",
+        "returnFunction",
+        "returnArgumentMemory",
+        "callerRoleAtReturn",
+        "targetAtReturn",
+        "aggregateAtReturnHex",
+        "instructionStateCount",
+        "instructionStatesSHA256",
+        "returnRegisters",
+        "returnStack",
+    }
+    expected_state_fields = {
+        "stateIndex",
+        "invocationIndex",
+        "invocationStateIndex",
+        "stepIndex",
+        "instruction",
+        "aggregateBeforeHex",
+        "registers",
+        "stack",
+        "target",
+    }
+    state_cursor = 0
+    previous_return_step = -1
+    invocations = []
+    for invocation_index, (raw, entry_step_index) in enumerate(
+        zip(raw_invocations, entry_steps, strict=True)
+    ):
+        label = f"semantic crop invocation {invocation_index}"
+        invocation = mapping(raw, label)
+        if set(invocation) != expected_invocation_fields:
+            raise ValueError(f"{label} fields differ")
+        entry_step = mapping(raw_steps[entry_step_index], f"{label} entry step")
+        entry_instruction = _instruction(
+            entry_step.get("instruction"), f"{label} entry instruction", scopes
+        )
+        return_step_index = integer(
+            invocation.get("returnStepIndex"), f"{label} return step"
+        )
+        if not entry_step_index <= return_step_index < len(raw_steps):
+            raise ValueError(f"{label} span differs")
+        return_step = mapping(raw_steps[return_step_index], f"{label} return step")
+        return_instruction = _instruction(
+            return_step.get("instruction"), f"{label} return instruction", scopes
+        )
+        expected_step_indices = [
+            index
+            for index in range(entry_step_index, return_step_index + 1)
+            if mapping(raw_steps[index], f"{label} span step {index}").get("kind")
+            == "scope-instruction"
+        ]
+        count = integer(invocation.get("instructionStateCount"), f"{label} state count")
+        start = integer(
+            invocation.get("instructionStateStartIndex"), f"{label} state start"
+        )
+        end = start + count
+        if (
+            invocation.get("invocationIndex") != invocation_index
+            or invocation.get("entryStepIndex") != entry_step_index
+            or invocation.get("entryPC") != entry_instruction["pc"]
+            or entry_step_index <= previous_return_step
+            or (
+                invocation_index + 1 < len(entry_steps)
+                and return_step_index >= entry_steps[invocation_index + 1]
+            )
+            or start != state_cursor
+            or count != len(expected_step_indices)
+            or end > len(raw_states)
+            or return_instruction["scopeName"] != SEMANTIC_CROP_SCOPE_NAME
+            or return_instruction["mnemonic"].lower() not in CROP_RETURN_MNEMONICS
+            or return_instruction["rawLittleEndianHex"]
+            not in CROP_RETURN_RAW_LITTLE_ENDIAN_HEX
+            or invocation.get("returnInstructionStateIndex") != end - 1
+            or invocation.get("returnInstructionScopeOffset")
+            != return_instruction["scopeOffset"]
+            or invocation.get("returnInstructionRawLittleEndianHex")
+            != return_instruction["rawLittleEndianHex"]
+            or invocation.get("returnInstructionMnemonic")
+            != return_instruction["mnemonic"].lower()
+        ):
+            raise ValueError(f"{label} identity differs")
+
+        raw_addresses = mapping(
+            invocation.get("entryArgumentAddresses"), f"{label} arguments"
+        )
+        argument_names = ("x0", "x1", "x2", "x3", "x4", "x5")
+        if set(raw_addresses) != set(argument_names):
+            raise ValueError(f"{label} argument fields differ")
+        addresses = {
+            name: integer(raw_addresses.get(name), f"{label} {name}")
+            for name in argument_names
+        }
+        argument_records = list(
+            sequence(
+                invocation.get("entryArgumentRegisters"),
+                f"{label} argument registers",
+            )
+        )
+        if len(argument_records) != len(argument_names):
+            raise ValueError(f"{label} argument register inventory differs")
+        for raw_record, name in zip(argument_records, argument_names, strict=True):
+            record = writer_base.register_record(
+                raw_record, name, 8, f"{label} {name} register"
+            )
+            if record.get("unsignedValue") != addresses[name]:
+                raise ValueError(f"{label} {name} register differs")
+        caller_role = integer(invocation.get("callerRoleBase"), f"{label} caller")
+        target = integer(invocation.get("targetAddress"), f"{label} target")
+        if target != caller_role + SEMANTIC_CROP_CALLER_ROLE_OFFSET:
+            raise ValueError(f"{label} target relation differs")
+        _crop_argument_memory(
+            invocation.get("entryArgumentMemory"), addresses, f"{label} entry memory"
+        )
+        _crop_argument_memory(
+            invocation.get("returnArgumentMemory"),
+            addresses,
+            f"{label} return memory",
+        )
+        _memory_payload(
+            invocation.get("callerRoleAtEntry"),
+            f"{label} caller role at entry",
+            expected_address=caller_role,
+            expected_byte_count=SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT,
+        )
+        _memory_payload(
+            invocation.get("callerRoleAtReturn"),
+            f"{label} caller role at return",
+            expected_address=caller_role,
+            expected_byte_count=SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT,
+        )
+        target_at_entry = _memory_payload(
+            invocation.get("targetAtEntry"),
+            f"{label} target at entry",
+            expected_address=target,
+            expected_byte_count=SEMANTIC_CROP_TARGET_BYTE_COUNT,
+        )
+        target_at_return = _memory_payload(
+            invocation.get("targetAtReturn"),
+            f"{label} target at return",
+            expected_address=target,
+            expected_byte_count=SEMANTIC_CROP_TARGET_BYTE_COUNT,
+        )
+
+        invocation_states = raw_states[start:end]
+        for local_index, (raw_state, step_index) in enumerate(
+            zip(invocation_states, expected_step_indices, strict=True)
+        ):
+            state_index = start + local_index
+            state_label = f"{label} state {local_index}"
+            state = mapping(raw_state, state_label)
+            step = mapping(raw_steps[step_index], f"{state_label} step")
+            instruction = _instruction(
+                state.get("instruction"), f"{state_label} instruction", scopes
+            )
+            general = _semantic_registers(
+                state.get("registers"), f"{state_label} registers"
+            )
+            _memory_payload(
+                state.get("stack"),
+                f"{state_label} stack",
+                expected_address=general["sp"],
+                expected_byte_count=SEMANTIC_STACK_BYTE_COUNT,
+            )
+            state_target = _memory_payload(
+                state.get("target"),
+                f"{state_label} target",
+                expected_address=target,
+                expected_byte_count=SEMANTIC_CROP_TARGET_BYTE_COUNT,
+            )
+            aggregate = _payload(
+                state.get("aggregateBeforeHex"),
+                full_base.AGGREGATE_BYTE_COUNT,
+                f"{state_label} aggregate",
+            )
+            if (
+                set(state) != expected_state_fields
+                or state.get("stateIndex") != state_index
+                or state.get("invocationIndex") != invocation_index
+                or state.get("invocationStateIndex") != local_index
+                or state.get("stepIndex") != step_index
+                or state.get("instruction") != step.get("instruction")
+                or aggregate.hex() != step.get("aggregateBeforeHex")
+                or general["pc"] != instruction["pc"]
+                or (local_index == 0 and state_target != target_at_entry)
+            ):
+                raise ValueError(f"{state_label} differs")
+            if local_index == 0 and any(
+                general[name] != addresses[name] for name in argument_names
+            ):
+                raise ValueError(f"{label} entry arguments differ")
+        if not invocation_states:
+            raise ValueError(f"{label} states are absent")
+        terminal_target = _memory_payload(
+            mapping(invocation_states[-1], f"{label} terminal state").get("target"),
+            f"{label} terminal target",
+            expected_address=target,
+            expected_byte_count=SEMANTIC_CROP_TARGET_BYTE_COUNT,
+        )
+        return_general = _semantic_registers(
+            invocation.get("returnRegisters"), f"{label} return registers"
+        )
+        _memory_payload(
+            invocation.get("returnStack"),
+            f"{label} return stack",
+            expected_address=return_general["sp"],
+            expected_byte_count=SEMANTIC_STACK_BYTE_COUNT,
+        )
+        entry_aggregate = _payload(
+            invocation.get("aggregateAtEntryHex"),
+            full_base.AGGREGATE_BYTE_COUNT,
+            f"{label} entry aggregate",
+        )
+        return_aggregate = _payload(
+            invocation.get("aggregateAtReturnHex"),
+            full_base.AGGREGATE_BYTE_COUNT,
+            f"{label} return aggregate",
+        )
+        digest = hashlib.sha256(
+            json.dumps(
+                invocation_states,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            ).encode("utf-8")
+        ).hexdigest()
+        expected_store = invocation_index if invocation_index < 3 else None
+        if (
+            invocation.get("storeLinkIndex") != expected_store
+            or invocation.get("returnPC") != return_step.get("resultPC")
+            or invocation.get("returnFunction") != return_step.get("resultFunction")
+            or not isinstance(invocation.get("returnFunction"), str)
+            or not invocation["returnFunction"]
+            or return_general["pc"] != invocation.get("returnPC")
+            or entry_aggregate.hex() != entry_step.get("aggregateBeforeHex")
+            or return_aggregate.hex() != return_step.get("aggregateAfterHex")
+            or target_at_return != terminal_target
+            or invocation.get("instructionStatesSHA256") != digest
+        ):
+            raise ValueError(f"{label} closure differs")
+        invocations.append(
+            {
+                "invocationIndex": invocation_index,
+                "entryStepIndex": entry_step_index,
+                "returnStepIndex": return_step_index,
+                "callerRoleBase": caller_role,
+                "targetAddress": target,
+                "instructionStateCount": count,
+                "instructionStatesSHA256": digest,
+                "targetAtEntryHex": target_at_entry.hex(),
+                "targetAtReturnHex": target_at_return.hex(),
+                "storeLinkIndex": expected_store,
+            }
+        )
+        state_cursor = end
+        previous_return_step = return_step_index
+    if state_cursor != len(raw_states):
+        raise ValueError("semantic crop state accounting differs")
+    if (
+        invocations[-1]["callerRoleBase"] != identity["roleBase"]
+        or invocations[-1]["targetAddress"]
+        != identity["roleBase"] + full_base.AGGREGATE_OFFSET
+    ):
+        raise ValueError("semantic crop selected aggregate link differs")
+
+    raw_stores = list(
+        sequence(trace.get("semanticCropStoreLinks"), "semantic crop store links")
+    )
+    store_step_indices = [
+        index
+        for index, raw in enumerate(raw_steps)
+        if isinstance(raw, Mapping)
+        and isinstance(raw.get("instruction"), Mapping)
+        and raw["instruction"].get("scopeName") == "prepareLayer"
+        and raw["instruction"].get("scopeOffset") == CROP_STORE_RELATIVE_OFFSET
+    ]
+    if len(raw_stores) != 3 or len(store_step_indices) != 3:
+        raise ValueError("semantic crop store inventory differs")
+    stores = []
+    expected_store_fields = {
+        "storeLinkIndex",
+        "sourceInvocationIndex",
+        "stepIndex",
+        "instruction",
+        "registers",
+        "callerRoleBase",
+        "sourceIntegerAddress",
+        "sourceInteger",
+        "destinationAddress",
+        "destinationBefore",
+        "destinationAfter",
+        "returnPC",
+        "unionInputIndex",
+    }
+    for index, (raw, step_index) in enumerate(
+        zip(raw_stores, store_step_indices, strict=True)
+    ):
+        label = f"semantic crop store {index}"
+        store = mapping(raw, label)
+        step = mapping(raw_steps[step_index], f"{label} step")
+        instruction = _instruction(store.get("instruction"), label, scopes)
+        general = _semantic_registers(store.get("registers"), f"{label} registers")
+        q0 = _semantic_simd_payload(store.get("registers"), "v0", label)
+        caller_role = general["x19"]
+        destination = general["x28"] + CROP_DESTINATION_OFFSET
+        source = _memory_payload(
+            store.get("sourceInteger"),
+            f"{label} source",
+            expected_address=caller_role + CROP_INTEGER_SOURCE_OFFSET,
+            expected_byte_count=CROP_INTEGER_BYTE_COUNT,
+        )
+        _memory_payload(
+            store.get("destinationBefore"),
+            f"{label} destination before",
+            expected_address=destination,
+            expected_byte_count=CROP_INTEGER_BYTE_COUNT,
+        )
+        after = _memory_payload(
+            store.get("destinationAfter"),
+            f"{label} destination after",
+            expected_address=destination,
+            expected_byte_count=CROP_INTEGER_BYTE_COUNT,
+        )
+        if (
+            set(store) != expected_store_fields
+            or store.get("storeLinkIndex") != index
+            or store.get("sourceInvocationIndex") != index
+            or store.get("stepIndex") != step_index
+            or store.get("instruction") != step.get("instruction")
+            or instruction["rawLittleEndianHex"] != CROP_STORE_RAW_LITTLE_ENDIAN_HEX
+            or instruction["mnemonic"].lower() != "str"
+            or store.get("callerRoleBase") != caller_role
+            or store.get("sourceIntegerAddress")
+            != caller_role + CROP_INTEGER_SOURCE_OFFSET
+            or caller_role != invocations[index]["callerRoleBase"]
+            or step_index <= invocations[index]["returnStepIndex"]
+            or store.get("destinationAddress") != destination
+            or source != q0
+            or after != source
+            or store.get("returnPC") != step.get("resultPC")
+            or store.get("unionInputIndex") != index
+        ):
+            raise ValueError(f"{label} differs")
+        stores.append(
+            {
+                "storeLinkIndex": index,
+                "sourceInvocationIndex": index,
+                "stepIndex": step_index,
+                "destinationAddress": destination,
+                "cropI32": list(struct.unpack("<4i", after)),
+            }
+        )
+
+    raw_unions = list(
+        sequence(trace.get("semanticCropUnionInputs"), "semantic crop union inputs")
+    )
+    union_step_indices = [
+        index
+        for index, raw in enumerate(raw_steps)
+        if isinstance(raw, Mapping)
+        and isinstance(raw.get("instruction"), Mapping)
+        and raw["instruction"].get("scopeName") == "prepareLayer"
+        and raw["instruction"].get("scopeOffset") == CROP_UNION_INPUT_RELATIVE_OFFSET
+    ]
+    if len(raw_unions) != 3 or len(union_step_indices) != 3:
+        raise ValueError("semantic crop union inventory differs")
+    unions = []
+    expected_union_fields = {
+        "unionInputIndex",
+        "sourceStoreLinkIndex",
+        "stepIndex",
+        "instruction",
+        "registers",
+        "layerShapesBase",
+        "stateAddress",
+        "state",
+    }
+    crop_offset = CROP_DESTINATION_OFFSET - CROP_UNION_STATE_OFFSET
+    for index, (raw, step_index) in enumerate(
+        zip(raw_unions, union_step_indices, strict=True)
+    ):
+        label = f"semantic crop union input {index}"
+        union = mapping(raw, label)
+        step = mapping(raw_steps[step_index], f"{label} step")
+        instruction = _instruction(union.get("instruction"), label, scopes)
+        general = _semantic_registers(union.get("registers"), f"{label} registers")
+        base = general["x28"]
+        state = _memory_payload(
+            union.get("state"),
+            f"{label} state",
+            expected_address=base + CROP_UNION_STATE_OFFSET,
+            expected_byte_count=CROP_UNION_STATE_BYTE_COUNT,
+        )
+        crop = state[crop_offset : crop_offset + CROP_INTEGER_BYTE_COUNT]
+        if (
+            set(union) != expected_union_fields
+            or union.get("unionInputIndex") != index
+            or union.get("sourceStoreLinkIndex") != index
+            or union.get("stepIndex") != step_index
+            or union.get("instruction") != step.get("instruction")
+            or instruction["rawLittleEndianHex"]
+            != CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX
+            or instruction["mnemonic"].lower() != "ldp"
+            or union.get("layerShapesBase") != base
+            or union.get("stateAddress") != base + CROP_UNION_STATE_OFFSET
+            or base + CROP_DESTINATION_OFFSET != stores[index]["destinationAddress"]
+            or crop != struct.pack("<4i", *stores[index]["cropI32"])
+            or step_index <= stores[index]["stepIndex"]
+        ):
+            raise ValueError(f"{label} differs")
+        unions.append(
+            {
+                "unionInputIndex": index,
+                "sourceStoreLinkIndex": index,
+                "stepIndex": step_index,
+                "cropI32": list(struct.unpack("<4i", crop)),
+            }
+        )
+
+    raw_boundaries = list(
+        sequence(trace.get("opaqueCalleeBoundaries"), "opaque boundaries")
+    )
+    boundary_step_indices = {}
+    for step_index, raw_step in enumerate(raw_steps):
+        step = mapping(raw_step, f"instruction step {step_index}")
+        if step.get("kind") != "opaque-callee-step-out":
+            continue
+        boundary = mapping(step.get("opaqueBoundary"), f"step {step_index} boundary")
+        boundary_index = integer(
+            boundary.get("boundaryIndex"), f"step {step_index} boundary index"
+        )
+        if boundary_index in boundary_step_indices:
+            raise ValueError("semantic crop opaque boundary step identity differs")
+        boundary_step_indices[boundary_index] = step_index
+    if set(boundary_step_indices) != set(range(len(raw_boundaries))):
+        raise ValueError("semantic crop opaque boundary step inventory differs")
+    crop_opaque_boundaries = []
+    for boundary_index, raw in enumerate(raw_boundaries):
+        boundary = mapping(raw, f"opaque boundary {boundary_index}")
+        invocation_index = boundary.get("semanticCropInvocationIndex")
+        crop_fields = {
+            "semanticCropInvocationIndex",
+            "semanticCropTargetBefore",
+            "semanticCropTargetAfter",
+            "semanticCropTargetChanged",
+        }
+        present = crop_fields.intersection(boundary)
+        step_index = boundary_step_indices[boundary_index]
+        expected_invocation = next(
+            (
+                item["invocationIndex"]
+                for item in invocations
+                if item["entryStepIndex"] < step_index < item["returnStepIndex"]
+            ),
+            None,
+        )
+        if expected_invocation is None:
+            if present:
+                raise ValueError(f"opaque boundary {boundary_index} crop fields differ")
+            continue
+        if (
+            present != crop_fields
+            or invocation_index != expected_invocation
+            or not 0 <= invocation_index < len(invocations)
+        ):
+            raise ValueError(f"opaque boundary {boundary_index} crop link differs")
+        target = invocations[invocation_index]["targetAddress"]
+        before = _memory_payload(
+            boundary.get("semanticCropTargetBefore"),
+            f"opaque boundary {boundary_index} crop before",
+            expected_address=target,
+            expected_byte_count=SEMANTIC_CROP_TARGET_BYTE_COUNT,
+        )
+        after = _memory_payload(
+            boundary.get("semanticCropTargetAfter"),
+            f"opaque boundary {boundary_index} crop after",
+            expected_address=target,
+            expected_byte_count=SEMANTIC_CROP_TARGET_BYTE_COUNT,
+        )
+        changed = before != after
+        if boundary.get("semanticCropTargetChanged") is not changed:
+            raise ValueError(f"opaque boundary {boundary_index} crop mutation differs")
+        crop_opaque_boundaries.append(
+            {
+                "boundaryIndex": boundary_index,
+                "invocationIndex": invocation_index,
+                "targetChanged": changed,
+            }
+        )
+
+    if (
+        trace.get("semanticCropActiveInvocationIndex") is not None
+        or trace.get("semanticCropCompletedInvocationCount")
+        != SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT
+        or trace.get("finalSemanticCropInvocationCount") != len(invocations)
+        or trace.get("finalSemanticCropInstructionStateCount") != len(raw_states)
+        or trace.get("finalSemanticCropStoreLinkCount") != len(stores)
+        or trace.get("finalSemanticCropUnionInputCount") != len(unions)
+    ):
+        raise ValueError("semantic crop closure differs")
+    return {
+        "invocationCount": len(invocations),
+        "instructionStateCount": len(raw_states),
+        "invocations": invocations,
+        "storeLinks": stores,
+        "unionInputs": unions,
+        "opaqueBoundaryCount": len(crop_opaque_boundaries),
+        "changedOpaqueTargetBoundaryCount": sum(
+            item["targetChanged"] for item in crop_opaque_boundaries
+        ),
+    }
+
+
 def _manual_selection_markers(
     trace: Mapping[str, Any],
     order: Mapping[int, str],
@@ -1222,15 +1925,26 @@ def _manual_selection_markers(
 def validate_documents(
     trace: Mapping[str, Any], inherited_trace: Mapping[str, Any]
 ) -> dict[str, Any]:
+    schema_version = trace.get("prepareLayerInstructionTraceSchemaVersion")
+    legacy = schema_version == LEGACY_TRACE_SCHEMA_VERSION
+    expected_schema_version = (
+        LEGACY_TRACE_SCHEMA_VERSION if legacy else EXPECTED_TRACE_SCHEMA_VERSION
+    )
+    expected_classification = (
+        LEGACY_EXPECTED_CLASSIFICATION if legacy else EXPECTED_CLASSIFICATION
+    )
+    expected_configuration = (
+        LEGACY_EXPECTED_CONFIGURATION if legacy else EXPECTED_CONFIGURATION
+    )
+    scope_specs = LEGACY_CHECKPOINT_SCOPE_SPECS if legacy else CHECKPOINT_SCOPE_SPECS
     if (
-        trace.get("prepareLayerInstructionTraceSchemaVersion")
-        != EXPECTED_TRACE_SCHEMA_VERSION
-        or trace.get("classification") != EXPECTED_CLASSIFICATION
+        schema_version != expected_schema_version
+        or trace.get("classification") != expected_classification
         or trace.get("status") != "finalized"
         or trace.get("statusBeforeFinalization")
         != "selected-software-instruction-path-closed"
         or mapping(trace.get("configuration"), "configuration")
-        != EXPECTED_CONFIGURATION
+        != expected_configuration
         or list(sequence(trace.get("failures"), "failures"))
         or trace.get("finalFailureCount") != 0
     ):
@@ -1238,7 +1952,7 @@ def validate_documents(
     inherited = active_validator._inherited_frame_context(inherited_trace)
     order = _callback_order(trace)
     prepare_start, _module_value, scopes, _prepare_code = _static_trace(
-        trace, order, inherited
+        trace, order, inherited, scope_specs
     )
     selected_source = integer(inherited.get("selectedSource"), "selected source")
     prepare = mapping(trace.get("prepareLayer"), "prepare layer")
@@ -1269,6 +1983,7 @@ def validate_documents(
     )
     known = _known_state_sequence(states)
     semantic_dod = _semantic_dod_trace(trace, scopes, identity)
+    semantic_crop = None if legacy else _semantic_crop_trace(trace, scopes, identity)
     manual_marker_index, manual_selected_callback = _manual_selection_markers(
         trace, order, prepare_start, identity, selected_source
     )
@@ -1362,11 +2077,15 @@ def validate_documents(
     ):
         raise ValueError("final instruction accounting differs")
 
-    return {
+    result = {
         "prepareLayerInstructionTraceValidationSchemaVersion": (
-            VALIDATION_SCHEMA_VERSION
+            LEGACY_VALIDATION_SCHEMA_VERSION if legacy else VALIDATION_SCHEMA_VERSION
         ),
-        "classification": EXPECTED_VALIDATION_CLASSIFICATION,
+        "classification": (
+            LEGACY_EXPECTED_VALIDATION_CLASSIFICATION
+            if legacy
+            else EXPECTED_VALIDATION_CLASSIFICATION
+        ),
         "conclusion": "success",
         "prospectiveGatePassed": True,
         "selectedSource": selected_source,
@@ -1414,6 +2133,17 @@ def validate_documents(
             "liquidGlassParityEstablished": False,
         },
     }
+    if not legacy:
+        result["semanticCropTrace"] = semantic_crop
+        result["sealedConclusion"].update(
+            {
+                "backgroundFilterCropCompleteRegisterStateCaptured": True,
+                "backgroundFilterCropExactDynamicReplayOpened": True,
+                "backgroundFilterCropStoreAndUnionLinkPassed": True,
+                "backgroundFilterCropInstructionSemanticsDecoded": False,
+            }
+        )
+    return result
 
 
 def validate_files(

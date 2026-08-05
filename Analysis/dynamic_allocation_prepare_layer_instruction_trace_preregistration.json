@@ -1,8 +1,8 @@
 {
-  "schemaVersion": 5,
-  "classification": "prospective-selected-glass-dod-complete-register-state-trace-for-exact-dynamic-semantic-replay",
+  "schemaVersion": 6,
+  "classification": "prospective-all-background-filter-crop-complete-register-state-trace-for-exact-dynamic-semantic-replay",
   "registeredDate": "2026-08-05",
-  "researchQuestion": "What are the exact scalar, SIMD, floating-point-status, and stack states before every executed instruction of the unique GlassBackgroundFilter::DOD invocation whose x3 argument equals the prospectively selected prepare_layer role aggregate, including the exact post-call states that expose every key lookup and helper return used by its geometry arithmetic?",
+  "researchQuestion": "What exact arithmetic and clip inputs inside all four add_background_filters_ invocations produce the three nested signed-integer crops and the selected root aggregate, and does the relevant mutation occur inline or across a named deeper helper boundary?",
   "openedEvidenceBoundary": {
     "sourceRunID": 31034880031,
     "sourceHeadSHA": "06d717ecbf269b7cc2d54df0332f45d0e8502f2c",
@@ -99,11 +99,31 @@
     "selectedGlassDODCompleteRegisterStateCaptured": false,
     "completeCropAllocationPolicyProved": false
   },
+  "selectedGlassDODSemanticBoundary": {
+    "sourceRunID": 31044659120,
+    "sourceJobID": 92437136123,
+    "sourceHeadSHA": "ad04e7d167787e19ac12e1a7d645868bd81bb621",
+    "sourceResultPath": "Analysis/dynamic_allocation_prepare_layer_dod_semantics_result.json",
+    "sourceResultSHA256": "95cf0116bbf7075aee611bf0a20733f2919aa1b04eb2cdc4df8c683608c7714d",
+    "workflowConclusion": "success",
+    "instructionTraceSHA256": "397a6926bb75bb053b1f5797c9e2de4a93c47440812f47e1a221a51ea94756fe",
+    "selectedDODInstructionStateCount": 267,
+    "selectedDODOpaqueHelperReturnCount": 9,
+    "inputBlurRadius": 0.0627145767211914,
+    "shadowOffset": [0.0, 8.0],
+    "inputOuterRefractionAmount": 8.215566487793694,
+    "expansionRule": "e = 2.8 * max(2 * blurRadius, bleedBlurRadius)",
+    "sizeIncrementRule": "deltaSize = 2 * e",
+    "finalNestedLayerInputI32": [490, 166, 360, 368],
+    "glassDODArithmeticDecoded": true,
+    "upstreamIntegerCropProductionDecoded": false,
+    "completeCropAllocationPolicyProved": false
+  },
   "prospectiveHypothesis": {
-    "primary": "The selected aggregate is passed as x3 to exactly one GlassBackgroundFilter::DOD entry. Capturing the complete register file and 256 bytes at the live stack pointer before every executed instruction from that entry through its exact retab will make every executed arithmetic dependency and each opaque helper return exactly replayable.",
-    "opaqueBoundary": "The nine already observed opaque helpers inside the selected DOD remain atomic, but the complete register and stack state at the next DOD instruction must expose each helper's exact returned values without requiring a helper implementation hypothesis.",
+    "primary": "The selected path executes exactly four add_background_filters_ calls. Capturing all four from entry through return, without selecting by output, will expose the exact inputs and arithmetic that produce the first three nested crops and the selected root aggregate.",
+    "opaqueBoundary": "For every deeper opaque callee crossed while an add_background_filters_ invocation is active, exact before/after bytes at that invocation's fixed x5 target distinguish inline arithmetic from a mutation delegated to a named deeper helper.",
     "knownTransfer": "The existing continuous aggregate state chain and its 12 architectural writer transitions must remain bit-for-bit identical in structure and continue to contain the four known transfer states in order.",
-    "semanticSeal": "Passing opens exact dynamic replay of the selected Glass DOD invocation. Offline semantic decoding, the complete crop-allocation policy outside that invocation, unseen geometry transfer, shader authority, and parity remain sealed until separately validated."
+    "semanticSeal": "Passing opens exact dynamic replay of the four selected-path background-filter crop invocations and their three store/union links. General crop-policy transfer, unseen geometry, shader authority, and parity remain sealed until separately validated."
   },
   "selection": {
     "sourceSelection": "Reuse the independent capture_backdrop late selector and its exact object chain.",
@@ -149,6 +169,24 @@
       "aggregate bytes after retab",
       "canonical SHA-256 over every retained semantic instruction state"
     ],
+    "semanticCropExpectedInvocationCount": 4,
+    "semanticCropMaximumInvocationCount": 8,
+    "semanticCropSelection": "Retain every add_background_filters_ +0x0 entry encountered on the already prospectively selected instruction path; no output value, crop value, later store, or later union may select an invocation.",
+    "semanticCropTargetRule": "At each entry require x5 = live caller x19 + 0x290 and retain that fixed 32-byte target before every subsequently executed opened-scope instruction until the invocation returns.",
+    "semanticCropInstructionState": [
+      "exact instruction record checked against its frozen runtime symbol bytes",
+      "complete x0-x30, sp, pc, and cpsr register records",
+      "complete v0-v31, fpsr, and fpcr register records",
+      "exact 256-byte memory snapshot beginning at the live sp",
+      "exact 32-byte memory snapshot at the invocation's fixed entry x5 target",
+      "exact selected aggregate bytes before execution",
+      "global and per-invocation instruction-state indices"
+    ],
+    "semanticCropEntryAndReturnMemory": "Retain 1024 bytes at each of the six entry argument pointers x0-x5 plus the complete 2048-byte caller role at x19, both at entry and return.",
+    "semanticCropOpaqueBoundary": "While a crop invocation is active, every StepOut boundary retains exact before/after x5 target bytes, the invocation index, and a bit-exact mutation flag.",
+    "semanticCropStoreLink": "For the first three invocations, require caller x19 identity to link uniquely to prepare_layer +0x55c0 (raw 802f803d), prove q0 equals the 16 bytes at x19+0x270, and prove the store writes those bytes to x28+0xb0.",
+    "semanticCropUnionLink": "Require each linked destination to be consumed later at prepare_layer +0x8570 (raw 88275729), retaining 48 bytes at x28+0xa0 and proving its +0xb0 crop equals the linked store.",
+    "semanticCropRootLink": "Require the fourth invocation's caller x19 to equal the prospectively selected role base and its x5 to equal selected roleBase+aggregateOffset; it has no nested crop store link before the exact source marker.",
     "changedInstructionContext": [
       "raw instruction bytes",
       "LLDB mnemonic, operands, and comment",
@@ -210,6 +248,13 @@
         "expectedSHA256": null
       },
       {
+        "name": "addBackgroundFilters",
+        "function": "CA::Render::Updater::add_background_filters_(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::Layer const*, CA::Render::LayerNode*, CA::Render::Updater::LocalState*, CA::Render::Updater::LayerShapes*)",
+        "relativeToPrepareLayer": 40128,
+        "byteCount": 1564,
+        "expectedSHA256": null
+      },
+      {
         "name": "unionBounds",
         "function": "CA::Render::Updater::LayerShapes::union_bounds(CA::Rect const&, bool)",
         "relativeToPrepareLayer": -2720,
@@ -217,7 +262,7 @@
         "expectedSHA256": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7"
       }
     ],
-    "unopenedScopeHashRule": "The prior artifacts fixed filterApplyDOD, filterApply, and filterMapBounds names, relative starts, and byte counts but not their complete bytes. Their runtime bytes and SHA-256 are captured before the first selected epoch resumes. Because every aligned instruction in each full symbol is stepped independent of content, the observed digest cannot influence instruction selection."
+    "unopenedScopeHashRule": "The prior artifacts fixed filterApplyDOD, filterApply, filterMapBounds, and addBackgroundFilters names, relative starts, and byte counts but not every complete byte sequence. Their runtime bytes and SHA-256 are captured before the first selected epoch resumes. Because every aligned instruction in each full symbol is stepped independent of content, the observed digest cannot influence instruction selection."
   },
   "acceptance": {
     "existingFrameSourceMarkerContextMustPass": true,
@@ -243,6 +288,15 @@
     "selectedGlassDODMustCloseAtFrozenRetab": true,
     "selectedGlassDODCompleteReturnStateRequired": true,
     "semanticInstructionStateCanonicalDigestRequired": true,
+    "exactlyFourBackgroundFilterCropInvocationsRequired": true,
+    "everyExecutedOpenedScopeInstructionWithinEachCropInvocationMustHaveOneCompletePreState": true,
+    "cropEntryArgumentPointersAndMemoryMustBeExact": true,
+    "cropTargetMustEqualCallerRoleBasePlusAggregateOffset": true,
+    "cropTargetMemoryMustBeRetainedAtEveryInstructionState": true,
+    "cropOpaqueBoundaryTargetMutationsMustBeBitExact": true,
+    "firstThreeCropInvocationsMustLinkToExactStoreAndUnion": true,
+    "fourthCropInvocationMustTargetSelectedAggregate": true,
+    "cropInstructionStateCanonicalDigestRequired": true,
     "minimumChangedInstructionTransitionCount": 3,
     "minimumDistinctAggregateStateCount": 4,
     "lastAggregateMustBitMatchCurrentAndInheritedMarkers": true,
@@ -253,6 +307,9 @@
     "timelineFailedSampleCount": 0,
     "changedInstructionBytesAndOperandsMayBeClaimed": true,
     "selectedGlassDODExactDynamicReplayMayBeClaimed": true,
+    "backgroundFilterCropExactDynamicReplayMayBeClaimed": true,
+    "backgroundFilterCropStoreAndUnionLinkMayBeClaimed": true,
+    "backgroundFilterCropInstructionSemanticsMayBeClaimed": false,
     "writerInstructionSemanticsMayBeClaimed": false,
     "completeCropPolicyMayBeClaimed": false,
     "productionShaderMayChange": false,
@@ -273,6 +330,12 @@
     "the selected DOD leaves its frozen scope anywhere except the registered +0x468 retab",
     "the selected DOD return register or stack state is incomplete or differs from the retab result frame",
     "the canonical semantic instruction-state digest differs",
+    "the selected path contains other than exactly four complete add_background_filters_ invocations",
+    "any crop invocation entry pointer, caller-role relation, full register state, stack bytes, target bytes, or argument memory differs",
+    "any crop invocation escapes by an instruction other than an exact return encoded in its frozen symbol bytes",
+    "any active crop opaque boundary lacks exact before/after target bytes or its mutation flag differs",
+    "the first three crop invocations do not link uniquely and bit-exactly through +0x55c0 stores and +0x8570 union inputs",
+    "the fourth crop invocation does not target the prospectively selected role aggregate",
     "the before/after chain is discontinuous",
     "the known four-state transfer is missing or reordered",
     "the final aggregate differs from either marker copy",
@@ -310,18 +373,20 @@
     "applyDODScopeResultSHA256": "d6c8975ddc64636aa00b6766396e485babb58c41104682ed47923e8e23caad21",
     "successfulInstructionChainResultPath": "Analysis/dynamic_allocation_prepare_layer_instruction_trace_result.json",
     "successfulInstructionChainResultSHA256": "876f8a238cf30c6d91381f8527ae9ce01ebe45fecf2350995b31e0abe5dc0059",
+    "selectedDODSemanticResultPath": "Analysis/dynamic_allocation_prepare_layer_dod_semantics_result.json",
+    "selectedDODSemanticResultSHA256": "95cf0116bbf7075aee611bf0a20733f2919aa1b04eb2cdc4df8c683608c7714d",
     "captureProgramPath": "Analysis/capture_prepare_layer_instruction_trace_lldb.py",
-    "captureProgramSHA256": "7d0db402113d04e9cdb3eb78768f72bd69311ba1c12a4f099ab25ce7cc1d91ee",
+    "captureProgramSHA256": "385db36206cfa7c80ec78ecaf9fc0278a9785b7b46ab34f58ff6f085b674c7d7",
     "validatorPath": "Analysis/validate_prepare_layer_instruction_trace.py",
-    "validatorSHA256": "24d93f000fe6d1c8b273df5428aea73468c703c9fb354e917604f63b002b7d19",
+    "validatorSHA256": "a0217eec161e93cec00d4fe79ba60ea31d3892e170fda483fc51fc0069ef4bfb",
     "captureSourceTestPath": "Analysis/test_capture_prepare_layer_instruction_trace_lldb_source.py",
-    "captureSourceTestSHA256": "6eeed8eb5ce964a164cf0874916f5719e163b67f62f7ae0080843595ba956704",
+    "captureSourceTestSHA256": "acf52d5f216c790e434667783561e6c9f49ea5f742d20dea2d26d81328dc1d53",
     "validatorTestPath": "Analysis/test_validate_prepare_layer_instruction_trace.py",
-    "validatorTestSHA256": "b1c35a6338fa88112c8ee04d27da9812d64790794d404f0d9780691def26b114",
+    "validatorTestSHA256": "dcc489c5e77b311903956d3029f81e30785d127628f20a694dbcbe0707c0f7b4",
     "workflowPath": ".github/workflows/prepare-layer-instruction-trace-introspect.yml",
-    "workflowSHA256": "fddba1573f43c38fae5605598d4eb75ef087de08e1d5da723cf3a8aeb75f9794",
+    "workflowSHA256": "d0db70af1b713b16f079a65f0c3b2c33da69bab69ed4304bbb7b44841fd3332e",
     "preregistrationTestPath": "Analysis/test_dynamic_allocation_prepare_layer_instruction_trace_preregistration.py",
-    "preregistrationTestSHA256": "bede195ae7af923653cd44597a31c64a34e8a54583ec5fa4c4dd41a25c213b3e"
+    "preregistrationTestSHA256": "8e9c8645cdb619ebd8dbf3e7579c772a1eec8b02abea38546705b9c8036a0478"
   },
   "firstAttemptRuntimeOutcome": {
     "runID": 31038371480,
@@ -364,12 +429,15 @@
     "productionShaderAuthorized": false
   },
   "semanticRegisterTraceRuntimeOutcomeFrozenBeforeRun": null,
+  "cropWriterTraceRuntimeOutcomeFrozenBeforeRun": null,
   "notAuthorizedBeforeAcceptance": [
     "treating one hardware watch callback as one architectural store",
     "selecting an epoch from thread/x19/x29 address equality without both exact selected-source link cells",
     "adaptively choosing a later epoch after observing a run instead of applying the frozen dual-source-link rule prospectively",
     "ignoring or interpolating a changed opaque boundary",
     "claiming writer instruction semantics from bytes and operands alone",
+    "claiming background-filter crop instruction semantics before offline decoding of the accepted complete state trace",
+    "generalizing the selected four-invocation crop trace to unseen geometry or boundary cases",
     "claiming the complete crop-allocation producer is recovered",
     "claiming unseen geometry or raster transfer has passed",
     "modifying Walle's production shader",

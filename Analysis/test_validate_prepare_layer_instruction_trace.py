@@ -111,21 +111,39 @@ def register_record(name: str, byte_count: int, value: int = 0) -> dict[str, obj
     return record
 
 
-def semantic_registers(*, pc: int, sp: int, x3: int) -> dict[str, object]:
+def semantic_registers(
+    *,
+    pc: int,
+    sp: int,
+    x3: int = 0,
+    general_values: dict[str, int] | None = None,
+    v0: bytes | None = None,
+) -> dict[str, object]:
+    overrides = {} if general_values is None else general_values
     general = []
     for name in validator.full_base.GENERAL_REGISTER_NAMES:
         byte_count = 4 if name == "cpsr" else 8
-        value = {"pc": pc, "sp": sp, "x3": x3}.get(name, 0)
+        value = {"pc": pc, "sp": sp, "x3": x3, **overrides}.get(name, 0)
         general.append(register_record(name, byte_count, value))
     simd = []
     for name in validator.full_base.SIMD_REGISTER_NAMES:
         byte_count = 4 if name in {"fpsr", "fpcr"} else 16
-        simd.append(register_record(name, byte_count))
+        record = register_record(name, byte_count)
+        if name == "v0" and v0 is not None:
+            if len(v0) != 16:
+                raise ValueError("fixture v0 byte count differs")
+            record["hex"] = v0.hex()
+        simd.append(record)
     return {"general": general, "simd": simd}
 
 
-def memory_snapshot(address: int, byte_count: int) -> dict[str, object]:
-    payload = bytes(byte_count)
+def memory_snapshot(
+    address: int, byte_count: int, payload: bytes | None = None
+) -> dict[str, object]:
+    if payload is None:
+        payload = bytes(byte_count)
+    if len(payload) != byte_count:
+        raise ValueError("fixture memory byte count differs")
     return {
         "address": address,
         "byteCount": byte_count,
@@ -262,6 +280,329 @@ def semantic_fixture() -> tuple[dict[str, object], dict[str, dict[str, object]]]
     return document, semantic_scopes
 
 
+def crop_instruction(
+    scope: str,
+    start: int,
+    offset: int,
+    raw: str,
+    mnemonic: str,
+    *,
+    writer: bool = False,
+) -> dict[str, object]:
+    relative = offset
+    if scope == validator.SEMANTIC_CROP_SCOPE_NAME:
+        relative += 40128
+    return {
+        "pc": start + offset,
+        "scopeName": scope,
+        "scopeOffset": offset,
+        "prepareLayerRelativeOffset": relative,
+        "rawLittleEndianHex": raw,
+        "mnemonic": mnemonic,
+        "operands": "",
+        "comment": "",
+        "potentialWriter": writer,
+        "potentialCall": False,
+    }
+
+
+def crop_step(
+    index: int,
+    instruction_value: dict[str, object],
+    aggregate: bytes,
+    result_pc: int,
+) -> dict[str, object]:
+    return {
+        "stepIndex": index,
+        "kind": "scope-instruction",
+        "aggregateBeforeHex": aggregate.hex(),
+        "aggregateAfterHex": aggregate.hex(),
+        "aggregateChanged": False,
+        "changedLaneOffsets": [],
+        "instruction": instruction_value,
+        "opaqueBoundary": None,
+        "resultPC": result_pc,
+        "resultFunction": "caller",
+        "transitionIndex": None,
+    }
+
+
+def crop_argument_memory(addresses: dict[str, int]) -> list[dict[str, object]]:
+    return [
+        {
+            "registerName": name,
+            "memory": memory_snapshot(
+                addresses[name], validator.SEMANTIC_CROP_ARGUMENT_MEMORY_BYTE_COUNT
+            ),
+        }
+        for name in ("x0", "x1", "x2", "x3", "x4", "x5")
+    ]
+
+
+def crop_fixture() -> tuple[dict[str, object], dict[str, dict[str, object]]]:
+    prepare_start = 0x1_9000_0000
+    crop_start = prepare_start + 40128
+    aggregate = bytes(validator.full_base.AGGREGATE_BYTE_COUNT)
+    sp = 0x1_7000_C000
+    crop_code = bytearray(12)
+    crop_code[0:4] = bytes.fromhex("7f2303d5")
+    crop_code[8:12] = bytes.fromhex("c0035fd6")
+    prepare_code = bytearray(validator.CROP_UNION_INPUT_RELATIVE_OFFSET + 4)
+    prepare_code[
+        validator.CROP_STORE_RELATIVE_OFFSET : validator.CROP_STORE_RELATIVE_OFFSET + 4
+    ] = bytes.fromhex(validator.CROP_STORE_RAW_LITTLE_ENDIAN_HEX)
+    prepare_code[
+        validator.CROP_UNION_INPUT_RELATIVE_OFFSET : validator.CROP_UNION_INPUT_RELATIVE_OFFSET
+        + 4
+    ] = bytes.fromhex(validator.CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX)
+    semantic_scopes = {
+        "prepareLayer": {
+            "name": "prepareLayer",
+            "startAddress": prepare_start,
+            "endAddress": prepare_start + len(prepare_code),
+            "byteCount": len(prepare_code),
+            "code": bytes(prepare_code),
+        },
+        validator.SEMANTIC_CROP_SCOPE_NAME: {
+            "name": validator.SEMANTIC_CROP_SCOPE_NAME,
+            "startAddress": crop_start,
+            "endAddress": crop_start + len(crop_code),
+            "byteCount": len(crop_code),
+            "code": bytes(crop_code),
+        },
+    }
+    steps = []
+    states = []
+    invocations = []
+    stores = []
+    unions = []
+    for invocation_index in range(4):
+        caller_role = (
+            IDENTITY["roleBase"]
+            if invocation_index == 3
+            else 0x1_7100_0000 + invocation_index * 0x10_000
+        )
+        target = caller_role + validator.SEMANTIC_CROP_CALLER_ROLE_OFFSET
+        addresses = {
+            "x0": 0x2_1000_0000 + invocation_index * 0x10_000,
+            "x1": 0x2_2000_0000 + invocation_index * 0x10_000,
+            "x2": 0x2_3000_0000 + invocation_index * 0x10_000,
+            "x3": 0x2_4000_0000 + invocation_index * 0x10_000,
+            "x4": caller_role + 0x420,
+            "x5": target,
+        }
+        entry_index = len(steps)
+        entry_instruction = crop_instruction(
+            validator.SEMANTIC_CROP_SCOPE_NAME,
+            crop_start,
+            0,
+            "7f2303d5",
+            "pacibsp",
+        )
+        return_instruction = crop_instruction(
+            validator.SEMANTIC_CROP_SCOPE_NAME,
+            crop_start,
+            8,
+            "c0035fd6",
+            "ret",
+        )
+        steps.append(
+            crop_step(entry_index, entry_instruction, aggregate, crop_start + 8)
+        )
+        return_index = len(steps)
+        caller_pc = prepare_start + 0x2000 + invocation_index * 0x100
+        steps.append(crop_step(return_index, return_instruction, aggregate, caller_pc))
+        start = len(states)
+        for local_index, (step_index, instruction_value) in enumerate(
+            ((entry_index, entry_instruction), (return_index, return_instruction))
+        ):
+            state_registers = semantic_registers(
+                pc=instruction_value["pc"],
+                sp=sp,
+                general_values={**addresses, "x19": caller_role},
+            )
+            states.append(
+                {
+                    "stateIndex": len(states),
+                    "invocationIndex": invocation_index,
+                    "invocationStateIndex": local_index,
+                    "stepIndex": step_index,
+                    "instruction": instruction_value,
+                    "aggregateBeforeHex": aggregate.hex(),
+                    "registers": state_registers,
+                    "stack": memory_snapshot(sp, validator.SEMANTIC_STACK_BYTE_COUNT),
+                    "target": memory_snapshot(
+                        target, validator.SEMANTIC_CROP_TARGET_BYTE_COUNT
+                    ),
+                }
+            )
+        invocation_states = states[start:]
+        invocations.append(
+            {
+                "invocationIndex": invocation_index,
+                "entryStepIndex": entry_index,
+                "entryPC": crop_start,
+                "entryArgumentRegisters": [
+                    register_record(name, 8, addresses[name])
+                    for name in ("x0", "x1", "x2", "x3", "x4", "x5")
+                ],
+                "entryArgumentAddresses": addresses,
+                "entryArgumentMemory": crop_argument_memory(addresses),
+                "callerRoleBase": caller_role,
+                "callerRoleAtEntry": memory_snapshot(
+                    caller_role, validator.SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT
+                ),
+                "targetAddress": target,
+                "targetAtEntry": memory_snapshot(
+                    target, validator.SEMANTIC_CROP_TARGET_BYTE_COUNT
+                ),
+                "aggregateAtEntryHex": aggregate.hex(),
+                "instructionStateStartIndex": start,
+                "storeLinkIndex": invocation_index if invocation_index < 3 else None,
+                "returnStepIndex": return_index,
+                "returnInstructionStateIndex": len(states) - 1,
+                "returnInstructionScopeOffset": 8,
+                "returnInstructionRawLittleEndianHex": "c0035fd6",
+                "returnInstructionMnemonic": "ret",
+                "returnPC": caller_pc,
+                "returnFunction": "caller",
+                "returnArgumentMemory": crop_argument_memory(addresses),
+                "callerRoleAtReturn": memory_snapshot(
+                    caller_role, validator.SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT
+                ),
+                "targetAtReturn": memory_snapshot(
+                    target, validator.SEMANTIC_CROP_TARGET_BYTE_COUNT
+                ),
+                "aggregateAtReturnHex": aggregate.hex(),
+                "instructionStateCount": len(invocation_states),
+                "instructionStatesSHA256": hashlib.sha256(
+                    json.dumps(
+                        invocation_states,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                        allow_nan=False,
+                    ).encode("utf-8")
+                ).hexdigest(),
+                "returnRegisters": semantic_registers(pc=caller_pc, sp=sp),
+                "returnStack": memory_snapshot(sp, validator.SEMANTIC_STACK_BYTE_COUNT),
+            }
+        )
+        if invocation_index == 3:
+            continue
+        crop = struct.pack("<4i", 490 + invocation_index, 166, 360, 368)
+        destination_base = 0x2_9000_0000 + invocation_index * 0x1000
+        store_index = len(steps)
+        store_instruction = crop_instruction(
+            "prepareLayer",
+            prepare_start,
+            validator.CROP_STORE_RELATIVE_OFFSET,
+            validator.CROP_STORE_RAW_LITTLE_ENDIAN_HEX,
+            "str",
+            writer=True,
+        )
+        steps.append(
+            crop_step(
+                store_index,
+                store_instruction,
+                aggregate,
+                store_instruction["pc"] + 4,
+            )
+        )
+        stores.append(
+            {
+                "storeLinkIndex": invocation_index,
+                "sourceInvocationIndex": invocation_index,
+                "stepIndex": store_index,
+                "instruction": store_instruction,
+                "registers": semantic_registers(
+                    pc=store_instruction["pc"],
+                    sp=sp,
+                    general_values={"x19": caller_role, "x28": destination_base},
+                    v0=crop,
+                ),
+                "callerRoleBase": caller_role,
+                "sourceIntegerAddress": (
+                    caller_role + validator.CROP_INTEGER_SOURCE_OFFSET
+                ),
+                "sourceInteger": memory_snapshot(
+                    caller_role + validator.CROP_INTEGER_SOURCE_OFFSET,
+                    validator.CROP_INTEGER_BYTE_COUNT,
+                    crop,
+                ),
+                "destinationAddress": (
+                    destination_base + validator.CROP_DESTINATION_OFFSET
+                ),
+                "destinationBefore": memory_snapshot(
+                    destination_base + validator.CROP_DESTINATION_OFFSET,
+                    validator.CROP_INTEGER_BYTE_COUNT,
+                ),
+                "destinationAfter": memory_snapshot(
+                    destination_base + validator.CROP_DESTINATION_OFFSET,
+                    validator.CROP_INTEGER_BYTE_COUNT,
+                    crop,
+                ),
+                "returnPC": store_instruction["pc"] + 4,
+                "unionInputIndex": invocation_index,
+            }
+        )
+        union_index = len(steps)
+        union_instruction = crop_instruction(
+            "prepareLayer",
+            prepare_start,
+            validator.CROP_UNION_INPUT_RELATIVE_OFFSET,
+            validator.CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX,
+            "ldp",
+        )
+        steps.append(
+            crop_step(
+                union_index,
+                union_instruction,
+                aggregate,
+                union_instruction["pc"] + 4,
+            )
+        )
+        state = bytearray(validator.CROP_UNION_STATE_BYTE_COUNT)
+        crop_offset = (
+            validator.CROP_DESTINATION_OFFSET - validator.CROP_UNION_STATE_OFFSET
+        )
+        state[crop_offset : crop_offset + len(crop)] = crop
+        unions.append(
+            {
+                "unionInputIndex": invocation_index,
+                "sourceStoreLinkIndex": invocation_index,
+                "stepIndex": union_index,
+                "instruction": union_instruction,
+                "registers": semantic_registers(
+                    pc=union_instruction["pc"],
+                    sp=sp,
+                    general_values={"x28": destination_base},
+                ),
+                "layerShapesBase": destination_base,
+                "stateAddress": destination_base + validator.CROP_UNION_STATE_OFFSET,
+                "state": memory_snapshot(
+                    destination_base + validator.CROP_UNION_STATE_OFFSET,
+                    validator.CROP_UNION_STATE_BYTE_COUNT,
+                    bytes(state),
+                ),
+            }
+        )
+    document = {
+        "instructionSteps": steps,
+        "opaqueCalleeBoundaries": [],
+        "semanticCropInvocations": invocations,
+        "semanticCropInstructionStates": states,
+        "semanticCropStoreLinks": stores,
+        "semanticCropUnionInputs": unions,
+        "semanticCropActiveInvocationIndex": None,
+        "semanticCropCompletedInvocationCount": 4,
+        "finalSemanticCropInvocationCount": 4,
+        "finalSemanticCropInstructionStateCount": len(states),
+        "finalSemanticCropStoreLinkCount": 3,
+        "finalSemanticCropUnionInputCount": 3,
+    }
+    return document, semantic_scopes
+
+
 def manual_marker(index: int, hit: int, x28: int, result: str) -> dict[str, object]:
     value: dict[str, object] = {
         "manualSelectionMarkerIndex": index,
@@ -341,6 +682,41 @@ class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
         document["semanticDODInstructionStates"][0]["stack"]["sha256"] = "0" * 64
         with self.assertRaisesRegex(ValueError, "identity differs"):
             validator._semantic_dod_trace(document, semantic_scopes, IDENTITY)
+
+    def test_complete_background_filter_crop_trace_passes(self):
+        document, semantic_scopes = crop_fixture()
+        result = validator._semantic_crop_trace(document, semantic_scopes, IDENTITY)
+        self.assertEqual(result["invocationCount"], 4)
+        self.assertEqual(result["instructionStateCount"], 8)
+        self.assertEqual(len(result["storeLinks"]), 3)
+        self.assertEqual(len(result["unionInputs"]), 3)
+        self.assertEqual(result["unionInputs"][-1]["cropI32"], [492, 166, 360, 368])
+
+    def test_crop_target_or_state_tampering_fails_closed(self):
+        document, semantic_scopes = crop_fixture()
+        document["semanticCropInstructionStates"][0]["target"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "identity differs"):
+            validator._semantic_crop_trace(document, semantic_scopes, IDENTITY)
+
+        document, semantic_scopes = crop_fixture()
+        document["semanticCropInvocations"][1]["targetAddress"] += 8
+        with self.assertRaisesRegex(ValueError, "target relation differs"):
+            validator._semantic_crop_trace(document, semantic_scopes, IDENTITY)
+
+    def test_crop_store_and_union_substitution_fails_closed(self):
+        document, semantic_scopes = crop_fixture()
+        document["semanticCropStoreLinks"][1]["sourceInvocationIndex"] = 0
+        with self.assertRaisesRegex(ValueError, "semantic crop store 1 differs"):
+            validator._semantic_crop_trace(document, semantic_scopes, IDENTITY)
+
+        document, semantic_scopes = crop_fixture()
+        union = document["semanticCropUnionInputs"][2]["state"]
+        payload = bytearray.fromhex(union["hex"])
+        payload[16] ^= 1
+        union["hex"] = payload.hex()
+        union["sha256"] = hashlib.sha256(payload).hexdigest()
+        with self.assertRaisesRegex(ValueError, "semantic crop union input 2 differs"):
+            validator._semantic_crop_trace(document, semantic_scopes, IDENTITY)
 
     def test_dual_source_link_requires_both_exact_cells(self):
         source = 0xA_BEEF_0000

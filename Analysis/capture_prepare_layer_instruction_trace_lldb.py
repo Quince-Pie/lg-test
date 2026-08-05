@@ -6,7 +6,7 @@ no hardware watchpoints.  It stops at the first source-known depth-four epoch
 whose two independently opened source-link cells both equal the selected
 source, disables every software breakpoint, and advances that selected thread
 until the exact-source marker, one instruction at a time through
-``prepare_layer`` and the seven opened QuartzCore helpers. Calls outside
+``prepare_layer`` and the eight opened QuartzCore helpers. Calls outside
 that frozen scope are stepped out as named boundaries and must not change the
 aggregate for the gate to pass.
 """
@@ -28,7 +28,7 @@ import capture_prepare_layer_frame_correlated_writer_trace_lldb as frame_base  #
 
 capture_base = frame_base.capture_base
 
-TRACE_SCHEMA_VERSION = 5
+TRACE_SCHEMA_VERSION = 6
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
 )
@@ -64,6 +64,24 @@ SEMANTIC_DOD_ENTRY_OFFSET = 0
 SEMANTIC_DOD_RETURN_OFFSET = 1128
 SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX = "ff0f5fd6"
 SEMANTIC_STACK_BYTE_COUNT = 256
+SEMANTIC_CROP_SCOPE_NAME = "addBackgroundFilters"
+SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT = 4
+SEMANTIC_CROP_MAXIMUM_INVOCATION_COUNT = 8
+SEMANTIC_CROP_TARGET_BYTE_COUNT = 32
+SEMANTIC_CROP_ARGUMENT_MEMORY_BYTE_COUNT = 1024
+SEMANTIC_CROP_CALLER_ROLE_OFFSET = 0x290
+SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT = 2048
+CROP_INTEGER_SOURCE_OFFSET = 0x270
+CROP_INTEGER_BYTE_COUNT = 16
+CROP_DESTINATION_OFFSET = 0xB0
+CROP_STORE_RELATIVE_OFFSET = 0x55C0
+CROP_STORE_RAW_LITTLE_ENDIAN_HEX = "802f803d"
+CROP_UNION_INPUT_RELATIVE_OFFSET = 0x8570
+CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX = "88275729"
+CROP_UNION_STATE_OFFSET = 0xA0
+CROP_UNION_STATE_BYTE_COUNT = 48
+CROP_RETURN_MNEMONICS = ("ret", "retab")
+CROP_RETURN_RAW_LITTLE_ENDIAN_HEX = ("c0035fd6", "ff0f5fd6")
 KNOWN_CANVAS_EXTENT = 1024.0
 KNOWN_GLASS_EXTENT = 640.0
 KNOWN_EDGE_PADDING = 8.0
@@ -165,6 +183,19 @@ CHECKPOINT_SCOPE_SPECS = (
         "expectedSHA256": None,
     },
     {
+        "name": SEMANTIC_CROP_SCOPE_NAME,
+        "function": (
+            "CA::Render::Updater::add_background_filters_("
+            "CA::Render::Updater::GlobalState&, "
+            "CA::Render::Updater::LocalState&, CA::Render::Layer const*, "
+            "CA::Render::LayerNode*, CA::Render::Updater::LocalState*, "
+            "CA::Render::Updater::LayerShapes*)"
+        ),
+        "relativeToPrepareLayer": 40128,
+        "byteCount": 1564,
+        "expectedSHA256": None,
+    },
+    {
         "name": "unionBounds",
         "function": capture_base.UNION_HELPER_SYMBOL_NAME,
         "relativeToPrepareLayer": capture_base.UNION_HELPER_RELATIVE_TO_PREPARE_LAYER,
@@ -200,6 +231,8 @@ def _fresh_state():
         "manualTraceFinished": False,
         "semanticDODActive": False,
         "semanticDODFinished": False,
+        "semanticCropActiveInvocationIndex": None,
+        "semanticCropCompletedInvocationCount": 0,
     }
 
 
@@ -232,10 +265,10 @@ def _new_trace():
     return {
         "prepareLayerInstructionTraceSchemaVersion": TRACE_SCHEMA_VERSION,
         "classification": (
-            "preregistered-dual-source-linked-selected-glass-dod-full-register-"
-            "software-instruction-trace; architectural-writers-opened; crop-"
-            "policy-generalization-unseen-transfer-and-product-parity-remain-"
-            "sealed"
+            "preregistered-dual-source-linked-background-filter-crop-full-"
+            "register-software-instruction-trace; selected-glass-dod-and-"
+            "architectural-writers-opened; crop-policy-generalization-unseen-"
+            "transfer-and-product-parity-remain-sealed"
         ),
         "status": "initialized",
         "configuration": {
@@ -280,6 +313,32 @@ def _new_trace():
             "semanticStackByteCount": SEMANTIC_STACK_BYTE_COUNT,
             "semanticGeneralRegisterNames": list(capture_base.GENERAL_REGISTER_NAMES),
             "semanticSIMDRegisterNames": list(capture_base.SIMD_REGISTER_NAMES),
+            "semanticCropScopeName": SEMANTIC_CROP_SCOPE_NAME,
+            "semanticCropExpectedInvocationCount": (
+                SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT
+            ),
+            "semanticCropMaximumInvocationCount": (
+                SEMANTIC_CROP_MAXIMUM_INVOCATION_COUNT
+            ),
+            "semanticCropTargetByteCount": SEMANTIC_CROP_TARGET_BYTE_COUNT,
+            "semanticCropArgumentMemoryByteCount": (
+                SEMANTIC_CROP_ARGUMENT_MEMORY_BYTE_COUNT
+            ),
+            "semanticCropCallerRoleOffset": SEMANTIC_CROP_CALLER_ROLE_OFFSET,
+            "semanticCropCallerRoleByteCount": (SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT),
+            "cropIntegerSourceOffset": CROP_INTEGER_SOURCE_OFFSET,
+            "cropIntegerByteCount": CROP_INTEGER_BYTE_COUNT,
+            "cropDestinationOffset": CROP_DESTINATION_OFFSET,
+            "cropStoreRelativeOffset": CROP_STORE_RELATIVE_OFFSET,
+            "cropStoreRawLittleEndianHex": CROP_STORE_RAW_LITTLE_ENDIAN_HEX,
+            "cropUnionInputRelativeOffset": CROP_UNION_INPUT_RELATIVE_OFFSET,
+            "cropUnionInputRawLittleEndianHex": (
+                CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX
+            ),
+            "cropUnionStateOffset": CROP_UNION_STATE_OFFSET,
+            "cropUnionStateByteCount": CROP_UNION_STATE_BYTE_COUNT,
+            "cropReturnMnemonics": list(CROP_RETURN_MNEMONICS),
+            "cropReturnRawLittleEndianHex": list(CROP_RETURN_RAW_LITTLE_ENDIAN_HEX),
             "knownCanvasExtent": KNOWN_CANVAS_EXTENT,
             "knownGlassExtent": KNOWN_GLASS_EXTENT,
             "knownEdgePadding": KNOWN_EDGE_PADDING,
@@ -336,6 +395,21 @@ def _new_trace():
                 "complete scalar and SIMD register files and 256 bytes at sp "
                 "before execution, then retain the complete return state"
             ),
+            "semanticCropInvocationRule": (
+                "retain all four add_background_filters_ entries in execution "
+                "order; require x5=x19+0x290; from each entry through its exact "
+                "return retain every executed opened-scope instruction with "
+                "complete scalar/SIMD registers, 256 stack bytes, and the "
+                "fixed 32-byte x5 target; retain 1024 bytes at every entry "
+                "argument pointer and the complete 2048-byte caller role at "
+                "entry and return"
+            ),
+            "semanticCropLinkRule": (
+                "link the first three invocations by caller x19 to the exact "
+                "prepare_layer +0x55c0 q0 store and then to the exact +0x8570 "
+                "nested-crop union input; require the fourth invocation to "
+                "target the prospectively selected role aggregate"
+            ),
         },
         "callbackOrder": [],
         "prepareLayer": {},
@@ -350,6 +424,10 @@ def _new_trace():
         "semanticDODEntries": [],
         "semanticDODInvocation": {},
         "semanticDODInstructionStates": [],
+        "semanticCropInvocations": [],
+        "semanticCropInstructionStates": [],
+        "semanticCropStoreLinks": [],
+        "semanticCropUnionInputs": [],
         "manualSelectionMarkers": [],
         "selectedFrame": {},
         "terminalProcess": {},
@@ -749,6 +827,313 @@ def _finish_semantic_instruction(instruction, result_frame, aggregate):
         _write_trace()
     elif returned_outside and not instruction["potentialCall"]:
         raise RuntimeError("semantic DOD escaped at a non-return instruction")
+
+
+def _register_records_by_name(registers):
+    return {record["name"]: record for record in registers["general"]}
+
+
+def _crop_argument_memory(process, addresses, label):
+    result = []
+    for name in ("x0", "x1", "x2", "x3", "x4", "x5"):
+        address = addresses[name]
+        if address <= 0:
+            raise RuntimeError(label + " " + name + " pointer is invalid")
+        _payload, memory = _memory_payload(
+            process,
+            address,
+            SEMANTIC_CROP_ARGUMENT_MEMORY_BYTE_COUNT,
+            label + " " + name,
+        )
+        result.append({"registerName": name, "memory": memory})
+    return result
+
+
+def _crop_memory(process, address, byte_count, label):
+    _payload, memory = _memory_payload(process, address, byte_count, label)
+    return memory
+
+
+def _semantic_crop_state_before(frame, instruction, aggregate):
+    trace = _state["trace"]
+    step_index = len(trace["instructionSteps"])
+    active_index = _state["semanticCropActiveInvocationIndex"]
+    is_entry = (
+        instruction["scopeName"] == SEMANTIC_CROP_SCOPE_NAME
+        and instruction["scopeOffset"] == 0
+    )
+    if not is_entry and active_index is None:
+        return
+    if is_entry:
+        if active_index is not None:
+            raise RuntimeError("semantic crop writer re-entered before return")
+        invocations = trace["semanticCropInvocations"]
+        if len(invocations) >= SEMANTIC_CROP_MAXIMUM_INVOCATION_COUNT:
+            raise RuntimeError("semantic crop invocation bound exceeded")
+        registers, stack = _semantic_register_and_stack_snapshot(
+            frame, "semantic crop entry"
+        )
+        records = _register_records_by_name(registers)
+        arguments = {
+            name: records[name]["unsignedValue"]
+            for name in (
+                "x0",
+                "x1",
+                "x2",
+                "x3",
+                "x4",
+                "x5",
+            )
+        }
+        caller_role = records["x19"]["unsignedValue"]
+        target = arguments["x5"]
+        if target != caller_role + SEMANTIC_CROP_CALLER_ROLE_OFFSET:
+            raise RuntimeError("semantic crop x5 and caller role differ")
+        process = frame.GetThread().GetProcess()
+        invocation = {
+            "invocationIndex": len(invocations),
+            "entryStepIndex": step_index,
+            "entryPC": frame.GetPC(),
+            "entryArgumentRegisters": [records[name] for name in arguments],
+            "entryArgumentAddresses": arguments,
+            "entryArgumentMemory": _crop_argument_memory(
+                process, arguments, "semantic crop entry argument"
+            ),
+            "callerRoleBase": caller_role,
+            "callerRoleAtEntry": _crop_memory(
+                process,
+                caller_role,
+                SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT,
+                "semantic crop caller role at entry",
+            ),
+            "targetAddress": target,
+            "targetAtEntry": _crop_memory(
+                process,
+                target,
+                SEMANTIC_CROP_TARGET_BYTE_COUNT,
+                "semantic crop target at entry",
+            ),
+            "aggregateAtEntryHex": aggregate.hex(),
+            "instructionStateStartIndex": len(trace["semanticCropInstructionStates"]),
+            "storeLinkIndex": None,
+        }
+        invocations.append(invocation)
+        active_index = invocation["invocationIndex"]
+        _state["semanticCropActiveInvocationIndex"] = active_index
+    else:
+        registers, stack = _semantic_register_and_stack_snapshot(
+            frame, "semantic crop instruction"
+        )
+    invocation = trace["semanticCropInvocations"][active_index]
+    process = frame.GetThread().GetProcess()
+    states = trace["semanticCropInstructionStates"]
+    states.append(
+        {
+            "stateIndex": len(states),
+            "invocationIndex": active_index,
+            "invocationStateIndex": (
+                len(states) - invocation["instructionStateStartIndex"]
+            ),
+            "stepIndex": step_index,
+            "instruction": instruction,
+            "aggregateBeforeHex": aggregate.hex(),
+            "registers": registers,
+            "stack": stack,
+            "target": _crop_memory(
+                process,
+                invocation["targetAddress"],
+                SEMANTIC_CROP_TARGET_BYTE_COUNT,
+                "semantic crop instruction target",
+            ),
+        }
+    )
+    if len(states) % 64 == 0:
+        _write_trace()
+
+
+def _finish_semantic_crop_instruction(instruction, result_frame, aggregate):
+    active_index = _state["semanticCropActiveInvocationIndex"]
+    if active_index is None or instruction["scopeName"] != SEMANTIC_CROP_SCOPE_NAME:
+        return
+    result_scope = _scope_for_pc(result_frame.GetPC())
+    returned_outside = (
+        result_scope is None or result_scope["name"] != SEMANTIC_CROP_SCOPE_NAME
+    )
+    if not returned_outside:
+        return
+    if instruction["potentialCall"]:
+        return
+    if (
+        instruction["mnemonic"].lower() not in CROP_RETURN_MNEMONICS
+        or instruction["rawLittleEndianHex"] not in CROP_RETURN_RAW_LITTLE_ENDIAN_HEX
+    ):
+        raise RuntimeError("semantic crop writer escaped at a non-return instruction")
+    trace = _state["trace"]
+    invocation = trace["semanticCropInvocations"][active_index]
+    registers, stack = _semantic_register_and_stack_snapshot(
+        result_frame, "semantic crop return"
+    )
+    process = result_frame.GetThread().GetProcess()
+    states = trace["semanticCropInstructionStates"]
+    start = invocation["instructionStateStartIndex"]
+    invocation_states = states[start:]
+    arguments = invocation["entryArgumentAddresses"]
+    invocation.update(
+        {
+            "returnStepIndex": len(trace["instructionSteps"]) - 1,
+            "returnInstructionStateIndex": len(states) - 1,
+            "returnInstructionScopeOffset": instruction["scopeOffset"],
+            "returnInstructionRawLittleEndianHex": instruction["rawLittleEndianHex"],
+            "returnInstructionMnemonic": instruction["mnemonic"].lower(),
+            "returnPC": result_frame.GetPC(),
+            "returnFunction": result_frame.GetFunctionName(),
+            "returnArgumentMemory": _crop_argument_memory(
+                process, arguments, "semantic crop return argument"
+            ),
+            "callerRoleAtReturn": _crop_memory(
+                process,
+                invocation["callerRoleBase"],
+                SEMANTIC_CROP_CALLER_ROLE_BYTE_COUNT,
+                "semantic crop caller role at return",
+            ),
+            "targetAtReturn": _crop_memory(
+                process,
+                invocation["targetAddress"],
+                SEMANTIC_CROP_TARGET_BYTE_COUNT,
+                "semantic crop target at return",
+            ),
+            "aggregateAtReturnHex": aggregate.hex(),
+            "instructionStateCount": len(invocation_states),
+            "instructionStatesSHA256": hashlib.sha256(
+                json.dumps(
+                    invocation_states,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                ).encode("utf-8")
+            ).hexdigest(),
+            "returnRegisters": registers,
+            "returnStack": stack,
+        }
+    )
+    _state["semanticCropActiveInvocationIndex"] = None
+    _state["semanticCropCompletedInvocationCount"] += 1
+    _write_trace()
+
+
+def _crop_store_before(frame, instruction):
+    if not (
+        instruction["scopeName"] == "prepareLayer"
+        and instruction["scopeOffset"] == CROP_STORE_RELATIVE_OFFSET
+    ):
+        return None
+    if (
+        instruction["rawLittleEndianHex"] != CROP_STORE_RAW_LITTLE_ENDIAN_HEX
+        or instruction["mnemonic"].lower() != "str"
+    ):
+        raise RuntimeError("semantic crop store instruction differs")
+    registers = capture_base._full_register_snapshot(frame)
+    records = _register_records_by_name(registers)
+    caller_role = records["x19"]["unsignedValue"]
+    destination_base = records["x28"]["unsignedValue"]
+    invocations = _state["trace"]["semanticCropInvocations"]
+    candidates = [
+        item
+        for item in invocations
+        if item["callerRoleBase"] == caller_role
+        and "returnStepIndex" in item
+        and item["storeLinkIndex"] is None
+    ]
+    if len(candidates) != 1:
+        raise RuntimeError("semantic crop store source invocation differs")
+    invocation = candidates[0]
+    process = frame.GetThread().GetProcess()
+    stores = _state["trace"]["semanticCropStoreLinks"]
+    record = {
+        "storeLinkIndex": len(stores),
+        "sourceInvocationIndex": invocation["invocationIndex"],
+        "stepIndex": len(_state["trace"]["instructionSteps"]),
+        "instruction": instruction,
+        "registers": registers,
+        "callerRoleBase": caller_role,
+        "sourceIntegerAddress": caller_role + CROP_INTEGER_SOURCE_OFFSET,
+        "sourceInteger": _crop_memory(
+            process,
+            caller_role + CROP_INTEGER_SOURCE_OFFSET,
+            CROP_INTEGER_BYTE_COUNT,
+            "semantic crop integer source",
+        ),
+        "destinationAddress": destination_base + CROP_DESTINATION_OFFSET,
+        "destinationBefore": _crop_memory(
+            process,
+            destination_base + CROP_DESTINATION_OFFSET,
+            CROP_INTEGER_BYTE_COUNT,
+            "semantic crop destination before",
+        ),
+        "destinationAfter": None,
+        "returnPC": None,
+        "unionInputIndex": None,
+    }
+    stores.append(record)
+    invocation["storeLinkIndex"] = record["storeLinkIndex"]
+    return record
+
+
+def _finish_crop_store(record, result_frame):
+    if record is None:
+        return
+    record["destinationAfter"] = _crop_memory(
+        result_frame.GetThread().GetProcess(),
+        record["destinationAddress"],
+        CROP_INTEGER_BYTE_COUNT,
+        "semantic crop destination after",
+    )
+    record["returnPC"] = result_frame.GetPC()
+
+
+def _crop_union_input_before(frame, instruction):
+    if not (
+        instruction["scopeName"] == "prepareLayer"
+        and instruction["scopeOffset"] == CROP_UNION_INPUT_RELATIVE_OFFSET
+    ):
+        return
+    if (
+        instruction["rawLittleEndianHex"] != CROP_UNION_INPUT_RAW_LITTLE_ENDIAN_HEX
+        or instruction["mnemonic"].lower() != "ldp"
+    ):
+        raise RuntimeError("semantic crop union input instruction differs")
+    registers = capture_base._full_register_snapshot(frame)
+    records = _register_records_by_name(registers)
+    destination_base = records["x28"]["unsignedValue"]
+    destination = destination_base + CROP_DESTINATION_OFFSET
+    stores = _state["trace"]["semanticCropStoreLinks"]
+    candidates = [
+        item
+        for item in stores
+        if item["destinationAddress"] == destination and item["unionInputIndex"] is None
+    ]
+    if len(candidates) != 1:
+        raise RuntimeError("semantic crop union source store differs")
+    store = candidates[0]
+    process = frame.GetThread().GetProcess()
+    values = _state["trace"]["semanticCropUnionInputs"]
+    record = {
+        "unionInputIndex": len(values),
+        "sourceStoreLinkIndex": store["storeLinkIndex"],
+        "stepIndex": len(_state["trace"]["instructionSteps"]),
+        "instruction": instruction,
+        "registers": registers,
+        "layerShapesBase": destination_base,
+        "stateAddress": destination_base + CROP_UNION_STATE_OFFSET,
+        "state": _crop_memory(
+            process,
+            destination_base + CROP_UNION_STATE_OFFSET,
+            CROP_UNION_STATE_BYTE_COUNT,
+            "semantic crop union state",
+        ),
+    }
+    values.append(record)
+    store["unionInputIndex"] = record["unionInputIndex"]
 
 
 def _candidate_context(frame, identity, label):
@@ -1263,6 +1648,22 @@ def _selected_marker(frame, exact, aggregate):
         return False
     if _state["semanticDODActive"] or not _state["semanticDODFinished"]:
         raise RuntimeError("selected marker preceded semantic DOD closure")
+    crop_invocations = _state["trace"]["semanticCropInvocations"]
+    crop_stores = _state["trace"]["semanticCropStoreLinks"]
+    crop_unions = _state["trace"]["semanticCropUnionInputs"]
+    if (
+        _state["semanticCropActiveInvocationIndex"] is not None
+        or _state["semanticCropCompletedInvocationCount"]
+        != SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT
+        or len(crop_invocations) != SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT
+        or len(crop_stores) != SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT - 1
+        or len(crop_unions) != SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT - 1
+        or [item["storeLinkIndex"] for item in crop_invocations] != [0, 1, 2, None]
+        or crop_invocations[-1]["callerRoleBase"] != identity["roleBase"]
+        or crop_invocations[-1]["targetAddress"]
+        != identity["roleBase"] + capture_base.AGGREGATE_OFFSET
+    ):
+        raise RuntimeError("selected marker preceded semantic crop closure")
     # Reuse the inherited marker recorder directly while the physical
     # breakpoint remains disabled.  This closes its independent source/frame
     # context without reintroducing a stop collision.
@@ -1321,6 +1722,9 @@ def _trace_one_instruction(thread, frame, scope, before):
     process = thread.GetProcess()
     instruction = _instruction_record(frame, scope)
     _semantic_state_before(frame, instruction, before)
+    _semantic_crop_state_before(frame, instruction, before)
+    crop_store = _crop_store_before(frame, instruction)
+    _crop_union_input_before(frame, instruction)
     context = None
     if instruction["potentialWriter"] or instruction["potentialCall"]:
         observed, context = _candidate_context(
@@ -1357,6 +1761,8 @@ def _trace_one_instruction(thread, frame, scope, before):
         before_context=context,
     )
     _finish_semantic_instruction(instruction, result_frame, after)
+    _finish_semantic_crop_instruction(instruction, result_frame, after)
+    _finish_crop_store(crop_store, result_frame)
     return current_thread, result_frame, after
 
 
@@ -1372,6 +1778,16 @@ def _trace_opaque_callee(thread, frame, before):
     )
     if observed != before:
         raise RuntimeError("opaque callee before aggregate differs")
+    crop_index = _state["semanticCropActiveInvocationIndex"]
+    crop_target_before = None
+    if crop_index is not None:
+        invocation = _state["trace"]["semanticCropInvocations"][crop_index]
+        crop_target_before = _crop_memory(
+            process,
+            invocation["targetAddress"],
+            SEMANTIC_CROP_TARGET_BYTE_COUNT,
+            "semantic crop opaque target before",
+        )
     entry = capture_base._frame_record(frame, process.GetTarget())
     error = lldb.SBError()
     thread.StepOut(error)
@@ -1393,6 +1809,25 @@ def _trace_opaque_callee(thread, frame, before):
         "returnFrame": capture_base._frame_record(result_frame, process.GetTarget()),
         "aggregateChanged": before != after,
     }
+    if crop_index is not None:
+        if _state["semanticCropActiveInvocationIndex"] != crop_index:
+            raise RuntimeError("semantic crop invocation changed across opaque callee")
+        crop_target_after = _crop_memory(
+            process,
+            invocation["targetAddress"],
+            SEMANTIC_CROP_TARGET_BYTE_COUNT,
+            "semantic crop opaque target after",
+        )
+        opaque.update(
+            {
+                "semanticCropInvocationIndex": crop_index,
+                "semanticCropTargetBefore": crop_target_before,
+                "semanticCropTargetAfter": crop_target_after,
+                "semanticCropTargetChanged": (
+                    crop_target_before["hex"] != crop_target_after["hex"]
+                ),
+            }
+        )
     boundaries.append(opaque)
     _record_step(
         "opaque-callee-step-out",
@@ -1496,6 +1931,12 @@ def trace_selected_path():
             raise RuntimeError("instruction path did not close at selected marker")
         if _state["semanticDODActive"] or not _state["semanticDODFinished"]:
             raise RuntimeError("semantic DOD invocation did not close")
+        if (
+            _state["semanticCropActiveInvocationIndex"] is not None
+            or _state["semanticCropCompletedInvocationCount"]
+            != SEMANTIC_CROP_EXPECTED_INVOCATION_COUNT
+        ):
+            raise RuntimeError("semantic crop invocations did not close")
     except Exception as error:
         _failure("selected-instruction-path", error)
         trace["status"] = "selected-instruction-path-failed"
@@ -1554,6 +1995,18 @@ def finalize():
     trace["finalSemanticDODInstructionStateCount"] = len(
         trace["semanticDODInstructionStates"]
     )
+    trace["semanticCropActiveInvocationIndex"] = _state[
+        "semanticCropActiveInvocationIndex"
+    ]
+    trace["semanticCropCompletedInvocationCount"] = _state[
+        "semanticCropCompletedInvocationCount"
+    ]
+    trace["finalSemanticCropInvocationCount"] = len(trace["semanticCropInvocations"])
+    trace["finalSemanticCropInstructionStateCount"] = len(
+        trace["semanticCropInstructionStates"]
+    )
+    trace["finalSemanticCropStoreLinkCount"] = len(trace["semanticCropStoreLinks"])
+    trace["finalSemanticCropUnionInputCount"] = len(trace["semanticCropUnionInputs"])
     states = []
     pending = _state["pendingCandidate"]
     if pending is not None:

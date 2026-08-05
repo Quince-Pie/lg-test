@@ -98,12 +98,14 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
                 "filterApplyDOD",
                 "filterApply",
                 "filterMapBounds",
+                "addBackgroundFilters",
                 "unionBounds",
             ],
         )
         self.assertIsNone(observed[4]["expectedSHA256"])
         self.assertIsNone(observed[5]["expectedSHA256"])
         self.assertIsNone(observed[6]["expectedSHA256"])
+        self.assertIsNone(observed[7]["expectedSHA256"])
         self.assertIn(
             "cannot influence instruction selection",
             self.document["instrumentation"]["unopenedScopeHashRule"],
@@ -129,6 +131,20 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         self.assertEqual(boundary["selectedGlassDODExecutedInstructionCount"], 267)
         self.assertTrue(boundary["completeArchitecturalWriterSequenceCaptured"])
         self.assertFalse(boundary["selectedGlassDODCompleteRegisterStateCaptured"])
+        result_path = REPOSITORY_ROOT / boundary["sourceResultPath"]
+        self.assertEqual(sha256(result_path), boundary["sourceResultSHA256"])
+
+    def test_selected_dod_semantics_are_the_new_opened_boundary(self) -> None:
+        boundary = self.document["selectedGlassDODSemanticBoundary"]
+        self.assertEqual(boundary["sourceRunID"], 31044659120)
+        self.assertEqual(boundary["selectedDODInstructionStateCount"], 267)
+        self.assertEqual(boundary["shadowOffset"], [0.0, 8.0])
+        self.assertEqual(
+            boundary["expansionRule"],
+            "e = 2.8 * max(2 * blurRadius, bleedBlurRadius)",
+        )
+        self.assertTrue(boundary["glassDODArithmeticDecoded"])
+        self.assertFalse(boundary["upstreamIntegerCropProductionDecoded"])
         result_path = REPOSITORY_ROOT / boundary["sourceResultPath"]
         self.assertEqual(sha256(result_path), boundary["sourceResultSHA256"])
 
@@ -159,6 +175,13 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         self.assertIn(
             "canonical SHA-256", instrumentation["semanticDODReturnState"][-1]
         )
+        self.assertEqual(instrumentation["semanticCropExpectedInvocationCount"], 4)
+        self.assertEqual(instrumentation["semanticCropMaximumInvocationCount"], 8)
+        self.assertIn(
+            "x5 = live caller x19 + 0x290", instrumentation["semanticCropTargetRule"]
+        )
+        self.assertIn("+0x55c0", instrumentation["semanticCropStoreLink"])
+        self.assertIn("+0x8570", instrumentation["semanticCropUnionLink"])
 
     def test_gate_fails_on_any_opaque_aggregate_mutation(self) -> None:
         acceptance = self.document["acceptance"]
@@ -175,6 +198,13 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         acceptance = self.document["acceptance"]
         self.assertTrue(acceptance["changedInstructionBytesAndOperandsMayBeClaimed"])
         self.assertTrue(acceptance["selectedGlassDODExactDynamicReplayMayBeClaimed"])
+        self.assertTrue(
+            acceptance["backgroundFilterCropExactDynamicReplayMayBeClaimed"]
+        )
+        self.assertTrue(acceptance["backgroundFilterCropStoreAndUnionLinkMayBeClaimed"])
+        self.assertFalse(
+            acceptance["backgroundFilterCropInstructionSemanticsMayBeClaimed"]
+        )
         self.assertTrue(
             acceptance[
                 "everyExecutedSelectedGlassDODInstructionMustHaveOneCompletePreState"
@@ -209,6 +239,10 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
             (
                 integrity["successfulInstructionChainResultPath"],
                 "successfulInstructionChainResultSHA256",
+            ),
+            (
+                integrity["selectedDODSemanticResultPath"],
+                "selectedDODSemanticResultSHA256",
             ),
             (integrity["captureProgramPath"], "captureProgramSHA256"),
             (integrity["validatorPath"], "validatorSHA256"),
@@ -249,6 +283,7 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         self.assertIsNone(
             self.document["semanticRegisterTraceRuntimeOutcomeFrozenBeforeRun"]
         )
+        self.assertIsNone(self.document["cropWriterTraceRuntimeOutcomeFrozenBeforeRun"])
 
 
 if __name__ == "__main__":

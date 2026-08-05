@@ -6132,3 +6132,31 @@ unseen geometry and temporal transfer, material/appearance/direction transfer,
 physical Retina 2x evidence, and end-to-end Walle image equality before any
 production shader change or Liquid Glass parity claim. The shader quality lock
 and SHA-256 above remain unchanged.
+
+Schema 6 opens the now-isolated upstream writer without changing that quality
+lock. The accepted schema-5 path contains exactly four calls to
+`CA::Render::Updater::add_background_filters_`, whose symbol begins at
+`prepare_layer+40128` and spans 1564 bytes. The first three returns feed the
+generic floor/ceil enclosure and the exact `prepare_layer+0x55c0`
+`str q0,[x28,#0xb0]` stores; those destinations are subsequently consumed by
+the three `prepare_layer+0x8570` nested-rectangle union paths. The fourth call
+targets the prospectively selected root role after the separately decoded
+Glass DOD path. This ordering and linkage come from the accepted instruction
+trace; schema 6 does not select a call by its eventual crop value.
+
+The schema-6 capture retains all four invocations. From each entry through its
+exact return it records every executed instruction in any already opened
+scope, the complete scalar and SIMD register files, 256 live stack bytes, and
+the fixed 32 bytes at the entry `x5` target. It also records 1024 bytes at each
+entry argument pointer and the complete 2048-byte caller role at entry and
+return. Every deeper opaque callee records exact target bytes before and after
+the step-out, so a passing artifact will distinguish inline crop arithmetic
+from a mutation delegated to a named helper. The first three calls must link
+bit-for-bit through `+0x55c0` and `+0x8570`; the fourth must link to
+`selected roleBase+0x290`. Any missing state, different call count, broken
+link, or unregistered exit fails the run.
+
+Passing schema 6 will authorize offline decoding of this selected-path crop
+writer only. It will not by itself prove the general crop-allocation policy,
+unseen geometry or boundary transfer, material/appearance/direction transfer,
+Retina 2x behavior, production-shader authority, or Liquid Glass parity.
