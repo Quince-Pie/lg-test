@@ -5947,3 +5947,44 @@ the allocated backdrop width, and UV origin equals the producer-pass crop
 transform plus the copy-base signed integer offset. The discrete allocation
 policy, unseen transfer, production shader changes, and Liquid Glass parity
 remain sealed until their later gates pass.
+
+Run `31041421876`, from schema-3 commit `5cfcf4d`, proves the dual-source-link
+selector and closes the exact selected frame, but the composed instruction gate
+still fails closed at one newly identified opaque scope. The probe retains all
+seven source-known depth-four zero epochs. The first six fail the two-cell
+source link; the seventh has both exact little-endian uint64 cells equal to
+source `36918284224`, so it is selected without consulting a future marker.
+The trace then executes 6,146 instructions, records nine aggregate transitions,
+crosses 81 opaque boundaries, reaches the exact `+0x3ef0` marker in the same
+live frame, captures all 33 images, and exits normally with no capture failure.
+
+Eight transitions are already assigned to exact instructions in frozen scopes.
+They include the initial `union_bounds +128` `stp q0,q1,[x20]`, three exact
+`Rect::unapply_transform` stores, three exact `Rect::apply_transform` stores,
+and the final `union_bounds +128` store. The continuous path begins at zero,
+passes through `[P,384-P,640,640]` for `P=481.998779296875`, and closes exactly
+at `[480,-105.998779296875,641.998779296875,649.998779296875]`. No state was
+interpolated or spliced from another observer.
+
+The sole unassigned transition is opaque boundary 11. Entry is exact symbol
+`CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const`;
+its start is `prepare_layer-609324`, its symbol is exactly 1,092 bytes, and it
+returns to `FilterOp::apply_filter +100`. Across that boundary the rectangle
+changes from `[0,-0,640,640]` to
+`[2.842170943040401e-14,2.842170943040401e-14,640,648]`, changing lanes 0, 8,
+and 24. Because the call was stepped out atomically, schema 3 cannot claim the
+instruction that produced those bits. The validator rejects at instruction
+step 660 with `opaque mutation differs`; GitHub's displayed check mark for the
+`continue-on-error` validator step does not turn that rejection into a pass.
+The immutable evidence is
+`Analysis/dynamic_allocation_prepare_layer_instruction_trace_apply_dod_scope_result.json`.
+
+Schema 4 adds only that complete `apply_dod` symbol to the frozen scope set.
+Its name, relative start, and 1,092-byte extent come from the retained entry
+frame. Its complete bytes and SHA-256 were not present in the artifact, so the
+digest remains preregistered as null and is captured before selection; every
+aligned instruction is stepped regardless of the observed hash. A call from
+the wrapper into the already frozen Glass Background DOD symbol remains fully
+stepped. Any other aggregate-changing opaque callee still fails closed. This
+scope expansion does not authorize crop-policy, shader, unseen-transfer, or
+parity claims by itself.

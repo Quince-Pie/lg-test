@@ -95,6 +95,7 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
                 "rectApplyTransform",
                 "rectUnapplyTransform",
                 "glassBackgroundDOD",
+                "filterApplyDOD",
                 "filterApply",
                 "filterMapBounds",
                 "unionBounds",
@@ -102,10 +103,21 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         )
         self.assertIsNone(observed[4]["expectedSHA256"])
         self.assertIsNone(observed[5]["expectedSHA256"])
+        self.assertIsNone(observed[6]["expectedSHA256"])
         self.assertIn(
             "cannot influence instruction selection",
             self.document["instrumentation"]["unopenedScopeHashRule"],
         )
+        correction = self.document["opaqueScopeCorrection"]
+        self.assertEqual(correction["sourceRunID"], 31041421876)
+        self.assertEqual(correction["changedOpaqueCalleeBoundaryCount"], 1)
+        self.assertEqual(
+            correction["onlyChangedOpaqueBoundary"]["relativeToPrepareLayer"],
+            -609324,
+        )
+        self.assertEqual(correction["onlyChangedOpaqueBoundary"]["byteCount"], 1092)
+        result_path = REPOSITORY_ROOT / correction["sourceResultPath"]
+        self.assertEqual(sha256(result_path), correction["sourceResultSHA256"])
 
     def test_instrumentation_removes_both_callback_collision_sources(self) -> None:
         instrumentation = self.document["instrumentation"]
@@ -162,6 +174,10 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
                 "observerOrdinalResultSHA256",
             ),
             (integrity["frameReuseResultPath"], "frameReuseResultSHA256"),
+            (
+                integrity["applyDODScopeResultPath"],
+                "applyDODScopeResultSHA256",
+            ),
             (integrity["captureProgramPath"], "captureProgramSHA256"),
             (integrity["validatorPath"], "validatorSHA256"),
             (integrity["captureSourceTestPath"], "captureSourceTestSHA256"),
@@ -174,7 +190,7 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
                 self.assertEqual(sha256(REPOSITORY_ROOT / relative), integrity[field])
         self.assertFalse(integrity["productionShaderModifiedByExperiment"])
 
-    def test_two_negative_attempts_are_frozen_and_successor_is_null(self) -> None:
+    def test_three_negative_attempts_are_frozen_and_successor_is_null(self) -> None:
         outcome = self.document["firstAttemptRuntimeOutcome"]
         self.assertEqual(outcome["runID"], 31038371480)
         self.assertEqual(outcome["registeredEpochOrdinal"], 7)
@@ -188,7 +204,13 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         self.assertTrue(retry["selectedFrameReturnedBeforeMarker"])
         self.assertFalse(retry["firstEpochDualSourceLinkPassed"])
         self.assertFalse(retry["productionShaderAuthorized"])
-        self.assertIsNone(self.document["successorRuntimeOutcomeFrozenBeforeRun"])
+        selected = self.document["dualSourceLinkRuntimeOutcome"]
+        self.assertEqual(selected["runID"], 31041421876)
+        self.assertTrue(selected["dualSourceLinkSelectorPassed"])
+        self.assertTrue(selected["selectedFrameReachedExactMarker"])
+        self.assertEqual(selected["changedOpaqueCalleeBoundaryCount"], 1)
+        self.assertFalse(selected["productionShaderAuthorized"])
+        self.assertIsNone(self.document["expandedScopeRuntimeOutcomeFrozenBeforeRun"])
 
 
 if __name__ == "__main__":

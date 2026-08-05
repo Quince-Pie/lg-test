@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: prepare-layer-instruction-trace-v3-${{ github.ref }}
+  group: prepare-layer-instruction-trace-v4-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

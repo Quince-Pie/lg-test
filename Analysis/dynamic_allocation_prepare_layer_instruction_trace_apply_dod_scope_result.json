@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "classification": "opened-negative-result-selected-instruction-path-has-one-opaque-apply-dod-mutation",
+  "run": {
+    "runID": 31041421876,
+    "jobID": 92426440596,
+    "headSHA": "5cfcf4d33bf1a9056cae65030ab241c463d85277",
+    "workflowConclusion": "failure",
+    "durationSeconds": 478,
+    "captureTargetExitedNormally": true,
+    "timelineSampleCount": 33,
+    "timelineFailedSampleCount": 0,
+    "pathIsolationGatePassed": true,
+    "inputClampGatePassed": true
+  },
+  "artifact": {
+    "artifactID": 8944939744,
+    "name": "liquid-glass-prepare-layer-instruction-trace-31041421876",
+    "sizeBytes": 100448395,
+    "digest": "sha256:4f038ca58871ec58d56c2cd31907f50f24f4d53c7a8191be5e7391f47eb41388"
+  },
+  "fileSHA256": {
+    "instructionTrace": "3da78d8eae2c7666309b166616863ee6c2f6335f3abb9d9f19e4a7bc50d20e8f",
+    "inheritedFrameTrace": "724171fe723328e1dd678243ef54b871dc0596d8562d625ac70770600eda04ee",
+    "timeline": "6f244187c961c8c2cb52c19e85e0e4df3b35c0a434e48ae25bb7ad58b60ec0ad",
+    "lldbLog": "99f21ee74c1af3231bb286045f6d69f6f1746e0636a64f04cdcbd2648526e7d0",
+    "pathIsolation": "4716d712d76bfa82f83c0b69b80fb20246cd112cb28dab44188ed3a9093f0162",
+    "inputClamp": "799d2802729689c49f99dd4fc2d247a39f0614ebcad9736615aee8c90b2df428",
+    "contracts": "c446377859bf7a774e29fb25948122fa95fbcfdeff13d744542d3c9967cfab43",
+    "build": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af",
+    "runtimeStderr": "e0c5a3dd21d473b9db81bd5cbe9746f5f068cd2c77085ecb510680995f1aa1e0"
+  },
+  "sourceSelection": {
+    "selectedLateCandidateIndex": 1,
+    "selectedSource": 36918284224,
+    "pointerChainExact": true,
+    "sourceSelectedRectI32": [500, -128, 644, 652],
+    "layerStateSelectedRectI32": [500, 0, 524, 524],
+    "ownerSelectedRectF64": [500.0, 0.0, 524.0, 524.0],
+    "sourceEqualsLayerStateRectangle": false,
+    "ownerEqualsLayerStateRectangle": true
+  },
+  "prospectiveSelectorOutcome": {
+    "sourceKnownDepthFourEpochCount": 7,
+    "rejectedSourceLinkEpochCount": 6,
+    "sourceLinkedDepthFourEpochCount": 1,
+    "selectedEpochRecordIndex": 6,
+    "selectedSourceKnownDepthFourOrdinal": 7,
+    "selectedMarkerHitIndex": 37,
+    "threadID": 64424509442,
+    "roleBase": 6171889024,
+    "framePointer": 6171890976,
+    "sourceLinkCells": [
+      {
+        "baseRegister": "x10",
+        "baseValue": 4623960672,
+        "signedOffset": 128,
+        "address": 4623960800,
+        "littleEndianHex": "c04f809808000000",
+        "sha256": "9b4f6beac8b5c54923970b85ef20e1b35ee178e73827827be8ec164696892226",
+        "observedValue": 36918284224,
+        "selectedSourceMatches": true
+      },
+      {
+        "baseRegister": "x20",
+        "baseValue": 36930783104,
+        "signedOffset": -24,
+        "address": 36930783080,
+        "littleEndianHex": "c04f809808000000",
+        "sha256": "9b4f6beac8b5c54923970b85ef20e1b35ee178e73827827be8ec164696892226",
+        "observedValue": 36918284224,
+        "selectedSourceMatches": true
+      }
+    ],
+    "dualSourceLinkSelectedExactLaterFrame": true,
+    "selectedFrameReachedExactSourceMarker": true
+  },
+  "instructionTraceOutcome": {
+    "captureFailureCount": 0,
+    "manualTraceStarted": true,
+    "manualTraceFinished": true,
+    "instructionStepCount": 6146,
+    "aggregateTransitionCount": 9,
+    "distinctAggregateStateCount": 10,
+    "opaqueCalleeBoundaryCount": 81,
+    "changedOpaqueCalleeBoundaryCount": 1,
+    "manualSelectionMarkerCount": 1,
+    "exactMarkerClosed": true,
+    "finalAggregateF64": [480.0, -105.998779296875, 641.998779296875, 649.998779296875],
+    "carrierP": 481.998779296875,
+    "integerOriginL": 480,
+    "composedValidatorFailure": "instruction step 660 opaque mutation differs"
+  },
+  "changedTransitions": [
+    {
+      "transitionIndex": 0,
+      "stepIndex": 244,
+      "scope": "unionBounds",
+      "scopeOffset": 128,
+      "relativeToPrepareLayer": -2592,
+      "rawLittleEndianHex": "800600ad",
+      "instruction": "stp q0, q1, [x20]",
+      "beforeF64": [0.0, 0.0, 0.0, 0.0],
+      "afterF64": [481.998779296875, -97.998779296875, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 1,
+      "stepIndex": 638,
+      "scope": "rectUnapplyTransform",
+      "scopeOffset": 40,
+      "relativeToPrepareLayer": -1202608,
+      "rawLittleEndianHex": "030000fd",
+      "instruction": "str d3, [x0]",
+      "beforeF64": [481.998779296875, -97.998779296875, 640.0, 640.0],
+      "afterF64": [0.0, -97.998779296875, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 2,
+      "stepIndex": 641,
+      "scope": "rectUnapplyTransform",
+      "scopeOffset": 52,
+      "relativeToPrepareLayer": -1202596,
+      "rawLittleEndianHex": "020400fd",
+      "instruction": "str d2, [x0, #0x8]",
+      "beforeF64": [0.0, -97.998779296875, 640.0, 640.0],
+      "afterF64": [0.0, -640.0, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 3,
+      "stepIndex": 646,
+      "scope": "rectUnapplyTransform",
+      "scopeOffset": 104,
+      "relativeToPrepareLayer": -1202544,
+      "rawLittleEndianHex": "020400fd",
+      "instruction": "str d2, [x0, #0x8]",
+      "beforeF64": [0.0, -640.0, 640.0, 640.0],
+      "afterF64": [0.0, -0.0, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 4,
+      "stepIndex": 660,
+      "scope": null,
+      "opaqueBoundaryIndex": 11,
+      "beforeF64": [0.0, -0.0, 640.0, 640.0],
+      "afterF64": [2.842170943040401e-14, 2.842170943040401e-14, 640.0, 648.0]
+    },
+    {
+      "transitionIndex": 5,
+      "stepIndex": 689,
+      "scope": "rectApplyTransform",
+      "scopeOffset": 180,
+      "relativeToPrepareLayer": -1207032,
+      "rawLittleEndianHex": "000400fd",
+      "instruction": "str d0, [x0, #0x8]",
+      "beforeF64": [2.842170943040401e-14, 2.842170943040401e-14, 640.0, 648.0],
+      "afterF64": [2.842170943040401e-14, -648.0, 640.0, 648.0]
+    },
+    {
+      "transitionIndex": 6,
+      "stepIndex": 693,
+      "scope": "rectApplyTransform",
+      "scopeOffset": 196,
+      "relativeToPrepareLayer": -1207016,
+      "rawLittleEndianHex": "010000fd",
+      "instruction": "str d1, [x0]",
+      "beforeF64": [2.842170943040401e-14, -648.0, 640.0, 648.0],
+      "afterF64": [481.998779296875, -648.0, 640.0, 648.0]
+    },
+    {
+      "transitionIndex": 7,
+      "stepIndex": 696,
+      "scope": "rectApplyTransform",
+      "scopeOffset": 208,
+      "relativeToPrepareLayer": -1207004,
+      "rawLittleEndianHex": "000400fd",
+      "instruction": "str d0, [x0, #0x8]",
+      "beforeF64": [481.998779296875, -648.0, 640.0, 648.0],
+      "afterF64": [481.998779296875, -105.998779296875, 640.0, 648.0]
+    },
+    {
+      "transitionIndex": 8,
+      "stepIndex": 5569,
+      "scope": "unionBounds",
+      "scopeOffset": 128,
+      "relativeToPrepareLayer": -2592,
+      "rawLittleEndianHex": "800600ad",
+      "instruction": "stp q0, q1, [x20]",
+      "beforeF64": [481.998779296875, -105.998779296875, 640.0, 648.0],
+      "afterF64": [480.0, -105.998779296875, 641.998779296875, 649.998779296875]
+    }
+  ],
+  "openedOpaqueScope": {
+    "boundaryIndex": 11,
+    "entryFunction": "CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const",
+    "relativeToPrepareLayer": -609324,
+    "symbolByteCount": 1092,
+    "symbolByteCountIsInstructionAligned": true,
+    "entrySymbolOffset": 0,
+    "returnFunction": "CA::Render::Updater::FilterOp::apply_filter(CA::Rect&, bool)",
+    "returnSymbolOffset": 100,
+    "aggregateBeforeF64": [0.0, -0.0, 640.0, 640.0],
+    "aggregateAfterF64": [2.842170943040401e-14, 2.842170943040401e-14, 640.0, 648.0],
+    "changedLaneOffsets": [0, 8, 24],
+    "completeFunctionBytesRetained": false,
+    "exactInstructionWithinFunctionOpened": false
+  },
+  "successorScope": {
+    "name": "filterApplyDOD",
+    "function": "CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const",
+    "relativeToPrepareLayer": -609324,
+    "byteCount": 1092,
+    "expectedSHA256": null,
+    "rule": "Capture and hash the complete symbol before the selected epoch, then software-step every executed instruction in it. Calls into the already frozen GlassBackground DOD scope remain instruction-stepped; any other callee remains a fail-closed opaque boundary."
+  },
+  "conclusion": {
+    "dualSourceLinkSelectorPassed": true,
+    "selectedFrameMarkerClosurePassed": true,
+    "knownAggregateStateTransferObserved": true,
+    "continuousInstructionChainPassed": false,
+    "onlyChangedOpaqueBoundaryIsApplyDOD": true,
+    "completeArchitecturalWriterInstructionSequenceCaptured": false,
+    "completeCropAllocationPolicyOpened": false,
+    "unseenGeometryTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

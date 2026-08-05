@@ -18,13 +18,13 @@ import validate_prepare_layer_frame_correlated_writer_trace as frame_validator
 full_base = frame_validator.full_base
 merge_base = frame_validator.merge_base
 
-EXPECTED_TRACE_SCHEMA_VERSION = 3
-VALIDATION_SCHEMA_VERSION = 3
+EXPECTED_TRACE_SCHEMA_VERSION = 4
+VALIDATION_SCHEMA_VERSION = 4
 EXPECTED_CLASSIFICATION = (
-    "preregistered-dual-source-linked-epoch-software-instruction-trace; "
-    "frame-address-reuse-and-observer-dependent-ordinal-selection-eliminated; "
-    "crop-policy-generalization-unseen-transfer-and-product-parity-remain-"
-    "sealed"
+    "preregistered-dual-source-linked-expanded-apply-dod-software-instruction-"
+    "trace; frame-address-reuse-observer-dependent-ordinal-and-changed-opaque-"
+    "boundary-selection-eliminated; crop-policy-generalization-unseen-transfer-"
+    "and-product-parity-remain-sealed"
 )
 EXPECTED_VALIDATION_CLASSIFICATION = (
     "prospective-dual-source-link-integrity-gate-for-selected-prepare-layer-"
@@ -126,6 +126,15 @@ CHECKPOINT_SCOPE_SPECS = (
         "expectedSHA256": (
             "8ac014e4a0e296c28b5ada0444a281d7609e93a239f4201f748d758defe6955e"
         ),
+    },
+    {
+        "name": "filterApplyDOD",
+        "function": (
+            "CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const"
+        ),
+        "relativeToPrepareLayer": -609324,
+        "byteCount": 1092,
+        "expectedSHA256": None,
     },
     {
         "name": "filterApply",

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 3,
-  "classification": "prospective-dual-source-linked-epoch-software-instruction-state-trace",
+  "schemaVersion": 4,
+  "classification": "prospective-dual-source-linked-expanded-apply-dod-software-instruction-state-trace",
   "registeredDate": "2026-08-05",
   "researchQuestion": "Which exact architectural instructions produce every observed 32-byte prepare_layer aggregate transition from the first exact-depth-four zero epoch whose two retained source-link cells equal the independently selected source through that invocation's exact-source marker, after eliminating hardware callback coalescing, observer-dependent ordinal selection, and reused stack-address identity?",
   "openedEvidenceBoundary": {
@@ -56,9 +56,29 @@
     "x20Minus24AloneIsSufficient": false,
     "laterMarkerUsedBySelector": false
   },
+  "opaqueScopeCorrection": {
+    "sourceRunID": 31041421876,
+    "sourceHeadSHA": "5cfcf4d33bf1a9056cae65030ab241c463d85277",
+    "sourceResultPath": "Analysis/dynamic_allocation_prepare_layer_instruction_trace_apply_dod_scope_result.json",
+    "sourceResultSHA256": "d6c8975ddc64636aa00b6766396e485babb58c41104682ed47923e8e23caad21",
+    "dualSourceLinkSelectorPassed": true,
+    "selectedFrameReachedExactMarker": true,
+    "instructionStepCount": 6146,
+    "aggregateTransitionCount": 9,
+    "opaqueCalleeBoundaryCount": 81,
+    "changedOpaqueCalleeBoundaryCount": 1,
+    "onlyChangedOpaqueBoundary": {
+      "function": "CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const",
+      "relativeToPrepareLayer": -609324,
+      "byteCount": 1092,
+      "aggregateBeforeF64": [0.0, -0.0, 640.0, 640.0],
+      "aggregateAfterF64": [2.842170943040401e-14, 2.842170943040401e-14, 640.0, 648.0]
+    },
+    "replacementRule": "Add the complete 1092-byte apply_dod symbol as a frozen instruction scope. Capture and hash all bytes before selection, step every executed instruction inside it, enter the already frozen GlassBackground DOD scope normally, and continue to fail closed on any other changed opaque boundary."
+  },
   "prospectiveHypothesis": {
     "primary": "Single-stepping from the first exact-depth-four zero epoch whose x10+128 and x20-24 uint64 cells both equal the independently selected source, with all software breakpoints disabled, will expose a continuous bitwise aggregate state chain and assign each changed boundary to one exact instruction in a frozen QuartzCore scope.",
-    "opaqueBoundary": "Calls outside the seven frozen scopes will not change the selected aggregate across their entry-to-return boundary. Any changed opaque boundary is a null outcome and must open a separately preregistered successor scope.",
+    "opaqueBoundary": "Calls outside the eight frozen scopes will not change the selected aggregate across their entry-to-return boundary. Any changed opaque boundary is a null outcome and must open a separately preregistered successor scope.",
     "knownTransfer": "The continuous state chain contains zero, [P,1024-P-640,640,640], [P,1024-P-640-8,640,648], and [floor(P)-1,1024-P-640-8,P+640-(floor(P)-1),P+648-(floor(P)-1)] bit-for-bit and in order.",
     "semanticSeal": "Passing opens exact changed instruction bytes, operands, and before/after state only. Instruction semantics, the complete crop policy, unseen transfer, shader authority, and parity remain sealed."
   },
@@ -128,6 +148,13 @@
         "expectedSHA256": "8ac014e4a0e296c28b5ada0444a281d7609e93a239f4201f748d758defe6955e"
       },
       {
+        "name": "filterApplyDOD",
+        "function": "CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const",
+        "relativeToPrepareLayer": -609324,
+        "byteCount": 1092,
+        "expectedSHA256": null
+      },
+      {
         "name": "filterApply",
         "function": "CA::Render::Updater::FilterOp::apply_filter(CA::Rect&, bool)",
         "relativeToPrepareLayer": -61476,
@@ -149,7 +176,7 @@
         "expectedSHA256": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7"
       }
     ],
-    "unopenedScopeHashRule": "The prior artifact fixed filterApply and filterMapBounds names, relative starts, and byte counts but not their complete bytes. Their runtime bytes and SHA-256 are captured before the first selected epoch resumes. Because every aligned instruction in each full symbol is stepped independent of content, the observed digest cannot influence instruction selection."
+    "unopenedScopeHashRule": "The prior artifacts fixed filterApplyDOD, filterApply, and filterMapBounds names, relative starts, and byte counts but not their complete bytes. Their runtime bytes and SHA-256 are captured before the first selected epoch resumes. Because every aligned instruction in each full symbol is stepped independent of content, the observed digest cannot influence instruction selection."
   },
   "acceptance": {
     "existingFrameSourceMarkerContextMustPass": true,
@@ -221,18 +248,20 @@
     "observerOrdinalResultSHA256": "ee19e2256afca44f6c04f9c26cab775567bf490b77e5283313d3dd9f942c99af",
     "frameReuseResultPath": "Analysis/dynamic_allocation_prepare_layer_instruction_trace_frame_reuse_result.json",
     "frameReuseResultSHA256": "a586f3809f0929a65b929b9f43842d5edf564a7e20293483f1a6b33d84dc54c6",
+    "applyDODScopeResultPath": "Analysis/dynamic_allocation_prepare_layer_instruction_trace_apply_dod_scope_result.json",
+    "applyDODScopeResultSHA256": "d6c8975ddc64636aa00b6766396e485babb58c41104682ed47923e8e23caad21",
     "captureProgramPath": "Analysis/capture_prepare_layer_instruction_trace_lldb.py",
-    "captureProgramSHA256": "bd6552192e207928616701a9f65debd884bc51b71ea991fb87237de193c63c1d",
+    "captureProgramSHA256": "3d289c5ef1eac81e9f3f4539473d696d86fd42be9d368f9a313a3e23656cd1da",
     "validatorPath": "Analysis/validate_prepare_layer_instruction_trace.py",
-    "validatorSHA256": "61b89bf549ce67d015385b7ab98f8a96f3d104c15dd230453ef320f929a480de",
+    "validatorSHA256": "581951464558c1d72ce6ae3bacf66cdd43aa021d7cd71fad48b30167e0aa4115",
     "captureSourceTestPath": "Analysis/test_capture_prepare_layer_instruction_trace_lldb_source.py",
-    "captureSourceTestSHA256": "a1ef282259643ebcc20c1b79f3c38a544f62f42e10a72fd400c552b0378a931c",
+    "captureSourceTestSHA256": "d2f92491cc63b41c84ad5e9bbe35a6ad4e2e50317ecb89f71f11ca24c6f8e9ad",
     "validatorTestPath": "Analysis/test_validate_prepare_layer_instruction_trace.py",
     "validatorTestSHA256": "a98441338393502757e4672541058c82336b875fbe1d0caae299ad831d797921",
     "workflowPath": ".github/workflows/prepare-layer-instruction-trace-introspect.yml",
-    "workflowSHA256": "0239ba101c4b0fd62d6f94bc477f1a8d2090496b11c539c23aefe6ad3ced37c0",
+    "workflowSHA256": "c0d7d75e2f71e57236df67f1be5edea07d691a3c3f0a0cfb6b43e3d8dfae3d6c",
     "preregistrationTestPath": "Analysis/test_dynamic_allocation_prepare_layer_instruction_trace_preregistration.py",
-    "preregistrationTestSHA256": "18f52825b8efa4bf28f7f74b6464f481943afb3599d89a4865cee59e2c2d8958"
+    "preregistrationTestSHA256": "d928d195c8d06b22f818a926bc9e826751ef2fc4c158efa77ff521833609d34c"
   },
   "firstAttemptRuntimeOutcome": {
     "runID": 31038371480,
@@ -252,7 +281,18 @@
     "firstEpochDualSourceLinkPassed": false,
     "productionShaderAuthorized": false
   },
-  "successorRuntimeOutcomeFrozenBeforeRun": null,
+  "dualSourceLinkRuntimeOutcome": {
+    "runID": 31041421876,
+    "outcome": "negative-one-changed-opaque-apply-dod-boundary",
+    "dualSourceLinkSelectorPassed": true,
+    "selectedFrameReachedExactMarker": true,
+    "instructionStepCount": 6146,
+    "aggregateTransitionCount": 9,
+    "changedOpaqueCalleeBoundaryCount": 1,
+    "changedOpaqueFunction": "CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const",
+    "productionShaderAuthorized": false
+  },
+  "expandedScopeRuntimeOutcomeFrozenBeforeRun": null,
   "notAuthorizedBeforeAcceptance": [
     "treating one hardware watch callback as one architectural store",
     "selecting an epoch from thread/x19/x29 address equality without both exact selected-source link cells",

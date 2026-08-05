@@ -75,6 +75,7 @@ class PrepareLayerInstructionTraceSourceTests(unittest.TestCase):
                 "rectApplyTransform",
                 "rectUnapplyTransform",
                 "glassBackgroundDOD",
+                "filterApplyDOD",
                 "filterApply",
                 "filterMapBounds",
                 "unionBounds",

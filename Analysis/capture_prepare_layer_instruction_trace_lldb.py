@@ -6,7 +6,7 @@ no hardware watchpoints.  It stops at the first source-known depth-four epoch
 whose two independently opened source-link cells both equal the selected
 source, disables every software breakpoint, and advances that selected thread
 until the exact-source marker, one instruction at a time through
-``prepare_layer`` and the six already opened QuartzCore helpers. Calls outside
+``prepare_layer`` and the seven opened QuartzCore helpers. Calls outside
 that frozen scope are stepped out as named boundaries and must not change the
 aggregate for the gate to pass.
 """
@@ -28,7 +28,7 @@ import capture_prepare_layer_frame_correlated_writer_trace_lldb as frame_base  #
 
 capture_base = frame_base.capture_base
 
-TRACE_SCHEMA_VERSION = 3
+TRACE_SCHEMA_VERSION = 4
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
 )
@@ -133,6 +133,15 @@ CHECKPOINT_SCOPE_SPECS = (
         ),
     },
     {
+        "name": "filterApplyDOD",
+        "function": (
+            "CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const"
+        ),
+        "relativeToPrepareLayer": -609324,
+        "byteCount": 1092,
+        "expectedSHA256": None,
+    },
+    {
         "name": "filterApply",
         "function": ("CA::Render::Updater::FilterOp::apply_filter(CA::Rect&, bool)"),
         "relativeToPrepareLayer": -61476,
@@ -215,10 +224,11 @@ def _new_trace():
     return {
         "prepareLayerInstructionTraceSchemaVersion": TRACE_SCHEMA_VERSION,
         "classification": (
-            "preregistered-dual-source-linked-epoch-software-instruction-"
-            "trace; frame-address-reuse-and-observer-dependent-ordinal-"
-            "selection-eliminated; crop-policy-generalization-unseen-transfer-"
-            "and-product-parity-remain-sealed"
+            "preregistered-dual-source-linked-expanded-apply-dod-software-"
+            "instruction-trace; frame-address-reuse-observer-dependent-"
+            "ordinal-and-changed-opaque-boundary-selection-eliminated; crop-"
+            "policy-generalization-unseen-transfer-and-product-parity-remain-"
+            "sealed"
         ),
         "status": "initialized",
         "configuration": {
