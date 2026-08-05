@@ -226,9 +226,20 @@ def analyze_documents(
     validation: Mapping[str, Any],
 ) -> dict[str, Any]:
     expected_validation = validator.validate_documents(trace, inherited_trace)
-    if validation != expected_validation:
+    validation_core = dict(validation)
+    retained_hash_fields = {
+        name: validation_core.pop(name)
+        for name in ("traceSHA256", "inheritedTraceSHA256")
+        if name in validation_core
+    }
+    if retained_hash_fields and set(retained_hash_fields) != {
+        "traceSHA256",
+        "inheritedTraceSHA256",
+    }:
+        raise ValueError("stored validation file-hash inventory differs")
+    if validation_core != expected_validation:
         raise ValueError("stored validation differs from composed revalidation")
-    semantic = mapping(validation.get("semanticDODTrace"), "semantic validation")
+    semantic = mapping(validation_core.get("semanticDODTrace"), "semantic validation")
     states = list(
         sequence(trace.get("semanticDODInstructionStates"), "semantic states")
     )
@@ -365,6 +376,16 @@ def analyze_files(
     validation = mapping(
         json.loads(validation_path.read_text(encoding="utf-8")), "validation"
     )
+    expected_file_hashes = {
+        "traceSHA256": hashlib.sha256(trace_path.read_bytes()).hexdigest(),
+        "inheritedTraceSHA256": hashlib.sha256(
+            inherited_trace_path.read_bytes()
+        ).hexdigest(),
+    }
+    if {
+        name: validation.get(name) for name in expected_file_hashes
+    } != expected_file_hashes:
+        raise ValueError("stored validation input file hashes differ")
     return analyze_documents(trace, inherited, validation)
 
 
