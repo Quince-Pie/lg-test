@@ -1,0 +1,32 @@
+name: Capture Landmark Liquid Glass Reference
+
+on:
+  workflow_dispatch:
+    inputs:
+      landmark_id:
+        description: Landmark asset ID (e.g. 1008, 1001)
+        required: true
+        default: '1008'
+
+jobs:
+  capture-landmark:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Swift
+        run: swift --version
+        
+      - name: Build GlassCapture
+        run: |
+          swift build -c release --product GlassCapture
+          
+      - name: Capture Native Apple macOS 26 Landmark Framebuffer
+        run: |
+          .build/release/GlassCapture --landmark ${{ inputs.landmark_id }} --out-dir artifacts/landmark_captures
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: landmark-native-capture-${{ inputs.landmark_id }}
+          path: artifacts/landmark_captures/
