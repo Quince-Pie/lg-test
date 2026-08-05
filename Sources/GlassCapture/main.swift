@@ -2918,6 +2918,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if config.suite.includesStatic {
+            let backgrounds = staticBackgrounds()
             guard let baseScene = scenes.first(where: { $0.name == "circle-0500-center" }) else {
                 fatalError("Missing baseScene circle-0500-center")
             }
