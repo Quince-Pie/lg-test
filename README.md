@@ -5520,3 +5520,62 @@ feeding the discrete crop/allocation policy, followed by prospective unseen
 geometry, scale, appearance, material, direction, and physical-Retina
 transfer. No production shader change or Liquid Glass parity claim is
 authorized before those gates pass.
+
+Run `30960697537`, from live-writer commit `65bc6a5`, passes the source,
+complete-code, build, capture, path-isolation, and input-clamp stages, and the
+target exits normally after all 33 real image samples. It fails the sealed
+live-writer validator and final enforcement, as required. The raw trace has
+SHA-256
+`fa5af50b42e248b87d1d5f000266f0be80c18b92a4bb303b7b33cc746d256b2d`;
+the 178,820,194-byte timeline has SHA-256
+`8b212a5831700e79f04eacd7ff38af63dc1a97eda4ff6b314088d56d8e15ba00`;
+and the downloaded artifact has GitHub digest
+`sha256:7f5a9866ffc0815d7b078acbb0aaa23fb309cafedd5e9d863b5db27a9527b48d`.
+The immutable opened result is
+`Analysis/dynamic_allocation_prepare_layer_live_writer_x28_timing_result.json`.
+
+The live arm itself is exact. The selected source is `33339949056`; the
+source rectangle is `[499,-127,644,652]`; layer state is `[499,0,525,525]`;
+and owner is `[499.0,0.0,525.0,525.0]`. At the source-known `+0x3ef0`
+marker the live role is `6171889152`, frame pointer is `6171891104`, and the
+aggregate origin and watchpoint initial bytes are identically
+`0000000000b07e40` (`490.0`). The hardware watchpoint then reaches its
+8,192-hit bound because the stack address is reused, but 196 rejected stops
+contain the exact hashed `prepare_layer` frame. Those stops expose eight real
+after-write PCs: `CA::Rect::apply_transform` at relative `-1207012`,
+`CA::Rect::unapply_transform` at `-1202604`, three
+`GlassBackgroundFilter::DOD` sites at `-90080`, `-89720`, and `-89512`,
+`LayerShapes::union_bounds+0x84` at relative `-2588`, and direct
+`prepare_layer` sites `+0xb60` and `+0x3974`.
+
+The direct sites prove why the former qualifier fails. The preceding words are
+`60a6803d` (`str q0,[x19,#656]`) and `608614ad` (`stp q0,q1,[x19,#656]`). A
+hardware stop on the watched `roleBase+656` therefore proves that `x19`
+matches the live role at each direct write. Since the combined `x19/x28`
+predicate still rejected them, `x28` is not yet the independently selected
+source at those early instructions; it only acquires that identity later at
+`+0x3ef0`. Requiring the future `x28` value at the write was temporally
+invalid. This result opens real writer locations, not the selected
+invocation's dependency slice or their semantics.
+
+The replacement probe is separate and prospective. It installs software
+breakpoints at all eight opened after-write PCs plus the statically opened
+alternate copy at `+0x33f4` before the first exact `prepare_layer` invocation
+resumes. It uses no long-lived hardware watchpoint. Every retained hit records
+the nearest exact parent `prepare_layer`, thread ID, unwound `x19/x28/x29`,
+the complete 2 KiB role, scalar and SIMD registers, stack, pointer probes, and
+a PC-containing code window. At the first source-known exact-source
+`+0x3ef0` marker it selects only events with identical `(thread ID, x19,
+x29)`, starting at that identity's latest `+0xb60` zero-initialization epoch.
+The validator rejects stale reuse, omitted same-frame events, mismatched frame
+pointers, unaccounted hits, instruction drift, a nonchanging suffix, or any
+last writer aggregate that is not bit-for-bit equal to the marker aggregate.
+
+The already proven backdrop arithmetic remains unchanged and explicitly
+recorded: Apple's dynamic resampling scale is exactly `q = 2 / (2 - k)`; the
+glass UV span is `q` times the allocated backdrop width; and the UV origin is
+the producer-pass crop transform plus the copy-base signed integer offset.
+What remains unknown is the complete crop-allocation producer that feeds that
+known resampling law, followed by unseen-state transfer. The frame-correlated
+run may open the selected writer suffix, but it cannot by itself authorize a
+Walle shader change or establish Liquid Glass parity.
