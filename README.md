@@ -5796,3 +5796,62 @@ passing version-3 capture opens only the complete writer-PC sequence. Writer
 instruction semantics, the complete discrete crop-allocation policy, unseen
 geometry transfer, production-shader changes, and Apple Liquid Glass parity
 remain sealed.
+
+Run `31034880031`, from isolated-watch commit `06d717e`, proves the sampled
+breakpoint retirement exactly and then disproves the remaining hardware-watch
+assumption. The target exits normally after all 33 real image samples. The
+eight non-epoch sampled breakpoints read back disabled, the zero, selection,
+and return controls read back enabled, all 18 hardware callbacks are retained,
+and none is ignored. Artifact `8942329322` has GitHub digest
+`sha256:ddcca54ea7bbeb1651759481df2fe1fe21048d54dc6bcc61774571f1ffc89c2f`;
+the active trace has SHA-256
+`c5e6629c3e524cf9706e0038b298b0a7afe962f77ee1dc435e8d1d1293c8c0a2`;
+the inherited trace has SHA-256
+`2babbc5a3d58e76762c2b7dc5be75f727430d3d15466617e1040e3d7c1c1d6f8`;
+and the timeline has SHA-256
+`5082f871fb324ae4393f2bfd1b1d403f6f0101e5a9f26d01930f57e7b0ad7f5f`.
+The immutable negative result is
+`Analysis/dynamic_allocation_prepare_layer_active_frame_watch_coalescing_result.json`.
+
+The selected invocation is the seventh source-known exact-depth-four epoch,
+with thread `64424509442`, role `6171888992`, frame pointer `6171890944`, and
+source `32636161408`. Its marker is exactly
+`[480,-105.85443115234375,641.8544311523438,649.8544311523438]` for
+`P=481.85443115234375`. The hardware list still lacks the required padded
+state `[P,-105.85443115234375,640,648]`, so the validator correctly fails with
+`known aggregate state transfer differs`. This is not evidence against the
+known arithmetic.
+
+The DOD machine code establishes the debugger failure directly. At relative
+`-89724`, `6202803d` is `str q2,[x19]`. At relative `-89704`, `6202016d` is
+`stp d2,d0,[x19,#16]`. Both write the watched 32-byte rectangle, yet LLDB emits
+no callback after the first store and one callback at `-89700` after both have
+executed, reporting all four lanes changed. Therefore one Apple-silicon LLDB
+hardware-watch callback is not one architectural store. Removing sampled
+breakpoint collisions cannot turn hardware callbacks into a complete store
+sequence, and the rig must not splice the missing transition into that list.
+
+The prospective replacement is frozen in
+`Analysis/dynamic_allocation_prepare_layer_instruction_trace_preregistration.json`
+and runs separately in
+`prepare-layer-instruction-trace-introspect.yml`. It uses no hardware
+watchpoint. The seventh source-known exact-depth-four zero epoch is fixed
+before dispatch; the rig stops only there, disables every software breakpoint,
+forces synchronous debugger mode with `SBDebugger.SetAsync(false)`, verifies
+that the target contains no watchpoint, and advances the selected thread with
+`SBThread.StepInstruction(false, SBError)`. It
+single-steps every executed instruction in the complete frozen
+`prepare_layer`, Rect apply/unapply, Glass DOD, FilterOp apply/map, and
+LayerShapes union symbols. Any other callee is an explicit `StepOut` boundary;
+an aggregate change across even one such boundary fails closed and opens a
+separate successor scope instead of being guessed away.
+
+Every changed step retains its raw instruction, decoded operands, complete
+pre-execution scalar/SIMD register file, stack and pointer probes, full role
+before and after, private fields, and exact backtrace. The validator requires
+continuous 32-byte before/after equality between every adjacent step, the
+known four-state transfer bit-for-bit and in order, zero opaque mutations, and
+final equality with both independent marker copies. Passing opens exact
+changed instruction evidence only. Decoding the instructions into the full
+crop policy, transferring it to unseen geometry and raster cases, changing
+Walle's shader, and claiming Liquid Glass parity remain later gates.

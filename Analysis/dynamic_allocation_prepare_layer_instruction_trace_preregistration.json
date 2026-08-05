@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "classification": "prospective-selected-epoch-software-instruction-state-trace",
+  "registeredDate": "2026-08-05",
+  "researchQuestion": "Which exact architectural instructions produce every observed 32-byte prepare_layer aggregate transition from the selected zero epoch through the exact-source marker when hardware watchpoint callback coalescing is removed?",
+  "openedEvidenceBoundary": {
+    "sourceRunID": 31034880031,
+    "sourceHeadSHA": "06d717ecbf269b7cc2d54df0332f45d0e8502f2c",
+    "sourceResultPath": "Analysis/dynamic_allocation_prepare_layer_active_frame_watch_coalescing_result.json",
+    "sourceResultSHA256": "8099a078bff021c638802f142a884f61a77c5c3d05e5b7b0436739b1e39d412d",
+    "selectedPrepareLayerRecursionDepth": 4,
+    "selectedSourceKnownDepthFourEpochOrdinal": 7,
+    "hardwareWatchCallbackCoalescingProved": true,
+    "coalescedFirstStoreRelativeToPrepareLayer": -89724,
+    "coalescedSecondStoreRelativeToPrepareLayer": -89704,
+    "singleReportedStopRelativeToPrepareLayer": -89700,
+    "knownPaddedIntermediateMissingFromHardwareCallbacks": true,
+    "completeArchitecturalStoreSequenceProved": false,
+    "knownPublicResamplingLaw": "q = 2 / (2 - k)",
+    "completeCropAllocationPolicyProved": false
+  },
+  "prospectiveHypothesis": {
+    "primary": "Single-stepping the prospectively selected invocation with all software breakpoints disabled will expose a continuous bitwise aggregate state chain and assign each changed boundary to one exact instruction in a frozen QuartzCore scope.",
+    "opaqueBoundary": "Calls outside the seven frozen scopes will not change the selected aggregate across their entry-to-return boundary. Any changed opaque boundary is a null outcome and must open a separately preregistered successor scope.",
+    "knownTransfer": "The continuous state chain contains zero, [P,1024-P-640,640,640], [P,1024-P-640-8,640,648], and [floor(P)-1,1024-P-640-8,P+640-(floor(P)-1),P+648-(floor(P)-1)] bit-for-bit and in order.",
+    "semanticSeal": "Passing opens exact changed instruction bytes, operands, and before/after state only. Instruction semantics, the complete crop policy, unseen transfer, shader authority, and parity remain sealed."
+  },
+  "selection": {
+    "sourceSelection": "Reuse the independent capture_backdrop late selector and its exact object chain.",
+    "frameSelection": "Accept exact prepare_layer function name and frozen symbol bounds only when the bounded live ancestry has exactly four exact prepare_layer frames and the top SBFrame.GetFP equals x29.",
+    "earlyIdentity": ["threadID", "x19", "x29"],
+    "futureIdentity": "At +0x3ef0 require x28 to equal the independently selected source while threadID/x19/x29 still equal the stopped epoch identity.",
+    "prospectiveEpochOrdinal": 7,
+    "adaptiveEpochSelectionForbidden": true
+  },
+  "instrumentation": {
+    "hardwareWatchpointsUsed": false,
+    "sampledWriterBreakpointsRetiredAfterSourceSelection": true,
+    "allSoftwareBreakpointsDisabledBeforeFirstInstructionStep": true,
+    "selectedThreadStepAPI": "SBThread.StepInstruction(false, SBError)",
+    "opaqueCalleeAPI": "SBThread.StepOut(SBError)",
+    "debuggerModeBeforeStepping": "SBDebugger.SetAsync(false) with GetAsync() readback false",
+    "maximumInstructionStepCount": 250000,
+    "maximumOpaqueCalleeCount": 8192,
+    "changedInstructionContext": [
+      "raw instruction bytes",
+      "LLDB mnemonic, operands, and comment",
+      "complete scalar and SIMD register file before execution",
+      "stack and pointer probes before execution",
+      "complete 2048-byte role before and after execution",
+      "selected private fields before and after execution",
+      "exact before and after 32-byte aggregate",
+      "backtrace before and after execution"
+    ],
+    "checkpointScopes": [
+      {
+        "name": "prepareLayer",
+        "function": "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes&, unsigned long long&)",
+        "relativeToPrepareLayer": 0,
+        "byteCount": 40128,
+        "expectedSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
+      },
+      {
+        "name": "rectApplyTransform",
+        "function": "CA::Rect::apply_transform(CA::SimpleTransform const&)",
+        "relativeToPrepareLayer": -1207212,
+        "byteCount": 216,
+        "expectedSHA256": "33690a5426ab0ea58626fd32bac7793953f0b9d4bf5a2b9de070701c2b3f1905"
+      },
+      {
+        "name": "rectUnapplyTransform",
+        "function": "CA::Rect::unapply_transform(CA::SimpleTransform const&)",
+        "relativeToPrepareLayer": -1202648,
+        "byteCount": 216,
+        "expectedSHA256": "6cfb69c5706fce5a48b722499d708ea7e76ffdcaba41b8b5ec77ad2e4481b046"
+      },
+      {
+        "name": "glassBackgroundDOD",
+        "function": "CA::OGL::GlassBackgroundFilter::DOD(CA::Render::Filter const*, CA::Render::Layer const*, CA::Rect&) const",
+        "relativeToPrepareLayer": -90584,
+        "byteCount": 1136,
+        "expectedSHA256": "8ac014e4a0e296c28b5ada0444a281d7609e93a239f4201f748d758defe6955e"
+      },
+      {
+        "name": "filterApply",
+        "function": "CA::Render::Updater::FilterOp::apply_filter(CA::Rect&, bool)",
+        "relativeToPrepareLayer": -61476,
+        "byteCount": 292,
+        "expectedSHA256": null
+      },
+      {
+        "name": "filterMapBounds",
+        "function": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+        "relativeToPrepareLayer": -61056,
+        "byteCount": 788,
+        "expectedSHA256": null
+      },
+      {
+        "name": "unionBounds",
+        "function": "CA::Render::Updater::LayerShapes::union_bounds(CA::Rect const&, bool)",
+        "relativeToPrepareLayer": -2720,
+        "byteCount": 404,
+        "expectedSHA256": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7"
+      }
+    ],
+    "unopenedScopeHashRule": "The prior artifact fixed filterApply and filterMapBounds names, relative starts, and byte counts but not their complete bytes. Their runtime bytes and SHA-256 are captured before the first selected epoch resumes. Because every aligned instruction in each full symbol is stepped independent of content, the observed digest cannot influence instruction selection."
+  },
+  "acceptance": {
+    "existingFrameSourceMarkerContextMustPass": true,
+    "sourceKnownDepthFourEpochCountAtStop": 7,
+    "selectedEpochAggregateMustBeAllZero": true,
+    "allBreakpointReadbacksDisabledDuringStepping": true,
+    "zeroHardwareWatchpointsRequired": true,
+    "continuousBeforeAfterAggregateChainRequired": true,
+    "everyChangedStepMustHaveExactInstructionBytes": true,
+    "everyChangedStepMustHavePreExecutionOperandContext": true,
+    "zeroChangedOpaqueCalleeBoundariesRequired": true,
+    "knownAggregateStateTransferBitExactAndOrderedRequired": true,
+    "minimumChangedInstructionTransitionCount": 3,
+    "minimumDistinctAggregateStateCount": 4,
+    "lastAggregateMustBitMatchCurrentAndInheritedMarkers": true,
+    "existingPathIsolationGateMustPass": true,
+    "existingInputClampGateMustPass": true,
+    "targetMustExitNormally": true,
+    "timelineSampleCount": 33,
+    "timelineFailedSampleCount": 0,
+    "changedInstructionBytesAndOperandsMayBeClaimed": true,
+    "writerInstructionSemanticsMayBeClaimed": false,
+    "completeCropPolicyMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "nullOutcome": [
+    "the seventh source-known exact-depth-four epoch is absent or is not the future exact-source invocation",
+    "any breakpoint remains enabled during instruction stepping",
+    "the target frame returns before +0x3ef0",
+    "the instruction-step bound is reached",
+    "an aggregate transition occurs after an instruction not decoded as a writer or call",
+    "any opaque callee boundary changes the aggregate",
+    "the before/after chain is discontinuous",
+    "the known four-state transfer is missing or reordered",
+    "the final aggregate differs from either marker copy",
+    "the inherited source/frame context fails",
+    "the allocation or inputClamp gate fails",
+    "the target does not exit normally",
+    "any trace record is truncated or any callback failure is retained"
+  ],
+  "capture": {
+    "workflow": ".github/workflows/prepare-layer-instruction-trace-introspect.yml",
+    "runner": "macos-26",
+    "debugger": "xcrun lldb --batch",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-640-center",
+    "allocationOnly": true,
+    "sampleCount": 33,
+    "physicalScale": "runner-native",
+    "artifactNamePrefix": "liquid-glass-prepare-layer-instruction-trace-",
+    "composedValidator": "Analysis/validate_prepare_layer_instruction_trace.py"
+  },
+  "inputProgramIntegrity": {
+    "productionShaderPath": "../shaders/frag.glsl",
+    "productionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "productionShaderExternalToStandaloneLgTestCheckout": true,
+    "productionShaderModifiedByExperiment": false,
+    "coalescingResultPath": "Analysis/dynamic_allocation_prepare_layer_active_frame_watch_coalescing_result.json",
+    "coalescingResultSHA256": "8099a078bff021c638802f142a884f61a77c5c3d05e5b7b0436739b1e39d412d",
+    "captureProgramPath": "Analysis/capture_prepare_layer_instruction_trace_lldb.py",
+    "captureProgramSHA256": "1b9c13d727fbb3ca4aae1a3a988401971e2911ebb7855bad923bf2d067a87e2d",
+    "validatorPath": "Analysis/validate_prepare_layer_instruction_trace.py",
+    "validatorSHA256": "0922a4f116c0d30863f2ecc67838e4b0704f4d4c5a3d7dd8e0f4f80700e776c9",
+    "captureSourceTestPath": "Analysis/test_capture_prepare_layer_instruction_trace_lldb_source.py",
+    "captureSourceTestSHA256": "69f3a75e6ccf58307be5e84dfcd21b3509a223c97a74b513e4b65c11f157b7ec",
+    "validatorTestPath": "Analysis/test_validate_prepare_layer_instruction_trace.py",
+    "validatorTestSHA256": "2a85d2aca6506e5cf22447365a8acdf52c65d5271fdefd6836da045f232cfb0c",
+    "workflowPath": ".github/workflows/prepare-layer-instruction-trace-introspect.yml",
+    "workflowSHA256": "a67c08baee85b7d75505a0d2c4387c06f531ab30dec965990707fe7cd1738a0b",
+    "preregistrationTestPath": "Analysis/test_dynamic_allocation_prepare_layer_instruction_trace_preregistration.py",
+    "preregistrationTestSHA256": "e2e89e0b50723139aefccc3baa66d1d64c6a5eda219a0ca0a5abaf5a07c282d7"
+  },
+  "runtimeOutcomeFrozenBeforeRun": null,
+  "notAuthorizedBeforeAcceptance": [
+    "treating one hardware watch callback as one architectural store",
+    "adaptively choosing a different epoch after observing this run",
+    "ignoring or interpolating a changed opaque boundary",
+    "claiming writer instruction semantics from bytes and operands alone",
+    "claiming the complete crop-allocation producer is recovered",
+    "claiming unseen geometry or raster transfer has passed",
+    "modifying Walle's production shader",
+    "claiming Apple Liquid Glass parity",
+    "promising a fixed number of later CI runs"
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "classification": "opened-negative-result-hardware-watch-callbacks-coalesce-multiple-architectural-stores",
+  "run": {
+    "runID": 31034880031,
+    "jobID": 92404357596,
+    "headSHA": "06d717ecbf269b7cc2d54df0332f45d0e8502f2c",
+    "workflowConclusion": "failure",
+    "durationSeconds": 377,
+    "captureTargetExitedNormally": true,
+    "timelineSampleCount": 33,
+    "timelineFailedSampleCount": 0
+  },
+  "artifact": {
+    "artifactID": 8942329322,
+    "name": "liquid-glass-prepare-layer-active-frame-watch-31034880031",
+    "sizeBytes": 100247777,
+    "digest": "sha256:ddcca54ea7bbeb1651759481df2fe1fe21048d54dc6bcc61774571f1ffc89c2f"
+  },
+  "fileSHA256": {
+    "activeTrace": "c5e6629c3e524cf9706e0038b298b0a7afe962f77ee1dc435e8d1d1293c8c0a2",
+    "inheritedFrameTrace": "2babbc5a3d58e76762c2b7dc5be75f727430d3d15466617e1040e3d7c1c1d6f8",
+    "lldbLog": "698dd968d0d8e9f5ee8b73b2ae8a1adf0b6afe1be1d054d0e7a4c28ee1fa0387",
+    "timeline": "5082f871fb324ae4393f2bfd1b1d403f6f0101e5a9f26d01930f57e7b0ad7f5f",
+    "pathIsolation": "5064416dba25504ae148108366521353a061916a24bfb8a09b0d15eb9eac6e47",
+    "inputClamp": "8972fdc09a450ec54bdb8b4cfb82b17d0db5d3dbc3bb8623e75efc23a296f67f",
+    "contracts": "4bee170c01de08d4a86926af5f9592f334be3f06b971683c5a6f9adcdc8b0e83",
+    "build": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af",
+    "runtimeStderr": "d30e17a991d43cff80918b3ba88ef6993941b1e29c4047bd2185967060b796ef"
+  },
+  "breakpointIsolation": {
+    "callbackSequence": 2,
+    "retiredSampleBreakpointIDs": [3, 4, 5, 6, 7, 8, 10, 11],
+    "retiredReadbackEnabled": [false, false, false, false, false, false, false, false],
+    "retainedControlBreakpointIDs": [9, 12, 13],
+    "retainedReadbackEnabled": [true, true, true],
+    "sampledBreakpointCollisionEliminated": true
+  },
+  "selectedInvocation": {
+    "threadID": 64424509442,
+    "roleBase": 6171888992,
+    "framePointer": 6171890944,
+    "selectedSource": 32636161408,
+    "prepareRecursionDepth": 4,
+    "sourceKnownDepthFourEpochOrdinal": 7,
+    "carrierP": 481.85443115234375,
+    "integerOriginL": 480,
+    "finalAggregateF64": [
+      480.0,
+      -105.85443115234375,
+      641.8544311523438,
+      649.8544311523438
+    ]
+  },
+  "accounting": {
+    "traceStatusBeforeFinalization": "live-selected-active-frame-watch-closed",
+    "traceFailureCount": 0,
+    "epochMarkerHitCount": 40,
+    "sourceUnknownEpochCount": 13,
+    "rejectedEpochDepthCount": 20,
+    "acceptedEpochRecordCount": 7,
+    "selectionMarkerHitCount": 3,
+    "rejectedSelectionMarkerHitCount": 2,
+    "returnMarkerHitCount": 34,
+    "rawWatchpointHitCount": 18,
+    "qualifiedWatchpointHitCount": 18,
+    "ignoredWatchpointHitCount": 0,
+    "selectedWriterEventIndices": [11, 12, 13, 14, 15, 16, 17],
+    "selectedWriterEventCount": 7,
+    "selectedChangedTransitionCount": 5,
+    "selectedDistinctAggregateCount": 6
+  },
+  "selectedObservedStatesF64": [
+    [0.0, 0.0, 0.0, 0.0],
+    [481.85443115234375, -97.85443115234375, 640.0, 640.0],
+    [481.85443115234375, -97.85443115234375, 640.0, 640.0],
+    [-0.5275474548339844, -0.5275474548339844, 641.055094909668, 641.055094909668],
+    [-0.5275474548339844, -0.5275474548339844, 641.055094909668, 648.527547454834],
+    [2.842170943040401e-14, 2.842170943040401e-14, 640.0, 648.0],
+    [480.0, -105.85443115234375, 641.8544311523438, 649.8544311523438],
+    [480.0, -105.85443115234375, 641.8544311523438, 649.8544311523438]
+  ],
+  "architecturalStoreEvidence": {
+    "quartzCorePrepareLayerStart": 6879083132,
+    "glassDODRelativeStart": -90584,
+    "glassDODByteCount": 1136,
+    "glassDODSHA256": "8ac014e4a0e296c28b5ada0444a281d7609e93a239f4201f748d758defe6955e",
+    "coalescedPair": {
+      "firstStoreRelativeToPrepareLayer": -89724,
+      "firstStoreRawLittleEndianHex": "6202803d",
+      "firstStoreAssembly": "str q2, [x19]",
+      "secondStoreRelativeToPrepareLayer": -89704,
+      "secondStoreRawLittleEndianHex": "6202016d",
+      "secondStoreAssembly": "stp d2, d0, [x19, #16]",
+      "reportedWatchStopRelativeToPrepareLayer": -89700,
+      "separateCallbackForFirstStoreObserved": false,
+      "singleCallbackObservedAfterBothStores": true,
+      "allFourAggregateLanesChangedAtSingleCallback": true
+    },
+    "otherDecodedStops": [
+      {
+        "stopRelativeToPrepareLayer": -90080,
+        "precedingRawLittleEndianHex": "601600ad",
+        "precedingAssembly": "stp q0, q5, [x19]"
+      },
+      {
+        "stopRelativeToPrepareLayer": -89512,
+        "precedingRawLittleEndianHex": "600600ad",
+        "precedingAssembly": "stp q0, q1, [x19]"
+      },
+      {
+        "stopRelativeToPrepareLayer": -2588,
+        "precedingRawLittleEndianHex": "800600ad",
+        "precedingAssembly": "stp q0, q1, [x20]"
+      },
+      {
+        "stopRelativeToPrepareLayer": 14708,
+        "precedingRawLittleEndianHex": "608614ad",
+        "precedingAssembly": "stp q0, q1, [x19, #656]"
+      }
+    ]
+  },
+  "validatorOutcome": {
+    "passed": false,
+    "error": "known aggregate state transfer differs",
+    "requiredPaddedIntermediateF64": [
+      481.85443115234375,
+      -105.85443115234375,
+      640.0,
+      648.0
+    ],
+    "requiredPaddedIntermediateObservedByHardwareCallbacks": false,
+    "completeArchitecturalStoreSequenceProved": false
+  },
+  "conclusion": {
+    "hardwareWatchCallbackEqualsArchitecturalStore": false,
+    "hardwareWatchCallbackCoalescingProved": true,
+    "knownPublicResamplingLawChanged": false,
+    "knownPublicResamplingLaw": "q = 2 / (2 - k)",
+    "completeCropAllocationPolicyOpened": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

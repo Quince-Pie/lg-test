@@ -132,7 +132,7 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
                 self.assertEqual(sha256(path), integrity[field])
         self.assertFalse(integrity["productionShaderModifiedByExperiment"])
 
-    def test_runtime_outcome_is_null_and_product_claims_remain_forbidden(self) -> None:
+    def test_runtime_outcome_records_coalescing_and_forbids_product_claims(self) -> None:
         correction = self.document["preCaptureContractCorrection"]
         self.assertEqual(correction["runID"], 31025339792)
         self.assertFalse(correction["captureAttempted"])
@@ -199,7 +199,32 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
                 "recursivePrepareReturn",
             ],
         )
-        self.assertIsNone(self.document["runtimeOutcomeFrozenBeforeRun"])
+        coalescing = self.document["hardwareWatchCallbackCoalescingCorrection"]
+        self.assertEqual(coalescing["runID"], 31034880031)
+        self.assertTrue(coalescing["captureTargetExitedNormally"])
+        self.assertTrue(coalescing["allNonEpochSampledWriterBreakpointsRetired"])
+        self.assertEqual(coalescing["acceptedEpochRecordCount"], 7)
+        self.assertEqual(
+            coalescing["selectedSourceKnownDepthFourEpochOrdinal"], 7
+        )
+        self.assertEqual(
+            coalescing["coalescedFirstStoreRelativeToPrepareLayer"], -89724
+        )
+        self.assertEqual(
+            coalescing["coalescedSecondStoreRelativeToPrepareLayer"], -89704
+        )
+        self.assertEqual(
+            coalescing["singleReportedStopRelativeToPrepareLayer"], -89700
+        )
+        self.assertTrue(coalescing["hardwareWatchCallbackCoalescingProved"])
+        self.assertFalse(coalescing["completeArchitecturalStoreSequenceProved"])
+        result_path = REPOSITORY_ROOT / coalescing["resultPath"]
+        self.assertEqual(sha256(result_path), coalescing["resultSHA256"])
+        outcome = self.document["runtimeOutcomeFrozenBeforeRun"]
+        self.assertEqual(outcome["runID"], 31034880031)
+        self.assertFalse(outcome["knownAggregateStateTransferGatePassed"])
+        self.assertFalse(outcome["completeCausalWriterListProved"])
+        self.assertFalse(outcome["productionShaderAuthorized"])
         forbidden = "\n".join(self.document["notAuthorizedBeforeAcceptance"])
         self.assertIn("production shader", forbidden)
         self.assertIn("parity", forbidden)
