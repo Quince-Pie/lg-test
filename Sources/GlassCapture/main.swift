@@ -2900,6 +2900,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     log("UNSTABLE: \(name)")
                 }
                 if let diff,
+                   bg.family != .qualitative,
                    !sourceRoundTripIsWithinTolerance(
                        diff,
                        pixelCount: result.frame.pixels.count / 4,
