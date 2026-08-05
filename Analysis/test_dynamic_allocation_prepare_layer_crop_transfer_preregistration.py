@@ -25,6 +25,14 @@ def sha256(path):
     return digest.hexdigest()
 
 
+def is_sha256(value):
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
 class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
     def test_registration_is_prospective_and_has_no_observed_outcome(self):
         self.assertEqual(
@@ -89,14 +97,21 @@ class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
         )
         for relative, expected in pairs:
             self.assertEqual(sha256(REPOSITORY_ROOT / relative), expected)
-        self.assertEqual(
-            sha256(WORKSPACE_ROOT / "shaders" / "frag.glsl"),
-            frozen["productionShaderSHA256"],
+
+    def test_external_walle_companion_hashes_are_frozen_and_match_when_present(self):
+        frozen = REGISTRATION["frozenImplementation"]
+        companions = (
+            (
+                WORKSPACE_ROOT / "shaders" / "frag.glsl",
+                frozen["productionShaderSHA256"],
+            ),
+            (WORKSPACE_ROOT / "flake.nix", frozen["developmentFlakeSHA256"]),
         )
-        self.assertEqual(
-            sha256(WORKSPACE_ROOT / "flake.nix"),
-            frozen["developmentFlakeSHA256"],
-        )
+        for path, expected in companions:
+            with self.subTest(path=path):
+                self.assertTrue(is_sha256(expected))
+                if path.is_file():
+                    self.assertEqual(sha256(path), expected)
 
     def test_capture_program_is_unchanged_and_fully_hashed(self):
         records = REGISTRATION["frozenCaptureProgram"]
