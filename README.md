@@ -6366,3 +6366,47 @@ ancestor-role, backtrace, callback, and public timeline byte remains required,
 and selection and the 256-state matrix are unchanged. This amendment permits
 discovery evidence only; it does not authorize a public crop law, shader
 change, or parity claim.
+
+Run `31054385862`, from available-register commit `1a56cd9`, is the first
+schema-7 attempt to retain complete private crop payloads. All eight jobs pass
+their contracts and builds, reach the Apple marker, exit the target normally,
+and upload artifacts. GitHub nevertheless reports all eight jobs as failures
+because the prospective validator required 32 depth-four records. The opened
+`circle-640-phase-0500-signed` artifact `8949736391`, with GitHub digest
+`sha256:5266daf253b981a481c8b2d5f331a91eb368720b923e57318a593beba3a29871`,
+proves that requirement wrong without weakening the structural selector. Its
+trace has SHA-256
+`30996c0f43abb923d2212b2719390baf1a324d7b3fa21441e03df5c5fee19935`;
+the joined public timeline has SHA-256
+`e9ae49a962a6a81689c46c179140ba742288dadc55d895cb30134659a02a80e0`.
+
+The opened trace contains 32 marker hits and zero trace failures. Hit one has
+the exact direct normal caller chain but prepare recursion depth three, so the
+old depth-four-only selector retains it as the sole rejection. Hits two through
+32 have depth four and retain 31 complete payloads. The first retained private
+aggregate is
+
+```
+[491,-116.025634765625,641.025634765625,649.025634765625]
+```
+
+with raw binary64 bytes
+`0000000000b07e4000000000a4015dc000000080340884400000008034488440`.
+Public sample two has carrier position `492.025634765625`; the preregistered
+diagnostic law predicts the same four values and the same 256 bits. Together
+with callback order and marker indices `2...32`, this identifies the retained
+records as public samples two through 32. Public sample one is therefore the
+depth-three hit whose private payload the old selector rejected. This is exact
+topology evidence, not an inferred crop match.
+
+The prospective correction is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_transfer_topology_preregistration.json`.
+It admits only direct-normal-caller depths three and four, rejects every other
+depth and every intervention caller, and requires the exact normal sequence
+one depth-three record followed by 31 depth-four records. Each record must
+retain exactly its observed number of complete prepare-frame role snapshots.
+Register inventories, crop-bearing memory, byte counts, crop-independent
+selection, callback ordinal join, the eight-regime matrix, and the Apple
+capture program remain unchanged. A passing corrected run can open all 256
+discovery pairs, but it still cannot establish the general crop policy,
+authorize a production shader change, or establish Liquid Glass parity.

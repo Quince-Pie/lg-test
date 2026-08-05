@@ -36,6 +36,13 @@ AVAILABLE_REGISTER_REGISTRATION_PATH = (
 AVAILABLE_REGISTER_REGISTRATION = json.loads(
     AVAILABLE_REGISTER_REGISTRATION_PATH.read_text(encoding="utf-8")
 )
+TOPOLOGY_REGISTRATION_PATH = (
+    ANALYSIS_ROOT
+    / "dynamic_allocation_prepare_layer_crop_transfer_topology_preregistration.json"
+)
+TOPOLOGY_REGISTRATION = json.loads(
+    TOPOLOGY_REGISTRATION_PATH.read_text(encoding="utf-8")
+)
 
 
 def sha256(path):
@@ -108,14 +115,13 @@ class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
         self.assertTrue(acceptance["zeroUnretainedRejectionsRequired"])
 
     def test_frozen_implementation_hashes_match(self):
-        frozen = REGISTRATION["frozenImplementation"]
-        retry = AVAILABLE_REGISTER_REGISTRATION["frozenImplementation"]
+        frozen = TOPOLOGY_REGISTRATION["frozenImplementation"]
         pairs = (
             (frozen["workflow"], frozen["workflowSHA256"]),
-            (retry["captureHarness"], retry["captureHarnessSHA256"]),
-            (retry["captureHarnessTest"], retry["captureHarnessTestSHA256"]),
-            (retry["validator"], retry["validatorSHA256"]),
-            (retry["validatorTest"], retry["validatorTestSHA256"]),
+            (frozen["captureHarness"], frozen["captureHarnessSHA256"]),
+            (frozen["captureHarnessTest"], frozen["captureHarnessTestSHA256"]),
+            (frozen["validator"], frozen["validatorSHA256"]),
+            (frozen["validatorTest"], frozen["validatorTestSHA256"]),
         )
         for relative, expected in pairs:
             self.assertEqual(sha256(REPOSITORY_ROOT / relative), expected)
@@ -252,6 +258,78 @@ class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
         self.assertTrue(acceptance["allCropBearingMemoryRangesRemainRequired"])
         self.assertFalse(acceptance["generalCropPolicyMayBeClaimedByThisRunAlone"])
         self.assertFalse(acceptance["productionShaderMayChange"])
+        self.assertIsNone(registration["runtimeOutcomeFrozenBeforeDispatch"])
+
+    def test_topology_amendment_is_chained_to_opened_exact_bytes(self):
+        registration = TOPOLOGY_REGISTRATION
+        antecedent = registration["antecedentPreregistration"]
+        failed = registration["failedAttempt"]
+        opened = failed["openedTopologyFixture"]
+        amendment = registration["topologyAmendment"]
+        acceptance = registration["acceptance"]
+        self.assertEqual(
+            registration[
+                "prepareLayerCropTransferTopologyPreregistrationSchemaVersion"
+            ],
+            1,
+        )
+        self.assertEqual(
+            sha256(AVAILABLE_REGISTER_REGISTRATION_PATH), antecedent["sha256"]
+        )
+        previous = AVAILABLE_REGISTER_REGISTRATION["frozenImplementation"]
+        for name in (
+            "captureHarnessSHA256",
+            "captureHarnessTestSHA256",
+            "validatorSHA256",
+            "validatorTestSHA256",
+        ):
+            self.assertEqual(antecedent[name], previous[name])
+        self.assertEqual(failed["runID"], 31054385862)
+        self.assertEqual(
+            failed["headSHA"], "1a56cd92f241a0807000172997bc0ed01a1fc274"
+        )
+        self.assertEqual(failed["failedJobCount"], 8)
+        self.assertEqual(len(failed["artifactInventory"]), 8)
+        self.assertEqual(
+            len({record["artifactID"] for record in failed["artifactInventory"]}),
+            8,
+        )
+        self.assertTrue(
+            all(
+                record["digest"].startswith("sha256:")
+                and is_sha256(record["digest"].removeprefix("sha256:"))
+                for record in failed["artifactInventory"]
+            )
+        )
+        self.assertEqual(opened["publicNormalReplayCount"], 32)
+        self.assertEqual(opened["markerHitCount"], 32)
+        self.assertEqual(opened["qualifiedDepthFourRecordCount"], 31)
+        self.assertEqual(opened["rejectedMarkerCount"], 1)
+        self.assertEqual(opened["rejectedMarkerDepth"], 3)
+        self.assertEqual(opened["qualifiedMarkerHitIndices"], list(range(2, 33)))
+        self.assertEqual(
+            opened["firstQualifiedAggregateHex"],
+            opened["preregisteredSampleTwoPredictionHex"],
+        )
+        self.assertTrue(opened["firstQualifiedMatchesPublicSampleTwoBitForBit"])
+        self.assertFalse(opened["sampleOnePrivateCropObserved"])
+        self.assertFalse(opened["generalCropPolicyEvidenceComplete"])
+        self.assertEqual(amendment["allowedPrepareRecursionDepths"], [3, 4])
+        self.assertTrue(amendment["allOtherPrepareRecursionDepthsRejected"])
+        self.assertTrue(amendment["directNormalCallerChainStillRequired"])
+        self.assertTrue(amendment["interventionCallerChainsStillExcluded"])
+        self.assertFalse(amendment["cropBytesReadDuringSelection"])
+        self.assertTrue(amendment["recordedPrepareFrameCountMustEqualObservedDepth"])
+        self.assertFalse(amendment["ordinalJoinChanged"])
+        self.assertFalse(amendment["matrixChanged"])
+        self.assertFalse(amendment["appleCaptureProgramChanged"])
+        self.assertFalse(amendment["productionShaderChanged"])
+        self.assertTrue(acceptance["firstNormalRecordMustHavePrepareDepthThree"])
+        self.assertTrue(acceptance["remainingNormalRecordsMustHavePrepareDepthFour"])
+        self.assertEqual(acceptance["qualifiedRecordCountPerJob"], 32)
+        self.assertFalse(acceptance["generalCropPolicyMayBeClaimedByThisRunAlone"])
+        self.assertFalse(acceptance["productionShaderMayChange"])
+        self.assertFalse(acceptance["liquidGlassParityMayBeClaimed"])
         self.assertIsNone(registration["runtimeOutcomeFrozenBeforeDispatch"])
 
     def test_error_checked_retry_is_chained_to_the_second_failed_attempt(self):

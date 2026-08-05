@@ -110,7 +110,7 @@ jobs:
             -o glass-transition-introspect 2>&1 |
             tee -a transition-introspection/build.log
 
-      - name: Capture every normal depth-four crop state
+      - name: Capture every normal crop state
         id: capture
         if: steps.build.outcome == 'success'
         continue-on-error: true
@@ -176,6 +176,7 @@ jobs:
               or sealed.get("exactPrepareLayerCodePassed") is not True
               or sealed.get("cropIndependentStructuralSelectionPassed") is not True
               or sealed.get("oneQualifiedRecordPerNormalRenderPassed") is not True
+              or sealed.get("firstDepthThreeThenDepthFourTopologyPassed") is not True
               or sealed.get("publicPrivateOrdinalJoinPassed") is not True
               or sealed.get("completeRoleBytesCaptured") is not True
               or sealed.get("allAncestorRoleBytesCaptured") is not True

@@ -98,7 +98,8 @@ def valid_inputs():
         }
         role = role_payload(ordinal)
         prepare_frames = []
-        for index in range(4):
+        prepare_depth = 3 if ordinal == 1 else 4
+        for index in range(prepare_depth):
             frame_role_address = role_address + index * 0x3000
             frame_values = {
                 "x19": frame_role_address,
@@ -130,7 +131,7 @@ def valid_inputs():
                 "markerHitIndex": ordinal * 4,
                 "threadID": 42,
                 "pc": marker,
-                "prepareRecursionDepth": 4,
+                "prepareRecursionDepth": prepare_depth,
                 "frame": frame_record(0, marker),
                 "backtrace": [
                     frame_record(0, marker),
@@ -295,6 +296,13 @@ class PrepareLayerCropTransferValidatorTests(unittest.TestCase):
         self.assertFalse(
             result["sealedConclusion"]["productionShaderAuthorized"]
         )
+
+    def test_normal_recursion_topology_mismatch_fails_closed(self):
+        trace, _timeline = valid_inputs()
+        record = trace["qualifiedRecords"][0]
+        record["prepareRecursionDepth"] = 4
+        with self.assertRaisesRegex(ValueError, "recursion topology differs"):
+            validator.validate_trace(trace)
 
     def test_missing_structural_record_fails_closed(self):
         trace, timeline = valid_inputs()

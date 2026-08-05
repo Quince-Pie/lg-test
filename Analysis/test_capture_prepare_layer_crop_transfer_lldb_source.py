@@ -74,7 +74,7 @@ class PrepareLayerCropTransferSourceTests(unittest.TestCase):
     def test_selection_is_structural_and_crop_value_independent(self):
         source = inspect.getsource(self.module.crop_transfer_marker)
         caller_index = source.index("_direct_timeline_caller")
-        depth_index = source.index("depth != REQUIRED_PREPARE_RECURSION_DEPTH")
+        depth_index = source.index("depth not in REQUIRED_PREPARE_RECURSION_DEPTHS")
         role_index = source.index('role_base = values["x19"]')
         self.assertLess(caller_index, role_index)
         self.assertLess(depth_index, role_index)
@@ -129,6 +129,16 @@ class PrepareLayerCropTransferSourceTests(unittest.TestCase):
         )
         self.assertFalse(hasattr(self.module, "_register_record"))
 
+    def test_normal_topology_accepts_only_opened_depths_three_and_four(self):
+        self.assertEqual(self.module.REQUIRED_PREPARE_RECURSION_DEPTHS, (3, 4))
+        self.assertEqual(
+            self.module.EXPECTED_NORMAL_PREPARE_RECURSION_DEPTHS,
+            (3,) + (4,) * 31,
+        )
+        source = inspect.getsource(self.module.crop_transfer_marker)
+        self.assertIn("depth not in REQUIRED_PREPARE_RECURSION_DEPTHS", source)
+        self.assertIn("_direct_timeline_caller", source)
+
     def test_hardware_watchpoints_and_instruction_stepping_are_absent(self):
         source = MODULE_PATH.read_text(encoding="utf-8")
         self.assertNotIn("WatchAddress", source)
@@ -136,7 +146,7 @@ class PrepareLayerCropTransferSourceTests(unittest.TestCase):
         self.assertNotIn("StepInstruction", source)
         self.assertNotIn("StepOut", source)
 
-    def test_every_qualified_record_keeps_all_four_role_snapshots(self):
+    def test_every_qualified_record_keeps_every_structural_role_snapshot(self):
         source = inspect.getsource(self.module.crop_transfer_marker)
         frame_source = inspect.getsource(self.module._prepare_frame_snapshot)
         self.assertIn("for item in exact", source)

@@ -33,7 +33,8 @@ PREPARE_LAYER_FULL_CODE_SHA256 = (
 MARKER_NAME = "sourceLaterHandle"
 MARKER_OFFSET = 0x3EF0
 MARKER_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX = "28330b91"
-REQUIRED_PREPARE_RECURSION_DEPTH = 4
+REQUIRED_PREPARE_RECURSION_DEPTHS = (3, 4)
+EXPECTED_NORMAL_PREPARE_RECURSION_DEPTHS = (3,) + (4,) * 31
 MAXIMUM_MARKER_HIT_COUNT = 4096
 MAXIMUM_QUALIFIED_RECORD_COUNT = 128
 MAXIMUM_REJECTION_GROUP_COUNT = 64
@@ -122,7 +123,10 @@ def _expected_configuration():
         "markerInstructionRawLittleEndianHex": (
             MARKER_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX
         ),
-        "requiredPrepareRecursionDepth": REQUIRED_PREPARE_RECURSION_DEPTH,
+        "requiredPrepareRecursionDepths": list(REQUIRED_PREPARE_RECURSION_DEPTHS),
+        "expectedNormalPrepareRecursionDepths": list(
+            EXPECTED_NORMAL_PREPARE_RECURSION_DEPTHS
+        ),
         "maximumMarkerHitCount": MAXIMUM_MARKER_HIT_COUNT,
         "maximumQualifiedRecordCount": MAXIMUM_QUALIFIED_RECORD_COUNT,
         "maximumRejectionGroupCount": MAXIMUM_REJECTION_GROUP_COUNT,
@@ -139,7 +143,8 @@ def _expected_configuration():
         "excludedCallerFragments": list(EXCLUDED_CALLER_FRAGMENTS),
         "selectionRule": (
             "retain every exact prepare_layer+0x3ef0 stop whose backtrace has "
-            "exactly four structural prepare_layer frames and the direct normal "
+            "exactly three or four structural prepare_layer frames and the "
+            "direct normal "
             "transitionBackgroundUniformEvidence -> localTransitionCARendererEvidence "
             "-> carendererUniformEvidence caller chain, excluding every matrix, "
             "fixed-state, and path-isolation intervention caller; never inspect "
@@ -427,7 +432,7 @@ def prepare_layer_entry(frame, breakpoint_location, _internal_dict):
 
 
 def crop_transfer_marker(frame, breakpoint_location, _internal_dict):
-    """Retain only the value-independent normal-timeline depth-four stop."""
+    """Retain only value-independent normal-timeline depth-three/four stops."""
     try:
         _state["markerHitCount"] += 1
         if _state["markerHitCount"] > MAXIMUM_MARKER_HIT_COUNT:
@@ -445,7 +450,7 @@ def crop_transfer_marker(frame, breakpoint_location, _internal_dict):
         if not _direct_timeline_caller(functions):
             _rejection(frame, "caller-chain-excluded", depth, functions)
             return False
-        if depth != REQUIRED_PREPARE_RECURSION_DEPTH:
+        if depth not in REQUIRED_PREPARE_RECURSION_DEPTHS:
             _rejection(frame, "prepare-recursion-depth-differs", depth, functions)
             return False
         if len(_state["trace"]["qualifiedRecords"]) >= MAXIMUM_QUALIFIED_RECORD_COUNT:

@@ -32,7 +32,8 @@ KNOWN_PREPARE_LAYER_WINDOWS = (
 MARKER_NAME = "sourceLaterHandle"
 MARKER_OFFSET = 0x3EF0
 MARKER_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX = "28330b91"
-REQUIRED_PREPARE_RECURSION_DEPTH = 4
+REQUIRED_PREPARE_RECURSION_DEPTHS = (3, 4)
+EXPECTED_NORMAL_PREPARE_RECURSION_DEPTHS = (3,) + (4,) * 31
 MAXIMUM_MARKER_HIT_COUNT = 4096
 MAXIMUM_QUALIFIED_RECORD_COUNT = 128
 MAXIMUM_REJECTION_GROUP_COUNT = 64
@@ -96,7 +97,10 @@ EXPECTED_CONFIGURATION = {
     "markerInstructionRawLittleEndianHex": (
         MARKER_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX
     ),
-    "requiredPrepareRecursionDepth": REQUIRED_PREPARE_RECURSION_DEPTH,
+    "requiredPrepareRecursionDepths": list(REQUIRED_PREPARE_RECURSION_DEPTHS),
+    "expectedNormalPrepareRecursionDepths": list(
+        EXPECTED_NORMAL_PREPARE_RECURSION_DEPTHS
+    ),
     "maximumMarkerHitCount": MAXIMUM_MARKER_HIT_COUNT,
     "maximumQualifiedRecordCount": MAXIMUM_QUALIFIED_RECORD_COUNT,
     "maximumRejectionGroupCount": MAXIMUM_REJECTION_GROUP_COUNT,
@@ -113,7 +117,8 @@ EXPECTED_CONFIGURATION = {
     "excludedCallerFragments": list(EXCLUDED_CALLER_FRAGMENTS),
     "selectionRule": (
         "retain every exact prepare_layer+0x3ef0 stop whose backtrace has "
-        "exactly four structural prepare_layer frames and the direct normal "
+        "exactly three or four structural prepare_layer frames and the "
+        "direct normal "
         "transitionBackgroundUniformEvidence -> localTransitionCARendererEvidence "
         "-> carendererUniformEvidence caller chain, excluding every matrix, "
         "fixed-state, and path-isolation intervention caller; never inspect "
@@ -340,6 +345,17 @@ def validate_trace(trace):
         or trace.get("finalQualifiedRecordCount") != len(records)
     ):
         raise ValueError("qualified normal-render record count differs")
+    observed_depths = tuple(
+        integer(
+            mapping(raw, "qualified topology record").get(
+                "prepareRecursionDepth"
+            ),
+            "qualified topology depth",
+        )
+        for raw in records
+    )
+    if observed_depths != EXPECTED_NORMAL_PREPARE_RECURSION_DEPTHS:
+        raise ValueError("qualified normal-render recursion topology differs")
     marker_hit_count = integer(trace.get("finalMarkerHitCount"), "marker hit count")
     rejected_count = integer(
         trace.get("finalRejectedMarkerCount"), "rejected marker count"
@@ -408,10 +424,13 @@ def validate_timeline(timeline, expected_geometry):
 
 def validate_record(raw, ordinal, start):
     record = mapping(raw, "qualified record %d" % ordinal)
+    prepare_depth = integer(
+        record.get("prepareRecursionDepth"), "prepare recursion depth"
+    )
     if (
         record.get("recordIndex") != ordinal - 1
         or record.get("normalRenderOrdinal") != ordinal
-        or record.get("prepareRecursionDepth") != REQUIRED_PREPARE_RECURSION_DEPTH
+        or prepare_depth not in REQUIRED_PREPARE_RECURSION_DEPTHS
         or record.get("pc") != start + MARKER_OFFSET
     ):
         raise ValueError("qualified record ordinal or marker differs")
@@ -475,7 +494,7 @@ def validate_record(raw, ordinal, start):
         elif pointer.get("readable") is not False:
             raise ValueError("pointer state readability differs")
     prepare_frames = sequence(record.get("prepareFrames"), "prepare frames")
-    if len(prepare_frames) != REQUIRED_PREPARE_RECURSION_DEPTH:
+    if len(prepare_frames) != prepare_depth:
         raise ValueError("prepare frame inventory differs")
     for index, raw_frame in enumerate(prepare_frames):
         prepared = mapping(raw_frame, "prepare frame %d" % index)
@@ -550,6 +569,7 @@ def validate(trace_path, timeline_path, expected_geometry):
                 "sampleIndex": uniform.get("sampleIndex"),
                 "capture": render.get("capture"),
                 "remaining": number(uniform.get("remaining"), "remaining"),
+                "prepareRecursionDepth": raw_trace.get("prepareRecursionDepth"),
                 "carrierPosition": carrier_position,
                 "carrierBounds": carrier_bounds,
                 "private": private,
@@ -580,6 +600,7 @@ def validate(trace_path, timeline_path, expected_geometry):
             "exactPrepareLayerCodePassed": True,
             "cropIndependentStructuralSelectionPassed": True,
             "oneQualifiedRecordPerNormalRenderPassed": True,
+            "firstDepthThreeThenDepthFourTopologyPassed": True,
             "publicPrivateOrdinalJoinPassed": True,
             "completeRoleBytesCaptured": True,
             "allAncestorRoleBytesCaptured": True,
