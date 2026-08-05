@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "classification": "opened-successful-dual-source-linked-selected-prepare-layer-software-instruction-chain; exact architectural aggregate writers and continuous state transfer are captured while semantic replay, general crop allocation, unseen transfer, shader authority, and product parity remain sealed",
+  "run": {
+    "runID": 31042429686,
+    "jobID": 92429783332,
+    "headSHA": "6a3528391a9083bfe3eecdadd2884c68492bddb0",
+    "workflowConclusion": "success",
+    "durationSeconds": 451,
+    "captureTargetExitedNormally": true,
+    "timelineSampleCount": 33,
+    "timelineFailedSampleCount": 0,
+    "pathIsolationGatePassed": true,
+    "inputClampGatePassed": true,
+    "instructionTraceGatePassed": true,
+    "finalEnforcementPassed": true
+  },
+  "artifact": {
+    "artifactID": 8945312544,
+    "name": "liquid-glass-prepare-layer-instruction-trace-31042429686",
+    "sizeBytes": 100481809,
+    "digest": "sha256:08cf29557b14440f7d5a952825c47a4b7c74c2cf4feac15540f2f1e43017790f"
+  },
+  "fileSHA256": {
+    "instructionTrace": "1b0b2c05ff64216c8010d65af0b696ce416934c42970bbd03057725e0fd9f04f",
+    "inheritedFrameTrace": "797da39b0a581cd281c55d613254b13d46a29652450e7d735a84f1c03e08c921",
+    "timeline": "d27843335b923b762d4986f05d7583eaf7e8b475c97db975233a5a6239cbc9bb",
+    "lldbLog": "9292399997e236ff8a1bbcd266e9f26a6249d06a06a44b91876fbcf2ebf20a68",
+    "pathIsolation": "99fb521c739a0313ebff621a60e183a34cdb481c6b57fa0c988cfa5f8cfbf43c",
+    "inputClamp": "a172509ef4f19efc47631ee0f23a271d44e3942c78f20b3a8cde9f3d513ea983",
+    "contracts": "60f546e4a287821707745b2adbbde5e8cc99784440e514b74e039bb9738196ff",
+    "build": "a29c931a1760bc0da9f7d884edb57997a9b1d402e095c31d40e7867b314dc2af",
+    "runtimeStderr": "a565df2f710b2b7c6ce433384b9b53ba9cf23c3ae69ee16be0f914d3ae6f6624",
+    "validation": "a8e9c2bbdb127fa4b86159c920b3e98d0d5b4daaf0d1c06791cc2b5b0a04d4c4"
+  },
+  "sourceSelection": {
+    "selectedLateCandidateIndex": 1,
+    "selectedSource": 49207164928,
+    "pointerChainExact": true,
+    "sourceSelectedRectI32": [499, -127, 644, 652],
+    "layerStateSelectedRectI32": [499, 0, 525, 525],
+    "ownerSelectedRectF64": [499.0, 0.0, 525.0, 525.0],
+    "sourceEqualsLayerStateRectangle": false,
+    "ownerEqualsLayerStateRectangle": true
+  },
+  "prospectiveSelectorOutcome": {
+    "sourceKnownDepthFourEpochCount": 3,
+    "rejectedSourceLinkEpochCount": 2,
+    "sourceLinkedDepthFourEpochCount": 1,
+    "selectedEpochRecordIndex": 2,
+    "selectedSourceKnownDepthFourOrdinal": 3,
+    "selectedMarkerHitIndex": 23,
+    "threadID": 64424509442,
+    "roleBase": 6171889024,
+    "framePointer": 6171890976,
+    "sourceLinkCells": [
+      {
+        "baseRegister": "x10",
+        "baseValue": 4623929152,
+        "signedOffset": 128,
+        "address": 4623929280,
+        "littleEndianHex": "00c0f9740b000000",
+        "sha256": "de0aee530b21ad3a5283190eb1b1b94f53e47897b75da5c1726184a0cb98dc01",
+        "observedValue": 49207164928,
+        "selectedSourceMatches": true
+      },
+      {
+        "baseRegister": "x20",
+        "baseValue": 49207183232,
+        "signedOffset": -24,
+        "address": 49207183208,
+        "littleEndianHex": "00c0f9740b000000",
+        "sha256": "de0aee530b21ad3a5283190eb1b1b94f53e47897b75da5c1726184a0cb98dc01",
+        "observedValue": 49207164928,
+        "selectedSourceMatches": true
+      }
+    ],
+    "dualSourceLinkSelectedExactLaterFrame": true,
+    "selectedFrameReachedExactSourceMarker": true
+  },
+  "instructionTraceOutcome": {
+    "captureFailureCount": 0,
+    "manualTraceStarted": true,
+    "manualTraceFinished": true,
+    "instructionStepCount": 7356,
+    "aggregateTransitionCount": 12,
+    "distinctAggregateStateCount": 13,
+    "opaqueCalleeBoundaryCount": 117,
+    "changedOpaqueCalleeBoundaryCount": 0,
+    "manualSelectionMarkerCount": 1,
+    "exactMarkerClosed": true,
+    "carrierP": 492.03204345703125,
+    "integerOriginL": 491,
+    "knownTransferOrderedStateIndices": [0, 245, 1027, 6780],
+    "finalAggregateF64": [
+      491.0,
+      -116.03204345703125,
+      641.0320434570312,
+      649.0320434570312
+    ]
+  },
+  "observedScopeSHA256": {
+    "prepareLayer": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+    "rectApplyTransform": "33690a5426ab0ea58626fd32bac7793953f0b9d4bf5a2b9de070701c2b3f1905",
+    "rectUnapplyTransform": "6cfb69c5706fce5a48b722499d708ea7e76ffdcaba41b8b5ec77ad2e4481b046",
+    "glassBackgroundDOD": "8ac014e4a0e296c28b5ada0444a281d7609e93a239f4201f748d758defe6955e",
+    "filterApplyDOD": "1fbe87e96831c11eee633b58c2b0a39968d75ea29a48673aa95ccb761eaa30dd",
+    "filterApply": "855b03e09d815f83985994344be2867e6ac40938e80897183bcd06afc89f252f",
+    "filterMapBounds": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "unionBounds": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7"
+  },
+  "changedTransitions": [
+    {
+      "transitionIndex": 0,
+      "stepIndex": 244,
+      "scope": "unionBounds",
+      "scopeOffset": 128,
+      "relativeToPrepareLayer": -2592,
+      "rawLittleEndianHex": "800600ad",
+      "instruction": "stp q0, q1, [x20]",
+      "beforeF64": [0.0, 0.0, 0.0, 0.0],
+      "afterF64": [492.03204345703125, -108.03204345703125, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 1,
+      "stepIndex": 638,
+      "scope": "rectUnapplyTransform",
+      "scopeOffset": 40,
+      "relativeToPrepareLayer": -1202608,
+      "rawLittleEndianHex": "030000fd",
+      "instruction": "str d3, [x0]",
+      "beforeF64": [492.03204345703125, -108.03204345703125, 640.0, 640.0],
+      "afterF64": [0.0, -108.03204345703125, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 2,
+      "stepIndex": 641,
+      "scope": "rectUnapplyTransform",
+      "scopeOffset": 52,
+      "relativeToPrepareLayer": -1202596,
+      "rawLittleEndianHex": "020400fd",
+      "instruction": "str d2, [x0, #0x8]",
+      "beforeF64": [0.0, -108.03204345703125, 640.0, 640.0],
+      "afterF64": [0.0, -640.0, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 3,
+      "stepIndex": 646,
+      "scope": "rectUnapplyTransform",
+      "scopeOffset": 104,
+      "relativeToPrepareLayer": -1202544,
+      "rawLittleEndianHex": "020400fd",
+      "instruction": "str d2, [x0, #0x8]",
+      "beforeF64": [0.0, -640.0, 640.0, 640.0],
+      "afterF64": [0.0, -0.0, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 4,
+      "stepIndex": 829,
+      "scope": "glassBackgroundDOD",
+      "scopeOffset": 860,
+      "relativeToPrepareLayer": -89724,
+      "rawLittleEndianHex": "6202803d",
+      "instruction": "str q2, [x19]",
+      "beforeF64": [0.0, -0.0, 640.0, 640.0],
+      "afterF64": [-0.3494392395019531, -0.3494392395019531, 640.0, 640.0]
+    },
+    {
+      "transitionIndex": 5,
+      "stepIndex": 834,
+      "scope": "glassBackgroundDOD",
+      "scopeOffset": 880,
+      "relativeToPrepareLayer": -89704,
+      "rawLittleEndianHex": "6202016d",
+      "instruction": "stp d2, d0, [x19, #0x10]",
+      "beforeF64": [-0.3494392395019531, -0.3494392395019531, 640.0, 640.0],
+      "afterF64": [
+        -0.3494392395019531,
+        -0.3494392395019531,
+        640.698878479004,
+        640.698878479004
+      ]
+    },
+    {
+      "transitionIndex": 6,
+      "stepIndex": 861,
+      "scope": "glassBackgroundDOD",
+      "scopeOffset": 500,
+      "relativeToPrepareLayer": -90084,
+      "rawLittleEndianHex": "601600ad",
+      "instruction": "stp q0, q5, [x19]",
+      "beforeF64": [
+        -0.3494392395019531,
+        -0.3494392395019531,
+        640.698878479004,
+        640.698878479004
+      ],
+      "afterF64": [
+        -0.3494392395019531,
+        -0.3494392395019531,
+        640.698878479004,
+        648.349439239502
+      ]
+    },
+    {
+      "transitionIndex": 7,
+      "stepIndex": 975,
+      "scope": "glassBackgroundDOD",
+      "scopeOffset": 1068,
+      "relativeToPrepareLayer": -89516,
+      "rawLittleEndianHex": "600600ad",
+      "instruction": "stp q0, q1, [x19]",
+      "beforeF64": [
+        -0.3494392395019531,
+        -0.3494392395019531,
+        640.698878479004,
+        648.349439239502
+      ],
+      "afterF64": [
+        2.842170943040401e-14,
+        2.842170943040401e-14,
+        640.0,
+        648.0
+      ]
+    },
+    {
+      "transitionIndex": 8,
+      "stepIndex": 1019,
+      "scope": "rectApplyTransform",
+      "scopeOffset": 180,
+      "relativeToPrepareLayer": -1207032,
+      "rawLittleEndianHex": "000400fd",
+      "instruction": "str d0, [x0, #0x8]",
+      "beforeF64": [
+        2.842170943040401e-14,
+        2.842170943040401e-14,
+        640.0,
+        648.0
+      ],
+      "afterF64": [2.842170943040401e-14, -648.0, 640.0, 648.0]
+    },
+    {
+      "transitionIndex": 9,
+      "stepIndex": 1023,
+      "scope": "rectApplyTransform",
+      "scopeOffset": 196,
+      "relativeToPrepareLayer": -1207016,
+      "rawLittleEndianHex": "010000fd",
+      "instruction": "str d1, [x0]",
+      "beforeF64": [2.842170943040401e-14, -648.0, 640.0, 648.0],
+      "afterF64": [492.03204345703125, -648.0, 640.0, 648.0]
+    },
+    {
+      "transitionIndex": 10,
+      "stepIndex": 1026,
+      "scope": "rectApplyTransform",
+      "scopeOffset": 208,
+      "relativeToPrepareLayer": -1207004,
+      "rawLittleEndianHex": "000400fd",
+      "instruction": "str d0, [x0, #0x8]",
+      "beforeF64": [492.03204345703125, -648.0, 640.0, 648.0],
+      "afterF64": [492.03204345703125, -116.03204345703125, 640.0, 648.0]
+    },
+    {
+      "transitionIndex": 11,
+      "stepIndex": 6779,
+      "scope": "unionBounds",
+      "scopeOffset": 128,
+      "relativeToPrepareLayer": -2592,
+      "rawLittleEndianHex": "800600ad",
+      "instruction": "stp q0, q1, [x20]",
+      "beforeF64": [492.03204345703125, -116.03204345703125, 640.0, 648.0],
+      "afterF64": [
+        491.0,
+        -116.03204345703125,
+        641.0320434570312,
+        649.0320434570312
+      ]
+    }
+  ],
+  "openedSemanticsBoundary": {
+    "continuousArchitecturalWriterSequenceCaptured": true,
+    "allAggregateChangingInstructionsIdentified": true,
+    "zeroOpaqueAggregateMutations": true,
+    "initialUnionInputF64": [
+      492.03204345703125,
+      -108.03204345703125,
+      640.0,
+      640.0
+    ],
+    "simpleTransformF64": [492.03204345703125, 531.9679565429688, 1.0, 1.0],
+    "finalUnionInputI32": [491, 166, 359, 367],
+    "finalUnionInputF64": [491.0, 166.0, 359.0, 367.0],
+    "glassDODParameterReturnValuesCapturedAtEveryCall": false,
+    "exactDynamicReplayOfEveryGlassDODInstructionOpened": false,
+    "interpretation": "The final floor(P)-1 edge is supplied by a live nested layer integer rectangle that prepare_layer sign-extends and converts to binary64 before the final union. It is not an inferred post-hoc floor adjustment. The current trace retains transition operands but not compact register state after every unchanged key lookup and arithmetic instruction, so a complete semantic replay remains sealed."
+  },
+  "conclusion": {
+    "dualSourceLinkSelectorPassed": true,
+    "selectedFrameMarkerClosurePassed": true,
+    "continuousInstructionChainPassed": true,
+    "zeroOpaqueAggregateMutations": true,
+    "knownAggregateStateTransferPassed": true,
+    "completeArchitecturalWriterInstructionSequenceCaptured": true,
+    "writerInstructionSemanticsDecoded": false,
+    "completeCropAllocationPolicyOpened": false,
+    "unseenGeometryTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

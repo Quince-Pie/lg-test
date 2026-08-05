@@ -119,6 +119,19 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         result_path = REPOSITORY_ROOT / correction["sourceResultPath"]
         self.assertEqual(sha256(result_path), correction["sourceResultSHA256"])
 
+    def test_successful_instruction_chain_is_the_opened_boundary(self) -> None:
+        boundary = self.document["successfulInstructionChainBoundary"]
+        self.assertEqual(boundary["sourceRunID"], 31042429686)
+        self.assertEqual(boundary["instructionStepCount"], 7356)
+        self.assertEqual(boundary["aggregateTransitionCount"], 12)
+        self.assertEqual(boundary["changedOpaqueCalleeBoundaryCount"], 0)
+        self.assertEqual(boundary["selectedGlassDODEntryStepIndex"], 715)
+        self.assertEqual(boundary["selectedGlassDODExecutedInstructionCount"], 267)
+        self.assertTrue(boundary["completeArchitecturalWriterSequenceCaptured"])
+        self.assertFalse(boundary["selectedGlassDODCompleteRegisterStateCaptured"])
+        result_path = REPOSITORY_ROOT / boundary["sourceResultPath"]
+        self.assertEqual(sha256(result_path), boundary["sourceResultSHA256"])
+
     def test_instrumentation_removes_both_callback_collision_sources(self) -> None:
         instrumentation = self.document["instrumentation"]
         self.assertFalse(instrumentation["hardwareWatchpointsUsed"])
@@ -137,6 +150,15 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
             instrumentation["opaqueCalleeAPI"], "SBThread.StepOut(SBError)"
         )
         self.assertIn("SetAsync(false)", instrumentation["debuggerModeBeforeStepping"])
+        self.assertEqual(
+            instrumentation["semanticDODSelection"].split(";", 1)[0],
+            "At every glassBackgroundDOD +0x0 entry retain the exact x3 register record",
+        )
+        self.assertIn("x0-x30", instrumentation["semanticDODInstructionState"][1])
+        self.assertIn("v0-v31", instrumentation["semanticDODInstructionState"][2])
+        self.assertIn(
+            "canonical SHA-256", instrumentation["semanticDODReturnState"][-1]
+        )
 
     def test_gate_fails_on_any_opaque_aggregate_mutation(self) -> None:
         acceptance = self.document["acceptance"]
@@ -152,6 +174,12 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
     def test_pass_cannot_authorize_shader_or_parity(self) -> None:
         acceptance = self.document["acceptance"]
         self.assertTrue(acceptance["changedInstructionBytesAndOperandsMayBeClaimed"])
+        self.assertTrue(acceptance["selectedGlassDODExactDynamicReplayMayBeClaimed"])
+        self.assertTrue(
+            acceptance[
+                "everyExecutedSelectedGlassDODInstructionMustHaveOneCompletePreState"
+            ]
+        )
         self.assertFalse(acceptance["writerInstructionSemanticsMayBeClaimed"])
         self.assertFalse(acceptance["completeCropPolicyMayBeClaimed"])
         self.assertFalse(acceptance["productionShaderMayChange"])
@@ -178,6 +206,10 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
                 integrity["applyDODScopeResultPath"],
                 "applyDODScopeResultSHA256",
             ),
+            (
+                integrity["successfulInstructionChainResultPath"],
+                "successfulInstructionChainResultSHA256",
+            ),
             (integrity["captureProgramPath"], "captureProgramSHA256"),
             (integrity["validatorPath"], "validatorSHA256"),
             (integrity["captureSourceTestPath"], "captureSourceTestSHA256"),
@@ -190,7 +222,7 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
                 self.assertEqual(sha256(REPOSITORY_ROOT / relative), integrity[field])
         self.assertFalse(integrity["productionShaderModifiedByExperiment"])
 
-    def test_three_negative_attempts_are_frozen_and_successor_is_null(self) -> None:
+    def test_three_negative_attempts_success_and_successor_are_frozen(self) -> None:
         outcome = self.document["firstAttemptRuntimeOutcome"]
         self.assertEqual(outcome["runID"], 31038371480)
         self.assertEqual(outcome["registeredEpochOrdinal"], 7)
@@ -210,7 +242,13 @@ class PrepareLayerInstructionTracePreregistrationTests(unittest.TestCase):
         self.assertTrue(selected["selectedFrameReachedExactMarker"])
         self.assertEqual(selected["changedOpaqueCalleeBoundaryCount"], 1)
         self.assertFalse(selected["productionShaderAuthorized"])
-        self.assertIsNone(self.document["expandedScopeRuntimeOutcomeFrozenBeforeRun"])
+        expanded = self.document["expandedScopeRuntimeOutcome"]
+        self.assertEqual(expanded["runID"], 31042429686)
+        self.assertEqual(expanded["changedOpaqueCalleeBoundaryCount"], 0)
+        self.assertFalse(expanded["selectedGlassDODCompleteRegisterStateCaptured"])
+        self.assertIsNone(
+            self.document["semanticRegisterTraceRuntimeOutcomeFrozenBeforeRun"]
+        )
 
 
 if __name__ == "__main__":

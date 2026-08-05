@@ -28,7 +28,7 @@ import capture_prepare_layer_frame_correlated_writer_trace_lldb as frame_base  #
 
 capture_base = frame_base.capture_base
 
-TRACE_SCHEMA_VERSION = 4
+TRACE_SCHEMA_VERSION = 5
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
 )
@@ -58,6 +58,12 @@ MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT = 128
 MAXIMUM_INSTRUCTION_STEP_COUNT = 250000
 MAXIMUM_OPAQUE_CALLEE_COUNT = 8192
 MAXIMUM_UNEXPECTED_TERMINAL_CONTINUE_COUNT = 8
+MAXIMUM_SEMANTIC_DOD_ENTRY_COUNT = 128
+SEMANTIC_DOD_SCOPE_NAME = "glassBackgroundDOD"
+SEMANTIC_DOD_ENTRY_OFFSET = 0
+SEMANTIC_DOD_RETURN_OFFSET = 1128
+SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX = "ff0f5fd6"
+SEMANTIC_STACK_BYTE_COUNT = 256
 KNOWN_CANVAS_EXTENT = 1024.0
 KNOWN_GLASS_EXTENT = 640.0
 KNOWN_EDGE_PADDING = 8.0
@@ -192,6 +198,8 @@ def _fresh_state():
         "pendingCandidate": None,
         "manualTraceStarted": False,
         "manualTraceFinished": False,
+        "semanticDODActive": False,
+        "semanticDODFinished": False,
     }
 
 
@@ -224,9 +232,8 @@ def _new_trace():
     return {
         "prepareLayerInstructionTraceSchemaVersion": TRACE_SCHEMA_VERSION,
         "classification": (
-            "preregistered-dual-source-linked-expanded-apply-dod-software-"
-            "instruction-trace; frame-address-reuse-observer-dependent-"
-            "ordinal-and-changed-opaque-boundary-selection-eliminated; crop-"
+            "preregistered-dual-source-linked-selected-glass-dod-full-register-"
+            "software-instruction-trace; architectural-writers-opened; crop-"
             "policy-generalization-unseen-transfer-and-product-parity-remain-"
             "sealed"
         ),
@@ -263,6 +270,16 @@ def _new_trace():
             "maximumUnexpectedTerminalContinueCount": (
                 MAXIMUM_UNEXPECTED_TERMINAL_CONTINUE_COUNT
             ),
+            "maximumSemanticDODEntryCount": MAXIMUM_SEMANTIC_DOD_ENTRY_COUNT,
+            "semanticDODScopeName": SEMANTIC_DOD_SCOPE_NAME,
+            "semanticDODEntryOffset": SEMANTIC_DOD_ENTRY_OFFSET,
+            "semanticDODReturnOffset": SEMANTIC_DOD_RETURN_OFFSET,
+            "semanticDODReturnRawLittleEndianHex": (
+                SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX
+            ),
+            "semanticStackByteCount": SEMANTIC_STACK_BYTE_COUNT,
+            "semanticGeneralRegisterNames": list(capture_base.GENERAL_REGISTER_NAMES),
+            "semanticSIMDRegisterNames": list(capture_base.SIMD_REGISTER_NAMES),
             "knownCanvasExtent": KNOWN_CANVAS_EXTENT,
             "knownGlassExtent": KNOWN_GLASS_EXTENT,
             "knownEdgePadding": KNOWN_EDGE_PADDING,
@@ -312,6 +329,13 @@ def _new_trace():
                 "[P,1024-P-640-8,640,648]; and [floor(P)-1,"
                 "1024-P-640-8,P+640-(floor(P)-1),P+648-(floor(P)-1)]"
             ),
+            "semanticInvocationRule": (
+                "at every glassBackgroundDOD +0x0 entry retain x3; select the "
+                "unique entry where x3 equals selected roleBase+aggregateOffset; "
+                "for every executed instruction in that invocation retain the "
+                "complete scalar and SIMD register files and 256 bytes at sp "
+                "before execution, then retain the complete return state"
+            ),
         },
         "callbackOrder": [],
         "prepareLayer": {},
@@ -323,6 +347,9 @@ def _new_trace():
         "instructionSteps": [],
         "aggregateTransitions": [],
         "opaqueCalleeBoundaries": [],
+        "semanticDODEntries": [],
+        "semanticDODInvocation": {},
+        "semanticDODInstructionStates": [],
         "manualSelectionMarkers": [],
         "selectedFrame": {},
         "terminalProcess": {},
@@ -600,6 +627,128 @@ def _instruction_record(frame, scope):
         "potentialWriter": lowered.startswith(WRITER_MNEMONIC_PREFIXES),
         "potentialCall": lowered.startswith(CALL_MNEMONIC_PREFIXES),
     }
+
+
+def _semantic_register_and_stack_snapshot(frame, label):
+    process = frame.GetThread().GetProcess()
+    registers = capture_base._full_register_snapshot(frame)
+    general = {item["name"]: item for item in registers["general"]}
+    stack_pointer = general["sp"]["unsignedValue"]
+    return registers, capture_base._memory_snapshot(
+        process,
+        stack_pointer,
+        SEMANTIC_STACK_BYTE_COUNT,
+        label + " stack",
+    )
+
+
+def _semantic_state_before(frame, instruction, aggregate):
+    if instruction["scopeName"] != SEMANTIC_DOD_SCOPE_NAME:
+        return
+    trace = _state["trace"]
+    step_index = len(trace["instructionSteps"])
+    if instruction["scopeOffset"] == SEMANTIC_DOD_ENTRY_OFFSET:
+        entries = trace["semanticDODEntries"]
+        if len(entries) >= MAXIMUM_SEMANTIC_DOD_ENTRY_COUNT:
+            raise RuntimeError("semantic DOD entry bound exceeded")
+        target = (
+            _state["pendingCandidate"]["identity"]["roleBase"]
+            + capture_base.AGGREGATE_OFFSET
+        )
+        x3_register = capture_base._register_snapshot(frame, ("x3",))[0]
+        argument = x3_register["unsignedValue"]
+        matched = argument == target
+        entry = {
+            "entryIndex": len(entries),
+            "stepIndex": step_index,
+            "pc": frame.GetPC(),
+            "argumentX3": argument,
+            "x3Register": x3_register,
+            "targetAggregateAddress": target,
+            "argumentMatchesTarget": matched,
+        }
+        entries.append(entry)
+        if matched:
+            if _state["semanticDODActive"] or _state["semanticDODFinished"]:
+                raise RuntimeError("semantic DOD target entry is not unique")
+            _state["semanticDODActive"] = True
+            trace["semanticDODInvocation"] = {
+                "entryRecordIndex": entry["entryIndex"],
+                "entryStepIndex": step_index,
+                "entryPC": frame.GetPC(),
+                "entryArgumentX3": argument,
+                "targetAggregateAddress": target,
+                "aggregateAtEntryHex": aggregate.hex(),
+            }
+    if not _state["semanticDODActive"]:
+        return
+    registers, stack = _semantic_register_and_stack_snapshot(
+        frame, "semantic DOD instruction"
+    )
+    states = trace["semanticDODInstructionStates"]
+    states.append(
+        {
+            "stateIndex": len(states),
+            "stepIndex": step_index,
+            "instruction": instruction,
+            "aggregateBeforeHex": aggregate.hex(),
+            "registers": registers,
+            "stack": stack,
+        }
+    )
+    if len(states) % 64 == 0:
+        _write_trace()
+
+
+def _finish_semantic_instruction(instruction, result_frame, aggregate):
+    if (
+        not _state["semanticDODActive"]
+        or instruction["scopeName"] != SEMANTIC_DOD_SCOPE_NAME
+    ):
+        return
+    result_scope = _scope_for_pc(result_frame.GetPC())
+    returned_outside = (
+        result_scope is None or result_scope["name"] != SEMANTIC_DOD_SCOPE_NAME
+    )
+    terminal = instruction["scopeOffset"] == SEMANTIC_DOD_RETURN_OFFSET
+    if terminal:
+        if (
+            instruction["rawLittleEndianHex"]
+            != SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX
+            or instruction["mnemonic"].lower() != "retab"
+            or not returned_outside
+        ):
+            raise RuntimeError("semantic DOD return instruction differs")
+        registers, stack = _semantic_register_and_stack_snapshot(
+            result_frame, "semantic DOD return"
+        )
+        states = _state["trace"]["semanticDODInstructionStates"]
+        invocation = _state["trace"]["semanticDODInvocation"]
+        invocation.update(
+            {
+                "returnStepIndex": len(_state["trace"]["instructionSteps"]) - 1,
+                "returnInstructionStateIndex": len(states) - 1,
+                "returnPC": result_frame.GetPC(),
+                "returnFunction": result_frame.GetFunctionName(),
+                "aggregateAtReturnHex": aggregate.hex(),
+                "instructionStateCount": len(states),
+                "instructionStatesSHA256": hashlib.sha256(
+                    json.dumps(
+                        states,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                        allow_nan=False,
+                    ).encode("utf-8")
+                ).hexdigest(),
+                "returnRegisters": registers,
+                "returnStack": stack,
+            }
+        )
+        _state["semanticDODActive"] = False
+        _state["semanticDODFinished"] = True
+        _write_trace()
+    elif returned_outside and not instruction["potentialCall"]:
+        raise RuntimeError("semantic DOD escaped at a non-return instruction")
 
 
 def _candidate_context(frame, identity, label):
@@ -1112,6 +1261,8 @@ def _selected_marker(frame, exact, aggregate):
         )
         _write_trace()
         return False
+    if _state["semanticDODActive"] or not _state["semanticDODFinished"]:
+        raise RuntimeError("selected marker preceded semantic DOD closure")
     # Reuse the inherited marker recorder directly while the physical
     # breakpoint remains disabled.  This closes its independent source/frame
     # context without reintroducing a stop collision.
@@ -1169,6 +1320,7 @@ def _selected_marker(frame, exact, aggregate):
 def _trace_one_instruction(thread, frame, scope, before):
     process = thread.GetProcess()
     instruction = _instruction_record(frame, scope)
+    _semantic_state_before(frame, instruction, before)
     context = None
     if instruction["potentialWriter"] or instruction["potentialCall"]:
         observed, context = _candidate_context(
@@ -1204,6 +1356,7 @@ def _trace_one_instruction(thread, frame, scope, before):
         result_frame=result_frame,
         before_context=context,
     )
+    _finish_semantic_instruction(instruction, result_frame, after)
     return current_thread, result_frame, after
 
 
@@ -1341,6 +1494,8 @@ def trace_selected_path():
             raise RuntimeError("instruction step bound exceeded before marker")
         if not _state["manualTraceFinished"]:
             raise RuntimeError("instruction path did not close at selected marker")
+        if _state["semanticDODActive"] or not _state["semanticDODFinished"]:
+            raise RuntimeError("semantic DOD invocation did not close")
     except Exception as error:
         _failure("selected-instruction-path", error)
         trace["status"] = "selected-instruction-path-failed"
@@ -1392,6 +1547,12 @@ def finalize():
     )
     trace["finalChangedOpaqueCalleeBoundaryCount"] = sum(
         item["aggregateChanged"] for item in trace["opaqueCalleeBoundaries"]
+    )
+    trace["semanticDODActive"] = _state["semanticDODActive"]
+    trace["semanticDODFinished"] = _state["semanticDODFinished"]
+    trace["finalSemanticDODEntryCount"] = len(trace["semanticDODEntries"])
+    trace["finalSemanticDODInstructionStateCount"] = len(
+        trace["semanticDODInstructionStates"]
     )
     states = []
     pending = _state["pendingCandidate"]

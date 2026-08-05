@@ -3,6 +3,7 @@
 
 import copy
 import hashlib
+import json
 import struct
 import unittest
 from unittest import mock
@@ -97,6 +98,170 @@ def scopes() -> dict[str, dict[str, object]]:
     }
 
 
+def register_record(name: str, byte_count: int, value: int = 0) -> dict[str, object]:
+    payload = value.to_bytes(byte_count, "little")
+    record: dict[str, object] = {
+        "name": name,
+        "byteCount": byte_count,
+        "hex": payload.hex(),
+        "valueString": f"0x{value:x}",
+    }
+    if byte_count <= 8:
+        record["unsignedValue"] = value
+    return record
+
+
+def semantic_registers(*, pc: int, sp: int, x3: int) -> dict[str, object]:
+    general = []
+    for name in validator.full_base.GENERAL_REGISTER_NAMES:
+        byte_count = 4 if name == "cpsr" else 8
+        value = {"pc": pc, "sp": sp, "x3": x3}.get(name, 0)
+        general.append(register_record(name, byte_count, value))
+    simd = []
+    for name in validator.full_base.SIMD_REGISTER_NAMES:
+        byte_count = 4 if name in {"fpsr", "fpcr"} else 16
+        simd.append(register_record(name, byte_count))
+    return {"general": general, "simd": simd}
+
+
+def memory_snapshot(address: int, byte_count: int) -> dict[str, object]:
+    payload = bytes(byte_count)
+    return {
+        "address": address,
+        "byteCount": byte_count,
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "hex": payload.hex(),
+    }
+
+
+def dod_instruction(start: int, offset: int) -> dict[str, object]:
+    terminal = offset == validator.SEMANTIC_DOD_RETURN_OFFSET
+    return {
+        "pc": start + offset,
+        "scopeName": validator.SEMANTIC_DOD_SCOPE_NAME,
+        "scopeOffset": offset,
+        "prepareLayerRelativeOffset": -90584 + offset,
+        "rawLittleEndianHex": (
+            validator.SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX
+            if terminal
+            else "7f2303d5"
+        ),
+        "mnemonic": "retab" if terminal else "pacibsp",
+        "operands": "",
+        "comment": "",
+        "potentialWriter": False,
+        "potentialCall": False,
+    }
+
+
+def semantic_fixture() -> tuple[dict[str, object], dict[str, dict[str, object]]]:
+    start = 0x1_8000_0000
+    caller = 0x1_9000_0000
+    sp = 0x1_7000_C000
+    target = IDENTITY["roleBase"] + validator.full_base.AGGREGATE_OFFSET
+    aggregate = struct.pack("<4d", 0.0, -0.0, 640.0, 640.0)
+    code = bytearray(validator.SEMANTIC_DOD_RETURN_OFFSET + 4)
+    code[0:4] = bytes.fromhex("7f2303d5")
+    code[-4:] = bytes.fromhex(validator.SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX)
+    semantic_scopes = {
+        "prepareLayer": {
+            "name": "prepareLayer",
+            "startAddress": start + 90584,
+            "endAddress": start + 90588,
+            "byteCount": 4,
+            "code": bytes(4),
+        },
+        validator.SEMANTIC_DOD_SCOPE_NAME: {
+            "name": validator.SEMANTIC_DOD_SCOPE_NAME,
+            "startAddress": start,
+            "endAddress": start + len(code),
+            "byteCount": len(code),
+            "code": bytes(code),
+        },
+    }
+    instructions = [
+        dod_instruction(start, validator.SEMANTIC_DOD_ENTRY_OFFSET),
+        dod_instruction(start, validator.SEMANTIC_DOD_RETURN_OFFSET),
+    ]
+    steps = []
+    for index, instruction_value in enumerate(instructions):
+        terminal = index == 1
+        steps.append(
+            {
+                "stepIndex": index,
+                "kind": "scope-instruction",
+                "aggregateBeforeHex": aggregate.hex(),
+                "aggregateAfterHex": aggregate.hex(),
+                "aggregateChanged": False,
+                "changedLaneOffsets": [],
+                "instruction": instruction_value,
+                "opaqueBoundary": None,
+                "resultPC": caller if terminal else instructions[1]["pc"],
+                "resultFunction": "caller" if terminal else "glass DOD",
+                "transitionIndex": None,
+            }
+        )
+    states = []
+    for index, instruction_value in enumerate(instructions):
+        states.append(
+            {
+                "stateIndex": index,
+                "stepIndex": index,
+                "instruction": instruction_value,
+                "aggregateBeforeHex": aggregate.hex(),
+                "registers": semantic_registers(
+                    pc=instruction_value["pc"], sp=sp, x3=target
+                ),
+                "stack": memory_snapshot(sp, validator.SEMANTIC_STACK_BYTE_COUNT),
+            }
+        )
+    digest = hashlib.sha256(
+        json.dumps(
+            states,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    document = {
+        "instructionSteps": steps,
+        "semanticDODEntries": [
+            {
+                "entryIndex": 0,
+                "stepIndex": 0,
+                "pc": start,
+                "argumentX3": target,
+                "x3Register": register_record("x3", 8, target),
+                "targetAggregateAddress": target,
+                "argumentMatchesTarget": True,
+            }
+        ],
+        "semanticDODInvocation": {
+            "entryRecordIndex": 0,
+            "entryStepIndex": 0,
+            "entryPC": start,
+            "entryArgumentX3": target,
+            "targetAggregateAddress": target,
+            "aggregateAtEntryHex": aggregate.hex(),
+            "returnStepIndex": 1,
+            "returnInstructionStateIndex": 1,
+            "returnPC": caller,
+            "returnFunction": "caller",
+            "aggregateAtReturnHex": aggregate.hex(),
+            "instructionStateCount": len(states),
+            "instructionStatesSHA256": digest,
+            "returnRegisters": semantic_registers(pc=caller, sp=sp, x3=target),
+            "returnStack": memory_snapshot(sp, validator.SEMANTIC_STACK_BYTE_COUNT),
+        },
+        "semanticDODInstructionStates": states,
+        "semanticDODActive": False,
+        "semanticDODFinished": True,
+        "finalSemanticDODEntryCount": 1,
+        "finalSemanticDODInstructionStateCount": len(states),
+    }
+    return document, semantic_scopes
+
+
 def manual_marker(index: int, hit: int, x28: int, result: str) -> dict[str, object]:
     value: dict[str, object] = {
         "manualSelectionMarkerIndex": index,
@@ -146,6 +311,37 @@ def source_link_cells(
 
 
 class PrepareLayerInstructionTraceValidatorTests(unittest.TestCase):
+    def test_complete_semantic_dod_register_trace_passes(self):
+        document, semantic_scopes = semantic_fixture()
+        result = validator._semantic_dod_trace(document, semantic_scopes, IDENTITY)
+        self.assertEqual(result["entryStepIndex"], 0)
+        self.assertEqual(result["returnStepIndex"], 1)
+        self.assertEqual(result["instructionStateCount"], 2)
+
+    def test_semantic_dod_entry_pointer_substitution_fails_closed(self):
+        document, semantic_scopes = semantic_fixture()
+        document["semanticDODEntries"][0]["argumentX3"] += 8
+        with self.assertRaisesRegex(ValueError, "entry 0 differs"):
+            validator._semantic_dod_trace(document, semantic_scopes, IDENTITY)
+
+    def test_missing_semantic_dod_instruction_state_fails_closed(self):
+        document, semantic_scopes = semantic_fixture()
+        document["semanticDODInstructionStates"].pop()
+        with self.assertRaisesRegex(ValueError, "state inventory differs"):
+            validator._semantic_dod_trace(document, semantic_scopes, IDENTITY)
+
+    def test_semantic_dod_register_or_stack_tampering_fails_closed(self):
+        document, semantic_scopes = semantic_fixture()
+        registers = document["semanticDODInstructionStates"][0]["registers"]
+        registers["general"][3]["unsignedValue"] += 1
+        with self.assertRaisesRegex(ValueError, "raw value differs"):
+            validator._semantic_dod_trace(document, semantic_scopes, IDENTITY)
+
+        document, semantic_scopes = semantic_fixture()
+        document["semanticDODInstructionStates"][0]["stack"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "identity differs"):
+            validator._semantic_dod_trace(document, semantic_scopes, IDENTITY)
+
     def test_dual_source_link_requires_both_exact_cells(self):
         source = 0xA_BEEF_0000
         registers = {

@@ -258,6 +258,48 @@ class PrepareLayerInstructionTraceSourceTests(unittest.TestCase):
             self.module._new_trace()["configuration"]["opaqueBoundaryRule"],
         )
 
+    def test_semantic_dod_trace_is_selected_by_the_live_aggregate_pointer(self):
+        module = self.module
+        source = inspect.getsource(module._semantic_state_before)
+        self.assertIn('identity"]["roleBase"]', source)
+        self.assertIn("capture_base.AGGREGATE_OFFSET", source)
+        self.assertIn('capture_base._register_snapshot(frame, ("x3",))', source)
+        self.assertIn('"argumentMatchesTarget": matched', source)
+        self.assertIn("semantic DOD target entry is not unique", source)
+        configuration = module._new_trace()["configuration"]
+        self.assertEqual(
+            configuration["semanticGeneralRegisterNames"],
+            list(module.capture_base.GENERAL_REGISTER_NAMES),
+        )
+        self.assertEqual(
+            configuration["semanticSIMDRegisterNames"],
+            list(module.capture_base.SIMD_REGISTER_NAMES),
+        )
+        self.assertEqual(
+            configuration["semanticStackByteCount"],
+            module.SEMANTIC_STACK_BYTE_COUNT,
+        )
+
+    def test_every_selected_dod_instruction_and_return_state_are_exact(self):
+        module = self.module
+        before = inspect.getsource(module._semantic_state_before)
+        finish = inspect.getsource(module._finish_semantic_instruction)
+        marker = inspect.getsource(module._selected_marker)
+        self.assertIn(
+            "capture_base._full_register_snapshot",
+            inspect.getsource(module._semantic_register_and_stack_snapshot),
+        )
+        self.assertIn(
+            "capture_base._memory_snapshot",
+            inspect.getsource(module._semantic_register_and_stack_snapshot),
+        )
+        self.assertIn('"semanticDODInstructionStates"', before)
+        self.assertIn('"instructionStatesSHA256"', finish)
+        self.assertIn('"returnRegisters"', finish)
+        self.assertIn('"returnStack"', finish)
+        self.assertIn("semantic DOD return instruction differs", finish)
+        self.assertIn("selected marker preceded semantic DOD closure", marker)
+
     def test_inherited_source_harness_is_reused_and_forwarded(self):
         initialization = inspect.getsource(getattr(self.module, "__lldb_init_module"))
         entry = inspect.getsource(self.module.multiplexed_prepare_layer_entry)

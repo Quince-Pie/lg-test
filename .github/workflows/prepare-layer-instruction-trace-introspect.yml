@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: prepare-layer-instruction-trace-v4-${{ github.ref }}
+  group: prepare-layer-instruction-trace-v5-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -209,7 +209,9 @@ jobs:
           )
           sealed = validation.get("sealedConclusion", {})
           if (
-              validation.get("conclusion") != "success"
+              validation.get("prepareLayerInstructionTraceValidationSchemaVersion")
+                  != 5
+              or validation.get("conclusion") != "success"
               or validation.get("prospectiveGatePassed") is not True
               or sealed.get("inheritedStaticSourceMarkerContextPassed") is not True
               or sealed.get("hardwareWatchpointsUsed") is not False
@@ -220,6 +222,8 @@ jobs:
               or sealed.get("zeroOpaqueAggregateMutations") is not True
               or sealed.get("knownAggregateStateTransferPassed") is not True
               or sealed.get("changedInstructionBytesAndOperandsCaptured") is not True
+              or sealed.get("selectedGlassDODCompleteRegisterStateCaptured") is not True
+              or sealed.get("selectedGlassDODExactDynamicReplayOpened") is not True
               or sealed.get("writerInstructionSemanticsDecoded") is not False
               or sealed.get("productionShaderAuthorized") is not False
           ):

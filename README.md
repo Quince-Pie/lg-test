@@ -5988,3 +5988,83 @@ the wrapper into the already frozen Glass Background DOD symbol remains fully
 stepped. Any other aggregate-changing opaque callee still fails closed. This
 scope expansion does not authorize crop-policy, shader, unseen-transfer, or
 parity claims by itself.
+
+Run `31042429686`, from schema-4 commit `6a35283`, passes that gate. The native
+target, 33-image timeline, surviving-path allocation check, input-clamp check,
+composed instruction validator, artifact upload, and final enforcement all
+complete successfully. Artifact `8945312544` has GitHub digest
+`sha256:08cf29557b14440f7d5a952825c47a4b7c74c2cf4feac15540f2f1e43017790f`.
+The instruction trace has SHA-256
+`1b0b2c05ff64216c8010d65af0b696ce416934c42970bbd03057725e0fd9f04f`;
+the inherited frame trace has SHA-256
+`797da39b0a581cd281c55d613254b13d46a29652450e7d735a84f1c03e08c921`;
+and the immutable result is
+`Analysis/dynamic_allocation_prepare_layer_instruction_trace_result.json`.
+
+The prospective selector retains three source-known depth-four epochs. The
+first two fail at least one exact source-link cell; record 2 is the unique
+epoch where both `*(x10+128)` and `*(x20-24)` equal selected source
+`49207164928`. The selected live identity is thread `64424509442`, role
+`6171889024`, and frame pointer `6171890976`. It executes 7,356 instruction
+steps, crosses 117 opaque callees with zero aggregate mutation, records 12
+architectural aggregate transitions and 13 distinct states, and closes the
+same exact-source marker. The known states occur at indices
+`[0,245,1027,6780]`; `P=492.03204345703125`, `L=491`, and the final aggregate
+is exactly `[491,-116.03204345703125,641.0320434570312,649.0320434570312]`.
+
+This resolves the architectural-writer question without hardware callback
+inference. The exact selected path is:
+
+1. `union_bounds +0x80` stores
+   `[P,384-P,640,640]`.
+2. `Rect::unapply_transform` stores x, y, and y again, yielding
+   `[0,-0,640,640]` under the exact transform
+   `[P,1024-P,1,1]`.
+3. Glass Background DOD stores
+   `[-0.3494392395019531,-0.3494392395019531,
+   640.698878479004,640.698878479004]`, then extends height to
+   `648.349439239502`, then clamps/intersects to
+   `[2.842170943040401e-14,2.842170943040401e-14,640,648]`.
+4. `Rect::apply_transform` restores
+   `[P,1024-P-640-8,640,648]` in three exact stores.
+5. The final `union_bounds +0x80` produces the marker aggregate.
+
+The final integer edge is no longer a fitted `floor` adjustment. Immediately
+before the final union, `prepare_layer +0x8570` loads two signed 32-bit lanes,
+`+0x8598` sign-extends them, `+0x859c` converts them to binary64, and
+`+0x85c0` through `+0x85cc` materialize the exact nested-layer rectangle
+`[491,166,359,367]`. Unioning that live rectangle with
+`[P,-116.03204345703125,640,648]` supplies x lower edge `491` and y far edge
+`533`, giving the exact final width and height. Therefore `L=floor(P)-1`
+describes this sample's observed relationship, but the producer is a live
+signed-integer layer rectangle, not a post-hoc floating-point floor inserted
+by the analysis.
+
+The public backdrop arithmetic remains exactly as previously opened:
+`q = 2/(2-k)`; glass UV span is `q` times the allocated backdrop extent; and
+UV origin is the producer-pass crop transform plus the copy-base signed
+integer offset. Schema 4 does not yet retain the compact post-call register
+state after every unchanged key lookup and helper call in the selected Glass
+DOD invocation. Consequently it proves all aggregate-changing instruction
+bytes, but it does not by itself provide an exact dynamic replay of every DOD
+operand or prove the general crop-allocation policy.
+
+Schema 5 closes only that evidence gap. At every Glass Background DOD `+0x0`
+entry it retains the raw `x3` register and selects the unique invocation whose
+argument equals `selected roleBase+656`, rather than choosing a call by ordinal
+or by later output. For every executed DOD-scope instruction from its `pacibsp`
+through the exact `+0x468` `retab`, it retains the complete `x0`-`x30`, `sp`,
+`pc`, `cpsr`, `v0`-`v31`, `fpsr`, and `fpcr` state, the exact 256 bytes at the
+live stack pointer, the aggregate bytes, and the global step index. It also
+retains the complete caller register and stack state after `retab` and a
+canonical digest over all instruction states. The prior run predicts 267 DOD
+instructions and nine opaque helper returns for the selected invocation, but
+the validator derives the executed span from the frozen instruction chain and
+does not accept a count in place of the records.
+
+A schema-5 pass authorizes exact offline replay and decoding of that selected
+Glass DOD invocation only. General crop allocation outside the invocation,
+unseen geometry and Retina transfer, production-shader changes, and Liquid
+Glass parity remain separate fail-closed gates. The production shader remains
+unchanged at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.

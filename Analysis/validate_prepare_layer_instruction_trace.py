@@ -18,17 +18,16 @@ import validate_prepare_layer_frame_correlated_writer_trace as frame_validator
 full_base = frame_validator.full_base
 merge_base = frame_validator.merge_base
 
-EXPECTED_TRACE_SCHEMA_VERSION = 4
-VALIDATION_SCHEMA_VERSION = 4
+EXPECTED_TRACE_SCHEMA_VERSION = 5
+VALIDATION_SCHEMA_VERSION = 5
 EXPECTED_CLASSIFICATION = (
-    "preregistered-dual-source-linked-expanded-apply-dod-software-instruction-"
-    "trace; frame-address-reuse-observer-dependent-ordinal-and-changed-opaque-"
-    "boundary-selection-eliminated; crop-policy-generalization-unseen-transfer-"
-    "and-product-parity-remain-sealed"
+    "preregistered-dual-source-linked-selected-glass-dod-full-register-software-"
+    "instruction-trace; architectural-writers-opened; crop-policy-generalization-"
+    "unseen-transfer-and-product-parity-remain-sealed"
 )
 EXPECTED_VALIDATION_CLASSIFICATION = (
-    "prospective-dual-source-link-integrity-gate-for-selected-prepare-layer-"
-    "software-instruction-state-transitions; crop-semantics-remain-sealed"
+    "prospective-selected-glass-dod-complete-register-state-gate-for-exact-"
+    "dynamic-semantic-replay; crop-policy-generalization-remains-sealed"
 )
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
@@ -59,6 +58,12 @@ MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT = 128
 MAXIMUM_INSTRUCTION_STEP_COUNT = 250000
 MAXIMUM_OPAQUE_CALLEE_COUNT = 8192
 MAXIMUM_UNEXPECTED_TERMINAL_CONTINUE_COUNT = 8
+MAXIMUM_SEMANTIC_DOD_ENTRY_COUNT = 128
+SEMANTIC_DOD_SCOPE_NAME = "glassBackgroundDOD"
+SEMANTIC_DOD_ENTRY_OFFSET = 0
+SEMANTIC_DOD_RETURN_OFFSET = 1128
+SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX = "ff0f5fd6"
+SEMANTIC_STACK_BYTE_COUNT = 256
 KNOWN_CANVAS_EXTENT = 1024.0
 KNOWN_GLASS_EXTENT = 640.0
 KNOWN_EDGE_PADDING = 8.0
@@ -191,6 +196,14 @@ EXPECTED_CONFIGURATION = {
     "maximumUnexpectedTerminalContinueCount": (
         MAXIMUM_UNEXPECTED_TERMINAL_CONTINUE_COUNT
     ),
+    "maximumSemanticDODEntryCount": MAXIMUM_SEMANTIC_DOD_ENTRY_COUNT,
+    "semanticDODScopeName": SEMANTIC_DOD_SCOPE_NAME,
+    "semanticDODEntryOffset": SEMANTIC_DOD_ENTRY_OFFSET,
+    "semanticDODReturnOffset": SEMANTIC_DOD_RETURN_OFFSET,
+    "semanticDODReturnRawLittleEndianHex": (SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX),
+    "semanticStackByteCount": SEMANTIC_STACK_BYTE_COUNT,
+    "semanticGeneralRegisterNames": list(full_base.GENERAL_REGISTER_NAMES),
+    "semanticSIMDRegisterNames": list(full_base.SIMD_REGISTER_NAMES),
     "knownCanvasExtent": KNOWN_CANVAS_EXTENT,
     "knownGlassExtent": KNOWN_GLASS_EXTENT,
     "knownEdgePadding": KNOWN_EDGE_PADDING,
@@ -234,6 +247,13 @@ EXPECTED_CONFIGURATION = {
         "and in order, zero; [P,1024-P-640,640,640]; "
         "[P,1024-P-640-8,640,648]; and [floor(P)-1,"
         "1024-P-640-8,P+640-(floor(P)-1),P+648-(floor(P)-1)]"
+    ),
+    "semanticInvocationRule": (
+        "at every glassBackgroundDOD +0x0 entry retain x3; select the unique "
+        "entry where x3 equals selected roleBase+aggregateOffset; for every "
+        "executed instruction in that invocation retain the complete scalar "
+        "and SIMD register files and 256 bytes at sp before execution, then "
+        "retain the complete return state"
     ),
 }
 
@@ -878,6 +898,256 @@ def _steps_and_transitions(
     return states, transitions
 
 
+def _semantic_registers(value: Any, label: str) -> dict[str, int]:
+    snapshot = mapping(value, label)
+    if set(snapshot) != {"general", "simd"}:
+        raise ValueError(f"{label} fields differ")
+    general_values = list(sequence(snapshot.get("general"), f"{label} general"))
+    simd_values = list(sequence(snapshot.get("simd"), f"{label} SIMD"))
+    if len(general_values) != len(full_base.GENERAL_REGISTER_NAMES) or len(
+        simd_values
+    ) != len(full_base.SIMD_REGISTER_NAMES):
+        raise ValueError(f"{label} inventory differs")
+    general = {}
+    for name, raw in zip(full_base.GENERAL_REGISTER_NAMES, general_values, strict=True):
+        byte_count = 4 if name == "cpsr" else 8
+        record = writer_base.register_record(raw, name, byte_count, f"{label} {name}")
+        general[name] = integer(record.get("unsignedValue"), f"{label} {name} value")
+    for name, raw in zip(full_base.SIMD_REGISTER_NAMES, simd_values, strict=True):
+        byte_count = 4 if name in {"fpsr", "fpcr"} else 16
+        writer_base.register_record(raw, name, byte_count, f"{label} {name}")
+    return general
+
+
+def _semantic_dod_trace(
+    trace: Mapping[str, Any],
+    scopes: Mapping[str, Mapping[str, Any]],
+    identity: Mapping[str, int],
+) -> dict[str, Any]:
+    target = identity["roleBase"] + full_base.AGGREGATE_OFFSET
+    raw_steps = list(sequence(trace.get("instructionSteps"), "instruction steps"))
+    dod_entry_steps = []
+    for index, raw in enumerate(raw_steps):
+        step = mapping(raw, f"instruction step {index}")
+        instruction_value = step.get("instruction")
+        if not isinstance(instruction_value, Mapping):
+            continue
+        if (
+            instruction_value.get("scopeName") == SEMANTIC_DOD_SCOPE_NAME
+            and instruction_value.get("scopeOffset") == SEMANTIC_DOD_ENTRY_OFFSET
+        ):
+            dod_entry_steps.append(index)
+
+    raw_entries = list(sequence(trace.get("semanticDODEntries"), "semantic entries"))
+    if (
+        not raw_entries
+        or len(raw_entries) > MAXIMUM_SEMANTIC_DOD_ENTRY_COUNT
+        or len(raw_entries) != len(dod_entry_steps)
+    ):
+        raise ValueError("semantic DOD entry inventory differs")
+    entries = []
+    selected_entry = None
+    expected_entry_fields = {
+        "entryIndex",
+        "stepIndex",
+        "pc",
+        "argumentX3",
+        "x3Register",
+        "targetAggregateAddress",
+        "argumentMatchesTarget",
+    }
+    for index, (raw, step_index) in enumerate(
+        zip(raw_entries, dod_entry_steps, strict=True)
+    ):
+        label = f"semantic DOD entry {index}"
+        entry = mapping(raw, label)
+        step = mapping(raw_steps[step_index], f"{label} step")
+        instruction = _instruction(step.get("instruction"), label, scopes)
+        x3_record = writer_base.register_record(
+            entry.get("x3Register"), "x3", 8, f"{label} x3"
+        )
+        x3 = integer(x3_record.get("unsignedValue"), f"{label} x3 value")
+        matched = x3 == target
+        if (
+            set(entry) != expected_entry_fields
+            or entry.get("entryIndex") != index
+            or entry.get("stepIndex") != step_index
+            or entry.get("pc") != instruction["pc"]
+            or entry.get("argumentX3") != x3
+            or entry.get("targetAggregateAddress") != target
+            or entry.get("argumentMatchesTarget") is not matched
+        ):
+            raise ValueError(f"{label} differs")
+        entries.append(dict(entry))
+        if matched:
+            if selected_entry is not None:
+                raise ValueError("semantic DOD target entry is not unique")
+            selected_entry = dict(entry)
+    if selected_entry is None:
+        raise ValueError("semantic DOD target entry is absent")
+
+    invocation = mapping(trace.get("semanticDODInvocation"), "semantic invocation")
+    expected_invocation_fields = {
+        "entryRecordIndex",
+        "entryStepIndex",
+        "entryPC",
+        "entryArgumentX3",
+        "targetAggregateAddress",
+        "aggregateAtEntryHex",
+        "returnStepIndex",
+        "returnInstructionStateIndex",
+        "returnPC",
+        "returnFunction",
+        "aggregateAtReturnHex",
+        "instructionStateCount",
+        "instructionStatesSHA256",
+        "returnRegisters",
+        "returnStack",
+    }
+    if set(invocation) != expected_invocation_fields:
+        raise ValueError("semantic invocation fields differ")
+    entry_step_index = integer(invocation.get("entryStepIndex"), "semantic entry step")
+    if (
+        invocation.get("entryRecordIndex") != selected_entry["entryIndex"]
+        or entry_step_index != selected_entry["stepIndex"]
+        or invocation.get("entryPC") != selected_entry["pc"]
+        or invocation.get("entryArgumentX3") != target
+        or invocation.get("targetAggregateAddress") != target
+    ):
+        raise ValueError("semantic invocation entry differs")
+
+    expected_step_indices = []
+    terminal_step_index = None
+    for step_index in range(entry_step_index, len(raw_steps)):
+        step = mapping(raw_steps[step_index], f"semantic span step {step_index}")
+        raw_instruction = step.get("instruction")
+        if not isinstance(raw_instruction, Mapping):
+            continue
+        if raw_instruction.get("scopeName") != SEMANTIC_DOD_SCOPE_NAME:
+            continue
+        instruction = _instruction(
+            raw_instruction, f"semantic span instruction {step_index}", scopes
+        )
+        expected_step_indices.append(step_index)
+        if instruction["scopeOffset"] == SEMANTIC_DOD_RETURN_OFFSET:
+            if (
+                instruction["rawLittleEndianHex"]
+                != SEMANTIC_DOD_RETURN_RAW_LITTLE_ENDIAN_HEX
+                or instruction["mnemonic"].lower() != "retab"
+            ):
+                raise ValueError("semantic DOD return instruction differs")
+            terminal_step_index = step_index
+            break
+    if terminal_step_index is None:
+        raise ValueError("semantic DOD terminal instruction is absent")
+
+    raw_states = list(
+        sequence(
+            trace.get("semanticDODInstructionStates"),
+            "semantic instruction states",
+        )
+    )
+    if len(raw_states) != len(expected_step_indices):
+        raise ValueError("semantic instruction state inventory differs")
+    expected_state_fields = {
+        "stateIndex",
+        "stepIndex",
+        "instruction",
+        "aggregateBeforeHex",
+        "registers",
+        "stack",
+    }
+    first_general = None
+    for state_index, (raw, step_index) in enumerate(
+        zip(raw_states, expected_step_indices, strict=True)
+    ):
+        label = f"semantic instruction state {state_index}"
+        state = mapping(raw, label)
+        step = mapping(raw_steps[step_index], f"{label} step")
+        instruction = _instruction(state.get("instruction"), label, scopes)
+        general = _semantic_registers(state.get("registers"), f"{label} registers")
+        _memory_payload(
+            state.get("stack"),
+            f"{label} stack",
+            expected_address=general["sp"],
+            expected_byte_count=SEMANTIC_STACK_BYTE_COUNT,
+        )
+        aggregate = _payload(
+            state.get("aggregateBeforeHex"),
+            full_base.AGGREGATE_BYTE_COUNT,
+            f"{label} aggregate",
+        )
+        if (
+            set(state) != expected_state_fields
+            or state.get("stateIndex") != state_index
+            or state.get("stepIndex") != step_index
+            or state.get("instruction") != step.get("instruction")
+            or aggregate.hex() != step.get("aggregateBeforeHex")
+            or general["pc"] != instruction["pc"]
+        ):
+            raise ValueError(f"{label} differs")
+        if state_index == 0:
+            first_general = general
+    if first_general is None or first_general["x3"] != target:
+        raise ValueError("semantic invocation entry register differs")
+
+    entry_step = mapping(raw_steps[entry_step_index], "semantic entry step")
+    terminal_step = mapping(raw_steps[terminal_step_index], "semantic terminal step")
+    entry_aggregate = _payload(
+        invocation.get("aggregateAtEntryHex"),
+        full_base.AGGREGATE_BYTE_COUNT,
+        "semantic entry aggregate",
+    )
+    return_aggregate = _payload(
+        invocation.get("aggregateAtReturnHex"),
+        full_base.AGGREGATE_BYTE_COUNT,
+        "semantic return aggregate",
+    )
+    return_general = _semantic_registers(
+        invocation.get("returnRegisters"), "semantic return registers"
+    )
+    _memory_payload(
+        invocation.get("returnStack"),
+        "semantic return stack",
+        expected_address=return_general["sp"],
+        expected_byte_count=SEMANTIC_STACK_BYTE_COUNT,
+    )
+    state_digest = hashlib.sha256(
+        json.dumps(
+            raw_states,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    if (
+        invocation.get("returnStepIndex") != terminal_step_index
+        or invocation.get("returnInstructionStateIndex") != len(raw_states) - 1
+        or invocation.get("returnPC") != terminal_step.get("resultPC")
+        or invocation.get("returnFunction") != terminal_step.get("resultFunction")
+        or not isinstance(invocation.get("returnFunction"), str)
+        or not invocation["returnFunction"]
+        or return_general["pc"] != invocation.get("returnPC")
+        or entry_aggregate.hex() != entry_step.get("aggregateBeforeHex")
+        or return_aggregate.hex() != terminal_step.get("aggregateAfterHex")
+        or invocation.get("instructionStateCount") != len(raw_states)
+        or invocation.get("instructionStatesSHA256") != state_digest
+        or trace.get("semanticDODActive") is not False
+        or trace.get("semanticDODFinished") is not True
+        or trace.get("finalSemanticDODEntryCount") != len(entries)
+        or trace.get("finalSemanticDODInstructionStateCount") != len(raw_states)
+    ):
+        raise ValueError("semantic DOD closure differs")
+    return {
+        "targetAggregateAddress": target,
+        "entryRecordIndex": selected_entry["entryIndex"],
+        "entryStepIndex": entry_step_index,
+        "returnStepIndex": terminal_step_index,
+        "instructionStateCount": len(raw_states),
+        "instructionStatesSHA256": state_digest,
+    }
+
+
 def _manual_selection_markers(
     trace: Mapping[str, Any],
     order: Mapping[int, str],
@@ -998,6 +1268,7 @@ def validate_documents(
         trace, order, scopes, identity, zero, addresses
     )
     known = _known_state_sequence(states)
+    semantic_dod = _semantic_dod_trace(trace, scopes, identity)
     manual_marker_index, manual_selected_callback = _manual_selection_markers(
         trace, order, prepare_start, identity, selected_source
     )
@@ -1109,6 +1380,7 @@ def validate_documents(
             sequence(trace.get("opaqueCalleeBoundaries"), "opaque boundaries")
         ),
         "knownStateTransfer": known,
+        "semanticDODTrace": semantic_dod,
         "observedScopeSHA256": {
             name: scope["observedSHA256"] for name, scope in scopes.items()
         },
@@ -1133,6 +1405,8 @@ def validate_documents(
             "zeroOpaqueAggregateMutations": True,
             "knownAggregateStateTransferPassed": True,
             "changedInstructionBytesAndOperandsCaptured": True,
+            "selectedGlassDODCompleteRegisterStateCaptured": True,
+            "selectedGlassDODExactDynamicReplayOpened": True,
             "writerInstructionSemanticsDecoded": False,
             "completeCropAllocationPolicyOpened": False,
             "unseenGeometryTransferPassed": False,
