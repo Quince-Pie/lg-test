@@ -6313,3 +6313,30 @@ Apple capture program, and the production shader are unchanged. The retry is
 still discovery evidence only; even a complete pass cannot itself establish
 unseen transfer, authorize a Walle shader change, or establish Liquid Glass
 parity.
+
+Run `31053097928`, from retry commit `0faf942`, also reaches the Apple runtime
+in all eight jobs. Every contract and build passes, every target exits zero,
+and all eight artifacts upload, but every final enforcement gate fails and no
+job validates a crop record. The opened 1536-clipped artifact `8949257830`
+has GitHub digest
+`sha256:3f1af1ce9e187ecdeedf7e60585fc59013b41f4798575923db61a62b3bf0e039`.
+Its trace has SHA-256
+`40a592049360afe267930c7688653287d98f948a6475f282d6ade26aa2366a7b`;
+the selected depth-four marker again follows one retained depth-three
+rejection, but payload capture reports `register x30 has neither exact SBData
+nor a self-consistent scalar value`. This is another transport failure before
+the first private crop record and therefore has no crop-policy outcome.
+
+The second correction is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_transfer_error_checked_retry_preregistration.json`.
+The first retry incorrectly made LLDB's optional `SBValue.GetValue()` display
+text a mandatory second witness. LLDB's official API instead provides
+`GetValueAsUnsigned(SBError, fail_value)`: the returned scalar is resolved only
+when the explicit `SBError` reports success. The second retry still prefers
+canonical `x30` bytes and then exact `lr` alias bytes. Only if both lack
+`SBData`, and only for an eight-byte `x30`, it serializes the error-checked
+`uint64`. If formatted text is present it must parse and agree; absent display
+text is no longer confused with an unresolved scalar. All selection, memory,
+join, matrix, Apple-program, validator, and shader bytes remain unchanged.
+This correction still cannot authorize a crop law, production change, or
+parity claim by itself.

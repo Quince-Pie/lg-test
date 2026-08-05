@@ -22,6 +22,13 @@ RETRY_REGISTRATION_PATH = (
 RETRY_REGISTRATION = json.loads(
     RETRY_REGISTRATION_PATH.read_text(encoding="utf-8")
 )
+ERROR_CHECKED_RETRY_REGISTRATION_PATH = (
+    ANALYSIS_ROOT
+    / "dynamic_allocation_prepare_layer_crop_transfer_error_checked_retry_preregistration.json"
+)
+ERROR_CHECKED_RETRY_REGISTRATION = json.loads(
+    ERROR_CHECKED_RETRY_REGISTRATION_PATH.read_text(encoding="utf-8")
+)
 
 
 def sha256(path):
@@ -95,7 +102,7 @@ class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
 
     def test_frozen_implementation_hashes_match(self):
         frozen = REGISTRATION["frozenImplementation"]
-        retry = RETRY_REGISTRATION["frozenRetryImplementation"]
+        retry = ERROR_CHECKED_RETRY_REGISTRATION["frozenRetryImplementation"]
         pairs = (
             (frozen["validator"], frozen["validatorSHA256"]),
             (frozen["validatorTest"], frozen["validatorTestSHA256"]),
@@ -155,6 +162,74 @@ class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
             acceptance["allOriginalProspectiveCaptureRequirementsRemainRequired"]
         )
         self.assertTrue(acceptance["x30ScalarViewsMustAgreeWhenFallbackIsUsed"])
+        self.assertFalse(acceptance["generalCropPolicyMayBeClaimedByRetryAlone"])
+        self.assertFalse(acceptance["productionShaderMayChange"])
+        self.assertIsNone(retry["retryRuntimeOutcomeFrozenBeforeDispatch"])
+
+    def test_error_checked_retry_is_chained_to_the_second_failed_attempt(self):
+        retry = ERROR_CHECKED_RETRY_REGISTRATION
+        antecedent = retry["antecedentRetryPreregistration"]
+        failed = retry["failedAttempt"]
+        api = retry["apiEvidence"]
+        correction = retry["retryCorrection"]
+        acceptance = retry["acceptance"]
+        self.assertEqual(
+            retry[
+                "prepareLayerCropTransferErrorCheckedRetryPreregistrationSchemaVersion"
+            ],
+            1,
+        )
+        self.assertEqual(sha256(RETRY_REGISTRATION_PATH), antecedent["sha256"])
+        self.assertEqual(
+            antecedent["captureHarnessSHA256"],
+            RETRY_REGISTRATION["frozenRetryImplementation"][
+                "captureHarnessSHA256"
+            ],
+        )
+        self.assertEqual(
+            antecedent["captureHarnessTestSHA256"],
+            RETRY_REGISTRATION["frozenRetryImplementation"][
+                "captureHarnessTestSHA256"
+            ],
+        )
+        self.assertEqual(failed["runID"], 31053097928)
+        self.assertEqual(failed["headSHA"], "0faf942e552bd04131ae78af46d52c5797968792")
+        self.assertEqual(failed["failedJobCount"], 8)
+        self.assertEqual(len(failed["artifactInventory"]), 8)
+        self.assertEqual(
+            len({record["artifactID"] for record in failed["artifactInventory"]}),
+            8,
+        )
+        self.assertTrue(
+            all(
+                record["digest"].startswith("sha256:")
+                and is_sha256(record["digest"].removeprefix("sha256:"))
+                for record in failed["artifactInventory"]
+            )
+        )
+        opened = failed["openedFailureFixture"]
+        self.assertEqual(opened["qualifiedRecordCount"], 0)
+        self.assertFalse(opened["privateCropOutcomeObserved"])
+        self.assertEqual(
+            opened["failureMessage"],
+            "register x30 has neither exact SBData nor a self-consistent scalar value",
+        )
+        self.assertIn("GetValueAsUnsigned", api["requiredOverload"])
+        self.assertIn("SBError", api["requiredOverload"])
+        self.assertEqual(correction["affectedArchitecturalRegister"], "x30")
+        self.assertFalse(correction["selectionChanged"])
+        self.assertFalse(correction["cropBytesReadDuringSelection"])
+        self.assertFalse(correction["ordinalJoinChanged"])
+        self.assertFalse(correction["appleCaptureProgramChanged"])
+        self.assertFalse(correction["validatorChanged"])
+        self.assertTrue(
+            acceptance["allOriginalProspectiveCaptureRequirementsRemainRequired"]
+        )
+        self.assertTrue(acceptance["x30ExplicitScalarErrorMustReportSuccess"])
+        self.assertTrue(acceptance["x30PresentFormattedTextMustAgree"])
+        self.assertTrue(
+            acceptance["x30MissingFormattedTextMayNotRejectAnErrorCheckedValue"]
+        )
         self.assertFalse(acceptance["generalCropPolicyMayBeClaimedByRetryAlone"])
         self.assertFalse(acceptance["productionShaderMayChange"])
         self.assertIsNone(retry["retryRuntimeOutcomeFrozenBeforeDispatch"])

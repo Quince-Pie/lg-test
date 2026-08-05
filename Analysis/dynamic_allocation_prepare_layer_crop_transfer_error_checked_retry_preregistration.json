@@ -1,0 +1,111 @@
+{
+  "prepareLayerCropTransferErrorCheckedRetryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-05T22:40:24Z",
+  "classification": "prospective second transport retry after run 31053097928 proved that LLDB's optional formatted x30 text is absent at the selected stop; crop selection, Apple code identity, captured memory, ordinal join, discovery matrix, and all product-parity gates remain unchanged",
+  "antecedentRetryPreregistration": {
+    "path": "Analysis/dynamic_allocation_prepare_layer_crop_transfer_retry_preregistration.json",
+    "sha256": "365f6c3040e8fcda2d4ab1f92705407d5cfabecc5096275efdd22600501d873b",
+    "captureHarnessSHA256": "e905e726252dcac8fe3a9f9a59a3e604212a67be60d7b52ef5c80e5e1aa864eb",
+    "captureHarnessTestSHA256": "ef5f8b2f36c8f250e1f8cb6dd4edd44add44de3ef419de19c8a491810197375b"
+  },
+  "failedAttempt": {
+    "runID": 31053097928,
+    "headSHA": "0faf942e552bd04131ae78af46d52c5797968792",
+    "workflowConclusion": "failure",
+    "jobCount": 8,
+    "failedJobCount": 8,
+    "contractsPassedEveryJob": true,
+    "buildPassedEveryJob": true,
+    "captureTargetExitedNormallyEveryJob": true,
+    "artifactUploadedEveryJob": true,
+    "validationPassedAnyJob": false,
+    "productionShaderChanged": false,
+    "artifactInventory": [
+      {"geometry": "circle-1536-center", "jobID": 92464611353, "artifactID": 8949257830, "digest": "sha256:3f1af1ce9e187ecdeedf7e60585fc59013b41f4798575923db61a62b3bf0e039"},
+      {"geometry": "circle-256-center", "jobID": 92464611399, "artifactID": 8949265426, "digest": "sha256:6a3a69bed3db26cac18d2a08cef6a1befe08651eef6929839f5cb3cfabf851d0"},
+      {"geometry": "circle-512-offset", "jobID": 92464611384, "artifactID": 8949336878, "digest": "sha256:342fde90d7e7a2066bbceaffac404c4ec25e9b0292dd342f6b55b9c546a74c9d"},
+      {"geometry": "circle-640-center", "jobID": 92464611410, "artifactID": 8949335845, "digest": "sha256:1f69d264b48d7a7ca7d9b252cf4f1607429b23a5c87e40785915099e17ac37a3"},
+      {"geometry": "circle-640-fractional", "jobID": 92464611406, "artifactID": 8949352515, "digest": "sha256:fe8404e88e34b3504e0af4e398821717e1eab9d8261c0826cd6d10fff8debaec"},
+      {"geometry": "circle-640-phase-0500-even", "jobID": 92464611362, "artifactID": 8949260508, "digest": "sha256:030c7b78a58dec5f97e1d8007c548a07f98be7e91e83d9ef06e45d919bb8a78c"},
+      {"geometry": "circle-640-phase-0500-signed", "jobID": 92464611328, "artifactID": 8949306111, "digest": "sha256:37ad9d68e7702f0b50db6c81f7fb648e572e36075ce8fdea7a4412415c99c78b"},
+      {"geometry": "circle-640-integer", "jobID": 92464611395, "artifactID": 8949281694, "digest": "sha256:894dce5ef55f1625c2e7718402651c467b4e458058dd8bf6d55e1d8b1990a108"}
+    ],
+    "openedFailureFixture": {
+      "geometry": "circle-1536-center",
+      "artifactID": 8949257830,
+      "traceSHA256": "40a592049360afe267930c7688653287d98f948a6475f282d6ade26aa2366a7b",
+      "timelineSHA256": "c9df71d825fdf919d85caeedb2a94f94f9e84556bf745668821be3733be8e24c",
+      "contractsLogSHA256": "fb786edac6ff8718913dfcb2e1c316290b1d0b88ef102f2df34319eeb81684b1",
+      "lldbLogSHA256": "8da0f538b76ae9e0e2643fedac9b5c801384f69ae3a61f38139e95c6e3226bac",
+      "terminalExitStatus": 0,
+      "markerHitCount": 2,
+      "retainedRejectionCount": 1,
+      "retainedRejectionDepth": 3,
+      "qualifiedRecordCount": 0,
+      "failureStage": "crop-transfer-marker",
+      "failureMessage": "register x30 has neither exact SBData nor a self-consistent scalar value",
+      "privateCropOutcomeObserved": false,
+      "generalCropPolicyEvidenceProduced": false
+    }
+  },
+  "apiEvidence": {
+    "pythonDocumentation": "https://lldb.llvm.org/python_api/lldb.SBValue.html",
+    "implementationSource": "https://lldb.llvm.org/cpp_reference/SBValue_8cpp_source.html",
+    "requiredOverload": "SBValue.GetValueAsUnsigned(SBError error, uint64_t fail_value=0)",
+    "requiredSemantics": "accept the scalar only when the explicit SBError reports success; the implementation reports could-not-resolve through that error rather than through GetValue's optional formatted string"
+  },
+  "retryCorrection": {
+    "scope": "x30 scalar transport witness only",
+    "affectedArchitecturalRegister": "x30",
+    "firstChoice": "retain canonical x30 SBData bytes when LLDB exposes them",
+    "secondChoice": "retain exact SBData bytes from LLDB's architectural lr alias and label the source alias",
+    "lastChoice": "only for x30 with an exact eight-byte type, call GetValueAsUnsigned with an explicit SBError and serialize the returned uint64 only when SBError.Success is true",
+    "formattedTextRule": "GetValue is optional; when present it must parse and agree modulo 64 bits, and when absent it neither supplies nor vetoes the value returned by the error-checked numeric API",
+    "failurePolicy": "any other unavailable register, non-eight-byte x30 value, failed SBError, out-of-range scalar, unparseable present text, or present-text disagreement fails closed",
+    "selectionChanged": false,
+    "cropBytesReadDuringSelection": false,
+    "capturedRoleByteCountChanged": false,
+    "capturedSourceByteCountChanged": false,
+    "capturedStackByteCountChanged": false,
+    "capturedAncestorRoleCountChanged": false,
+    "ordinalJoinChanged": false,
+    "matrixChanged": false,
+    "appleCaptureProgramChanged": false,
+    "validatorChanged": false,
+    "productionShaderChanged": false
+  },
+  "frozenRetryImplementation": {
+    "captureHarness": "Analysis/capture_prepare_layer_crop_transfer_lldb.py",
+    "captureHarnessSHA256": "1393a87dd1914eafe995769b05ecb690d34ecc23d40c5772a36712a409962027",
+    "captureHarnessTest": "Analysis/test_capture_prepare_layer_crop_transfer_lldb_source.py",
+    "captureHarnessTestSHA256": "1a3a26eb21738a4884e32b24877d873b0e89f6a4ee08edf88b5a14e671d9b599",
+    "validator": "Analysis/validate_prepare_layer_crop_transfer.py",
+    "validatorSHA256": "7f40a1b598f899093be8abd34374823acf52a60ebb15d4c074a5b3a500d40b3e",
+    "workflow": ".github/workflows/prepare-layer-crop-transfer-introspect.yml",
+    "workflowSHA256": "d768f8e5eb70d9e557b261b44543a1cf6cea254d1617b7adc075c13d2770e9bd",
+    "productionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "developmentFlakeSHA256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01"
+  },
+  "retryRuntimeOutcomeFrozenBeforeDispatch": null,
+  "acceptance": {
+    "allOriginalProspectiveCaptureRequirementsRemainRequired": true,
+    "exactRegisterBytesRequired": true,
+    "x30ExplicitScalarErrorMustReportSuccess": true,
+    "x30PresentFormattedTextMustAgree": true,
+    "x30MissingFormattedTextMayNotRejectAnErrorCheckedValue": true,
+    "allEightJobsMustPass": true,
+    "qualifiedRecordCountPerJob": 32,
+    "generalCropPolicyMayBeClaimedByRetryAlone": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "notClaimed": [
+    "that run 31053097928 captured any private crop record",
+    "that the error-checked retry has run or passed",
+    "that a resolved x30 value contributes to crop selection or crop decoding",
+    "that the 256-state discovery matrix establishes unseen transfer",
+    "that the general crop policy is recovered",
+    "that the production shader may change",
+    "that Liquid Glass parity is established"
+  ]
+}

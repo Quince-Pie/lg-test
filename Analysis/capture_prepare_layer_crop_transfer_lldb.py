@@ -324,28 +324,42 @@ def _register_record(frame, name):
     for candidate, value in scalar_candidates:
         byte_count = value.GetByteSize()
         value_string = value.GetValue()
-        if byte_count != 8 or not isinstance(value_string, str):
+        if byte_count != 8:
             continue
-        try:
-            parsed = int(value_string, 0)
-        except ValueError:
+        error = lldb.SBError()
+        unsigned = value.GetValueAsUnsigned(error, 0)
+        if not error.Success():
             continue
-        unsigned = value.GetValueAsUnsigned(0)
         mask = (1 << (byte_count * 8)) - 1
-        if unsigned != (parsed & mask):
+        if unsigned < 0 or unsigned > mask:
             continue
+        value_string_corroborated = False
+        if value_string is not None:
+            if not isinstance(value_string, str):
+                continue
+            try:
+                parsed = int(value_string, 0)
+            except ValueError:
+                continue
+            if unsigned != (parsed & mask):
+                continue
+            value_string_corroborated = True
         payload = unsigned.to_bytes(byte_count, "little")
         return {
             "name": name,
             "sourceRegisterName": candidate,
-            "acquisition": "lldb-canonical-scalar-value-after-sbdata-unavailable",
+            "acquisition": (
+                "lldb-error-checked-scalar-value-after-sbdata-unavailable"
+            ),
             "byteCount": byte_count,
             "hex": payload.hex(),
             "valueString": value_string,
+            "valueStringCorroborated": value_string_corroborated,
+            "scalarErrorSuccess": True,
             "unsignedValue": unsigned,
         }
     raise RuntimeError(
-        "register %s has neither exact SBData nor a self-consistent scalar value"
+        "register %s has neither exact SBData nor an error-checked scalar value"
         % name
     )
 
