@@ -109,14 +109,18 @@ def passing_documents():
     zero = bytes(validator.full_base.AGGREGATE_BYTE_COUNT)
     state_one = struct.pack("<4d", 481.25, -97.25, 640.0, 640.0)
     state_two = struct.pack("<4d", 481.25, -105.25, 640.0, 648.0)
-    final = bytes.fromhex(base_selected["aggregateAtMarkerHex"])
+    final = struct.pack("<4d", 480.0, -105.25, 641.25, 649.25)
+    base_selected["aggregateAtMarkerHex"] = final.hex()
+    base_selected["roleStateAtMarker"] = frame_fixture.memory_snapshot(
+        ROLE_BASE, frame_fixture.role_state(final)
+    )
     offsets = [0x3974, 0x2504, 0x2604]
     states = [(zero, state_one), (state_one, state_two), (state_two, final)]
     lanes = [0, 8, 0]
     events = [
         active_event(
             index,
-            4 + index,
+            5 + index,
             offsets[index],
             before,
             after,
@@ -135,9 +139,35 @@ def passing_documents():
     marker_frame = frame_fixture.prepare_frame(marker_pc)
     epoch_prepare_frames = prepare_frames(epoch_pc)
     marker_prepare_frames = prepare_frames(marker_pc)
+    base_sites = {item["name"]: item for item in base["prepareLayer"]["writerSites"]}
+    retired_breakpoints = [
+        {
+            "name": name,
+            "breakpointID": base_sites[name]["breakpointID"],
+            "enabledAfterRetirement": False,
+        }
+        for name in validator.RETIRED_INHERITED_WRITER_SITE_NAMES
+    ]
+    retained_breakpoints = [
+        {
+            "name": validator.EPOCH_MARKER_NAME,
+            "breakpointID": base_sites[validator.EPOCH_MARKER_NAME]["breakpointID"],
+            "enabledAfterRetirement": True,
+        },
+        {
+            "name": validator.SELECTION_MARKER_NAME,
+            "breakpointID": base["prepareLayer"]["liveSelectionMarker"]["breakpointID"],
+            "enabledAfterRetirement": True,
+        },
+        {
+            "name": validator.RETURN_MARKER_NAME,
+            "breakpointID": 13,
+            "enabledAfterRetirement": True,
+        },
+    ]
     group = {
         "groupIndex": 0,
-        "callbackSequence": 3,
+        "callbackSequence": 4,
         "epochRecordIndex": 0,
         "identity": identity(),
         "initialAggregateHex": zero.hex(),
@@ -151,7 +181,7 @@ def passing_documents():
             }
             for index, lane in enumerate(validator.WATCH_LANE_OFFSETS)
         ],
-        "retiredCallbackSequence": 8,
+        "retiredCallbackSequence": 9,
         "retirementReason": "selected-marker-closed",
         "lastAggregateHex": final.hex(),
     }
@@ -165,17 +195,18 @@ def passing_documents():
         "configuration": copy.deepcopy(validator.EXPECTED_CONFIGURATION),
         "callbackOrder": [
             {"sequence": 1, "kind": "prepare-layer-entry"},
-            {"sequence": 2, "kind": "depth-four-zero-epoch"},
-            {"sequence": 3, "kind": "active-watch-group-armed"},
+            {"sequence": 2, "kind": "inherited-writer-breakpoints-retired"},
+            {"sequence": 3, "kind": "depth-four-zero-epoch"},
+            {"sequence": 4, "kind": "active-watch-group-armed"},
             *[
                 {
-                    "sequence": 4 + index,
+                    "sequence": 5 + index,
                     "kind": "qualified-active-frame-watchpoint-hit",
                 }
                 for index in range(3)
             ],
-            {"sequence": 7, "kind": "live-selected-active-frame-watch-closed"},
-            {"sequence": 8, "kind": "active-watch-group-retired"},
+            {"sequence": 8, "kind": "live-selected-active-frame-watch-closed"},
+            {"sequence": 9, "kind": "active-watch-group-retired"},
         ],
         "prepareLayerEntryBreakpointID": 2,
         "prepareLayer": {
@@ -193,14 +224,14 @@ def passing_documents():
             "epochMarker": {"address": epoch_pc, "breakpointID": 9},
             "returnMarker": {
                 "address": PREPARE_START + validator.RETURN_MARKER_OFFSET,
-                "breakpointID": 13,
+                "breakpointID": retained_breakpoints[2]["breakpointID"],
             },
             "selectionMarker": {"address": marker_pc, "breakpointID": 12},
         },
         "epochRecords": [
             {
                 "recordIndex": 0,
-                "callbackSequence": 2,
+                "callbackSequence": 3,
                 "markerHitIndex": 1,
                 "threadID": THREAD_ID,
                 "pc": epoch_pc,
@@ -228,7 +259,7 @@ def passing_documents():
         "retirementRecords": [
             {
                 "recordIndex": 0,
-                "callbackSequence": 8,
+                "callbackSequence": 9,
                 "groupIndex": 0,
                 "epochRecordIndex": 0,
                 "reason": "selected-marker-closed",
@@ -239,9 +270,18 @@ def passing_documents():
         "qualifiedWatchpointEvents": events,
         "ignoredWatchpointDiagnostics": [],
         "rejectedMarkerDiagnostics": [],
+        "inheritedWriterBreakpointRetirement": {
+            "callbackSequence": 2,
+            "threadID": THREAD_ID,
+            "pc": base["captureBackdrop"]["symbolAddress"]
+            + validator.full_base.CAPTURE_BACKDROP_LATE_OFFSET,
+            "selectedSource": source,
+            "retired": retired_breakpoints,
+            "retainedControlBreakpoints": retained_breakpoints,
+        },
         "codeWindows": windows,
         "selectedFrame": {
-            "callbackSequence": 7,
+            "callbackSequence": 8,
             "markerHitIndex": 1,
             "threadID": THREAD_ID,
             "pc": marker_pc,
@@ -269,7 +309,7 @@ def passing_documents():
         "selectedWriterEventIndices": [0, 1, 2],
         "failures": [],
         "finalFailureCount": 0,
-        "finalCallbackSequence": 8,
+        "finalCallbackSequence": 9,
         "epochMarkerHitCount": 1,
         "rejectedEpochDepthCount": 0,
         "sourceUnknownEpochCount": 0,
@@ -284,6 +324,7 @@ def passing_documents():
         "unretainedIgnoredWatchpointHitCount": 0,
         "unretainedRejectedMarkerDiagnosticCount": 0,
         "finalRejectedMarkerDiagnosticCount": 0,
+        "inheritedWriterBreakpointsRetired": True,
         "finalQualifiedWatchpointEventCount": 3,
         "finalChangedQualifiedWatchpointEventCount": 3,
         "finalSelectedWriterEventCount": 3,
@@ -307,10 +348,27 @@ class ActiveFrameWatchValidatorTests(unittest.TestCase):
                 json.dumps(base, sort_keys=True, allow_nan=False) + "\n",
                 encoding="utf-8",
             )
-            with mock.patch.object(
-                validator.frame_validator,
-                "validate",
-                return_value={"conclusion": "success", "prospectiveGatePassed": True},
+            full_code_hash = base["prepareLayer"]["fullCode"]["sha256"]
+            known_windows = [
+                (item["offset"], item["byteCount"], item["sha256"])
+                for item in base["prepareLayer"]["knownWindows"]
+            ]
+            with (
+                mock.patch.object(
+                    validator.frame_validator,
+                    "PREPARE_LAYER_FULL_CODE_SHA256",
+                    full_code_hash,
+                ),
+                mock.patch.object(
+                    validator.full_base,
+                    "KNOWN_PREPARE_LAYER_WINDOWS",
+                    known_windows,
+                ),
+                mock.patch.object(
+                    validator.frame_validator,
+                    "EXPECTED_CONFIGURATION",
+                    base["configuration"],
+                ),
             ):
                 return validator.validate(trace_path, base_path)
 
@@ -326,8 +384,77 @@ class ActiveFrameWatchValidatorTests(unittest.TestCase):
         )
         sealed = result["sealedConclusion"]
         self.assertTrue(sealed["completeCausalWriterPCSequenceCaptured"])
+        self.assertTrue(sealed["knownAggregateStateTransferPassed"])
         self.assertFalse(sealed["writerInstructionSemanticsOpened"])
         self.assertFalse(sealed["productionShaderAuthorized"])
+
+    def test_breakpoint_retirement_identity_is_exact(self):
+        document, base = passing_documents()
+        retirement = document["inheritedWriterBreakpointRetirement"]
+        retirement["retired"][0]["breakpointID"] += 1
+        with self.assertRaisesRegex(ValueError, "retired writer breakpoint"):
+            self.validate_documents(document, base)
+
+    def test_disabled_writer_state_is_observed_not_assumed(self):
+        document, base = passing_documents()
+        retirement = document["inheritedWriterBreakpointRetirement"]
+        retirement["retired"][0]["enabledAfterRetirement"] = True
+        with self.assertRaisesRegex(ValueError, "retired writer breakpoint"):
+            self.validate_documents(document, base)
+
+    def test_retirement_must_precede_first_hardware_epoch(self):
+        document, base = passing_documents()
+        document["callbackOrder"][1]["kind"] = "depth-four-zero-epoch"
+        document["callbackOrder"][2]["kind"] = "inherited-writer-breakpoints-retired"
+        document["inheritedWriterBreakpointRetirement"]["callbackSequence"] = 3
+        document["epochRecords"][0]["callbackSequence"] = 2
+        with self.assertRaisesRegex(ValueError, "retirement timing differs"):
+            self.validate_documents(document, base)
+
+    def test_retirement_pc_is_the_independent_source_selector(self):
+        document, base = passing_documents()
+        document["inheritedWriterBreakpointRetirement"]["pc"] += 4
+        with self.assertRaisesRegex(ValueError, "breakpoint retirement differs"):
+            self.validate_documents(document, base)
+
+    def test_inherited_marker_context_cannot_be_replaced(self):
+        document, base = passing_documents()
+        base["selectedFrame"]["selectedSource"] += 8
+        with self.assertRaisesRegex(ValueError, "selected marker identity differs"):
+            self.validate_documents(document, base)
+
+    def test_known_transfer_is_bit_exact_and_ordered(self):
+        carrier = 481.25
+        states = [
+            bytes(32),
+            struct.pack("<4d", carrier, -97.25, 640.0, 640.0),
+            struct.pack("<4d", carrier, -105.25, 640.0, 648.0),
+            struct.pack("<4d", 480.0, -105.25, 641.25, 649.25),
+        ]
+        result = validator._known_state_transfer(states, states[-1])
+        self.assertEqual(result["carrierP"], carrier)
+        self.assertEqual(result["integerOriginL"], 480)
+        self.assertEqual(result["stateIndices"], [0, 1, 2, 3])
+
+    def test_previous_collision_trace_still_fails_known_transfer(self):
+        carrier = 491.9310302734375
+        marker = struct.pack(
+            "<4d", 490.0, -115.9310302734375, 641.9310302734375, 649.9310302734375
+        )
+        observed = [
+            bytes(32),
+            struct.pack("<4d", carrier, -107.9310302734375, 640.0, 640.0),
+            struct.pack(
+                "<4d",
+                -0.3512069702148437,
+                -0.3512069702148437,
+                640.7024139404297,
+                648.3512069702149,
+            ),
+            marker,
+        ]
+        with self.assertRaisesRegex(ValueError, "known aggregate state transfer"):
+            validator._known_state_transfer(observed, marker)
 
     def test_missing_hardware_lane_fails_closed(self):
         document, base = passing_documents()

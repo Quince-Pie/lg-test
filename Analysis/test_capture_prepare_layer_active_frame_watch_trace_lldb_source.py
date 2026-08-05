@@ -7,6 +7,7 @@ import sys
 import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import test_capture_prepare_layer_frame_correlated_writer_trace_lldb_source as frame_source
 import validate_prepare_layer_active_frame_watch_trace as validator
@@ -188,9 +189,75 @@ class ActiveFrameWatchSourceTests(unittest.TestCase):
         self.assertIn('frame_base._state["captureLateBreakpoint"]', capture_entry)
         self.assertIn('"forwarded_capture_backdrop_late"', capture_entry)
         self.assertIn("frame_base.capture_backdrop_late", capture_late)
+        self.assertLess(
+            capture_late.index("frame_base.capture_backdrop_late"),
+            capture_late.index(
+                "_retire_inherited_writer_breakpoints_for_hardware_watch"
+            ),
+        )
         self.assertIn("frame_base.writer_site", writer)
         self.assertIn('"forwarded_writer_site"', entry)
         self.assertIn("name != EPOCH_MARKER_NAME", entry)
+
+    def test_non_epoch_sample_breakpoints_are_retired_before_hardware_watch(self):
+        class FakeBreakpoint:
+            def __init__(self, identifier):
+                self.identifier = identifier
+                self.enabled = True
+
+            def GetID(self):
+                return self.identifier
+
+            def IsEnabled(self):
+                return self.enabled
+
+            def IsValid(self):
+                return True
+
+            def SetEnabled(self, enabled):
+                self.enabled = enabled
+
+        class FakeThread:
+            def GetThreadID(self):
+                return 0x1_7000_0042
+
+        class FakeFrame:
+            def GetThread(self):
+                return FakeThread()
+
+            def GetPC(self):
+                return 0x1_9440_2B58
+
+        module = self.module
+        writer_breakpoints = {
+            site["name"]: FakeBreakpoint(index + 10)
+            for index, site in enumerate(module.frame_base.WRITER_SITES)
+        }
+        module.frame_base._state["writerBreakpoints"] = writer_breakpoints
+        module.frame_base._state["objectAddresses"] = {"source": 0x9_BEEF_0000}
+        module._state["prepareLayer"] = {"symbolStart": 0x1_9000_0000}
+        module._state["callbackSequence"] = 1
+        module._state["selectionBreakpoint"] = FakeBreakpoint(100)
+        module._state["returnBreakpoint"] = FakeBreakpoint(101)
+        with mock.patch.object(module, "_write_trace"):
+            module._retire_inherited_writer_breakpoints_for_hardware_watch(FakeFrame())
+        for name in module.RETIRED_INHERITED_WRITER_SITE_NAMES:
+            self.assertFalse(writer_breakpoints[name].IsEnabled(), name)
+        self.assertTrue(writer_breakpoints[module.EPOCH_MARKER_NAME].IsEnabled())
+        self.assertTrue(module._state["selectionBreakpoint"].IsEnabled())
+        self.assertTrue(module._state["returnBreakpoint"].IsEnabled())
+        self.assertEqual(module._state["callbackSequence"], 2)
+        record = module._state["trace"]["inheritedWriterBreakpointRetirement"]
+        self.assertEqual(record["callbackSequence"], 2)
+        self.assertTrue(
+            all(item["enabledAfterRetirement"] is False for item in record["retired"])
+        )
+        self.assertTrue(
+            all(
+                item["enabledAfterRetirement"] is True
+                for item in record["retainedControlBreakpoints"]
+            )
+        )
 
 
 if __name__ == "__main__":

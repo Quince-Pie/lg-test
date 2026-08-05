@@ -5723,3 +5723,76 @@ ordinary source or depth rejection now retains a bounded structural diagnostic,
 and zero unretained diagnostics remains mandatory. The full correction,
 artifact hashes, and unchanged semantic seals are recorded in
 `Analysis/dynamic_allocation_prepare_layer_active_frame_watch_preregistration.json`.
+
+Run `31029790210`, from structural-depth commit `0b426fe`, proves that the
+version-2 frame fix works, but it still does **not** open the complete causal
+writer chain. The target exits normally in 315 seconds with all 33 real image
+samples. Artifact `8940311690` has GitHub digest
+`sha256:538d5ed1489fe66a59ac548cb3d41ca616e70b1e1ad6a957c40e3f5564ec58e0`.
+The active trace has SHA-256
+`b20f9c3f9c3d846908b94b25d56847451b5cf6a1396802ade1ee37889bc62651`;
+the inherited trace has SHA-256
+`8ef6e4453d781541f0d43502537e00371614b3083a2cf24dc8d484df074d3b3a`;
+and the timeline has SHA-256
+`0506af1e55ada7e657998c6eb205c4c8f37379707f884d79e50f34241266aafa`.
+
+The active probe accepts three real depth-four epochs. It records 26 epoch
+hits: 13 before source selection, 10 source-known structural-depth
+rejections, and three accepted records. All nine hardware stops are retained,
+none is ignored, and the selected group contains seven events, five changes,
+and six distinct aggregate states. The selected identity is thread
+`64424509442`, role `6171888992`, frame pointer `6171890944`, and source
+`41851338752`. The final marker is exactly
+`[490,-115.9310302734375,641.9310302734375,649.9310302734375]`, with
+`P=491.9310302734375` and `L=floor(P)-1=490`.
+
+The two simultaneous debugger mechanisms produce complementary but incomplete
+views. The inherited software-breakpoint suffix is zero, two apply samples,
+and the exact padded intermediate
+`[P,1024-P-640-8,640,648]`; it then misses the final aggregate writer. The
+hardware-watch suffix sees the exact initial state
+`[P,1024-P-640,640,640]`, multiple DOD states, and the exact final marker, but
+it misses that padded intermediate and the already known `-89720` writer PC.
+Conversely, several hardware stops at `-90080`, `-89700`, `-89512`, and the
+final `-2588` change have no corresponding inherited selected callback.
+
+This is debugger interference, not evidence of a different Apple algorithm.
+The sampled breakpoints are installed at post-store PCs while four hardware
+write watches cover those same destination bytes. LLDB can coalesce or mask
+one callback when both stop mechanisms meet the same instruction. Splicing
+the software list and hardware list after the fact would not prove callback
+order or continuity, so both version-2 validators fail closed with
+`selected writer suffix differs`. No complete-writer or parity claim follows
+from this run.
+
+The known public arithmetic remains unchanged and is now an explicit bitwise
+gate. Apple's dynamic resampling scale is exactly `q = 2/(2-k)`; the glass UV
+span is `q` times the allocated backdrop extent; and UV origin is the producer
+crop transform plus the copy-base signed integer offset. For this fixed
+1024-by-1024, 640-point capture, a valid hardware-only state list must contain
+in order and bit-for-bit: zero;
+`[P,1024-P-640,640,640]`;
+`[P,1024-P-640-8,640,648]`; and
+`[floor(P)-1,1024-P-640-8,P+640-(floor(P)-1),P+648-(floor(P)-1)]`.
+Run `31029790210` fails this gate because its hardware list lacks the third
+state.
+
+Schema version 3 removes the collision before measurement. Immediately after
+the independent `capture_backdrop` late selector fixes the source, active
+callback sequence 2 disables every inherited sampled writer breakpoint except
+the shared `+0xb60` zero epoch. The trace reads back and records `enabled=false`
+for all eight retired sites. It separately reads back `enabled=true` for
+exactly the shared zero epoch, shared `+0x3ef0` selection marker, and active
+`+0x2a68` return marker. The validator checks every name, inherited breakpoint
+ID, enabled state, selector PC, selected source, and ordering before accepting
+an epoch or hardware event.
+
+The current composed validator revalidates the inherited complete-code,
+source, object-chain, frame-identity, and final-marker context, but it does not
+pretend the deliberately retired sampled suffix should still close. The
+hardware chain alone must provide the exact four-state transfer, zero ignored
+hits, full continuity, marker closure, and a newly exposed changed PC. Even a
+passing version-3 capture opens only the complete writer-PC sequence. Writer
+instruction semantics, the complete discrete crop-allocation policy, unseen
+geometry transfer, production-shader changes, and Apple Liquid Glass parity
+remain sealed.

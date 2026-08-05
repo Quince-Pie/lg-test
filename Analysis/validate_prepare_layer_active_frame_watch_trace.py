@@ -4,6 +4,8 @@
 import argparse
 import hashlib
 import json
+import math
+import struct
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -15,8 +17,8 @@ import validate_prepare_layer_frame_correlated_writer_trace as frame_validator
 
 full_base = frame_validator.full_base
 
-EXPECTED_TRACE_SCHEMA_VERSION = 2
-VALIDATION_SCHEMA_VERSION = 2
+EXPECTED_TRACE_SCHEMA_VERSION = 3
+VALIDATION_SCHEMA_VERSION = 3
 EXPECTED_CLASSIFICATION = (
     "preregistered-live-depth-qualified-four-lane-prepare-layer-aggregate-"
     "watch-trace; complete-causal-writer-list-semantics-public-crop-policy-"
@@ -50,8 +52,21 @@ MAXIMUM_QUALIFIED_WATCHPOINT_EVENT_COUNT = 512
 MAXIMUM_IGNORED_WATCHPOINT_DIAGNOSTIC_COUNT = 64
 MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT = 64
 MINIMUM_SELECTED_CHANGED_TRANSITION_COUNT = 3
+KNOWN_CANVAS_EXTENT = 1024.0
+KNOWN_GLASS_EXTENT = 640.0
+KNOWN_EDGE_PADDING = 8.0
 IDENTITY_FRAME_REGISTER_NAMES = ("x19", "x29", "pc")
 SELECTION_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "pc")
+RETIRED_INHERITED_WRITER_SITE_NAMES = tuple(
+    site["name"]
+    for site in frame_validator.WRITER_SITES
+    if site["name"] != EPOCH_MARKER_NAME
+)
+RETAINED_CONTROL_BREAKPOINT_NAMES = (
+    EPOCH_MARKER_NAME,
+    SELECTION_MARKER_NAME,
+    RETURN_MARKER_NAME,
+)
 FRAME_TRACE_OUTPUT_ENVIRONMENT = "LG_PREPARE_LAYER_FRAME_WRITER_TRACE_OUTPUT"
 KNOWN_SAMPLED_WRITER_AFTER_OFFSETS = tuple(
     sorted(site["relativeToPrepareLayer"] for site in frame_validator.WRITER_SITES)
@@ -89,9 +104,14 @@ EXPECTED_CONFIGURATION = {
     "minimumSelectedChangedTransitionCount": (
         MINIMUM_SELECTED_CHANGED_TRANSITION_COUNT
     ),
+    "knownCanvasExtent": KNOWN_CANVAS_EXTENT,
+    "knownGlassExtent": KNOWN_GLASS_EXTENT,
+    "knownEdgePadding": KNOWN_EDGE_PADDING,
     "identityFrameRegisterNames": list(IDENTITY_FRAME_REGISTER_NAMES),
     "selectionFrameRegisterNames": list(SELECTION_FRAME_REGISTER_NAMES),
     "structuralFramePointerSource": "SBFrame.GetFP",
+    "retiredInheritedWriterSiteNames": list(RETIRED_INHERITED_WRITER_SITE_NAMES),
+    "retainedControlBreakpointNames": list(RETAINED_CONTROL_BREAKPOINT_NAMES),
     "knownSampledWriterAfterOffsets": list(KNOWN_SAMPLED_WRITER_AFTER_OFFSETS),
     "frameTraceOutputEnvironment": FRAME_TRACE_OUTPUT_ENVIRONMENT,
     "frameTraceSchemaVersion": frame_validator.EXPECTED_TRACE_SCHEMA_VERSION,
@@ -130,6 +150,19 @@ EXPECTED_CONFIGURATION = {
     "inheritedCallbackForwardingRule": (
         "bind every inherited entry and dynamically created breakpoint through "
         "a callback exported by this command-script module"
+    ),
+    "breakpointIsolationRule": (
+        "immediately after independent source selection, disable every inherited "
+        "sampled writer breakpoint except the shared +0xb60 zero epoch before any "
+        "hardware watch is armed; retain only the shared zero epoch, selection "
+        "marker, and return marker while hardware watches are live"
+    ),
+    "knownStateTransferRule": (
+        "the selected full-aggregate state sequence must contain, bit-for-bit "
+        "and in order, zero; [P,1024-P-640,640,640]; "
+        "[P,1024-P-640-8,640,648]; and "
+        "[floor(P)-1,1024-P-640-8,P+640-(floor(P)-1),"
+        "P+648-(floor(P)-1)], with P recovered from the final second lane"
     ),
 }
 
@@ -201,6 +234,245 @@ def _selection_registers(
     ):
         raise ValueError(f"{label} identity differs")
     return registers
+
+
+def _inherited_frame_context(trace: Mapping[str, Any]) -> dict[str, Any]:
+    """Validate inherited static/source/marker evidence without its masked suffix."""
+    if (
+        trace.get("prepareLayerFrameWriterTraceSchemaVersion")
+        != frame_validator.EXPECTED_TRACE_SCHEMA_VERSION
+        or trace.get("classification") != frame_validator.EXPECTED_CLASSIFICATION
+        or trace.get("status") != "finalized"
+        or trace.get("statusBeforeFinalization") != "live-selected-frame-correlated"
+        or mapping(trace.get("configuration"), "inherited configuration")
+        != frame_validator.EXPECTED_CONFIGURATION
+        or list(sequence(trace.get("failures"), "inherited failures"))
+        or trace.get("finalFailureCount") != 0
+    ):
+        raise ValueError("inherited frame context envelope differs")
+    order = frame_validator._callback_order(trace)
+    prepare_start, prepare_module, _code, site_records, capture_sequence = (
+        frame_validator._static_gates(trace, order)
+    )
+    chain, selected_source = frame_validator.construction_base._selected_object_chain(
+        trace
+    )
+    object_addresses = mapping(chain.get("addresses"), "inherited object addresses")
+    source_sequence = frame_validator._require_callback(
+        order,
+        chain.get("callbackSequence"),
+        "source-selected",
+        "inherited source callback",
+    )
+    late_count = integer(trace.get("lateCandidateCount"), "inherited late count")
+    if (
+        late_count != chain.get("selectedLateCandidateIndex")
+        or not 1 <= late_count <= full_base.MAXIMUM_LATE_CANDIDATE_COUNT
+        or len(
+            sequence(
+                trace.get("lateCandidateDiagnostics"),
+                "inherited late diagnostics",
+            )
+        )
+        > full_base.MAXIMUM_LATE_CANDIDATE_DIAGNOSTIC_COUNT
+        or source_sequence <= capture_sequence
+    ):
+        raise ValueError("inherited source selection accounting differs")
+    events, retained = frame_validator._candidate_events(
+        trace,
+        order,
+        prepare_start=prepare_start,
+        prepare_module=prepare_module,
+        site_records=site_records,
+        source_sequence=source_sequence,
+    )
+    frame_validator._writer_accounting(
+        trace,
+        retained,
+        prepare_start=prepare_start,
+        prepare_module=prepare_module,
+    )
+    diagnostics = list(
+        sequence(
+            trace.get("preselectionMarkerDiagnostics"),
+            "inherited preselection diagnostics",
+        )
+    )
+    if len(diagnostics) > frame_validator.MAXIMUM_PRESELECTION_MARKER_DIAGNOSTIC_COUNT:
+        raise ValueError("inherited preselection diagnostic bound differs")
+    previous_hit = 0
+    for index, value in enumerate(diagnostics):
+        label = f"inherited preselection diagnostic {index}"
+        item = mapping(value, label)
+        hit = integer(item.get("markerHitIndex"), f"{label} hit")
+        if (
+            hit <= previous_hit
+            or integer(item.get("threadID"), f"{label} thread") <= 0
+            or integer(item.get("roleBase"), f"{label} role") <= 0
+            or integer(item.get("sourceRegister"), f"{label} source") <= 0
+            or integer(item.get("framePointer"), f"{label} frame") <= 0
+        ):
+            raise ValueError(f"{label} identity differs")
+        previous_hit = hit
+    selected = mapping(trace.get("selectedFrame"), "inherited selected frame")
+    callback = frame_validator._require_callback(
+        order,
+        selected.get("callbackSequence"),
+        "live-selected-frame-correlated",
+        "inherited selected callback",
+    )
+    marker_hit = integer(selected.get("markerHitIndex"), "inherited marker hit")
+    thread_id = integer(selected.get("threadID"), "inherited selected thread")
+    marker_pc = prepare_start + frame_validator.LIVE_SELECTION_MARKER_OFFSET
+    if (
+        callback <= source_sequence
+        or callback != len(order)
+        or marker_hit <= previous_hit
+        or thread_id <= 0
+        or selected.get("pc") != marker_pc
+        or selected.get("selectedSource") != selected_source
+    ):
+        raise ValueError("inherited selected marker identity differs")
+    selected_frame = merge_base.frame_record(
+        selected.get("frame"),
+        "inherited selected frame",
+        expected_pc=marker_pc,
+        expected_symbol_start=prepare_start,
+        expected_module=prepare_module,
+    )
+    backtrace = frame_validator._backtrace(
+        selected.get("backtrace"), "inherited selected backtrace"
+    )
+    if selected_frame != backtrace[0]:
+        raise ValueError("inherited selected backtrace head differs")
+    registers = frame_validator._registers(
+        selected.get("registers"),
+        frame_validator.PREPARE_FRAME_REGISTER_NAMES,
+        "inherited selected registers",
+    )
+    identity = _identity(selected.get("frameIdentity"), "inherited identity")
+    if (
+        identity["threadID"] != thread_id
+        or registers["x19"] != identity["roleBase"]
+        or registers["x28"] != selected_source
+        or registers["x29"] != identity["framePointer"]
+        or registers["pc"] != marker_pc
+    ):
+        raise ValueError("inherited selected frame correlation differs")
+    role = frame_validator._memory_payload(
+        selected.get("roleStateAtMarker"),
+        "inherited selected marker role",
+        expected_address=identity["roleBase"],
+        expected_byte_count=full_base.ROLE_STATE_BYTE_COUNT,
+    )
+    marker_aggregate = role[
+        full_base.AGGREGATE_OFFSET : full_base.AGGREGATE_OFFSET
+        + full_base.AGGREGATE_BYTE_COUNT
+    ]
+    if (
+        _payload(
+            selected.get("aggregateAtMarkerHex"),
+            full_base.AGGREGATE_BYTE_COUNT,
+            "inherited selected marker aggregate",
+        )
+        != marker_aggregate
+    ):
+        raise ValueError("inherited marker aggregate alias differs")
+    writer_base.private_fields(
+        selected.get("privateFieldsAtMarker"),
+        "inherited selected marker private fields",
+    )
+    objects = mapping(
+        selected.get("selectedObjectsAtMarker"), "inherited selected objects"
+    )
+    specs = dict(full_base.OBJECT_SNAPSHOT_SPECS)
+    if set(objects) != set(specs):
+        raise ValueError("inherited selected object inventory differs")
+    for name, byte_count in specs.items():
+        frame_validator._memory_payload(
+            objects[name],
+            f"inherited selected object {name}",
+            expected_address=integer(object_addresses.get(name), f"{name} address"),
+            expected_byte_count=byte_count,
+        )
+    selected_indices = [
+        integer(value, "inherited selected event index")
+        for value in sequence(
+            trace.get("selectedWriterEventIndices"),
+            "inherited selected event indices",
+        )
+    ]
+    if (
+        not selected_indices
+        or selected_indices != sorted(set(selected_indices))
+        or selected_indices[-1] >= len(events)
+    ):
+        raise ValueError("inherited selected event bounds differ")
+    matching = [
+        event
+        for event in events
+        if event.get("frameIdentity") == dict(identity)
+        and event.get("callbackSequence") < callback
+    ]
+    epochs = [event for event in matching if event.get("epochStart") is True]
+    if not epochs:
+        raise ValueError("inherited selected epoch is absent")
+    epoch = max(epochs, key=lambda event: event["callbackSequence"])
+    expected_selected = sorted(
+        (
+            event["eventIndex"]
+            for event in matching
+            if event["callbackSequence"] >= epoch["callbackSequence"]
+        ),
+        key=lambda index: events[index]["callbackSequence"],
+    )
+    selected_events = [events[index] for index in selected_indices]
+    distinct = len({event["aggregateAfterHex"] for event in selected_events})
+    changing = sum(
+        event.get("aggregateChangedFromPreviousSameFrameCandidate") is True
+        for event in selected_events
+    )
+    if (
+        selected_indices != expected_selected
+        or selected.get("epochStartEventIndex") != epoch["eventIndex"]
+        or selected_indices[0] != epoch["eventIndex"]
+        or epoch.get("siteName") != EPOCH_MARKER_NAME
+        or selected.get("selectedWriterEventCount") != len(selected_indices)
+        or trace.get("finalSelectedWriterEventCount") != len(selected_indices)
+        or trace.get("finalSelectedDistinctAggregateCount") != distinct
+        or trace.get("finalSelectedChangingTransitionCount") != changing
+    ):
+        raise ValueError("inherited selected context differs")
+    hits = integer(trace.get("selectionMarkerHitCount"), "inherited marker hits")
+    rejected = integer(
+        trace.get("rejectedSelectionMarkerHitCount"),
+        "inherited rejected marker count",
+    )
+    discarded = integer(
+        trace.get("discardedSelectionMarkerHitCount"),
+        "inherited discarded marker count",
+    )
+    if (
+        discarded != 0
+        or hits != len(diagnostics) + rejected + 1
+        or hits > frame_validator.MAXIMUM_LIVE_SELECTION_MARKER_HIT_COUNT
+        or marker_hit != hits
+    ):
+        raise ValueError("inherited marker accounting differs")
+    return {
+        "prepareStart": prepare_start,
+        "prepareModule": prepare_module,
+        "selectedSource": selected_source,
+        "objectChain": chain,
+        "selectedFrame": selected,
+        "markerAggregate": marker_aggregate,
+        "selectedSampleEventCount": len(selected_indices),
+        "selectedSampleDistinctAggregateCount": distinct,
+        "selectedSampleChangingTransitionCount": changing,
+        "sampledSuffixClosedAtMarker": (
+            selected_events[-1]["aggregateAfterHex"] == marker_aggregate.hex()
+        ),
+    }
 
 
 def _structural_prepare_frames(
@@ -292,6 +564,110 @@ def _static_gate(
     ):
         raise ValueError("active watch breakpoint identities differ")
     return start, prepare_module
+
+
+def _breakpoint_isolation_gate(
+    trace: Mapping[str, Any],
+    base_trace: Mapping[str, Any],
+    order: Mapping[int, str],
+    *,
+    selected_source: int,
+) -> int:
+    retirement = mapping(
+        trace.get("inheritedWriterBreakpointRetirement"),
+        "inherited writer breakpoint retirement",
+    )
+    if set(retirement) != {
+        "callbackSequence",
+        "threadID",
+        "pc",
+        "selectedSource",
+        "retired",
+        "retainedControlBreakpoints",
+    }:
+        raise ValueError("inherited writer breakpoint retirement fields differ")
+    callback = _require_callback(
+        order,
+        retirement.get("callbackSequence"),
+        "inherited-writer-breakpoints-retired",
+        "inherited writer retirement callback",
+    )
+    if callback != 2:
+        raise ValueError("inherited writer retirement timing differs")
+    base_prepare = mapping(base_trace.get("prepareLayer"), "base prepare layer")
+    sites = {
+        mapping(value, "base writer site").get("name"): mapping(
+            value, "base writer site"
+        )
+        for value in sequence(base_prepare.get("writerSites"), "base writer sites")
+    }
+    retired = list(sequence(retirement.get("retired"), "retired writer breakpoints"))
+    if len(retired) != len(RETIRED_INHERITED_WRITER_SITE_NAMES):
+        raise ValueError("retired writer breakpoint inventory differs")
+    for expected_name, value in zip(
+        RETIRED_INHERITED_WRITER_SITE_NAMES, retired, strict=True
+    ):
+        item = mapping(value, f"retired writer breakpoint {expected_name}")
+        base_site = mapping(sites.get(expected_name), f"base site {expected_name}")
+        if (
+            set(item) != {"name", "breakpointID", "enabledAfterRetirement"}
+            or item.get("name") != expected_name
+            or item.get("breakpointID") != base_site.get("breakpointID")
+            or item.get("enabledAfterRetirement") is not False
+        ):
+            raise ValueError(f"retired writer breakpoint {expected_name} differs")
+    retained = list(
+        sequence(
+            retirement.get("retainedControlBreakpoints"),
+            "retained control breakpoints",
+        )
+    )
+    active_prepare = mapping(trace.get("prepareLayer"), "active prepare layer")
+    expected_retained_ids = (
+        mapping(sites.get(EPOCH_MARKER_NAME), "base zero epoch").get("breakpointID"),
+        mapping(base_prepare.get("liveSelectionMarker"), "base selection marker").get(
+            "breakpointID"
+        ),
+        mapping(active_prepare.get("returnMarker"), "active return marker").get(
+            "breakpointID"
+        ),
+    )
+    if len(retained) != len(RETAINED_CONTROL_BREAKPOINT_NAMES):
+        raise ValueError("retained control breakpoint inventory differs")
+    for expected_name, expected_id, value in zip(
+        RETAINED_CONTROL_BREAKPOINT_NAMES,
+        expected_retained_ids,
+        retained,
+        strict=True,
+    ):
+        item = mapping(value, f"retained control breakpoint {expected_name}")
+        if item != {
+            "name": expected_name,
+            "breakpointID": expected_id,
+            "enabledAfterRetirement": True,
+        }:
+            raise ValueError(f"retained control breakpoint {expected_name} differs")
+    isolated_ids = [
+        integer(item.get("breakpointID"), "isolated breakpoint ID")
+        for item in (
+            mapping(value, "isolated breakpoint") for value in [*retired, *retained]
+        )
+    ]
+    if len(isolated_ids) != len(set(isolated_ids)):
+        raise ValueError("isolated breakpoint identities differ")
+    capture = mapping(base_trace.get("captureBackdrop"), "base capture backdrop")
+    expected_retirement_pc = (
+        integer(capture.get("symbolAddress"), "base capture symbol")
+        + full_base.CAPTURE_BACKDROP_LATE_OFFSET
+    )
+    if (
+        trace.get("inheritedWriterBreakpointsRetired") is not True
+        or integer(retirement.get("threadID"), "retirement thread") <= 0
+        or retirement.get("pc") != expected_retirement_pc
+        or retirement.get("selectedSource") != selected_source
+    ):
+        raise ValueError("inherited writer breakpoint retirement differs")
+    return callback
 
 
 def _epochs_and_groups(
@@ -799,6 +1175,53 @@ def _events(
     return events
 
 
+def _known_state_transfer(states: Sequence[bytes], marker: bytes) -> dict[str, Any]:
+    final = struct.unpack("<4d", marker)
+    carrier = KNOWN_CANVAS_EXTENT - KNOWN_GLASS_EXTENT - KNOWN_EDGE_PADDING - final[1]
+    integer_origin = math.floor(carrier) - 1
+    expected_values = (
+        (0.0, 0.0, 0.0, 0.0),
+        (
+            carrier,
+            KNOWN_CANVAS_EXTENT - carrier - KNOWN_GLASS_EXTENT,
+            KNOWN_GLASS_EXTENT,
+            KNOWN_GLASS_EXTENT,
+        ),
+        (
+            carrier,
+            KNOWN_CANVAS_EXTENT - carrier - KNOWN_GLASS_EXTENT - KNOWN_EDGE_PADDING,
+            KNOWN_GLASS_EXTENT,
+            KNOWN_GLASS_EXTENT + KNOWN_EDGE_PADDING,
+        ),
+        (
+            float(integer_origin),
+            KNOWN_CANVAS_EXTENT - carrier - KNOWN_GLASS_EXTENT - KNOWN_EDGE_PADDING,
+            carrier + KNOWN_GLASS_EXTENT - integer_origin,
+            carrier + KNOWN_GLASS_EXTENT + KNOWN_EDGE_PADDING - integer_origin,
+        ),
+    )
+    if not all(math.isfinite(value) for values in expected_values for value in values):
+        raise ValueError("known aggregate transfer is non-finite")
+    expected = [struct.pack("<4d", *values) for values in expected_values]
+    if expected[-1] != marker:
+        raise ValueError("known final aggregate transfer differs")
+    indices = []
+    cursor = 0
+    for payload in expected:
+        try:
+            index = states.index(payload, cursor)
+        except ValueError as error:
+            raise ValueError("known aggregate state transfer differs") from error
+        indices.append(index)
+        cursor = index + 1
+    return {
+        "carrierP": carrier,
+        "integerOriginL": integer_origin,
+        "stateIndices": indices,
+        "stateHex": [payload.hex() for payload in expected],
+    }
+
+
 def _selection(
     trace: Mapping[str, Any],
     base_trace: Mapping[str, Any],
@@ -809,7 +1232,7 @@ def _selection(
     *,
     prepare_start: int,
     prepare_module: Mapping[str, Any],
-) -> tuple[list[int], list[int], int, int]:
+) -> tuple[list[int], list[int], int, int, dict[str, Any]]:
     selected = mapping(trace.get("selectedFrame"), "active watch selected frame")
     base_selected = mapping(base_trace.get("selectedFrame"), "base selected frame")
     callback = _require_callback(
@@ -955,6 +1378,7 @@ def _selection(
         states.append(after)
         previous = after
     distinct = len(set(states))
+    known_transfer = _known_state_transfer(states, marker_aggregate)
     newly_opened = sorted(
         set(changed_offsets).difference(KNOWN_SAMPLED_WRITER_AFTER_OFFSETS)
     )
@@ -968,20 +1392,15 @@ def _selection(
         or groups[group_index].get("retirementReason") != "selected-marker-closed"
     ):
         raise ValueError("active watch selected causal chain differs")
-    return selected_indices, newly_opened, changed, distinct
+    return selected_indices, newly_opened, changed, distinct, known_transfer
 
 
 def validate(trace_path: Path, frame_trace_path: Path) -> dict[str, Any]:
-    frame_validation = frame_validator.validate(frame_trace_path)
-    if (
-        frame_validation.get("conclusion") != "success"
-        or frame_validation.get("prospectiveGatePassed") is not True
-    ):
-        raise ValueError("inherited frame writer validation differs")
     trace_bytes = trace_path.read_bytes()
     frame_trace_bytes = frame_trace_path.read_bytes()
     trace = mapping(json.loads(trace_bytes), "active watch trace")
     base_trace = mapping(json.loads(frame_trace_bytes), "frame writer trace")
+    frame_context = _inherited_frame_context(base_trace)
     if (
         trace.get("prepareLayerActiveFrameWatchTraceSchemaVersion")
         != EXPECTED_TRACE_SCHEMA_VERSION
@@ -1003,10 +1422,13 @@ def validate(trace_path: Path, frame_trace_path: Path) -> dict[str, Any]:
         prepare_module=prepare_module,
     )
     selected_source = integer(
-        mapping(base_trace.get("objectChain"), "base object chain")
-        .get("addresses", {})
-        .get("source"),
-        "base selected source",
+        frame_context.get("selectedSource"), "base selected source"
+    )
+    breakpoint_retirement_callback = _breakpoint_isolation_gate(
+        trace,
+        base_trace,
+        order,
+        selected_source=selected_source,
     )
     epochs, groups = _epochs_and_groups(
         trace,
@@ -1015,6 +1437,12 @@ def validate(trace_path: Path, frame_trace_path: Path) -> dict[str, Any]:
         prepare_module=prepare_module,
         selected_source=selected_source,
     )
+    if any(
+        integer(epoch.get("callbackSequence"), "epoch callback")
+        <= breakpoint_retirement_callback
+        for epoch in epochs
+    ):
+        raise ValueError("active watch epoch precedes breakpoint isolation")
     if trace.get("epochMarkerHitCount") != len(epochs) + trace.get(
         "sourceUnknownEpochCount"
     ) + trace.get("rejectedEpochDepthCount") or trace.get(
@@ -1043,7 +1471,7 @@ def validate(trace_path: Path, frame_trace_path: Path) -> dict[str, Any]:
     events = _events(trace, order, groups, epochs)
     if trace.get("rawWatchpointHitCount") != len(events):
         raise ValueError("active watch raw and qualified accounting differs")
-    selected_indices, newly_opened, changed, distinct = _selection(
+    selected_indices, newly_opened, changed, distinct, known_transfer = _selection(
         trace,
         base_trace,
         order,
@@ -1080,12 +1508,21 @@ def validate(trace_path: Path, frame_trace_path: Path) -> dict[str, Any]:
             "selectedDistinctAggregateCount": distinct,
             "selectedChangedWriterOffsets": changed_offsets,
             "newlyOpenedChangedWriterOffsets": newly_opened,
+            "knownStateTransfer": known_transfer,
+            "inheritedSelectedSampleEventCount": frame_context[
+                "selectedSampleEventCount"
+            ],
+            "inheritedSampledSuffixClosedAtMarker": frame_context[
+                "sampledSuffixClosedAtMarker"
+            ],
         },
         "sealedConclusion": {
-            "inheritedSameFrameClosurePassed": True,
+            "inheritedStaticSourceMarkerContextPassed": True,
+            "sampledWriterBreakpointsRetiredBeforeHardwareWatch": True,
             "fourLaneAggregateCoverageInstalled": True,
             "watchLifetimeBoundToLiveFrame": True,
             "selectedHardwareChainContiguous": True,
+            "knownAggregateStateTransferPassed": True,
             "completeCausalWriterPCSequenceCaptured": True,
             "previouslyUnsampledChangedWriterOpened": True,
             "writerInstructionSemanticsOpened": False,

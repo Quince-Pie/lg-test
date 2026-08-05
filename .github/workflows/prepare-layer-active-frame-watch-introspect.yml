@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: prepare-layer-active-frame-watch-v2-${{ github.ref }}
+  group: prepare-layer-active-frame-watch-v3-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -133,18 +133,6 @@ jobs:
             --output \
               transition-introspection/input-clamp-arithmetic-probe.json
 
-      - name: Validate inherited sampled frame closure
-        id: inherited_frame_writer
-        if: >-
-          steps.build.outcome == 'success' &&
-          steps.capture.outcome == 'success'
-        continue-on-error: true
-        run: |
-          python3 Analysis/validate_prepare_layer_frame_correlated_writer_trace.py \
-            transition-introspection/prepare-layer-frame-writer-trace.json \
-            --output \
-              transition-introspection/prepare-layer-frame-writer-trace-validation.json
-
       - name: Validate complete active-frame hardware chain
         id: active_frame_watch
         if: >-
@@ -175,7 +163,6 @@ jobs:
           test "${{ steps.capture.outcome }}" = success
           test "${{ steps.allocation_path_isolation.outcome }}" = success
           test "${{ steps.input_clamp_probe.outcome }}" = success
-          test "${{ steps.inherited_frame_writer.outcome }}" = success
           test "${{ steps.active_frame_watch.outcome }}" = success
           test -s transition-introspection/transition-timeline.json
           test -s transition-introspection/prepare-layer-frame-writer-trace.json
@@ -223,10 +210,12 @@ jobs:
           if (
               validation.get("conclusion") != "success"
               or validation.get("prospectiveGatePassed") is not True
-              or sealed.get("inheritedSameFrameClosurePassed") is not True
+              or sealed.get("inheritedStaticSourceMarkerContextPassed") is not True
+              or sealed.get("sampledWriterBreakpointsRetiredBeforeHardwareWatch") is not True
               or sealed.get("fourLaneAggregateCoverageInstalled") is not True
               or sealed.get("watchLifetimeBoundToLiveFrame") is not True
               or sealed.get("selectedHardwareChainContiguous") is not True
+              or sealed.get("knownAggregateStateTransferPassed") is not True
               or sealed.get("completeCausalWriterPCSequenceCaptured") is not True
               or sealed.get("previouslyUnsampledChangedWriterOpened") is not True
               or sealed.get("writerInstructionSemanticsOpened") is not False

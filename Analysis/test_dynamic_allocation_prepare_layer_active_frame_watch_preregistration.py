@@ -48,6 +48,10 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertTrue(
             acceptance["everyInheritedCallbackMustBeExportedByLoadedModule"]
         )
+        self.assertTrue(acceptance["allNonEpochSampledWriterBreakpointsMustBeRetired"])
+        self.assertEqual(acceptance["sampledBreakpointRetirementCallbackSequence"], 2)
+        self.assertFalse(acceptance["retiredBreakpointEnabledStateRequired"])
+        self.assertTrue(acceptance["retainedControlBreakpointEnabledStateRequired"])
 
     def test_early_identity_excludes_future_x28(self) -> None:
         acceptance = self.document["acceptance"]
@@ -72,6 +76,11 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertEqual(acceptance["minimumSelectedDistinctAggregateCount"], 4)
         self.assertTrue(acceptance["newChangedWriterOutsideSampledSitesRequired"])
         self.assertTrue(acceptance["lastAggregateMustBitMatchBothMarkers"])
+        self.assertTrue(
+            acceptance["knownAggregateStateTransferBitExactAndOrderedRequired"]
+        )
+        self.assertTrue(acceptance["currentInheritedStaticSourceMarkerContextMustPass"])
+        self.assertFalse(acceptance["currentInheritedSampledSuffixGateRequired"])
         self.assertFalse(acceptance["writerInstructionSemanticsMayBeClaimed"])
         self.assertFalse(acceptance["productionShaderMayChange"])
 
@@ -157,13 +166,38 @@ class ActiveFrameWatchPreregistrationTests(unittest.TestCase):
         self.assertEqual(unwind["rejectedEpochDepthCount"], 13)
         self.assertFalse(unwind["hardwareWatchpointInstalled"])
         self.assertFalse(unwind["causalWriterOutcomeObserved"])
+        collision = self.document["sampledBreakpointHardwareWatchCollisionCorrection"]
+        self.assertEqual(collision["runID"], 31029790210)
+        self.assertTrue(collision["captureTargetExitedNormally"])
+        self.assertEqual(collision["acceptedEpochRecordCount"], 3)
+        self.assertEqual(collision["selectedWriterEventCount"], 7)
+        self.assertEqual(collision["selectedDistinctAggregateCount"], 6)
+        self.assertTrue(
+            collision["inheritedSelectedSuffixEndsAtRequiredPaddedIntermediate"]
+        )
+        self.assertFalse(collision["inheritedSelectedSuffixClosesAtFinalMarker"])
+        self.assertTrue(collision["requiredPaddedIntermediateMissingFromActiveStates"])
+        self.assertEqual(
+            collision["knownSampledWriterOffsetMissingFromActiveEvents"], -89720
+        )
+        self.assertFalse(collision["knownAggregateStateTransferGatePassed"])
+        self.assertFalse(collision["completeCausalWriterListProved"])
+        self.assertFalse(collision["scientificOutcomeChanged"])
         contract = self.document["traceContract"]
-        self.assertEqual(contract["rawTraceSchemaVersion"], 2)
-        self.assertEqual(contract["sealedValidatorSchemaVersion"], 2)
+        self.assertEqual(contract["rawTraceSchemaVersion"], 3)
+        self.assertEqual(contract["sealedValidatorSchemaVersion"], 3)
         self.assertEqual(contract["identityFrameRegisterNames"], ["x19", "x29", "pc"])
         self.assertEqual(
             contract["selectionFrameRegisterNames"],
             ["x19", "x28", "x29", "pc"],
+        )
+        self.assertEqual(
+            contract["retainedControlBreakpointNames"],
+            [
+                "zeroInitializationAfter",
+                "sourceLaterHandle",
+                "recursivePrepareReturn",
+            ],
         )
         self.assertIsNone(self.document["runtimeOutcomeFrozenBeforeRun"])
         forbidden = "\n".join(self.document["notAuthorizedBeforeAcceptance"])

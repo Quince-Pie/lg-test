@@ -24,7 +24,7 @@ import capture_prepare_layer_frame_correlated_writer_trace_lldb as frame_base  #
 
 capture_base = frame_base.capture_base
 
-TRACE_SCHEMA_VERSION = 2
+TRACE_SCHEMA_VERSION = 3
 PREPARE_LAYER_FULL_CODE_SHA256 = (
     "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c"
 )
@@ -49,8 +49,21 @@ MAXIMUM_QUALIFIED_WATCHPOINT_EVENT_COUNT = 512
 MAXIMUM_IGNORED_WATCHPOINT_DIAGNOSTIC_COUNT = 64
 MAXIMUM_REJECTED_MARKER_DIAGNOSTIC_COUNT = 64
 MINIMUM_SELECTED_CHANGED_TRANSITION_COUNT = 3
+KNOWN_CANVAS_EXTENT = 1024.0
+KNOWN_GLASS_EXTENT = 640.0
+KNOWN_EDGE_PADDING = 8.0
 IDENTITY_FRAME_REGISTER_NAMES = ("x19", "x29", "pc")
 SELECTION_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "pc")
+RETIRED_INHERITED_WRITER_SITE_NAMES = tuple(
+    site["name"]
+    for site in frame_base.WRITER_SITES
+    if site["name"] != EPOCH_MARKER_NAME
+)
+RETAINED_CONTROL_BREAKPOINT_NAMES = (
+    EPOCH_MARKER_NAME,
+    SELECTION_MARKER_NAME,
+    RETURN_MARKER_NAME,
+)
 TRACE_OUTPUT_ENVIRONMENT = "LG_PREPARE_LAYER_ACTIVE_FRAME_WATCH_TRACE_OUTPUT"
 DEFAULT_TRACE_OUTPUT = (
     "transition-introspection/prepare-layer-active-frame-watch-trace.json"
@@ -79,6 +92,7 @@ def _fresh_state():
         "ignoredWatchpointHitCount": 0,
         "unretainedIgnoredWatchpointHitCount": 0,
         "unretainedRejectedMarkerDiagnosticCount": 0,
+        "inheritedWriterBreakpointsRetired": False,
         "ignoredWatchpointGroups": {},
         "activeGroup": None,
         "watchSpecByID": {},
@@ -148,9 +162,16 @@ def _new_trace():
             "minimumSelectedChangedTransitionCount": (
                 MINIMUM_SELECTED_CHANGED_TRANSITION_COUNT
             ),
+            "knownCanvasExtent": KNOWN_CANVAS_EXTENT,
+            "knownGlassExtent": KNOWN_GLASS_EXTENT,
+            "knownEdgePadding": KNOWN_EDGE_PADDING,
             "identityFrameRegisterNames": list(IDENTITY_FRAME_REGISTER_NAMES),
             "selectionFrameRegisterNames": list(SELECTION_FRAME_REGISTER_NAMES),
             "structuralFramePointerSource": "SBFrame.GetFP",
+            "retiredInheritedWriterSiteNames": list(
+                RETIRED_INHERITED_WRITER_SITE_NAMES
+            ),
+            "retainedControlBreakpointNames": list(RETAINED_CONTROL_BREAKPOINT_NAMES),
             "knownSampledWriterAfterOffsets": sorted(
                 site["relativeToPrepareLayer"] for site in frame_base.WRITER_SITES
             ),
@@ -199,6 +220,20 @@ def _new_trace():
                 "bind every inherited entry and dynamically created breakpoint "
                 "through a callback exported by this command-script module"
             ),
+            "breakpointIsolationRule": (
+                "immediately after independent source selection, disable every "
+                "inherited sampled writer breakpoint except the shared +0xb60 "
+                "zero epoch before any hardware watch is armed; retain only the "
+                "shared zero epoch, selection marker, and return marker while "
+                "hardware watches are live"
+            ),
+            "knownStateTransferRule": (
+                "the selected full-aggregate state sequence must contain, "
+                "bit-for-bit and in order, zero; [P,1024-P-640,640,640]; "
+                "[P,1024-P-640-8,640,648]; and "
+                "[floor(P)-1,1024-P-640-8,P+640-(floor(P)-1),"
+                "P+648-(floor(P)-1)], with P recovered from the final second lane"
+            ),
         },
         "callbackOrder": [],
         "prepareLayer": {},
@@ -208,6 +243,7 @@ def _new_trace():
         "qualifiedWatchpointEvents": [],
         "ignoredWatchpointDiagnostics": [],
         "rejectedMarkerDiagnostics": [],
+        "inheritedWriterBreakpointRetirement": {},
         "codeWindows": [],
         "selectedFrame": {},
         "selectedWriterEventIndices": [],
@@ -532,9 +568,74 @@ def forwarded_capture_backdrop_entry(frame, breakpoint_location, internal_dict):
     return False
 
 
+def _retire_inherited_writer_breakpoints_for_hardware_watch(frame):
+    if _state["inheritedWriterBreakpointsRetired"]:
+        return
+    source = _selected_source()
+    if source is None:
+        return
+    if _state["prepareLayer"] is None or _state["callbackSequence"] != 1:
+        raise RuntimeError(
+            "inherited writer retirement did not immediately follow active setup"
+        )
+    breakpoints = frame_base._state["writerBreakpoints"]
+    if set(breakpoints) != {site["name"] for site in frame_base.WRITER_SITES}:
+        raise RuntimeError("inherited writer breakpoint inventory differs")
+    retired = []
+    for name in RETIRED_INHERITED_WRITER_SITE_NAMES:
+        breakpoint = breakpoints[name]
+        if breakpoint is None or not breakpoint.IsValid():
+            raise RuntimeError(name + " inherited writer breakpoint is invalid")
+        breakpoint.SetEnabled(False)
+        if breakpoint.IsEnabled():
+            raise RuntimeError(name + " inherited writer breakpoint remained enabled")
+        retired.append(
+            {
+                "name": name,
+                "breakpointID": breakpoint.GetID(),
+                "enabledAfterRetirement": breakpoint.IsEnabled(),
+            }
+        )
+    controls = (
+        (EPOCH_MARKER_NAME, breakpoints[EPOCH_MARKER_NAME]),
+        (SELECTION_MARKER_NAME, _state["selectionBreakpoint"]),
+        (RETURN_MARKER_NAME, _state["returnBreakpoint"]),
+    )
+    retained = []
+    for name, breakpoint in controls:
+        if breakpoint is None or not breakpoint.IsValid() or not breakpoint.IsEnabled():
+            raise RuntimeError(name + " control breakpoint was not retained")
+        retained.append(
+            {
+                "name": name,
+                "breakpointID": breakpoint.GetID(),
+                "enabledAfterRetirement": breakpoint.IsEnabled(),
+            }
+        )
+    ids = [item["breakpointID"] for item in retired + retained]
+    if any(value <= 0 for value in ids) or len(ids) != len(set(ids)):
+        raise RuntimeError("isolated breakpoint identities differ")
+    sequence = _next_sequence("inherited-writer-breakpoints-retired")
+    _state["trace"]["inheritedWriterBreakpointRetirement"] = {
+        "callbackSequence": sequence,
+        "threadID": frame.GetThread().GetThreadID(),
+        "pc": frame.GetPC(),
+        "selectedSource": source,
+        "retired": retired,
+        "retainedControlBreakpoints": retained,
+    }
+    _state["inheritedWriterBreakpointsRetired"] = True
+    _state["trace"]["status"] = "sampled-writer-breakpoints-retired"
+    _write_trace()
+
+
 def forwarded_capture_backdrop_late(frame, breakpoint_location, internal_dict):
     """Forward the dynamically created independent source selector."""
     frame_base.capture_backdrop_late(frame, breakpoint_location, internal_dict)
+    try:
+        _retire_inherited_writer_breakpoints_for_hardware_watch(frame)
+    except Exception as error:
+        _failure("inherited-writer-breakpoint-retirement", error)
     return False
 
 
@@ -1053,6 +1154,9 @@ def finalize():
     trace["finalRejectedMarkerDiagnosticCount"] = len(
         trace["rejectedMarkerDiagnostics"]
     )
+    trace["inheritedWriterBreakpointsRetired"] = _state[
+        "inheritedWriterBreakpointsRetired"
+    ]
     trace["finalQualifiedWatchpointEventCount"] = len(
         trace["qualifiedWatchpointEvents"]
     )
