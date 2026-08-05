@@ -6340,3 +6340,29 @@ text is no longer confused with an unresolved scalar. All selection, memory,
 join, matrix, Apple-program, validator, and shader bytes remain unchanged.
 This correction still cannot authorize a crop law, production change, or
 parity claim by itself.
+
+Run `31053754016`, from error-checked retry commit `75c8fb8`, proves that the
+numeric path is also unavailable. All eight jobs again pass contracts and
+build, reach the selected Apple marker, exit zero, and upload artifacts, but
+all eight enforcement gates fail before any crop record. The opened
+512-offset artifact `8949498724` has GitHub digest
+`sha256:021f9f7173a657c10e00b8d600014b7615d93734f110b7c2f6a3bf6f75b8bc67`.
+Its trace has SHA-256
+`8c1ffd3aad1fc340fbcee4cd9b70f6b481581ccc556e4e62a9223b7de3a63985`
+and reports `register x30 has neither exact SBData nor an error-checked scalar
+value`. Thus canonical `x30`, the `lr` alias, formatted text, and the explicit
+`SBError` numeric API all fail at this selected stop. No architectural `x30`
+value was observed and no crop-policy conclusion follows.
+
+The available-register amendment is prospectively frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_transfer_available_register_preregistration.json`.
+Static validation proves that `x30` participates in no structural selector,
+crop decoder, memory address, ordinal join, or acceptance predicate; it was
+only an overbroad inventory member. The amended capture therefore retains
+exact `SBData` for `x0` through `x29`, `sp`, `pc`, and `cpsr` at the marker,
+and `x19`, `x28`, `x29`, `sp`, and `pc` for every prepare frame. It contains no
+synthetic register fallback. Every crop-bearing role, source, stack, pointer,
+ancestor-role, backtrace, callback, and public timeline byte remains required,
+and selection and the 256-state matrix are unchanged. This amendment permits
+discovery evidence only; it does not authorize a public crop law, shader
+change, or parity claim.

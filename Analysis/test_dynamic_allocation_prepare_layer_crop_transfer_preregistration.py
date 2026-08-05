@@ -29,6 +29,13 @@ ERROR_CHECKED_RETRY_REGISTRATION_PATH = (
 ERROR_CHECKED_RETRY_REGISTRATION = json.loads(
     ERROR_CHECKED_RETRY_REGISTRATION_PATH.read_text(encoding="utf-8")
 )
+AVAILABLE_REGISTER_REGISTRATION_PATH = (
+    ANALYSIS_ROOT
+    / "dynamic_allocation_prepare_layer_crop_transfer_available_register_preregistration.json"
+)
+AVAILABLE_REGISTER_REGISTRATION = json.loads(
+    AVAILABLE_REGISTER_REGISTRATION_PATH.read_text(encoding="utf-8")
+)
 
 
 def sha256(path):
@@ -102,13 +109,13 @@ class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
 
     def test_frozen_implementation_hashes_match(self):
         frozen = REGISTRATION["frozenImplementation"]
-        retry = ERROR_CHECKED_RETRY_REGISTRATION["frozenRetryImplementation"]
+        retry = AVAILABLE_REGISTER_REGISTRATION["frozenImplementation"]
         pairs = (
-            (frozen["validator"], frozen["validatorSHA256"]),
-            (frozen["validatorTest"], frozen["validatorTestSHA256"]),
             (frozen["workflow"], frozen["workflowSHA256"]),
             (retry["captureHarness"], retry["captureHarnessSHA256"]),
             (retry["captureHarnessTest"], retry["captureHarnessTestSHA256"]),
+            (retry["validator"], retry["validatorSHA256"]),
+            (retry["validatorTest"], retry["validatorTestSHA256"]),
         )
         for relative, expected in pairs:
             self.assertEqual(sha256(REPOSITORY_ROOT / relative), expected)
@@ -165,6 +172,87 @@ class PrepareLayerCropTransferPreregistrationTests(unittest.TestCase):
         self.assertFalse(acceptance["generalCropPolicyMayBeClaimedByRetryAlone"])
         self.assertFalse(acceptance["productionShaderMayChange"])
         self.assertIsNone(retry["retryRuntimeOutcomeFrozenBeforeDispatch"])
+
+    def test_available_register_amendment_removes_only_unused_x30(self):
+        registration = AVAILABLE_REGISTER_REGISTRATION
+        antecedent = registration["antecedentRetryPreregistration"]
+        failed = registration["failedAttempt"]
+        amendment = registration["amendment"]
+        acceptance = registration["acceptance"]
+        self.assertEqual(
+            registration[
+                "prepareLayerCropTransferAvailableRegisterPreregistrationSchemaVersion"
+            ],
+            1,
+        )
+        self.assertEqual(
+            sha256(ERROR_CHECKED_RETRY_REGISTRATION_PATH), antecedent["sha256"]
+        )
+        previous = ERROR_CHECKED_RETRY_REGISTRATION["frozenRetryImplementation"]
+        self.assertEqual(
+            antecedent["captureHarnessSHA256"], previous["captureHarnessSHA256"]
+        )
+        self.assertEqual(
+            antecedent["captureHarnessTestSHA256"],
+            previous["captureHarnessTestSHA256"],
+        )
+        self.assertEqual(antecedent["validatorSHA256"], previous["validatorSHA256"])
+        self.assertEqual(failed["runID"], 31053754016)
+        self.assertEqual(
+            failed["headSHA"], "75c8fb8dd693ecc4a07f9d1f56dded6aaf95bb14"
+        )
+        self.assertEqual(failed["failedJobCount"], 8)
+        self.assertEqual(len(failed["artifactInventory"]), 8)
+        self.assertEqual(
+            len({record["artifactID"] for record in failed["artifactInventory"]}),
+            8,
+        )
+        self.assertTrue(
+            all(
+                record["digest"].startswith("sha256:")
+                and is_sha256(record["digest"].removeprefix("sha256:"))
+                for record in failed["artifactInventory"]
+            )
+        )
+        self.assertEqual(failed["openedFailureFixture"]["qualifiedRecordCount"], 0)
+        self.assertFalse(
+            failed["openedFailureFixture"]["privateCropOutcomeObserved"]
+        )
+        self.assertEqual(amendment["removedUnavailableField"], "x30")
+        self.assertEqual(
+            amendment["markerRegisterNames"],
+            ["x%d" % index for index in range(30)] + ["sp", "pc", "cpsr"],
+        )
+        self.assertEqual(
+            amendment["prepareFrameRegisterNames"],
+            ["x19", "x28", "x29", "sp", "pc"],
+        )
+        self.assertNotIn("x30", amendment["markerRegisterNames"])
+        self.assertNotIn("x30", amendment["prepareFrameRegisterNames"])
+        for predicate in (
+            "x30UsedByStructuralSelection",
+            "x30UsedByCropDecoding",
+            "x30UsedByMemoryAddressing",
+            "x30UsedByOrdinalJoin",
+            "x30UsedByAnyAcceptancePredicate",
+        ):
+            self.assertFalse(amendment[predicate])
+        self.assertTrue(amendment["allRetainedRegistersRequireExactSBData"])
+        self.assertFalse(amendment["syntheticRegisterFallbackRetained"])
+        self.assertFalse(amendment["selectionChanged"])
+        self.assertFalse(amendment["cropBytesReadDuringSelection"])
+        self.assertFalse(amendment["ordinalJoinChanged"])
+        self.assertFalse(amendment["appleCaptureProgramChanged"])
+        self.assertTrue(
+            acceptance[
+                "allOriginalProspectiveRequirementsExceptUnavailableUnusedX30RemainRequired"
+            ]
+        )
+        self.assertTrue(acceptance["exactSBDataRequiredForEveryRetainedRegister"])
+        self.assertTrue(acceptance["allCropBearingMemoryRangesRemainRequired"])
+        self.assertFalse(acceptance["generalCropPolicyMayBeClaimedByThisRunAlone"])
+        self.assertFalse(acceptance["productionShaderMayChange"])
+        self.assertIsNone(registration["runtimeOutcomeFrozenBeforeDispatch"])
 
     def test_error_checked_retry_is_chained_to_the_second_failed_attempt(self):
         retry = ERROR_CHECKED_RETRY_REGISTRATION

@@ -104,7 +104,6 @@ def valid_inputs():
                 "x19": frame_role_address,
                 "x28": source_address if index == 0 else source_address + index,
                 "x29": values["x29"] + index * 0x1000,
-                "x30": marker + 4,
                 "sp": stack_address + index * 0x1000,
                 "pc": marker if index == 0 else start + 0x2A68,
             }

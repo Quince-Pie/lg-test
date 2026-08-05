@@ -43,7 +43,7 @@ STACK_STATE_BYTE_COUNT = 0x800
 POINTER_STATE_BYTE_COUNT = 0x200
 MINIMUM_POINTER_ADDRESS = 0x1_0000_0000
 MAXIMUM_POINTER_ADDRESS = 0x0000_FFFF_FFFF_FFFF
-GENERAL_REGISTER_NAMES = tuple("x%d" % index for index in range(31)) + (
+GENERAL_REGISTER_NAMES = tuple("x%d" % index for index in range(30)) + (
     "sp",
     "pc",
     "cpsr",
@@ -61,7 +61,7 @@ POINTER_REGISTER_NAMES = (
     "x27",
     "x28",
 )
-PREPARE_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "x30", "sp", "pc")
+PREPARE_FRAME_REGISTER_NAMES = ("x19", "x28", "x29", "sp", "pc")
 DIRECT_TIMELINE_CALLER_FRAGMENT = "transitionBackgroundUniformEvidence("
 REQUIRED_CALLER_FRAGMENTS = (
     "carendererUniformEvidence(",

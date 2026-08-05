@@ -25,19 +25,6 @@ def load_with_stub_lldb():
     previous_lldb = sys.modules.get("lldb")
     previous_base = sys.modules.pop(BASE_MODULE_NAME, None)
     stub = types.ModuleType("lldb")
-
-    class SBError:
-        def __init__(self):
-            self.success = True
-            self.message = None
-
-        def Success(self):
-            return self.success
-
-        def GetCString(self):
-            return self.message
-
-    stub.SBError = SBError
     stub.LLDB_INVALID_ADDRESS = (1 << 64) - 1
     stub.eStateExited = 10
     stub.eStateDetached = 9
@@ -119,144 +106,28 @@ class PrepareLayerCropTransferSourceTests(unittest.TestCase):
         self.assertNotIn("_register", source)
         self.assertNotIn("ReadMemory", source)
 
-    def test_x30_uses_error_checked_scalar_bytes_when_text_is_unavailable(self):
-        class Value:
-            def IsValid(self):
-                return True
-
-            def GetByteSize(self):
-                return 8
-
-            def GetValue(self):
-                return None
-
-            def GetValueAsUnsigned(self, error, _failure):
-                error.success = True
-                return 0x1122334455667788
-
-        class Frame:
-            def FindRegister(self, name):
-                return Value() if name == "x30" else InvalidValue()
-
-        class InvalidValue:
-            def IsValid(self):
-                return False
-
-        original = self.module.capture_base._register_record
-        self.module.capture_base._register_record = lambda _frame, name: (
-            (_ for _ in ()).throw(
-                RuntimeError("register %s data is unavailable" % name)
-            )
+    def test_unavailable_x30_is_excluded_without_removing_crop_inputs(self):
+        expected_general = tuple("x%d" % index for index in range(30)) + (
+            "sp",
+            "pc",
+            "cpsr",
         )
-        try:
-            record = self.module._register_record(Frame(), "x30")
-        finally:
-            self.module.capture_base._register_record = original
-        self.assertEqual(record["name"], "x30")
-        self.assertEqual(record["sourceRegisterName"], "x30")
-        self.assertEqual(record["byteCount"], 8)
-        self.assertEqual(record["hex"], "8877665544332211")
-        self.assertEqual(record["unsignedValue"], 0x1122334455667788)
-        self.assertIsNone(record["valueString"])
-        self.assertFalse(record["valueStringCorroborated"])
-        self.assertTrue(record["scalarErrorSuccess"])
-        self.assertIn("sbdata-unavailable", record["acquisition"])
-
-    def test_x30_error_checked_scalar_rejects_failure_or_text_disagreement(self):
-        class Value:
-            def __init__(self, fail, text):
-                self.fail = fail
-                self.text = text
-
-            def IsValid(self):
-                return True
-
-            def GetByteSize(self):
-                return 8
-
-            def GetValue(self):
-                return self.text
-
-            def GetValueAsUnsigned(self, error, failure):
-                if self.fail:
-                    error.success = False
-                    error.message = "could not resolve value"
-                    return failure
-                error.success = True
-                return 0x1122334455667788
-
-        class Frame:
-            def __init__(self, value):
-                self.value = value
-
-            def FindRegister(self, _name):
-                return self.value
-
-        original = self.module.capture_base._register_record
-        self.module.capture_base._register_record = lambda _frame, name: (
-            (_ for _ in ()).throw(
-                RuntimeError("register %s data is unavailable" % name)
-            )
-        )
-        try:
-            for value in (
-                Value(True, None),
-                Value(False, "0x1122334455667789"),
-            ):
-                with self.subTest(fail=value.fail, text=value.text):
-                    with self.assertRaisesRegex(
-                        RuntimeError, "neither exact SBData nor an error-checked"
-                    ):
-                        self.module._register_record(Frame(value), "x30")
-        finally:
-            self.module.capture_base._register_record = original
-
-    def test_x30_prefers_exact_lr_alias_sbdata(self):
-        class Value:
-            def __init__(self, valid):
-                self.valid = valid
-
-            def IsValid(self):
-                return self.valid
-
-        class Frame:
-            def FindRegister(self, name):
-                return Value(name in {"x30", "lr"})
-
-        original = self.module.capture_base._register_record
-
-        def record(_frame, name):
-            if name == "x30":
-                raise RuntimeError("register x30 data is unavailable")
-            return {
-                "name": "lr",
-                "byteCount": 8,
-                "hex": "0807060504030201",
-                "valueString": "0x0102030405060708",
-                "unsignedValue": 0x0102030405060708,
-            }
-
-        self.module.capture_base._register_record = record
-        try:
-            observed = self.module._register_record(Frame(), "x30")
-        finally:
-            self.module.capture_base._register_record = original
-        self.assertEqual(observed["name"], "x30")
-        self.assertEqual(observed["sourceRegisterName"], "lr")
-        self.assertEqual(observed["hex"], "0807060504030201")
-
-    def test_scalar_fallback_is_restricted_to_x30_and_checks_explicit_error(self):
-        source = inspect.getsource(self.module._register_record)
         self.assertEqual(
-            self.module.SCALAR_VALUE_FALLBACK_REGISTER_NAMES,
-            frozenset(("x30",)),
+            self.module.GENERAL_REGISTER_NAMES,
+            expected_general,
         )
-        self.assertEqual(self.module.REGISTER_ALIASES, {"x30": ("lr",)})
-        self.assertIn("lldb.SBError()", source)
-        self.assertIn("GetValueAsUnsigned(error, 0)", source)
-        self.assertIn("error.Success()", source)
-        self.assertIn("int(value_string, 0)", source)
-        self.assertIn("unsigned != (parsed & mask)", source)
+        self.assertEqual(
+            self.module.PREPARE_FRAME_REGISTER_NAMES,
+            ("x19", "x28", "x29", "sp", "pc"),
+        )
+        self.assertNotIn("x30", self.module.GENERAL_REGISTER_NAMES)
+        self.assertNotIn("x30", self.module.PREPARE_FRAME_REGISTER_NAMES)
+        self.assertTrue(
+            {"x19", "x28", "x29", "sp", "pc"}.issubset(
+                self.module.GENERAL_REGISTER_NAMES
+            )
+        )
+        self.assertFalse(hasattr(self.module, "_register_record"))
 
     def test_hardware_watchpoints_and_instruction_stepping_are_absent(self):
         source = MODULE_PATH.read_text(encoding="utf-8")
