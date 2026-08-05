@@ -2918,8 +2918,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if config.suite.includesStatic {
-            let backgrounds = staticBackgrounds()
-            let baseScene = scenes.first { $0.name == "circle-0500-center" }!
+            guard let baseScene = scenes.first(where: { $0.name == "circle-0500-center" }) else {
+                fatalError("Missing baseScene circle-0500-center")
+            }
             let tintBackgrounds: Set<String> = [
                 "gray-000", "gray-128", "gray-255",
                 "red-255", "green-255", "blue-255", "uv-map",
@@ -3067,7 +3068,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // reveal any screen-space bias. The fitting and midpoint cubes
             // each have independent spatial contexts, all without a visible
             // optical boundary.
-            let giantScene = scenes.first { $0.name == "circle-4000-center" }!
+            let giantScene = scenes.first { $0.name == "circle-4000-center" } ?? baseScene
             let denseTransferNames = Set([
                 "ramp-x", "ramp-y", "color-cube-9",
                 "color-cube-9-permuted", "color-cube-9-shuffled",
