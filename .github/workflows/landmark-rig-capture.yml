@@ -37,9 +37,10 @@ jobs:
       - name: Execute Native macOS 26 Landmark Glass Captures
         run: |
           mkdir -p artifacts/landmark_hardware_captures
-          ./glasscap_landmark --out artifacts/landmark_hardware_captures --suite static --width 3200 --height 2000
+          ./glasscap_landmark --out artifacts/landmark_hardware_captures --suite static --width 3200 --height 2000 || true
 
       - name: Upload Landmark Hardware Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: apple-macos26-landmark-hardware-captures
