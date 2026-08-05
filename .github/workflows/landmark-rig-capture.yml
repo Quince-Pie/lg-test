@@ -1,0 +1,45 @@
+name: Apple Landmark Photos Liquid Glass Rig Capture
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  capture-landmark-rig:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Runner Info
+        run: |
+          sw_vers
+          uname -m
+          xcodebuild -version
+
+      - name: Accessibility Settings
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Build GlassCapture Landmark Rig
+        run: |
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            Sources/GlassCapture/main.swift \
+            -o glasscap_landmark
+
+      - name: Execute Native macOS 26 Landmark Glass Captures
+        run: |
+          mkdir -p artifacts/landmark_hardware_captures
+          ./glasscap_landmark --out artifacts/landmark_hardware_captures --suite static --width 3200 --height 2000
+
+      - name: Upload Landmark Hardware Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: apple-macos26-landmark-hardware-captures
+          path: artifacts/landmark_hardware_captures/

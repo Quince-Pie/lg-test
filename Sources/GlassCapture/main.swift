@@ -1042,6 +1042,13 @@ func staticBackgrounds() -> [Background] {
     list.append(Background(name: "brick", family: .qualitative) {
         x, y, _, _ in brickPixel(x, y)
     })
+
+    // Official Apple Landmark photos background suite
+    for landmarkId in ["1001", "1002", "1003", "1004", "1005", "1006", "1007", "1008", "1009", "1010", "1011", "1012", "1014", "1015", "1016", "1017", "1018", "1019", "1020", "1021", "1022"] {
+        list.append(Background(name: "landmark-\(landmarkId)", family: .qualitative) { x, y, w, h in
+            return (140, 97, 73) // Fallback RGB
+        })
+    }
     return list
 }
 
@@ -1096,6 +1103,14 @@ func incomingDynamicBackground() -> Background {
 }
 
 func renderBackground(_ bg: Background, width: Int, height: Int) -> CGImage {
+    if bg.name.hasPrefix("landmark-") {
+        let photoName = bg.name.replacingOccurrences(of: "landmark-", with: "") + "@2x.jpg"
+        let photoPath = URL(fileURLWithPath: "Resources/Landmarks/" + photoName)
+        if let source = CGImageSourceCreateWithURL(photoPath as CFURL, nil),
+           let image = CGImageSourceCreateImageAtIndex(source, 0, nil) {
+            return image
+        }
+    }
     var rgba = [UInt8](repeating: 255, count: width * height * 4)
     for y in 0..<height {
         let row = y * width * 4
