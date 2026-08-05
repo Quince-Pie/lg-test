@@ -1,0 +1,181 @@
+{
+  "prepareLayerCropUnionOperandPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-05T23:40:15Z",
+  "classification": "prospective destination-correlated capture of the exact signed-int LayerShapes rectangle passed to the already-opened floating union; the prior 256-state matrix, nine exact proxy mismatches, instruction sites, selection, implementation, acceptance, and product-authority boundary are frozen before dispatch",
+  "antecedentEvidence": {
+    "topologyPreregistration": "Analysis/dynamic_allocation_prepare_layer_crop_transfer_topology_preregistration.json",
+    "topologyPreregistrationSHA256": "824c37c902d9773af0d077a4bbba45fa48d410b0acbc9fbfadd952fa63e003f6",
+    "successfulRunID": 31055266553,
+    "successfulHeadSHA": "db96f741f3f73bb753b20c7e11de2ccfff0cd0ed",
+    "successfulJobCount": 8,
+    "failedJobCount": 0,
+    "normalRecordCountPerJob": 32,
+    "totalPublicPrivateRecordCount": 256,
+    "firstDepthThreeThenDepthFourTopologyPassedEveryJob": true,
+    "traceFailureCountEveryJob": 0,
+    "productionShaderChanged": false,
+    "artifactInventory": [
+      {
+        "label": "crop-1536-clipped",
+        "artifactID": 8950077129,
+        "digest": "sha256:aad504a0cc770cd35ab394cbca3d21d078567505dff3127ff42998cdede9c0ff"
+      },
+      {
+        "label": "crop-256-center",
+        "artifactID": 8950062858,
+        "digest": "sha256:cf07a221d58a7b1b5dea27bf600a1e4ae3ce298eeb35620f8880635b70a067ef"
+      },
+      {
+        "label": "crop-512-offset",
+        "artifactID": 8950056205,
+        "digest": "sha256:b6e7c8723da1bb449f79d1796878e6360cfa04935781a456ac2c09f3df95d1a3"
+      },
+      {
+        "label": "crop-640-center",
+        "artifactID": 8950120619,
+        "digest": "sha256:f14eb1b4fac1ae473fd605aa7d1e057fac02b193708f7e3cdddb2d143abf8f35"
+      },
+      {
+        "label": "crop-640-fractional",
+        "artifactID": 8950124269,
+        "digest": "sha256:74d716a8d6865f193cd2607b49e9fbf6d55c3b3162fef89cf1996cdac0df8acc"
+      },
+      {
+        "label": "crop-640-half-even",
+        "artifactID": 8950069722,
+        "digest": "sha256:f81d86f6dc2c46ac23c82885c258b9eda1e0cb4dd6800cbc8274d800c409f62b"
+      },
+      {
+        "label": "crop-640-half-signed",
+        "artifactID": 8950118432,
+        "digest": "sha256:d10b60aa3cc9018197411b8b4c457e4d97fa63459344ab0490143b516465c151"
+      },
+      {
+        "label": "crop-640-integer",
+        "artifactID": 8950064164,
+        "digest": "sha256:856f8e3344c0aca1a111b59d07045a80a38cad72bf03c452a08d6633a55a441b"
+      }
+    ]
+  },
+  "openedMatrixAnalysis": {
+    "path": "Analysis/dynamic_allocation_prepare_layer_crop_transfer_matrix_analysis.json",
+    "analysisSHA256": "96bf9829a79e13a94b9cbc8873f3b2450f8c990427e0946c5c7dc9980aaacade",
+    "analyzer": "Analysis/analyze_prepare_layer_crop_transfer_matrix.py",
+    "recordCount": 256,
+    "componentCount": 1024,
+    "exactRecordCount": 250,
+    "mismatchedRecordCount": 6,
+    "exactComponentCount": 1015,
+    "mismatchedComponentCount": 9,
+    "mismatchProjection": [
+      {"label": "crop-256-center", "sampleIndex": 28, "components": [2]},
+      {"label": "crop-256-center", "sampleIndex": 29, "components": [2]},
+      {"label": "crop-256-center", "sampleIndex": 30, "components": [1, 3]},
+      {"label": "crop-256-center", "sampleIndex": 31, "components": [1, 3]},
+      {"label": "crop-640-center", "sampleIndex": 31, "components": [1, 3]},
+      {"label": "crop-640-half-signed", "sampleIndex": 20, "components": [3]}
+    ],
+    "openedInterpretation": "The transformed Glass DOD, finite integerization, signed integer intersection, and floating union reproduce 1,015 component words exactly. The ancestor aggregate used by that replay is only a proxy for a nested signed-int LayerShapes rectangle; it is not the actual union operand and cannot explain the nine remaining boundary words.",
+    "toleranceUsed": false,
+    "exceptionFitUsed": false,
+    "generalCropPolicyRecovered": false
+  },
+  "openedInstructionSites": {
+    "prepareLayerFunction": "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes&, unsigned long long&)",
+    "prepareLayerSymbolByteCount": 40128,
+    "prepareLayerFullCodeSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+    "callOffset": 34268,
+    "callOffsetHex": "0x85dc",
+    "callRawLittleEndianHex": "e1dbff97",
+    "callInstruction": "bl CA::Render::Updater::LayerShapes::union_bounds(CA::Rect const&, bool)",
+    "returnOffset": 34272,
+    "returnOffsetHex": "0x85e0",
+    "returnRawLittleEndianHex": "686241f9",
+    "returnInstruction": "ldr x8, [x19, #0x2c0]",
+    "destinationLoadOffset": 34260,
+    "destinationLoadInstruction": "ldr x0, [x19, #0x238]",
+    "inputConstructionRange": [34160, 34252],
+    "inputPointerInstruction": "add x1, x19, #0x620",
+    "propagationGateInstruction": "mov w2, #0",
+    "inputRoleOffset": 1568,
+    "destinationRoleOffset": 656,
+    "nestedIntegerRectangleOffsetInLayerShapes": 176,
+    "nestedIntegerLoadInstruction": "ldr d1, [x28, #0xb0]; ldp w8, w9, [x28, #0xb8]",
+    "signedIntegerConversion": "sshll/scvtf for origin and scvtf for extents, with the already-opened large-extent sentinel guard",
+    "unionHelperSymbolByteCount": 404,
+    "unionHelperCodeSHA256": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7",
+    "floatingUnionOperationOrder": "fadd both far edges; fminnm origins; fmaxnm far edges; fsub selected origin; stp q0,q1",
+    "instructionEvidenceRunID": 31048753297
+  },
+  "captureDesign": {
+    "baseCapture": "Run the unchanged schema-7 crop-transfer entry gate and marker selector first.",
+    "callSelection": "At every exact prepare_layer+0x85dc stop, retain the call only when its backtrace has the exact direct normal transition caller chain and no intervention caller chain. Read no crop or aggregate bytes before this structural decision.",
+    "callReturnPairing": "Pair the synchronous +0x85dc call and +0x85e0 return by thread ID; nested or missing pairs fail closed.",
+    "capturedCallState": "Retain x0/x1/x2/x19/x28/x29/sp/pc/cpsr, complete backtrace, 2 KiB x19 role bytes, 48 bytes at x28+0xa0, 32 bytes at x1, and the 32-byte x0 target before and after the call.",
+    "markerCorrelation": "Within each interval ending at a qualified schema-7 marker, select only a complete union call whose x0 destination equals the marker x19 role base plus 0x290. Require exactly one match per marker after capture; rectangle values never participate in correlation.",
+    "cropValuesUsedForSelection": false,
+    "aggregateValuesUsedForSelection": false,
+    "hardwareWatchpoints": false,
+    "instructionStepping": false,
+    "maximumCallHits": 16384,
+    "maximumQualifiedUnionRecords": 4096,
+    "appleCaptureProgramChanged": false,
+    "matrixChanged": false,
+    "productionShaderChanged": false
+  },
+  "frozenImplementation": {
+    "baseCaptureHarness": "Analysis/capture_prepare_layer_crop_transfer_lldb.py",
+    "baseCaptureHarnessSHA256": "1e08267e1c24a7b75765b0f3d9ec09749e7f2673673ba1133bc569b5c87039b9",
+    "baseValidator": "Analysis/validate_prepare_layer_crop_transfer.py",
+    "baseValidatorSHA256": "1681b93409bac765ea5569d0ac3203ef141bcd76a808d2e747b0c3cb670022b1",
+    "captureHarness": "Analysis/capture_prepare_layer_crop_union_operand_lldb.py",
+    "captureHarnessSHA256": "607f165b29d0324677725892833ba99a79d3fd9830bd9d52573d56d5aa0f51bb",
+    "captureHarnessTest": "Analysis/test_capture_prepare_layer_crop_union_operand_lldb_source.py",
+    "captureHarnessTestSHA256": "bd25937c836e871fd78b74746f6392c4b57fb7adbf300c8697336fd02f95f17f",
+    "validator": "Analysis/validate_prepare_layer_crop_union_operand.py",
+    "validatorSHA256": "bd19b89360c15fe569f8f8ac033f1133eb3ad067f104f304cba671cde8938695",
+    "validatorTest": "Analysis/test_validate_prepare_layer_crop_union_operand.py",
+    "validatorTestSHA256": "022eef18aeca119df8ecc2a9198aa2a1260a1ecfe355b9135e27a6affa183079",
+    "workflow": ".github/workflows/prepare-layer-crop-union-operand-introspect.yml",
+    "workflowSHA256": "bcebe7ede6b741aa19152ae970616dfaaf42d1e0e83eed59f81193a242d27269",
+    "matrixAnalyzer": "Analysis/analyze_prepare_layer_crop_transfer_matrix.py",
+    "matrixAnalyzerSHA256": "84b3050ca4dc602227f66b95d0a615ed433f95ff26191ef58cbdf7dbeed570cd",
+    "matrixAnalyzerTest": "Analysis/test_analyze_prepare_layer_crop_transfer_matrix.py",
+    "matrixAnalyzerTestSHA256": "c64a77c3210a910e9eaae74ecdfa0a55ef376a0eb1f05f269304f374e18c39f9",
+    "matrixAnalysis": "Analysis/dynamic_allocation_prepare_layer_crop_transfer_matrix_analysis.json",
+    "matrixAnalysisSHA256": "96bf9829a79e13a94b9cbc8873f3b2450f8c990427e0946c5c7dc9980aaacade",
+    "productionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "developmentFlakeSHA256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01"
+  },
+  "acceptance": {
+    "geometryCount": 8,
+    "normalMarkerCountPerGeometry": 32,
+    "linkedOperandCountPerGeometry": 32,
+    "allSchemaSevenMarkerGatesMustRepass": true,
+    "exactCallAndReturnInstructionBytesRequired": true,
+    "allCallReturnPairsMustBeComplete": true,
+    "oneDestinationMatchPerMarkerRequired": true,
+    "allCapturedMemoryMetadataMustRehash": true,
+    "allSignedIntegerConversionsMustMatchBitForBit": true,
+    "zeroTraceFailuresRequired": true,
+    "zeroDiscardedQualifiedMarkerRecordsRequired": true,
+    "zeroTrailingQualifiedUnionRecordsRequired": true,
+    "allSelectedUnionsMustReplayBitForBit": true,
+    "allFinalAggregatesMustReplayBitForBit": true,
+    "allEightJobsMustPass": true,
+    "generalCropPolicyMayBeClaimedByThisRunAlone": false,
+    "unseenTransferMayBeClaimedByThisRunAlone": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "notClaimed": [
+    "that the prospective union-operand workflow has run or passed",
+    "that every structurally retained union call targets the selected marker aggregate",
+    "that the nested integer operand's general public-state production law is already known",
+    "that the nine proxy mismatches may be repaired with special cases or tolerances",
+    "that unseen geometry, temporal, material, appearance, direction, or physical Retina 2x transfer passed",
+    "that the production shader may change",
+    "that Apple Liquid Glass parity has been achieved"
+  ]
+}

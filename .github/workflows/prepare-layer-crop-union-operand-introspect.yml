@@ -1,0 +1,196 @@
+name: Capture prepare_layer crop union operand
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: prepare-layer-crop-union-operand-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  crop-union-operand:
+    name: ${{ matrix.label }}
+    runs-on: macos-26
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: crop-640-center
+            geometry: circle-640-center
+          - label: crop-640-integer
+            geometry: circle-640-integer
+          - label: crop-640-half-even
+            geometry: circle-640-phase-0500-even
+          - label: crop-640-half-signed
+            geometry: circle-640-phase-0500-signed
+          - label: crop-256-center
+            geometry: circle-256-center
+          - label: crop-512-offset
+            geometry: circle-512-offset
+          - label: crop-640-fractional
+            geometry: circle-640-fractional
+          - label: crop-1536-clipped
+            geometry: circle-1536-center
+    env:
+      LG_GLASS_MATERIAL: clear
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-introspection/prepare-layer-crop-union-operand-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify prospective crop-union contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-introspection
+          set -o pipefail
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_transfer_lldb_source.py' \
+            -v 2>&1 | tee transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_crop_transfer.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_union_operand_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_crop_union_operand.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_dynamic_allocation_prepare_layer_crop_union_operand_preregistration.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          mkdir -p transition-introspection
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-introspection/MatrixBridge.o 2>&1 |
+            tee transition-introspection/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-introspection/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-introspection/build.log
+
+      - name: Capture exact crop-union call operands
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-introspection/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-introspection/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_crop_union_operand_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_crop_union_operand_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-introspection \
+            > transition-introspection/lldb-prepare-layer-crop-union-operand.log 2>&1
+
+      - name: Validate destination-correlated crop unions
+        id: crop_union
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_crop_union_operand.py \
+            transition-introspection/prepare-layer-crop-union-operand-trace.json \
+            transition-introspection/transition-timeline.json \
+            --expected-geometry '${{ matrix.geometry }}' \
+            --output \
+              transition-introspection/prepare-layer-crop-union-operand-validation.json
+
+      - name: Upload prospective crop-union evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-prepare-layer-crop-union-operand-${{ matrix.label }}-${{ github.run_id }}
+          path: transition-introspection
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce prospective crop-union evidence
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.crop_union.outcome }}" = success
+          test -s transition-introspection/transition-timeline.json
+          test -s transition-introspection/prepare-layer-crop-union-operand-trace.json
+          test -s transition-introspection/prepare-layer-crop-union-operand-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("transition-introspection")
+          result = json.loads(
+              (root / "prepare-layer-crop-union-operand-validation.json")
+              .read_text(encoding="utf-8")
+          )
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get("prepareLayerCropUnionOperandValidationSchemaVersion") != 1
+              or result.get("conclusion") != "success"
+              or result.get("prospectiveCaptureIntegrityGatePassed") is not True
+              or result.get("recordCount") != 32
+              or result.get("componentCount") != 128
+              or sealed.get("schemaSevenMarkerValidationRepassed") is not True
+              or sealed.get("exactUnionCallAndReturnCodePassed") is not True
+              or sealed.get("cropIndependentUnionCallSelectionPassed") is not True
+              or sealed.get("destinationOnlyMarkerCorrelationPassed") is not True
+              or sealed.get("oneExactNestedOperandPerNormalReplayPassed") is not True
+              or sealed.get("signedIntegerToBinary64ConversionPassed") is not True
+              or sealed.get("allSelectedFloatingUnionsReplayedBitForBit") is not True
+              or sealed.get("allFinalAggregateComponentsReplayedBitForBit") is not True
+              or sealed.get("generalCropPolicyRecovered") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("crop-union validation differs")
+          PY

@@ -1,0 +1,559 @@
+{
+  "classification": "opened exact replay of the eight-regime crop discovery matrix; the ancestor aggregate is explicitly a proxy for the uncaptured nested LayerShapes integer operand, and every disagreement remains an exact binary64 mismatch rather than a tolerance",
+  "componentCount": 1024,
+  "conclusion": {
+    "ancestorAggregateProxyExactForEveryComponent": false,
+    "discoveryMatrixIntegrityRechecked": true,
+    "generalCropPolicyRecovered": false,
+    "liquidGlassParityEstablished": false,
+    "missingExactOperand": "the signed-int rectangle converted at prepare_layer+0x8570 and passed at +0x85dc to LayerShapes::union_bounds",
+    "openedFloatingUnionReplayed": true,
+    "openedIntegerCropReplayed": true,
+    "openedIntegerIntersectionReplayed": true,
+    "productionShaderAuthorized": false,
+    "transformedGlassDODReplayed": true,
+    "unseenTransferPassed": false
+  },
+  "exactComponentCount": 1015,
+  "exactRecordCount": 250,
+  "geometryCount": 8,
+  "geometryResults": [
+    {
+      "componentCount": 128,
+      "exactComponentCount": 128,
+      "exactRecordCount": 32,
+      "geometry": "circle-1536-center",
+      "label": "crop-1536-clipped",
+      "mismatchedComponentCount": 0,
+      "mismatchedRecordCount": 0,
+      "recordCount": 32,
+      "timelineSHA256": "c3145da213687c262c3f28df8b2d10e9398880f7db0da24dc04acd7fe63ace70",
+      "traceSHA256": "715bf3e30d7b04ffa525794f1ff6338f5b0ef99cad258c48f3d7d06e425cf439",
+      "validationSHA256": "ea11a175cba90d305357c0702a40b18a229baa0f897a8fa663ef946a1354f982"
+    },
+    {
+      "componentCount": 128,
+      "exactComponentCount": 122,
+      "exactRecordCount": 28,
+      "geometry": "circle-256-center",
+      "label": "crop-256-center",
+      "mismatchedComponentCount": 6,
+      "mismatchedRecordCount": 4,
+      "recordCount": 32,
+      "timelineSHA256": "8726ecf24a0f2549a02894d02cf7eddc9a6361bb7a018dbcdc62afdb439d215d",
+      "traceSHA256": "f6a53b0e5e9f25e6350345bf1a8cb8654c603a122dbe47baa8f62cad21946d65",
+      "validationSHA256": "61e648b78961f2e81feb13b4bac3a7a279e3d36d94da74c72369377edcdfe409"
+    },
+    {
+      "componentCount": 128,
+      "exactComponentCount": 128,
+      "exactRecordCount": 32,
+      "geometry": "circle-512-offset",
+      "label": "crop-512-offset",
+      "mismatchedComponentCount": 0,
+      "mismatchedRecordCount": 0,
+      "recordCount": 32,
+      "timelineSHA256": "191835628efbe6e4e049e3cb3edba138af2e7097456c0970589c98bd7ff12bea",
+      "traceSHA256": "c0a74fa18f37ffe7a519b70aa3c45750ff4d6ecab7e4ec8b2c7ce9eca40b6d30",
+      "validationSHA256": "60934d918fa1ca8ee9ecb72c35cf64eda456d5d017ad3c3918ac071d729ca4a0"
+    },
+    {
+      "componentCount": 128,
+      "exactComponentCount": 126,
+      "exactRecordCount": 31,
+      "geometry": "circle-640-center",
+      "label": "crop-640-center",
+      "mismatchedComponentCount": 2,
+      "mismatchedRecordCount": 1,
+      "recordCount": 32,
+      "timelineSHA256": "5a2bd1e4b06ecfbe0ef4c8f62e1f5dc4d9c4e0746040ef61f9bcdae063785cfb",
+      "traceSHA256": "82b24f7f6c51f571b7db49017fa056784ab65a48c2df27ce3232dbe70e7f0651",
+      "validationSHA256": "b5891651c5a3c4b28c80dc526afebb4892291442e5c3ee874cbde3f163acec87"
+    },
+    {
+      "componentCount": 128,
+      "exactComponentCount": 128,
+      "exactRecordCount": 32,
+      "geometry": "circle-640-fractional",
+      "label": "crop-640-fractional",
+      "mismatchedComponentCount": 0,
+      "mismatchedRecordCount": 0,
+      "recordCount": 32,
+      "timelineSHA256": "5ab66ddcb57b52cadb2a07ad493930758551dff9eb8fb94fe5a6c096dbabf9f6",
+      "traceSHA256": "d5b52472206e952b3e0a89a60155e43d20e5aa5d2b775278714f4d759b40910c",
+      "validationSHA256": "c594ba420d066267a235bb0fb9ac8bf53e52a2f5163c5e5c3e228d9f97f8bb7f"
+    },
+    {
+      "componentCount": 128,
+      "exactComponentCount": 128,
+      "exactRecordCount": 32,
+      "geometry": "circle-640-phase-0500-even",
+      "label": "crop-640-half-even",
+      "mismatchedComponentCount": 0,
+      "mismatchedRecordCount": 0,
+      "recordCount": 32,
+      "timelineSHA256": "80f04aac462459cb7a80860445e666eef16094c64c1ba0620a7fd9f685d20d7e",
+      "traceSHA256": "2aed34abfa14ed40ae35851a85d43f1d62cb01d0d9020d21c4a7366433b4a6df",
+      "validationSHA256": "57ed861d84ede393cfbf046558156d0c141a4e6614113388648d51b57bc279f0"
+    },
+    {
+      "componentCount": 128,
+      "exactComponentCount": 127,
+      "exactRecordCount": 31,
+      "geometry": "circle-640-phase-0500-signed",
+      "label": "crop-640-half-signed",
+      "mismatchedComponentCount": 1,
+      "mismatchedRecordCount": 1,
+      "recordCount": 32,
+      "timelineSHA256": "f050504a68fbb5ae621636fe544fe2f298c435c91090cc822c33d2c300e33c77",
+      "traceSHA256": "8719cc1ac63fed39e8c8b02b85c779ee26a8597bbfd596c488967d88bfb5e627",
+      "validationSHA256": "8ac137ca393129913deb8cf330c11c5519929895784df814e16a5774593b7b58"
+    },
+    {
+      "componentCount": 128,
+      "exactComponentCount": 128,
+      "exactRecordCount": 32,
+      "geometry": "circle-640-integer",
+      "label": "crop-640-integer",
+      "mismatchedComponentCount": 0,
+      "mismatchedRecordCount": 0,
+      "recordCount": 32,
+      "timelineSHA256": "c81865ffe6b0998c13e7b4c9b9240ca8f8e3fa86bf2f821aeb3f76dae0c60f4e",
+      "traceSHA256": "aa885994c2361430fc9bcd68d1906d793eb41a95c850ebea5ee750d8d75c0e7b",
+      "validationSHA256": "1166c374950cf37fa7a4309086d0700c93ccdda22c04c72f801d5273a451ffce"
+    }
+  ],
+  "mismatchRecords": [
+    {
+      "ancestorAggregateF64": [
+        372.0,
+        373.0,
+        279.0,
+        279.0
+      ],
+      "ancestorCropI32": [
+        372,
+        373,
+        279,
+        279
+      ],
+      "childCropI32": [
+        398,
+        359,
+        259,
+        267
+      ],
+      "label": "crop-256-center",
+      "mismatchedComponentIndices": [
+        2
+      ],
+      "mismatches": [
+        {
+          "componentIndex": 2,
+          "observed": {
+            "littleEndianHex": "0000000000207040",
+            "value": 258.0,
+            "valueHex": "0x1.0200000000000p+8"
+          },
+          "predicted": {
+            "littleEndianHex": "00000080f91f7040",
+            "value": 257.9984130859375,
+            "valueHex": "0x1.01ff980000000p+8"
+          }
+        }
+      ],
+      "observedF64": [
+        398.0,
+        360.0015869140625,
+        258.0,
+        265.9984130859375
+      ],
+      "predictedF64": [
+        398.0,
+        360.0015869140625,
+        257.9984130859375,
+        265.9984130859375
+      ],
+      "proxyIntersectionI32": [
+        398,
+        373,
+        253,
+        253
+      ],
+      "sampleIndex": 28,
+      "transformedChildF64": [
+        399.9984130859375,
+        360.0015869140625,
+        256.0,
+        264.0
+      ]
+    },
+    {
+      "ancestorAggregateF64": [
+        372.0,
+        373.0,
+        279.0,
+        279.0
+      ],
+      "ancestorCropI32": [
+        372,
+        373,
+        279,
+        279
+      ],
+      "childCropI32": [
+        394,
+        363,
+        259,
+        267
+      ],
+      "label": "crop-256-center",
+      "mismatchedComponentIndices": [
+        2
+      ],
+      "mismatches": [
+        {
+          "componentIndex": 2,
+          "observed": {
+            "littleEndianHex": "0000000000307040",
+            "value": 259.0,
+            "valueHex": "0x1.0300000000000p+8"
+          },
+          "predicted": {
+            "littleEndianHex": "00000000e71a7040",
+            "value": 257.681396484375,
+            "valueHex": "0x1.01ae700000000p+8"
+          }
+        }
+      ],
+      "observedF64": [
+        394.0,
+        364.318603515625,
+        259.0,
+        265.681396484375
+      ],
+      "predictedF64": [
+        394.0,
+        364.318603515625,
+        257.681396484375,
+        265.681396484375
+      ],
+      "proxyIntersectionI32": [
+        394,
+        373,
+        257,
+        257
+      ],
+      "sampleIndex": 29,
+      "transformedChildF64": [
+        395.681396484375,
+        364.318603515625,
+        256.0,
+        264.0
+      ]
+    },
+    {
+      "ancestorAggregateF64": [
+        373.0,
+        373.0,
+        278.0,
+        278.0
+      ],
+      "ancestorCropI32": [
+        373,
+        373,
+        278,
+        278
+      ],
+      "childCropI32": [
+        390,
+        367,
+        259,
+        267
+      ],
+      "label": "crop-256-center",
+      "mismatchedComponentIndices": [
+        1,
+        3
+      ],
+      "mismatches": [
+        {
+          "componentIndex": 1,
+          "observed": {
+            "littleEndianHex": "0000000000f07640",
+            "value": 367.0,
+            "valueHex": "0x1.6f00000000000p+8"
+          },
+          "predicted": {
+            "littleEndianHex": "00000000c0047740",
+            "value": 368.296875,
+            "valueHex": "0x1.704c000000000p+8"
+          }
+        },
+        {
+          "componentIndex": 3,
+          "observed": {
+            "littleEndianHex": "0000000000b07040",
+            "value": 267.0,
+            "valueHex": "0x1.0b00000000000p+8"
+          },
+          "predicted": {
+            "littleEndianHex": "00000000409b7040",
+            "value": 265.703125,
+            "valueHex": "0x1.09b4000000000p+8"
+          }
+        }
+      ],
+      "observedF64": [
+        390.0,
+        367.0,
+        259.0,
+        267.0
+      ],
+      "predictedF64": [
+        390.0,
+        368.296875,
+        259.0,
+        265.703125
+      ],
+      "proxyIntersectionI32": [
+        390,
+        373,
+        259,
+        261
+      ],
+      "sampleIndex": 30,
+      "transformedChildF64": [
+        391.703125,
+        368.296875,
+        256.0,
+        264.0
+      ]
+    },
+    {
+      "ancestorAggregateF64": [
+        373.0,
+        373.0,
+        278.0,
+        278.0
+      ],
+      "ancestorCropI32": [
+        373,
+        373,
+        278,
+        278
+      ],
+      "childCropI32": [
+        387,
+        370,
+        259,
+        267
+      ],
+      "label": "crop-256-center",
+      "mismatchedComponentIndices": [
+        1,
+        3
+      ],
+      "mismatches": [
+        {
+          "componentIndex": 1,
+          "observed": {
+            "littleEndianHex": "0000000000207740",
+            "value": 370.0,
+            "valueHex": "0x1.7200000000000p+8"
+          },
+          "predicted": {
+            "littleEndianHex": "00000080d13f7740",
+            "value": 371.9886474609375,
+            "valueHex": "0x1.73fd180000000p+8"
+          }
+        },
+        {
+          "componentIndex": 3,
+          "observed": {
+            "littleEndianHex": "0000000000b07040",
+            "value": 267.0,
+            "valueHex": "0x1.0b00000000000p+8"
+          },
+          "predicted": {
+            "littleEndianHex": "000000802e907040",
+            "value": 265.0113525390625,
+            "valueHex": "0x1.0902e80000000p+8"
+          }
+        }
+      ],
+      "observedF64": [
+        387.0,
+        370.0,
+        259.0,
+        267.0
+      ],
+      "predictedF64": [
+        387.0,
+        371.9886474609375,
+        259.0,
+        265.0113525390625
+      ],
+      "proxyIntersectionI32": [
+        387,
+        373,
+        259,
+        264
+      ],
+      "sampleIndex": 31,
+      "transformedChildF64": [
+        388.0113525390625,
+        371.9886474609375,
+        256.0,
+        264.0
+      ]
+    },
+    {
+      "ancestorAggregateF64": [
+        181.0,
+        181.0,
+        662.0,
+        662.0
+      ],
+      "ancestorCropI32": [
+        181,
+        181,
+        662,
+        662
+      ],
+      "childCropI32": [
+        200,
+        173,
+        643,
+        651
+      ],
+      "label": "crop-640-center",
+      "mismatchedComponentIndices": [
+        1,
+        3
+      ],
+      "mismatches": [
+        {
+          "componentIndex": 1,
+          "observed": {
+            "littleEndianHex": "0000000000a06540",
+            "value": 173.0,
+            "valueHex": "0x1.5a00000000000p+7"
+          },
+          "predicted": {
+            "littleEndianHex": "0000008037c26540",
+            "value": 174.06927490234375,
+            "valueHex": "0x1.5c23780000000p+7"
+          }
+        },
+        {
+          "componentIndex": 3,
+          "observed": {
+            "littleEndianHex": "0000000000588440",
+            "value": 651.0,
+            "valueHex": "0x1.4580000000000p+9"
+          },
+          "predicted": {
+            "littleEndianHex": "00000020724f8440",
+            "value": 649.9307250976562,
+            "valueHex": "0x1.44f7220000000p+9"
+          }
+        }
+      ],
+      "observedF64": [
+        200.0,
+        173.0,
+        643.0,
+        651.0
+      ],
+      "predictedF64": [
+        200.0,
+        174.06927490234375,
+        643.0,
+        649.9307250976562
+      ],
+      "proxyIntersectionI32": [
+        200,
+        181,
+        643,
+        643
+      ],
+      "sampleIndex": 31,
+      "transformedChildF64": [
+        201.93072509765628,
+        174.06927490234375,
+        640.0,
+        648.0
+      ]
+    },
+    {
+      "ancestorAggregateF64": [
+        88.0,
+        44.0,
+        667.0,
+        667.0
+      ],
+      "ancestorCropI32": [
+        88,
+        44,
+        667,
+        667
+      ],
+      "childCropI32": [
+        310,
+        63,
+        643,
+        651
+      ],
+      "label": "crop-640-half-signed",
+      "mismatchedComponentIndices": [
+        3
+      ],
+      "mismatches": [
+        {
+          "componentIndex": 3,
+          "observed": {
+            "littleEndianHex": "0000000000588440",
+            "value": 651.0,
+            "valueHex": "0x1.4580000000000p+9"
+          },
+          "predicted": {
+            "littleEndianHex": "00000000664b8440",
+            "value": 649.4248046875,
+            "valueHex": "0x1.44b6600000000p+9"
+          }
+        }
+      ],
+      "observedF64": [
+        310.0,
+        63.0,
+        641.5751953125,
+        651.0
+      ],
+      "predictedF64": [
+        310.0,
+        63.0,
+        641.5751953125,
+        649.4248046875
+      ],
+      "proxyIntersectionI32": [
+        310,
+        63,
+        445,
+        648
+      ],
+      "sampleIndex": 20,
+      "transformedChildF64": [
+        311.5751953125,
+        64.4248046875,
+        640.0,
+        648.0
+      ]
+    }
+  ],
+  "mismatchedComponentCount": 9,
+  "mismatchedRecordCount": 6,
+  "prepareLayerCropTransferMatrixAnalysisSchemaVersion": 1,
+  "recordCount": 256,
+  "runID": 31055266553
+}

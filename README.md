@@ -6410,3 +6410,61 @@ selection, callback ordinal join, the eight-regime matrix, and the Apple
 capture program remain unchanged. A passing corrected run can open all 256
 discovery pairs, but it still cannot establish the general crop policy,
 authorize a production shader change, or establish Liquid Glass parity.
+
+Corrected run `31055266553`, from topology commit `db96f74`, passes all eight
+jobs. It retains the required depth sequence `[3,4,...,4]`, all 256 joined
+public/private records, zero trace failures, and complete role bytes for every
+structural frame. The independently rehashed and replayed result is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_transfer_matrix_analysis.json`;
+the deterministic replay program is
+`Analysis/analyze_prepare_layer_crop_transfer_matrix.py`.
+
+The opened matrix sharply narrows, but does not close, the crop law. For each
+record, transform the top role's local Glass DOD `D` into canvas coordinates,
+apply the already opened finite floor/ceil enclosure and conditional one-pixel
+border to `D`, do the same to the first ancestor aggregate `A`, intersect those
+two signed integer rectangles, convert the intersection to binary64, and run
+the instruction-derived `LayerShapes::union_bounds` operation order. That
+replay matches 1,015 of 1,024 aggregate component words exactly and 250 of 256
+rectangles exactly. No tolerance is used. The nine unequal words are retained
+verbatim in six records:
+
+```
+crop-256-center       sample 28   width
+crop-256-center       sample 29   width
+crop-256-center       sample 30   y, height
+crop-256-center       sample 31   y, height
+crop-640-center       sample 31   y, height
+crop-640-half-signed  sample 20   height
+```
+
+The ancestor aggregate is therefore a high-coverage proxy, not Apple's actual
+crop operand. Earlier instruction evidence identifies the missing value
+without guessing: `prepare_layer+0x8570` loads a signed integer rectangle from
+the live nested `LayerShapes` object at `x28+0xb0`, converts it to binary64 at
+`x19+0x620`, loads the destination through `x19+0x238`, and calls
+`LayerShapes::union_bounds` at `prepare_layer+0x85dc`. The call returns at
+`+0x85e0`. On the previously stepped invocation, that exact union is the final
+writer of the selected aggregate.
+
+The next prospective capture is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_union_operand_preregistration.json`.
+It layers two breakpoints on the unchanged schema-7 probe: the exact `+0x85dc`
+call and `+0x85e0` return. Calls are retained only by the direct normal caller
+chain, before reading rectangle bytes. Within the interval ending at each
+accepted schema-7 marker, a call is linked only when its `x0` destination
+equals the marker role base plus `0x290`. The gate requires exactly one linked
+call per marker, exact signed-int-to-binary64 conversion, complete pre/post
+bytes, and bitwise replay of the union and final aggregate. No crop value is
+used for selection or linkage.
+
+The capture, validator, and eight-regime workflow are respectively
+`Analysis/capture_prepare_layer_crop_union_operand_lldb.py`,
+`Analysis/validate_prepare_layer_crop_union_operand.py`, and
+`.github/workflows/prepare-layer-crop-union-operand-introspect.yml`. A passing
+run will expose the actual 256 integer operands needed to replace the ancestor
+proxy and derive the remaining production rule. It is still a discovery run:
+an unseen preregistered transfer and repeat remain mandatory before any Walle
+shader change or parity claim. The production shader remains untouched at
+SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
