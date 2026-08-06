@@ -1,6 +1,6 @@
 {
   "backdropMarginCase22CalleePreregistrationSchemaVersion": 1,
-  "frozenAtUtc": "2026-08-06T16:38:03Z",
+  "frozenAtUtc": "2026-08-06T17:06:25Z",
   "classification": "retrospective arithmetic diagnostic of the already-opened SwiftUI.SDFStyle.Group.margin case-22 path: the authenticated target address and ordinal-20 return are disclosed antecedents, while the target symbol, complete code, live object bytes, instruction sequence, registers, stack, opaque callees, and arithmetic are sealed unknown before dispatch; this profile and selector carry no prospective transfer or product authority",
   "antecedent": {
     "runID": 31118243811,
@@ -51,6 +51,19 @@
     "authenticatedTargetModuleOffset": 7781460,
     "swiftUICoreUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97"
   },
+  "preCaptureTransportFailures": {
+    "runID": 31120650554,
+    "failedAttempts": [1, 2],
+    "failureStage": "GitHub runner Set up job",
+    "failureMessage": "Failed to resolve action download info: Service Unavailable",
+    "repositoryCheckoutStarted": false,
+    "contractsStarted": false,
+    "probeBuildStarted": false,
+    "lldbCaptureStarted": false,
+    "appleOutputOpened": false,
+    "captureContractChangedAfterFailure": false,
+    "transportOnlyAmendment": "remove all marketplace actions, perform exact-SHA checkout with git, and upload the diagnostic zip as a temporary draft release asset"
+  },
   "captureContract": {
     "inheritedWriterAdapterUnchanged": true,
     "inheritedProducerAdapterUnchanged": true,
@@ -72,6 +85,8 @@
     "maximumOpaqueCalleeCount": 512,
     "maximumSymbolByteCount": 131072,
     "maximumTotalOpaqueCodeByteCount": 8388608,
+    "externalMarketplaceActionCount": 0,
+    "archiveTransport": "temporary draft GitHub release asset keyed by run ID and attempt",
     "zeroTolerance": true
   },
   "unknownBeforeCapture": {
@@ -157,7 +172,7 @@
       },
       {
         "path": ".github/workflows/backdrop-margin-case22-callee.yml",
-        "sha256": "b1e5503f3a9c6a00573910531c3aa18d6f212fb024de3a9fd89cdd7fb9684a3a"
+        "sha256": "91adba4d750a2db09c90954d3600fbbd11f9b61d79cc98186ddea5d4174e010c"
       }
     ],
     "productionShader": {

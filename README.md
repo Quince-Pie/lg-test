@@ -7724,3 +7724,12 @@ and arithmetic are all null at freeze time. A successful run can authorize an
 offline exact decode of this one opened case-22 execution only. It cannot map
 unobserved discriminator cases, declare a general public-input law, change the
 production shader, or establish Liquid Glass parity.
+
+Runs `31120650554` attempts 1 and 2 never checked out the repository. Both
+macOS hosts failed in GitHub's `Set up job` phase while resolving marketplace
+actions, after repeated `Service Unavailable` responses. No contract, build,
+LLDB callback, Apple value, or image executed, so these are transport failures
+rather than diagnostic results. Before attempt 3, the workflow transport was
+amended without changing any capture or validation source: it now checks out
+the exact `GITHUB_SHA` with plain `git`, uses zero marketplace actions, and
+uploads the zip as a temporary draft-release asset keyed by run and attempt.

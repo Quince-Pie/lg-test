@@ -9,7 +9,7 @@ on:
       - .github/workflows/backdrop-margin-case22-callee.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: backdrop-margin-case22-callee-v1-${{ github.ref }}
@@ -21,6 +21,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 120
     env:
+      GITHUB_TOKEN: ${{ github.token }}
       LG_GLASS_MATERIAL: regular
       LG_GLASS_APPEARANCE: light
       LG_GLASS_GEOMETRY: circle-127-center
@@ -39,7 +40,16 @@ jobs:
       LG_BACKDROP_MARGIN_WRITER_TRACE_OUTPUT: >-
         backdrop-margin-case22-callee/backdrop-margin-writer-trace.json
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout the exact workflow commit without an external action
+        run: |
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          credential="$({ printf 'x-access-token:%s' "$GITHUB_TOKEN"; } | base64)"
+          git -c http.extraheader="AUTHORIZATION: basic $credential" \
+            fetch --depth=1 origin "$GITHUB_SHA"
+          unset credential
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
 
       - name: Require macOS 26+
         run: |
@@ -132,15 +142,80 @@ jobs:
             Analysis/backdrop_margin_case22_callee_preregistration.json \
             --output backdrop-margin-case22-callee/case22-callee-validation.json
 
-      - name: Upload complete case-22 evidence
+      - name: Upload complete case-22 evidence without an external action
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: >-
-            liquid-glass-backdrop-margin-case22-callee-${{ github.run_id }}
-          path: backdrop-margin-case22-callee
-          if-no-files-found: error
-          retention-days: 7
+        env:
+          RELEASE_TAG: >-
+            case22-diagnostic-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          ARCHIVE_NAME: >-
+            liquid-glass-backdrop-margin-case22-callee-${{ github.run_id }}-attempt-${{ github.run_attempt }}.zip
+        run: |
+          mkdir -p backdrop-margin-case22-callee
+          release_payload="$(python3 - <<'PY'
+          import json
+          import os
+
+          print(json.dumps({
+              "tag_name": os.environ["RELEASE_TAG"],
+              "target_commitish": os.environ["GITHUB_SHA"],
+              "name": os.environ["RELEASE_TAG"],
+              "body": (
+                  "Temporary private diagnostic transport for run "
+                  + os.environ["GITHUB_RUN_ID"]
+                  + " attempt "
+                  + os.environ["GITHUB_RUN_ATTEMPT"]
+              ),
+              "draft": True,
+              "prerelease": True,
+          }))
+          PY
+          )"
+          release_response="$(curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" \
+            --data "$release_payload")"
+          export release_response
+          upload_url="$(python3 - <<'PY'
+          import json
+          import os
+
+          value = json.loads(os.environ["release_response"])
+          print(value["upload_url"].split("{")[0])
+          PY
+          )"
+          export upload_url
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          value = json.loads(os.environ["release_response"])
+          Path("backdrop-margin-case22-callee/release-transport.json").write_text(
+              json.dumps({
+                  "releaseID": value["id"],
+                  "tag": value["tag_name"],
+                  "uploadURL": os.environ["upload_url"],
+                  "runID": int(os.environ["GITHUB_RUN_ID"]),
+                  "runAttempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+                  "headSHA": os.environ["GITHUB_SHA"],
+              }, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          ditto -c -k --sequesterRsrc --keepParent \
+            backdrop-margin-case22-callee "$ARCHIVE_NAME"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Content-Type: application/zip" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --data-binary "@$ARCHIVE_NAME" \
+            --output /tmp/case22-release-asset-response.json \
+            "${upload_url}?name=${ARCHIVE_NAME}"
 
       - name: Enforce the case-22 diagnostic gate
         if: always()
