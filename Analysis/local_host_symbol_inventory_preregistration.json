@@ -1,0 +1,134 @@
+{
+  "localHostSymbolInventoryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T19:38:14Z",
+  "classification": "output-blind build-identity bootstrap for the user's directly attached Retina Mac: the OS/framework UUIDs and a successful non-debug Retina baseline are opened antecedents, while exact symbol offsets, bounds, bytes, hashes, and code differences remain sealed until LLDB dispatch; no renderer, transfer, optical, physical-output, or parity authority follows",
+  "hostAntecedent": {
+    "sshHost": "quince@10.0.41.19",
+    "hostName": "quince",
+    "architecture": "arm64",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "darwinVersion": "25.6.0",
+    "swiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "previousCIHostSwiftUICoreUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97",
+    "previousCIHostQuartzCoreUUID": "4D34EB4E-2BBB-3751-A362-8E2EB74656E8",
+    "frameworkIdentityDiffersFromPreviousCIHost": true,
+    "developerToolsAuthorizationAtFreeze": "disabled",
+    "consoleUserIsDeveloperGroupMember": true,
+    "display": {
+      "model": "built-in Liquid Retina XDR",
+      "physicalPixels": [3456, 2234],
+      "logicalPixels": [1728, 1117],
+      "refreshRateHz": 120.0,
+      "main": true,
+      "online": true,
+      "mirrored": false
+    },
+    "accessibilityPreferences": {
+      "reduceTransparency": "unset-standard-default",
+      "reduceMotion": "unset-standard-default",
+      "increaseContrast": "unset-standard-default"
+    }
+  },
+  "openedRetinaBaseline": {
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-retina-baseline",
+    "timelineSHA256": "56260f053445abb2b2a9f3b5e25127b9d64ddcb42a09d4bcc51be21b94932cfe",
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "windowBackingScaleFactor": 2,
+    "expectedWindowPixels": [2048, 2048],
+    "sampleCount": 33,
+    "pngCount": 33,
+    "failedSamples": 0,
+    "dynamicBackgroundUniformsExecuted": true,
+    "dynamicBackgroundRecordCount": 32,
+    "classification": "same-profile local optical and allocation baseline only; not a Walle comparison or parity pass"
+  },
+  "failedDebuggerAttempt": {
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-case22-attempt-1",
+    "traceSHA256": "76e22857b032db58d4ff51d0919db7d9d2d79d2a3b9ad99c4a4799dc59e8e0d4",
+    "lldbLogSHA256": "74b99e91f42800a45a959145a3748c8ee7e6504002ac240ea24cc44b7b1482ea",
+    "failure": "process exited with status -1 because the non-interactive debugger lacked host permission",
+    "probeProcessLaunched": false,
+    "appleRuntimeValueOpened": false,
+    "symbolCodeOpened": false
+  },
+  "repositoryAntecedent": {
+    "headSHA": "bdac17c686ee9dc566579ed41b7cb97c13559cfc",
+    "previousCase22RunID": 31118243811,
+    "previousCase22TargetModuleOffset": 7781460,
+    "previousCase22TargetCodeOpened": false,
+    "previousCase22ArithmeticDecoded": false,
+    "liquidGlassParityEstablished": false
+  },
+  "selection": {
+    "stop": "the probe executable's exact main symbol",
+    "stopOccursBeforeRendering": true,
+    "symbols": [
+      "SwiftUI.SDFStyle.Group.margin.getter : CoreGraphics.CGFloat",
+      "SwiftUI.SDFLayer.updateSDFEffects(for: SwiftUI.SDFStyle, at: inout Swift.Int, in: SwiftUI.DisplayList.ViewRenderer.Environment, backdropGroupID: Swift.Optional<SwiftUI.BackdropGroupID>, blend: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Blend, opacity: Swift.Float, options: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Options, gain: Swift.Float, maxColorComponent: Swift.Float) -> ()",
+      "-[CABackdropLayer setMarginWidth:]",
+      "-[CABackdropLayer _copyRenderLayer:layerFlags:commitFlags:]",
+      "CA::Render::BackdropLayer::get_bounds(CA::Render::Layer const*, CA::Rect&, CA::Rect*) const"
+    ],
+    "capturedMarginUsedForSelection": false,
+    "capturedCropUsedForSelection": false,
+    "capturedImageUsedForSelection": false,
+    "capturedPixelUsedForSelection": false
+  },
+  "captureContract": {
+    "captureExactLoadedModuleUUIDAndBase": true,
+    "requireExactlyOneResolutionPerRequestedSymbol": true,
+    "captureCompleteSymbolCode": true,
+    "maximumSymbolByteCount": 262144,
+    "captureCodeSHA256": true,
+    "captureModuleRelativeOffset": true,
+    "zeroTolerance": true
+  },
+  "unknownBeforeDispatch": {
+    "symbolModuleOffsets": null,
+    "symbolBounds": null,
+    "symbolByteCounts": null,
+    "symbolCodeBytes": null,
+    "symbolCodeSHA256": null,
+    "oldToNewInstructionCorrespondence": null,
+    "localCase22Target": null,
+    "localCase22Arithmetic": null
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_local_host_symbol_inventory_lldb.py",
+        "sha256": "c592301f26787bdfe97782e37c0a7946aece0450fd5c729f1f0756450b5cb707"
+      },
+      {
+        "path": "Analysis/test_capture_local_host_symbol_inventory_lldb_source.py",
+        "sha256": "90c6be595d5bde864995cabd1d308fe931db283f78c0150db7987e62d725c095"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "hostSpecificExecutionAdapterMayBeFrozenOnPass": true,
+    "case22ArithmeticMayBeDeclaredDecoded": false,
+    "publicInputMarginLawMayBeDeclaredDecoded": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "physicalOutputTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}
