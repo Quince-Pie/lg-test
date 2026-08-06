@@ -1,0 +1,162 @@
+{
+  "backdropMarginGroupExecutionPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T15:41:22Z",
+  "classification": "retrospective execution diagnostic for the prospectively opened SwiftUI.SDFStyle.Group.margin getter: the public regular/light circle-127 materialize profile is intentionally already opened, while every internal group record, tagged payload, discriminator, branch operand, accumulator word, and callee identity is sealed unknown before this dispatch",
+  "antecedent": {
+    "runID": 31113785381,
+    "headSHA": "16102867187c66f20b560bb9a36667bdd3ae6115",
+    "analysis": "Analysis/backdrop_margin_writer_execution_retry_result.json",
+    "analysisSHA256": "1b918108551e0f9db3487b609f05e2c65fa07480a9b3094ec9f85098aad5c09d",
+    "regularProspectiveJobsPassed": 2,
+    "clearProspectiveJobsPassed": 0,
+    "allFourProspectiveCasesPassed": false,
+    "producerCodeOpened": true,
+    "producerSymbolicArithmeticDecodedRetrospectively": true,
+    "producerPublicOperandMappingDecoded": false,
+    "productionShaderChanged": false,
+    "liquidGlassParityEstablished": false
+  },
+  "profile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "exactPublicProfilePreviouslyCaptured": true,
+    "exactGroupExecutionPreviouslyCaptured": false
+  },
+  "profileSelectionReason": "the already-opened small regular profile is a diagnostic, not an unseen transfer claim; its public captured-input corpus contains the known regime in which shadow support can exceed bleed support, so one structural execution can expose competing Group.margin branches without spending a fresh holdout",
+  "openedProducer": {
+    "function": "SwiftUI.SDFStyle.Group.margin.getter : CoreGraphics.CGFloat",
+    "swiftUICoreUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97",
+    "moduleOffset": 3610064,
+    "symbolByteCount": 732,
+    "instructionCount": 183,
+    "codeSHA256": "5414dac1e2dce7753af9afe072ceb3b7f938ec894df81bd621866f50d03b015d",
+    "callerFunction": "SwiftUI.SDFLayer.updateSDFEffects(for: SwiftUI.SDFStyle, at: inout Swift.Int, in: SwiftUI.DisplayList.ViewRenderer.Environment, backdropGroupID: Swift.Optional<SwiftUI.BackdropGroupID>, blend: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Blend, opacity: Swift.Float, options: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Options, gain: Swift.Float, maxColorComponent: Swift.Float) -> ()",
+    "callerReturnAfterProducerOffset": 5764,
+    "directCallInstructionOffsets": [184, 212, 324, 360, 384, 520, 596, 604, 628],
+    "directCallTargetModuleOffsets": [1330724, 20280, 748752, 20280, 20280, 20280, 20280, 14041104, 753464],
+    "stageInstructionOffsets": [188, 216, 328, 364, 388, 504, 524, 616, 620, 632, 688]
+  },
+  "unknownBeforeCapture": {
+    "groupRecordCount": null,
+    "groupRecordBytes": null,
+    "sideTableBytes": null,
+    "taggedPayloadBytes": null,
+    "discriminatorSequence": null,
+    "directCalleeSymbols": null,
+    "directCalleeCodeHashes": null,
+    "branchOperands": null,
+    "accumulatorWords": null,
+    "nestedIndirectTarget": null
+  },
+  "captureContract": {
+    "baseWriterAdapterUnchanged": true,
+    "adjacentProducerAdapterUnchanged": true,
+    "newOverlayOnly": true,
+    "selection": "all invocations of the exact opened Group.margin symbol whose immediate caller is the exact opened updateSDFEffects symbol at return offset 5764",
+    "groupSelfByteCount": 96,
+    "collectionHeaderByteCount": 32,
+    "groupRecordByteCount": 128,
+    "sideEntryByteCount": 56,
+    "taggedPayloadByteCount": 128,
+    "maximumCollectionCount": 64,
+    "maximumTag2ValueCount": 256,
+    "maximumInvocationCount": 512,
+    "maximumStageCount": 8192,
+    "maximumDirectTargetCount": 16,
+    "maximumDirectTargetByteCount": 131072,
+    "maximumTotalDirectTargetByteCount": 2097152,
+    "captureAllSelectedInvocations": true,
+    "captureDirectAndBridged0x80RecordStorage": true,
+    "captureEveryDiscriminator": true,
+    "captureEveryLoopAccumulator": true,
+    "requireExactBranchStageSequence": true,
+    "captureCaseProjectionPayloads": true,
+    "captureFixedDirectCallees": true,
+    "captureAuthenticatedIndirectCallRegisters": true,
+    "joinReturnToAdjacentSetterByThreadAndEventOrder": true,
+    "capturedMarginUsedForSelection": false,
+    "capturedCropUsedForSelection": false,
+    "capturedImageUsedForSelection": false,
+    "capturedPixelUsedForSelection": false
+  },
+  "acceptance": {
+    "requireExactProducerCode": true,
+    "requireExactCallerCallsite": true,
+    "requireCompleteSelectedInvocations": true,
+    "requireRawGroupRecords": true,
+    "requireRawSideTableAndTaggedPayloads": true,
+    "requireEveryDiscriminatorAndAccumulatorStage": true,
+    "requireExactBranchStageSequence": true,
+    "requireGetterReturnToMatchAdjacentSetterBitwise": true,
+    "requireNoValueBasedSelection": true,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_backdrop_margin_writer_execution_lldb.py",
+        "sha256": "f91ba6afb61b491d949ea5dc9d4fc1c82c165e0016aefa84db00a0b15d435ecd"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_writer_producer_lldb.py",
+        "sha256": "4e5620a157021578a0bb79f3b8cbf49eed2d754e960ecc076a046ae13d575d76"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_group_execution_lldb.py",
+        "sha256": "718075227f950e75757987225f0c5e0a9a3c64aff69a5086a4a84face45f8ada"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_group_execution.py",
+        "sha256": "2d609358164154933da7c4459ef2c89cf5256e22daeea900621b0a26dab5c761"
+      },
+      {
+        "path": "Analysis/test_capture_backdrop_margin_group_execution_lldb_source.py",
+        "sha256": "34f0f86112afb9df0fac138bc2604b87f4933eea155523a77d5ede75c1b5d0c7"
+      },
+      {
+        "path": "Analysis/test_validate_backdrop_margin_group_execution.py",
+        "sha256": "3713eccb3f015cb3226f7fd20c3fde981de0db0b1a37ca8f39586c968e195176"
+      },
+      {
+        "path": "Analysis/analyze_backdrop_margin_writer_execution_retry.py",
+        "sha256": "0bb0c59bb8cfe57e9a4ce6a5ded3c201c71801beee1f3c459ba628e261aedc08"
+      },
+      {
+        "path": "Analysis/backdrop_margin_writer_execution_retry_result.json",
+        "sha256": "1b918108551e0f9db3487b609f05e2c65fa07480a9b3094ec9f85098aad5c09d"
+      },
+      {
+        "path": "Analysis/test_analyze_backdrop_margin_writer_execution_retry.py",
+        "sha256": "cfae290a615aa687ee105688bae89792de32c64630e324483e3181c8ff9fe8d2"
+      },
+      {
+        "path": ".github/workflows/backdrop-margin-group-execution.yml",
+        "sha256": "1295647488c04cddf0bcb7dedcec323dced731c7825593de635b6df1baa3579e"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "groupExecutionMayBeOpenedOnPass": true,
+    "publicInputMarginLawMayBeDeclaredDecoded": false,
+    "unseenProfileTransferMayBeClaimed": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "independentTemporalInputGenerationMayBeClaimed": false,
+    "physicalOutputTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}

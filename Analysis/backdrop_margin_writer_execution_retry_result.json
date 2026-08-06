@@ -1,0 +1,249 @@
+{
+  "adjacentProducer": {
+    "codeSHA256": "5414dac1e2dce7753af9afe072ceb3b7f938ec894df81bd621866f50d03b015d",
+    "directCallTargetModuleOffsets": [
+      {
+        "instructionOffset": 184,
+        "targetModuleOffset": 1330724
+      },
+      {
+        "instructionOffset": 212,
+        "targetModuleOffset": 20280
+      },
+      {
+        "instructionOffset": 324,
+        "targetModuleOffset": 748752
+      },
+      {
+        "instructionOffset": 360,
+        "targetModuleOffset": 20280
+      },
+      {
+        "instructionOffset": 384,
+        "targetModuleOffset": 20280
+      },
+      {
+        "instructionOffset": 520,
+        "targetModuleOffset": 20280
+      },
+      {
+        "instructionOffset": 596,
+        "targetModuleOffset": 20280
+      },
+      {
+        "instructionOffset": 604,
+        "targetModuleOffset": 14041104
+      },
+      {
+        "instructionOffset": 628,
+        "targetModuleOffset": 753464
+      }
+    ],
+    "exactSymbolicControlFlow": [
+      "initialize binary64 accumulator to +0.0",
+      "iterate the Group collection count at storage +0x10 using 128-byte records",
+      "dispatch each copied SDFStyle record through the exact case discriminator",
+      "cases 2 and 3 contribute abs(projectedDouble) plus, for a tag-5 side payload, max(+0.0, -payload[+0x30] - payload[+0x10]); retain max(accumulator, contribution)",
+      "case 1 takes the maximum binary64 member of a tag-2 side collection and retains max(accumulator, memberMaximum)",
+      "case 21 replaces the accumulator with one projected binary64 value",
+      "case 22 invokes a nested/dynamic margin provider and replaces the accumulator with its binary64 return",
+      "other decoded case numbers contribute no margin",
+      "return the accumulator in v0 without a floating-format conversion"
+    ],
+    "function": "SwiftUI.SDFStyle.Group.margin.getter : CoreGraphics.CGFloat",
+    "identicalCodeInAllFourArtifacts": true,
+    "instructionCount": 183,
+    "moduleOffset": 3610064,
+    "publicOperandMappingDecoded": false,
+    "swiftUICoreUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97",
+    "symbolByteCount": 732,
+    "symbolicArithmeticDecoded": true,
+    "unopenedOperands": [
+      "the public SDFStyle names corresponding to discriminator values 1, 2, 3, 21, and 22",
+      "the tag-2 and tag-5 pointed payload bytes referenced by the x21 side table",
+      "the authenticated indirect case-22 callee at producer +0x268",
+      "the per-branch operands and accumulator after each executed live record"
+    ]
+  },
+  "artifacts": [
+    {
+      "artifactDigest": "sha256:4f5e4154fa1677a4efd7f59a5ea1f8e0fcb4f3bc7de59f05a00cca7c7c91bd3e",
+      "artifactID": 8972897031,
+      "artifactSizeBytes": 67791256,
+      "captureFailure": "presentation glassBackground snapshot unavailable at sample 24",
+      "case": "clear-light-materialize-circle-408-center",
+      "distinctProducerReturnWordCount": 1,
+      "eventTypeCounts": {
+        "backdropBounds": 0,
+        "copyEntry": 266,
+        "copyMarginStore": 136,
+        "marginSetter": 131
+      },
+      "jobConclusion": "failure",
+      "maximumProducerReturnF64": 0.0,
+      "maximumProducerReturnF64RawLittleEndianHex": "0000000000000000",
+      "minimumProducerReturnF64": 0.0,
+      "partialProducerObservationMayCountAsTransfer": false,
+      "producerInvocationCount": 131,
+      "producerProvenance": {
+        "allProducerReturnsEqualSetterInputsBitwise": true,
+        "allSetterInvocationsExposeExactAdjacentProducer": true,
+        "capturedMarginUsedForProducerSelection": false,
+        "directCallerCount": 1,
+        "producerCalleeCodeByteCount": 732,
+        "producerCalleeCount": 1,
+        "setterInvocationCount": 131
+      },
+      "producerSelfCollectionTagByte": 64,
+      "prospectiveMaterialLawResult": false,
+      "timelineSHA256": "7f7af5899c3d2a9580648757d25f1a26e40a6049c566efe89b154fd0e2daa522",
+      "traceSHA256": "4d1e3afef588459576d4ccc64fb40afddfacf0fa85e0375064e466ebf7d0465b",
+      "validationOutputExists": false
+    },
+    {
+      "artifactDigest": "sha256:8157b13d353062132a86d179d618beaad2852a44529694defd71cb6f506921cf",
+      "artifactID": 8972898736,
+      "artifactSizeBytes": 90846621,
+      "captureFailure": "presentation glassBackground snapshot unavailable at sample 31",
+      "case": "clear-dark-materialize-circle-640-phase-0501",
+      "distinctProducerReturnWordCount": 1,
+      "eventTypeCounts": {
+        "backdropBounds": 0,
+        "copyEntry": 252,
+        "copyMarginStore": 129,
+        "marginSetter": 124
+      },
+      "jobConclusion": "failure",
+      "maximumProducerReturnF64": 0.0,
+      "maximumProducerReturnF64RawLittleEndianHex": "0000000000000000",
+      "minimumProducerReturnF64": 0.0,
+      "partialProducerObservationMayCountAsTransfer": false,
+      "producerInvocationCount": 124,
+      "producerProvenance": {
+        "allProducerReturnsEqualSetterInputsBitwise": true,
+        "allSetterInvocationsExposeExactAdjacentProducer": true,
+        "capturedMarginUsedForProducerSelection": false,
+        "directCallerCount": 1,
+        "producerCalleeCodeByteCount": 732,
+        "producerCalleeCount": 1,
+        "setterInvocationCount": 124
+      },
+      "producerSelfCollectionTagByte": 64,
+      "prospectiveMaterialLawResult": false,
+      "timelineSHA256": "728b801ab3788d3311f42023177443a04fb66cb6bf522d5cd028bbdff0a5683b",
+      "traceSHA256": "5d3ef502922b03f077fb9144348220f275237b31c85493bd3f76f7ad21e3e364",
+      "validationOutputExists": false
+    },
+    {
+      "artifactDigest": "sha256:bb610cc16963e45aad8003b2cbe2bdc2ec35bb33ca0a8f776ed3d0daa4b126aa",
+      "artifactID": 8973005023,
+      "artifactSizeBytes": 88610815,
+      "candidateMaximumF64": 268.79999999999995,
+      "candidateMaximumF64RawLittleEndianHex": "cccccccccccc7040",
+      "case": "regular-light-materialize-circle-768-center",
+      "completeBitExactChainCount": 32,
+      "distinctProducerReturnWordCount": 96,
+      "eventTypeCounts": {
+        "backdropBounds": 320,
+        "copyEntry": 368,
+        "copyMarginStore": 212,
+        "marginSetter": 100
+      },
+      "independentValidationEqualExceptCallerPaths": true,
+      "jobConclusion": "success",
+      "maximumProducerReturnF64": 268.79999999999995,
+      "maximumProducerReturnF64RawLittleEndianHex": "cccccccccccc7040",
+      "minimumProducerReturnF64": 0.0,
+      "producerInvocationCount": 100,
+      "producerProvenance": {
+        "allProducerReturnsEqualSetterInputsBitwise": true,
+        "allSetterInvocationsExposeExactAdjacentProducer": true,
+        "capturedMarginUsedForProducerSelection": false,
+        "directCallerCount": 1,
+        "producerCalleeCodeByteCount": 732,
+        "producerCalleeCount": 1,
+        "setterInvocationCount": 100
+      },
+      "producerSelfCollectionTagByte": 64,
+      "prospectiveRegularBranchResult": true,
+      "renderMarginF32": 268.79998779296875,
+      "renderMarginF32RawLittleEndianHex": "66668643",
+      "timelineSHA256": "6b3de340f4dc1184bf59116d5d3f708b5325e69f74b75df7849c65aefdc9e35f",
+      "traceSHA256": "a09f296f20bf805cee9277f1a976668b9c36fee28ddc4af69d04ddee14fef73d",
+      "validationSHA256": "e0e52288e4a40e6b38f324ecdaecdca7cc6de0d053784f5188f4f0da311c4f8a"
+    },
+    {
+      "artifactDigest": "sha256:74938ec9011dc77c0d61aa587740056e34d8e51112ae6459b330bca02e534adb",
+      "artifactID": 8973017885,
+      "artifactSizeBytes": 71935628,
+      "candidateMaximumF64": 537.25,
+      "candidateMaximumF64RawLittleEndianHex": "0000000000ca8040",
+      "case": "regular-dark-materialize-circle-1535-center",
+      "completeBitExactChainCount": 32,
+      "distinctProducerReturnWordCount": 114,
+      "eventTypeCounts": {
+        "backdropBounds": 320,
+        "copyEntry": 400,
+        "copyMarginStore": 230,
+        "marginSetter": 118
+      },
+      "independentValidationEqualExceptCallerPaths": true,
+      "jobConclusion": "success",
+      "maximumProducerReturnF64": 537.25,
+      "maximumProducerReturnF64RawLittleEndianHex": "0000000000ca8040",
+      "minimumProducerReturnF64": 0.0,
+      "producerInvocationCount": 118,
+      "producerProvenance": {
+        "allProducerReturnsEqualSetterInputsBitwise": true,
+        "allSetterInvocationsExposeExactAdjacentProducer": true,
+        "capturedMarginUsedForProducerSelection": false,
+        "directCallerCount": 1,
+        "producerCalleeCodeByteCount": 732,
+        "producerCalleeCount": 1,
+        "setterInvocationCount": 118
+      },
+      "producerSelfCollectionTagByte": 64,
+      "prospectiveRegularBranchResult": true,
+      "renderMarginF32": 537.25,
+      "renderMarginF32RawLittleEndianHex": "00500644",
+      "timelineSHA256": "068bad1a968b9cb1dc4b86bf38fb6c7891b6fa00607b14c47a2ac8f91352c4d7",
+      "traceSHA256": "5cbc0ba5b3a155a5e6ad950b559f01284e998923f7c14476c95866b3115cf5b6",
+      "validationSHA256": "6a2360eb6326731e3c5226be84b033362f0affd608c2cbef524f1c8581af24e4"
+    }
+  ],
+  "backdropMarginWriterExecutionRetryAnalysisSchemaVersion": 1,
+  "classification": "immutable mixed retry result: two regular prospective jobs pass bitwise, two clear jobs preserve valid producer observations but fail before validation because the presentation snapshot disappears; the opened producer code receives retrospective symbolic decoding only",
+  "diagnosis": {
+    "allFourProspectiveCasesPassed": false,
+    "clearFailureClass": "timeline/presentation-state transport",
+    "clearProducerCodeAndReturnCaptureCompleted": true,
+    "clearProspectiveJobsPassed": 0,
+    "clearTraceFailureCount": 0,
+    "clearValidationSkipped": true,
+    "nextStructuralCapture": "capture each producer discriminator, raw 128-byte record, x21 side table payload, branch operands, accumulator, and nested case-22 target",
+    "partialClearReturnsMayNotBePromotedToProspectiveTransfer": true,
+    "producerSelfSnapshotLimitation": "the 96-byte value contains collection headers and pointers, but the pointed 128-byte records and tagged payloads were not retained",
+    "regularProspectiveJobsPassed": 2
+  },
+  "run": {
+    "completedAtUtc": "2026-08-06T15:07:38Z",
+    "conclusion": "failure",
+    "createdAtUtc": "2026-08-06T15:01:10Z",
+    "headSHA": "16102867187c66f20b560bb9a36667bdd3ae6115",
+    "runID": 31113785381,
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31113785381"
+  },
+  "sealedConclusion": {
+    "adjacentProducerCodeOpened": true,
+    "adjacentProducerPublicInputLawDecoded": false,
+    "adjacentProducerSymbolicArithmeticDecoded": true,
+    "clearBranchProspectiveBitExact": false,
+    "independentTemporalInputGenerationPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "materialSpecificFourCaseGatePassed": false,
+    "physicalOutputTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "regularBranchProspectiveBitExactInTwoCases": true
+  }
+}

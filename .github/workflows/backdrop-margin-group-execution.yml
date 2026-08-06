@@ -1,0 +1,185 @@
+name: Decode backdrop margin Group execution
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backdrop-margin-group-execution-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  group_execution:
+    name: regular-light-materialize-circle-127-center
+    runs-on: macos-26
+    timeout-minutes: 90
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-127-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_BACKDROP_MARGIN_WRITER_TRACE_OUTPUT: >-
+        backdrop-margin-group-execution/backdrop-margin-writer-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen diagnostic contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p backdrop-margin-group-execution
+          set -o pipefail
+          for pattern in \
+            test_capture_backdrop_margin_writer_execution_lldb_source.py \
+            test_capture_backdrop_margin_writer_producer_lldb_source.py \
+            test_capture_backdrop_margin_group_execution_lldb_source.py \
+            test_validate_backdrop_margin_writer_execution.py \
+            test_validate_backdrop_margin_writer_execution_retry.py \
+            test_validate_backdrop_margin_group_execution.py \
+            test_analyze_backdrop_margin_writer_execution_retry.py \
+            test_backdrop_margin_group_execution_preregistration.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a backdrop-margin-group-execution/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o backdrop-margin-group-execution/MatrixBridge.o 2>&1 |
+            tee backdrop-margin-group-execution/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            backdrop-margin-group-execution/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a backdrop-margin-group-execution/build.log
+
+      - name: Capture exact Group margin execution
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path backdrop-margin-group-execution/runtime-stdout.log' \
+            -o 'settings set target.error-path backdrop-margin-group-execution/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_backdrop_margin_group_execution_lldb.py' \
+            -o run \
+            -o 'script capture_backdrop_margin_group_execution_lldb.finalize()' \
+            -- ./glass-transition-introspect backdrop-margin-group-execution \
+            > backdrop-margin-group-execution/lldb-group-execution.log 2>&1
+
+      - name: Validate exact Group margin execution
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_backdrop_margin_group_execution.py \
+            backdrop-margin-group-execution/backdrop-margin-writer-trace.json \
+            Analysis/backdrop_margin_group_execution_preregistration.json \
+            --output backdrop-margin-group-execution/group-margin-validation.json
+
+      - name: Upload complete Group margin evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-backdrop-margin-group-execution-${{ github.run_id }}
+          path: backdrop-margin-group-execution
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce the diagnostic gate
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s backdrop-margin-group-execution/group-margin-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "backdrop-margin-group-execution/"
+                  "group-margin-validation.json"
+              ).read_text(encoding="utf-8")
+          )
+          profile = result.get("profile", {})
+          producer = result.get("producer", {})
+          execution = result.get("execution", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get("backdropMarginGroupExecutionValidationSchemaVersion")
+                  != 1
+              or result.get("conclusion") != "success"
+              or profile.get("material") != "regular"
+              or profile.get("appearance") != "light"
+              or profile.get("direction") != "materialize"
+              or profile.get("geometry") != "circle-127-center"
+              or producer.get("moduleOffset") != 0x3715D0
+              or producer.get("symbolByteCount") != 732
+              or producer.get("directCallCount") != 9
+              or producer.get("uniqueDirectTargetCount", 0) < 1
+              or producer.get("completeDirectTargetCount", 0) < 1
+              or execution.get("invocationCount", 0) < 1
+              or execution.get("recordCount", 0) < 1
+              or execution.get("stageCount", 0) < 1
+              or not execution.get("discriminatorCaseCounts")
+              or execution.get("allSelectedInvocationsComplete") is not True
+              or execution.get(
+                  "allGetterReturnsMatchAdjacentSetterBitwise"
+              ) is not True
+              or execution.get("capturedMarginUsedForSelection") is not False
+              or sealed.get("exactGroupMarginExecutionCaptured") is not True
+              or sealed.get("publicInputMarginLawDecoded") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("Group.margin execution diagnostic gate differs")
+          PY

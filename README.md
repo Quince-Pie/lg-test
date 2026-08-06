@@ -7556,3 +7556,88 @@ production from captured transition inputs and opens the next arithmetic
 callee; it does not independently generate the transition inputs, prove
 physical Retina/color/compositor transfer, authorize a production shader
 change, or establish real-Walle frame parity.
+
+### Mixed writer retry and exact `Group.margin` opening
+
+Run `31113785381`, from commit `1610286`, is a mixed result and therefore does
+not pass the four-case gate. Both regular jobs pass their complete prospective
+checks. Regular/light circle-768 joins 32 exact chains at binary64
+`268.79999999999995` (`cccccccccccc7040`) and binary32
+`268.79998779296875` (`66668643`). Regular/dark circle-1535 joins 32 exact
+chains at binary64 `537.25` (`0000000000ca8040`) and binary32 `537.25`
+(`00500644`). Independent local validation under `nix develop` reproduces both
+CI results after removing only the caller-supplied trace and timeline paths.
+
+The clear jobs did not reach validation. Clear/light lost the presentation
+`glassBackground` snapshot at sample 24 and clear/dark lost it at sample 31;
+both processes exited before the static carrier produced any `get_bounds`
+event. Their trace extensions finalized without an LLDB failure and retained
+131 and 124 exact-zero getter-to-setter returns respectively, but those partial
+observations cannot be relabelled as prospective clear transfer. There is no
+validation JSON for either job. The overall GitHub run is correctly red.
+
+All four artifacts independently identify the adjacent producer as
+
+```text
+SwiftUI.SDFStyle.Group.margin.getter : CoreGraphics.CGFloat
+```
+
+at SwiftUICore module offset `0x3715d0`. Its complete 732 bytes/183
+instructions have SHA-256
+`5414dac1e2dce7753af9afe072ceb3b7f938ec894df81bd621866f50d03b015d`
+in every artifact. Retrospective instruction decoding establishes this exact
+symbolic control flow:
+
+```text
+accumulator = +0.0
+for each 128-byte Group record:
+    case = discriminate(record)
+    case 2 or 3:
+        contribution = abs(projectedDouble)
+        if the referenced side word has tag 5:
+            contribution += max(+0.0, -payload[0x30] - payload[0x10])
+        accumulator = max(accumulator, contribution)
+    case 1:
+        contribution = max(all binary64 values in a tag-2 side collection)
+        accumulator = max(accumulator, contribution)
+    case 21:
+        accumulator = projectedDouble
+    case 22:
+        accumulator = nested dynamic margin return
+return accumulator as binary64
+```
+
+The comparisons and selections above are the exact ARM64 operation order, not
+an algebraic fit. The opening does not yet map discriminator numbers to public
+`SDFStyle` case names, because the first retry retained the 96-byte Group value
+but not the pointed record array, 56-byte side table, tag-2/tag-5 payloads, or
+per-branch registers. The mixed run and code decode are immutable in
+`Analysis/backdrop_margin_writer_execution_retry_result.json`; their
+reproducible analyzer is
+`Analysis/analyze_backdrop_margin_writer_execution_retry.py`.
+
+The bounded successor is frozen in
+`Analysis/backdrop_margin_group_execution_preregistration.json`. Workflow
+`.github/workflows/backdrop-margin-group-execution.yml` deliberately reuses the
+already-opened regular/light circle-127 profile as a diagnostic rather than
+spending an unseen transfer case. That small profile exercises the regime in
+which shadow support can beat bleed support. The overlay captures every getter
+invocation from the exact `updateSDFEffects+5760` call, all raw Group records,
+the complete side table and tag-2/tag-5 payloads, every discriminator and
+accumulator stage, all fixed direct callees, the authenticated indirect-call
+registers, and the bitwise join from getter return to the adjacent setter. All
+those live values and callee identities are null at freeze time; no margin,
+crop, image, or pixel selects them.
+
+Even a successful diagnostic only closes the getter's live operand mapping for
+the discriminator branches actually exercised; any unobserved case remains a
+separate structural gate. The next gates remain: freeze the resulting
+public-input decoder and pass new regular and clear holdouts; repair clear
+timeline transport without changing Apple state; independently generate the
+animated private inputs, mesh/SDF/source geometry, and backdrop pyramid; pass
+physical Retina/color/pixel/compositor transfer; and compare newly captured
+Apple frames with real Walle frames at zero unequal bytes. Only those gates can
+authorize renderer integration.
+Tracy, VRAM, throughput, and latency work remains downstream of immutable
+zero-byte image gates. The production shader is still untouched at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
