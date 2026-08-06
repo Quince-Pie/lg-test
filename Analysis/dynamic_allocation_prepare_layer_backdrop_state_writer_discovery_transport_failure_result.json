@@ -1,0 +1,48 @@
+{
+  "prepareLayerBackdropStateWriterDiscoveryTransportFailureResultSchemaVersion": 1,
+  "classification": "failed pre-capture transport execution retained without semantic acceptance; the repository-external production-shader quality-lock test attempted to read ../shaders/frag.glsl in the standalone lg-test checkout, so build, LLDB capture, and validation never ran",
+  "run": {
+    "id": 31090521879,
+    "headSHA": "02ef0852c8401e8c8aa844da7967cdf5697114e9",
+    "jobID": 92580151611,
+    "conclusion": "failure",
+    "artifactID": 8963222210,
+    "artifactDigest": "sha256:ad757cdf51c511e9e4396166249a65bb057cd26bb4d88d6ed8667414e9a74df7",
+    "artifactByteCount": 4602,
+    "contractsLogSHA256": "c23c759cad1a8fe993560e225567103e0dffee66e7025484ca43740bf6f16987",
+    "failedJobLogSHA256": "5d9e4c88326c13d13456b1ce77a269ac3ae65f353775e7d692957e3e146d493e"
+  },
+  "failure": {
+    "stage": "Verify frozen backdrop-state contracts",
+    "test": "test_production_shader_quality_lock_is_unchanged",
+    "exception": "FileNotFoundError",
+    "missingPath": "/Users/runner/work/lg-test/shaders/frag.glsl",
+    "cause": "lg-test is checked out as a standalone repository in CI, so the parent Walle shader path intentionally present in the preregistration is unavailable",
+    "contractsBeforeFailurePassed": true,
+    "buildRan": false,
+    "lldbCaptureRan": false,
+    "semanticOutputOpened": false,
+    "objectFieldsOpened": false,
+    "symbolInventoryOpened": false
+  },
+  "retry": {
+    "change": "assert the immutable expected shader SHA-256 in every checkout and additionally hash the real external shader only when that parent-repository path exists",
+    "captureImplementationChanged": false,
+    "validatorChanged": false,
+    "workflowChanged": false,
+    "preregisteredUnknownsChanged": false,
+    "selectionChanged": false,
+    "breakpointsChanged": false,
+    "instructionStepsChanged": false
+  },
+  "authority": {
+    "transportFailureMayBeClaimed": true,
+    "liveBackdropFieldCaptureMayBeClaimed": false,
+    "selectedBackdropBoundsReplayMayBeClaimed": false,
+    "writerIdentityOrArithmeticMayBeClaimed": false,
+    "dynamicTopologyLawMayBeClaimed": false,
+    "regularGeometryTransferMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}

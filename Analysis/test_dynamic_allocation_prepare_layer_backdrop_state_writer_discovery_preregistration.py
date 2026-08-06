@@ -96,8 +96,13 @@ class BackdropStateWriterDiscoveryPreregistrationTests(unittest.TestCase):
         path = (ROOT / shader["externalPath"]).resolve()
         self.assertFalse(shader["changed"])
         self.assertEqual(
-            hashlib.sha256(path.read_bytes()).hexdigest(), shader["sha256"]
+            shader["sha256"],
+            "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
         )
+        if path.is_file():
+            self.assertEqual(
+                hashlib.sha256(path.read_bytes()).hexdigest(), shader["sha256"]
+            )
 
 
 if __name__ == "__main__":
