@@ -1,0 +1,326 @@
+{
+  "artifact": {
+    "artifactID": 8974080154,
+    "digest": "sha256:6c3ad6261166570c5016c07abd916d22360359dd10c624cb750f74940bdd82e6",
+    "files": [
+      {
+        "byteCount": 6489856,
+        "label": "trace",
+        "name": "backdrop-margin-writer-trace.json",
+        "sha256": "3f1494ad1d1e3fe547252b82ed9744667fa621a34b57b5810613d433db7e792c"
+      },
+      {
+        "byteCount": 46770484,
+        "label": "timeline",
+        "name": "transition-timeline.json",
+        "sha256": "0a7db5d9416c4c69f19b608de73e9225e7edf8629e112de2be0d07cab1adc711"
+      },
+      {
+        "byteCount": 2863,
+        "label": "validation",
+        "name": "group-margin-validation.json",
+        "sha256": "8b974c97d28c92ec3a0adf9919ff1e2c7108e2199fbd658e917f668d6766cef2"
+      },
+      {
+        "byteCount": 7557,
+        "label": "contractsLog",
+        "name": "contracts.log",
+        "sha256": "9b191cf091d32f755403352d612e8421b07d2a9d7b67c95d8b028c755103ce16"
+      },
+      {
+        "byteCount": 718,
+        "label": "lldbLog",
+        "name": "lldb-group-execution.log",
+        "sha256": "5fecafd93bd43fdb26601de3c932d2cd596c8a610194ae5ac4192850f8b98f89"
+      }
+    ],
+    "name": "liquid-glass-backdrop-margin-group-execution-31118243811",
+    "sizeBytes": 87254614
+  },
+  "backdropMarginGroupExecutionAnalysisSchemaVersion": 1,
+  "candidateCorroboration": {
+    "binary64Tolerance": "zero bits",
+    "frozenCandidate": "max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))",
+    "interpretation": "exact semantic corroboration only: all 32 record values (8 distinct binary64 words) occur among the 76 live returns, but the LLDB and timeline streams have no authenticated per-frame temporal join",
+    "liveDistinctReturnWordCount": 72,
+    "liveInvocationCount": 76,
+    "matches": [
+      {
+        "liveInvocationIndices": [
+          1,
+          73,
+          74
+        ],
+        "rawLittleEndianHex": "0000000000c05440",
+        "requiredMarginF64": 83.0,
+        "timelineRecordIndices": [
+          32
+        ]
+      },
+      {
+        "liveInvocationIndices": [
+          57
+        ],
+        "rawLittleEndianHex": "00000030c90b4d40",
+        "requiredMarginF64": 58.09207725524902,
+        "timelineRecordIndices": [
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22
+        ]
+      },
+      {
+        "liveInvocationIndices": [
+          20
+        ],
+        "rawLittleEndianHex": "0000007037c73140",
+        "requiredMarginF64": 17.778189659118652,
+        "timelineRecordIndices": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "liveInvocationIndices": [
+          71
+        ],
+        "rawLittleEndianHex": "0000007cdf195440",
+        "requiredMarginF64": 80.40426540374756,
+        "timelineRecordIndices": [
+          30,
+          31
+        ]
+      },
+      {
+        "liveInvocationIndices": [
+          44
+        ],
+        "rawLittleEndianHex": "00000098bfd34440",
+        "requiredMarginF64": 41.65428447723389,
+        "timelineRecordIndices": [
+          14,
+          15
+        ]
+      },
+      {
+        "liveInvocationIndices": [
+          67
+        ],
+        "rawLittleEndianHex": "0000009c91585240",
+        "requiredMarginF64": 73.38388729095459,
+        "timelineRecordIndices": [
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29
+        ]
+      },
+      {
+        "liveInvocationIndices": [
+          40
+        ],
+        "rawLittleEndianHex": "000000d064264240",
+        "requiredMarginF64": 36.29995155334473,
+        "timelineRecordIndices": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      {
+        "liveInvocationIndices": [
+          24
+        ],
+        "rawLittleEndianHex": "000000f042473540",
+        "requiredMarginF64": 21.27836513519287,
+        "timelineRecordIndices": [
+          5,
+          6
+        ]
+      }
+    ],
+    "perFrameTemporalJoinCaptured": false,
+    "prospectiveTransferAuthority": false,
+    "sameOpenedProfileDiagnostic": true,
+    "timelineDistinctWordCount": 8,
+    "timelineDistinctWordsOccurringInLiveReturns": 8,
+    "timelineRecordCount": 32,
+    "timelineRecordsWhoseWordOccursInLiveReturns": 32
+  },
+  "case22": {
+    "authenticatedIndirectModifierRaw": 13534161353748195992,
+    "authenticatedIndirectTargetAddress": 9366203476,
+    "discriminatorCaseCounts": {
+      "22": 76
+    },
+    "invocationCount": 76,
+    "projectionFirstWordEqualsIndirectObjectPointerCount": 76,
+    "sideTagCounts": {
+      "10": 76
+    },
+    "swiftUICoreModuleOffset": 7781460,
+    "targetCodeCaptured": false,
+    "targetInstructionExecutionCaptured": false,
+    "targetSymbolCaptured": false,
+    "unexercisedDiscriminatorCases": [
+      1,
+      2,
+      3,
+      21
+    ]
+  },
+  "classification": "immutable successful retrospective execution diagnostic for one already-opened regular/light profile; exact case-22 execution is captured, while its dynamic callee arithmetic and product parity remain open",
+  "directTargets": [
+    {
+      "codeSHA256": "5272864b698cd0ef8dfe1781cb917ed1dc015539f8881ebf619e6ff5521ce06b",
+      "completeCodeCaptured": true,
+      "function": "getEnumTag value witness for SwiftUI.GraphicsFilter",
+      "symbolByteCount": 36
+    },
+    {
+      "codeSHA256": "90846829dff37f071883d4bc6bd152a473d878c8ad87b97b004a9ccd61ee3df1",
+      "completeCodeCaptured": true,
+      "function": "outlined enum project data for load of SwiftUI.GraphicsFilter",
+      "symbolByteCount": 20
+    },
+    {
+      "codeSHA256": "1953ad6600ff2283079247e305a19d58bf92dc5c25d7fb1eb3738cc504b421d7",
+      "completeCodeCaptured": true,
+      "function": "outlined init with copy of SwiftUI.GraphicsFilter",
+      "symbolByteCount": 84
+    },
+    {
+      "codeSHA256": "ce1a9a30831c0408f792355805edd1ef2ed53e2e06a39eb33a09cc1da8952617",
+      "completeCodeCaptured": true,
+      "function": "protocol witness for Swift.OptionSet.init(rawValue: \u03c4_0_0.RawValue) -> \u03c4_0_0 in conformance SwiftUI.DisplayList.Properties : Swift.OptionSet in SwiftUI",
+      "symbolByteCount": 16
+    },
+    {
+      "codeSHA256": "c6257a9d1a3ecb4a5afdad318951df1a214b1d8b83979e0d512db58d52aeee55",
+      "completeCodeCaptured": true,
+      "function": "outlined destroy of SwiftUI.GraphicsFilter",
+      "symbolByteCount": 76
+    }
+  ],
+  "independentValidationEqualExceptCallerPaths": true,
+  "nextExactGate": "capture the complete SwiftUICore symbol at module offset 0x76bc54, its case-22 object bytes, and one structurally selected active instruction trace without selecting on a margin value",
+  "openedFacts": {
+    "allGetterReturnsMatchAdjacentSetterBitwise": true,
+    "case22TargetStableAcrossAllInvocations": true,
+    "groupCollectionTag": 64,
+    "onlyDiscriminatorCaseObserved": 22,
+    "recordsPerInvocation": 1,
+    "sideEntriesPerInvocation": 1
+  },
+  "run": {
+    "conclusion": "success",
+    "event": "push",
+    "headSHA": "f4054b43b1a1b6c16f78c4e78e6350e7678a8763",
+    "job": "regular-light-materialize-circle-127-center",
+    "jobID": 92673064584,
+    "runID": 31118243811,
+    "workflow": "Decode backdrop margin Group execution"
+  },
+  "sealedConclusion": {
+    "case22TargetArithmeticDecoded": false,
+    "case22TargetIdentityOpened": true,
+    "discriminatorCases1To3And21LiveMapped": false,
+    "frozenCandidateExactlyCorroboratedOnOpenedProfile": true,
+    "groupMarginCase22LiveExecutionCaptured": true,
+    "independentTemporalInputGenerationPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "physicalOutputTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "prospectiveUnseenProfileTransferPassed": false,
+    "publicInputMarginLawDecoded": false
+  },
+  "validatedExecution": {
+    "backdropMarginGroupExecutionValidationSchemaVersion": 1,
+    "classification": "bounded output-blind live operand diagnostic for the already-opened Group.margin getter; public-input arithmetic and product parity remain open",
+    "conclusion": "success",
+    "execution": {
+      "allGetterReturnsMatchAdjacentSetterBitwise": true,
+      "allSelectedInvocationsComplete": true,
+      "capturedMarginUsedForSelection": false,
+      "collectionTagByteCounts": {
+        "64": 76
+      },
+      "discriminatorCaseCounts": {
+        "22": 76
+      },
+      "invocationCount": 76,
+      "recordCount": 76,
+      "sideEntryCount": 76,
+      "stageCount": 456
+    },
+    "inheritedWriter": {
+      "eventCount": 866,
+      "exactCodeGateCount": 3,
+      "producerProvenance": {
+        "allProducerReturnsEqualSetterInputsBitwise": true,
+        "allSetterInvocationsExposeExactAdjacentProducer": true,
+        "capturedMarginUsedForProducerSelection": false,
+        "directCallerCount": 1,
+        "producerCalleeCodeByteCount": 732,
+        "producerCalleeCount": 1,
+        "setterInvocationCount": 76
+      }
+    },
+    "inputs": {
+      "preregistration": "Analysis/backdrop_margin_group_execution_preregistration.json",
+      "trace": "../artifacts/gh-run-31118243811/backdrop-margin-writer-trace.json"
+    },
+    "producer": {
+      "breakpointCount": 12,
+      "codeSHA256": "5414dac1e2dce7753af9afe072ceb3b7f938ec894df81bd621866f50d03b015d",
+      "completeDirectTargetCount": 5,
+      "directCallCount": 9,
+      "directTargetFunctions": [
+        "getEnumTag value witness for SwiftUI.GraphicsFilter",
+        "outlined enum project data for load of SwiftUI.GraphicsFilter",
+        "outlined init with copy of SwiftUI.GraphicsFilter",
+        "protocol witness for Swift.OptionSet.init(rawValue: \u03c4_0_0.RawValue) -> \u03c4_0_0 in conformance SwiftUI.DisplayList.Properties : Swift.OptionSet in SwiftUI",
+        "outlined destroy of SwiftUI.GraphicsFilter"
+      ],
+      "function": "SwiftUI.SDFStyle.Group.margin.getter : CoreGraphics.CGFloat",
+      "moduleOffset": 3610064,
+      "swiftUICoreUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97",
+      "symbolByteCount": 732,
+      "uniqueDirectTargetCount": 5
+    },
+    "profile": {
+      "appearance": "light",
+      "diagnosticProfilePreviouslyOpened": true,
+      "direction": "materialize",
+      "geometry": "circle-127-center",
+      "groupExecutionFrozenBeforeCapture": true,
+      "material": "regular"
+    },
+    "sealedConclusion": {
+      "capturedInputOpticalParityPassed": false,
+      "exactGroupMarginExecutionCaptured": true,
+      "independentTemporalInputGenerationPassed": false,
+      "independentWalleZeroByteFrameParityPassed": false,
+      "liquidGlassParityEstablished": false,
+      "physicalOutputTransferPassed": false,
+      "productionShaderAuthorized": false,
+      "prospectiveUnseenProfileTransferPassed": false,
+      "publicInputMarginLawDecoded": false,
+      "publicSDFStyleCaseNamesDecoded": false
+    }
+  }
+}
