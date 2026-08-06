@@ -1,0 +1,91 @@
+{
+  "prepareLayerFilterMapBounds513PreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T04:19:40Z",
+  "classification": "retrospective diagnostic transfer of the already frozen output-blind FilterOp instruction trace to the 513-point geometry; the geometry was selected because the archived replay exposes binary64 endpoint-order differences, so this run may reveal operands and arithmetic but cannot serve as an unchanged blind repeat or a general parity gate",
+  "antecedent": {
+    "runID": 31070080768,
+    "headSHA": "38829224b269e747b77a5f09a464e659408df5a9",
+    "conclusion": "success",
+    "artifactID": 8955408760,
+    "artifactName": "liquid-glass-prepare-layer-filter-map-bounds-31070080768",
+    "artifactDigest": "sha256:d5cfb2b82d7cf44e072c23bb247aa47fe1f0b7cf0266de92272b505d7a95cd4a",
+    "traceSHA256": "37aefd5f2b21c2ef3b0c8b8b51778cfa670c3e5f71e76e526ade0c899dfed5a7",
+    "timelineSHA256": "19dd416efbc301752c6bb8a777ec18e5256aea954b4f9c41a51de348139338a5",
+    "instructionStatesSHA256": "9c05f09a1f306ff3ff65e02649ee601a4f4cbc7fc5efe7aef2f75b37a7e34886",
+    "filterReturnMatchesProducerBitForBit": true,
+    "exactCrossCorpusReplayEstablished": false,
+    "liquidGlassParityEstablished": false
+  },
+  "diagnosticTarget": {
+    "geometry": "circle-513-center",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "dynamicCallOffset": 10340,
+    "dynamicReturnOffset": 10344,
+    "targetDispatchOrdinal": 4,
+    "filterFunction": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+    "filterRelativeToPrepareLayer": -61056,
+    "filterSymbolByteCount": 788,
+    "filterCodeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "geometryChoiceUsedPriorObservedResiduals": true,
+    "cropOrOutputValuesUsedForInRunSelection": false
+  },
+  "diagnosticQuestionsFrozenBeforeDispatch": [
+    "What exact first rectangle enters the second SDF and fourth Filter dispatch for sample two?",
+    "Does the 513-point Filter path execute the same instruction and opaque-boundary sequence as the retained 1025-point path?",
+    "What exact binary64 source-layer bounds are loaded by GlassBackgroundFilter::DOD at offsets +0x48 and +0x58?",
+    "Does replaying the retained instruction order from those live operands reproduce all four returned producer qwords exactly?"
+  ],
+  "captureInvariants": {
+    "captureImplementationChangedFromSuccessful1025Run": false,
+    "validatorImplementationChangedFromSuccessful1025Run": false,
+    "onlyWorkflowGeometryAndArtifactPathsChanged": true,
+    "selectionRemainsStructuralAndOutputBlindWithinRun": true,
+    "allSevenPreviouslyHashedArithmeticScopesRemainOpen": true,
+    "completeScalarAndSIMDRegistersBeforeAndAfterEachInstruction": true,
+    "callerRoleBytesBeforeAndAfterEachInstruction": 2048,
+    "outputBytesBeforeAndAfterEachInstruction": 512
+  },
+  "acceptance": {
+    "exactCodeAndExecutionChainRequired": true,
+    "filterReturnMustMatchIndependentProducerBitForBit": true,
+    "diagnosticMayAuthorizeArithmeticDecoderRefinement": true,
+    "unchangedBlindRepeatMayBeClaimed": false,
+    "allCropHoldoutsMayBeClaimed": false,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_filter_map_bounds_lldb.py",
+        "sha256": "0755924cd34936f6cc433d1efe322989229f94423a832107a73ae087da0c1320"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_filter_map_bounds.py",
+        "sha256": "24fd0d7df9912738e3914eb146f5c4959c7bf737fc69a52ff10577fba88a19cc"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-filter-map-bounds-513.yml",
+        "sha256": "d21eeb0c5fb694fee8c285ed725f31d463bb5bacec80692b839539b4ab0630aa"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_filter_map_bounds_preregistration.json",
+        "sha256": "7242833deeb837a2da9d3183b71a2ae986718afa936be2fd8a2930f317de2651"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}
