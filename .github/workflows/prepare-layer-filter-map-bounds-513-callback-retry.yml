@@ -1,0 +1,204 @@
+name: Retry 513-point FilterOp callbacks
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: prepare-layer-filter-map-bounds-513-callback-retry-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  filter-map-bounds-513-callback-retry:
+    name: callback-visible-output-blind-513-dispatch
+    runs-on: macos-26
+    timeout-minutes: 180
+    env:
+      LG_GLASS_MATERIAL: clear
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-513-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_MASK_CAPTURE_MODE: selected
+      LG_PREPARE_LAYER_MASK_INVENTORY_VALIDATION: >-
+        Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-filter-map-bounds-513-callback-retry/prepare-layer-filter-map-bounds-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify prospective FilterOp contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-filter-map-bounds-513-callback-retry
+          set -o pipefail
+          for pattern in \
+            test_capture_prepare_layer_crop_transfer_lldb_source.py \
+            test_validate_prepare_layer_crop_transfer.py \
+            test_capture_prepare_layer_crop_union_operand_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py \
+            test_analyze_prepare_layer_crop_policy_holdout_callback_retry.py \
+            test_capture_prepare_layer_mask_instruction_trace_lldb_source.py \
+            test_capture_prepare_layer_mask_inventory_calibration_lldb_source.py \
+            test_validate_prepare_layer_mask_instruction_inventory.py \
+            test_analyze_prepare_layer_mask_instruction_inventory.py \
+            test_dynamic_allocation_prepare_layer_mask_inventory_selected_trace_result.py \
+            test_capture_prepare_layer_crop_producer_callee_lldb_source.py \
+            test_validate_prepare_layer_crop_producer_callee.py \
+            test_dynamic_allocation_prepare_layer_crop_producer_callee_preregistration.py \
+            test_dynamic_allocation_prepare_layer_crop_producer_callee_callback_visibility_failure_result.py \
+            test_capture_prepare_layer_crop_producer_callee_callback_retry_lldb_source.py \
+            test_dynamic_allocation_prepare_layer_crop_producer_callee_callback_retry_preregistration.py \
+            test_dynamic_allocation_prepare_layer_crop_producer_callee_callback_retry_result.py \
+            test_capture_prepare_layer_filter_map_bounds_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds.py \
+            test_dynamic_allocation_prepare_layer_filter_map_bounds_preregistration.py \
+            test_dynamic_allocation_prepare_layer_filter_map_bounds_513_preregistration.py \
+            test_capture_prepare_layer_filter_map_bounds_513_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds_513.py \
+            test_dynamic_allocation_prepare_layer_filter_map_bounds_513_geometry_guard_failure_result.py \
+            test_dynamic_allocation_prepare_layer_filter_map_bounds_513_retry_preregistration.py \
+            test_capture_prepare_layer_filter_map_bounds_513_callback_retry_lldb_source.py \
+            test_dynamic_allocation_prepare_layer_filter_map_bounds_513_callback_visibility_failure_result.py \
+            test_dynamic_allocation_prepare_layer_filter_map_bounds_513_callback_retry_preregistration.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a transition-filter-map-bounds-513-callback-retry/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-filter-map-bounds-513-callback-retry/MatrixBridge.o 2>&1 |
+            tee transition-filter-map-bounds-513-callback-retry/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-filter-map-bounds-513-callback-retry/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-filter-map-bounds-513-callback-retry/build.log
+
+      - name: Capture structurally selected FilterOp execution
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-filter-map-bounds-513-callback-retry/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-filter-map-bounds-513-callback-retry/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_filter_map_bounds_513_callback_retry_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_filter_map_bounds_513_callback_retry_lldb.trace_selected_filter_map_bounds()' \
+            -o 'script capture_prepare_layer_filter_map_bounds_513_callback_retry_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-filter-map-bounds-513-callback-retry \
+            > transition-filter-map-bounds-513-callback-retry/lldb-filter-map-bounds.log 2>&1
+
+      - name: Validate FilterOp ownership gate
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_filter_map_bounds_513.py \
+            transition-filter-map-bounds-513-callback-retry/prepare-layer-filter-map-bounds-trace.json \
+            transition-filter-map-bounds-513-callback-retry/transition-timeline.json \
+            Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json \
+            --output transition-filter-map-bounds-513-callback-retry/filter-map-bounds-validation.json
+
+      - name: Upload FilterOp evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-prepare-layer-filter-map-bounds-513-callback-retry-${{ github.run_id }}
+          path: transition-filter-map-bounds-513-callback-retry
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce FilterOp ownership gate
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s transition-filter-map-bounds-513-callback-retry/filter-map-bounds-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(
+              Path("transition-filter-map-bounds-513-callback-retry/filter-map-bounds-validation.json")
+              .read_text(encoding="utf-8")
+          )
+          selection = result.get("selection", {})
+          target = result.get("filter", {})
+          correlation = result.get("structuralCorrelation", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get("prepareLayerFilterMapBoundsValidationSchemaVersion") != 1
+              or result.get("conclusion") != "success"
+              or result.get("prospectiveCaptureIntegrityGatePassed") is not True
+              or selection.get("markerInterval") != 2
+              or selection.get("qualifiedHelperOrdinal") != 14
+              or selection.get("dynamicCallOffset") != 0x2864
+              or selection.get("dispatchOrdinal") != 4
+              or selection.get("cropValuesUsedForSelection") is not False
+              or selection.get("outputValuesUsedForSelection") is not False
+              or target.get("relativeToPrepareLayer") != -61056
+              or target.get("symbolByteCount") != 788
+              or target.get("codeSHA256") != "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0"
+              or target.get("callerInstructionCount", 0) <= 0
+              or target.get("filterInstructionCount", 0) <= 0
+              or correlation.get("sampleIndex") != 2
+              or correlation.get("changedQwordOffsets") != [0, 8, 16, 24]
+              or correlation.get("filterReturnMatchesProducerBitForBit") is not True
+              or sealed.get("filterMapBoundsOwnsSelectedFloatingProducer") is not True
+              or sealed.get("exactFilterMapBoundsSemanticsDecoded") is not False
+              or sealed.get("unchangedRepeatPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("FilterOp map-bounds evidence differs")
+          PY
+

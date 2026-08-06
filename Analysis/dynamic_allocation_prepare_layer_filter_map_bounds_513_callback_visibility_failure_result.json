@@ -1,0 +1,53 @@
+{
+  "prepareLayerFilterMapBounds513CallbackVisibilityFailureResultSchemaVersion": 1,
+  "classification": "immutable null retry result: the 513 geometry guard was successfully rebound, but LLDB stopped at the inherited prepare_layer entry because dependency-module callback names were not visible through the top-level imported adapter",
+  "run": {
+    "id": 31071398653,
+    "headSHA": "02fda7d69f1f77cd6516f8bc2ec927a160e1d45c",
+    "workflowPath": ".github/workflows/prepare-layer-filter-map-bounds-513-retry.yml",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobID": 92519910668
+  },
+  "artifact": {
+    "id": 8955813963,
+    "name": "liquid-glass-prepare-layer-filter-map-bounds-513-retry-31071398653",
+    "sizeBytes": 92408033,
+    "digest": "sha256:5df3db1ca604d0022dc609d85f76d0f2368717767241ef8059563b59cfaaec27",
+    "traceSHA256": "bde467a92e3080bd38c3e3259bce2381e06ee7eb8197be1fee566534039ddd32",
+    "timelineSHA256": "f84152a0f34f48c25bedd63b6a9e6511cb40acb44a490e175ebd55d4139fd8f6",
+    "contractsLogSHA256": "c4131ad63ba246e7fb073bc375d4a49257d7dff111303e42fa131ba6e9359adb",
+    "lldbLogSHA256": "fc917bde0984a640ba25c6e27dff760937d63887aa0cacd0c9e724a7d5933f0d",
+    "runtimeStderrSHA256": "9668ad74277cd0a2121348c8fdcc25b8cad5ac6fa593e02c90857b53d0d17e89"
+  },
+  "observed": {
+    "requestedGeometry": "circle-513-center",
+    "traceExpectedGeometry": "circle-513-center",
+    "geometryGuardRebound": true,
+    "terminalStopFunction": "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes&, unsigned long long&)",
+    "terminalStopOffset": 0,
+    "failure": "structurally selected mask call was not reached",
+    "qualifiedMarkerCount": 0,
+    "qualifiedHelperEntryCount": 0,
+    "filterInstructionStateCount": 0,
+    "executionEventCount": 0,
+    "appleArithmeticOutcome": null
+  },
+  "conclusion": {
+    "geometryTransportRepaired": true,
+    "callbackTransportRepaired": false,
+    "newFilterEvidenceProduced": false,
+    "prior1025ResultChanged": false,
+    "cropReplayChanged": false,
+    "liquidGlassParityEstablished": false
+  },
+  "retryScope": {
+    "change": "expose and rebind all inherited dynamic callbacks through the top-level LLDB module using the already proven callback-proxy pattern",
+    "geometryAdapterChanged": false,
+    "captureSelectorChanged": false,
+    "breakpointOrMemoryReadChanged": false,
+    "filterTraceImplementationChanged": false,
+    "outputValueUsedForInRunSelection": false
+  }
+}

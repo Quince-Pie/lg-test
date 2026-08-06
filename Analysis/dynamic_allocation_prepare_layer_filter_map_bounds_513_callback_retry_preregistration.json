@@ -1,0 +1,86 @@
+{
+  "prepareLayerFilterMapBounds513CallbackRetryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T04:35:43Z",
+  "classification": "callback-transport-only retry of the geometry-adapted 513 diagnostic: every inherited dynamic callback is exposed through the top-level LLDB module using the previously proven proxy pattern; the frozen structural selector and complete FilterOp instruction trace are unchanged",
+  "antecedentFailure": {
+    "path": "Analysis/dynamic_allocation_prepare_layer_filter_map_bounds_513_callback_visibility_failure_result.json",
+    "sha256": "bd20efdfca482e160a8d0ce8e1a35b12a6554e28a3af12f972fb75f2b0c6f070",
+    "runID": 31071398653,
+    "headSHA": "02fda7d69f1f77cd6516f8bc2ec927a160e1d45c",
+    "geometryGuardRebound": true,
+    "callbackTransportRepaired": false,
+    "filterInstructionStateCount": 0,
+    "appleArithmeticOutcome": null
+  },
+  "fixedTarget": {
+    "geometry": "circle-513-center",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "dynamicCallOffset": 10340,
+    "targetDispatchOrdinal": 4,
+    "filterRelativeToPrepareLayer": -61056,
+    "filterSymbolByteCount": 788,
+    "filterCodeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "cropOrOutputValuesUsedForInRunSelection": false
+  },
+  "transportDelta": {
+    "topLevelCallbacks": [
+      "prepare_layer_entry",
+      "crop_transfer_marker",
+      "crop_union_call",
+      "crop_union_return",
+      "nested_crop_store",
+      "prepare_layer_mask_entry"
+    ],
+    "geometryAdapterChanged": false,
+    "captureSelectorChanged": false,
+    "breakpointChanged": false,
+    "memoryReadChanged": false,
+    "instructionTraceChanged": false,
+    "validatorSemanticChecksChanged": false,
+    "acceptanceChanged": false
+  },
+  "acceptance": {
+    "zeroCaptureFailuresRequired": true,
+    "completeFilterExecutionRequired": true,
+    "filterReturnMustMatchIndependentProducerBitForBit": true,
+    "diagnosticMayAuthorizeArithmeticDecoderRefinement": true,
+    "unchangedBlindRepeatMayBeClaimed": false,
+    "allCropHoldoutsMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_filter_map_bounds_lldb.py",
+        "sha256": "0755924cd34936f6cc433d1efe322989229f94423a832107a73ae087da0c1320"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_filter_map_bounds_513_callback_retry_lldb.py",
+        "sha256": "e43bd12cac716dabc614c880ab1b7c716f39f6212e5725470ada032c1f009812"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_filter_map_bounds_513_callback_retry_lldb_source.py",
+        "sha256": "b8dca3ba6ed0d92c6201b5b735d24804c7e2b50ec3da22f5fe48b0f91908e1dc"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_filter_map_bounds_513.py",
+        "sha256": "76f3dec800666fda24a51505129f26134a4fe67ecc9a9370dca2c1fedebf5143"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-filter-map-bounds-513-callback-retry.yml",
+        "sha256": "3e2f019d0aa1ac798197328bb0e30270d87482e390bd07c4218e86731df8d5ed"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}
