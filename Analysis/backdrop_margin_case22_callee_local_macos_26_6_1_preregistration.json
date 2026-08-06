@@ -1,0 +1,160 @@
+{
+  "backdropMarginCase22LocalMacOSPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T19:50:04Z",
+  "classification": "host-identity adaptation of the already-frozen retrospective case-22 arithmetic diagnostic: exact local framework code proves the Group body, caller callsite, case-22 callsite, target offset, copy store, and render layout are structurally unchanged; only opened module UUIDs and two opened QuartzCore code hashes are substituted, with no additional transfer or product authority",
+  "host": {
+    "sshHost": "quince@10.0.41.19",
+    "hostName": "quince",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "architecture": "arm64",
+    "developerToolsAuthorization": "enabled",
+    "builtInRetinaDisplay": true,
+    "windowBackingScaleFactor": 2,
+    "swiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484"
+  },
+  "openedInventory": {
+    "commit": "c7f1ffd",
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-symbol-inventory-passed",
+    "traceSHA256": "d5816e6519817e84ba7f04b9bb5648ed014cc71249adc31b7ba74e6a8ec6450d",
+    "validationSHA256": "a29bc66f3f3d42b0631d93b323982db94ea7b8b19b011b29f7fd8dc7dfabe780",
+    "staticTargetLookupLogSHA256": "649d4d02af14e439ab6a0e37a4f3abe11c41512bdbfc63c12b4e43a7903dad74",
+    "validationStatus": "passed",
+    "zeroTolerance": true
+  },
+  "structuralCorrespondence": {
+    "group": {
+      "function": "SwiftUI.SDFStyle.Group.margin.getter : CoreGraphics.CGFloat",
+      "moduleOffset": 3610064,
+      "symbolByteCount": 732,
+      "codeSHA256": "5414dac1e2dce7753af9afe072ceb3b7f938ec894df81bd621866f50d03b015d",
+      "completeCodeBitwiseEqualToCIHost": true,
+      "case22CallOffset": 616,
+      "case22CallInstructionHex": "910b3fd7",
+      "case22ReturnOffset": 620
+    },
+    "caller": {
+      "function": "SwiftUI.SDFLayer.updateSDFEffects(for: SwiftUI.SDFStyle, at: inout Swift.Int, in: SwiftUI.DisplayList.ViewRenderer.Environment, backdropGroupID: Swift.Optional<SwiftUI.BackdropGroupID>, blend: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Blend, opacity: Swift.Float, options: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Options, gain: Swift.Float, maxColorComponent: Swift.Float) -> ()",
+      "moduleOffset": 9594364,
+      "symbolByteCount": 6844,
+      "codeSHA256": "d60a0510382f913b937ceb2c20111c4dcf1b4dd9d6d49388c2fe5c4d2683168c",
+      "groupCallOffset": 5760,
+      "groupCallInstructionHex": "5526e997",
+      "decodedGroupTargetModuleOffset": 3610064,
+      "groupReturnOffset": 5764
+    },
+    "case22Target": {
+      "moduleOffset": 7781460,
+      "functionOpenedByStaticLookup": "SwiftUI._AnyCAFilterProvider.sdfBackdropMargin.getter : CoreGraphics.CGFloat",
+      "symbolByteCountOpenedByStaticLookup": 116,
+      "wrapperIndirectCallOffset": 100,
+      "completeCodeSHA256": null,
+      "liveObjectBytes": null,
+      "liveProviderTarget": null,
+      "exactArithmetic": null
+    },
+    "quartzCore": {
+      "copySymbolByteCount": 1640,
+      "copyCodeSHA256": "5bdf866c13bfb00d9becada24ff9876f84515fa36acb4ee274785d5176593a1e",
+      "copyStoreOffset": 948,
+      "copyStoreInstructionHex": "a02600bd",
+      "setterSymbolByteCount": 96,
+      "setterCodeSHA256": "2421048e418c6cdcc7622dd65f881e514e0852687f7920e6c4bdaf75a301f6dd",
+      "boundsSymbolByteCount": 80,
+      "boundsCodeSHA256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+      "renderMarginOffset": 36
+    }
+  },
+  "selection": {
+    "groupInvocationIndex": 20,
+    "selectionInheritedFrom": "Analysis/backdrop_margin_case22_callee_preregistration.json",
+    "ordinalChoiceWasRetrospective": true,
+    "runtimeSelector": "fixed structural invocation ordinal among exact Group.margin calls from the exact caller and return offset",
+    "capturedMarginUsedForRuntimeSelection": false,
+    "capturedCropUsedForRuntimeSelection": false,
+    "capturedImageUsedForRuntimeSelection": false,
+    "capturedPixelUsedForRuntimeSelection": false,
+    "prospectiveTransferAuthority": false
+  },
+  "captureContract": {
+    "originalCase22AdapterUnchanged": true,
+    "localOverlayOnly": true,
+    "requireLocalModuleUUIDs": true,
+    "requireOpenedLocalCompleteCodeHashes": true,
+    "requireUnchangedGroupCode": true,
+    "requireUnchangedCallerCallsite": true,
+    "requireUnchangedCase22CallsiteAndTargetOffset": true,
+    "requireUnchangedCopyStoreAndRenderLayout": true,
+    "captureCompleteTargetSymbolAndCode": true,
+    "captureFullGeneralAndSIMDRegistersPerInstruction": true,
+    "captureStackPerInstruction": true,
+    "captureEntryAndReturnObject": true,
+    "captureBoundedEntryPointerGraph": true,
+    "captureOpaqueProviderCompleteCodeAndBoundaries": true,
+    "zeroTolerance": true
+  },
+  "unknownBeforeDispatch": {
+    "targetCodeSHA256": null,
+    "targetCodeBytes": null,
+    "liveObjectBytes": null,
+    "livePointerGraph": null,
+    "instructionSequence": null,
+    "instructionRegisters": null,
+    "instructionStacks": null,
+    "liveProviderTarget": null,
+    "providerCodeBytes": null,
+    "providerEntryAndReturnRegisters": null,
+    "returnWord": null,
+    "exactArithmetic": null
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py",
+        "sha256": "ea9a41cd508ddc7535e8c097c9badc19da00817cfae48e5de6ee6abc95b4ea9e"
+      },
+      {
+        "path": "Analysis/test_capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb_source.py",
+        "sha256": "426d17fc4a859f45591a0ab2cec389bfd05c904f952e11bf363444de9d93a54a"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_callee_lldb.py",
+        "sha256": "933ca44e12426856b4c7ed83255ad205d370f51c430df16e9aa4441c3aa5db19"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_group_execution_lldb.py",
+        "sha256": "718075227f950e75757987225f0c5e0a9a3c64aff69a5086a4a84face45f8ada"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_writer_execution_lldb.py",
+        "sha256": "f91ba6afb61b491d949ea5dc9d4fc1c82c165e0016aefa84db00a0b15d435ecd"
+      },
+      {
+        "path": "Analysis/local_host_symbol_inventory_preregistration.json",
+        "sha256": "178363aa0e50f2359643d82331f45c94531961aa750a1c3c8062f8768afb26be"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "case22ArithmeticMayBeDecodedOnPass": true,
+    "publicInputMarginLawMayBeDeclaredDecoded": false,
+    "unobservedDiscriminatorBranchesMayBeDeclaredMapped": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "physicalOutputTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}
