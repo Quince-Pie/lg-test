@@ -1,0 +1,221 @@
+name: Retry backdrop margin writer execution
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backdrop-margin-writer-execution-retry-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  writer_execution_retry:
+    name: >-
+      ${{ matrix.material }}-${{ matrix.appearance }}-materialize-${{ matrix.geometry }}
+    runs-on: macos-26
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - material: clear
+            appearance: light
+            geometry: circle-408-center
+          - material: clear
+            appearance: dark
+            geometry: circle-640-phase-0501
+          - material: regular
+            appearance: light
+            geometry: circle-768-center
+          - material: regular
+            appearance: dark
+            geometry: circle-1535-center
+    env:
+      LG_GLASS_MATERIAL: ${{ matrix.material }}
+      LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
+      LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_BACKDROP_MARGIN_WRITER_TRACE_OUTPUT: >-
+        backdrop-margin-writer-retry/backdrop-margin-writer-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen retry contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p backdrop-margin-writer-retry
+          set -o pipefail
+          for pattern in \
+            test_capture_backdrop_margin_writer_execution_lldb_source.py \
+            test_validate_backdrop_margin_writer_execution.py \
+            test_backdrop_margin_writer_execution_preregistration.py \
+            test_validate_backdrop_margin_writer_execution_retry.py \
+            test_backdrop_margin_writer_execution_retry_preregistration.py \
+            test_backdrop_margin_writer_execution_transport_failure_result.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a backdrop-margin-writer-retry/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o backdrop-margin-writer-retry/MatrixBridge.o 2>&1 |
+            tee backdrop-margin-writer-retry/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            backdrop-margin-writer-retry/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a backdrop-margin-writer-retry/build.log
+
+      - name: Capture the complete live margin writer chain
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path backdrop-margin-writer-retry/runtime-stdout.log' \
+            -o 'settings set target.error-path backdrop-margin-writer-retry/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_backdrop_margin_writer_execution_lldb.py' \
+            -o run \
+            -o 'script capture_backdrop_margin_writer_execution_lldb.finalize()' \
+            -- ./glass-transition-introspect backdrop-margin-writer-retry \
+            > backdrop-margin-writer-retry/lldb-writer-execution.log 2>&1
+
+      - name: Validate the ABI-correct prospective candidate
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_backdrop_margin_writer_execution_retry.py \
+            backdrop-margin-writer-retry/backdrop-margin-writer-trace.json \
+            backdrop-margin-writer-retry/transition-timeline.json \
+            Analysis/backdrop_margin_writer_execution_retry_preregistration.json \
+            --material '${{ matrix.material }}' \
+            --appearance '${{ matrix.appearance }}' \
+            --direction materialize \
+            --geometry '${{ matrix.geometry }}' \
+            --output backdrop-margin-writer-retry/backdrop-margin-writer-validation.json
+
+      - name: Upload complete retry evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-backdrop-margin-writer-retry-${{ matrix.material }}-${{ matrix.appearance }}-${{ matrix.geometry }}-${{ github.run_id }}
+          path: backdrop-margin-writer-retry
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce the prospective retry gate
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s backdrop-margin-writer-retry/backdrop-margin-writer-validation.json
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "backdrop-margin-writer-retry/"
+                  "backdrop-margin-writer-validation.json"
+              ).read_text(encoding="utf-8")
+          )
+          profile = result.get("profile", {})
+          execution = result.get("writerExecution", {})
+          discovery = execution.get("opaqueEntryArgumentDiscovery", {})
+          candidate = result.get("candidate", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get(
+                  "backdropMarginWriterExecutionRetryValidationSchemaVersion"
+              ) != 1
+              or result.get("conclusion") != "success"
+              or profile.get("material") != os.environ["LG_GLASS_MATERIAL"]
+              or profile.get("appearance") != os.environ["LG_GLASS_APPEARANCE"]
+              or profile.get("direction") != "materialize"
+              or profile.get("geometry") != os.environ["LG_GLASS_GEOMETRY"]
+              or profile.get("prospectivelyFrozen") is not True
+              or candidate.get("recordCount") != 32
+              or execution.get("exactCodeGateCount") != 3
+              or execution.get("completeChainCount", 0) < 1
+              or execution.get("allStructurallyJoinedChainsBitExact") is not True
+              or execution.get("capturedValueUsedForSelection") is not False
+              or discovery.get("isRenderObject") is not False
+              or discovery.get(
+                  "copyStoreEventCountValidatedWithoutX2RenderAssumption", 0
+              ) < 1
+              or discovery.get("capturedValueUsedForCorrection") is not False
+              or discovery.get("marginValueUsedForCorrection") is not False
+              or sealed.get("opaqueCopyArgumentABIResolved") is not True
+              or sealed.get("selectedMarginSetterExecutionAuthenticated")
+                  is not True
+              or sealed.get("selectedRenderCopyExecutionAuthenticated")
+                  is not True
+              or sealed.get("selectedGetBoundsConsumptionAuthenticated")
+                  is not True
+              or sealed.get(
+                  "transitionMaximumCandidateProspectiveBitExactForThisCase"
+              ) is not True
+              or sealed.get("setterCallerCodeOpened") is not True
+              or sealed.get("setterCallerArithmeticDecoded") is not False
+              or sealed.get("independentTemporalInputGenerationPassed")
+                  is not False
+              or sealed.get("physicalOutputTransferPassed") is not False
+              or sealed.get("independentWalleZeroByteFrameParityPassed")
+                  is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("prospective writer-execution retry gate differs")
+          PY

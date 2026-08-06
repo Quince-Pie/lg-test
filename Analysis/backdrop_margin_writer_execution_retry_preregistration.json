@@ -1,0 +1,176 @@
+{
+  "backdropMarginWriterExecutionPreregistrationSchemaVersion": 1,
+  "backdropMarginWriterExecutionRetryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T14:25:20Z",
+  "classification": "prospective output-blind retry on four fresh all-materialize configurations after the first run stopped before candidate comparison; removes only the disproved accidental x2-equals-x21 ABI assertion while preserving the preregistered model x0-to-x20 and render x21-to-get_bounds-x0 object-identity joins, candidate formula, exact code gates, and zero-bit acceptance",
+  "antecedentFailure": {
+    "runID": 31109847952,
+    "headSHA": "7a0abe0857da5ab1bf63cad256ab2038ed326300",
+    "result": "Analysis/backdrop_margin_writer_execution_transport_failure_result.json",
+    "resultSHA256": "51fded30b16b8a05918ffd7f3dfa647ab1b986f3c0a96104706598c3bf9db171",
+    "candidateTested": false,
+    "candidateMarginValuesReadForDiagnosis": false,
+    "copyStoreEventCount": 527,
+    "modelEntryStorePointerMatchCount": 527,
+    "opaqueX2EqualsRenderX21Count": 0,
+    "dematerializeSupportedByDynamicUniformCapture": false,
+    "productionShaderChanged": false,
+    "liquidGlassParityEstablished": false
+  },
+  "frozenCandidate": {
+    "perRecordRequiredMargin": "max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))",
+    "transitionMargin": "max over all 32 retained records",
+    "modelStorage": "binary64",
+    "renderStorage": "round-to-nearest-even binary32",
+    "operationOrderChangedFromFirstDispatch": false,
+    "capturedTargetValueUsedToChooseCandidate": false,
+    "candidateAcceptedAsGeneralBeforeThisRun": false
+  },
+  "abiCorrection": {
+    "disprovedAssertion": "_copyRenderLayer first explicit Objective-C argument x2 equals the allocated render object later held in x21",
+    "evidenceUsed": "object pointers and exact instruction/register roles only",
+    "candidateMarginValueUsed": false,
+    "cropValueUsed": false,
+    "imageValueUsed": false,
+    "retainedModelJoin": "copy entry x0 equals copy store x20 on the same thread and invocation",
+    "retainedRenderJoin": "copy store x21 equals the receiver x0 of a later get_bounds event",
+    "opaqueX2RetainedAsEvidence": true,
+    "otherValidatorRuleChanged": false
+  },
+  "prospectiveCases": [
+    {
+      "material": "clear",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-408-center",
+      "exactConfigurationPreviouslyCaptured": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedMarginF64": null,
+      "expectedMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCallerIdentity": null
+    },
+    {
+      "material": "clear",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-640-phase-0501",
+      "exactConfigurationPreviouslyCaptured": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedMarginF64": null,
+      "expectedMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCallerIdentity": null
+    },
+    {
+      "material": "regular",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-768-center",
+      "exactConfigurationPreviouslyCaptured": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedMarginF64": null,
+      "expectedMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCallerIdentity": null
+    },
+    {
+      "material": "regular",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-1535-center",
+      "exactConfigurationPreviouslyCaptured": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedMarginF64": null,
+      "expectedMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCallerIdentity": null
+    }
+  ],
+  "captureContract": {
+    "captureAdapterChangedFromFirstDispatch": false,
+    "breakpointSelectionChangedFromFirstDispatch": false,
+    "exactCodeHashesChangedFromFirstDispatch": false,
+    "eventBoundChangedFromFirstDispatch": false,
+    "timelineDirection": "materialize",
+    "joinRule": "for each get_bounds render pointer, use the most recent earlier copy-store event for the identical x21 render pointer and then the most recent earlier setter event for that copy event's identical x20 model pointer; copy entry x0 must equal store x20 and its x2 argument is retained but opaque",
+    "capturedMarginUsedForSelection": false,
+    "capturedCropUsedForSelection": false,
+    "capturedImageUsedForSelection": false,
+    "expectedEventCounts": null,
+    "expectedObjectPointers": null,
+    "expectedCallerSymbols": null,
+    "expectedCallerCodeHashes": null
+  },
+  "acceptance": {
+    "requireAllExactCodeGates": true,
+    "requireEveryEventWithinBound": true,
+    "requireAtLeastOneCompleteSetterCopyBoundsChain": true,
+    "requireEveryStructurallyJoinedChainToMatchCandidateBitwise": true,
+    "requireNoCapturedValueForSelection": true,
+    "requireEveryOneOfFourMatrixJobsToPass": true,
+    "requireModelSetterBinary64WordExact": true,
+    "requireCopyStoreBinary32WordExact": true,
+    "requireGetBoundsBinary32WordExact": true,
+    "requireCallerCodeToBeRetained": true,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_backdrop_margin_writer_execution_lldb.py",
+        "sha256": "f91ba6afb61b491d949ea5dc9d4fc1c82c165e0016aefa84db00a0b15d435ecd"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_writer_execution.py",
+        "sha256": "47497743231b6e9183b75909d592033241f41a7bdc045017a3959e038beb465f"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_writer_execution_retry.py",
+        "sha256": "9343f8e51c3d9691cd8c007d22b99051c5005c1f7795c1e1ac67e0cf8b5c1d71"
+      },
+      {
+        "path": "Analysis/test_validate_backdrop_margin_writer_execution_retry.py",
+        "sha256": "225d7eb2e71ecc15ad3cf6f6369e7ea0030072d8dfdf1e2a82d683aa5b8c08b0"
+      },
+      {
+        "path": "Analysis/backdrop_margin_writer_execution_transport_failure_result.json",
+        "sha256": "51fded30b16b8a05918ffd7f3dfa647ab1b986f3c0a96104706598c3bf9db171"
+      },
+      {
+        "path": "Analysis/test_backdrop_margin_writer_execution_transport_failure_result.py",
+        "sha256": "01897aa1ba60d8c7a75bf61f677efa00d4334551797c00d817fa4cc0bd1f096d"
+      },
+      {
+        "path": "Analysis/test_backdrop_margin_writer_execution_retry_preregistration.py",
+        "sha256": "09d16e59892c8fbdf68d92f1bd28ca8871a8634fd01d01d9d21839aeefc56459"
+      },
+      {
+        "path": ".github/workflows/backdrop-margin-writer-execution-retry.yml",
+        "sha256": "f61e1b9ee28c9779b1828b4d9adc560bee4bf696c5db7bb8b329a1accb6e699a"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "selectedWriterExecutionMayBeAuthenticatedOnPass": true,
+    "transitionMaximumCandidateMayBeAcceptedForCapturedInputsAfterAllFourPass": true,
+    "setterCallerArithmeticMayBeDeclaredDecoded": false,
+    "independentTemporalInputGenerationMayBeClaimed": false,
+    "capturedInputOpticalParityMayBeClaimedByThisGate": false,
+    "physicalOutputTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}

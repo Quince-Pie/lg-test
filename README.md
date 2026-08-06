@@ -7483,3 +7483,32 @@ transition inputs; it does not independently generate those inputs, authorize a
 production shader change, or establish Liquid Glass parity. The production
 shader SHA-256 remains
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+The first dispatch, run `31109847952` at commit `7a0abe0`, is not a candidate
+result. The clear-dark and regular-light jobs used dematerialize direction,
+which the current dynamic-uniform carrier explicitly rejects; both exited
+before a complete timeline or any `get_bounds` event. The two materialize jobs
+completed clean captures with 1,195 and 1,148 events, but the frozen validator
+stopped before candidate computation on an accidental ABI assertion that the
+first explicit Objective-C argument to `_copyRenderLayer` in `x2` was the
+allocated render object later held in `x21`.
+
+The pointer-only evidence is unambiguous and does not inspect a target margin:
+all 527 materialize copy stores matched entry model `x0` to store model `x20`,
+while zero of 527 had `x2 == x21`. The original preregistered join rule needs
+no such equality: it joins model `x0` to `x20`, then render `x21` to a later
+`get_bounds` receiver `x0`. No candidate margin, crop, or image value was read
+to make this correction. Artifact identities, hashes, event counts, the two
+transport failures, and the fact that validation never reached the formula are
+preserved in
+`Analysis/backdrop_margin_writer_execution_transport_failure_result.json`.
+
+The output-blind retry is separately frozen in
+`Analysis/backdrop_margin_writer_execution_retry_preregistration.json`. It
+keeps the capture adapter, exact QuartzCore hashes, event bounds, formula,
+operation order, and zero-bit gate unchanged; only the disproved `x2 == x21`
+assertion is removed. Four fresh all-materialize configurations replace the
+opened/unsupported jobs: clear/light circle-408, clear/dark
+circle-640-phase-0501, regular/light circle-768, and regular/dark circle-1535.
+This is again a preregistration rather than a pass, and grants no shader or
+product-parity authority before all four new artifacts return.
