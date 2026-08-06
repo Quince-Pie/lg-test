@@ -1,0 +1,223 @@
+name: Open small-geometry helper code
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-layer-small-geometry-helper-code-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  helper_code:
+    name: circle-127-light-materialize-helper-code
+    runs-on: macos-26
+    timeout-minutes: 180
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-127-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_MASK_CAPTURE_MODE: selected
+      LG_PREPARE_LAYER_MASK_INVENTORY_VALIDATION: >-
+        Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-small-geometry-helper-code/prepare-layer-small-geometry-helper-code-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen helper-code contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-small-geometry-helper-code
+          set -o pipefail
+          for pattern in \
+            test_capture_prepare_layer_crop_transfer_lldb_source.py \
+            test_validate_prepare_layer_crop_transfer.py \
+            test_capture_prepare_layer_crop_union_operand_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py \
+            test_capture_prepare_layer_mask_instruction_trace_lldb_source.py \
+            test_validate_prepare_layer_mask_instruction_inventory.py \
+            test_capture_prepare_layer_crop_producer_callee_lldb_source.py \
+            test_validate_prepare_layer_crop_producer_callee.py \
+            test_capture_prepare_layer_filter_map_bounds_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds.py \
+            test_capture_prepare_layer_filter_map_bounds_regular_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds_regular_diagnostic.py \
+            test_capture_prepare_layer_sdf_map_bounds_diagnostic_lldb_source.py \
+            test_validate_prepare_layer_sdf_map_bounds_diagnostic.py \
+            test_capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb_source.py \
+            test_capture_prepare_layer_filter_sdf_small_geometry_lldb_source.py \
+            test_validate_prepare_layer_filter_sdf_small_geometry.py \
+            test_dynamic_allocation_prepare_layer_filter_sdf_small_geometry_preregistration.py \
+            test_analyze_prepare_layer_filter_sdf_small_geometry.py \
+            test_capture_prepare_layer_small_geometry_helper_code_lldb_source.py \
+            test_validate_prepare_layer_small_geometry_helper_code.py \
+            test_dynamic_allocation_prepare_layer_small_geometry_helper_code_preregistration.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a transition-small-geometry-helper-code/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-small-geometry-helper-code/MatrixBridge.o 2>&1 |
+            tee transition-small-geometry-helper-code/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-small-geometry-helper-code/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-small-geometry-helper-code/build.log
+
+      - name: Capture output-blind helper code and inherited execution
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-small-geometry-helper-code/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-small-geometry-helper-code/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_small_geometry_helper_code_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_small_geometry_helper_code_lldb.trace_selected_sdf_filter_map_bounds()' \
+            -o 'script capture_prepare_layer_small_geometry_helper_code_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-small-geometry-helper-code \
+            > transition-small-geometry-helper-code/lldb-helper-code.log 2>&1
+
+      - name: Validate helper-code opening
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_small_geometry_helper_code.py \
+            transition-small-geometry-helper-code/prepare-layer-small-geometry-helper-code-trace.json \
+            transition-small-geometry-helper-code/transition-timeline.json \
+            Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json \
+            --output transition-small-geometry-helper-code/helper-code-validation.json
+
+      - name: Upload complete helper-code evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-glass-prepare-layer-small-geometry-helper-code-${{ github.run_id }}
+          path: transition-small-geometry-helper-code
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce helper-code opening
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s transition-small-geometry-helper-code/helper-code-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "transition-small-geometry-helper-code/"
+                  "helper-code-validation.json"
+              ).read_text(encoding="utf-8")
+          )
+          targets = result.get("targets", [])
+          selection = result.get("selection", {})
+          sealed = result.get("sealedConclusion", {})
+          expected = [
+              (
+                  "gaussianExpansionFactor",
+                  "CA::OGL::gaussian_expansion_factor(double)",
+                  -96880,
+                  200,
+                  50,
+              ),
+              (
+                  "backdropGetBounds",
+                  "CA::Render::BackdropLayer::get_bounds("
+                  "CA::Render::Layer const*, CA::Rect&, CA::Rect*) const",
+                  364616,
+                  80,
+                  20,
+              ),
+          ]
+          if (
+              result.get(
+                  "prepareLayerSmallGeometryHelperCodeValidationSchemaVersion"
+              ) != 1
+              or result.get("conclusion") != "success"
+              or len(targets) != len(expected)
+              or selection.get("helperCodeHashesAcceptedBeforeCapture") is not False
+              or selection.get("staticMemoryReadsOnly") is not True
+              or selection.get("breakpointsAdded") != 0
+              or selection.get("instructionStepsAdded") != 0
+              or sealed.get("smallGeometryHelperCodeOpeningPassed") is not True
+              or sealed.get("gaussianExpansionGeneralSemanticsDecoded") is not False
+              or sealed.get("backdropAllocationGeneralSemanticsDecoded") is not False
+              or sealed.get("regularGeometryTransferPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("small-geometry helper-code gate differs")
+          for target, identity in zip(targets, expected, strict=True):
+              name, function, relative, byte_count, instruction_count = identity
+              digest = target.get("codeSHA256")
+              if (
+                  target.get("name") != name
+                  or target.get("function") != function
+                  or target.get("relativeToPrepareLayer") != relative
+                  or target.get("symbolByteCount") != byte_count
+                  or target.get("instructionCount") != instruction_count
+                  or not isinstance(digest, str)
+                  or len(digest) != 64
+                  or target.get("codeHashAcceptedBeforeCapture") is not False
+              ):
+                  raise SystemExit("small-geometry helper identity differs")
+          PY

@@ -1,0 +1,115 @@
+{
+  "prepareLayerSmallGeometryHelperCodePreregistrationSchemaVersion": 1,
+  "classification": "prospective output-blind static code opening: function identities and complete byte ranges are frozen before capture, while both code hashes and every semantic output remain unknown",
+  "antecedent": {
+    "runID": 31084256909,
+    "jobID": 92559896529,
+    "headSHA": "4cd04d24ca6e8cc85d18cdb2f25551677e3905a0",
+    "artifactID": 8960916532,
+    "artifactDigest": "sha256:28beddbb413117add739c3561b5f6ff4f4721f3ce16d7393cde58871e5bff193",
+    "traceSHA256": "61fe2befb665b985b8a1f136ec1777cb9273b472ee7019f9a073d2b5ef09feaa",
+    "analysis": "Analysis/dynamic_allocation_prepare_layer_filter_sdf_small_geometry_analysis.json",
+    "analysisSHA256": "e68a6fb85ad729e8857c5c2982a41b4483ba2c1f3ba9d7e1a3025f619c5db8ef",
+    "selectedSDFReplayExact": true,
+    "selectedFilterReplayExact": true,
+    "formerVerticalResidualExplainedExactly": true,
+    "generalHelperSemanticsDecoded": false,
+    "regularUnseenGeometryTransferPassed": false
+  },
+  "frozenProfile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "selectedSampleIndex": 2,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "filterDispatchOrdinal": 4,
+    "sdfDispatchOrdinal": 2,
+    "selectorChangedFromRun31084256909": false,
+    "cropOrOutputValuesUsedForSelection": false
+  },
+  "targets": [
+    {
+      "name": "gaussianExpansionFactor",
+      "function": "CA::OGL::gaussian_expansion_factor(double)",
+      "relativeToPrepareLayer": -96880,
+      "symbolByteCount": 200,
+      "instructionCount": 50,
+      "expectedCodeSHA256": null,
+      "semanticOutputAcceptedBeforeCapture": null
+    },
+    {
+      "name": "backdropGetBounds",
+      "function": "CA::Render::BackdropLayer::get_bounds(CA::Render::Layer const*, CA::Rect&, CA::Rect*) const",
+      "relativeToPrepareLayer": 364616,
+      "symbolByteCount": 80,
+      "instructionCount": 20,
+      "expectedCodeSHA256": null,
+      "semanticOutputAcceptedBeforeCapture": null
+    }
+  ],
+  "captureContract": {
+    "staticMemoryReadsOnly": true,
+    "breakpointsAdded": 0,
+    "instructionStepsAdded": 0,
+    "captureBeforeInheritedExecutionTrace": true,
+    "retainEveryCodeByte": true,
+    "retainEveryStaticARM64Instruction": true,
+    "joinToIndependentOpaqueExecutionBoundaryByFunctionAndAddress": true,
+    "codeHashAcceptedBeforeCapture": false,
+    "rectangleOrProducerCandidateAcceptedBeforeCapture": false,
+    "filterAndSDFCaptureChanged": false
+  },
+  "acceptance": {
+    "requireInheritedSmallGeometryDiagnosticPass": true,
+    "requireExactFunctionNamesRelativeAddressesAndByteCounts": true,
+    "requireCompleteContiguousCodeAndInstructionCoverage": true,
+    "requireObservedCodeDigestDerivedFromRetainedBytes": true,
+    "requireUniqueJoinToExecutedOpaqueBoundary": true,
+    "helperCodeOpeningMayBeClaimed": true,
+    "helperGeneralSemanticsMayBeClaimed": false,
+    "regularGeometryTransferMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_small_geometry_helper_code_lldb.py",
+        "sha256": "7dcff793c88e0bfbcf30fcd9bd11ad14a526a6a51c7cd59069db9d9249b50910"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_small_geometry_helper_code.py",
+        "sha256": "210819aab13a31db84bac1b954f5deca8a004c1ff5bc6e6fcc3457d0160b1d14"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-small-geometry-helper-code.yml",
+        "sha256": "e09578a77c5c79de86fcd72359e066569e498c5bc6db3e063af2c6aa1b7cfc7d"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_small_geometry_helper_code_lldb_source.py",
+        "sha256": "34d8620bf0800d5dd00b3d0b9d841ed4025fd84ba60ec2bf2fdda62ea2a85551"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_small_geometry_helper_code.py",
+        "sha256": "799a5453e195cee38987134a085c4f589e2165ce8879696426c0180b24bcf905"
+      }
+    ],
+    "productionShader": {
+      "path": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changeAuthorized": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "gaussianExpansionGeneralLawMayBeClaimed": false,
+    "backdropAllocationGeneralLawMayBeClaimed": false,
+    "completeRegularCropLawMayBeClaimed": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "independentPrivateInputGenerationMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}
