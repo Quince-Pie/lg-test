@@ -51,6 +51,14 @@ SYMBOLS = (
     ),
 )
 
+SYMBOL_DISCOVERY_REGEX = {
+    "groupMargin": r"SDFStyle\.Group\.margin\.getter",
+    "updateSDFEffects": r"updateSDFEffects",
+    "marginSetter": r"CABackdropLayer setMarginWidth",
+    "copyRenderLayer": r"CABackdropLayer _copyRenderLayer",
+    "backdropBounds": r"BackdropLayer::get_bounds",
+}
+
 _state = {
     "trace": None,
     "mainBreakpoint": None,
@@ -142,6 +150,12 @@ def _read_memory(process, address, byte_count, label):
 def _capture_symbol(process, role, function):
     target = process.GetTarget()
     breakpoint = target.BreakpointCreateByName(function)
+    resolution = "exact-name"
+    if not breakpoint.IsValid() or breakpoint.GetNumLocations() < 1:
+        if breakpoint.IsValid():
+            target.BreakpointDelete(breakpoint.GetID())
+        breakpoint = target.BreakpointCreateByRegex(SYMBOL_DISCOVERY_REGEX[role])
+        resolution = "fixed-family-regex-plus-exact-symbol-name"
     try:
         if not breakpoint.IsValid() or breakpoint.GetNumLocations() < 1:
             raise RuntimeError(function + " did not resolve")
@@ -152,6 +166,8 @@ def _capture_symbol(process, role, function):
             address = location.GetAddress()
             symbol = address.GetSymbol()
             if not address.IsValid() or not symbol.IsValid():
+                continue
+            if (symbol.GetName() or "") != function:
                 continue
             start = symbol.GetStartAddress().GetLoadAddress(target)
             end = symbol.GetEndAddress().GetLoadAddress(target)
@@ -189,6 +205,7 @@ def _capture_symbol(process, role, function):
         return {
             "role": role,
             "requestedFunction": function,
+            "resolution": resolution,
             "resolutionCount": len(records),
             "code": records[0],
         }

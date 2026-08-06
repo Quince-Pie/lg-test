@@ -28,6 +28,9 @@ class LocalHostSymbolInventoryLLDBSourceTests(unittest.TestCase):
             "CA::Render::BackdropLayer::get_bounds(",
         ):
             self.assertIn(literal, self.text)
+        self.assertIn("SYMBOL_DISCOVERY_REGEX = {", self.text)
+        self.assertIn("BreakpointCreateByRegex(", self.text)
+        self.assertIn('(symbol.GetName() or "") != function', self.text)
 
     def test_selection_cannot_read_output_evidence(self) -> None:
         for literal in (

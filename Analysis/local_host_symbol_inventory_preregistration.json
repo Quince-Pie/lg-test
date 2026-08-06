@@ -56,6 +56,22 @@
     "appleRuntimeValueOpened": false,
     "symbolCodeOpened": false
   },
+  "bootstrapRetry": {
+    "firstBootstrapCommit": "d0bad0c33a8a12fb9f9b29c7032fcd9b7d59f05c",
+    "developerToolsAuthorization": "enabled",
+    "processStoppedAtProbeMain": true,
+    "renderingStarted": false,
+    "failure": "LLDB BreakpointCreateByName did not resolve the fixed long updateSDFEffects Swift signature even though an output-blind image regex lookup returned exactly one symbol with that exact name",
+    "traceRetainedCompleteSymbolSet": false,
+    "capturedMarginOpened": false,
+    "capturedCropOpened": false,
+    "capturedImageOpened": false,
+    "capturedPixelOpened": false,
+    "transportOnlyCorrection": "fall back to a fixed per-role symbol-family regex and retain a location only when SBAddress.GetSymbol().GetName() equals the preregistered full function name exactly",
+    "requestedSymbolSetChanged": false,
+    "captureFieldsChanged": false,
+    "authorityChanged": false
+  },
   "repositoryAntecedent": {
     "headSHA": "bdac17c686ee9dc566579ed41b7cb97c13559cfc",
     "previousCase22RunID": 31118243811,
@@ -102,11 +118,19 @@
     "files": [
       {
         "path": "Analysis/capture_local_host_symbol_inventory_lldb.py",
-        "sha256": "c592301f26787bdfe97782e37c0a7946aece0450fd5c729f1f0756450b5cb707"
+        "sha256": "a1fee80e9237aa9aef8772aab4993ce9fb68c9c826ab1fd5a6859cbb8dac40ff"
       },
       {
         "path": "Analysis/test_capture_local_host_symbol_inventory_lldb_source.py",
-        "sha256": "90c6be595d5bde864995cabd1d308fe931db283f78c0150db7987e62d725c095"
+        "sha256": "ebf27709ee98a30101a7fd434bc64ad52deda2812690e7aaecdbad6ae7c3bd02"
+      },
+      {
+        "path": "Analysis/validate_local_host_symbol_inventory.py",
+        "sha256": "238db99a59fc62b5d0b7624d8b60688e4c5bdbefec808096e972ba71aeebc6bc"
+      },
+      {
+        "path": "Analysis/test_validate_local_host_symbol_inventory.py",
+        "sha256": "e2c085a45a8811eddacbf2f877c6a4dbdbf9dc3e708fc84cb3dca1102a0e8833"
       }
     ],
     "productionShader": {
