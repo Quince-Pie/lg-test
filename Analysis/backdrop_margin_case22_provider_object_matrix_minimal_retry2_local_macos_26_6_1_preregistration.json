@@ -1,0 +1,170 @@
+{
+  "backdropMarginCase22ProviderObjectMatrixMinimalRetry2LocalMacOSPreregistrationSchemaVersion": 1,
+  "classification": "fail-closed bound-only retry of the exact callsite-gated all-live provider-object matrix; the prior run completed all 33 Retina frames but reached the inherited 512-call observation bound after debugger overhead was removed",
+  "frozenAtUTC": "2026-08-06",
+  "baseContract": {
+    "path": "Analysis/backdrop_margin_case22_provider_object_matrix_minimal_retry_local_macos_26_6_1_preregistration.json",
+    "sha256": "817562300e8577b52644513266edeb3127ed5d6019dcc75554bee8b5c47c7e13",
+    "commit": "05e096242408f64f3f71f9dc84217820ca36d00b",
+    "capturePath": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_minimal_retry_local_macos_26_6_1_lldb.py",
+    "captureSHA256": "d7d3cf997207df915243273e7cf9540c8c8987adb667bd6e363ea329e5c8fd8e",
+    "binaryPathOnHost": "/Users/quince/lg-test/glass-transition-introspect-721293f",
+    "binarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd"
+  },
+  "launchTransportOpening": {
+    "pathOnHost": "local-case22-provider-object-matrix-minimal-retry-05e0962-preflight4",
+    "lldbLogSHA256": "8de282801c4f7663fe313a8a410eea4766bf898f063b90f5740ded1c7ec8c9c7",
+    "initializedTraceSHA256": "61061a8a39c7f09016ab15b51c7a4c81ee221c601cb39e77c2e25dc7e3d76406",
+    "bootstrapRule": "set a symbolic main breakpoint, launch to the executable's exact main entry, delete the bootstrap breakpoint, then import the frozen capture after all 524 process images are loaded",
+    "resolvedCallsiteBreakpointCount": 1,
+    "resolvedCallsiteFunctionOffset": 5760,
+    "resolvedCallsiteModuleOffset": 9600124,
+    "callbackNamespaceDirect": true,
+    "processKilledBeforeAppleApplicationExecution": true,
+    "capturedObjectOrReturnObserved": false,
+    "productAuthority": false
+  },
+  "failed512BoundRun": {
+    "pathOnHost": "local-case22-provider-object-matrix-minimal-retry-05e0962-run1",
+    "captureContextSHA256": "13aa712e837cc0690ecac384ac3f4fc57ea3e34bb66fad8133f285ad615528bb",
+    "lldbLogSHA256": "afb64f5b433ba3c0e245391dc42df77a1d46bea2ff609c89fbaf68009b77fa7d",
+    "lldbExitStatusSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "traceSHA256": "d85a48553791fd4e2359ae008ba82d4722c953eb124eaa5e9dd5b938bdeac82d",
+    "timelineSHA256": "a136b03cf2f2360e29d0fa4435cdc2f90a3a8daf7eb9864b0663b77657ef4d80",
+    "progressSHA256": "fc5eae6927a501a387f5ea5b4725718f891040fbb79d8252176874f5ce4077ba",
+    "runtimeStderrSHA256": "f6bf9ad3739262925618c73377367900abc5a9765b773cc740d6d5da8db52a79",
+    "processExitStatus": 0,
+    "timelineSchemaVersion": 5,
+    "timelineSampleCount": 33,
+    "timelineSamplesLength": 33,
+    "timelineFailedSamples": 0,
+    "timelineErrorAbsent": true,
+    "canonicalImageCount": 33,
+    "completedProviderCallCount": 512,
+    "providerEnteredCallCount": 512,
+    "providerReturnedCallCount": 512,
+    "providerGroupLinkedCallCount": 512,
+    "unchangedProviderObjectCount": 512,
+    "distinctProviderObjectCount": 512,
+    "distinctProviderReturnCount": 1,
+    "providerReturnWords": ["0000000000000000"],
+    "failureCount": 699,
+    "overlappingCallsiteFailureCountAfterBound": 232,
+    "finalActiveSelectedCallerCount": 1,
+    "rootCause": "the 512-call bound was calibrated under the heavy instruction-stage debugger, whose suspension reduced render cadence; the minimal six-stop chain reached that bound while the application timeline remained healthy",
+    "captureContractPassed": false,
+    "matrixAuthority": false,
+    "productAuthority": false
+  },
+  "retrospectiveCandidateSemanticsFromFailedRun": {
+    "classification": "same-run endpoint word equality without an authenticated temporal join; useful for choosing prospective interventions but not field-mapping authority",
+    "providerCallIndex": 0,
+    "timelineDynamicRecordIndex": 31,
+    "equalBinary64Words": [
+      {
+        "providerObjectOffset": 24,
+        "candidateInput": "inputShadowAmount",
+        "operation": "identity",
+        "rawLittleEndianHex": "0000000000c05240"
+      },
+      {
+        "providerObjectOffset": 152,
+        "candidateInput": "inputBlurRadius",
+        "operation": "multiply by exactly 2",
+        "rawLittleEndianHex": "9224499224491b40"
+      },
+      {
+        "providerObjectOffset": 232,
+        "candidateInput": "inputInnerRefractionAmount",
+        "operation": "identity",
+        "rawLittleEndianHex": "0000000000004ec0"
+      },
+      {
+        "providerObjectOffset": 352,
+        "candidateInput": "inputBleedAmount",
+        "operation": "identity",
+        "rawLittleEndianHex": "9999999999394640"
+      }
+    ],
+    "authenticatedTemporalJoin": false,
+    "publicInputMappingAuthority": false,
+    "productAuthority": false
+  },
+  "retry2Overlay": {
+    "path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1_lldb.py",
+    "sha256": "3796c5791462c30a971b2ab1063e7e3dc5a30ede1a82d7fa0a452a469d1306d4",
+    "testPath": "Analysis/test_capture_backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1_lldb_source.py",
+    "testSHA256": "b981f6c83cc449508acd30ec9a62fc1b542959eea38650b2e2ad5832c8697b49",
+    "previousMaximumCallCount": 512,
+    "maximumCallCount": 4096,
+    "boundMultiplier": 8,
+    "boundChangeOnly": true,
+    "exactCallerGroupWrapperAndProviderSelectionChanged": false,
+    "providerObjectCaptureChanged": false,
+    "providerReturnJoinChanged": false,
+    "applicationSourceChanged": false,
+    "binaryChanged": false,
+    "profileChanged": false,
+    "environmentChanged": false,
+    "capturedObjectReturnMarginCropImageOrPixelUsedToSelectBound": false
+  },
+  "captureContract": {
+    "requireExactCallerGroupWrapperAndProviderCode": true,
+    "requireCallerCallInstructionExact": true,
+    "requireExactlyOneProviderCallPerSelectedCallerCall": true,
+    "requireProviderEntryObjectEqualsWrapperSelfPlus16": true,
+    "requireWrapperEntryAndProviderEntryObjectsEqualBitwise": true,
+    "requireExact384ByteObjectAtEveryStage": true,
+    "requireProviderObjectUnchangedByCall": true,
+    "requireProviderReturnEqualsGroupInputBitwise": true,
+    "requireNoOverlappingOrPendingSelectedCallerCalls": true,
+    "requireProcessExitStatus": 0,
+    "requireTimelineSchemaVersion": 5,
+    "requireTimelineSampleCount": 33,
+    "requireTimelineSamplesLength": 33,
+    "requireTimelineFailedSamples": 0,
+    "requireTimelineErrorAbsent": true,
+    "requireAll33CanonicalImages": true,
+    "requireAtLeastTwoDistinctProviderObjectsOrReturns": true,
+    "maximumCallCount": 4096,
+    "capturedObjectUsedForRuntimeSelection": false,
+    "capturedReturnUsedForRuntimeSelection": false,
+    "capturedMarginUsedForRuntimeSelection": false,
+    "capturedCropUsedForRuntimeSelection": false,
+    "capturedImageUsedForRuntimeSelection": false,
+    "capturedPixelUsedForRuntimeSelection": false,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "files": [
+      {"path": "Analysis/backdrop_margin_case22_provider_object_matrix_minimal_retry_local_macos_26_6_1_preregistration.json", "sha256": "817562300e8577b52644513266edeb3127ed5d6019dcc75554bee8b5c47c7e13"},
+      {"path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_minimal_retry_local_macos_26_6_1_lldb.py", "sha256": "d7d3cf997207df915243273e7cf9540c8c8987adb667bd6e363ea329e5c8fd8e"},
+      {"path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1_lldb.py", "sha256": "3796c5791462c30a971b2ab1063e7e3dc5a30ede1a82d7fa0a452a469d1306d4"},
+      {"path": "Analysis/test_capture_backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1_lldb_source.py", "sha256": "b981f6c83cc449508acd30ec9a62fc1b542959eea38650b2e2ad5832c8697b49"}
+    ]
+  },
+  "unknownBeforeDispatch": {
+    "selectedCallerCount": null,
+    "providerCallCount": null,
+    "providerObjectBytesByCall": null,
+    "providerReturnWordsByCall": null,
+    "distinctProviderObjectCount": null,
+    "distinctProviderReturnCount": null,
+    "varyingProviderObjectOffsets": null,
+    "objectOffsetCovarianceWithReturn": null,
+    "branchRegimeByCall": null,
+    "retry2Conclusion": null
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "authorityOnPass": {
+    "exactAllLiveCase22ProviderObjectsForThisOpenedAllocationProfile": true,
+    "exactObjectOffsetAndReturnCovarianceForThisOpenedAllocationProfile": true,
+    "completeFiniteProviderLaw": false,
+    "publicSwiftUIGlassInputLaw": false,
+    "freshProfileTransfer": false,
+    "physicalOutputTransfer": false,
+    "independentWalleZeroByteFrameParity": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
