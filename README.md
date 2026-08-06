@@ -7170,3 +7170,58 @@ separate the live Filter source DOD from the post-shadow union and recursive
 child clip, decode the small-geometry SDF object, and isolate the remaining
 vertical-shadow term. It accepts no numeric source or SDF candidate and grants
 no regular-geometry transfer, shader-change, or Liquid Glass parity authority.
+
+Run `31084256909`, from diagnostic commit `4cd04d2`, passes that gate in
+7 minutes 20 seconds. Artifact `8960916532` has GitHub digest
+`sha256:28beddbb413117add739c3561b5f6ff4f4721f3ce16d7393cde58871e5bff193`.
+The trace and CI validation SHA-256 values are respectively
+`61fe2befb665b985b8a1f136ec1777cb9273b472ee7019f9a073d2b5ef09feaa`
+and `c4c4c93648b13ee9808a899a65d572ebaf331495aeaa163899ed5ede61e50855`.
+An independent local validator run under `nix develop` reaches the same
+semantic result; its only JSON differences are the two caller-supplied input
+path strings.
+
+The instruction decode cleanly separates three rectangles that the failed
+geometry candidate had conflated. The SDF input is
+`[441.5669584274292,440.4317445755005,142.0012969970703,142.0012969970703]`.
+Its object carries exact float32 parameters
+`[44.356536865234375,0,0,0]`, or
+`186d3142000000000000000000000000`, and the already frozen SDF rule returns
+`[397.2104215621948,396.0752077102661,230.71437072753906,230.71437072753906]`
+bit for bit. Inside Glass DOD, the raw source rectangle is exactly
+`[0,0,127,127]`. The separate `BackdropLayer::get_bounds` call changes that
+rectangle to `[-83,-83,293,293]`; this transformed recursive clip, not the raw
+Glass source DOD, supplies the 83-point margin.
+
+The former 31/32 replay residual is also completely explained for this
+selected invocation. Apple returns exact live values
+
+```
+inputShadowOpacity        = 0.018112458288669586
+gaussian expansion factor = 0.5576864082778439
+inputShadowRadius         = 1.4980545043945312
+shadow expansion          = 0.8354446359602317
+shadow offset             = [0,8]
+```
+
+and computes the shadow expansion before applying the offset. The regular
+Filter radius is exactly `3.102249537863099`, so its `2.8*r` expansion is
+`8.686298706016677`. The expanded main far-Y is
+`128.5434840697862`, while the offset shadow far-Y is
+`128.69262999972977`; the shadow therefore wins the endpoint union by exactly
+`0.149145929943586`. Omitting the Gaussian shadow expansion produces exactly
+the old delta `[0,+0.149145929943586,0,-0.149145929943586]`. Including it
+replays the selected Filter return
+`[425.06760692596436,387.23976307430587,211.5434840697862,211.69262999972977]`
+with identical binary64 bytes. The immutable offline decode is
+`Analysis/dynamic_allocation_prepare_layer_filter_sdf_small_geometry_analysis.json`.
+
+This closes the selected small-geometry arithmetic, not its general transfer.
+The 200-byte `gaussian_expansion_factor` helper and 80-byte
+`BackdropLayer::get_bounds` function remain opaque in this trace, and the
+upstream policy that constructs `[-83,-83,293,293]` is not yet prospectively
+proven. The next exact gate must open those functions, freeze their general
+semantics, and pass a new preregistered unseen-geometry/profile matrix. Optical
+image transfer, independent temporal/mesh/source/backdrop generation, physical
+Retina/color/compositor transfer, and real Walle zero-byte holdouts still
+follow before parity or a production shader change can be claimed.

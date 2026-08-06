@@ -1,0 +1,234 @@
+{
+  "classification": "retrospective exact decode of the prospectively selected output-blind circle-127 sample-two FilterOp/SDFOp trace; every retained arithmetic checkpoint and the final producer are compared bit for bit, while general geometry transfer and parity authority remain closed",
+  "conclusion": {
+    "backdropAllocationGeneralLawDecoded": false,
+    "capturedInputOpticalParityPassed": false,
+    "formerVerticalResidualExplainedExactly": true,
+    "gaussianHelperGeneralLawDecoded": false,
+    "independentPrivateInputGenerationPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "physicalOutputTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "prospectiveUnseenGeometryTransferPassed": false,
+    "selectedSmallGeometryFilterReplayExact": true,
+    "selectedSmallGeometrySDFReplayExact": true
+  },
+  "filter": {
+    "backdropInputF64": [
+      0.0,
+      0.0,
+      127.0,
+      127.0
+    ],
+    "backdropInputHex": "000000000000000000000000000000000000000000c05f400000000000c05f40",
+    "backdropReturnedClipF64": [
+      -83.0,
+      -83.0,
+      293.0,
+      293.0
+    ],
+    "backdropReturnedClipHex": "0000000000c054c00000000000c054c000000000005072400000000000507240",
+    "bleedHelperReturnF64": 3.102249537863099,
+    "blurRadiusF64": 0.22292670499155068,
+    "carrierTranslationF64": [
+      -508.06760692596436,
+      515.9323930740356
+    ],
+    "codeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "entryF64": [
+      397.2104215621948,
+      396.0752077102661,
+      230.71437072753906,
+      230.71437072753906
+    ],
+    "entryHex": "000000e35dd378400000000d34c1784000000020dcd66c4000000020dcd66c40",
+    "expandedFarF64": [
+      128.5434840697862,
+      128.5434840697862
+    ],
+    "expandedOriginF64": [
+      -119.5434840697862,
+      -119.5434840697862
+    ],
+    "expandedSizeF64": [
+      248.0869681395724,
+      248.0869681395724
+    ],
+    "filterExpansionF64": 8.686298706016677,
+    "filterRadiusF64": 3.102249537863099,
+    "gaussianExpansionFactorF64": 0.5576864082778439,
+    "instructionStatesSHA256": "41b137644eac7e9a0e3688ed4a2d9e3e4e983ebc85b9a59e1a5b632a53523ee3",
+    "intersectionOriginF64": [
+      -83.0,
+      -83.0
+    ],
+    "intersectionSizeF64": [
+      211.5434840697862,
+      211.69262999972977
+    ],
+    "localOriginF64": [
+      -110.85718536376953,
+      -110.85718536376953
+    ],
+    "localSizeF64": [
+      230.71437072753906,
+      230.71437072753906
+    ],
+    "rawSourceDODF64": [
+      0.0,
+      0.0,
+      127.0,
+      127.0
+    ],
+    "rawSourceDODHex": "000000000000000000000000000000000000000000c05f400000000000c05f40",
+    "replayExact": true,
+    "replayF64": [
+      425.06760692596436,
+      387.23976307430587,
+      211.5434840697862,
+      211.69262999972977
+    ],
+    "replayHex": "000000eb14917a40ea2ece11d63378401e34b43864716a402ca263062a766a40",
+    "returnF64": [
+      425.06760692596436,
+      387.23976307430587,
+      211.5434840697862,
+      211.69262999972977
+    ],
+    "returnHex": "000000eb14917a40ea2ece11d63378401e34b43864716a402ca263062a766a40",
+    "shadowExpansionF64": 0.8354446359602317,
+    "shadowFarAfterOffsetF64": [
+      120.69262999972976,
+      128.69262999972977
+    ],
+    "shadowOffsetF64": [
+      0.0,
+      8.0
+    ],
+    "shadowOpacityF64": 0.018112458288669586,
+    "shadowOriginBeforeOffsetF64": [
+      -111.69262999972976,
+      -111.69262999972976
+    ],
+    "shadowRadiusF64": 1.4980545043945312,
+    "shadowSizeF64": [
+      232.38525999945952,
+      232.38525999945952
+    ],
+    "unionFarF64": [
+      128.5434840697862,
+      128.69262999972977
+    ],
+    "unionOriginF64": [
+      -119.5434840697862,
+      -119.5434840697862
+    ],
+    "unionSizeF64": [
+      248.08696813957238,
+      248.23611406951596
+    ]
+  },
+  "inputs": {
+    "inventory": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json",
+    "inventorySHA256": "822f89af42d1d4b4982278582eaaf52f386bd352eb2bea78abb4d877813ef375",
+    "localValidationPassed": true,
+    "localValidationPathFieldsDifferFromCI": true,
+    "localValidationSemanticDifferenceFromCI": false,
+    "timeline": "../artifacts/gh-run-31084256909/liquid-glass-prepare-layer-filter-sdf-small-geometry-31084256909/transition-timeline.json",
+    "timelineSHA256": "f82e2f3403cec86dc99abb333e6d8745d4504d229011974bee5ca10c3ed37e67",
+    "trace": "../artifacts/gh-run-31084256909/liquid-glass-prepare-layer-filter-sdf-small-geometry-31084256909/prepare-layer-filter-sdf-small-geometry-trace.json",
+    "traceSHA256": "61fe2befb665b985b8a1f136ec1777cb9273b472ee7019f9a073d2b5ef09feaa",
+    "validation": "../artifacts/gh-run-31084256909/liquid-glass-prepare-layer-filter-sdf-small-geometry-31084256909/filter-sdf-small-geometry-validation.json",
+    "validationSHA256": "c4c4c93648b13ee9808a899a65d572ebaf331495aeaa163899ed5ede61e50855"
+  },
+  "isolatedFormerResidual": {
+    "cause": "the earlier replay omitted Gaussian shadow expansion; after the [0,8] offset, the expanded shadow far-Y exceeds the main Filter far-Y and therefore wins the endpoint union",
+    "deltaWithoutShadowExpansionF64": [
+      0.0,
+      0.149145929943586,
+      0.0,
+      -0.149145929943586
+    ],
+    "identity": "8 + gaussianExpansionFactor * inputShadowRadius - 2.8 * max(2 * inputBlurRadius, bleedHelperReturn)",
+    "mainFilterFarYF64": 128.5434840697862,
+    "replayWithoutShadowExpansionF64": [
+      425.06760692596436,
+      387.38890900424946,
+      211.5434840697862,
+      211.5434840697862
+    ],
+    "replayWithoutShadowExpansionHex": "000000eb14917a40f1e5a5f8383678401e34b43864716a401e34b43864716a40",
+    "shadowFarEdgeAdvantageF64": 0.149145929943586,
+    "shadowFarYF64": 128.69262999972977,
+    "xAndWidthWereAlreadyExact": true,
+    "yAndHeightAreNowExact": true
+  },
+  "nextExactGate": {
+    "requiresNewAppleCapture": true,
+    "target": "open the complete 200-byte gaussian_expansion_factor and 80-byte BackdropLayer::get_bounds functions, freeze their exact general semantics, then rerun a preregistered unseen-geometry/profile matrix"
+  },
+  "prepareLayerFilterSDFSmallGeometryAnalysisSchemaVersion": 1,
+  "run": {
+    "artifactDigest": "sha256:28beddbb413117add739c3561b5f6ff4f4721f3ce16d7393cde58871e5bff193",
+    "artifactID": 8960916532,
+    "artifactName": "liquid-glass-prepare-layer-filter-sdf-small-geometry-31084256909",
+    "artifactSizeBytes": 88842184,
+    "conclusion": "success",
+    "headSHA": "4cd04d24ca6e8cc85d18cdb2f25551677e3905a0",
+    "jobID": 92559896529,
+    "runID": 31084256909
+  },
+  "sdf": {
+    "codeSHA256": "1db9b60701304250a5784288bfa03136ab74db137eb021428d0fad7fa87b01ae",
+    "entryF64": [
+      441.5669584274292,
+      440.4317445755005,
+      142.0012969970703,
+      142.0012969970703
+    ],
+    "entryHex": "0000004312997b400000006de8867b40000000a00ac06140000000a00ac06140",
+    "instructionStatesSHA256": "2b1749abbd0653004c601ddb283b83ae8ff32540f52bd5e7ed849eda575f466e",
+    "parametersF32": [
+      44.356536865234375,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "parametersHex": "186d3142000000000000000000000000",
+    "replayExact": true,
+    "replayF64": [
+      397.2104215621948,
+      396.0752077102661,
+      230.71437072753906,
+      230.71437072753906
+    ],
+    "replayHex": "000000e35dd378400000000d34c1784000000020dcd66c4000000020dcd66c40",
+    "returnF64": [
+      397.2104215621948,
+      396.0752077102661,
+      230.71437072753906,
+      230.71437072753906
+    ],
+    "returnHex": "000000e35dd378400000000d34c1784000000020dcd66c4000000020dcd66c40"
+  },
+  "separation": {
+    "backdropReturnedClipF64": [
+      -83.0,
+      -83.0,
+      293.0,
+      293.0
+    ],
+    "constant280SourceDODHypothesisFalsified": true,
+    "generalEdgeAllocationLawEstablished": false,
+    "observedEdgeExpansionF64": 83.0,
+    "rawGlassSourceDODF64": [
+      0.0,
+      0.0,
+      127.0,
+      127.0
+    ],
+    "rawSourceAndRecursiveClipAreDistinct": true
+  }
+}
+
