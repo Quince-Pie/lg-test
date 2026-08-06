@@ -1,6 +1,6 @@
 {
   "backdropMarginGroupExecutionPreregistrationSchemaVersion": 1,
-  "frozenAtUtc": "2026-08-06T15:41:22Z",
+  "frozenAtUtc": "2026-08-06T15:59:55Z",
   "classification": "retrospective execution diagnostic for the prospectively opened SwiftUI.SDFStyle.Group.margin getter: the public regular/light circle-127 materialize profile is intentionally already opened, while every internal group record, tagged payload, discriminator, branch operand, accumulator word, and callee identity is sealed unknown before this dispatch",
   "antecedent": {
     "runID": 31113785381,
@@ -133,7 +133,7 @@
       },
       {
         "path": ".github/workflows/backdrop-margin-group-execution.yml",
-        "sha256": "1295647488c04cddf0bcb7dedcec323dced731c7825593de635b6df1baa3579e"
+        "sha256": "3813c4aacbab474f9247425f72d645753a818b4fe622cac5000988aab43f9170"
       }
     ],
     "productionShader": {

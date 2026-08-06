@@ -2,6 +2,11 @@ name: Decode backdrop margin Group execution
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/backdrop-margin-group-execution.yml
 
 permissions:
   contents: read
