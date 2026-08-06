@@ -6468,3 +6468,94 @@ an unseen preregistered transfer and repeat remain mandatory before any Walle
 shader change or parity claim. The production shader remains untouched at
 SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+Run `31057364064`, from operand-capture commit `f10aaa8`, deliberately does
+not satisfy that prospective gate. All eight jobs build, capture the complete
+Apple trace, exit the target normally, and upload their artifacts, but all
+eight final validators reject the same frozen assumption: every marker
+interval contains exactly **two**, not one, destination-matched unions. The
+run therefore remains a prospective failure. It is not relabelled as a pass.
+
+The retained bytes nevertheless support a separate, explicit retrospective
+opening. `Analysis/analyze_prepare_layer_crop_union_operand_matrix.py`
+independently reruns schema 7, rehashes every snapshot, validates every union
+call/return pair, and selects the later destination match by event order only.
+That later match is the last qualified union before every marker in all 256
+records. Both matches have the same recursion depth, the later role base is
+exactly 48 bytes after the earlier role base, the earlier target begins empty,
+the later target begins as the transformed Glass DOD, and the later return is
+the marker aggregate. No rectangle value participates in this selection.
+
+The opened result is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_union_operand_matrix_analysis.json`.
+It preserves `prospectiveGatePassed=false` and reports the actual topology.
+The later call exposes all 256 real signed integer operands. Replacing the
+ancestor proxy with those operands closes every former residual: 256 of 256
+rectangles and all 1,024 integer component words match exactly, and all 1,024
+final binary64 aggregate words replay bit for bit.
+
+One public-state expression reproduces those 256 operands without a tolerance
+or geometry-specific exception. Let `P=(Px,Py)` be the public carrier
+position, let `B=(Bx,By,Bw,Bh)` be the public bounds at layer path `[1,0,1]`,
+let `H` be the public window height, and let `D` be the already-opened
+transformed Glass DOD. With the captured background-filter inputs,
+
+```
+e = 2.8 * max(2 * inputBlurRadius, inputBleedBlurRadius)
+s = 9 + e
+
+Q.lowerX = Px + Bx - s
+Q.lowerY = H - Py - (By + Bh) - 17
+Q.farX   = Px + (Bx + Bw) + s
+Q.farY   = H - Py - By + s
+```
+
+Intersect `Q` and `D` in floating edge form, apply the opened finite
+floor/ceil enclosure and conditional one-pixel border, and then intersect the
+signed integer result with the integer viewport. This exact ordering is
+essential for oversized geometry: integerizing before the viewport
+intersection is what reproduces all 32 `circle-1536-center` operands. The
+candidate also reproduces the independently instruction-stepped schema-6
+floating input
+
+```
+[491.993896484375,
+ 167.50625610351562,
+ 356.84995422363284,
+ 364.4998474121094]
+```
+
+bit for bit. That is one floating anchor plus a 256-record exact integer
+calibration, not yet a general floating-producer proof.
+
+The prospective proof is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_preregistration.json`.
+The new capture adds only the already-opened `prepare_layer+0x55c0`
+`str q0,[x28,#0xb0]` stop. It retains the producer role, `v0`, and destination
+only after the direct-normal caller selector passes, then joins the store to
+the later union by marker order and identical `x28` pointer. This exposes the
+four binary64 values at producer role `x19+0x290` before integerization.
+
+The eight holdout geometries were excluded from derivation:
+
+```
+circle-065-center       circle-343-center
+circle-513-center       circle-769-center
+circle-1025-center      circle-2048-center
+circle-256-crop-d       circle-096-padx-453
+```
+
+Every one of their 256 floating rectangles must match all 256 bits; every
+integer operand and final aggregate must also match exactly. The capture,
+validator, and workflow are
+`Analysis/capture_prepare_layer_crop_policy_holdout_lldb.py`,
+`Analysis/validate_prepare_layer_crop_policy_holdout.py`, and
+`.github/workflows/prepare-layer-crop-policy-holdout.yml`.
+
+Even a complete holdout pass closes only the clear/light/materialize 1x crop
+producer. Remaining parity gates are material/appearance/direction transfer,
+physical Retina 2x and color/pixel-format transfer, and end-to-end zero-byte
+Walle frame comparisons. Only then may the exact model enter production; VRAM
+and Tracy optimization follow under those immutable image gates. The
+production shader is still untouched at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.

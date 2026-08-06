@@ -1,0 +1,232 @@
+{
+  "prepareLayerCropPolicyHoldoutPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T00:13:29Z",
+  "classification": "prospective immutable unseen-geometry test of the exact public-state crop candidate opened after run 31057364064 falsified the one-destination-match assumption; the failed gate, two-call topology, last-call structural selector, 256 exact integer operands, floating candidate, new pre-integer store capture, implementation bytes, holdout matrix, acceptance rules, and product-authority boundary are frozen before dispatch",
+  "openedCalibrationEvidence": {
+    "priorPreregistration": "Analysis/dynamic_allocation_prepare_layer_crop_union_operand_preregistration.json",
+    "priorPreregistrationSHA256": "fe92e2c3264d82c6afbdecb8f7b578f2b809557cdcf7307e9bccb39a3b41ee86",
+    "runID": 31057364064,
+    "headSHA": "f10aaa8e1cc89d0db08dff360235d78924311c34",
+    "workflowConclusion": "failure",
+    "prospectiveGatePassed": false,
+    "falsifiedProspectiveAssumption": "exactly one destination-matched union exists in each marker interval",
+    "observedDestinationMatchedUnionCountPerMarker": 2,
+    "openedSelectionRule": "select the last destination-matched union record in the marker interval; in all 256 records it is also the interval's final qualified union record",
+    "analysis": "Analysis/dynamic_allocation_prepare_layer_crop_union_operand_matrix_analysis.json",
+    "analysisSHA256": "e9976b04c5cdc74d20bdd05910d26e2a596f29b2f8aa72fde06b7414aeeb3da5",
+    "analyzer": "Analysis/analyze_prepare_layer_crop_union_operand_matrix.py",
+    "recordCount": 256,
+    "componentCount": 1024,
+    "exactPublicCropRecordCount": 256,
+    "mismatchedPublicCropRecordCount": 0,
+    "allFinalFloatingUnionsReplayedBitForBit": true,
+    "toleranceUsed": false,
+    "exceptionFitUsed": false,
+    "preIntegerFloatingProducerCapturedAcrossMatrix": false,
+    "artifactInventory": [
+      {
+        "label": "crop-1536-clipped",
+        "artifactID": 8950911131,
+        "sizeBytes": 102359515,
+        "digest": "sha256:b9f07abba4318c5e45ca315914bf5b574c5c433ad707830a1d87b0a278aa02b1"
+      },
+      {
+        "label": "crop-512-offset",
+        "artifactID": 8950894925,
+        "sizeBytes": 92644415,
+        "digest": "sha256:5ef46daaa5bead8285766eae2e4675a4ac59c3c4cab6c99a84f1e4c14a7c44ab"
+      },
+      {
+        "label": "crop-640-half-even",
+        "artifactID": 8950888569,
+        "sizeBytes": 95405972,
+        "digest": "sha256:37827fef0a4f7644aa5f0dca4c83c4c815be8e953bcf8f04dcd26aefb670c4b9"
+      },
+      {
+        "label": "crop-640-integer",
+        "artifactID": 8950832683,
+        "sizeBytes": 95395099,
+        "digest": "sha256:1be092acabc7395f48d298d60d926f22e821c01b4a4536188f23843940891b09"
+      },
+      {
+        "label": "crop-640-center",
+        "artifactID": 8950831292,
+        "sizeBytes": 95371465,
+        "digest": "sha256:cc941e819a083267ef3c1ab5255ca62fa9dc4a8352f2384ebefb464b8964274c"
+      },
+      {
+        "label": "crop-640-fractional",
+        "artifactID": 8950826142,
+        "sizeBytes": 95412252,
+        "digest": "sha256:db8d27aaaccdf2fd992e845e8882063d89da2f3758e808b8a130e351e2934ebe"
+      },
+      {
+        "label": "crop-256-center",
+        "artifactID": 8950822721,
+        "sizeBytes": 88446480,
+        "digest": "sha256:b58ed63514a992cbbae7f51ff9d2ef468a1a8419d33b907f6d6ec481d5f52689"
+      },
+      {
+        "label": "crop-640-half-signed",
+        "artifactID": 8950819977,
+        "sizeBytes": 95411860,
+        "digest": "sha256:6d1f0afb34627654f5283836a83911084f895f887460fddc816e3b5c0d96e1f7"
+      }
+    ]
+  },
+  "independentFloatingAnchor": {
+    "runID": 31048753297,
+    "sampleIndex": 2,
+    "carrierPosition": [491.993896484375, 491.993896484375],
+    "publicBounds": [-307.4998474121094, -307.4998474121094, 654.9996948242188, 654.9996948242188],
+    "inputBlurRadius": 0.062519073486328125,
+    "inputBleedBlurRadius": 0.0,
+    "observedPreIntegerF64": [491.993896484375, 167.50625610351562, 356.84995422363284, 364.4998474121094],
+    "candidatePreIntegerF64": [491.993896484375, 167.50625610351562, 356.84995422363284, 364.4998474121094],
+    "candidateMatchedAll256Bits": true,
+    "interpretationBoundary": "This one earlier instruction-stepped floating input anchors the candidate's meaning but does not establish general floating transfer. The prospective holdout must capture and match all four binary64 inputs for all 256 new records."
+  },
+  "frozenCandidate": {
+    "publicLayerPath": [1, 0, 1],
+    "symbols": {
+      "PxPy": "public carrier position from path [1]",
+      "BxByBwBh": "public bounds at path [1,0,1]",
+      "H": "public window height",
+      "D": "already-opened transformed Glass DOD rectangle"
+    },
+    "glassDODExpansion": "e = 2.8 * max(2 * inputBlurRadius, inputBleedBlurRadius)",
+    "support": "s = 9 + e",
+    "publicROIEdges": {
+      "lowerX": "Px + Bx - s",
+      "lowerY": "H - Py - (By + Bh) - 17",
+      "farX": "Px + (Bx + Bw) + s",
+      "farY": "H - Py - By + s"
+    },
+    "floatingComposition": "Form the four public ROI edges in the displayed binary64 grouping; intersect them with D by max lower edges and min far edges; form each nonnegative extent by far minus selected lower edge.",
+    "integerComposition": "Apply the opened finite clamp, floor lower edges, ceil far edges, and conditional one-pixel border to the floating intersection, then apply the opened signed integer intersection with the exact viewport.",
+    "finalComposition": "Convert the selected signed integer operand to binary64 and replay the opened LayerShapes::union_bounds instruction order against D.",
+    "calibrationRecordCount": 256,
+    "calibrationExactRecordCount": 256,
+    "calibrationExactIntegerComponentCount": 1024,
+    "toleranceUsed": false,
+    "exceptionFitUsed": false
+  },
+  "openedInstructionSites": {
+    "prepareLayerFunction": "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes&, unsigned long long&)",
+    "prepareLayerSymbolByteCount": 40128,
+    "prepareLayerFullCodeSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+    "preIntegerStoreOffset": 21952,
+    "preIntegerStoreOffsetHex": "0x55c0",
+    "preIntegerStoreRawLittleEndianHex": "802f803d",
+    "preIntegerStoreInstruction": "str q0, [x28, #0xb0]",
+    "floatingInputRoleOffset": 656,
+    "workingCropRoleOffset": 624,
+    "layerShapesNestedOffset": 176,
+    "finalUnionCallOffset": 34268,
+    "finalUnionReturnOffset": 34272
+  },
+  "captureDesign": {
+    "baseCapture": "Run the unchanged schema-7 marker capture and unchanged union-operand extension first.",
+    "storeSelection": "At every exact prepare_layer+0x55c0 stop, retain the store only after the exact direct normal caller-chain selector passes. Read no role, SIMD, destination, crop, or public value before retention.",
+    "unionSelection": "Within each accepted marker interval require exactly two destination-matched unions and select the later one by record order only.",
+    "storeCorrelation": "Within the same marker interval require exactly one retained +0x55c0 store whose x28 LayerShapes base equals the selected union's x28 base.",
+    "capturedStoreState": "Retain x19/x28/x29/sp/pc/cpsr, v0, complete backtrace, the complete 2 KiB x19 role, and 16 destination bytes at x28+0xb0 before the store.",
+    "floatingInput": "Read the four binary64 producer components from the selected store role at x19+0x290 only after structural retention and pointer correlation.",
+    "workingCrop": "Require the selected v0 bytes to equal x19+0x270 and the later selected union's signed integer input at x28+0xb0.",
+    "cropValuesUsedForSelection": false,
+    "publicValuesUsedForSelection": false,
+    "hardwareWatchpoints": false,
+    "instructionStepping": false,
+    "appleCaptureProgramChanged": false,
+    "productionShaderChanged": false
+  },
+  "holdoutMatrix": {
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "normalSamplesPerJob": 32,
+    "jobs": [
+      {"label": "holdout-065-center", "geometry": "circle-065-center"},
+      {"label": "holdout-343-center", "geometry": "circle-343-center"},
+      {"label": "holdout-513-center", "geometry": "circle-513-center"},
+      {"label": "holdout-769-center", "geometry": "circle-769-center"},
+      {"label": "holdout-1025-center", "geometry": "circle-1025-center"},
+      {"label": "holdout-2048-center", "geometry": "circle-2048-center"},
+      {"label": "holdout-256-crop-d", "geometry": "circle-256-crop-d"},
+      {"label": "holdout-096-padx-453", "geometry": "circle-096-padx-453"}
+    ],
+    "excludedCalibrationGeometries": [
+      "circle-1536-center",
+      "circle-256-center",
+      "circle-512-offset",
+      "circle-640-center",
+      "circle-640-fractional",
+      "circle-640-phase-0500-even",
+      "circle-640-phase-0500-signed",
+      "circle-640-integer"
+    ],
+    "diversity": "Previously unused exact crop-operand states spanning small support, odd size, just-above power-of-two boundaries, subviewport and superviewport clipping, asymmetric two-axis crop, and near-boundary horizontal placement."
+  },
+  "frozenImplementation": {
+    "files": [
+      {"path": "Analysis/capture_prepare_layer_crop_transfer_lldb.py", "sha256": "1e08267e1c24a7b75765b0f3d9ec09749e7f2673673ba1133bc569b5c87039b9"},
+      {"path": "Analysis/validate_prepare_layer_crop_transfer.py", "sha256": "1681b93409bac765ea5569d0ac3203ef141bcd76a808d2e747b0c3cb670022b1"},
+      {"path": "Analysis/capture_prepare_layer_crop_union_operand_lldb.py", "sha256": "607f165b29d0324677725892833ba99a79d3fd9830bd9d52573d56d5aa0f51bb"},
+      {"path": "Analysis/analyze_prepare_layer_crop_union_operand_matrix.py", "sha256": "7fbd6885f428987536103633e4243dfd1e03d3d4cf62c71315ca02dd72496977"},
+      {"path": "Analysis/dynamic_allocation_prepare_layer_crop_union_operand_matrix_analysis.json", "sha256": "e9976b04c5cdc74d20bdd05910d26e2a596f29b2f8aa72fde06b7414aeeb3da5"},
+      {"path": "Analysis/test_analyze_prepare_layer_crop_union_operand_matrix.py", "sha256": "b74e2d0e9f5291259c8577b777076ed5c1a7d4aeae8294a44db109ae7e085aee"},
+      {"path": "Analysis/capture_prepare_layer_crop_policy_holdout_lldb.py", "sha256": "5d5f243c40d400f2562445797780bb787ebfeb5197c21a4bf3c477b007aa2b46"},
+      {"path": "Analysis/test_capture_prepare_layer_crop_policy_holdout_lldb_source.py", "sha256": "ec640f7b211eb5f22411fc01c3754f50e55a3fc1e0b54453d4bd7b68b0bb0681"},
+      {"path": "Analysis/validate_prepare_layer_crop_policy_holdout.py", "sha256": "d6ea6752bb24d450a62762da4d2095ad676136ace6d0454a7938b1a87bea4964"},
+      {"path": "Analysis/test_validate_prepare_layer_crop_policy_holdout.py", "sha256": "a7f87992bc83dc4e42f95e023181c49f72dc845e011245484433a0715c783c52"},
+      {"path": "Analysis/test_dynamic_allocation_prepare_layer_crop_policy_holdout_preregistration.py", "sha256": "634b0589c0458fb058205a619f74519e61b5841f6b6cfd04074f47eaba5af44f"},
+      {"path": ".github/workflows/prepare-layer-crop-policy-holdout.yml", "sha256": "04a47e0e26c42db9a54aa0925d10f48034602b8ff53c7eb6c86a8c8e8ab4c011"},
+      {"path": "Sources/GlassIntrospect/main.swift", "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"}
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsed": false
+    }
+  },
+  "acceptance": {
+    "jobCount": 8,
+    "normalMarkerCountPerJob": 32,
+    "allSchemaSevenMarkerGatesMustRepass": true,
+    "exactUnionCallAndReturnInstructionsRequired": true,
+    "twoDestinationMatchesPerMarkerRequired": true,
+    "lastDestinationMatchRequired": true,
+    "exactNestedCropStoreInstructionRequired": true,
+    "onePointerMatchedStorePerMarkerRequired": true,
+    "allStoreSIMDBytesMustEqualWorkingCropBytes": true,
+    "allPreIntegerF64WordsMustMatchBitForBit": true,
+    "allIntegerCropWordsMustMatchExactly": true,
+    "allFinalAggregateWordsMustMatchBitForBit": true,
+    "zeroTraceFailuresRequired": true,
+    "allEightJobsMustPass": true,
+    "clearLightMaterializeOneXUnseenCropTransferMayBeClaimed": true,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xTransferMayBeClaimed": false,
+    "endToEndWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "notClaimed": [
+    "that the prospective crop-policy holdout has run or passed",
+    "that the 256/256 retrospective integer fit alone establishes the floating producer",
+    "that the frozen binary64 grouping may change after observing holdout values",
+    "that a failed floating-word comparison may be replaced by a tolerance or per-geometry exception",
+    "that clear-light-materialize 1x crop transfer establishes other materials, appearances, directions, scales, color spaces, or pixel formats",
+    "that physical Retina 2x transfer has passed",
+    "that end-to-end Walle frames are byte-identical to Apple",
+    "that the production shader may change",
+    "that Apple Liquid Glass parity has been achieved"
+  ]
+}
