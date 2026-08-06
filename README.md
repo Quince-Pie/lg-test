@@ -6982,3 +6982,100 @@ Only after that replay passes unchanged blind crop holdouts do the still-open
 material/appearance/direction, physical Retina/color-transfer, and independent
 Walle zero-byte gates become eligible. Liquid Glass parity and production
 shader changes remain unauthorized.
+
+### Regular Filter/SDF decode and exact profile-matrix retry
+
+The instruction work above is now superseded by two later captures and one
+explicitly retrospective reanalysis. Run `31075427781`, from commit `df801df`,
+prospectively reselects the regular/light/materialize `FilterOp` without crop
+values and retains its complete executed instruction chain. The selected
+source DOD is exactly
+
+```
+[-280, -280, 1360, 1360]
+```
+
+and regular material computes the Filter radius as
+
+```
+r = max(2 * inputBlurRadius, 0.5 * inputBleedBlurRadius)
+```
+
+The already decoded DOD arithmetic then expands by exact `2.8 * r`, using
+exact constants `-2.8` for origins and `5.6` for the size increment. This is
+the regular-material distinction that the first profile workflow lacked;
+clear material continues to use
+`max(2 * inputBlurRadius, inputBleedBlurRadius)`.
+
+Run `31077652563`, from commit `0af1023`, prospectively opens the second
+authenticated dynamic dispatch as the 160-byte `SDFOp::map_bounds`, SHA-256
+`1db9b60701304250a5784288bfa03136ab74db137eb021428d0fad7fa87b01ae`.
+Its object carries exact float32 parameters
+
+```
+[42.46388244628906, 0, 0, 0]
+```
+
+or `04db2942000000000000000000000000` as little-endian bytes. The complete
+executed chain proves
+
+```
+origin = input_origin - float32(radius) + float32(offset)
+size   = input_size + 2 * float32(radius)
+```
+
+with no tolerance. In every one of the 128 retained regular-profile records
+from failed run `31074006001`, the same SDF state is independently present at
+one structural location: pointer-correlated mirror store minus one, role base
+minus `0x800`, recursion depth plus one, parameters at role offset `0x7f0`.
+Every clear-profile record has the identical structure with exact float32
+radius `9.0` (`00001041000000000000000000000000`). The floating producer is the
+preceding store: mirror minus two, role base minus `0xfb0`, recursion depth
+plus two. Neither selector reads a crop or producer value.
+
+Replaying those structurally selected inputs closes the archived profile
+matrix exactly: 256/256 floating rectangles and 1,024/1,024 binary64
+components match, with maximum ULP distance zero. Four endpoint-adjacent
+regular records require a retained y term that the older role decoder had
+mislabelled as nominal shape. The output-blind rule is:
+
+```
+if foregroundFilter.filterPresent is not false:
+    materialize producer depth 6, or dematerialize producer depth 7:
+        sdf_input_y += pointer_correlated_mirror.nominalShapeF64[2] + 280
+```
+
+The four archived terms are exactly:
+
+```
+regular light materialize sample 1    -0.07593367490568426
+regular dark  materialize sample 1    -0.07529799505755363
+regular light dematerialize sample 31 -0.04553325892601379
+regular dark  dematerialize sample 31 -0.05282211212841048
+```
+
+The regular downstream integer path is also explicit rather than assumed:
+the floating producer is finitely enclosed, viewport clipping may occur before
+its integer store, the adjacent SDF-state store retains that exact working
+rectangle, and the pointer-correlated mirror retains the exact final viewport
+crop. All 128 regular records satisfy that chain.
+
+This is calibration, not a transfer pass, because the four-term rule was
+completed after opening run `31074006001`. The immutable calibration statement
+is
+`Analysis/dynamic_allocation_prepare_layer_filter_map_bounds_profile_transfer_reanalysis_result.json`.
+The candidate and its zero-tolerance acceptance are frozen before new output
+in
+`Analysis/dynamic_allocation_prepare_layer_filter_map_bounds_profile_transfer_retry_preregistration.json`.
+The strict validator is
+`Analysis/validate_prepare_layer_filter_map_bounds_profile_transfer_retry.py`,
+and workflow
+`.github/workflows/prepare-layer-filter-map-bounds-profile-transfer-retry.yml`
+runs all eight macOS profiles plus a separate aggregate job. An exact aggregate
+may establish only FilterOp crop profile transfer at this fixed geometry. It
+cannot establish optical appearance parity, independent private-input
+generation, unseen regular geometry, physical Retina/color transfer,
+independent Walle zero-byte frames, or Liquid Glass parity.
+
+The production shader remains unchanged at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.

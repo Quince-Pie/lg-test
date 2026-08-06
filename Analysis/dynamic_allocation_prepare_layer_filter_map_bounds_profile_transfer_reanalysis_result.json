@@ -1,0 +1,221 @@
+{
+  "prepareLayerFilterMapBoundsProfileTransferReanalysisResultSchemaVersion": 1,
+  "classification": "retrospective target-aware reanalysis of the failed eight-profile FilterOp crop-transfer matrix after direct regular FilterOp and SDFOp instruction captures; all comparisons are bitwise, but the rule was completed after opening these outputs and therefore has no prospective transfer authority",
+  "calibrationRun": {
+    "id": 31074006001,
+    "headSHA": "fef4f2fd9fe43c3a13d4bc9e63d36bccd8dd7e72",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31074006001",
+    "workflowConclusion": "failure",
+    "jobCount": 8,
+    "artifactCount": 8,
+    "allCaptureStepsCompleted": true,
+    "targetOutputsOpenedBeforeRuleFrozen": true,
+    "prospectiveTransferEstablished": false
+  },
+  "instructionEvidence": {
+    "regularFilter": {
+      "runID": 31075427781,
+      "headSHA": "df801dfa908ad38df57c43f52ae251825460ce13",
+      "artifactID": 8957420240,
+      "artifactDigest": "sha256:09ebe6d7c4ef0ee07858e11a3cc87b029fb5089652aac1e611540fe6949283fe",
+      "filterMapBoundsCodeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+      "sourceBoundsF64": [-280.0, -280.0, 1360.0, 1360.0],
+      "radiusRule": "max(2 * inputBlurRadius, 0.5 * inputBleedBlurRadius)",
+      "selectedFloatingProducerOwnedBitForBit": true
+    },
+    "regularSDF": {
+      "runID": 31077652563,
+      "headSHA": "0af1023f49e5a3db9c2798f71623509514342ac4",
+      "artifactID": 8958293662,
+      "artifactDigest": "sha256:44371e08ef07d1013223487e13284203fc83d2ff4d7fcbdbaceaf7f48bb7dea7",
+      "sdfMapBoundsCodeSHA256": "1db9b60701304250a5784288bfa03136ab74db137eb021428d0fad7fa87b01ae",
+      "radiusF32": 42.46388244628906,
+      "radiusAndOffsetsHex": "04db2942000000000000000000000000",
+      "operation": "origin = input origin - float32 radius + float32 offset; size = input size + 2 * float32 radius",
+      "completeExecutedInstructionChainValidated": true
+    }
+  },
+  "decodedCandidate": {
+    "producerSelector": {
+      "storeIndexDeltaFromPointerCorrelatedMirror": -2,
+      "roleBaseDeltaFromPointerCorrelatedMirror": -4016,
+      "prepareDepthDeltaFromPointerCorrelatedMirror": 2,
+      "cropOrProducerValuesUsedForSelection": false
+    },
+    "sdfStateSelector": {
+      "storeIndexDeltaFromPointerCorrelatedMirror": -1,
+      "roleBaseDeltaFromPointerCorrelatedMirror": -2048,
+      "prepareDepthDeltaFromPointerCorrelatedMirror": 1,
+      "parametersRoleOffset": 2032,
+      "cropOrProducerValuesUsedForSelection": false
+    },
+    "clear": {
+      "sdfRadiusF32": 9.0,
+      "sdfParametersHex": "00001041000000000000000000000000",
+      "filterRadiusRule": "max(2 * inputBlurRadius, inputBleedBlurRadius)",
+      "sourceBoundsRule": "terminal producer transform x/y plus terminal nominal width/height"
+    },
+    "regular": {
+      "sdfRadiusF32": 42.46388244628906,
+      "sdfParametersHex": "04db2942000000000000000000000000",
+      "filterRadiusRule": "max(2 * inputBlurRadius, 0.5 * inputBleedBlurRadius)",
+      "sourceBoundsF64": [-280.0, -280.0, 1360.0, 1360.0],
+      "endpointYOffsetRule": "when the foreground filter is live, producer depth 6 while materializing or depth 7 while dematerializing adds pointer-correlated mirror nominalShapeF64[2] + 280 to SDF input y",
+      "endpointSelectorUsesCropOrProducerValues": false
+    },
+    "filterOperationOrder": [
+      "construct the SDF-expanded Filter entry in the executed binary64 order",
+      "unapply x translation and the y-reflecting SimpleTransform",
+      "multiply the material-specific Filter radius by exact -2.8",
+      "expand width and height using binary64 fused multiply-add with exact 5.6",
+      "union the expanded rectangle with the unexpanded rectangle shifted by [0,8]",
+      "shadow-union the source bounds",
+      "intersect endpoints and subtract origins from far edges",
+      "reapply the y-reflecting transform in executed add/negate order"
+    ],
+    "binary64FMARequired": true,
+    "toleranceUsed": false,
+    "exceptionFitUsed": false
+  },
+  "retrospectiveReplay": {
+    "profileCount": 8,
+    "rectangleCount": 256,
+    "componentCount": 1024,
+    "exactRectangleCount": 256,
+    "exactComponentCount": 1024,
+    "mismatchedRectangleCount": 0,
+    "mismatchedComponentCount": 0,
+    "maximumULPDistance": 0,
+    "maximumAbsoluteError": 0.0,
+    "sdfStateRecordCount": 256,
+    "endpointYOffsetAppliedRecordCount": 4,
+    "profiles": [
+      {
+        "material": "clear",
+        "appearance": "light",
+        "direction": "materialize",
+        "traceSHA256": "792c8759864a3b4291501e6e73d11a5d589d24fc9b4261d9f11196f8fc256ee8",
+        "timelineSHA256": "4ce2ae5687414de29a0153e50c982210ab077fbb15c71733d1e3277ef2de20d4",
+        "exactRectangleCount": 32,
+        "exactComponentCount": 128,
+        "endpointRecords": []
+      },
+      {
+        "material": "clear",
+        "appearance": "light",
+        "direction": "dematerialize",
+        "traceSHA256": "edf1b41ce41f08dbdde1ae88a3573c0d57d04b6b5d867c1a09a7d733a4e7b0cf",
+        "timelineSHA256": "126a579a4e4905c2ee6ce99de3dea5beb3ea198033dfe2ae44acbd2df62692a4",
+        "exactRectangleCount": 32,
+        "exactComponentCount": 128,
+        "endpointRecords": []
+      },
+      {
+        "material": "clear",
+        "appearance": "dark",
+        "direction": "materialize",
+        "traceSHA256": "c0bc92e97ad08b098be01a8b476076bd76ca22b3fda4b8c37787a7ac56c0edd9",
+        "timelineSHA256": "a0fdd8a2a4dc5ac156e4e45b312d3508f8737e7928e8ae2b67f58708467a9ff5",
+        "exactRectangleCount": 32,
+        "exactComponentCount": 128,
+        "endpointRecords": []
+      },
+      {
+        "material": "clear",
+        "appearance": "dark",
+        "direction": "dematerialize",
+        "traceSHA256": "7d2a58191ab37ae7a26dd6652d05aa72e64404247eeadafda821df432c845403",
+        "timelineSHA256": "563e4963021b4f1f7e66570241f6e665b8d9e9d18319d5ffc6d0c02be5298b97",
+        "exactRectangleCount": 32,
+        "exactComponentCount": 128,
+        "endpointRecords": []
+      },
+      {
+        "material": "regular",
+        "appearance": "light",
+        "direction": "materialize",
+        "traceSHA256": "bf31f510738399b8afacf17c493de503fee37b1e5a02ff424df8b51f5d49f5b5",
+        "timelineSHA256": "8fb148b5cf4f8528bfea596d9d9f1167d6d4de5beeb42ca5a33dc0807ca8632f",
+        "exactRectangleCount": 32,
+        "exactComponentCount": 128,
+        "endpointRecords": [
+          {
+            "sampleIndex": 1,
+            "producerPrepareRecursionDepth": 6,
+            "endpointYOffsetF64": -0.07593367490568426,
+            "endpointYOffsetHex": "009062aa6370b3bf"
+          }
+        ]
+      },
+      {
+        "material": "regular",
+        "appearance": "light",
+        "direction": "dematerialize",
+        "traceSHA256": "cf688b7318c08a6629ff633d43d1cb88ed3b0bb9ff9faf255a35d1d9bba5e2f3",
+        "timelineSHA256": "3b62d2beead44ad62c8453203400e7f0c4ae69b7014ea665bb920d3b0b80fd8f",
+        "exactRectangleCount": 32,
+        "exactComponentCount": 128,
+        "endpointRecords": [
+          {
+            "sampleIndex": 31,
+            "producerPrepareRecursionDepth": 7,
+            "endpointYOffsetF64": -0.04553325892601379,
+            "endpointYOffsetHex": "0060efa32250a7bf"
+          }
+        ]
+      },
+      {
+        "material": "regular",
+        "appearance": "dark",
+        "direction": "materialize",
+        "traceSHA256": "142ac1eb5e765471499489ad50b265a36aef9bfe46e561f527b59386ce43811a",
+        "timelineSHA256": "d9dfebca5524c340e4ee44f5b3539ea7e04eda11ccccbe3f97bde21a2b3a0f1d",
+        "exactRectangleCount": 32,
+        "exactComponentCount": 128,
+        "endpointRecords": [
+          {
+            "sampleIndex": 1,
+            "producerPrepareRecursionDepth": 6,
+            "endpointYOffsetF64": -0.07529799505755363,
+            "endpointYOffsetHex": "00003ababa46b3bf"
+          }
+        ]
+      },
+      {
+        "material": "regular",
+        "appearance": "dark",
+        "direction": "dematerialize",
+        "traceSHA256": "a3f70f1b7d002d1e12e597a1e75491455ec9972e4ea20859e1114247418984ae",
+        "timelineSHA256": "705febbc682c1256093722dd19ee94273e3417b919027366512df4e22b1bfdbe",
+        "exactRectangleCount": 32,
+        "exactComponentCount": 128,
+        "endpointRecords": [
+          {
+            "sampleIndex": 31,
+            "producerPrepareRecursionDepth": 7,
+            "endpointYOffsetF64": -0.05282211212841048,
+            "endpointYOffsetHex": "00c031f87f0babbf"
+          }
+        ]
+      }
+    ]
+  },
+  "conclusion": {
+    "archivedCompleteProfileMatrixReplaysBitForBit": true,
+    "regularSDFStateStructurallyPresentInEveryRecord": true,
+    "regularTwoStageIntegerCropChainValidated": true,
+    "prospectiveUnchangedRepeatPassed": false,
+    "filterOpCropProfileTransferPassed": false,
+    "opticalMaterialAppearanceDirectionTransferPassed": false,
+    "physicalRetina2xAndColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderExpectedSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  },
+  "nextExactGate": {
+    "target": "unchanged output-blind eight-profile replay using the frozen structural SDF and producer selectors",
+    "requiresNewAppleCapture": true,
+    "acceptance": "all eight jobs, 256 rectangles, and 1024 binary64 components exact with maximum ULP distance zero"
+  }
+}
