@@ -39,6 +39,7 @@ LOCAL_CASE22_TARGET_FUNCTION = (
 )
 
 _case22_new_trace = case22._new_trace
+_active_callback_threads = {}
 
 
 def _set_local_callback(breakpoint, callback, label):
@@ -68,10 +69,24 @@ def producer_entry(frame, breakpoint_location, internal_dict):
 
 
 def producer_stage(frame, breakpoint_location, internal_dict):
-    return group.producer_stage(frame, breakpoint_location, internal_dict)
+    thread = frame.GetThread()
+    thread_id = thread.GetThreadID()
+    _active_callback_threads[thread_id] = thread
+    try:
+        return group.producer_stage(frame, breakpoint_location, internal_dict)
+    finally:
+        _active_callback_threads.pop(thread_id, None)
 
 
 def _selected_thread(process, thread_id):
+    active = _active_callback_threads.get(thread_id)
+    if (
+        active is not None
+        and active.IsValid()
+        and active.GetThreadID() == thread_id
+        and active.GetProcess().GetProcessID() == process.GetProcessID()
+    ):
+        return active
     debugger = base._state.get("debugger")
     if debugger is None:
         raise RuntimeError("local thread reacquisition lacks the debugger")
@@ -82,6 +97,13 @@ def _selected_thread(process, thread_id):
     ):
         raise RuntimeError("local thread reacquisition changed the process")
     thread = fresh_process.GetThreadByID(thread_id)
+    selected = fresh_process.GetSelectedThread()
+    if (
+        not thread.IsValid()
+        and selected.IsValid()
+        and selected.GetThreadID() == thread_id
+    ):
+        thread = selected
     if not thread.IsValid():
         for index in range(fresh_process.GetNumThreads()):
             candidate = fresh_process.GetThreadAtIndex(index)
@@ -157,8 +179,9 @@ def _new_trace():
         "boundsCodeSHA256": LOCAL_BOUNDS_CODE_SHA256,
         "retinaBaselineBackingScaleFactor": 2,
         "threadReacquisition": (
-            "fresh selected-target process after every synchronous LLDB step, "
-            "requiring unchanged process ID and exact thread ID"
+            "active callback SBThread across synchronous steps, then fresh "
+            "selected-target process fallback; every path requires unchanged "
+            "process ID and exact thread ID"
         ),
         "capturedMarginUsedForRuntimeSelection": False,
         "capturedCropUsedForRuntimeSelection": False,

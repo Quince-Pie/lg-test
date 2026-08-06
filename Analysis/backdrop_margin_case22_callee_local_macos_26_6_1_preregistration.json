@@ -121,6 +121,24 @@
     "returnWordOpened": false,
     "authorityChanged": false
   },
+  "reentrantThreadHandleRetry": {
+    "freshProcessCommit": "b731afb",
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-case22-thread-attempt-3",
+    "traceSHA256": "d5370a26414e5200ce1011d28b2d12e98bf3175760cd24acd5a6c7c74beddac8",
+    "lldbLogSHA256": "989592d6509a42ce0e9b0d827538bb300508fa976effbadb637362c9361d6098",
+    "baseEventCount": 93,
+    "completeGroupInvocationCount": 20,
+    "selectedInvocationIndex": 20,
+    "authenticatedTargetEntryReached": true,
+    "case22InstructionCount": 0,
+    "failure": "even a newly requested SBProcess cannot enumerate its threads until the synchronous Python breakpoint callback returns to LLDB",
+    "transportOnlyCorrection": "retain the callback's exact SBThread object while the callback is active and reuse it only when its process ID and thread ID still equal the original values; keep the fresh-process exact-ID path as fallback",
+    "runtimeSelectionChanged": false,
+    "captureFieldsChanged": false,
+    "arithmeticInstructionOpened": false,
+    "returnWordOpened": false,
+    "authorityChanged": false
+  },
   "captureContract": {
     "originalCase22AdapterUnchanged": true,
     "localOverlayOnly": true,
@@ -156,11 +174,11 @@
     "files": [
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py",
-        "sha256": "5fc1f5614f0ca096423bf80081d9a24becc3471c1496b4c55bb5b5c9b8904355"
+        "sha256": "bb0715db193ef5a00ecf807b64de2828f4c310ef33edf65b5dc0d7f3ebdd66c6"
       },
       {
         "path": "Analysis/test_capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb_source.py",
-        "sha256": "809f5f5218746d97e34df5fb45afeb22c0b090a18f9ec253256a717d3304502c"
+        "sha256": "93b935bcea448819cfbdaf51ef2fad0738d7d754ed93b2e0437b5a9025e556c8"
       },
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_lldb.py",

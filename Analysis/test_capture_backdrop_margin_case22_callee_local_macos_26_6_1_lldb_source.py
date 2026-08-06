@@ -68,10 +68,27 @@ class LocalMacOSCase22LLDBSourceTests(unittest.TestCase):
         )
         source = ast.get_source_segment(self.text, function)
         self.assertIsNotNone(source)
+        self.assertIn("_active_callback_threads.get(thread_id)", source)
+        self.assertIn("active.GetThreadID() == thread_id", source)
+        self.assertIn(
+            "active.GetProcess().GetProcessID() == process.GetProcessID()",
+            source,
+        )
         self.assertIn("debugger.GetSelectedTarget().GetProcess()", source)
         self.assertIn("fresh_process.GetProcessID() != process.GetProcessID()", source)
         self.assertIn("candidate.GetThreadID() == thread_id", source)
         self.assertIn("thread.GetThreadID() != thread_id", source)
+
+        callback = next(
+            node
+            for node in self.tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "producer_stage"
+        )
+        callback_source = ast.get_source_segment(self.text, callback)
+        self.assertIsNotNone(callback_source)
+        self.assertIn("_active_callback_threads[thread_id] = thread", callback_source)
+        self.assertIn("finally:", callback_source)
+        self.assertIn("_active_callback_threads.pop(thread_id, None)", callback_source)
 
     def test_runtime_selection_remains_output_blind(self) -> None:
         for literal in (
