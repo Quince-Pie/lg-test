@@ -1,0 +1,164 @@
+{
+  "prepareLayerSmallGeometryHelperCodeCallbackRetryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T08:54:44Z",
+  "classification": "prospective output-blind transport-only retry: the failed adapter and its original preregistration remain byte-identical; only the internal trace-writer module depth and top-level callback visibility are repaired before redispatch",
+  "antecedentFailure": {
+    "path": "Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_code_transport_failure_result.json",
+    "sha256": "79b6a7d2dd77cc42066a5cc698f54981001f0f199344d032565d9362b8916de2",
+    "runID": 31086167113,
+    "headSHA": "1019a15720e2a9cd1dc3efb7bfc639cee1da3199",
+    "workflowConclusion": "failure",
+    "traceWriterRouteFailed": true,
+    "inheritedExecutionTraceCompleted": false,
+    "timelinePresent": false,
+    "validationPresent": false,
+    "helperCodeOpeningAccepted": false,
+    "liquidGlassParityEstablished": false
+  },
+  "retainedButUnacceptedFailureEvidence": {
+    "selectionWasOutputBlind": true,
+    "codeHashesAcceptedAsRetryExpectations": false,
+    "targets": [
+      {
+        "name": "gaussianExpansionFactor",
+        "observedCodeSHA256": "7834bbb95f84915a6544d34b4148f7f267fcc94d2ae730888644535ffc57c0dd",
+        "retryExpectedCodeSHA256": null
+      },
+      {
+        "name": "backdropGetBounds",
+        "observedCodeSHA256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+        "retryExpectedCodeSHA256": null
+      }
+    ]
+  },
+  "frozenCorrection": {
+    "directlyImportedModule": "Analysis/capture_prepare_layer_small_geometry_helper_code_callback_retry_lldb.py",
+    "failedFrozenAdapter": "Analysis/capture_prepare_layer_small_geometry_helper_code_lldb.py",
+    "failedExpression": "frozen.frozen._write_trace()",
+    "repairedExpression": "frozen.frozen.frozen.frozen._write_trace()",
+    "writerReboundBeforeFrozenInitialization": true,
+    "callbacksForwarded": [
+      "prepare_layer_entry",
+      "crop_transfer_marker",
+      "crop_union_call",
+      "crop_union_return",
+      "nested_crop_store",
+      "prepare_layer_mask_entry"
+    ],
+    "dynamicCallbacksReboundAfterPrepareEntry": true,
+    "newStaticTargetAdded": false,
+    "newBreakpointAdded": false,
+    "newMemoryReadAdded": false,
+    "newSteppingRuleAdded": false,
+    "selectorChanged": false,
+    "captureRuleChanged": false,
+    "validatorChanged": false,
+    "timelineChanged": false,
+    "cropOrOutputValuesReadForSelection": false
+  },
+  "unchangedCapture": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "selectedSampleIndex": 2,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "filterDispatchOrdinal": 4,
+    "sdfDispatchOrdinal": 2,
+    "targets": [
+      {
+        "name": "gaussianExpansionFactor",
+        "function": "CA::OGL::gaussian_expansion_factor(double)",
+        "relativeToPrepareLayer": -96880,
+        "symbolByteCount": 200,
+        "instructionCount": 50,
+        "expectedCodeSHA256": null
+      },
+      {
+        "name": "backdropGetBounds",
+        "function": "CA::Render::BackdropLayer::get_bounds(CA::Render::Layer const*, CA::Rect&, CA::Rect*) const",
+        "relativeToPrepareLayer": 364616,
+        "symbolByteCount": 80,
+        "instructionCount": 20,
+        "expectedCodeSHA256": null
+      }
+    ],
+    "staticMemoryReadsOnly": true,
+    "breakpointsAdded": 0,
+    "instructionStepsAdded": 0,
+    "filterAndSDFCaptureChanged": false
+  },
+  "acceptance": {
+    "zeroCaptureFailuresRequired": true,
+    "inheritedSmallGeometryDiagnosticMustPassUnchanged": true,
+    "exactFunctionNamesRelativeAddressesAndByteCountsRequired": true,
+    "completeContiguousCodeAndInstructionCoverageRequired": true,
+    "observedCodeDigestMustBeDerivedFromRetainedBytes": true,
+    "helperCodeHashesMayBeAcceptedProspectively": false,
+    "helperCodeOpeningMayBeClaimed": true,
+    "gaussianGeneralSemanticsMayBeClaimed": false,
+    "backdropAllocationGeneralSemanticsMayBeClaimed": false,
+    "regularGeometryTransferMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_small_geometry_helper_code_lldb.py",
+        "sha256": "7dcff793c88e0bfbcf30fcd9bd11ad14a526a6a51c7cd59069db9d9249b50910"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_small_geometry_helper_code_callback_retry_lldb.py",
+        "sha256": "d47147dab4f1fbff7a63a3ced9d0a844072f0aae83995118ebca846f5bc3b729"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_small_geometry_helper_code_callback_retry_lldb_source.py",
+        "sha256": "23c528d444e5ea665dff2930ddd481eb682741cc33369901917f56e14e7f7f9e"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_small_geometry_helper_code.py",
+        "sha256": "210819aab13a31db84bac1b954f5deca8a004c1ff5bc6e6fcc3457d0160b1d14"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_small_geometry_helper_code.py",
+        "sha256": "799a5453e195cee38987134a085c4f589e2165ce8879696426c0180b24bcf905"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_code_transport_failure_result.json",
+        "sha256": "79b6a7d2dd77cc42066a5cc698f54981001f0f199344d032565d9362b8916de2"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_small_geometry_helper_code_transport_failure_result.py",
+        "sha256": "677bf397d46f06c556c26abe69c9edc3410280d588123025acc6b50d1ea92c4d"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-small-geometry-helper-code-callback-retry.yml",
+        "sha256": "13adeb3a242410959c3a03b463aa52b9261104ae174d05ada1ba0392ae4f5c12"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_code_preregistration.json",
+        "sha256": "e17f91d85faded2812235529a2f8050b55af9d739a792ef9ab845f91498d52e5"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "transportCorrectionMayBeClaimed": true,
+    "helperCodeOpeningMayBeClaimedIfGatePasses": true,
+    "gaussianExpansionGeneralLawMayBeClaimed": false,
+    "backdropAllocationGeneralLawMayBeClaimed": false,
+    "completeRegularCropLawMayBeClaimed": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "independentPrivateInputGenerationMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}

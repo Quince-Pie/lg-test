@@ -1,0 +1,79 @@
+{
+  "prepareLayerSmallGeometryHelperCodeTransportFailureResultSchemaVersion": 1,
+  "classification": "immutable failed-transport result: the output-blind static helper bytes were retained, but the adapter addressed the inherited trace writer through one module layer too few; the inherited Filter/SDF execution, timeline, and validator never completed",
+  "run": {
+    "id": 31086167113,
+    "headSHA": "1019a15720e2a9cd1dc3efb7bfc639cee1da3199",
+    "workflowPath": ".github/workflows/prepare-layer-small-geometry-helper-code.yml",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobID": 92566016000
+  },
+  "artifact": {
+    "id": 8961552790,
+    "name": "liquid-glass-prepare-layer-small-geometry-helper-code-31086167113",
+    "sizeBytes": 85283971,
+    "digest": "sha256:c3606d294b0a463b8742beea530a198e38a1dc7e1cc5ee84edcebdb0b556f89e",
+    "traceSHA256": "7f3bc21dbbfc16993a0778e25357d64100dec09528d88b19c01daf02c1080729",
+    "contractsLogSHA256": "93e61899d6160a6821273ac20c02d9144ffdf55bb497c08878967e0cfd7585b0",
+    "lldbLogSHA256": "b011b936b6d34f9913849c12253d84120100bb732eb35afbd4469adbf5be0b17",
+    "runtimeStderrSHA256": "d43c37dae8b108b6bae289e02c375930f9e2bb7c4828d3b91aa86c2f330c83c8",
+    "timelinePresent": false,
+    "validationPresent": false
+  },
+  "transportFailure": {
+    "stage": "trace-writer routing",
+    "message": "module 'capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb' has no attribute '_write_trace'",
+    "failedExpression": "frozen.frozen._write_trace()",
+    "requiredModuleDepthFromFailedAdapter": 3,
+    "extensionStatus": "static-code-capture-failed",
+    "extensionFailureCount": 3,
+    "inheritedExecutionTraceCompleted": false,
+    "scientificAcceptanceGateRan": false
+  },
+  "retainedStaticEvidence": {
+    "selectionWasOutputBlind": true,
+    "staticMemoryReadsOnly": true,
+    "breakpointsAdded": 0,
+    "instructionStepsAdded": 0,
+    "targets": [
+      {
+        "name": "gaussianExpansionFactor",
+        "function": "CA::OGL::gaussian_expansion_factor(double)",
+        "relativeToPrepareLayer": -96880,
+        "symbolByteCount": 200,
+        "instructionCount": 50,
+        "observedCodeSHA256": "7834bbb95f84915a6544d34b4148f7f267fcc94d2ae730888644535ffc57c0dd"
+      },
+      {
+        "name": "backdropGetBounds",
+        "function": "CA::Render::BackdropLayer::get_bounds(CA::Render::Layer const*, CA::Rect&, CA::Rect*) const",
+        "relativeToPrepareLayer": 364616,
+        "symbolByteCount": 80,
+        "instructionCount": 20,
+        "observedCodeSHA256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a"
+      }
+    ]
+  },
+  "conclusion": {
+    "staticBytesSalvagedAsFailureEvidence": true,
+    "helperCodeOpeningAccepted": false,
+    "gaussianExpansionGeneralSemanticsDecoded": false,
+    "backdropAllocationGeneralSemanticsDecoded": false,
+    "regularGeometryTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  },
+  "retryScope": {
+    "change": "route the failed adapter's trace writer to the existing diagnostic writer and expose the same six inherited callbacks through the retry module",
+    "staticTargetChanged": false,
+    "selectorChanged": false,
+    "breakpointChanged": false,
+    "memoryReadChanged": false,
+    "instructionTraceChanged": false,
+    "validatorChanged": false,
+    "codeHashAcceptedBeforeRetry": false,
+    "cropOrOutputValueUsedForSelection": false
+  }
+}
