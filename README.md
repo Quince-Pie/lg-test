@@ -7139,3 +7139,34 @@ absolute error. Workflow
 `.github/workflows/prepare-layer-filter-map-bounds-regular-geometry-transfer.yml`
 may establish regular crop transfer over this declared geometry/profile
 product; it still cannot establish optical or Walle product parity.
+
+The first opened jobs from run `31082481844` falsify that geometry candidate
+before the aggregate stage. At `circle-127-center`, the independently retained
+recursive child is `[0,0,293,293]`, not the frozen `[0,0,687,687]`; the
+structurally adjacent SDF parameters are also
+`c7a12e42000000000000000000000000`, or float32 radius
+`43.65798568725586`, rather than the fixed 800-point state. At
+`circle-128-center` while dematerializing, the authenticated recursion topology
+is 21 depth-three records followed by 11 depth-four records, not the fixed
+30/2 split. Consequently the run is failure evidence, not geometry transfer,
+and neither the failed candidate nor any post-hoc fit can authorize parity.
+
+The opened widths do expose a strong retrospective pattern: for widths 255
+and above the recursive-child edge expansion follows the float32 form of
+`0.35 * geometryWidth`; the 127/128 captures instead use an exact 83-point
+edge floor. Dematerialization changes recursion when the live shape becomes
+small, rather than at one universal sample index. Those observations are not
+yet a prospective law because the same artifacts revealed them.
+
+The next run is therefore an instruction diagnostic, not another fitted
+transfer claim. The preregistration
+`Analysis/dynamic_allocation_prepare_layer_filter_sdf_small_geometry_preregistration.json`
+keeps the accepted sample-2, marker-interval-2, helper-ordinal-14 selector and
+both dynamic dispatch ordinals unchanged, but moves the public geometry guard
+to `circle-127-center`. Workflow
+`.github/workflows/prepare-layer-filter-sdf-small-geometry.yml` captures the
+complete known-code FilterOp and SDFOp execution chains. It is intended to
+separate the live Filter source DOD from the post-shadow union and recursive
+child clip, decode the small-geometry SDF object, and isolate the remaining
+vertical-shadow term. It accepts no numeric source or SDF candidate and grants
+no regular-geometry transfer, shader-change, or Liquid Glass parity authority.

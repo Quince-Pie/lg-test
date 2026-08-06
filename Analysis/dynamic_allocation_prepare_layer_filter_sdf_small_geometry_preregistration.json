@@ -1,0 +1,106 @@
+{
+  "prepareLayerFilterSDFSmallGeometryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T08:13:17Z",
+  "classification": "prospective output-blind instruction diagnostic at a small regular geometry after the constant-280 geometry candidate was falsified; the already authenticated sample-2 FilterOp/SDFOp selector, exact implementation hashes, diagnostic questions, acceptance boundary, and non-parity authority are committed before dispatch",
+  "baselineCommit": "c8a21002f6734bc007ad5a5e427bba84d98a93b3",
+  "openedFailureEvidence": {
+    "runID": 31082481844,
+    "headSHA": "c8a21002f6734bc007ad5a5e427bba84d98a93b3",
+    "job": "circle-127-center-dark-materialize",
+    "artifactID": 8960145607,
+    "traceSHA256": "5daa7c8842409f3c5cb3528fb7049a07b1b82f66d5e3ea568c1853b7170e4574",
+    "timelineSHA256": "523f78acdd7e94e56d01020a1c35ce6de561b9d87b54b41ca39dd9b67d4c812e",
+    "frozenSourceCandidate": [-280.0, -280.0, 687.0, 687.0],
+    "observedRecursiveChildF64": [0.0, 0.0, 293.0, 293.0],
+    "structurallyAdjacentSDFParametersHex": "c7a12e42000000000000000000000000",
+    "structurallyAdjacentSDFRadiusF32": 43.65798568725586,
+    "validatorFailure": "regular geometry recursive child differs",
+    "constant280GeometryRuleFalsified": true,
+    "regularUnseenGeometryTransferPassed": false,
+    "liquidGlassParityEstablished": false
+  },
+  "diagnosticProfile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "backingScaleFactor": 1,
+    "selectedSampleIndex": 2,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "filterDispatchOrdinal": 4,
+    "sdfDispatchOrdinal": 2,
+    "dynamicCallOffset": 10340,
+    "filterFunctionRelativeToPrepareLayer": -61056,
+    "filterSymbolByteCount": 788,
+    "filterCodeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "sdfFunctionRelativeToPrepareLayer": -56012,
+    "sdfSymbolByteCount": 160,
+    "sdfCodeSHA256": "1db9b60701304250a5784288bfa03136ab74db137eb021428d0fad7fa87b01ae",
+    "selectorChangedFromAcceptedCircle800Diagnostics": false,
+    "cropOrOutputValuesUsedForSelection": false
+  },
+  "frozenQuestions": {
+    "extractExactFilterSourceDODFromLiveInstructionState": true,
+    "distinguishSourceDODFromShadowUnionAndRecursiveChildClip": true,
+    "decodeSmallGeometrySDFObjectAndExecutedArithmetic": true,
+    "isolateRemainingVerticalShadowResidual": true,
+    "acceptAnyNumericSourceDODBeforeCapture": false,
+    "acceptAnyNumericSDFRadiusBeforeCapture": false,
+    "acceptAnyCropOrProducerTolerance": false
+  },
+  "acceptance": {
+    "jobCount": 1,
+    "existingFilterAndSDFSelectorsMustRemainUnchanged": true,
+    "completeFilterSymbolAndExecutedInstructionChainRequired": true,
+    "completeSDFSymbolAndExecutedInstructionChainRequired": true,
+    "knownFilterAndSDFCodeHashesRequired": true,
+    "entryToReturnOutputAndRoleChainsMustBeBitExact": true,
+    "zeroCaptureFailuresRequired": true,
+    "cropOrOutputValuesMaySelectDispatch": false,
+    "smallGeometryInstructionDiagnosticMayBeClaimed": true,
+    "regularGeometryTransferMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "productAuthority": {
+    "smallGeometryFilterSDFDiagnosticMayBeClaimed": true,
+    "completeRegularCropLawMayBeClaimed": false,
+    "opticalMaterialAppearanceDirectionTransferMayBeClaimed": false,
+    "independentPrivateInputGenerationMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "independentWalleZeroByteFramesMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_filter_sdf_small_geometry_lldb.py",
+        "sha256": "ac0b0e4abe6bd13418b1b9d0915a3dec7e6b24a6402c24ddca69e13777c6586e"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_filter_sdf_small_geometry.py",
+        "sha256": "7f9befdb9a13046d0bc63332ce713e07ec18064d0342359f6c6c6f500dc1d533"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_filter_sdf_small_geometry_lldb_source.py",
+        "sha256": "760b31c807f761fe22b487cd47f12bcb4fffa38ec1bafac2bfe35a3555ef0ad9"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_filter_sdf_small_geometry.py",
+        "sha256": "894fcbab16c652aa40afb816ae65e4326e9d1d6b990824d4229b6dc32a53bc37"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-filter-sdf-small-geometry.yml",
+        "sha256": "8ca5125055ceae085dc624f448756a1bde4ac8800497755a8fda2f1bb33ed107"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}
