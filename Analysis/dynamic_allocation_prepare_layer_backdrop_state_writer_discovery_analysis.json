@@ -1,0 +1,1766 @@
+{
+  "classification": "retrospective exact decode of a prospective live-state capture and class-scoped code inventory, plus retrospective allocation-corpus analysis; selected state replay is proved while upstream allocation transfer, dynamic topology, and product parity remain closed",
+  "conclusion": {
+    "capturedInputOpticalParityPassedAcrossDeclaredDomain": false,
+    "classScopedBackdropWriterCodeInventoryOpened": true,
+    "dynamicTopologyLawDecoded": false,
+    "independentPrivateInputGenerationPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "liveBackdropBaseAndMarginFieldsCaptured": true,
+    "physicalOutputTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "prospectiveUnseenGeometryTransferPassed": false,
+    "renderMarginCopyPathSemanticsDecoded": true,
+    "selectedBackdropBoundsReplayBitExact": true,
+    "selectedRenderMarginWriterExecutionAuthenticated": false,
+    "upstreamMarginAllocationPolicyProspectivelyPassed": false
+  },
+  "currentAllocationCandidateReplay": {
+    "bitExact": true,
+    "directlyCapturedMarginF32": 83.0,
+    "maximumRequiredMarginF32": 83.0,
+    "maximumRequiredMarginF64": 83.0,
+    "retrospective": true
+  },
+  "dynamicTopology": {
+    "datasetCount": 15,
+    "dematerializePreterminalWidthBracketForSimpleThreshold": {
+      "candidateThresholdWouldNeedToBeGreaterThan": 40.17463207244873,
+      "candidateThresholdWouldNeedToBeLessThanOrEqualTo": 43.40578079223633,
+      "largestDepthFourWidth": 40.17463207244873,
+      "smallestDepthThreeWidth": 43.40578079223633
+    },
+    "dynamicTopologyLawDecoded": false,
+    "materializeObservedPattern": [
+      {
+        "count": 1,
+        "depth": 3
+      },
+      {
+        "count": 31,
+        "depth": 4
+      }
+    ],
+    "reason": "materialize sample 1 has a small carrier at depth 3, and terminal dematerialize records return full carrier width while remaining at depth 4",
+    "simpleWidthThresholdIsNotGeneral": true,
+    "topologyRuns": [
+      {
+        "name": "circle-1023-center-light-materialize",
+        "runs": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-1024-center-light-dematerialize",
+        "runs": [
+          {
+            "count": 30,
+            "depth": 3
+          },
+          {
+            "count": 2,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-127-center-dark-dematerialize",
+        "runs": [
+          {
+            "count": 21,
+            "depth": 3
+          },
+          {
+            "count": 11,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-127-center-dark-materialize",
+        "runs": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-127-center-light-dematerialize",
+        "runs": [
+          {
+            "count": 21,
+            "depth": 3
+          },
+          {
+            "count": 11,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-127-center-light-materialize",
+        "runs": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-128-center-dark-dematerialize",
+        "runs": [
+          {
+            "count": 21,
+            "depth": 3
+          },
+          {
+            "count": 11,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-128-center-dark-materialize",
+        "runs": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-128-center-light-dematerialize",
+        "runs": [
+          {
+            "count": 21,
+            "depth": 3
+          },
+          {
+            "count": 11,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-128-center-light-materialize",
+        "runs": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-255-center-light-materialize",
+        "runs": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-257-center-light-dematerialize",
+        "runs": [
+          {
+            "count": 26,
+            "depth": 3
+          },
+          {
+            "count": 6,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-257-center-light-materialize",
+        "runs": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-511-center-dark-materialize",
+        "runs": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ]
+      },
+      {
+        "name": "circle-512-center-light-dematerialize",
+        "runs": [
+          {
+            "count": 29,
+            "depth": 3
+          },
+          {
+            "count": 3,
+            "depth": 4
+          }
+        ]
+      }
+    ]
+  },
+  "liveSelectedState": {
+    "backdropRectF64": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "backdropRectRawLittleEndianHex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "bitExact": true,
+    "inputObjectsUnchanged": true,
+    "layerAddress": 42052896320,
+    "layerRectF64": [
+      0.0,
+      0.0,
+      127.0,
+      127.0
+    ],
+    "layerRectRawLittleEndianHex": "000000000000000000000000000000000000000000c05f400000000000c05f40",
+    "marginF32": 83.0,
+    "marginOffset": 36,
+    "marginRawLittleEndianHex": "0000a642",
+    "outputAddress": 6171882432,
+    "primaryRectAfterF64": [
+      -83.0,
+      -83.0,
+      293.0,
+      293.0
+    ],
+    "primaryRectBeforeF64": [
+      0.0,
+      0.0,
+      127.0,
+      127.0
+    ],
+    "replayF64": [
+      -83.0,
+      -83.0,
+      293.0,
+      293.0
+    ],
+    "replayRawLittleEndianHex": "0000000000c054c00000000000c054c000000000005072400000000000507240",
+    "selectedBaseSource": "layer",
+    "selfAddress": 42052896480,
+    "selfMinusLayer": 160
+  },
+  "nextExactGate": {
+    "acceptance": [
+      "every unseen allocation margin matches at zero ULP",
+      "every unseen recursion depth and recursive child matches exactly",
+      "no captured target value participates in selection or prediction"
+    ],
+    "capture": [
+      "authenticate the selected marginWidth copy/setter invocation and caller",
+      "freeze the retrospective transition-maximum margin candidate before unseen profiles",
+      "densely bracket and instruction-decode the direction-dependent recursion-topology switch"
+    ],
+    "requiresNewAppleCapture": true
+  },
+  "prepareLayerBackdropStateWriterDiscoveryAnalysisSchemaVersion": 1,
+  "retrospectiveAllocationCorpus": {
+    "candidateLaw": "margin_f32 = float32(max over retained transition records of max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y))))",
+    "classification": "retrospective candidate discovered after opening all fifteen datasets; not a prospective transfer gate",
+    "datasetCount": 15,
+    "datasets": [
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 358.04998779296875,
+        "candidateMarginF32Hex": "6606b343",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 358.05000000000007,
+        "carrierWidths": [
+          32.0282621383667,
+          63.80969524383545,
+          98.49746704101562,
+          127.9637804031372,
+          160.62716388702393,
+          193.2105474472046,
+          223.80368900299072,
+          256.80658435821533,
+          288.3187494277954,
+          320.4611577987671,
+          352.29137134552,
+          386.1830463409424,
+          415.6883840560913,
+          448.5898160934448,
+          482.12051582336426,
+          512.7253646850586,
+          543.8950910568237,
+          575.9623775482178,
+          607.8384447097778,
+          640.0569505691528,
+          673.668625831604,
+          705.2578639984131,
+          736.5456390380859,
+          767.9026823043823,
+          801.6070404052734,
+          833.0665225982666,
+          865.7142963409424,
+          895.6235361099243,
+          927.8635053634644,
+          960.7376203536987,
+          993.6341743469238,
+          1023.0
+        ],
+        "direction": "materialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 1023,
+          "name": "circle-1023-center",
+          "shape": "circle",
+          "width": 1023,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-1023-center-light-materialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -358.04998779296875,
+          -358.04998779296875,
+          1739.0999755859377,
+          1739.0999755859377
+        ],
+        "recursiveChildLastF64": [
+          -358.04998779296875,
+          -358.04998779296875,
+          1739.0999755859377,
+          1739.0999755859377
+        ],
+        "timelineSHA256": "52a78f53d683ff21462bfa6521146e6b1b94a12443a66622b660c0d1959daf0d",
+        "topologyRuns": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "5e5b3ba409b36d4a2f64d712118510412c5394fe4d5f9c532ca2aa6bc43692ca",
+        "uniqueObservedMarginF32": [
+          358.04998779296875
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 358.3999938964844,
+        "candidateMarginF32Hex": "3333b343",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 358.4,
+        "carrierWidths": [
+          992.0126953125,
+          960.0791015625,
+          925.841796875,
+          896.14453125,
+          862.2431640625,
+          830.63671875,
+          799.04296875,
+          767.21875,
+          736.142578125,
+          701.6826171875,
+          669.853515625,
+          637.95703125,
+          607.271484375,
+          573.701171875,
+          542.4921875,
+          511.97265625,
+          478.1103515625,
+          446.4541015625,
+          415.833984375,
+          383.50390625,
+          350.478515625,
+          318.935546875,
+          286.880859375,
+          254.359375,
+          221.5673828125,
+          189.74609375,
+          160.216796875,
+          125.9931640625,
+          96.1337890625,
+          62.0380859375,
+          29.57421875,
+          1024.0
+        ],
+        "direction": "dematerialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 1024,
+          "name": "circle-1024-center",
+          "shape": "circle",
+          "width": 1024,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-1024-center-light-dematerialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -358.3999938964844,
+          -358.3999938964844,
+          1740.7999877929688,
+          1740.7999877929688
+        ],
+        "recursiveChildLastF64": [
+          -358.3999938964844,
+          -358.3999938964844,
+          1740.7999877929688,
+          1740.7999877929688
+        ],
+        "timelineSHA256": "b89de6383a507091689299f40f57c5ef2365e1042408eaa1b9d422d3de5ae0e8",
+        "topologyRuns": [
+          {
+            "count": 30,
+            "depth": 3
+          },
+          {
+            "count": 2,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "900e5ee10ef43b62113938017e3d3f8e7cddeef3a23d3799175177bafdbbe3dc",
+        "uniqueObservedMarginF32": [
+          358.3999938964844
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "dark",
+        "candidateMarginF32": 83.0,
+        "candidateMarginF32Hex": "0000a642",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 83.0,
+        "carrierWidths": [
+          123.02519416809082,
+          118.95155715942383,
+          115.09338665008545,
+          111.13214588165283,
+          107.15237426757812,
+          103.18883228302002,
+          99.14729118347168,
+          94.90312194824219,
+          91.27059173583984,
+          87.32025146484375,
+          82.98609256744385,
+          79.06518363952637,
+          75.15020942687988,
+          71.37585163116455,
+          67.4813461303711,
+          63.15445423126221,
+          59.541544914245605,
+          55.25571155548096,
+          51.575340270996094,
+          47.56262493133545,
+          43.40578079223633,
+          39.564324378967285,
+          35.395005226135254,
+          31.44127368927002,
+          27.70167636871338,
+          23.465500831604004,
+          19.65565586090088,
+          15.855257987976074,
+          11.904312133789062,
+          7.945130348205566,
+          3.6430673599243164,
+          127.0
+        ],
+        "direction": "dematerialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 127,
+          "name": "circle-127-center",
+          "shape": "circle",
+          "width": 127,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-127-center-dark-dematerialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -83.0,
+          -83.0,
+          293.0,
+          293.0
+        ],
+        "recursiveChildLastF64": [
+          -83.0,
+          -83.0,
+          293.0,
+          293.0
+        ],
+        "timelineSHA256": "078ad1d0695188d4fcb6e473d375e412b238c3c5b884cda26aceb51ab96b9968",
+        "topologyRuns": [
+          {
+            "count": 21,
+            "depth": 3
+          },
+          {
+            "count": 11,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "c46610398782ab21fc41338d2d90f7e2515f85ce6518c8cda4b41083896815c1",
+        "uniqueObservedMarginF32": [
+          83.0
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "dark",
+        "candidateMarginF32": 83.0,
+        "candidateMarginF32Hex": "0000a642",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 83.0,
+        "carrierWidths": [
+          3.978560447692871,
+          7.93144416809082,
+          12.141337394714355,
+          16.02397346496582,
+          19.893771171569824,
+          23.97055721282959,
+          27.938701629638672,
+          31.823881149291992,
+          35.873900413513184,
+          39.9813289642334,
+          43.78003120422363,
+          47.62996578216553,
+          51.956252098083496,
+          55.82568645477295,
+          59.6848258972168,
+          63.60537147521973,
+          67.57375812530518,
+          71.4367733001709,
+          75.56890964508057,
+          79.4259901046753,
+          83.56805801391602,
+          87.63491249084473,
+          91.50955486297607,
+          95.48218059539795,
+          99.51597023010254,
+          103.22092819213867,
+          107.49610328674316,
+          111.27009773254395,
+          115.17707824707031,
+          119.23957252502441,
+          123.01901721954346,
+          127.0
+        ],
+        "direction": "materialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 127,
+          "name": "circle-127-center",
+          "shape": "circle",
+          "width": 127,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-127-center-dark-materialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -83.0,
+          -83.0,
+          293.0,
+          293.0
+        ],
+        "recursiveChildLastF64": [
+          -83.0,
+          -83.0,
+          293.0,
+          293.0
+        ],
+        "timelineSHA256": "523f78acdd7e94e56d01020a1c35ce6de561b9d87b54b41ca39dd9b67d4c812e",
+        "topologyRuns": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "5daa7c8842409f3c5cb3528fb7049a07b1b82f66d5e3ea568c1853b7170e4574",
+        "uniqueObservedMarginF32": [
+          83.0
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 83.0,
+        "candidateMarginF32Hex": "0000a642",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 83.0,
+        "carrierWidths": [
+          123.01816940307617,
+          119.06274223327637,
+          115.09193325042725,
+          111.09423637390137,
+          107.1237907409668,
+          103.14305019378662,
+          99.14329433441162,
+          95.14014720916748,
+          91.28015995025635,
+          87.23038291931152,
+          83.26671981811523,
+          79.35477352142334,
+          75.32921981811523,
+          71.40843200683594,
+          67.20871257781982,
+          63.4232120513916,
+          59.489585876464844,
+          55.46851348876953,
+          51.26455497741699,
+          47.46367263793945,
+          43.5396146774292,
+          39.665456771850586,
+          35.37308311462402,
+          31.763322830200195,
+          27.497352600097656,
+          23.737771034240723,
+          19.738499641418457,
+          15.733656883239746,
+          11.903827667236328,
+          7.656872749328613,
+          3.709681510925293,
+          127.0
+        ],
+        "direction": "dematerialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 127,
+          "name": "circle-127-center",
+          "shape": "circle",
+          "width": 127,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-127-center-light-dematerialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -83.0,
+          -83.0,
+          293.0,
+          293.0
+        ],
+        "recursiveChildLastF64": [
+          -83.0,
+          -83.0,
+          293.0,
+          293.0
+        ],
+        "timelineSHA256": "f438bceefdd25d7b6c5c500c2e01398ada8c3a9b4668878e63f884e4d0d3e28b",
+        "topologyRuns": [
+          {
+            "count": 21,
+            "depth": 3
+          },
+          {
+            "count": 11,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "a0aa2c5e1419b5000de0f8be135c15e164102278b6b3759b0d78f63e238ccc12",
+        "uniqueObservedMarginF32": [
+          83.0
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 83.0,
+        "candidateMarginF32Hex": "0000a642",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 83.0,
+        "carrierWidths": [
+          3.993821144104004,
+          7.936531066894531,
+          11.938709259033203,
+          16.202499389648438,
+          19.988484382629395,
+          23.964259147644043,
+          28.017064094543457,
+          31.933855056762695,
+          35.86360549926758,
+          39.73073863983154,
+          43.7323112487793,
+          47.69137191772461,
+          51.78693103790283,
+          55.83174228668213,
+          59.73751163482666,
+          63.70093250274658,
+          67.45821285247803,
+          71.69027042388916,
+          75.60948371887207,
+          79.67658042907715,
+          83.46135425567627,
+          87.35658645629883,
+          91.3263053894043,
+          95.32945251464844,
+          99.24854469299316,
+          103.2487850189209,
+          107.35645580291748,
+          111.14231967926025,
+          115.32956409454346,
+          119.11894035339355,
+          123.23254585266113,
+          127.0
+        ],
+        "direction": "materialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 127,
+          "name": "circle-127-center",
+          "shape": "circle",
+          "width": 127,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-127-center-light-materialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -83.0,
+          -83.0,
+          293.0,
+          293.0
+        ],
+        "recursiveChildLastF64": [
+          -83.0,
+          -83.0,
+          293.0,
+          293.0
+        ],
+        "timelineSHA256": "374f7d01f593d0c248e0257a87ed5be3788383e72f101b33f116f46fec2576ae",
+        "topologyRuns": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "13585da186b3c98570806747932e9e8f18c8b21d6647b842337f9b311c2a7a13",
+        "uniqueObservedMarginF32": [
+          83.0
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "dark",
+        "candidateMarginF32": 83.0,
+        "candidateMarginF32Hex": "0000a642",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 83.0,
+        "carrierWidths": [
+          123.980712890625,
+          120.0037841796875,
+          115.958740234375,
+          112.0040283203125,
+          107.9759521484375,
+          103.670166015625,
+          99.7410888671875,
+          95.7535400390625,
+          91.99755859375,
+          87.767822265625,
+          83.97900390625,
+          79.6475830078125,
+          75.746337890625,
+          71.950439453125,
+          67.888916015625,
+          63.9664306640625,
+          59.68798828125,
+          55.7056884765625,
+          51.6939697265625,
+          47.9990234375,
+          43.6307373046875,
+          39.891845703125,
+          35.7630615234375,
+          31.6829833984375,
+          27.6982421875,
+          23.94873046875,
+          19.7706298828125,
+          15.8916015625,
+          11.767822265625,
+          7.6697998046875,
+          3.972412109375,
+          128.0
+        ],
+        "direction": "dematerialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 128,
+          "name": "circle-128-center",
+          "shape": "circle",
+          "width": 128,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-128-center-dark-dematerialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -83.0,
+          -83.0,
+          294.0,
+          294.0
+        ],
+        "recursiveChildLastF64": [
+          -83.0,
+          -83.0,
+          294.0,
+          294.0
+        ],
+        "timelineSHA256": "5ae8ba19d32d10c4e0eda5a8eca62f6f36f7f32229dbd0eb1559f89636dc598b",
+        "topologyRuns": [
+          {
+            "count": 21,
+            "depth": 3
+          },
+          {
+            "count": 11,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "c93dd0a1b51b4b9d3fc453be60015ac662171090894192993aca98b06a70e894",
+        "uniqueObservedMarginF32": [
+          83.0
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "dark",
+        "candidateMarginF32": 83.0,
+        "candidateMarginF32Hex": "0000a642",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 83.0,
+        "carrierWidths": [
+          4.0360107421875,
+          7.99072265625,
+          11.998046875,
+          15.99072265625,
+          20.008544921875,
+          24.0560302734375,
+          28.119873046875,
+          31.99609375,
+          36.0013427734375,
+          40.13671875,
+          44.2960205078125,
+          48.024169921875,
+          52.154296875,
+          56.1981201171875,
+          60.1116943359375,
+          64.33984375,
+          68.324951171875,
+          72.0579833984375,
+          76.2930908203125,
+          80.3114013671875,
+          84.2962646484375,
+          88.026123046875,
+          92.3377685546875,
+          96.16162109375,
+          100.1827392578125,
+          104.265869140625,
+          108.2894287109375,
+          112.3065185546875,
+          116.2840576171875,
+          120.0576171875,
+          124.3291015625,
+          128.0
+        ],
+        "direction": "materialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 128,
+          "name": "circle-128-center",
+          "shape": "circle",
+          "width": 128,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-128-center-dark-materialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -83.0,
+          -83.0,
+          294.0,
+          294.0
+        ],
+        "recursiveChildLastF64": [
+          -83.0,
+          -83.0,
+          294.0,
+          294.0
+        ],
+        "timelineSHA256": "4f223a91d35fa9094e9a6aed79f318a633348fe8471a622b6309220f10aceef4",
+        "topologyRuns": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "be1e68296a0152a10aa6b6440a218064f1dd61e6e7763f453275d6381496decc",
+        "uniqueObservedMarginF32": [
+          83.0
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 83.0,
+        "candidateMarginF32Hex": "0000a642",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 83.0,
+        "carrierWidths": [
+          123.9781494140625,
+          119.9913330078125,
+          115.9793701171875,
+          111.957275390625,
+          108.0047607421875,
+          103.6282958984375,
+          99.7088623046875,
+          95.8841552734375,
+          91.650390625,
+          87.995361328125,
+          83.7650146484375,
+          79.668701171875,
+          75.801025390625,
+          71.80712890625,
+          67.746337890625,
+          63.66845703125,
+          59.8944091796875,
+          55.919921875,
+          51.8017578125,
+          47.91845703125,
+          43.9090576171875,
+          39.8709716796875,
+          35.830322265625,
+          31.6510009765625,
+          27.6856689453125,
+          23.8353271484375,
+          19.9183349609375,
+          15.8902587890625,
+          11.867431640625,
+          7.9901123046875,
+          3.7127685546875,
+          128.0
+        ],
+        "direction": "dematerialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 128,
+          "name": "circle-128-center",
+          "shape": "circle",
+          "width": 128,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-128-center-light-dematerialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -83.0,
+          -83.0,
+          294.0,
+          294.0
+        ],
+        "recursiveChildLastF64": [
+          -83.0,
+          -83.0,
+          294.0,
+          294.0
+        ],
+        "timelineSHA256": "3b165b6fae1fe354c18f47484b01fb4bdcda13ef4cd66c16d4ff222c2ed3fb42",
+        "topologyRuns": [
+          {
+            "count": 21,
+            "depth": 3
+          },
+          {
+            "count": 11,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "4bfa1a50c60a53ed62929bb1160a833884e20f4fbe6f450f40f4fad284ad0e44",
+        "uniqueObservedMarginF32": [
+          83.0
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 83.0,
+        "candidateMarginF32Hex": "0000a642",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 83.0,
+        "carrierWidths": [
+          3.990478515625,
+          7.9915771484375,
+          12.15869140625,
+          16.1600341796875,
+          20.1590576171875,
+          24.07568359375,
+          28.2425537109375,
+          32.158935546875,
+          36.0821533203125,
+          40.05224609375,
+          44.0596923828125,
+          48.354248046875,
+          52.062255859375,
+          56.0460205078125,
+          60.1585693359375,
+          64.0438232421875,
+          68.0687255859375,
+          72.153564453125,
+          76.163818359375,
+          80.02978515625,
+          84.3133544921875,
+          88.073974609375,
+          92.164794921875,
+          96.305908203125,
+          100.070068359375,
+          104.265869140625,
+          108.0557861328125,
+          112.1846923828125,
+          116.0709228515625,
+          120.0882568359375,
+          124.18115234375,
+          128.0
+        ],
+        "direction": "materialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 128,
+          "name": "circle-128-center",
+          "shape": "circle",
+          "width": 128,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-128-center-light-materialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -83.0,
+          -83.0,
+          294.0,
+          294.0
+        ],
+        "recursiveChildLastF64": [
+          -83.0,
+          -83.0,
+          294.0,
+          294.0
+        ],
+        "timelineSHA256": "f65da312f7ffa5058bf23748572fefec2218af7c39400abf94ad2413f4a0a1db",
+        "topologyRuns": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "7c7b76461ee22d703135be2c3972520f7159f509a66815578e81ec40c9fcdd8f",
+        "uniqueObservedMarginF32": [
+          83.0
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 89.25,
+        "candidateMarginF32Hex": "0080b242",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 89.25,
+        "carrierWidths": [
+          7.9972028732299805,
+          15.920963287353516,
+          24.07891273498535,
+          32.169742584228516,
+          39.87949848175049,
+          47.947468757629395,
+          55.962181091308594,
+          64.35431957244873,
+          72.06577777862549,
+          80.04376888275146,
+          87.83426284790039,
+          95.63472747802734,
+          103.62512111663818,
+          112.09289073944092,
+          119.68032360076904,
+          127.67266273498535,
+          135.86927890777588,
+          143.87256145477295,
+          152.07355499267578,
+          159.98321056365967,
+          167.43956565856934,
+          175.958890914917,
+          183.33669662475586,
+          191.57587051391602,
+          199.39311504364014,
+          207.2602128982544,
+          215.6100368499756,
+          223.74853134155273,
+          231.48868560791016,
+          239.66681957244873,
+          247.34179973602295,
+          255.0
+        ],
+        "direction": "materialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 255,
+          "name": "circle-255-center",
+          "shape": "circle",
+          "width": 255,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-255-center-light-materialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -89.25,
+          -89.25,
+          433.5,
+          433.5
+        ],
+        "recursiveChildLastF64": [
+          -89.25,
+          -89.25,
+          433.5,
+          433.5
+        ],
+        "timelineSHA256": "c42e8058fa3504c4ccb1fd9e4a927a757a5394faec6112b9a80077789735d096",
+        "topologyRuns": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "7623944374936fed65134812412959bfd6127fc6495105e3999081913969d65e",
+        "uniqueObservedMarginF32": [
+          89.25
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 89.94999694824219,
+        "candidateMarginF32Hex": "66e6b342",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 89.94999999999999,
+        "carrierWidths": [
+          248.98860263824463,
+          240.95441150665283,
+          232.92757320404053,
+          224.8840684890747,
+          216.81899547576904,
+          208.1612844467163,
+          200.1866512298584,
+          192.310791015625,
+          184.2525806427002,
+          176.05491161346436,
+          168.0376319885254,
+          160.04559707641602,
+          151.98616123199463,
+          144.55098056793213,
+          136.55919075012207,
+          127.7828540802002,
+          120.3373794555664,
+          112.2747573852539,
+          104.38223075866699,
+          95.72917652130127,
+          88.28492736816406,
+          79.64951992034912,
+          71.82831573486328,
+          63.8093204498291,
+          56.15943717956543,
+          47.841426849365234,
+          40.17463207244873,
+          31.458343505859375,
+          23.467534065246582,
+          15.482361793518066,
+          7.718509674072266,
+          257.0
+        ],
+        "direction": "dematerialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 257,
+          "name": "circle-257-center",
+          "shape": "circle",
+          "width": 257,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-257-center-light-dematerialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -89.94999694824219,
+          -89.94999694824219,
+          436.8999938964844,
+          436.8999938964844
+        ],
+        "recursiveChildLastF64": [
+          -89.94999694824219,
+          -89.94999694824219,
+          436.8999938964844,
+          436.8999938964844
+        ],
+        "timelineSHA256": "2cefbbf993f7f8c93a1c272ed8934f62565646b1bba5953f9938a5819b02792a",
+        "topologyRuns": [
+          {
+            "count": 26,
+            "depth": 3
+          },
+          {
+            "count": 6,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "e104cc86e57cac847e26adea243c6971903eed9f174f76d26619300d69d2ed59",
+        "uniqueObservedMarginF32": [
+          89.94999694824219
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 89.94999694824219,
+        "candidateMarginF32Hex": "66e6b342",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 89.94999999999999,
+        "carrierWidths": [
+          8.019485473632812,
+          16.111273765563965,
+          24.20355224609375,
+          32.39558410644531,
+          40.81898498535156,
+          49.21665096282959,
+          56.438109397888184,
+          64.85415744781494,
+          72.66604804992676,
+          80.46862506866455,
+          88.57781505584717,
+          96.6916618347168,
+          104.57438468933105,
+          113.127685546875,
+          121.12364196777344,
+          128.7691135406494,
+          137.17927932739258,
+          145.2392053604126,
+          152.82560920715332,
+          161.19974613189697,
+          168.98222541809082,
+          177.1475419998169,
+          184.8366403579712,
+          193.4624891281128,
+          201.3503589630127,
+          209.0036735534668,
+          217.56016063690186,
+          225.27793502807617,
+          232.98198413848877,
+          241.0568609237671,
+          249.62364196777344,
+          257.0
+        ],
+        "direction": "materialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 257,
+          "name": "circle-257-center",
+          "shape": "circle",
+          "width": 257,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-257-center-light-materialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -89.94999694824219,
+          -89.94999694824219,
+          436.8999938964844,
+          436.8999938964844
+        ],
+        "recursiveChildLastF64": [
+          -89.94999694824219,
+          -89.94999694824219,
+          436.8999938964844,
+          436.8999938964844
+        ],
+        "timelineSHA256": "84a58503d8481c80538540f94bca34868ece5e612c5ab5c67b0279d945d5e904",
+        "topologyRuns": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "70978bb21300b9918419b28cc9709ccd91f68ef0ef3e1877abc365fac2a94ab0",
+        "uniqueObservedMarginF32": [
+          89.94999694824219
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "dark",
+        "candidateMarginF32": 178.85000610351562,
+        "candidateMarginF32Hex": "9ad93243",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 178.85,
+        "carrierWidths": [
+          15.922941207885742,
+          31.953094482421875,
+          48.72983360290527,
+          64.62402248382568,
+          79.94365215301514,
+          95.87244129180908,
+          111.75054836273193,
+          129.05652523040771,
+          144.04915809631348,
+          160.18993473052979,
+          175.73519706726074,
+          191.76096439361572,
+          207.89443111419678,
+          224.61902618408203,
+          239.50201034545898,
+          256.54677963256836,
+          272.45607566833496,
+          287.52278232574463,
+          304.184024810791,
+          319.62938499450684,
+          336.7102165222168,
+          352.58247566223145,
+          368.10873222351074,
+          383.5945405960083,
+          400.28307342529297,
+          415.37560844421387,
+          431.2683353424072,
+          448.488055229187,
+          463.49043464660645,
+          479.81883239746094,
+          495.24128818511963,
+          511.0
+        ],
+        "direction": "materialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 511,
+          "name": "circle-511-center",
+          "shape": "circle",
+          "width": 511,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-511-center-dark-materialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -178.85000610351562,
+          -178.85000610351562,
+          868.7000122070312,
+          868.7000122070312
+        ],
+        "recursiveChildLastF64": [
+          -178.85000610351562,
+          -178.85000610351562,
+          868.7000122070312,
+          868.7000122070312
+        ],
+        "timelineSHA256": "3be6e3ca4894afb6f326a075f90a7000e3caea04ea3e8f870cda9e7248a89275",
+        "topologyRuns": [
+          {
+            "count": 1,
+            "depth": 3
+          },
+          {
+            "count": 31,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "829ef8ec580774f8268958d2ad850252a6d75e00959570c6a866893cb72ff1d2",
+        "uniqueObservedMarginF32": [
+          178.85000610351562
+        ]
+      },
+      {
+        "allRecordMarginsMatchCandidate": true,
+        "appearance": "light",
+        "candidateMarginF32": 179.1999969482422,
+        "candidateMarginF32Hex": "33333343",
+        "candidateMaximumSampleIndex": 32,
+        "candidateUnroundedF64": 179.2,
+        "carrierWidths": [
+          495.9873046875,
+          479.94921875,
+          463.994140625,
+          448.03662109375,
+          431.96142578125,
+          414.6123046875,
+          399.9345703125,
+          382.65576171875,
+          367.36865234375,
+          351.45654296875,
+          335.83837890625,
+          319.03955078125,
+          302.6806640625,
+          286.6259765625,
+          270.69921875,
+          255.49365234375,
+          239.8466796875,
+          222.6162109375,
+          206.8076171875,
+          192.03564453125,
+          175.94482421875,
+          158.70166015625,
+          143.76953125,
+          126.6484375,
+          111.83984375,
+          94.61376953125,
+          79.83740234375,
+          62.6142578125,
+          46.95068359375,
+          30.6533203125,
+          15.705078125,
+          512.0
+        ],
+        "direction": "dematerialize",
+        "geometry": {
+          "centerX": 512,
+          "centerY": 512,
+          "extendsBeyondWindow": false,
+          "height": 512,
+          "name": "circle-512-center",
+          "shape": "circle",
+          "width": 512,
+          "windowHeight": 1024,
+          "windowWidth": 1024
+        },
+        "material": "regular",
+        "name": "circle-512-center-light-dematerialize",
+        "recordCount": 32,
+        "recursiveChildFirstF64": [
+          -179.1999969482422,
+          -179.1999969482422,
+          870.3999938964844,
+          870.3999938964844
+        ],
+        "recursiveChildLastF64": [
+          -179.1999969482422,
+          -179.1999969482422,
+          870.3999938964844,
+          870.3999938964844
+        ],
+        "timelineSHA256": "55f51e9da51651c9e340f63b8976b366a19fd6fbf6129f4c02d3cea465f0ae3a",
+        "topologyRuns": [
+          {
+            "count": 29,
+            "depth": 3
+          },
+          {
+            "count": 3,
+            "depth": 4
+          }
+        ],
+        "traceSHA256": "e54fe59a81d73e8587d83138ff431d2d94987c0f46683b03c06be4608d08b8b9",
+        "uniqueObservedMarginF32": [
+          179.1999969482422
+        ]
+      }
+    ],
+    "exactMatchCount": 480,
+    "importantTemporalSemantics": "the selected allocation margin is constant across all 32 records; it is the captured-transition maximum, not each frame's current value",
+    "maximumAbsoluteError": 0.0,
+    "maximumULPDistanceF32": 0,
+    "prospectiveAuthority": false,
+    "recordCount": 480
+  },
+  "run": {
+    "artifactDigest": "sha256:196864e4082c96b00373d99108d506120ca7772fcbfd6633713d29e33ea9f426",
+    "artifactID": 8963467627,
+    "ciValidationSHA256": "420fb76aed6e13fd53177ae497f595dba300a1c68bac50781f6e762c91262f68",
+    "headSHA": "a27444af9bf97ccaf0c03568f91a962d0170f051",
+    "id": 31090638908,
+    "independentValidationEqualExceptCallerPaths": true,
+    "independentValidationSHA256": "47789f0cf0fbb49f5af6f80d6ddd63a6e4f67d6612531e5b2e2b3413794997ca",
+    "timelineSHA256": "672b639cf56070ade9b664ae58e7255ecfac6cba11f8565595b028eff217f4df",
+    "traceSHA256": "d77b3d4bf59940765bd3d7c20adfd484ded247e76d086c715e9cccfa2a2753b4"
+  },
+  "symbolInventory": {
+    "canonicalSHA256": "312130349720126c7a94164313bed05a08afbfe945c10d5b7fe97ff22d08660c",
+    "matchedNameCount": 117,
+    "totalCodeByteCount": 36312,
+    "uniqueRangeCount": 117
+  },
+  "writerCode": {
+    "copyPathSemanticsDecoded": true,
+    "propertyKey": 502,
+    "propertyValueType": 18,
+    "renderCopySemantics": "_copyRenderLayer sends marginWidth to the CABackdropLayer, converts the returned binary64 value to binary32, and stores it at Render::BackdropLayer+0x24",
+    "renderSetPropertySemantics": "property key 502 loads one binary64 value, converts it to binary32, and stores it at Render::BackdropLayer+0x24",
+    "selectedCopyInvocationExecutionAuthenticated": false,
+    "symbols": {
+      "-[CABackdropLayer _copyRenderLayer:layerFlags:commitFlags:]": {
+        "byteCount": 1640,
+        "codeSHA256": "6547059b681d624b57e2996cfe4ebec262759a7e11be3f43cdd56e6b5794d838",
+        "relativeStart": 221640,
+        "selectedInstructions": [
+          {
+            "comment": "",
+            "mnemonic": "mov",
+            "offset": 936,
+            "operands": "x0, x20",
+            "rawLittleEndianHex": "e00314aa"
+          },
+          {
+            "comment": "objc_msgSend$marginWidth",
+            "mnemonic": "bl",
+            "offset": 940,
+            "operands": "0x196913420",
+            "rawLittleEndianHex": "ab630f94"
+          },
+          {
+            "comment": "",
+            "mnemonic": "fcvt",
+            "offset": 944,
+            "operands": "s0, d0",
+            "rawLittleEndianHex": "0040621e"
+          },
+          {
+            "comment": "",
+            "mnemonic": "str",
+            "offset": 948,
+            "operands": "s0, [x21, #0x24]",
+            "rawLittleEndianHex": "a02600bd"
+          }
+        ]
+      },
+      "-[CABackdropLayer marginWidth]": {
+        "byteCount": 100,
+        "codeSHA256": "d78ead8020178d1f5220e9f3f602fd79e69152d7b5972360c92714161445e9d1",
+        "relativeStart": 225540,
+        "selectedInstructions": [
+          {
+            "comment": "",
+            "mnemonic": "ldr",
+            "offset": 32,
+            "operands": "x0, [x0, #0x10]",
+            "rawLittleEndianHex": "000840f9"
+          },
+          {
+            "comment": "=502 ",
+            "mnemonic": "mov",
+            "offset": 44,
+            "operands": "w1, #0x1f6",
+            "rawLittleEndianHex": "c13e8052"
+          },
+          {
+            "comment": "=18 ",
+            "mnemonic": "mov",
+            "offset": 48,
+            "operands": "w2, #0x12",
+            "rawLittleEndianHex": "42028052"
+          },
+          {
+            "comment": "CA::Layer::getter(unsigned int, _CAValueType, void*)",
+            "mnemonic": "bl",
+            "offset": 52,
+            "operands": "0x19650f980",
+            "rawLittleEndianHex": "1252ff97"
+          },
+          {
+            "comment": "",
+            "mnemonic": "ldr",
+            "offset": 56,
+            "operands": "d0, [sp]",
+            "rawLittleEndianHex": "e00340fd"
+          }
+        ]
+      },
+      "-[CABackdropLayer setMarginWidth:]": {
+        "byteCount": 96,
+        "codeSHA256": "b7c5020620b41d7d8f3107e525521ad6c381b5f26dac500449838e813c2f2901",
+        "relativeStart": 3270856,
+        "selectedInstructions": [
+          {
+            "comment": "",
+            "mnemonic": "ldr",
+            "offset": 32,
+            "operands": "x0, [x0, #0x10]",
+            "rawLittleEndianHex": "000840f9"
+          },
+          {
+            "comment": "",
+            "mnemonic": "str",
+            "offset": 36,
+            "operands": "d0, [sp]",
+            "rawLittleEndianHex": "e00300fd"
+          },
+          {
+            "comment": "=502 ",
+            "mnemonic": "mov",
+            "offset": 44,
+            "operands": "w1, #0x1f6",
+            "rawLittleEndianHex": "c13e8052"
+          },
+          {
+            "comment": "=18 ",
+            "mnemonic": "mov",
+            "offset": 48,
+            "operands": "w2, #0x12",
+            "rawLittleEndianHex": "42028052"
+          },
+          {
+            "comment": "CA::Layer::setter(unsigned int, _CAValueType, void const*)",
+            "mnemonic": "bl",
+            "offset": 52,
+            "operands": "0x19650cc14",
+            "rawLittleEndianHex": "c6a8f397"
+          }
+        ]
+      },
+      "CA::Render::BackdropLayer::set_property(unsigned long, unsigned int const*, bool, unsigned long, double const*)": {
+        "byteCount": 468,
+        "codeSHA256": "79e63b0075fa6ae3929961540990f9f2452c4b9bf9c2c251b2aa1fad2f74ecf3",
+        "relativeStart": 2152744,
+        "selectedInstructions": [
+          {
+            "comment": "",
+            "mnemonic": "cmp",
+            "offset": 300,
+            "operands": "w8, #0x1f6",
+            "rawLittleEndianHex": "1fd90771"
+          },
+          {
+            "comment": "<+156>",
+            "mnemonic": "cbz",
+            "offset": 308,
+            "operands": "x4, 0x1967119c4",
+            "rawLittleEndianHex": "44fbffb4"
+          },
+          {
+            "comment": "",
+            "mnemonic": "ldr",
+            "offset": 312,
+            "operands": "d0, [x5]",
+            "rawLittleEndianHex": "a00040fd"
+          },
+          {
+            "comment": "",
+            "mnemonic": "fcvt",
+            "offset": 316,
+            "operands": "s0, d0",
+            "rawLittleEndianHex": "0040621e"
+          },
+          {
+            "comment": "",
+            "mnemonic": "str",
+            "offset": 320,
+            "operands": "s0, [x19, #0x24]",
+            "rawLittleEndianHex": "602600bd"
+          }
+        ]
+      }
+    },
+    "upstreamPropertyArithmeticDecodedProspectively": false
+  }
+}

@@ -7346,3 +7346,91 @@ offline writer analysis. It cannot by itself establish the writer's upstream
 arithmetic, dynamic topology, unseen geometry transfer, optical parity, or
 product parity. Those claims remain sealed until the corresponding prospective
 gates pass.
+
+The first dispatch, run `31090521879` at commit `02ef085`, is a contract-harness
+failure rather than Apple evidence. The standalone `lg-test` checkout did not
+contain Walle's sibling `../shaders/frag.glsl`, and one preregistration test
+attempted to read it after already checking the frozen digest. Build, LLDB, and
+validation therefore never ran. The immutable failure record is
+`Analysis/dynamic_allocation_prepare_layer_backdrop_state_writer_discovery_transport_failure_result.json`.
+Commit `a27444a` changes only that test harness: it always checks the frozen
+digest and hashes the external file only when a colocated Walle checkout exists.
+The capture adapter, workflow inputs, validator, selectors, unknown field
+values, and unknown symbol inventory remain unchanged.
+
+Retry run `31090638908` passes every contract, build, capture, validation,
+artifact, and enforcement step in 7 minutes 3 seconds. Artifact `8963467627`
+has GitHub digest
+`sha256:196864e4082c96b00373d99108d506120ca7772fcbfd6633713d29e33ea9f426`.
+The trace, timeline, and CI-validation SHA-256 values are respectively
+`d77b3d4bf59940765bd3d7c20adfd484ded247e76d086c715e9cccfa2a2753b4`,
+`672b639cf56070ade9b664ae58e7255ecfac6cba11f8565595b028eff217f4df`,
+and `420fb76aed6e13fd53177ae497f595dba300a1c68bac50781f6e762c91262f68`.
+An independent validator run under `nix develop` has SHA-256
+`47789f0cf0fbb49f5af6f80d6ddd63a6e4f67d6612531e5b2e2b3413794997ca`
+and is semantically identical after removing only the two caller-supplied path
+strings.
+
+The selected live state is now a direct fact, not the prior conditional replay.
+The render `BackdropLayer` is 160 bytes above its layer pointer. Its stored self
+rectangle is all zero, so `get_backdrop_bounds` selects the layer fallback
+`[0,0,127,127]`. `BackdropLayer+0x24` contains exact binary32 `83.0`, raw bytes
+`0000a642`. The input rectangle is `[0,0,127,127]`; the returned and independently
+replayed rectangle is `[-83,-83,293,293]` with identical binary64 bytes. Both
+input objects are unchanged by the call.
+
+The output-blind class inventory contains 117 names, 117 unique ranges, and
+36,312 code bytes, with canonical SHA-256
+`312130349720126c7a94164313bed05a08afbfe945c10d5b7fe97ff22d08660c`.
+It opens the concrete render-copy transport. In
+`-[CABackdropLayer _copyRenderLayer:layerFlags:commitFlags:]`, offsets `+0x3a8`
+through `+0x3b4` send `marginWidth` to the model layer, convert the binary64
+return to binary32, and store it at render `BackdropLayer+0x24`. The model
+getter and setter use property key 502 and value type 18. The render
+`BackdropLayer::set_property` path independently converts the key-502 binary64
+payload to binary32 and stores the same field. These code paths are exact; this
+capture did not stop on and correlate the particular copy invocation that
+created the selected live object, so selected-writer execution and the upstream
+model-property arithmetic remain unproved.
+
+The retrospective cross-artifact audit is both stronger and narrower than the
+earlier `max(83,float32(0.35*width))` observation. Across 15 authenticated
+geometry/profile datasets and all 480 retained records, the observed recursive
+allocation margin is constant for each 32-record transition and exactly equals
+
+```text
+float32(max over retained transition records of
+        max(inputBleedAmount,
+            inputShadowAmount
+              + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y))))
+```
+
+with maximum float32 ULP distance zero and maximum absolute error zero. This is
+an allocation maximum over the captured transition, not the animated value of
+each individual frame. For example, the 1023-point materialize allocation holds
+binary32 `358.04998779296875` at all 32 records even though the first record's
+current required expansion is only about `11.38`. Because the same opened
+corpus revealed this candidate, it has no prospective transfer authority yet.
+
+The recursion topology is still not decoded. Every materialize dataset follows
+one depth-three record and 31 depth-four records. Dematerialize changes with
+geometry: the depth-three counts are 21 at widths 127/128, 26 at width 257, 29
+at width 512, and 30 at width 1024. Ignoring the special terminal record, a
+simple carrier-width threshold would have to lie above
+`40.17463207244873` and at or below `43.40578079223633`; it still cannot be the
+general rule because materialize sample 1 has a small carrier at depth three,
+and terminal dematerialize records return a full-width carrier while remaining
+at depth four.
+
+The immutable offline decode is
+`Analysis/dynamic_allocation_prepare_layer_backdrop_state_writer_discovery_analysis.json`,
+generated by
+`Analysis/analyze_prepare_layer_backdrop_state_writer_discovery.py`. The next
+prospective gate must authenticate the selected margin writer and its caller,
+freeze the transition-maximum candidate before unseen profiles are opened, and
+instruction-decode the direction-dependent topology switch. After that still
+come captured-input optical transfer across the declared profile domain,
+independent generation of temporal/mesh/SDF/source/backdrop inputs, physical
+Retina/color/pixel-format/compositor transfer, and new Apple-versus-real-Walle
+frames with zero unequal bytes. Liquid Glass parity is therefore not yet
+established, and the production shader remains unauthorized for change.
