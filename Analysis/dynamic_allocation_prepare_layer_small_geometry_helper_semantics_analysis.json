@@ -1,0 +1,172 @@
+{
+  "classification": "retrospective exact decode of prospectively retained Gaussian data and complete delegated backdrop code; selected arithmetic is replayed bit for bit, while live object fields, their writer, unseen geometry transfer, and product parity remain closed",
+  "conclusion": {
+    "backdropMarginWriterDecoded": false,
+    "capturedInputOpticalParityPassed": false,
+    "dynamicTopologyLawDecoded": false,
+    "gaussianExactPiecewiseLawDecoded": true,
+    "gaussianSelectedReplayBitExact": true,
+    "getBackdropBoundsCompleteSemanticsDecoded": true,
+    "independentPrivateInputGenerationPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "liveBackdropBaseAndMarginFieldsCaptured": false,
+    "physicalOutputTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "prospectiveUnseenGeometryTransferPassed": false
+  },
+  "gaussianExpansionFactor": {
+    "appleLibmLogBoundaryRemainsForCrossPlatformBitwiseTransfer": true,
+    "codeSHA256": "7834bbb95f84915a6544d34b4148f7f267fcc94d2ae730888644535ffc57c0dd",
+    "constants": [
+      {
+        "binary64": 0.505,
+        "binary64Bits": 4602723855168920617,
+        "binary64Hex": "0x1.028f5c28f5c29p-1",
+        "name": "highThreshold",
+        "rawLittleEndianHex": "295c8fc2f528e03f"
+      },
+      {
+        "binary64": 0.005,
+        "binary64Bits": 4572414629676717179,
+        "binary64Hex": "0x1.47ae147ae147bp-8",
+        "name": "lowThreshold",
+        "rawLittleEndianHex": "7b14ae47e17a743f"
+      },
+      {
+        "binary64": -0.005,
+        "binary64Bits": 13795786666531492987,
+        "binary64Hex": "-0x1.47ae147ae147bp-8",
+        "name": "activeShift",
+        "rawLittleEndianHex": "7b14ae47e17a74bf"
+      },
+      {
+        "binary64": 1.65,
+        "binary64Bits": 4610109758557808230,
+        "binary64Hex": "0x1.a666666666666p+0",
+        "name": "logIntercept",
+        "rawLittleEndianHex": "666666666666fa3f"
+      },
+      {
+        "binary64": 0.3,
+        "binary64Bits": 4599075939470750515,
+        "binary64Hex": "0x1.3333333333333p-2",
+        "name": "logSlope",
+        "rawLittleEndianHex": "333333333333d33f"
+      },
+      {
+        "binary64": 1.598989898989899,
+        "binary64Bits": 4609880029485907008,
+        "binary64Hex": "0x1.995766eacbc40p+0",
+        "name": "highIntercept",
+        "rawLittleEndianHex": "40bcac6e7695f93f"
+      },
+      {
+        "binary64": 0.10101010101010102,
+        "binary64Bits": 4591942965515480882,
+        "binary64Hex": "0x1.9dbcc48676f32p-4",
+        "name": "highSlope",
+        "rawLittleEndianHex": "326f6748ccdbb93f"
+      },
+      {
+        "binary64": 2.8,
+        "binary64Bits": 4613487458278336102,
+        "binary64Hex": "0x1.6666666666666p+1",
+        "name": "alternateModeReturn",
+        "rawLittleEndianHex": "6666666666660640"
+      }
+    ],
+    "exactLaw": {
+      "active": "if 0.005 < x < 0.505: return finite_or_zero(max(0, fma(log(2*max(0,x-0.005)),0.3,1.65)))",
+      "activeHighJoinIsBitExact": true,
+      "globalMode": "if mode & 1: return 2.8",
+      "high": "if x >= 0.505: return fma(x,0.10101010101010102,1.598989898989899)",
+      "joinF64": 1.65,
+      "joinHex": "666666666666fa3f",
+      "low": "if x <= 0.005: return 0"
+    },
+    "function": "CA::OGL::gaussian_expansion_factor(double)",
+    "globalModeFlagUnsignedValue": 0,
+    "selectedReplay": {
+      "bitExact": true,
+      "inputF64": 0.018168510869145393,
+      "inputHex": "00000020c49a923f",
+      "replayF64": 0.5589661023058468,
+      "replayHex": "0c3d1fe10ce3e13f",
+      "returnF64": 0.5589661023058468,
+      "returnHex": "0c3d1fe10ce3e13f"
+    }
+  },
+  "getBackdropBounds": {
+    "codeSHA256": "3296daa4d858acc2a259be7771e48c312ff7010fa3d7cd590a9f28bd17a4ff17",
+    "conditionalNominalBaseMargin83Replay": {
+      "assumption": "stored base rectangle is [0,0,127,127] and self+0x24 is binary32 83; neither object field was retained in this run",
+      "directlyCapturedFact": false,
+      "matchesReturn": true,
+      "replayF64": [
+        -83.0,
+        -83.0,
+        293.0,
+        293.0
+      ],
+      "replayHex": "0000000000c054c00000000000c054c000000000005072400000000000507240"
+    },
+    "exactSemantics": {
+      "baseSelection": [
+        "load self rectangle origin at +0x60 and size at +0x70",
+        "use the self rectangle when min(self.width,self.height) > 0",
+        "otherwise load layer rectangle origin at +0x48 and size at +0x58"
+      ],
+      "expansion": [
+        "load one binary32 margin from self+0x24",
+        "convert -margin to binary64",
+        "add -margin to both origins",
+        "add 2*margin to both sizes, with height formed by binary64 FMA",
+        "if either expanded size <= 0, zero both size lanes"
+      ],
+      "validity": [
+        "return the selected base unchanged when max(size) is unordered or >= DBL_MAX",
+        "return the selected base unchanged when min(size) <= 0"
+      ]
+    },
+    "function": "CA::Render::BackdropLayer::get_backdrop_bounds(CA::Render::Layer const*, CA::Rect&) const",
+    "instructionCount": 47,
+    "relativeToPrepareLayer": 364696,
+    "selectedBoundary": {
+      "inputBufferF64": [
+        0.0,
+        0.0,
+        127.0,
+        127.0
+      ],
+      "inputBufferHex": "000000000000000000000000000000000000000000c05f400000000000c05f40",
+      "returnF64": [
+        -83.0,
+        -83.0,
+        293.0,
+        293.0
+      ],
+      "returnHex": "0000000000c054c00000000000c054c000000000005072400000000000507240"
+    },
+    "symbolByteCount": 188
+  },
+  "nextExactGate": {
+    "capture": [
+      "the wrapper-entry BackdropLayer object fields through +0x80",
+      "the wrapper-entry Layer rectangle fields from +0x48 through +0x68",
+      "the exact BackdropLayer+0x24 writer identity and arithmetic"
+    ],
+    "requiresNewAppleCapture": true
+  },
+  "prepareLayerSmallGeometryHelperSemanticsAnalysisSchemaVersion": 1,
+  "run": {
+    "artifactDigest": "sha256:1911d52945e3e3a223dd640ca7b31bb6886fade3af215fcaa2e685703590f0c3",
+    "artifactID": 8962518110,
+    "ciValidationSHA256": "0cdb6e48bcc60ecc72b9218c0f934790cd74723000a598a1e0b339e01b7fc9bd",
+    "headSHA": "a16e7545a83ee2a2f0cc160694b3bbe7f68c9b10",
+    "id": 31088316959,
+    "independentValidationEqualExceptCallerPaths": true,
+    "timelineSHA256": "a3983d0361c190cf98258bccbf9d86605e8dfec99fb5e7e19c24d9b80135810d",
+    "traceSHA256": "eb0c54f6550f29c1b987806334f20dd20df5329e8e482928567a9986cb79de08"
+  }
+}

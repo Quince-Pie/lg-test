@@ -7270,3 +7270,55 @@ byte and opens that complete delegated symbol, with every value and callee code
 hash still unknown at preregistration. No geometry-transfer, optical-parity,
 private-input, physical-output, production-shader, or Liquid Glass product
 parity claim follows from this helper opening.
+
+That preregistered successor is run `31088316959` at commit `a16e754`; it
+passes every gate in 6 minutes 56 seconds. Artifact `8962518110` has GitHub
+digest
+`sha256:1911d52945e3e3a223dd640ca7b31bb6886fade3af215fcaa2e685703590f0c3`.
+The trace, timeline, and CI-validation SHA-256 values are respectively
+`eb0c54f6550f29c1b987806334f20dd20df5329e8e482928567a9986cb79de08`,
+`a3983d0361c190cf98258bccbf9d86605e8dfec99fb5e7e19c24d9b80135810d`,
+and `0cdb6e48bcc60ecc72b9218c0f934790cd74723000a598a1e0b339e01b7fc9bd`.
+The independent `nix develop` validation again matches after removing only
+the two caller-supplied input path strings.
+
+The Gaussian helper is no longer numerically opaque. Its exact binary64 law is
+
+```text
+if global_mode & 1: return 2.8
+if x <= 0.005:      return 0
+if x < 0.505:       return finite_or_zero(
+                        max(0, fma(log(2*max(0,x-0.005)), 0.3, 1.65)))
+otherwise:          return fma(
+                        x, 0.10101010101010102, 1.598989898989899)
+```
+
+The active and high branches meet bit for bit at exact `x = 0.505`, returning
+exact `1.65`. The captured global-mode byte is zero. In this fresh execution,
+input `0.018168510869145393` returns `0.5589661023058468`; the offline replay
+has identical binary64 bytes `0c3d1fe10ce3e13f`. Apple still calls its system
+`log`, so a cross-platform bitwise implementation must separately freeze that
+boundary over the active domain rather than assume every libm rounds alike.
+
+The delegated `get_backdrop_bounds` symbol is only 188 bytes/47 instructions,
+with accepted code hash
+`3296daa4d858acc2a259be7771e48c312ff7010fa3d7cd590a9f28bd17a4ff17`.
+It selects the rectangle stored at `BackdropLayer+0x60`/`+0x70` when both
+stored sizes are positive; otherwise it selects the layer rectangle at
+`Layer+0x48`/`+0x58`. For ordinary finite positive sizes it loads one binary32
+margin from `BackdropLayer+0x24`, converts its negation to binary64, subtracts
+that margin from both origins, and adds twice the margin to both extents. The
+height expression is one binary64 FMA. Invalid expanded sizes zero both size
+lanes.
+
+This code makes the remaining allocation gap much smaller but also makes its
+evidence boundary explicit. `[0,0,127,127]` plus binary32 margin `83` replays
+the observed `[-83,-83,293,293]` exactly, but this run retained only the output
+buffer—not the live `BackdropLayer` and `Layer` object fields. Therefore `83`
+is still a conditional replay, not a directly captured `self+0x24` value. The
+immutable decode is
+`Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_semantics_analysis.json`.
+The next exact gate must retain those object fields and identify the writer and
+arithmetic for `BackdropLayer+0x24`, then close the dynamic topology and unseen
+geometry/profile transfer. All downstream optical, private-input,
+Retina/color/compositor, and independent Walle zero-byte gates remain open.
