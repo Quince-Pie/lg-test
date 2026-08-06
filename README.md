@@ -8008,3 +8008,42 @@ and root flake remain untouched at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`
 and
 `b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01`.
+
+The first normal-flags transfer is also closed and is a semantic failure, not a
+transport failure. Commit `d28806a` changed only
+`LG_TRANSITION_ALLOCATION_ONLY` and `LG_TRANSITION_ALLOCATION_DENSE` from one
+to zero while leaving dynamic-uniform capture enabled. The app again completed
+33/33 Retina samples and exited zero. All 1,232 selected objects were retained
+unchanged and joined to their Group returns with no trace failure. Its nine
+controlled exact-pass replays also have zero unequal bytes. Nevertheless,
+provider binary32 `+0x88` and binary64 `+0x90` are exact zero in all 1,232
+objects, so the provider takes its early zero branch every time and exposes
+only one return word, `0000000000000000`.
+
+This fails the prospectively required nonzero-return coverage. The trace and
+timeline SHA-256 values are
+`32f82fab6a209831347bd2673a6c83fb304cdc72fb04045f37ed23c1ea0be614`
+and
+`e6fa2d9a2f9916f077f2af1b02d9e24a26a90bc60d72a84e0bb27fda5ef65345`.
+The exact negative validator and result are
+`Analysis/validate_backdrop_margin_case22_provider_object_matrix_normal_local_macos_26_6_1.py`
+at SHA-256
+`194e60b843c1f7cc4a588fcd5796d4951f2d61c438cbc66ba6d2cda689a322d8`
+and
+`Analysis/backdrop_margin_case22_provider_object_matrix_normal_local_macos_26_6_1_result.json`
+at SHA-256
+`7309717854e6e594e36922b0ca6d16e043aa2917fc6985583c2e2d0fb4988638`.
+The controlled replay remains captured-input evidence; it is not an independent
+Walle render and does not establish product parity.
+
+The historical selected instruction trace on this same binary proves a live
+nonzero path exists: `+0x88` and `+0x90` are positive and the exact return is
+`13.316424369812012` (`0000006002a22a40`). That run did not record its dynamic
+uniform environment and its heavy debugger lost the application timeline, so
+it has no prospective transfer authority. It only motivates the next
+output-blind intervention. The newly frozen live-profile retry changes exactly
+`LG_TRANSITION_UNIFORMS=1` to `0`, leaving both allocation flags at zero and
+all code, binary, profile, call, object, and return gates unchanged. It requires
+33/33 images, at least one object with positive `+0x88` and `+0x90`, multiple
+exact return words, and at least one finite positive return before any branch
+decode is authorized.
