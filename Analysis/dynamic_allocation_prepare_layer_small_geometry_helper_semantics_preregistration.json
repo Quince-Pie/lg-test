@@ -1,0 +1,164 @@
+{
+  "prepareLayerSmallGeometryHelperSemanticsPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T09:13:26Z",
+  "classification": "prospective output-blind static capture derived only from the accepted helper instructions: all eight referenced Gaussian binary64 addresses, the referenced global-mode byte, and the exact delegated get_backdrop_bounds symbol are frozen while every value, the callee size, code bytes, code hash, and semantic output remain unknown",
+  "antecedent": {
+    "runID": 31087074253,
+    "headSHA": "251b4f5c731babad2b026a22ad596fb93470a481",
+    "artifactID": 8961996101,
+    "artifactDigest": "sha256:db819539679c8c3a2d3429df8eb3e5ca5ce7d4f9cc1329111de5c38cb965a1cd",
+    "traceSHA256": "cdbc4eb4a3aa6aae9262015f57318248cdb3092a14ad2ddd18f2537ba3377d5d",
+    "timelineSHA256": "57b06cab4109d78d743f4a214852389d585f5d4f79022a39ed70f418368dff24",
+    "ciValidationSHA256": "be8281d67e2fd2156484f4cd8a6b430ee21ef1691d9539570a1699699b3810a5",
+    "analysis": "Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_code_analysis.json",
+    "analysisSHA256": "eda4fc1c46b5d8affaada1af9023fb5e55abeccdc6a23ca163d51c94f28b68ea",
+    "helperCodeOpeningPassed": true,
+    "gaussianCodeSHA256": "7834bbb95f84915a6544d34b4148f7f267fcc94d2ae730888644535ffc57c0dd",
+    "backdropWrapperCodeSHA256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+    "gaussianSymbolicControlFlowDecoded": true,
+    "gaussianGeneralNumericLawDecoded": false,
+    "backdropWrapperSemanticsDecoded": true,
+    "backdropAllocationGeneralLawDecoded": false,
+    "regularUnseenGeometryTransferPassed": false,
+    "liquidGlassParityEstablished": false
+  },
+  "frozenProfile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "selectedSampleIndex": 2,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "filterDispatchOrdinal": 4,
+    "sdfDispatchOrdinal": 2,
+    "selectorChangedFromRun31087074253": false,
+    "cropOrOutputValuesUsedForSelection": false
+  },
+  "gaussianTarget": {
+    "function": "CA::OGL::gaussian_expansion_factor(double)",
+    "relativeToPrepareLayer": -96880,
+    "symbolByteCount": 200,
+    "codeSHA256": "7834bbb95f84915a6544d34b4148f7f267fcc94d2ae730888644535ffc57c0dd",
+    "quartzCoreUUID": "4D34EB4E-2BBB-3751-A362-8E2EB74656E8",
+    "globalModeFlag": {
+      "adrpInstructionOffset": 0,
+      "loadInstructionOffset": 4,
+      "loadByteOffset": 2699,
+      "byteCount": 1,
+      "expectedValue": null
+    },
+    "binary64DataWords": [
+      {"name": "highThreshold", "moduleRelativeOffset": 3754256, "byteCount": 8, "expectedValue": null},
+      {"name": "lowThreshold", "moduleRelativeOffset": 3754280, "byteCount": 8, "expectedValue": null},
+      {"name": "activeShift", "moduleRelativeOffset": 3754288, "byteCount": 8, "expectedValue": null},
+      {"name": "logIntercept", "moduleRelativeOffset": 3754296, "byteCount": 8, "expectedValue": null},
+      {"name": "logSlope", "moduleRelativeOffset": 3754304, "byteCount": 8, "expectedValue": null},
+      {"name": "highIntercept", "moduleRelativeOffset": 3754264, "byteCount": 8, "expectedValue": null},
+      {"name": "highSlope", "moduleRelativeOffset": 3754272, "byteCount": 8, "expectedValue": null},
+      {"name": "alternateModeReturn", "moduleRelativeOffset": 3753208, "byteCount": 8, "expectedValue": null}
+    ],
+    "valuesAcceptedBeforeCapture": false
+  },
+  "delegatedBackdropTarget": {
+    "derivation": "accepted BackdropLayer::get_bounds BL instruction at wrapper offset 36",
+    "function": "CA::Render::BackdropLayer::get_backdrop_bounds(CA::Render::Layer const*, CA::Rect&) const",
+    "relativeToPrepareLayer": 364696,
+    "minimumSymbolByteCountExclusive": 0,
+    "maximumSymbolByteCountInclusive": 65536,
+    "symbolByteCount": null,
+    "expectedCodeSHA256": null,
+    "semanticOutputAcceptedBeforeCapture": null
+  },
+  "captureContract": {
+    "staticMemoryReadsOnly": true,
+    "breakpointsAdded": 0,
+    "instructionStepsAdded": 0,
+    "captureBeforeInheritedExecutionTrace": true,
+    "retainEveryGaussianDataByte": true,
+    "retainCompleteDelegatedCode": true,
+    "retainEveryDelegatedStaticARM64Instruction": true,
+    "constantValueAcceptedBeforeCapture": false,
+    "globalModeFlagAcceptedBeforeCapture": false,
+    "delegatedCodeHashAcceptedBeforeCapture": false,
+    "delegatedSymbolSizeAcceptedBeforeCapture": false,
+    "cropOrOutputValueUsedForSelection": false,
+    "inheritedFilterAndSDFCaptureChanged": false,
+    "validatorSemanticChecksChanged": false
+  },
+  "acceptance": {
+    "requireInheritedSmallGeometryHelperCodeGatePass": true,
+    "requireExactQuartzCoreUUIDAndAcceptedHelperCodeHashes": true,
+    "requireEightCompleteFiniteBinary64DataWords": true,
+    "requireCompleteGlobalModeByte": true,
+    "requireExactDelegatedFunctionNameAndRelativeAddress": true,
+    "requireDelegatedSymbolWithinPreregisteredSizeBound": true,
+    "requireCompleteContiguousDelegatedCodeAndInstructionCoverage": true,
+    "requireDelegatedCodeDigestDerivedFromRetainedBytes": true,
+    "gaussianDataOpeningMayBeClaimed": true,
+    "delegatedBackdropCodeOpeningMayBeClaimed": true,
+    "gaussianGeneralSemanticsMayBeClaimed": false,
+    "backdropAllocationGeneralSemanticsMayBeClaimed": false,
+    "regularGeometryTransferMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_small_geometry_helper_semantics_lldb.py",
+        "sha256": "256754d43caa26a575559bb39a127448999e3b2493e735d13e7fdcb3fb4c6653"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_small_geometry_helper_semantics_lldb_source.py",
+        "sha256": "b06616045e7850c199fc01ffb41c5f352b0321bac0529f09a04c983524cd9b28"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_small_geometry_helper_semantics.py",
+        "sha256": "61aa25ff1c6e07e65e34449ff4c414e56757598919ed7f9d9f8d268224fd474c"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_small_geometry_helper_semantics.py",
+        "sha256": "4cea0428d5abc92fe0a3ff87081664e06b7f95988e57a1363a9938fb28b1a4a1"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-small-geometry-helper-semantics.yml",
+        "sha256": "48a81063aa22fd55d5c48fe1a7c4a479cbdea724805836af1d13c26a68d7bccf"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_code_analysis.json",
+        "sha256": "eda4fc1c46b5d8affaada1af9023fb5e55abeccdc6a23ca163d51c94f28b68ea"
+      },
+      {
+        "path": "Analysis/analyze_prepare_layer_small_geometry_helper_code.py",
+        "sha256": "5d49a6805cdf71479ba1b9366d68acbdefdd2277c34ae6d1b5aa98f984674eb3"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_small_geometry_helper_code_callback_retry_lldb.py",
+        "sha256": "d47147dab4f1fbff7a63a3ced9d0a844072f0aae83995118ebca846f5bc3b729"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_small_geometry_helper_code.py",
+        "sha256": "210819aab13a31db84bac1b954f5deca8a004c1ff5bc6e6fcc3457d0160b1d14"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "gaussianDataWordsMayBeOpened": true,
+    "delegatedBackdropCodeMayBeOpened": true,
+    "gaussianExpansionGeneralLawMayBeClaimed": false,
+    "backdropAllocationGeneralLawMayBeClaimed": false,
+    "completeRegularCropLawMayBeClaimed": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "independentPrivateInputGenerationMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}

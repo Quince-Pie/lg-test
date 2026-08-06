@@ -1,0 +1,214 @@
+name: Open small-geometry helper semantics
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-layer-small-geometry-helper-semantics-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  helper_semantics:
+    name: circle-127-gaussian-data-and-backdrop-callee
+    runs-on: macos-26
+    timeout-minutes: 180
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-127-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_MASK_CAPTURE_MODE: selected
+      LG_PREPARE_LAYER_MASK_INVENTORY_VALIDATION: >-
+        Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-small-geometry-helper-semantics/prepare-layer-small-geometry-helper-semantics-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen helper-semantics contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-small-geometry-helper-semantics
+          set -o pipefail
+          for pattern in \
+            test_capture_prepare_layer_crop_transfer_lldb_source.py \
+            test_validate_prepare_layer_crop_transfer.py \
+            test_capture_prepare_layer_crop_union_operand_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py \
+            test_capture_prepare_layer_mask_instruction_trace_lldb_source.py \
+            test_validate_prepare_layer_mask_instruction_inventory.py \
+            test_capture_prepare_layer_crop_producer_callee_lldb_source.py \
+            test_validate_prepare_layer_crop_producer_callee.py \
+            test_capture_prepare_layer_filter_map_bounds_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds.py \
+            test_capture_prepare_layer_filter_map_bounds_regular_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds_regular_diagnostic.py \
+            test_capture_prepare_layer_sdf_map_bounds_diagnostic_lldb_source.py \
+            test_validate_prepare_layer_sdf_map_bounds_diagnostic.py \
+            test_capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb_source.py \
+            test_capture_prepare_layer_filter_sdf_small_geometry_lldb_source.py \
+            test_validate_prepare_layer_filter_sdf_small_geometry.py \
+            test_analyze_prepare_layer_filter_sdf_small_geometry.py \
+            test_capture_prepare_layer_small_geometry_helper_code_lldb_source.py \
+            test_validate_prepare_layer_small_geometry_helper_code.py \
+            test_capture_prepare_layer_small_geometry_helper_code_callback_retry_lldb_source.py \
+            test_dynamic_allocation_prepare_layer_small_geometry_helper_code_callback_retry_preregistration.py \
+            test_analyze_prepare_layer_small_geometry_helper_code.py \
+            test_capture_prepare_layer_small_geometry_helper_semantics_lldb_source.py \
+            test_validate_prepare_layer_small_geometry_helper_semantics.py \
+            test_dynamic_allocation_prepare_layer_small_geometry_helper_semantics_preregistration.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a transition-small-geometry-helper-semantics/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-small-geometry-helper-semantics/MatrixBridge.o 2>&1 |
+            tee transition-small-geometry-helper-semantics/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-small-geometry-helper-semantics/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-small-geometry-helper-semantics/build.log
+
+      - name: Capture Gaussian data and delegated backdrop code
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-small-geometry-helper-semantics/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-small-geometry-helper-semantics/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_small_geometry_helper_semantics_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_small_geometry_helper_semantics_lldb.trace_selected_sdf_filter_map_bounds()' \
+            -o 'script capture_prepare_layer_small_geometry_helper_semantics_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-small-geometry-helper-semantics \
+            > transition-small-geometry-helper-semantics/lldb-helper-semantics.log 2>&1
+
+      - name: Validate helper-semantics opening
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_small_geometry_helper_semantics.py \
+            transition-small-geometry-helper-semantics/prepare-layer-small-geometry-helper-semantics-trace.json \
+            transition-small-geometry-helper-semantics/transition-timeline.json \
+            Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json \
+            --output transition-small-geometry-helper-semantics/helper-semantics-validation.json
+
+      - name: Upload complete helper-semantics evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-prepare-layer-small-geometry-helper-semantics-${{ github.run_id }}
+          path: transition-small-geometry-helper-semantics
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce helper-semantics opening
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s transition-small-geometry-helper-semantics/helper-semantics-validation.json
+          python3 - <<'PY'
+          import json
+          import math
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "transition-small-geometry-helper-semantics/"
+                  "helper-semantics-validation.json"
+              ).read_text(encoding="utf-8")
+          )
+          selection = result.get("selection", {})
+          gaussian = result.get("gaussian", {})
+          constants = gaussian.get("constants", [])
+          callee = result.get("getBackdropBounds", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get(
+                  "prepareLayerSmallGeometryHelperSemanticsValidationSchemaVersion"
+              )
+              != 1
+              or result.get("conclusion") != "success"
+              or selection.get("constantValuesAcceptedBeforeCapture") is not False
+              or selection.get("globalModeFlagAcceptedBeforeCapture") is not False
+              or selection.get("backdropCalleeCodeHashAcceptedBeforeCapture") is not False
+              or selection.get("staticMemoryReadsOnly") is not True
+              or selection.get("breakpointsAdded") != 0
+              or selection.get("instructionStepsAdded") != 0
+              or len(constants) != 8
+              or not all(math.isfinite(item.get("binary64", math.nan)) for item in constants)
+              or not isinstance(gaussian.get("globalModeFlagUnsignedValue"), int)
+              or not 0 <= gaussian.get("globalModeFlagUnsignedValue") <= 255
+              or callee.get("relativeToPrepareLayer") != 364696
+              or not 0 < callee.get("symbolByteCount", 0) <= 65536
+              or callee.get("instructionCount") != callee.get("symbolByteCount") // 4
+              or not isinstance(callee.get("codeSHA256"), str)
+              or len(callee.get("codeSHA256")) != 64
+              or callee.get("codeHashAcceptedBeforeCapture") is not False
+              or sealed.get("smallGeometryHelperSemanticsStaticOpeningPassed") is not True
+              or sealed.get("gaussianConstantsOpened") is not True
+              or sealed.get("gaussianExpansionGeneralSemanticsDecoded") is not False
+              or sealed.get("backdropDelegatedCodeOpened") is not True
+              or sealed.get("backdropAllocationGeneralSemanticsDecoded") is not False
+              or sealed.get("regularGeometryTransferPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("small-geometry helper-semantics gate differs")
+          PY
