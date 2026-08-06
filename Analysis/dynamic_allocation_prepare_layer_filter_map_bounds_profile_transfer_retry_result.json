@@ -1,0 +1,218 @@
+{
+  "prepareLayerFilterMapBoundsProfileTransferRetryResultSchemaVersion": 1,
+  "classification": "opened prospective target-output-blind unchanged repeat: the complete clear/regular by light/dark by materialize/dematerialize fixed-geometry FilterOp crop matrix passes exact structural selection and binary64 replay with zero tolerance; this establishes crop-profile transfer only, not optical or product parity",
+  "preregistration": {
+    "file": "Analysis/dynamic_allocation_prepare_layer_filter_map_bounds_profile_transfer_retry_preregistration.json",
+    "sha256": "011734b36a5e4a8269b8ba1085fe27843aa4c232671ea69635d1fbb2310719c3",
+    "committedBeforeDispatch": true,
+    "runtimeOutcomeUnopenedAtFreeze": true,
+    "candidateChangedAfterOpening": false
+  },
+  "run": {
+    "id": 31080971042,
+    "headSHA": "05bff66e698615597f284408a0c77584061bb717",
+    "event": "workflow_dispatch",
+    "workflow": "Exact prepare_layer FilterOp profile transfer retry",
+    "createdAt": "2026-08-06T07:27:12Z",
+    "completedAt": "2026-08-06T07:36:14Z",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31080971042",
+    "macOSProfileJobCount": 8,
+    "successfulMacOSProfileJobCount": 8,
+    "aggregateJobConclusion": "success"
+  },
+  "artifactInventory": {
+    "artifactCount": 17,
+    "totalArchiveBytes": 761351808,
+    "allArtifactsDownloadedAndAudited": true,
+    "matrix": {
+      "id": 8959649007,
+      "name": "liquid-glass-filter-map-bounds-profile-retry-matrix-31080971042",
+      "archiveBytes": 1889,
+      "jsonBytes": 5159,
+      "jsonSHA256": "cd4a9883548d57095b54320205ce9ee0536f5382ce541129fb8a3ae232a6fb19"
+    },
+    "profiles": [
+      {
+        "material": "clear",
+        "appearance": "light",
+        "direction": "materialize",
+        "fullEvidenceArtifactID": 8959642625,
+        "fullEvidenceArchiveBytes": 99304618,
+        "resultArtifactID": 8959642947,
+        "resultArchiveBytes": 7219,
+        "traceSHA256": "f15c0518a07baffc94931fa4d7d29298c07ce181941cf2e592a0764bc4c9775c",
+        "timelineSHA256": "7f0c486fcdd3176046a137ab28dbfdabc32d78984a99d1ef45b4e01118dbffd6",
+        "validationSHA256": "7e63173f3f46fadad86e35a384e534ed91328d40ddbc5d40650e0f98cfcde3b5"
+      },
+      {
+        "material": "clear",
+        "appearance": "light",
+        "direction": "dematerialize",
+        "fullEvidenceArtifactID": 8959520438,
+        "fullEvidenceArchiveBytes": 98801778,
+        "resultArtifactID": 8959520755,
+        "resultArchiveBytes": 7160,
+        "traceSHA256": "b9fb7200b29f1138f5d5c7de3de85bdce5302e09b6c6da5c039453842966cb0e",
+        "timelineSHA256": "e3ea88108c05781927885df3f376a6b7245561296da735a2ed9668fe370e4caa",
+        "validationSHA256": "d2b08cd4a601b52a21a628dbb98cc3b9059825f56a28ca878ef1c5c951b8fb75"
+      },
+      {
+        "material": "clear",
+        "appearance": "dark",
+        "direction": "materialize",
+        "fullEvidenceArtifactID": 8959525549,
+        "fullEvidenceArchiveBytes": 99316150,
+        "resultArtifactID": 8959526060,
+        "resultArchiveBytes": 7225,
+        "traceSHA256": "f6f5262f3b7954e5e44109f90cd439293bd38c75262f1436b88d310838642e1a",
+        "timelineSHA256": "43b686a2e3a70e992e4eae9ea6754a65a81252b30e7a4fac2f84b5fefa6c7df7",
+        "validationSHA256": "c590e8e46c73178c2b4235ea4704b0cbca0e08625cc810ecf2241c9113c26563"
+      },
+      {
+        "material": "clear",
+        "appearance": "dark",
+        "direction": "dematerialize",
+        "fullEvidenceArtifactID": 8959523538,
+        "fullEvidenceArchiveBytes": 98839107,
+        "resultArtifactID": 8959523973,
+        "resultArchiveBytes": 7133,
+        "traceSHA256": "0a9525641bb1ee9ba5eb28c4d25c407d99150ec6ec27a95ffe1ceba5fb9ca94f",
+        "timelineSHA256": "a7c5a2e5ddd7e1f9affbb8b0038045e82ed7e439cdc997f141d56b775caea4b4",
+        "validationSHA256": "d63ae36a26d4fd2de73f56a2940e2a9540a21fd0ed0a6f26cd15f9db72a8f93c"
+      },
+      {
+        "material": "regular",
+        "appearance": "light",
+        "direction": "materialize",
+        "fullEvidenceArtifactID": 8959536730,
+        "fullEvidenceArchiveBytes": 91592525,
+        "resultArtifactID": 8959537312,
+        "resultArchiveBytes": 7745,
+        "traceSHA256": "fd9e8fe0768b68d2adc0f00c6cf61d098d710f6681d866272c5c6600b4c262db",
+        "timelineSHA256": "5203024fa46db0df2b832a5e47213cbdfdf81d186ac90c83fd06b82f3a69e98c",
+        "validationSHA256": "a717929ff73c5938c77e9da0fd87c6c03132b69143d6a462f0667e3049d0244c"
+      },
+      {
+        "material": "regular",
+        "appearance": "light",
+        "direction": "dematerialize",
+        "fullEvidenceArtifactID": 8959627104,
+        "fullEvidenceArchiveBytes": 91152715,
+        "resultArtifactID": 8959627614,
+        "resultArchiveBytes": 7692,
+        "traceSHA256": "6a56935a7d5c5287a001c94a394941276883050e6727622b7f6d89088b4142ec",
+        "timelineSHA256": "0781ad05e5ae64bc3bd28cf9d7ae7218afd211b8c462000f510f0029d2bc2139",
+        "validationSHA256": "059a382757ef4f1653dd1c2eca13df39feca8ed242f9da4922d4a994d2e6ff9f"
+      },
+      {
+        "material": "regular",
+        "appearance": "dark",
+        "direction": "materialize",
+        "fullEvidenceArtifactID": 8959540252,
+        "fullEvidenceArchiveBytes": 91360638,
+        "resultArtifactID": 8959540805,
+        "resultArchiveBytes": 7669,
+        "traceSHA256": "1696cb3816187a291ea0ee33b968dc03793b3f5c92976f77b43da54434612665",
+        "timelineSHA256": "0cd6f0aab468950b3092165aa1b6fe8372ccae45388ddd5122ed3033ce28c711",
+        "validationSHA256": "abf3b7f1c18fef88ef943d4c4ff2f6412114fd39fad09a008b33878cd8e0ca2a"
+      },
+      {
+        "material": "regular",
+        "appearance": "dark",
+        "direction": "dematerialize",
+        "fullEvidenceArtifactID": 8959630314,
+        "fullEvidenceArchiveBytes": 90922845,
+        "resultArtifactID": 8959630752,
+        "resultArchiveBytes": 7700,
+        "traceSHA256": "0e5cfff71f42c09277d82717498d15e5a88299ec8222a97c7b4cd6527b69ff01",
+        "timelineSHA256": "1d124f8634f7b5d5b307c55beed46b33c647da3ac4cdb84aef17620f31fff057",
+        "validationSHA256": "f50471a3a147191e0948c0cca68a6de3717006a1cefbdbb18874b2c9502e512c"
+      }
+    ]
+  },
+  "independentArtifactAudit": {
+    "allAggregateTraceHashesMatchDownloadedBytes": true,
+    "allAggregateTimelineHashesMatchDownloadedBytes": true,
+    "allAggregateValidationHashesMatchDownloadedResultBytes": true,
+    "allFullEvidenceValidationDuplicatesMatchResultBytes": true,
+    "hashMismatchCount": 0
+  },
+  "prospectiveReplay": {
+    "geometry": "circle-800-center",
+    "backingScaleFactor": 1,
+    "profileCount": 8,
+    "rectangleCount": 256,
+    "exactRectangleCount": 256,
+    "componentCount": 1024,
+    "exactComponentCount": 1024,
+    "sdfStateRecordCount": 256,
+    "structurallyAuthenticatedSDFStateRecordCount": 256,
+    "endpointYOffsetAppliedRecordCount": 4,
+    "maximumULPDistance": 0,
+    "maximumAbsoluteError": 0.0,
+    "toleranceUsed": false,
+    "cropOrProducerValuesUsedForSelection": false,
+    "allDownstreamIntegerCropsExact": true,
+    "allEightProfilesAndAggregatePassed": true
+  },
+  "freshEndpointBranchWitnesses": [
+    {
+      "appearance": "light",
+      "direction": "materialize",
+      "sampleIndex": 1,
+      "producerPrepareRecursionDepth": 6,
+      "endpointYOffsetF64": -0.07504361421285921,
+      "endpointYOffsetHex": "0060d1ec0e36b3bf"
+    },
+    {
+      "appearance": "dark",
+      "direction": "materialize",
+      "sampleIndex": 1,
+      "producerPrepareRecursionDepth": 6,
+      "endpointYOffsetF64": -0.075446355083443,
+      "endpointYOffsetHex": "0090afcb7350b3bf"
+    },
+    {
+      "appearance": "light",
+      "direction": "dematerialize",
+      "sampleIndex": 31,
+      "producerPrepareRecursionDepth": 7,
+      "endpointYOffsetF64": -0.058774498736852365,
+      "endpointYOffsetHex": "00c0d3ebb017aebf"
+    },
+    {
+      "appearance": "dark",
+      "direction": "dematerialize",
+      "sampleIndex": 31,
+      "producerPrepareRecursionDepth": 7,
+      "endpointYOffsetF64": -0.03753050027410154,
+      "endpointYOffsetHex": "00408f9e3237a3bf"
+    }
+  ],
+  "conclusion": {
+    "fixedGeometryFilterOpCropProfileTransferPassed": true,
+    "clearRegularLightDarkMaterializeDematerializeCropTransferPassed": true,
+    "unchangedProspectiveRepeatPassed": true,
+    "regularUnseenGeometryTransferPassed": false,
+    "currentShaderCapturedInputOpticalTransferPassed": false,
+    "independentPrivateUniformGenerationPassed": false,
+    "independentBackdropPyramidGenerationPassed": false,
+    "independentCompleteGeometryGenerationPassed": false,
+    "opticalMaterialAppearanceDirectionTransferPassed": false,
+    "physicalRetina2xAndColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderExpectedSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d"
+  },
+  "remainingExactGates": [
+    "transfer the same frozen regular Filter/SDF crop arithmetic to preregistered unseen geometries rather than only circle-800-center",
+    "repeat captured-input optical image transfer with the current production shader over the full material, appearance, direction, and temporal domain",
+    "replace Apple-captured private temporal uniforms, mesh/source geometry, and backdrop mip inputs with independently generated Walle inputs that match every bit",
+    "pass physical Retina 2x, color-space, pixel-format, display-transfer, and compositor-output holdouts",
+    "render newly captured Apple holdouts through the real Walle production path with zero unequal bytes",
+    "only after those image gates, integrate and optimize VRAM, throughput, and latency while every protected image remains exact"
+  ]
+}

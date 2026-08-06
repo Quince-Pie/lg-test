@@ -7079,3 +7079,41 @@ independent Walle zero-byte frames, or Liquid Glass parity.
 
 The production shader remains unchanged at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+Run `31080971042`, from prospectively frozen commit `05bff66`, passes the
+unchanged retry. All eight clear/regular by light/dark by
+materialize/dematerialize macOS jobs succeed, and the separate aggregate job
+accepts exactly 256/256 floating rectangles, 1,024/1,024 binary64 components,
+256/256 structurally authenticated SDF states, and all four endpoint-branch
+records. Maximum ULP distance and maximum absolute error are both zero. No
+crop or producer value participates in structural selection, and an
+independent audit of the downloaded artifacts reproduces every trace,
+timeline, and validation SHA-256 recorded by the aggregate.
+
+The fresh endpoint terms are not copied calibration constants. They differ
+from the earlier run while the frozen structural rule still predicts every
+bit: light/dark materialize sample 1 use
+`-0.07504361421285921`/`-0.075446355083443`, and light/dark dematerialize
+sample 31 use `-0.058774498736852365`/`-0.03753050027410154`. This is direct
+evidence that the rule transferred to new producer state rather than merely
+replaying four old numbers.
+
+The immutable opening is
+`Analysis/dynamic_allocation_prepare_layer_filter_map_bounds_profile_transfer_retry_result.json`.
+It establishes fixed-geometry **FilterOp crop-profile transfer** across the
+eight tested profiles. It does not establish optical material/appearance/
+direction transfer. Exact parity still requires, in order:
+
+1. the same regular Filter/SDF crop law on preregistered unseen geometries;
+2. captured-input optical image transfer under the current production shader;
+3. independent generation of Apple's temporal private uniforms, complete
+   mesh/source geometry, and backdrop mip pyramid with bit-exact inputs;
+4. physical Retina 2x, color-space, pixel-format, display-transfer, and
+   compositor-output holdouts;
+5. newly captured Apple frames rendered through the real Walle path with zero
+   unequal bytes; and
+6. only then, production integration and Tracy/VRAM/throughput/latency work
+   under immutable zero-byte image gates.
+
+Accordingly, Liquid Glass parity is still not established and the production
+shader is still unauthorized for change.
