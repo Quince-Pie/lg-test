@@ -7225,3 +7225,48 @@ semantics, and pass a new preregistered unseen-geometry/profile matrix. Optical
 image transfer, independent temporal/mesh/source/backdrop generation, physical
 Retina/color/compositor transfer, and real Walle zero-byte holdouts still
 follow before parity or a production shader change can be claimed.
+
+The first helper-code opening, run `31086167113`, is explicitly a transport
+failure rather than a pass. It retained the two output-blind static code ranges,
+then addressed `_write_trace` through one module layer too few; the inherited
+Filter/SDF execution did not complete, no timeline was produced, and the
+validator never ran. The immutable failure record is
+`Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_code_transport_failure_result.json`.
+The retry at commit `251b4f5` changes only that internal writer route and
+top-level callback visibility; it does not accept the code hashes observed in
+the failed run as expectations.
+
+Retry run `31087074253` passes all capture, inherited execution, validation,
+artifact, and enforcement gates in 5 minutes 50 seconds. Artifact `8961996101`
+has GitHub digest
+`sha256:db819539679c8c3a2d3429df8eb3e5ca5ce7d4f9cc1329111de5c38cb965a1cd`.
+The trace, timeline, and CI-validation SHA-256 values are respectively
+`cdbc4eb4a3aa6aae9262015f57318248cdb3092a14ad2ddd18f2537ba3377d5d`,
+`57b06cab4109d78d743f4a214852389d585f5d4f79022a39ed70f418368dff24`,
+and `be8281d67e2fd2156484f4cd8a6b430ee21ef1691d9539570a1699699b3810a5`.
+An independent validator run under `nix develop` is identical after removing
+only the two caller-supplied trace and timeline path strings.
+
+The accepted 200-byte Gaussian helper hash is
+`7834bbb95f84915a6544d34b4148f7f267fcc94d2ae730888644535ffc57c0dd`.
+Its exact ARM64 control flow has three numeric regions: zero below a loaded
+threshold; an active branch of
+`max(0, fma(log(2*max(0,x+shift)), slope, intercept))` with non-finite log
+results mapped to zero; and an affine FMA above a second threshold. A separate
+global-mode bit selects one loaded constant directly. This capture did not
+retain the eight referenced binary64 words or that mode byte, so the symbolic
+control flow is exact but its general numeric law is not yet accepted.
+
+The accepted 80-byte `BackdropLayer::get_bounds` hash is
+`85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a`.
+It tests `*(uint32_t *)(self+12) & 0x500`, zeros the appropriate 32-byte output
+when inactive, and otherwise delegates the actual rectangle construction to
+`BackdropLayer::get_backdrop_bounds` at exact `prepare_layer+364696`. The
+wrapper is therefore decoded; the allocation policy itself is not. The
+immutable decode is
+`Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_code_analysis.json`.
+The next gate reads the eight structurally referenced Gaussian words and mode
+byte and opens that complete delegated symbol, with every value and callee code
+hash still unknown at preregistration. No geometry-transfer, optical-parity,
+private-input, physical-output, production-shader, or Liquid Glass product
+parity claim follows from this helper opening.

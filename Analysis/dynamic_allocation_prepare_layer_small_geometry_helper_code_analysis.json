@@ -1,0 +1,157 @@
+{
+  "backdropGetBounds": {
+    "activeFlagMask": 1280,
+    "allocationGeneralLawDecoded": false,
+    "codeSHA256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+    "delegatedFunction": "CA::Render::BackdropLayer::get_backdrop_bounds(CA::Render::Layer const*, CA::Rect&) const",
+    "delegatedFunctionCodeAcceptedBeforeNextCapture": null,
+    "delegatedFunctionRelativeToPrepareLayer": 364696,
+    "delegatedFunctionStart": 6855920404,
+    "exactWrapperBehavior": [
+      "compute active = (*(uint32_t *)(self + 12) & 0x500) != 0",
+      "when active, call get_backdrop_bounds(self, layer, primaryRect)",
+      "when inactive, zero all 32 bytes of primaryRect",
+      "when active and optionalRect is non-null, zero all 32 bytes of optionalRect",
+      "return active"
+    ],
+    "instructionCount": 20,
+    "symbolByteCount": 80
+  },
+  "classification": "retrospective structural decode of the prospectively opened helper code; code bytes and inherited execution are accepted, while data constant values, delegated backdrop semantics, geometry transfer, and product parity remain closed",
+  "conclusion": {
+    "backdropAllocationGeneralLawDecoded": false,
+    "backdropWrapperSemanticsDecoded": true,
+    "capturedInputOpticalParityPassed": false,
+    "gaussianGeneralNumericLawDecoded": false,
+    "gaussianSymbolicControlFlowDecoded": true,
+    "helperCodeOpeningPassed": true,
+    "independentPrivateInputGenerationPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "physicalOutputTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "prospectiveUnseenGeometryTransferPassed": false,
+    "transportRetryPassed": true
+  },
+  "gaussianExpansionFactor": {
+    "codeSHA256": "7834bbb95f84915a6544d34b4148f7f267fcc94d2ae730888644535ffc57c0dd",
+    "dataConstants": [
+      {
+        "address": 6857525520,
+        "adrpInstructionOffset": 12,
+        "byteCount": 8,
+        "loadInstructionOffset": 16,
+        "moduleRelativeOffset": 3754256,
+        "name": "highThreshold",
+        "valueAcceptedBeforeNextCapture": null
+      },
+      {
+        "address": 6857525544,
+        "adrpInstructionOffset": 32,
+        "byteCount": 8,
+        "loadInstructionOffset": 36,
+        "moduleRelativeOffset": 3754280,
+        "name": "lowThreshold",
+        "valueAcceptedBeforeNextCapture": null
+      },
+      {
+        "address": 6857525552,
+        "adrpInstructionOffset": 64,
+        "byteCount": 8,
+        "loadInstructionOffset": 68,
+        "moduleRelativeOffset": 3754288,
+        "name": "activeShift",
+        "valueAcceptedBeforeNextCapture": null
+      },
+      {
+        "address": 6857525560,
+        "adrpInstructionOffset": 96,
+        "byteCount": 8,
+        "loadInstructionOffset": 100,
+        "moduleRelativeOffset": 3754296,
+        "name": "logIntercept",
+        "valueAcceptedBeforeNextCapture": null
+      },
+      {
+        "address": 6857525568,
+        "adrpInstructionOffset": 104,
+        "byteCount": 8,
+        "loadInstructionOffset": 108,
+        "moduleRelativeOffset": 3754304,
+        "name": "logSlope",
+        "valueAcceptedBeforeNextCapture": null
+      },
+      {
+        "address": 6857525528,
+        "adrpInstructionOffset": 160,
+        "byteCount": 8,
+        "loadInstructionOffset": 164,
+        "moduleRelativeOffset": 3754264,
+        "name": "highIntercept",
+        "valueAcceptedBeforeNextCapture": null
+      },
+      {
+        "address": 6857525536,
+        "adrpInstructionOffset": 168,
+        "byteCount": 8,
+        "loadInstructionOffset": 172,
+        "moduleRelativeOffset": 3754272,
+        "name": "highSlope",
+        "valueAcceptedBeforeNextCapture": null
+      },
+      {
+        "address": 6857524472,
+        "adrpInstructionOffset": 188,
+        "byteCount": 8,
+        "loadInstructionOffset": 192,
+        "moduleRelativeOffset": 3753208,
+        "name": "alternateModeReturn",
+        "valueAcceptedBeforeNextCapture": null
+      }
+    ],
+    "exactSymbolicControlFlow": [
+      "if globalModeFlag bit 0 is set: return alternateModeReturn",
+      "if x >= highThreshold: return fma(x, highSlope, highIntercept)",
+      "if x <= lowThreshold: return 0",
+      "z = log(2 * max(0, x + activeShift))",
+      "candidate = max(0, fma(z, logSlope, logIntercept))",
+      "return candidate when abs(z) < +infinity, otherwise return 0"
+    ],
+    "generalNumericLawDecoded": false,
+    "globalModeFlag": {
+      "address": 8499776139,
+      "adrpInstructionOffset": 0,
+      "byteCount": 1,
+      "loadInstructionOffset": 4,
+      "valueAcceptedBeforeNextCapture": null
+    },
+    "instructionCount": 50,
+    "reasonNumericLawRemainsOpen": "the eight referenced binary64 data words and global mode byte were not retained by this capture",
+    "symbolByteCount": 200
+  },
+  "nextExactGate": {
+    "capture": [
+      "the eight structurally referenced Gaussian binary64 words",
+      "the structurally referenced global mode byte",
+      "the complete get_backdrop_bounds symbol at prepare_layer + 364696"
+    ],
+    "expectedBackdropCalleeCodeSHA256": null,
+    "expectedGaussianConstantValues": null,
+    "requiresNewAppleCapture": true
+  },
+  "prepareLayerSmallGeometryHelperCodeAnalysisSchemaVersion": 1,
+  "quartzCore": {
+    "loadAddress": 6853771264,
+    "uuid": "4D34EB4E-2BBB-3751-A362-8E2EB74656E8"
+  },
+  "run": {
+    "artifactDigest": "sha256:db819539679c8c3a2d3429df8eb3e5ca5ce7d4f9cc1329111de5c38cb965a1cd",
+    "artifactID": 8961996101,
+    "ciValidationSHA256": "be8281d67e2fd2156484f4cd8a6b430ee21ef1691d9539570a1699699b3810a5",
+    "headSHA": "251b4f5c731babad2b026a22ad596fb93470a481",
+    "id": 31087074253,
+    "independentValidationEqualExceptCallerPaths": true,
+    "timelineSHA256": "57b06cab4109d78d743f4a214852389d585f5d4f79022a39ed70f418368dff24",
+    "traceSHA256": "cdbc4eb4a3aa6aae9262015f57318248cdb3092a14ad2ddd18f2537ba3377d5d"
+  }
+}
