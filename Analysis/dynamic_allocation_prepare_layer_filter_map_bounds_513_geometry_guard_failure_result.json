@@ -1,0 +1,53 @@
+{
+  "prepareLayerFilterMapBounds513GeometryGuardFailureResultSchemaVersion": 1,
+  "classification": "immutable null diagnostic: the 513-point workflow reused a capture stack whose inherited prepare_layer_mask module was intentionally frozen to circle-1025-center, so structural selection stopped before any FilterOp execution was traced",
+  "run": {
+    "id": 31070965886,
+    "headSHA": "e6a76dfacfd2aacedf6ad387d0de23300a4c1184",
+    "workflowPath": ".github/workflows/prepare-layer-filter-map-bounds-513.yml",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobID": 92518654500
+  },
+  "artifact": {
+    "id": 8955665381,
+    "name": "liquid-glass-prepare-layer-filter-map-bounds-513-31070965886",
+    "sizeBytes": 93119649,
+    "digest": "sha256:fd365c2cb0464a80088c225b7bdfc4b5bbe97a6e56a407f980b55cfc47d6c68f",
+    "traceSHA256": "32624729aa40cb95cf5b12d52aec75962ba99670806465a46f6e9db05a82c18b",
+    "timelineSHA256": "befcb8c814fad0d5ce8177ac053a2caf7ff8f18e4627d3f254fd4bacd59e9997",
+    "contractsLogSHA256": "446123ef66dfa3c979f56a4c329042183e5afa8ee51dae78d10fc9b6f50f5dfd",
+    "lldbLogSHA256": "eb69f6684fb2de0e6c59581782b8c8811027a5301fa38984a893d4810f02834b",
+    "runtimeStderrSHA256": "bbef8a68f2918bee60de9685e57ad5a56f52e6b86012f0cfe98dccd6c3094812"
+  },
+  "observed": {
+    "requestedGeometry": "circle-513-center",
+    "inheritedExpectedGeometry": "circle-1025-center",
+    "topLevelFailure": "prepare_layer_mask geometry differs",
+    "manualTraceFailure": "structurally selected mask call was not reached",
+    "filterInstructionStateCount": 0,
+    "executionEventCount": 0,
+    "filterIdentityCaptured": false,
+    "filterReturnCaptured": false,
+    "targetExitedNormally": true,
+    "appleArithmeticOutcome": null
+  },
+  "conclusion": {
+    "contractsPassed": true,
+    "probeBuilt": true,
+    "captureTransportReachedTarget": false,
+    "validatorRanToSemanticAcceptance": false,
+    "newFilterEvidenceProduced": false,
+    "prior1025ResultChanged": false,
+    "cropReplayChanged": false,
+    "liquidGlassParityEstablished": false
+  },
+  "retryScope": {
+    "change": "set the inherited capture and validator geometry guards to circle-513-center through geometry-only adapters before delegating to the byte-frozen implementations",
+    "captureSelectorChanged": false,
+    "breakpointOrMemoryReadChanged": false,
+    "filterTraceImplementationChanged": false,
+    "outputValueUsedForInRunSelection": false
+  }
+}
