@@ -1,0 +1,148 @@
+{
+  "backdropMarginCase22ProviderLocalMacOSPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T20:37:59Z",
+  "classification": "retrospective output-blind nested instruction diagnostic of the exact DesignLibrary provider opened by the frozen case-22 ordinal on the authenticated local macOS 26.6.1 host; selected-call arithmetic may be decoded on pass, but public-input transfer, optical parity, physical-output parity, production authority, and product parity remain closed",
+  "host": {
+    "sshHost": "quince@10.0.41.19",
+    "hostName": "quince",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "architecture": "arm64",
+    "developerToolsAuthorization": "enabled",
+    "windowBackingScaleFactor": 2,
+    "swiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "designLibraryUUID": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "openedParentExecution": {
+    "adapterCommit": "ae2beac",
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-case22-top-level-ae2beac",
+    "traceSHA256": "0de1f768af39868e50e9852c5512c714e11133b70d7726559ca419693ad97f65",
+    "lldbLogSHA256": "38bc47ab24df983c20d66afa5ffcb7017669067dcae8a0ec13a4e4cd06aed7c4",
+    "traceStatusBeforeFinalization": "instruction-trace-closed",
+    "selectedInvocationIndex": 20,
+    "wrapperInstructionStateCount": 29,
+    "wrapperOpaqueCalleeCount": 1,
+    "wrapperExecutionEventCount": 30,
+    "wrapperFailureCount": 0,
+    "wrapperReturnF64": 13.301833152770996,
+    "wrapperReturnF64RawLittleEndianHex": "000000e0899a2a40",
+    "returnMatchesGroupAndSetterBitwise": true,
+    "applicationCompletedAllTimelineFrames": false,
+    "applicationFailureAfterSelectedCall": "presentation glassBackground snapshot unavailable after transition frame 30",
+    "selectedCallClosedBeforeApplicationFailure": true
+  },
+  "openedStaticProvider": {
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-case22-provider-static-ae2beac",
+    "completeCodeLogSHA256": "529643dbe663b74009c92fc0e7fdd2fcf6da05ffcf46348c9fa83b7b541ae46e",
+    "completeDisassemblyLogSHA256": "2e5d26c61f7dee2efc8f65fff48db60b3675b720f9422ed7011b78401a9407b8",
+    "dispatchThunk": {
+      "moduleOffset": 753484,
+      "function": "___lldb_unnamed_symbol_240918f4c",
+      "symbolByteCount": 4,
+      "codeSHA256": "a4bd0b217d6f1355f73bffde7d725de4a4b3eaf5d4cd3f3c5915da27bc44add3",
+      "instructionHex": "5afcff17",
+      "decodedBranchDisplacement": -3736,
+      "decodedTargetModuleOffset": 749748
+    },
+    "provider": {
+      "moduleOffset": 749748,
+      "function": "___lldb_unnamed_symbol_2409180b4",
+      "symbolByteCount": 984,
+      "codeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+      "completeCodeCaptured": true
+    },
+    "helper": {
+      "moduleOffset": 813100,
+      "function": "___lldb_unnamed_symbol_24092782c",
+      "symbolByteCount": 276,
+      "codeSHA256": "f58da9879a4b367144e8acaf1ad099161b3e27f00e0769dd4fa6e18e9ef9edc1",
+      "completeCodeCaptured": true
+    }
+  },
+  "selection": {
+    "groupInvocationIndex": 20,
+    "selectionInheritedFrom": "Analysis/backdrop_margin_case22_callee_local_macos_26_6_1_preregistration.json",
+    "runtimeSelector": "the exact DesignLibrary module UUID and four-byte thunk offset reached while tracing the fixed structural case-22 ordinal",
+    "capturedMarginUsedForRuntimeSelection": false,
+    "capturedCropUsedForRuntimeSelection": false,
+    "capturedImageUsedForRuntimeSelection": false,
+    "capturedPixelUsedForRuntimeSelection": false,
+    "prospectiveTransferAuthority": false
+  },
+  "captureContract": {
+    "parentCase22AdapterUnchanged": true,
+    "localProviderOverlayOnly": true,
+    "requireExactDesignLibraryUUID": true,
+    "requireExactThunkOffsetInstructionAndCode": true,
+    "requireExactDecodedProviderTargetOffset": true,
+    "requireCompleteProviderSymbolAndCode": true,
+    "requireFullGeneralAndSIMDRegistersPerProviderInstruction": true,
+    "requireStackPerProviderInstruction": true,
+    "requireProviderEntryAndReturnObject": true,
+    "requireExactHelperSymbolAndCompleteCode": true,
+    "requireHelperEntryAndReturnRegisters": true,
+    "requireContinuousProviderExecutionChain": true,
+    "requireExactReturnToSwiftUIWrapper": true,
+    "maximumProviderInstructionCount": 512,
+    "maximumProviderHelperCount": 8,
+    "maximumProviderHelperCodeByteCount": 4096,
+    "zeroTolerance": true
+  },
+  "unknownBeforeDispatch": {
+    "providerInstructionSequence": null,
+    "providerInstructionRegisters": null,
+    "providerInstructionStacks": null,
+    "providerBranchPath": null,
+    "providerEntryObjectBytes": null,
+    "helperEntryAndReturnRegisters": null,
+    "helperReturnWord": null,
+    "providerReturnWord": null,
+    "exactSelectedProviderArithmetic": null
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb.py",
+        "sha256": "d858d47a0bc5680499c6d54c84588d2425ef525447ae216315e8d905638987d8"
+      },
+      {
+        "path": "Analysis/test_capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb_source.py",
+        "sha256": "0ee44b13cc9f1248ff9b3f53f816ed61ce12894f3be52843c6e65b671902f3f7"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py",
+        "sha256": "6562cc403d46d84774d1eb1ee1cc07f0c61b1dfa7ea622eeb770e204e5d47780"
+      },
+      {
+        "path": "Analysis/backdrop_margin_case22_callee_local_macos_26_6_1_preregistration.json",
+        "sha256": "95f56499f6c4539c0d2802abf01c5398773c668d50f52f5a18ce875b39a05c6a"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_callee_lldb.py",
+        "sha256": "933ca44e12426856b4c7ed83255ad205d370f51c430df16e9aa4441c3aa5db19"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "selectedProviderArithmeticMayBeDecodedOnPass": true,
+    "publicInputMarginLawMayBeDeclaredDecoded": false,
+    "unobservedProviderBranchesMayBeDeclaredMapped": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "physicalOutputTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}
