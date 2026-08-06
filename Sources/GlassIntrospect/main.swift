@@ -17855,6 +17855,168 @@ private struct TransitionMatrixUniformIntervention {
     let values: [(key: String, value: Any)]
 }
 
+@_cdecl("lg_case22_provider_probe_marker")
+@inline(never)
+@_optimize(none)
+public func lgCase22ProviderProbeMarker(
+    _ interventionIndex: Int32,
+    _ phase: Int32
+) {
+    lgCase22ProviderProbeMarkerState =
+        UInt64(UInt32(bitPattern: interventionIndex))
+        | UInt64(UInt32(bitPattern: phase)) << 32
+}
+
+nonisolated(unsafe) public var
+    lgCase22ProviderProbeMarkerState: UInt64 = 0
+
+private struct Case22ProviderFieldIntervention {
+    let name: String
+    let values: [(key: String, value: Any)]
+}
+
+private func case22ProviderScalar(
+    _ key: String,
+    _ value: Float
+) -> (key: String, value: Any) {
+    (key, NSNumber(value: value))
+}
+
+private func case22ProviderFieldInterventions()
+    -> [Case22ProviderFieldIntervention]
+{
+    [
+        Case22ProviderFieldIntervention(
+            name: "baseline",
+            values: []),
+        Case22ProviderFieldIntervention(
+            name: "blur-radius-3_25",
+            values: [
+                case22ProviderScalar("inputBlurRadius", 3.25)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "bleed-amount-11_25",
+            values: [
+                case22ProviderScalar("inputBleedAmount", 11.25)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "bleed-height-0_375",
+            values: [
+                case22ProviderScalar("inputBleedHeight", 0.375)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "bleed-blur-radius-4_5",
+            values: [
+                case22ProviderScalar(
+                    "inputBleedBlurRadius", 4.5)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "bleed-distance0-0_25",
+            values: [
+                case22ProviderScalar("inputBleedDistance0", 0.25)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "bleed-distance1-0_75",
+            values: [
+                case22ProviderScalar("inputBleedDistance1", 0.75)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "shadow-offset-neg3-pos5",
+            values: [
+                (
+                    key: "inputShadowOffset",
+                    value: NSValue(
+                        size: NSSize(width: -3, height: 5))
+                )
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "shadow-amount-13_5",
+            values: [
+                case22ProviderScalar("inputShadowAmount", 13.5)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "shadow-height-0_4375",
+            values: [
+                case22ProviderScalar("inputShadowHeight", 0.4375)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "shadow-opacity-0_625",
+            values: [
+                case22ProviderScalar("inputShadowOpacity", 0.625)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "shadow-distance-offset-2_25",
+            values: [
+                case22ProviderScalar(
+                    "inputShadowDistanceOffset", 2.25)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "shadow-blur-radius-6_5",
+            values: [
+                case22ProviderScalar(
+                    "inputShadowBlurRadius", 6.5)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "shadow-radius-7_25",
+            values: [
+                case22ProviderScalar("inputShadowRadius", 7.25)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "inner-refraction-amount-0_3125",
+            values: [
+                case22ProviderScalar(
+                    "inputInnerRefractionAmount", 0.3125)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "inner-refraction-height-0_5625",
+            values: [
+                case22ProviderScalar(
+                    "inputInnerRefractionHeight", 0.5625)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "outer-refraction-amount-0_6875",
+            values: [
+                case22ProviderScalar(
+                    "inputOuterRefractionAmount", 0.6875)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "outer-refraction-height-0_8125",
+            values: [
+                case22ProviderScalar(
+                    "inputOuterRefractionHeight", 0.8125)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "refraction-distance0-0_1875",
+            values: [
+                case22ProviderScalar(
+                    "inputRefractionDistance0", 0.1875)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "refraction-distance1-0_9375",
+            values: [
+                case22ProviderScalar(
+                    "inputRefractionDistance1", 0.9375)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "refraction-opacity-0_40625",
+            values: [
+                case22ProviderScalar(
+                    "inputRefractionOpacity", 0.40625)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "face-opacity-0_5",
+            values: [
+                case22ProviderScalar("inputFaceOpacity", 0.5)
+            ]),
+        Case22ProviderFieldIntervention(
+            name: "sdr-shadow-opacity-0_34375",
+            values: [
+                case22ProviderScalar(
+                    "inputSDRShadowOpacity", 0.34375)
+            ]),
+    ]
+}
+
 private func transitionMatrixScalar(
     _ key: String,
     _ value: Float
@@ -19920,6 +20082,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
     private let geometry: ProbeGeometry
     private let transitionTimelineEnabled: Bool
     private let geometryPolicyEnabled: Bool
+    private let case22ProviderFieldProbeEnabled: Bool
     private let transitionModel: TransitionProbeModel
     private var window: ProbeWindow!
     private var captureStarted = false
@@ -19946,6 +20109,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             ProcessInfo.processInfo.environment[
                 "LG_GEOMETRY_POLICY"
             ] == "1"
+        case22ProviderFieldProbeEnabled =
+            ProcessInfo.processInfo.environment[
+                "LG_CASE22_PROVIDER_FIELD_PROBE"
+            ] == "1"
         transitionModel = TransitionProbeModel()
     }
 
@@ -19956,7 +20123,20 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 withIntermediateDirectories: true)
 
             _ = MetalUniformProbe.shared.install()
-            if !transitionTimelineEnabled && !geometryPolicyEnabled {
+            if case22ProviderFieldProbeEnabled
+                && (transitionTimelineEnabled || geometryPolicyEnabled)
+            {
+                throw NSError(
+                    domain: "LiquidGlassCase22ProviderProbe",
+                    code: 1,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "case-22 provider field probe must run alone"
+                    ])
+            }
+            if !transitionTimelineEnabled && !geometryPolicyEnabled
+                && !case22ProviderFieldProbeEnabled
+            {
                 let manager = MTLCaptureManager.shared()
                 if manager.supportsDestination(.gpuTraceDocument),
                    let device = MTLCreateSystemDefaultDevice() {
@@ -20010,6 +20190,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     await captureTransitionTimeline()
                 } else if geometryPolicyEnabled {
                     finishGeometryPolicy()
+                } else if case22ProviderFieldProbeEnabled {
+                    finishCase22ProviderFieldProbe()
                 } else {
                     finish()
                 }
@@ -20017,6 +20199,141 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         } catch {
             FileHandle.standardError.write(
                 Data("introspection setup failed: \(error)\n".utf8))
+            exit(1)
+        }
+    }
+
+    private func finishCase22ProviderFieldProbe() {
+        let reportURL = outputDirectory.appendingPathComponent(
+            "case22-provider-field-probe.json")
+        guard material == .regular,
+              appearance == .light,
+              geometry.rawValue == "circle-127-center",
+              let rootLayer = window.contentView?.layer,
+              let device = MTLCreateSystemDefaultDevice(),
+              let target = transitionBackgroundFilterTarget(
+                in: rootLayer),
+              let sourceFilter = copiedTransitionFilter(
+                target.filter),
+              let inputKeys = sourceFilter.value(
+                forKey: "inputKeys") as? [String]
+        else {
+            try? writeJSON(
+                [
+                    "schemaVersion": 1,
+                    "executed": false,
+                    "reason":
+                        "regular/light/circle-127 static endpoint "
+                        + "filter or Metal device unavailable",
+                ],
+                to: reportURL)
+            exit(1)
+        }
+
+        let interventions = case22ProviderFieldInterventions()
+        let availableKeys = Set(inputKeys)
+        var records: [[String: Any]] = []
+        records.reserveCapacity(interventions.count)
+        for (index, intervention) in interventions.enumerated() {
+            let missingKeys = intervention.values.map(\.key).filter {
+                !availableKeys.contains($0)
+            }
+            guard missingKeys.isEmpty,
+                  let stateFilter = copiedTransitionFilter(
+                    sourceFilter)
+            else {
+                records.append([
+                    "index": index,
+                    "name": intervention.name,
+                    "executed": false,
+                    "missingInputKeys": missingKeys,
+                    "reason":
+                        missingKeys.isEmpty
+                        ? "endpoint filter copy failed"
+                        : "requested input key unavailable",
+                ])
+                continue
+            }
+            for value in intervention.values {
+                stateFilter.setValue(
+                    value.value,
+                    forKey: value.key)
+            }
+            guard installTransitionBackgroundFilter(
+                    stateFilter,
+                    target: target)
+            else {
+                records.append([
+                    "index": index,
+                    "name": intervention.name,
+                    "executed": false,
+                    "missingInputKeys": [],
+                    "reason": "intervention installation failed",
+                ])
+                continue
+            }
+            lgCase22ProviderProbeMarker(Int32(index), 0)
+            let render = carendererUniformEvidence(
+                rootLayer: rootLayer,
+                device: device,
+                capture: String(
+                    format: "case22-provider-field-%02d-%@",
+                    index,
+                    intervention.name))
+            lgCase22ProviderProbeMarker(Int32(index), 1)
+            records.append([
+                "index": index,
+                "name": intervention.name,
+                "executed": render["executed"] as? Bool == true,
+                "missingInputKeys": [],
+                "requestedValues": Dictionary(
+                    uniqueKeysWithValues:
+                        intervention.values.map {
+                            (
+                                $0.key,
+                                serializedRuntimeValue($0.value)
+                            )
+                        }),
+                "effectiveFilter": filterDescription(stateFilter),
+                "render": render,
+            ])
+        }
+        let executedCount = records.filter {
+            $0["executed"] as? Bool == true
+        }.count
+        let report: [String: Any] = [
+            "schemaVersion": 1,
+            "probe":
+                "output-blind-case22-provider-field-interventions",
+            "executed": executedCount == interventions.count,
+            "material": material.rawValue,
+            "appearance": appearance.rawValue,
+            "geometry": geometry.evidence,
+            "sourceFilter": filterDescription(sourceFilter),
+            "markerSymbol": "lg_case22_provider_probe_marker",
+            "markerPhases": [
+                "0": "immediately before CARenderer",
+                "1": "immediately after CARenderer",
+            ],
+            "interventionNames": interventions.map(\.name),
+            "interventionCount": interventions.count,
+            "executedInterventionCount": executedCount,
+            "records": records,
+            "selectionUsesProviderReturn": false,
+            "selectionUsesMargin": false,
+            "selectionUsesCrop": false,
+            "selectionUsesImageOrPixel": false,
+        ]
+        do {
+            try writeJSON(report, to: reportURL)
+            exit(executedCount == interventions.count ? 0 : 1)
+        } catch {
+            FileHandle.standardError.write(
+                Data(
+                    (
+                        "case-22 provider field probe write failed: "
+                        + error.localizedDescription + "\n"
+                    ).utf8))
             exit(1)
         }
     }

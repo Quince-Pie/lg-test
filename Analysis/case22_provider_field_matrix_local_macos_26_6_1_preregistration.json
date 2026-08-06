@@ -1,0 +1,150 @@
+{
+  "case22ProviderFieldMatrixLocalMacOSPreregistrationSchemaVersion": 1,
+  "classification": "prospectively fixed output-blind local filter-intervention matrix; all intervention keys, values, order, marker brackets, symbol identities, capture bounds, and authority limits are frozen before the first provider-object matrix dispatch",
+  "frozenAtUTC": "2026-08-06",
+  "host": {
+    "sshTarget": "quince@10.0.41.19",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "architecture": "arm64",
+    "hardware": "Apple M1 Max",
+    "display": "built-in Retina 3456x2234 physical / 1728x1117 logical",
+    "windowBackingScaleFactor": 2,
+    "developerModeEnabled": true,
+    "swiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+    "designLibraryUUID": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "profile": {
+    "material": "regular",
+    "appearance": "light",
+    "geometry": "circle-127-center",
+    "carrier": "fresh static endpoint",
+    "renderBackend": "CARenderer with the copied real glassBackground endpoint filter",
+    "githubActionsRequired": false
+  },
+  "binary": {
+    "pathOnHost": "/Users/quince/lg-test/local-case22-field-build/glass-transition-introspect",
+    "sha256": "0064fa35159b0d4872370d54528742a93e41662110e3d5456cf3f9e9e234dcb8",
+    "matrixBridgeObjectSHA256": "1fab3f5158a9f8ca9ac881e710efe7ecdaa5e884a891880f64d7658d96e7e96e",
+    "buildUsesNixDevelop": true,
+    "nativeAppleToolPathsExplicit": true,
+    "nixStorePathEmbeddedInCommand": false
+  },
+  "marker": {
+    "cdeclName": "lg_case22_provider_probe_marker",
+    "swiftMangledName": "$s4main27lgCase22ProviderProbeMarkeryys5Int32V_ADtF",
+    "beforePhase": 0,
+    "afterPhase": 1,
+    "indexRegister": "w0",
+    "phaseRegister": "w1",
+    "selection": "capture every provider entry and matching return after the before marker and before the after marker for every intervention in fixed source order"
+  },
+  "symbols": {
+    "wrapper": {
+      "module": "SwiftUICore",
+      "moduleOffset": 7781460,
+      "function": "SwiftUI._AnyCAFilterProvider.sdfBackdropMargin.getter : CoreGraphics.CGFloat",
+      "byteCount": 116,
+      "codeSHA256": "922147f9c8b9cecdc273065e6677312965449069e4cf076e65daa1aba0a9d0ee",
+      "returnOffset": 104
+    },
+    "provider": {
+      "module": "DesignLibrary",
+      "moduleOffset": 749748,
+      "function": "___lldb_unnamed_symbol_2409180b4",
+      "byteCount": 984,
+      "codeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+      "objectByteCount": 384
+    }
+  },
+  "interventions": [
+    {"index": 0, "name": "baseline", "key": null, "storage": null, "rawLittleEndianHex": null},
+    {"index": 1, "name": "blur-radius-3_25", "key": "inputBlurRadius", "storage": "binary32 NSNumber", "rawLittleEndianHex": "00005040"},
+    {"index": 2, "name": "bleed-amount-11_25", "key": "inputBleedAmount", "storage": "binary32 NSNumber", "rawLittleEndianHex": "00003441"},
+    {"index": 3, "name": "bleed-height-0_375", "key": "inputBleedHeight", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000c03e"},
+    {"index": 4, "name": "bleed-blur-radius-4_5", "key": "inputBleedBlurRadius", "storage": "binary32 NSNumber", "rawLittleEndianHex": "00009040"},
+    {"index": 5, "name": "bleed-distance0-0_25", "key": "inputBleedDistance0", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000803e"},
+    {"index": 6, "name": "bleed-distance1-0_75", "key": "inputBleedDistance1", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000403f"},
+    {"index": 7, "name": "shadow-offset-neg3-pos5", "key": "inputShadowOffset", "storage": "two binary64 NSSize lanes", "rawLittleEndianHex": "00000000000008c00000000000001440"},
+    {"index": 8, "name": "shadow-amount-13_5", "key": "inputShadowAmount", "storage": "binary32 NSNumber", "rawLittleEndianHex": "00005841"},
+    {"index": 9, "name": "shadow-height-0_4375", "key": "inputShadowHeight", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000e03e"},
+    {"index": 10, "name": "shadow-opacity-0_625", "key": "inputShadowOpacity", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000203f"},
+    {"index": 11, "name": "shadow-distance-offset-2_25", "key": "inputShadowDistanceOffset", "storage": "binary32 NSNumber", "rawLittleEndianHex": "00001040"},
+    {"index": 12, "name": "shadow-blur-radius-6_5", "key": "inputShadowBlurRadius", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000d040"},
+    {"index": 13, "name": "shadow-radius-7_25", "key": "inputShadowRadius", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000e840"},
+    {"index": 14, "name": "inner-refraction-amount-0_3125", "key": "inputInnerRefractionAmount", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000a03e"},
+    {"index": 15, "name": "inner-refraction-height-0_5625", "key": "inputInnerRefractionHeight", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000103f"},
+    {"index": 16, "name": "outer-refraction-amount-0_6875", "key": "inputOuterRefractionAmount", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000303f"},
+    {"index": 17, "name": "outer-refraction-height-0_8125", "key": "inputOuterRefractionHeight", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000503f"},
+    {"index": 18, "name": "refraction-distance0-0_1875", "key": "inputRefractionDistance0", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000403e"},
+    {"index": 19, "name": "refraction-distance1-0_9375", "key": "inputRefractionDistance1", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000703f"},
+    {"index": 20, "name": "refraction-opacity-0_40625", "key": "inputRefractionOpacity", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000d03e"},
+    {"index": 21, "name": "face-opacity-0_5", "key": "inputFaceOpacity", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000003f"},
+    {"index": 22, "name": "sdr-shadow-opacity-0_34375", "key": "inputSDRShadowOpacity", "storage": "binary32 NSNumber", "rawLittleEndianHex": "0000b03e"}
+  ],
+  "captureContract": {
+    "requireAll23InterventionReports": true,
+    "requireAll23MarkerIntervalsInExactOrder": true,
+    "requireAtLeastOneProviderCallPerInterval": true,
+    "requireEveryProviderCallToReturn": true,
+    "requireExactWrapperAndProviderCode": true,
+    "requireExact384ByteObjectAtEntryAndReturn": true,
+    "requireExactBinary64ReturnWord": true,
+    "maximumCallsPerIntervention": 128,
+    "maximumTotalCalls": 2944,
+    "capturedObjectUsedForRuntimeSelection": false,
+    "capturedReturnUsedForRuntimeSelection": false,
+    "capturedMarginUsedForRuntimeSelection": false,
+    "capturedCropUsedForRuntimeSelection": false,
+    "capturedImageUsedForRuntimeSelection": false,
+    "capturedPixelUsedForRuntimeSelection": false,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "files": [
+      {"path": "Sources/GlassIntrospect/main.swift", "sha256": "0a958523aadac6154cc1afe0fb9809de5c9cf33101a1ff3d60122fe362fa2202"},
+      {"path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_lldb.py", "sha256": "ac29cb987391b9748499c410d76d0c189996c8756f6543e394eba68b5ff52b63"},
+      {"path": "Analysis/test_capture_case22_provider_field_matrix_local_macos_26_6_1_lldb_source.py", "sha256": "89bf673f98319522c0f4315585b277014414dab28154915e3c434932c80ff6f6"},
+      {"path": "Analysis/backdrop_margin_case22_provider_local_macos_26_6_1_preregistration.json", "sha256": "9d1e65309058303dfa40574827d38ba8ce602c77cb98e363da348b4e4bf4ba06"},
+      {"path": "Analysis/capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb.py", "sha256": "964b03394b837e3d0e0f312a56f593ffdbb7be6c325d98a53d56fbc216efd25b"}
+    ]
+  },
+  "preRegistrationCalibrationExclusions": [
+    {
+      "pathOnHost": "local-case22-marker-calibration-3/lldb.log",
+      "sha256": "f1097ed438c9428d0e413715cf95ed5e1e05e6c7ea5ab78b986db32e7bd1b2d0",
+      "scope": "stopped at the first before marker to verify w0/w1 transport; no provider interval executed",
+      "authority": false
+    },
+    {
+      "pathOnHost": "local-case22-field-calibration-1/case22-provider-field-probe.json",
+      "sha256": "4a96ee2910db1a42f9bb3976b008b9380c56a157277a98af8092c30157f75f78",
+      "scope": "confirmed that all 23 fixed KVC interventions rendered; no LLDB provider object or return was captured",
+      "authority": false
+    }
+  ],
+  "unknownBeforeDispatch": {
+    "providerCallCountByIntervention": null,
+    "providerObjectWordsByIntervention": null,
+    "providerReturnWordsByIntervention": null,
+    "objectOffsetsAffectedByEachFilterInput": null,
+    "selectedBranchByIntervention": null,
+    "closedFormFieldMapping": null,
+    "prospectiveMatrixConclusion": null
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "exactFilterInputToProviderObjectEffectsMayBeDecodedOnPass": true,
+    "observedProviderBranchEffectsMayBeDecodedOnPass": true,
+    "completeFiniteProviderLawDecodedOnPass": false,
+    "unobservedProviderBranchesValidatedOnPass": false,
+    "publicSwiftUIGlassInputLawDecodedOnPass": false,
+    "upstreamIntegerCropAllocationPolicyDecodedOnPass": false,
+    "prospectiveUnseenProfileTransferPassedOnPass": false,
+    "capturedInputOpticalParityPassedOnPass": false,
+    "physicalOutputTransferPassedOnPass": false,
+    "independentWalleZeroByteFrameParityPassedOnPass": false,
+    "productionShaderAuthorizedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false
+  }
+}
