@@ -7733,3 +7733,125 @@ rather than diagnostic results. Before attempt 3, the workflow transport was
 amended without changing any capture or validation source: it now checks out
 the exact `GITHUB_SHA` with plain `git`, uses zero marketplace actions, and
 uploads the zip as a temporary draft-release asset keyed by run and attempt.
+
+### Local Retina case-22 provider opening and exact selected replay
+
+The GitHub runner is no longer required for this diagnostic. The primary Apple
+host is the developer-enabled machine at `quince@10.0.41.19`: macOS 26.6.1
+build 25G76 on Apple M1 Max, with the built-in 3456x2234 Retina display online
+at 1728x1117 logical points and backing scale 2. Repository commands still run
+inside `nix develop`; native Apple compilation and debugging use
+`/Library/Developer/CommandLineTools/usr/bin/{clang,swiftc,lldb}` and
+`/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` explicitly. No command or
+source file relies on an unstable `/nix/store/...` path.
+
+The first local instruction capture closed the SwiftUICore wrapper itself. The
+target is
+
+```text
+SwiftUI._AnyCAFilterProvider.sdfBackdropMargin.getter : CoreGraphics.CGFloat
+```
+
+at SwiftUICore offset `0x76bc54`. Its complete 116 bytes have SHA-256
+`922147f9c8b9cecdc273065e6677312965449069e4cf076e65daa1aba0a9d0ee`.
+The selected execution contains 29 continuous wrapper instructions, one
+four-byte authenticated indirect callee, 30 events, and no capture failure. A
+top-level LLDB stepping loop was necessary because LLDB's embedded Python
+callback rejected re-entrant stepping. The earlier callback/thread attempts
+remain negative evidence; they were not silently discarded or treated as
+successful traces.
+
+The four-byte callee is a DesignLibrary dispatch thunk at module offset
+`0xb7f4c`, instruction `5afcff17`, SHA-256
+`a4bd0b217d6f1355f73bffde7d725de4a4b3eaf5d4cd3f3c5915da27bc44add3`.
+Decoding that ARM64 `B` instruction gives displacement `-3736` and therefore
+the real provider at DesignLibrary offset `0xb70b4`. The provider's complete
+984 bytes have SHA-256
+`a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b`.
+Its only selected helper is 276 bytes at offset `0xc682c`, SHA-256
+`f58da9879a4b367144e8acaf1ad099161b3e27f00e0769dd4fa6e18e9ef9edc1`.
+
+Commit `42f9413` produced the clean local provider trace. Its full artifact
+manifest has SHA-256
+`6750d84ecfb992e727785f5b8f2ac47ab723ff1abe2125a8172bae27d240fa13`;
+`backdrop-margin-writer-trace.json` has SHA-256
+`19e7d74f3aba55e5c6924d7119fddcf20578a98a4e7b946cc4a435918df4059f`.
+The provider extension contains exactly 74 continuous instruction states, one
+exact helper boundary, 75 events, the complete code for both symbols, full
+general/SIMD registers and stack at every retained provider instruction, an
+unchanged 384-byte provider object, and no failure. The scoped independent
+validation is
+`Analysis/validate_backdrop_margin_case22_provider_local_macos_26_6_1.py`;
+its retained result has SHA-256
+`eccee6478fffcdecefa238243374c92330a5428e7e8bde6c44457da28ac0db04`.
+
+The selected helper is now numerically open. It first promotes its binary32
+input exactly to binary64, then evaluates the following operation-ordered law
+for finite inputs:
+
+```text
+if x <= 0.005:
+    g = 0
+elif x < 0.505:
+    g = max(0, log(2 * max(x - 0.005, 0)) * 0.3 + 1.65)
+else:
+    g = ((min(x, 1) - 0.505) / 0.495) * 0.05 + 1.65
+```
+
+The constants above are the exact binary64 words loaded by the machine code,
+not decimal fit parameters. In this trace, input raw word `e3ada83c` is
+binary32 `0.020590728148818016`; the replay returns raw binary64 word
+`261fc8d20282e33f`, exactly `0.6096204869108746`, matching the live helper
+return bit for bit.
+
+For the selected provider branch, neutral analyst labels are used until public
+field meanings are authenticated. The exact operation order is:
+
+```text
+shape = abs(shapeRadius) + max(-shapeInset, 0)
+gaussian = gaussianRadius * g
+primary = max(shape, gaussian)
+axis = max(abs(axisX), abs(axisY))
+base = axis + primary
+directional = max(direction2, direction3, direction4)
+return max(max(max(base, directional), secondary1),
+           abs(absoluteCandidate))
+```
+
+The live candidates are `shape = 5.316424369812012`,
+`gaussian = 1.0371203881438842`, `axis = 8`,
+`directional = secondary1 = 2.011250541402842`, and
+`abs(absoluteCandidate) = 3.5196884474549734`. The base candidate wins at
+`13.316424369812012`, raw word `0000006002a22a40`. Eighteen retained
+intermediate register words, the provider return, the SwiftUI wrapper return,
+and the enclosing `Group.margin` return all match this replay bit for bit. The
+reproducible analyzer and immutable result are
+`Analysis/analyze_backdrop_margin_case22_provider_local_macos_26_6_1.py` and
+`Analysis/backdrop_margin_case22_provider_local_macos_26_6_1_analysis.json`;
+the result SHA-256 is
+`c1c1b1f3024432d968eede7335153e99da5227b1ee18c335b09097f083e2b6dc`.
+
+This advances the known boundary but does not establish Liquid Glass parity.
+The dynamic resampling relation `q = 2 / (2 - k)`, producer-crop/copy-base UV
+origin, and exact DOD expansion
+`e = 2.8 * max(2 * inputBlurRadius, inputBleedBlurRadius)` remain the accepted
+earlier findings. The remaining gates are now explicit:
+
+1. map the provider object's internal offsets to controlled public inputs and
+   prospectively cover its unopened sign/gate branches on the local Mac;
+2. finish the upstream integer crop/allocation policy that feeds the already
+   decoded resampling and DOD arithmetic;
+3. independently generate the required private state in Walle rather than
+   replaying an Apple-captured value;
+4. pass physical Retina, color-space, pixel-format, and compositor transfer;
+5. compare fresh Apple output with real Walle output across the frozen parity
+   domain and require zero unequal bytes.
+
+Accordingly, the formal parity gate is still 0/1. There is no honest fixed run
+count: local captures remove the approximately 35-minute GitHub scheduling
+loop, but a run is useful only when it closes a preregistered identification
+case. The production shader remains untouched at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+Tracy, `amdgpu_top`, VRAM reduction, throughput, and latency optimization remain
+downstream of the immutable zero-byte quality gate so an optimization can
+never buy speed by degrading the shader.

@@ -1,0 +1,508 @@
+{
+  "backdropMarginCase22ProviderLocalMacOSAnalysisSchemaVersion": 1,
+  "classification": "retrospective exact decode of the output-blind selected local DesignLibrary provider path; every retained arithmetic checkpoint and the parent return are replayed bit for bit, while public field meaning, unseen branch transfer, and product parity remain closed",
+  "conclusion": {
+    "capturedInputOpticalParityPassed": false,
+    "completeFiniteProviderLawDecoded": false,
+    "completeProviderCodeCaptured": true,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "physicalOutputTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "prospectiveUnseenProfileTransferPassed": false,
+    "publicInputMarginLawDecoded": false,
+    "publicObjectFieldMeaningsDecoded": false,
+    "selectedProviderArithmeticDecoded": true,
+    "selectedProviderPathCaptured": true,
+    "selectedProviderReplayBitExact": true,
+    "unobservedProviderBranchesProspectivelyValidated": false,
+    "upstreamIntegerCropAllocationPolicyDecoded": false
+  },
+  "gaussianExpansionFactor": {
+    "appleLibmLogBoundaryRemainsForUnseenBitwiseTransfer": true,
+    "codeSHA256": "f58da9879a4b367144e8acaf1ad099161b3e27f00e0769dd4fa6e18e9ef9edc1",
+    "constants": [
+      {
+        "binary64": 0.505,
+        "binary64Hex": "0x1.028f5c28f5c29p-1",
+        "name": "highThreshold",
+        "rawLittleEndianHex": "295c8fc2f528e03f"
+      },
+      {
+        "binary64": 0.005,
+        "binary64Hex": "0x1.47ae147ae147bp-8",
+        "name": "lowThreshold",
+        "rawLittleEndianHex": "7b14ae47e17a743f"
+      },
+      {
+        "binary64": -0.005,
+        "binary64Hex": "-0x1.47ae147ae147bp-8",
+        "name": "activeShift",
+        "rawLittleEndianHex": "7b14ae47e17a74bf"
+      },
+      {
+        "binary64": -0.505,
+        "binary64Hex": "-0x1.028f5c28f5c29p-1",
+        "name": "highShift",
+        "rawLittleEndianHex": "295c8fc2f528e0bf"
+      },
+      {
+        "binary64": 0.495,
+        "binary64Hex": "0x1.fae147ae147aep-2",
+        "name": "highSpan",
+        "rawLittleEndianHex": "ae47e17a14aedf3f"
+      },
+      {
+        "binary64": 0.049999999999999996,
+        "binary64Hex": "0x1.9999999999999p-5",
+        "name": "highScale",
+        "rawLittleEndianHex": "999999999999a93f"
+      },
+      {
+        "binary64": 0.3,
+        "binary64Hex": "0x1.3333333333333p-2",
+        "name": "logSlope",
+        "rawLittleEndianHex": "333333333333d33f"
+      },
+      {
+        "binary64": 1.65,
+        "binary64Hex": "0x1.a666666666666p+0",
+        "name": "intercept",
+        "rawLittleEndianHex": "666666666666fa3f"
+      }
+    ],
+    "finiteInputLaw": {
+      "active": "if 0.005 < x < 0.505: return max(0, log(2*max(x-0.005,0))*0.3 + 1.65)",
+      "high": "if x >= 0.505: return ((min(x,1)-0.505)/0.495)*0.05 + 1.65",
+      "inputDomain": "binary32 promoted exactly to binary64",
+      "low": "if x <= 0.005: return 0",
+      "operationOrderMatchesMachineCode": true
+    },
+    "function": "___lldb_unnamed_symbol_24092782c",
+    "moduleOffset": 813100,
+    "selectedReplay": {
+      "bitExact": true,
+      "inputF32": 0.020590728148818016,
+      "inputRawLittleEndianHex": "e3ada83c",
+      "returnF64": 0.6096204869108746,
+      "returnRawLittleEndianHex": "261fc8d20282e33f"
+    },
+    "symbolByteCount": 276
+  },
+  "inputs": {
+    "independentValidationEqualExceptCallerPaths": true,
+    "preregistration": "Analysis/backdrop_margin_case22_provider_local_macos_26_6_1_preregistration.json",
+    "preregistrationSHA256": "9d1e65309058303dfa40574827d38ba8ce602c77cb98e363da348b4e4bf4ba06",
+    "trace": "../artifacts/mac-quince-macos-26.6.1-case22-provider-passed-42f9413/backdrop-margin-writer-trace.json",
+    "traceSHA256": "19e7d74f3aba55e5c6924d7119fddcf20578a98a4e7b946cc4a435918df4059f",
+    "validation": "../artifacts/mac-quince-macos-26.6.1-case22-provider-passed-42f9413/provider-validation.json",
+    "validationSHA256": "eccee6478fffcdecefa238243374c92330a5428e7e8bde6c44457da28ac0db04"
+  },
+  "nextExactGate": {
+    "githubActionsRequired": false,
+    "requiresNewAppleCapture": true,
+    "target": "map provider object offsets to controlled public inputs and cover the unopened sign/gate branches on the local Retina Mac, then solve the upstream integer crop/allocation policy"
+  },
+  "object": {
+    "byteCount": 384,
+    "fieldsUsedBySelectedPath": [
+      {
+        "hexadecimalValue": "0x0.0p+0",
+        "name": "axisX",
+        "objectOffset": 8,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "0000000000000000",
+        "storage": "binary64",
+        "value": 0.0
+      },
+      {
+        "hexadecimalValue": "0x1.0000000000000p+3",
+        "name": "axisY",
+        "objectOffset": 16,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "0000000000002040",
+        "storage": "binary64",
+        "value": 8.0
+      },
+      {
+        "hexadecimalValue": "0x1.54404c0000000p+2",
+        "name": "shapeRadius",
+        "objectOffset": 24,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "000000c004441540",
+        "storage": "binary64",
+        "value": 5.316424369812012
+      },
+      {
+        "hexadecimalValue": "0x0.0p+0",
+        "name": "shapeInset",
+        "objectOffset": 40,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "0000000000000000",
+        "storage": "binary64",
+        "value": 0.0
+      },
+      {
+        "hexadecimalValue": "0x1.b385800000000p+0",
+        "name": "gaussianRadius",
+        "objectOffset": 56,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "000000005838fb3f",
+        "storage": "binary64",
+        "value": 1.7012557983398438
+      },
+      {
+        "hexadecimalValue": "0x1.515bc60000000p-6",
+        "name": "gaussianInput",
+        "objectOffset": 136,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "e3ada83c",
+        "storage": "binary32",
+        "value": 0.020590728148818016
+      },
+      {
+        "hexadecimalValue": "0x1.d700dbf050000p-5",
+        "name": "gaussianGate",
+        "objectOffset": 144,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "000005bf0d70ad3f",
+        "storage": "binary64",
+        "value": 0.057495526855291246
+      },
+      {
+        "hexadecimalValue": "0x1.0301d12016db7p-1",
+        "name": "directionGate",
+        "objectOffset": 152,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "b76d01121d30e03f",
+        "storage": "binary64",
+        "value": 0.5058732368155948
+      },
+      {
+        "hexadecimalValue": "-0x1.41ccd27a1e000p+2",
+        "name": "direction0",
+        "objectOffset": 160,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "00e0a127cd1c14c0",
+        "storage": "binary64",
+        "value": -5.028126353507105
+      },
+      {
+        "hexadecimalValue": "-0x1.2259000000000p-4",
+        "name": "direction1",
+        "objectOffset": 168,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "000000009025b2bf",
+        "storage": "binary64",
+        "value": -0.07088565826416016
+      },
+      {
+        "hexadecimalValue": "0x0.0p+0",
+        "name": "direction2",
+        "objectOffset": 176,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "0000000000000000",
+        "storage": "binary64",
+        "value": 0.0
+      },
+      {
+        "hexadecimalValue": "0x0.0p+0",
+        "name": "direction3",
+        "objectOffset": 184,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "0000000000000000",
+        "storage": "binary64",
+        "value": 0.0
+      },
+      {
+        "hexadecimalValue": "0x1.0170a861b199ap+1",
+        "name": "direction4",
+        "objectOffset": 192,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "9a191b860a170040",
+        "storage": "binary64",
+        "value": 2.011250541402842
+      },
+      {
+        "hexadecimalValue": "-0x1.1033700000000p+2",
+        "name": "secondary0",
+        "objectOffset": 232,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "00000000370311c0",
+        "storage": "binary64",
+        "value": -4.253139495849609
+      },
+      {
+        "hexadecimalValue": "0x1.0170a861b199ap+1",
+        "name": "secondary1",
+        "objectOffset": 248,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "9a191b860a170040",
+        "storage": "binary64",
+        "value": 2.011250541402842
+      },
+      {
+        "hexadecimalValue": "0x1.5c6ace0000000p-6",
+        "name": "secondary1Gate",
+        "objectOffset": 272,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "6735ae3c",
+        "storage": "binary32",
+        "value": 0.021265698596835136
+      },
+      {
+        "hexadecimalValue": "0x1.c28526aaf6ccdp+1",
+        "name": "absoluteCandidate",
+        "objectOffset": 352,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "cd6caf6a52280c40",
+        "storage": "binary64",
+        "value": 3.5196884474549734
+      },
+      {
+        "hexadecimalValue": "0x1.d700dc0000000p-6",
+        "name": "absoluteCandidateGate",
+        "objectOffset": 376,
+        "publicMeaningEstablished": false,
+        "rawLittleEndianHex": "6e80eb3c",
+        "storage": "binary32",
+        "value": 0.028747763484716415
+      }
+    ],
+    "sha256": "83a34c3c891703868da04466741ab04c9cf5b0591fae05691976ffd4131d352a",
+    "unchangedAcrossCall": true
+  },
+  "provider": {
+    "allSelectedInstructionsContinuousAndExact": true,
+    "allStaticBranchesExecuted": false,
+    "codeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+    "completeSymbolCaptured": true,
+    "designLibraryUUID": "1E980802-69F5-3E69-89EF-50088297FCF5",
+    "executedInstructionCount": 74,
+    "executedOffsets": [
+      0,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28,
+      32,
+      36,
+      40,
+      44,
+      48,
+      52,
+      56,
+      60,
+      64,
+      68,
+      72,
+      76,
+      80,
+      84,
+      88,
+      92,
+      96,
+      100,
+      104,
+      108,
+      112,
+      116,
+      120,
+      124,
+      128,
+      136,
+      140,
+      144,
+      148,
+      152,
+      156,
+      160,
+      164,
+      168,
+      272,
+      276,
+      280,
+      284,
+      288,
+      292,
+      296,
+      300,
+      304,
+      364,
+      368,
+      372,
+      376,
+      380,
+      384,
+      436,
+      440,
+      444,
+      448,
+      452,
+      464,
+      468,
+      472,
+      476,
+      480,
+      484,
+      488,
+      492,
+      496,
+      500,
+      504,
+      508
+    ],
+    "function": "___lldb_unnamed_symbol_2409180b4",
+    "moduleOffset": 749748,
+    "symbolByteCount": 984
+  },
+  "selectedArithmetic": {
+    "absoluteCandidateF64": 3.5196884474549734,
+    "allRetainedArithmeticCheckpointsMatchedBitwise": true,
+    "axisCandidateF64": 8.0,
+    "baseCandidateF64": 13.316424369812012,
+    "checkpoints": [
+      {
+        "bitExact": true,
+        "label": "abs(shapeRadius)",
+        "rawLittleEndianHex": "000000c004441540",
+        "register": "v2",
+        "stateOffset": 64,
+        "valueF64": 5.316424369812012
+      },
+      {
+        "bitExact": true,
+        "label": "-shapeInset",
+        "rawLittleEndianHex": "0000000000000080",
+        "register": "v3",
+        "stateOffset": 68,
+        "valueF64": -0.0
+      },
+      {
+        "bitExact": true,
+        "label": "max(-shapeInset, 0)",
+        "rawLittleEndianHex": "0000000000000000",
+        "register": "v3",
+        "stateOffset": 80,
+        "valueF64": 0.0
+      },
+      {
+        "bitExact": true,
+        "label": "abs(shapeRadius) + max(-shapeInset, 0)",
+        "rawLittleEndianHex": "000000c004441540",
+        "register": "v2",
+        "stateOffset": 84,
+        "valueF64": 5.316424369812012
+      },
+      {
+        "bitExact": true,
+        "label": "gaussianRadius * gaussianExpansionFactor(gaussianInput)",
+        "rawLittleEndianHex": "257c518c0b98f03f",
+        "register": "v0",
+        "stateOffset": 88,
+        "valueF64": 1.0371203881438842
+      },
+      {
+        "bitExact": true,
+        "label": "max(shapeCandidate, gaussianCandidate)",
+        "rawLittleEndianHex": "000000c004441540",
+        "register": "v0",
+        "stateOffset": 96,
+        "valueF64": 5.316424369812012
+      },
+      {
+        "bitExact": true,
+        "label": "abs(axisX)",
+        "rawLittleEndianHex": "0000000000000000",
+        "register": "v2",
+        "stateOffset": 100,
+        "valueF64": 0.0
+      },
+      {
+        "bitExact": true,
+        "label": "abs(axisY)",
+        "rawLittleEndianHex": "0000000000002040",
+        "register": "v3",
+        "stateOffset": 104,
+        "valueF64": 8.0
+      },
+      {
+        "bitExact": true,
+        "label": "max(abs(axisX), abs(axisY))",
+        "rawLittleEndianHex": "0000000000002040",
+        "register": "v2",
+        "stateOffset": 112,
+        "valueF64": 8.0
+      },
+      {
+        "bitExact": true,
+        "label": "axisCandidate + primaryCandidate",
+        "rawLittleEndianHex": "0000006002a22a40",
+        "register": "v0",
+        "stateOffset": 116,
+        "valueF64": 13.316424369812012
+      },
+      {
+        "bitExact": true,
+        "label": "max(direction2, direction3)",
+        "rawLittleEndianHex": "0000000000000000",
+        "register": "v2",
+        "stateOffset": 280,
+        "valueF64": 0.0
+      },
+      {
+        "bitExact": true,
+        "label": "max(direction2, direction3, direction4)",
+        "rawLittleEndianHex": "9a191b860a170040",
+        "register": "v3",
+        "stateOffset": 288,
+        "valueF64": 2.011250541402842
+      },
+      {
+        "bitExact": true,
+        "label": "abs(absoluteCandidate)",
+        "rawLittleEndianHex": "cd6caf6a52280c40",
+        "register": "v1",
+        "stateOffset": 448,
+        "valueF64": 3.5196884474549734
+      },
+      {
+        "bitExact": true,
+        "label": "max(baseCandidate, directionalCandidate)",
+        "rawLittleEndianHex": "0000006002a22a40",
+        "register": "v3",
+        "stateOffset": 472,
+        "valueF64": 13.316424369812012
+      },
+      {
+        "bitExact": true,
+        "label": "max(previous, secondary1)",
+        "rawLittleEndianHex": "0000006002a22a40",
+        "register": "v4",
+        "stateOffset": 480,
+        "valueF64": 13.316424369812012
+      },
+      {
+        "bitExact": true,
+        "label": "max(previous, abs(absoluteCandidate))",
+        "rawLittleEndianHex": "0000006002a22a40",
+        "register": "v0",
+        "stateOffset": 488,
+        "valueF64": 13.316424369812012
+      }
+    ],
+    "directionalCandidateF64": 2.011250541402842,
+    "exactSelectedIdentity": "max(max(max(max(abs(axisX),abs(axisY)) + max(abs(shapeRadius)+max(-shapeInset,0), gaussianRadius*gaussianExpansionFactor(gaussianInput)), max(direction2,direction3,direction4)), secondary1), abs(absoluteCandidate))",
+    "finalWinner": "baseCandidate",
+    "gaussianCandidateF64": 1.0371203881438842,
+    "parentReturnMatchedBitwise": true,
+    "primaryWinner": "shapeCandidate",
+    "returnF64": 13.316424369812012,
+    "returnRawLittleEndianHex": "0000006002a22a40",
+    "secondary1F64": 2.011250541402842,
+    "shapeCandidateF64": 5.316424369812012
+  }
+}
