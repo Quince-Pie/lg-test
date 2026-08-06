@@ -1,0 +1,119 @@
+{
+  "backdropMarginCase22ProviderObjectMatrixLocalMacOSRetry2PreregistrationSchemaVersion": 1,
+  "classification": "fail-closed binary-transport retry of the unchanged all-live-call provider-object capture; a previously authenticated pre-field-probe binary is selected solely because an output-blind no-LLDB calibration completed all 33 presentation samples, while provider objects and returns under this capture remain unopened",
+  "frozenAtUTC": "2026-08-06",
+  "baseContract": {
+    "path": "Analysis/backdrop_margin_case22_provider_object_matrix_local_macos_26_6_1_retry_preregistration.json",
+    "sha256": "7dcd6519174a7e452ea74aadcf27c1c183df95c1b0a16380e4cbd91013aafc32",
+    "commit": "ceb34ee",
+    "captureSHA256": "b7d0f8a9bc70c7b1d3ceb114eed3337fdc2e8411f8cfc45592c3972cef00fa82"
+  },
+  "failedRetry": {
+    "pathOnHost": "local-case22-provider-object-matrix-ceb34ee-retry1",
+    "lldbLogSHA256": "d043c2adc7305efe3c4cf598c018b55672aa9761e898551e2d1a24016304ca69",
+    "traceSHA256": "94e1a99303c0484ae646b07e86b04b26b91a790b77cdab9914530369ec8d68ea",
+    "timelineSHA256": "215de53593707c809e896a6c912c93c054fa36e053fe4ae5c3699e97d43c6a6f",
+    "progressSHA256": "dab0206afa7d1c4304477b81093ea89b3d3c2ea29c936648ab7cdc07a30ea731",
+    "runtimeStderrSHA256": "ca44b0b15e0cdbc866c8d4a0678874b4f3a0bd09cd5bacd7e3aaa96b5c148c6d",
+    "binarySHA256": "0064fa35159b0d4872370d54528742a93e41662110e3d5456cf3f9e9e234dcb8",
+    "processExitStatus": 1,
+    "timelineError": "presentation glassBackground snapshot unavailable at sample 1",
+    "groupInvocationCount": 2,
+    "providerCallCount": 2,
+    "providerReturnedCallCount": 2,
+    "providerGroupLinkedCallCount": 2,
+    "traceFailureCount": 0,
+    "completeTimelinePassed": false,
+    "matrixAuthority": false
+  },
+  "transportDiagnosticsOpenedBeforeFreeze": {
+    "currentBinaryWithoutLLDB": {
+      "pathOnHost": "local-case22-provider-object-matrix-transport-no-lldb",
+      "binarySHA256": "0064fa35159b0d4872370d54528742a93e41662110e3d5456cf3f9e9e234dcb8",
+      "timelineSHA256": "215de53593707c809e896a6c912c93c054fa36e053fe4ae5c3699e97d43c6a6f",
+      "progressSHA256": "281560bf7df6007aae7874b6f8d9f18db761183a9497dec3f98cd010ffe7cab5",
+      "processExitStatus": 1,
+      "timelineError": "presentation glassBackground snapshot unavailable at sample 1",
+      "providerCaptureAttached": false,
+      "authority": false
+    },
+    "selectedOlderBinaryWithoutLLDB": {
+      "pathOnHost": "local-case22-provider-object-matrix-transport-old-binary-no-lldb",
+      "binaryPathOnHost": "/Users/quince/lg-test/glass-transition-introspect-721293f",
+      "binarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+      "sourceCommit": "721293f1d6593849d4b85b9ad45688a24d2ca437",
+      "sourceSHA256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518",
+      "timelineSHA256": "7aa792938e6131e4a0e700fed3e5aec1c3c23cd160553ae1417f71483989f51b",
+      "progressSHA256": "95fa66dc1417279004430d106e910881ccaac2a45ebdfed4847197fb1122f879",
+      "runtimeStderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "processExitStatus": 0,
+      "timelineSchemaVersion": 5,
+      "timelineSampleCount": 33,
+      "timelineSamplesLength": 33,
+      "timelineFailedSamples": 0,
+      "canonicalImageCount": 33,
+      "providerCaptureAttached": false,
+      "selectedOnlyByCompleteTransport": true,
+      "providerObjectOrReturnObserved": false,
+      "authority": false
+    },
+    "sourceDifference": "between source commits 721293f and 87b5f7d, the only main.swift change is the environment-gated case-22 copied-filter intervention probe; its environment is disabled for transition runs, but its compiled binary layout correlates with deterministic sample-1 carrier loss on this host"
+  },
+  "retryContract": {
+    "captureImplementationChanged": false,
+    "profileChanged": false,
+    "environmentChanged": false,
+    "selectionChanged": false,
+    "captureBoundsChanged": false,
+    "binaryChanged": true,
+    "binarySelectionUsesProviderObjectOrReturn": false,
+    "binaryPathOnHost": "/Users/quince/lg-test/glass-transition-introspect-721293f",
+    "binarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "requireProcessExitStatus": 0,
+    "requireTimelineSchemaVersion": 5,
+    "requireTimelineSampleCount": 33,
+    "requireTimelineSamplesLength": 33,
+    "requireTimelineFailedSamples": 0,
+    "requireTimelineErrorAbsent": true,
+    "requireAll33CanonicalImages": true,
+    "requireGroupInvocationCountEqualsProviderCallCount": true,
+    "requireEveryProviderCallReturnedAndGroupLinked": true,
+    "requireEveryProviderObjectUnchanged": true,
+    "requireNoCaptureFailuresOrPendingThreads": true,
+    "requireAtLeastTwoDistinctProviderObjectsOrReturns": true,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "files": [
+      {"path": "Analysis/backdrop_margin_case22_provider_object_matrix_local_macos_26_6_1_preregistration.json", "sha256": "8da5d1ec6536410aec5945dbb75bc74b1c02de02ea1ebd380b8bd63156df0474"},
+      {"path": "Analysis/backdrop_margin_case22_provider_object_matrix_local_macos_26_6_1_retry_preregistration.json", "sha256": "7dcd6519174a7e452ea74aadcf27c1c183df95c1b0a16380e4cbd91013aafc32"},
+      {"path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_local_macos_26_6_1_lldb.py", "sha256": "b7d0f8a9bc70c7b1d3ceb114eed3337fdc2e8411f8cfc45592c3972cef00fa82"},
+      {"path": "Analysis/test_capture_backdrop_margin_case22_provider_object_matrix_local_macos_26_6_1_lldb_source.py", "sha256": "a6454efbd70612261b08f580ffd14c499f01e28ccf69d57ff14d849c0f2914f2"}
+    ]
+  },
+  "unknownBeforeRetryDispatch": {
+    "groupInvocationCount": null,
+    "providerCallCount": null,
+    "providerObjectBytesByCall": null,
+    "providerReturnWordsByCall": null,
+    "distinctProviderObjectCount": null,
+    "distinctProviderReturnCount": null,
+    "varyingProviderObjectOffsets": null,
+    "objectOffsetCovarianceWithReturn": null,
+    "branchRegimeByCall": null,
+    "retryConclusion": null
+  },
+  "runtimeOutcomeFrozenBeforeRetryDispatch": null,
+  "authorityOnPass": {
+    "exactAllLiveCase22ProviderObjectsForThisOpenedProfile": true,
+    "exactObjectOffsetAndReturnCovarianceForThisOpenedProfile": true,
+    "completeFiniteProviderLaw": false,
+    "unobservedProviderBranches": false,
+    "publicSwiftUIGlassInputLaw": false,
+    "freshProfileTransfer": false,
+    "physicalOutputTransfer": false,
+    "independentWalleZeroByteFrameParity": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
