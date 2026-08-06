@@ -1,0 +1,483 @@
+{
+  "blindReplay": {
+    "componentCount": 1024,
+    "exactComponentCount": 1024,
+    "exactRectangleCount": 256,
+    "jobCount": 8,
+    "jobs": [
+      {
+        "allRequiredStepsPassed": true,
+        "artifact": {
+          "artifactID": 8956379064,
+          "digest": "sha256:64cb8bf3493704fad30876fed337c746d708e235092bc6f479269ace29827f77",
+          "expired": false,
+          "name": "liquid-glass-filter-map-bounds-blind-blind-127-center-31072896015",
+          "sizeInBytes": 87537793
+        },
+        "completedAt": "2026-08-06T05:05:58Z",
+        "exactComponentCount": 128,
+        "exactRectangleCount": 32,
+        "files": {
+          "contractsSHA256": "43cc86437f595191b3e131bea9b72f636bf76a2e7eea79dffcdd554f23659c91",
+          "lldbLogSHA256": "2f89ab087ce538f65db7072fec68ca390a19e4de4d36160eeae45a41afbee423",
+          "runtimeStderrSHA256": "bea7905247df959ba72a6c048853e50e819d01eaa6d32a342ac544db5a70f1d1",
+          "timelineSHA256": "4aeed9a7196e8ec3eb1aa381f2eca5f1734fc898683dfbb6f4fab1816e7daaab",
+          "traceSHA256": "191f8b14c390fc37df6ce64e694372dced24ad4736a432ab1928cc4e9f11410b",
+          "validationSHA256": "88d8a3ae5e810f586f892197174d7a8ca0b9e5134287e714bafd74d2bc569173"
+        },
+        "geometry": "circle-127-center",
+        "jobID": 92524356907,
+        "label": "blind-127-center",
+        "localSemanticReplayByteIdenticalToCI": true,
+        "maximumAbsoluteErrorsXYWH": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maximumULPDistancesXYWH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sourceBounds": {
+          "cropOrProducerValuesUsed": false,
+          "f64": [
+            0.0,
+            0.0,
+            127.0,
+            127.0
+          ],
+          "hex": "000000000000000000000000000000000000000000c05f400000000000c05f40",
+          "rule": "terminal sample 32 transformF64[12:14] plus terminal nominalShapeF64[2:4]",
+          "sampleIndex": 32
+        },
+        "startedAt": "2026-08-06T05:01:35Z",
+        "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015/job/92524356907"
+      },
+      {
+        "allRequiredStepsPassed": true,
+        "artifact": {
+          "artifactID": 8956450473,
+          "digest": "sha256:1c8d5e67490801f826cc35b5ee4f1433086df799aab765e12ae59bf143dd8206",
+          "expired": false,
+          "name": "liquid-glass-filter-map-bounds-blind-blind-128-center-31072896015",
+          "sizeInBytes": 87534065
+        },
+        "completedAt": "2026-08-06T05:09:33Z",
+        "exactComponentCount": 128,
+        "exactRectangleCount": 32,
+        "files": {
+          "contractsSHA256": "b4f5a56ee7a4da5556644b75659393d6a65bb78f6ffe370759dc84a9f54cad35",
+          "lldbLogSHA256": "8b6533f78241cb97201064589f568b8d3509c441a7c55e318c72902b82403245",
+          "runtimeStderrSHA256": "514602a158fc6a4f45ea5ce49f68e399a355ecc2b6d4c93ceb81947e22941b0a",
+          "timelineSHA256": "9da143ac147ad3bff9cf5afd481e02733eb2954ba6654b84cfc42f6bc16f2c1f",
+          "traceSHA256": "ad1498ec46b07e5bf9635b3622646ac25ce75f55106b4cf8e6caf13f298a6abc",
+          "validationSHA256": "3a9270f9b7ae01a2dde53d3ce74ded770efa7886fd4369348b750eb047a35a5c"
+        },
+        "geometry": "circle-128-center",
+        "jobID": 92524356967,
+        "label": "blind-128-center",
+        "localSemanticReplayByteIdenticalToCI": true,
+        "maximumAbsoluteErrorsXYWH": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maximumULPDistancesXYWH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sourceBounds": {
+          "cropOrProducerValuesUsed": false,
+          "f64": [
+            0.0,
+            0.0,
+            128.0,
+            128.0
+          ],
+          "hex": "0000000000000000000000000000000000000000000060400000000000006040",
+          "rule": "terminal sample 32 transformF64[12:14] plus terminal nominalShapeF64[2:4]",
+          "sampleIndex": 32
+        },
+        "startedAt": "2026-08-06T05:05:03Z",
+        "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015/job/92524356967"
+      },
+      {
+        "allRequiredStepsPassed": true,
+        "artifact": {
+          "artifactID": 8956451236,
+          "digest": "sha256:8c9b5347b4c83264097644fdb628d2beb4dc42ba91e175757d109e6f12ca19c9",
+          "expired": false,
+          "name": "liquid-glass-filter-map-bounds-blind-blind-255-center-31072896015",
+          "sizeInBytes": 88672183
+        },
+        "completedAt": "2026-08-06T05:09:34Z",
+        "exactComponentCount": 128,
+        "exactRectangleCount": 32,
+        "files": {
+          "contractsSHA256": "753a80cd43a0735e5f661ec29ea6e7a47cec974dbd9f08016854fbc8ee9d324c",
+          "lldbLogSHA256": "5272ebc1dfcaf6fc788a9d25a2112705bc04a92b35c36aa57ea258b6c22b3a4d",
+          "runtimeStderrSHA256": "6c748b1a10b502a4340c8343748028ed8bf80b3a14bc5a3f1c30759231a2c6ee",
+          "timelineSHA256": "b0c15f542dee8151ca7dfbbd329baaeeca47b5068e6b5b0dad4d82ed8d746964",
+          "traceSHA256": "ad6d32ad412d52a74cf48bcf1cd903eb62a25483caa829e6fbf0604dec5de0d3",
+          "validationSHA256": "fc02c0eb6876f5b5ed832386af6777b37858be9d3802ed629acc31a28912b05a"
+        },
+        "geometry": "circle-255-center",
+        "jobID": 92524356968,
+        "label": "blind-255-center",
+        "localSemanticReplayByteIdenticalToCI": true,
+        "maximumAbsoluteErrorsXYWH": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maximumULPDistancesXYWH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sourceBounds": {
+          "cropOrProducerValuesUsed": false,
+          "f64": [
+            0.0,
+            0.0,
+            255.0,
+            255.0
+          ],
+          "hex": "000000000000000000000000000000000000000000e06f400000000000e06f40",
+          "rule": "terminal sample 32 transformF64[12:14] plus terminal nominalShapeF64[2:4]",
+          "sampleIndex": 32
+        },
+        "startedAt": "2026-08-06T05:06:00Z",
+        "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015/job/92524356968"
+      },
+      {
+        "allRequiredStepsPassed": true,
+        "artifact": {
+          "artifactID": 8956379903,
+          "digest": "sha256:8806fe9bfdea736e14d980ba5da838070db662a45f3a8c0bb735066d5a56faec",
+          "expired": false,
+          "name": "liquid-glass-filter-map-bounds-blind-blind-257-center-31072896015",
+          "sizeInBytes": 88681695
+        },
+        "completedAt": "2026-08-06T05:06:00Z",
+        "exactComponentCount": 128,
+        "exactRectangleCount": 32,
+        "files": {
+          "contractsSHA256": "63651977113ed03fbc65117adf7c2e57dd63f91f67793a9657773cc4ba14d8c3",
+          "lldbLogSHA256": "9d0c722cc714811aa17dbd84cd8f1b2775461d57da7e38e11a6e89cd2cb96028",
+          "runtimeStderrSHA256": "4be548449e6ee9c9830ea64cdda814f61d63caba031e79a37b53a80e29ae5766",
+          "timelineSHA256": "d71a598fbde5fcd87b7b87a5b940d5e90cfc7085d7f7bcb19f77bc54c95e617e",
+          "traceSHA256": "07ea246444cabacf38733a4ed073cf8d39a005baaae9ce6efee638d52db2f4ae",
+          "validationSHA256": "8b35df4966274dfc24d47329ab6d08536fc3e1005592eb3ca3e8b1ce62c8a50e"
+        },
+        "geometry": "circle-257-center",
+        "jobID": 92524356984,
+        "label": "blind-257-center",
+        "localSemanticReplayByteIdenticalToCI": true,
+        "maximumAbsoluteErrorsXYWH": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maximumULPDistancesXYWH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sourceBounds": {
+          "cropOrProducerValuesUsed": false,
+          "f64": [
+            0.0,
+            0.0,
+            257.0,
+            257.0
+          ],
+          "hex": "0000000000000000000000000000000000000000001070400000000000107040",
+          "rule": "terminal sample 32 transformF64[12:14] plus terminal nominalShapeF64[2:4]",
+          "sampleIndex": 32
+        },
+        "startedAt": "2026-08-06T05:01:36Z",
+        "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015/job/92524356984"
+      },
+      {
+        "allRequiredStepsPassed": true,
+        "artifact": {
+          "artifactID": 8956379840,
+          "digest": "sha256:8f58f94a419c1832684c8f1be2ad0e01be75f686d9d94e79e9e79c3d31812d44",
+          "expired": false,
+          "name": "liquid-glass-filter-map-bounds-blind-blind-511-center-31072896015",
+          "sizeInBytes": 93068981
+        },
+        "completedAt": "2026-08-06T05:05:59Z",
+        "exactComponentCount": 128,
+        "exactRectangleCount": 32,
+        "files": {
+          "contractsSHA256": "2c378ac261df64e03b78b6b16c819f48d9fd342394e9a5bff87aea0f169a52ac",
+          "lldbLogSHA256": "21f7efc8fc9c03b5b89d27e734efdb892dcecfe666a0019024698c53b7032db9",
+          "runtimeStderrSHA256": "f9ddf0940fe097a56952955c91b5a050914945a3f6d089b166acc13f38036272",
+          "timelineSHA256": "b7a1734e8f52903d47ee5930fa5f30eed065523d3a9d7a31f2ec8965b18f3f21",
+          "traceSHA256": "9b296a257487d115501d1637f311aadabda780ebb7c57fd143919289767179be",
+          "validationSHA256": "2c4130faacbd0758400e365138bd94c4fd6184630362ee49793e3ab3827cebdb"
+        },
+        "geometry": "circle-511-center",
+        "jobID": 92524356937,
+        "label": "blind-511-center",
+        "localSemanticReplayByteIdenticalToCI": true,
+        "maximumAbsoluteErrorsXYWH": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maximumULPDistancesXYWH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sourceBounds": {
+          "cropOrProducerValuesUsed": false,
+          "f64": [
+            0.0,
+            0.0,
+            511.0,
+            511.0
+          ],
+          "hex": "000000000000000000000000000000000000000000f07f400000000000f07f40",
+          "rule": "terminal sample 32 transformF64[12:14] plus terminal nominalShapeF64[2:4]",
+          "sampleIndex": 32
+        },
+        "startedAt": "2026-08-06T05:01:35Z",
+        "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015/job/92524356937"
+      },
+      {
+        "allRequiredStepsPassed": true,
+        "artifact": {
+          "artifactID": 8956361754,
+          "digest": "sha256:c1738dfbe873c57785e06a9f65f8dc6dbbbe9d7dd2361b04b7233d3d189d65fa",
+          "expired": false,
+          "name": "liquid-glass-filter-map-bounds-blind-blind-512-center-31072896015",
+          "sizeInBytes": 93078080
+        },
+        "completedAt": "2026-08-06T05:05:01Z",
+        "exactComponentCount": 128,
+        "exactRectangleCount": 32,
+        "files": {
+          "contractsSHA256": "624582c1e97e360558745825b17962178df8454d0e198ca2caa09235e38d9258",
+          "lldbLogSHA256": "e8e2415cd8088c61952459ae1170f5804deb1461ee569c361731411e6053fde0",
+          "runtimeStderrSHA256": "f89973c136cf33a35d76c24c4b30cc3bab8d1b1b143301bdf0e2adcab9bcdbc6",
+          "timelineSHA256": "79643bee273222301533959bc73e0a11d1c1ff18a4b9df0696724b431e58e69d",
+          "traceSHA256": "c707649f326eb85f52748d6a11fbf3dca851dd420e0f5e9f57d40c728be60b58",
+          "validationSHA256": "53ed796c174fcf6401a61f9efd3c96a8fcb6ceb780a8eb8f981cdb9a23a36786"
+        },
+        "geometry": "circle-512-center",
+        "jobID": 92524356952,
+        "label": "blind-512-center",
+        "localSemanticReplayByteIdenticalToCI": true,
+        "maximumAbsoluteErrorsXYWH": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maximumULPDistancesXYWH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sourceBounds": {
+          "cropOrProducerValuesUsed": false,
+          "f64": [
+            0.0,
+            0.0,
+            512.0,
+            512.0
+          ],
+          "hex": "0000000000000000000000000000000000000000000080400000000000008040",
+          "rule": "terminal sample 32 transformF64[12:14] plus terminal nominalShapeF64[2:4]",
+          "sampleIndex": 32
+        },
+        "startedAt": "2026-08-06T05:01:35Z",
+        "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015/job/92524356952"
+      },
+      {
+        "allRequiredStepsPassed": true,
+        "artifact": {
+          "artifactID": 8956372358,
+          "digest": "sha256:ad188e2eeeba434418c50c93d3e65215bf25c82d5d86969cb8808865209392e9",
+          "expired": false,
+          "name": "liquid-glass-filter-map-bounds-blind-blind-1023-center-31072896015",
+          "sizeInBytes": 103639669
+        },
+        "completedAt": "2026-08-06T05:05:37Z",
+        "exactComponentCount": 128,
+        "exactRectangleCount": 32,
+        "files": {
+          "contractsSHA256": "3242e41cdb2eafaa36cf4650b6833fe3898c78db54a5aeafaf2ebb6c1dd03f97",
+          "lldbLogSHA256": "44e5f25a283e1a827cb766728b70992b87d48a0f98bc03e18cf88278ef22fc82",
+          "runtimeStderrSHA256": "35142d976ee6bb4ffa47a2074359e3b46eaee2a454d2e3f5845fe57da5fb110d",
+          "timelineSHA256": "b8939483977992f8dadb9455c2712651790d9a18c508e747ec7aa9eca78d2e07",
+          "traceSHA256": "33906882e50922efe720eacede3c1a48b0f10cb6ac4f3c178ac1bb6391f84724",
+          "validationSHA256": "9c4e45702123043138953f105ea2e32b533772b4cf8beb796d156ccfee379210"
+        },
+        "geometry": "circle-1023-center",
+        "jobID": 92524356953,
+        "label": "blind-1023-center",
+        "localSemanticReplayByteIdenticalToCI": true,
+        "maximumAbsoluteErrorsXYWH": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maximumULPDistancesXYWH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sourceBounds": {
+          "cropOrProducerValuesUsed": false,
+          "f64": [
+            1.199040866595169e-14,
+            1.199040866595169e-14,
+            1023.0000000000002,
+            1023.0000000000002
+          ],
+          "hex": "0000000000000b3d0000000000000b3d0200000000f88f400200000000f88f40",
+          "rule": "terminal sample 32 transformF64[12:14] plus terminal nominalShapeF64[2:4]",
+          "sampleIndex": 32
+        },
+        "startedAt": "2026-08-06T05:01:34Z",
+        "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015/job/92524356953"
+      },
+      {
+        "allRequiredStepsPassed": true,
+        "artifact": {
+          "artifactID": 8956447826,
+          "digest": "sha256:79e2072826f2eca63a958effe7e35055efb28a1eaccc51dac90591d6eaeff496",
+          "expired": false,
+          "name": "liquid-glass-filter-map-bounds-blind-blind-1024-center-31072896015",
+          "sizeInBytes": 103636093
+        },
+        "completedAt": "2026-08-06T05:09:26Z",
+        "exactComponentCount": 128,
+        "exactRectangleCount": 32,
+        "files": {
+          "contractsSHA256": "72ed167bd3a49e952844d135bea9dc379eb5ee1ba45629cfe81b57d2ed5051e1",
+          "lldbLogSHA256": "a3049fc23875f749a597c51bdbe4ff18b57025ce4a7db39ba0c9e718aa307593",
+          "runtimeStderrSHA256": "f36f3254ec4c8ba7b92efce5b00d02b85685d8bcfd91ad8c65dda7afac30bd62",
+          "timelineSHA256": "5fdd200c5ab66aac277a45d19042dac4bf2dcd0e6041322af6114c265d4bdbf3",
+          "traceSHA256": "901e092fd4a64d3f710d6e42d7c75f9d9b1c12879f611c46c4cc968c23eac564",
+          "validationSHA256": "ea175c3db749cc089ada79dbbadc7a98be034e22f9db1665d95e65969787077e"
+        },
+        "geometry": "circle-1024-center",
+        "jobID": 92524356982,
+        "label": "blind-1024-center",
+        "localSemanticReplayByteIdenticalToCI": true,
+        "maximumAbsoluteErrorsXYWH": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maximumULPDistancesXYWH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "sourceBounds": {
+          "cropOrProducerValuesUsed": false,
+          "f64": [
+            -1.3322676295501878e-14,
+            -1.3322676295501878e-14,
+            1024.0,
+            1024.0
+          ],
+          "hex": "0000000000000ebd0000000000000ebd00000000000090400000000000009040",
+          "rule": "terminal sample 32 transformF64[12:14] plus terminal nominalShapeF64[2:4]",
+          "sampleIndex": 32
+        },
+        "startedAt": "2026-08-06T05:05:40Z",
+        "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015/job/92524356982"
+      }
+    ],
+    "maximumAbsoluteErrorsXYWH": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "maximumULPDistancesXYWH": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "mismatchedComponentCount": 0,
+    "mismatchedRectangleCount": 0,
+    "passedJobCount": 8,
+    "rectangleCount": 256,
+    "toleranceUsed": false
+  },
+  "classification": "opened prospective target-output-blind result: all eight frozen boundary geometries pass exact binary64 FilterOp replay, and an independent local semantic rerun reproduces every CI validation byte",
+  "combinedCropEvidence": {
+    "blindExactIntegerCropCount": 256,
+    "blindFloatingComponentCount": 1024,
+    "blindFloatingRectangleCount": 256,
+    "priorExactIntegerCropCount": 512,
+    "retrospectiveFloatingComponentCount": 1024,
+    "retrospectiveFloatingRectangleCount": 256,
+    "totalExactFloatingComponentCount": 2048,
+    "totalExactFloatingRectangleCount": 512,
+    "totalExactIntegerCropCount": 768
+  },
+  "conclusion": {
+    "clearLightMaterializeOneXGeometryCropTransferPassed": true,
+    "exactFilterMapBoundsArithmeticEstablished": true,
+    "filterMapBoundsOwnerEstablished": true,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "materialAppearanceDirectionTransferPassed": false,
+    "physicalRetina2xAndColorTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "unchangedBlindRepeatPassed": true,
+    "uniformCropBlindSourceBoundsRuleEstablished": true
+  },
+  "prepareLayerFilterMapBoundsBlindReplayResultSchemaVersion": 1,
+  "productionShader": {
+    "changed": false,
+    "externalPath": "../shaders/frag.glsl",
+    "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d"
+  },
+  "remainingExactGates": [
+    "material, appearance, and direction transfer",
+    "physical Retina 2x plus color-space and pixel-format transfer",
+    "independent Walle renders with zero unequal bytes over the declared parity domain",
+    "production integration under the immutable shader-quality gate",
+    "Tracy, VRAM, throughput, and latency optimization with every protected image still exact"
+  ],
+  "run": {
+    "conclusion": "success",
+    "createdAt": "2026-08-06T05:01:30Z",
+    "headSHA": "cf40cfdfe2f2fefc2b539f932048df5c434f6e26",
+    "preregistration": "Analysis/dynamic_allocation_prepare_layer_filter_map_bounds_blind_replay_preregistration.json",
+    "preregistrationSHA256": "fa4324d854ac1ee95a100269dd734260720b119dc2255932ab2ab2d5903eb251",
+    "runID": 31072896015,
+    "status": "completed",
+    "updatedAt": "2026-08-06T05:09:35Z",
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31072896015"
+  }
+}
