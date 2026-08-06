@@ -39,7 +39,13 @@ LOCAL_CASE22_TARGET_FUNCTION = (
 )
 
 _case22_new_trace = case22._new_trace
-_active_callback_threads = {}
+_case22_selected_thread = case22._selected_thread
+_pending_trace = {
+    "processID": None,
+    "threadID": None,
+    "invocationIndex": None,
+    "callsitePC": None,
+}
 
 
 def _set_local_callback(breakpoint, callback, label):
@@ -69,50 +75,112 @@ def producer_entry(frame, breakpoint_location, internal_dict):
 
 
 def producer_stage(frame, breakpoint_location, internal_dict):
-    thread = frame.GetThread()
-    thread_id = thread.GetThreadID()
-    _active_callback_threads[thread_id] = thread
+    return _deferred_producer_stage(frame, breakpoint_location, internal_dict)
+
+
+def _deferred_producer_stage(frame, breakpoint_location, internal_dict):
+    result = case22._group_producer_stage(frame, breakpoint_location, internal_dict)
+    extension = case22._extension()
     try:
-        return group.producer_stage(frame, breakpoint_location, internal_dict)
-    finally:
-        _active_callback_threads.pop(thread_id, None)
+        gate = group._extension().get("producerCodeGate")
+        if (
+            gate is None
+            or frame.GetPC() - gate["symbolStart"] != case22.CASE22_CALL_OFFSET
+        ):
+            return result
+        thread = frame.GetThread()
+        process_id = thread.GetProcess().GetProcessID()
+        thread_id = thread.GetThreadID()
+        stack = base._state["groupInvocationStacks"].get(thread_id, [])
+        if not stack or stack[-1] is None:
+            return result
+        invocation_index = stack[-1]
+        invocation = group._extension()["invocations"][invocation_index]
+        last_stage = invocation["stages"][-1]
+        if last_stage.get("discriminatorCase") is not None:
+            raise RuntimeError(
+                "case-22 call stage unexpectedly carries a discriminator"
+            )
+        if (
+            invocation_index == case22.SELECTED_INVOCATION_INDEX
+            and extension["status"] == "initialized"
+        ):
+            if [stage["instructionOffset"] for stage in invocation["stages"]] != [
+                0x0BC,
+                0x20C,
+                0x268,
+            ]:
+                raise RuntimeError("selected invocation is not the case-22 path")
+            _pending_trace["processID"] = process_id
+            _pending_trace["threadID"] = thread_id
+            _pending_trace["invocationIndex"] = invocation_index
+            _pending_trace["callsitePC"] = frame.GetPC()
+            extension["status"] = "instruction-trace-pending-top-level"
+            extension["selectedInvocationIndex"] = invocation_index
+            case22._write_trace()
+            return True
+    except Exception as error:
+        extension["failures"].append(
+            {"stage": "case22-deferred-selection", "message": str(error)}
+        )
+        extension["status"] = "instruction-trace-failed"
+        group._failure("case22-deferred-selection", error)
+        case22._write_trace()
+    return result
 
 
-def _selected_thread(process, thread_id):
-    active = _active_callback_threads.get(thread_id)
+def trace_selected_case22():
+    extension = case22._extension()
+    process_id = _pending_trace["processID"]
+    thread_id = _pending_trace["threadID"]
+    invocation_index = _pending_trace["invocationIndex"]
+    callsite_pc = _pending_trace["callsitePC"]
     if (
-        active is not None
-        and active.IsValid()
-        and active.GetThreadID() == thread_id
-        and active.GetProcess().GetProcessID() == process.GetProcessID()
+        extension is None
+        or process_id is None
+        or thread_id is None
+        or invocation_index is None
+        or callsite_pc is None
     ):
-        return active
+        raise RuntimeError("no deferred case-22 trace is pending")
+    if extension["status"] != "instruction-trace-pending-top-level":
+        raise RuntimeError("deferred case-22 trace status differs")
     debugger = base._state.get("debugger")
     if debugger is None:
-        raise RuntimeError("local thread reacquisition lacks the debugger")
-    fresh_process = debugger.GetSelectedTarget().GetProcess()
-    if (
-        not fresh_process.IsValid()
-        or fresh_process.GetProcessID() != process.GetProcessID()
-    ):
-        raise RuntimeError("local thread reacquisition changed the process")
-    thread = fresh_process.GetThreadByID(thread_id)
-    selected = fresh_process.GetSelectedThread()
-    if (
-        not thread.IsValid()
-        and selected.IsValid()
-        and selected.GetThreadID() == thread_id
-    ):
-        thread = selected
-    if not thread.IsValid():
-        for index in range(fresh_process.GetNumThreads()):
-            candidate = fresh_process.GetThreadAtIndex(index)
-            if candidate.IsValid() and candidate.GetThreadID() == thread_id:
-                thread = candidate
-                break
+        raise RuntimeError("deferred case-22 trace lacks the debugger")
+    process = debugger.GetSelectedTarget().GetProcess()
+    case22._require_stopped(process, "deferred case-22 callsite")
+    if process.GetProcessID() != process_id:
+        raise RuntimeError("deferred case-22 process identity differs")
+    thread = process.GetThreadByID(thread_id)
     if not thread.IsValid() or thread.GetThreadID() != thread_id:
-        raise RuntimeError("case-22 selected thread is unavailable")
-    return thread
+        raise RuntimeError("deferred case-22 thread identity differs")
+    frame = thread.GetFrameAtIndex(0)
+    gate = group._extension().get("producerCodeGate")
+    if (
+        gate is None
+        or frame.GetPC() != callsite_pc
+        or callsite_pc != gate["symbolStart"] + case22.CASE22_CALL_OFFSET
+    ):
+        raise RuntimeError("deferred case-22 callsite identity differs")
+    extension["status"] = "instruction-trace-active-top-level"
+    case22._write_trace()
+    try:
+        case22._trace_case22(frame, invocation_index, gate)
+    except Exception as error:
+        extension["failures"].append(
+            {"stage": "case22-callee-trace-top-level", "message": str(error)}
+        )
+        extension["status"] = "instruction-trace-failed"
+        group._failure("case22-callee-trace-top-level", error)
+        case22._write_trace()
+        return False
+    finally:
+        _pending_trace["processID"] = None
+        _pending_trace["threadID"] = None
+        _pending_trace["invocationIndex"] = None
+        _pending_trace["callsitePC"] = None
+    return True
 
 
 def _require_unchanged_structural_contract():
@@ -178,10 +246,11 @@ def _new_trace():
         "setterCodeSHA256": LOCAL_SETTER_CODE_SHA256,
         "boundsCodeSHA256": LOCAL_BOUNDS_CODE_SHA256,
         "retinaBaselineBackingScaleFactor": 2,
-        "threadReacquisition": (
-            "active callback SBThread across synchronous steps, then fresh "
-            "selected-target process fallback; every path requires unchanged "
-            "process ID and exact thread ID"
+        "instructionTraceDispatch": (
+            "breakpoint callback records the fixed structural selection and "
+            "returns true without stepping; the frozen instruction loop runs "
+            "from the next top-level LLDB script command on the exact stopped "
+            "process, thread, and callsite"
         ),
         "capturedMarginUsedForRuntimeSelection": False,
         "capturedCropUsedForRuntimeSelection": False,
@@ -198,6 +267,7 @@ def finalize():
 def __lldb_init_module(debugger, internal_dict):
     _apply_local_host_profile()
     group._set_callback = _set_local_callback
-    case22._selected_thread = _selected_thread
+    case22._selected_thread = _case22_selected_thread
     case22._new_trace = _new_trace
     case22.__lldb_init_module(debugger, internal_dict)
+    group.producer_stage = _deferred_producer_stage

@@ -28,7 +28,8 @@ class LocalMacOSCase22LLDBSourceTests(unittest.TestCase):
         self.assertIn("case22.__lldb_init_module(debugger, internal_dict)", self.text)
         self.assertIn("case22.finalize()", self.text)
         self.assertIn("group._set_callback = _set_local_callback", self.text)
-        self.assertIn("case22._selected_thread = _selected_thread", self.text)
+        self.assertIn("case22._selected_thread = _case22_selected_thread", self.text)
+        self.assertIn("group.producer_stage = _deferred_producer_stage", self.text)
         for callback in (
             "copy_entry",
             "margin_setter",
@@ -60,35 +61,40 @@ class LocalMacOSCase22LLDBSourceTests(unittest.TestCase):
         ):
             self.assertIn(literal, self.text)
 
-    def test_thread_reacquisition_requires_exact_process_and_thread(self) -> None:
+    def test_instruction_loop_is_deferred_to_top_level_lldb(self) -> None:
         function = next(
             node
             for node in self.tree.body
-            if isinstance(node, ast.FunctionDef) and node.name == "_selected_thread"
+            if isinstance(node, ast.FunctionDef)
+            and node.name == "_deferred_producer_stage"
         )
         source = ast.get_source_segment(self.text, function)
         self.assertIsNotNone(source)
-        self.assertIn("_active_callback_threads.get(thread_id)", source)
-        self.assertIn("active.GetThreadID() == thread_id", source)
+        self.assertIn("case22._group_producer_stage(", source)
+        self.assertIn("invocation_index == case22.SELECTED_INVOCATION_INDEX", source)
         self.assertIn(
-            "active.GetProcess().GetProcessID() == process.GetProcessID()",
+            'extension["status"] = "instruction-trace-pending-top-level"',
             source,
         )
-        self.assertIn("debugger.GetSelectedTarget().GetProcess()", source)
-        self.assertIn("fresh_process.GetProcessID() != process.GetProcessID()", source)
-        self.assertIn("candidate.GetThreadID() == thread_id", source)
-        self.assertIn("thread.GetThreadID() != thread_id", source)
+        self.assertIn("return True", source)
+        self.assertNotIn("StepInstruction", source)
 
-        callback = next(
+        top_level = next(
             node
             for node in self.tree.body
-            if isinstance(node, ast.FunctionDef) and node.name == "producer_stage"
+            if isinstance(node, ast.FunctionDef)
+            and node.name == "trace_selected_case22"
         )
-        callback_source = ast.get_source_segment(self.text, callback)
-        self.assertIsNotNone(callback_source)
-        self.assertIn("_active_callback_threads[thread_id] = thread", callback_source)
-        self.assertIn("finally:", callback_source)
-        self.assertIn("_active_callback_threads.pop(thread_id, None)", callback_source)
+        top_level_source = ast.get_source_segment(self.text, top_level)
+        self.assertIsNotNone(top_level_source)
+        self.assertIn("process.GetProcessID() != process_id", top_level_source)
+        self.assertIn("process.GetThreadByID(thread_id)", top_level_source)
+        self.assertIn("thread.GetThreadID() != thread_id", top_level_source)
+        self.assertIn("frame.GetPC() != callsite_pc", top_level_source)
+        self.assertIn("case22._trace_case22(", top_level_source)
+        self.assertIn(
+            'extension["status"] = "instruction-trace-failed"', top_level_source
+        )
 
     def test_runtime_selection_remains_output_blind(self) -> None:
         for literal in (

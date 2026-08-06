@@ -1,6 +1,6 @@
 {
   "backdropMarginCase22LocalMacOSPreregistrationSchemaVersion": 1,
-  "frozenAtUtc": "2026-08-06T19:50:04Z",
+  "frozenAtUtc": "2026-08-06T20:07:45Z",
   "classification": "host-identity adaptation of the already-frozen retrospective case-22 arithmetic diagnostic: exact local framework code proves the Group body, caller callsite, case-22 callsite, target offset, copy store, and render layout are structurally unchanged; only opened module UUIDs and two opened QuartzCore code hashes are substituted, with no additional transfer or product authority",
   "host": {
     "sshHost": "quince@10.0.41.19",
@@ -139,6 +139,26 @@
     "returnWordOpened": false,
     "authorityChanged": false
   },
+  "topLevelInstructionDispatchRetry": {
+    "retainedCallbackThreadCommit": "721293f",
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-case22-thread-attempt-4",
+    "traceSHA256": "5c72cc2d83ad821d3902749c103aa0cd74dbfd4b49dbb1a88989e23b8b2b16ba",
+    "lldbLogSHA256": "b5eb6fdd34aa07e474cce15726f3446fb82655661a5695964f02b54f4e017835",
+    "baseEventCount": 93,
+    "completeGroupInvocationCount": 20,
+    "selectedInvocationIndex": 20,
+    "authenticatedTargetEntryReached": true,
+    "case22InstructionCount": 0,
+    "case22OpaqueCalleeCount": 0,
+    "failure": "the exact SBThread received by the Python breakpoint callback also becomes invalid after a synchronous StepInstruction while that callback remains active",
+    "harnessFinding": "all callback-internal thread reacquisition paths are invalid until LLDB regains top-level command control; the unchanged process and thread identities remain usable outside the callback",
+    "transportOnlyCorrection": "at the already-frozen ordinal and exact Group.margin +0x268 callsite, record only process ID, thread ID, invocation index, and callsite PC, return true without stepping, then execute the unchanged frozen instruction loop from the next top-level LLDB script command after requiring the exact stopped process, thread, and callsite",
+    "runtimeSelectionChanged": false,
+    "captureFieldsChanged": false,
+    "arithmeticInstructionOpened": false,
+    "returnWordOpened": false,
+    "authorityChanged": false
+  },
   "captureContract": {
     "originalCase22AdapterUnchanged": true,
     "localOverlayOnly": true,
@@ -174,11 +194,11 @@
     "files": [
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py",
-        "sha256": "bb0715db193ef5a00ecf807b64de2828f4c310ef33edf65b5dc0d7f3ebdd66c6"
+        "sha256": "6562cc403d46d84774d1eb1ee1cc07f0c61b1dfa7ea622eeb770e204e5d47780"
       },
       {
         "path": "Analysis/test_capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb_source.py",
-        "sha256": "93b935bcea448819cfbdaf51ef2fad0738d7d754ed93b2e0437b5a9025e556c8"
+        "sha256": "c416dcd35c05a4c3d6d3a30ab965f3e6d2d4a6a370fe86be36bb14c94e0540de"
       },
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_lldb.py",

@@ -48,6 +48,21 @@ class LocalMacOSCase22PreregistrationTests(unittest.TestCase):
         ):
             self.assertFalse(selection[key])
 
+    def test_top_level_dispatch_retry_changes_only_transport(self) -> None:
+        retry = self.value["topLevelInstructionDispatchRetry"]
+        self.assertEqual(retry["retainedCallbackThreadCommit"], "721293f")
+        self.assertEqual(retry["selectedInvocationIndex"], 20)
+        self.assertTrue(retry["authenticatedTargetEntryReached"])
+        self.assertEqual(retry["case22InstructionCount"], 0)
+        for key in (
+            "runtimeSelectionChanged",
+            "captureFieldsChanged",
+            "arithmeticInstructionOpened",
+            "returnWordOpened",
+            "authorityChanged",
+        ):
+            self.assertFalse(retry[key])
+
     def test_frozen_implementation_hashes_match(self) -> None:
         for record in self.value["frozenImplementation"]["files"]:
             payload = (ANALYSIS.parent / record["path"]).read_bytes()
