@@ -1,0 +1,125 @@
+{
+  "prepareLayerFilterMapBoundsRegularDiagnosticPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T05:50:10Z",
+  "classification": "prospective output-blind complete instruction trace of the structurally selected FilterOp on regular/light/materialize at circle-800-center; the profile, selector, code identities, capture bytes, stepping rules, post-selection correlation, acceptance boundary, and non-parity authority are frozen before dispatch",
+  "baselineCommit": "fef4f2fd9fe43c3a13d4bc9e63d36bccd8dd7e72",
+  "priorEvidence": {
+    "profileTransferRunID": 31074006001,
+    "profileTransferHeadSHA": "fef4f2fd9fe43c3a13d4bc9e63d36bccd8dd7e72",
+    "profileTransferWorkflowConclusion": "failure",
+    "allEightCaptureStepsCompleted": true,
+    "clearProfileExactReplayRectangleCountAfterAuthenticTopology": 128,
+    "clearProfileExactReplayComponentCountAfterAuthenticTopology": 512,
+    "regularProfileOldReplayExactRectangleCount": 0,
+    "regularProfileOldReplayRectangleCount": 128,
+    "regularStructuralMirrorMinusTwoLanePresentCount": 128,
+    "centeredRecursiveSourceCandidateF64": [-280.0, -280.0, 1360.0, 1360.0],
+    "centeredRecursiveSourceCandidateExactRectangleCount": 0,
+    "centeredRecursiveSourceCandidateIntegerCropCount": 96,
+    "mereSourceBoundSubstitutionFalsified": true,
+    "regularFilterEntryAndInternalDODBranchStillUnknown": true,
+    "completeProfileMatrixPassed": false,
+    "liquidGlassParityEstablished": false
+  },
+  "frozenDiagnostic": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-800-center",
+    "backingScaleFactor": 1,
+    "selectedSampleIndex": 2,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "dynamicDispatchOffset": 10340,
+    "dynamicDispatchOrdinal": 4,
+    "filterFunction": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+    "filterRelativeToPrepareLayer": -61056,
+    "filterSymbolByteCount": 788,
+    "filterCodeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "producerStoreIndexDelta": 2,
+    "producerRoleDelta": 4016,
+    "producerDepthDelta": 2,
+    "captureAdapterChangesGeometryGuardOnly": true,
+    "captureAdapterAddsBreakpoint": false,
+    "captureAdapterChangesMemoryRange": false,
+    "captureAdapterChangesSteppingRule": false,
+    "captureAdapterReadsCropOrOutputForSelection": false,
+    "validatorChangesFilterInstructionValidation": false,
+    "validatorUsesTargetBytesOnlyAfterStructuralSelection": true
+  },
+  "acceptance": {
+    "jobCount": 1,
+    "zeroCaptureFailuresRequired": true,
+    "completeFilterInstructionTraceRequired": true,
+    "allOpenedScopeCodeHashesMustMatch": true,
+    "filterReturnMustMatchStructuralProducerBitForBit": true,
+    "changedProducerQwordOffsetsMustEqual": [0, 8, 16, 24],
+    "regularMaterialFilterOwnershipMayBeClaimed": true,
+    "regularMaterialArithmeticMayBeClaimed": false,
+    "completeProfileTransferMayBeClaimed": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "productAuthority": {
+    "filterOpDiagnosticMayBeClaimed": true,
+    "completeFilterOpCropProfileTransferMayBeClaimed": false,
+    "opticalMaterialAppearanceTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "independentWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_filter_map_bounds_regular_lldb.py",
+        "sha256": "0366d6233e1260014d8a7e2ea1c509b0e7e5d8aa46c38bfda2f201746110249b"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_filter_map_bounds_regular_diagnostic.py",
+        "sha256": "743d2e6f22017418c5feddf3e2b6975faf2ec7fe56a3852fb1656bb42b8fd2d5"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_filter_map_bounds_regular_lldb_source.py",
+        "sha256": "4d366584a9b454620121161e5d27c50f54be8f7ebeca3fcab8232979305c5331"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_filter_map_bounds_regular_diagnostic.py",
+        "sha256": "3c99fe0353f3441b4174408af785a3d2d21df2a236b1507df087ca495603c7da"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-filter-map-bounds-regular-diagnostic.yml",
+        "sha256": "11f42433e1594bca4efc81b17e5dcfabe26ea068cfafeb3f63ea163dd1a29f83"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_filter_map_bounds_lldb.py",
+        "sha256": "0755924cd34936f6cc433d1efe322989229f94423a832107a73ae087da0c1320"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_filter_map_bounds.py",
+        "sha256": "24fd0d7df9912738e3914eb146f5c4959c7bf737fc69a52ff10577fba88a19cc"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_crop_producer_callee.py",
+        "sha256": "b8af91ae6bc8f137feefb927616cbbd36e4081e0dfdc240079fa7e924bb2046d"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_mask_instruction_trace.py",
+        "sha256": "e2a02168261bfc7fe1ac923bd6bae7494c410abbaefe6cadf71134746715a11a"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json",
+        "sha256": "822f89af42d1d4b4982278582eaaf52f386bd352eb2bea78abb4d877813ef375"
+      },
+      {
+        "path": "Sources/GlassIntrospect/main.swift",
+        "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}
