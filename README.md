@@ -7915,3 +7915,96 @@ input law, unopened branch coverage, physical Retina/compositor transfer, or a
 real Walle-versus-Apple zero-byte frame. Formal parity therefore remains 0/1,
 and the production shader remains unchanged at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+### Complete allocation-profile provider-object matrix
+
+The first all-live successor did not pass, and its failures are retained rather
+than folded into the successful result. The newly compiled field-probe binary
+failed its presentation carrier at sample 1 even without LLDB. The previously
+authenticated binary from commit `721293f`, SHA-256
+`b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd`,
+completed 33/33 samples without LLDB and became the frozen transport. The heavy
+writer/Group capture then retained 90 exact provider calls but accumulated
+enough debugger suspension to lose the fixed 60-second presentation carrier at
+sample 19. Its matrix has no authority.
+
+Removing the writer and instruction-stage breakpoints exposed two independent
+selection/bound defects. The first minimal adapter selected every wrapper whose
+immediate caller was `Group.margin+0x26c`; it had already retained 432 calls by
+sample 8 and was stopped before crossing its 512-call bound. The next adapter
+gated those callbacks at the exact authenticated
+`SDFLayer.updateSDFEffects+0x1680` call instruction (`5526e997`) and disarmed
+them at `+0x1684`. LLDB cannot resolve SwiftUICore's loaded address before the
+process reaches `main`, so the frozen launch transport now stops at the app's
+exact `main`, deletes that bootstrap breakpoint, imports the capture after all
+524 process images are loaded, and only then continues. Its preflight resolved
+one direct callback at the required `+0x1680` location.
+
+Commit `05e0962` completed all 33 Retina frames and the application exited zero,
+but the trace reached the inherited 512-call bound. It finalized with 699
+failures and one active selected caller, so it also has no matrix authority.
+This was not another caller-selection error: removing the heavy breakpoints
+restored render cadence, invalidating a call bound calibrated under debugger
+suspension. The prospectively frozen bound-only retry in commit `b694a91`
+raised the finite maximum to 4096 without changing the app, binary, profile,
+environment, callsite, wrapper/provider code, object capture, return join, or
+any value-based selector.
+
+That retry passes its complete narrow contract. On the developer-enabled local
+Retina host it produced:
+
+- process exit status 0, 33/33 canonical images, no failed timeline sample,
+  and backing scale 2;
+- 1,228/1,228 exact selected caller, wrapper, provider, wrapper-return, Group,
+  and caller-return chains;
+- 1,228 exact 384-byte objects equal at wrapper entry, provider entry, and
+  provider return, with 1,228 distinct object payloads;
+- 1,228 provider returns equal to the enclosing Group input bit for bit;
+- zero pending calls, zero active selected callers, and zero capture failures;
+  and
+- 121 byte offsets varying across the opened allocation profile.
+
+The trace and timeline SHA-256 values are respectively
+`0e83312d2535ad6601b6bcae178e939e13a9ebae95d15efcc166ffde013e6d72`
+and
+`1dd73cfa4e696c43a0612c107e9a5edcb78c72b14ba80e67a53e4e99b06d931f`.
+The strict validator is
+`Analysis/validate_backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1.py`,
+SHA-256
+`dbe64de0566a3c4f42df7fe141783a6a5e3ef8c744981f1f2d9e980154f52ad7`.
+Its canonical result is
+`Analysis/backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1_result.json`,
+SHA-256
+`3b6a51a98d7f631adb5f97cdf564d4398de358be90de6d121a5d977dc73483a7`.
+
+Every return in this allocation-only profile is exactly positive zero. That is
+an exact opened branch result, not an optical law. Across all nonzero objects,
+binary64 offset `+0xe8` equals offset `+0x18` multiplied by exact binary64
+`-0.8` bit for bit. The unjoined endpoint also repeats four exact candidate
+semantics against the copied-filter timeline:
+
+```text
+provider +0x018 == inputShadowAmount
+provider +0x098 == 2 * inputBlurRadius
+provider +0x0e8 == inputInnerRefractionAmount
+provider +0x160 == inputBleedAmount
+```
+
+Those four word equalities are useful but deliberately carry no public-input
+mapping authority: the provider calls and copied-filter records still lack an
+authenticated temporal join. They therefore cannot be promoted into Walle or
+used to claim parity.
+
+The next exact gate is a separately preregistered normal live transition using
+the same call/object/return chain with allocation-only and dense-allocation
+disabled. It must open nonzero provider gates and returns. Candidate inputs
+must then be controlled upstream of live provider construction and repeat on a
+fresh profile. After that, the remaining product gates are the upstream integer
+crop/allocation policy, physical Retina/color/pixel/compositor transfer, and a
+real Walle-versus-Apple frozen-domain comparison with zero unequal bytes.
+
+Formal Liquid Glass parity is consequently still 0/1. The production shader
+and root flake remain untouched at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`
+and
+`b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01`.
