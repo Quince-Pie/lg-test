@@ -7694,3 +7694,33 @@ margin value. Public-input generation, the unobserved discriminator branches,
 fresh-profile transfer, physical Retina/color/compositor transfer, and a real
 Walle-versus-Apple zero-unequal-byte frame remain open. Liquid Glass parity is
 not established, and no production renderer change is authorized.
+
+### Frozen case-22 callee instruction diagnostic
+
+`Analysis/backdrop_margin_case22_callee_preregistration.json` freezes the next
+arithmetic diagnostic before another macOS capture. It reuses the same opened
+regular/light circle-127 materialize profile and chooses Group invocation
+ordinal 20. That choice is explicitly retrospective: run `31118243811` already
+showed ordinal 20 returning binary64 `17.778189659118652`
+(`0000007037c73140`). Runtime selection reads only the fixed invocation ordinal
+and exact caller/case-22 control-flow identity; it never reads that return,
+another margin, a crop, an image, or a pixel. The run therefore cannot acquire
+prospective transfer authority.
+
+The new overlay leaves all three inherited writer/producer/Group adapters
+byte-identical. At the selected `blraa` at Group offset `0x268`, it requires the
+already-opened SwiftUICore target offset `0x76bc54`, captures the target's
+complete symbol and code, snapshots 4 KiB of its live object and a bounded
+pointer graph, and single-steps the complete target. Each retained instruction
+has the full general and SIMD register file plus 1 KiB of stack. Calls outside
+the target symbol are retained as complete-code entry/return boundaries. The
+normal Group `+0x26c` breakpoint is temporarily disabled, recorded exactly once
+at the manual return, stepped past, and restored so the original all-invocation
+validator remains applicable.
+
+The target function, symbol bounds, code bytes and hash, object and pointer
+bytes, instruction sequence, registers, stacks, opaque callees, return word,
+and arithmetic are all null at freeze time. A successful run can authorize an
+offline exact decode of this one opened case-22 execution only. It cannot map
+unobserved discriminator cases, declare a general public-input law, change the
+production shader, or establish Liquid Glass parity.

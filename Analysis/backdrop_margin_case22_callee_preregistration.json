@@ -1,0 +1,187 @@
+{
+  "backdropMarginCase22CalleePreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T16:38:03Z",
+  "classification": "retrospective arithmetic diagnostic of the already-opened SwiftUI.SDFStyle.Group.margin case-22 path: the authenticated target address and ordinal-20 return are disclosed antecedents, while the target symbol, complete code, live object bytes, instruction sequence, registers, stack, opaque callees, and arithmetic are sealed unknown before dispatch; this profile and selector carry no prospective transfer or product authority",
+  "antecedent": {
+    "runID": 31118243811,
+    "headSHA": "f4054b43b1a1b6c16f78c4e78e6350e7678a8763",
+    "preservationCommit": "e5470dc1a81bb248f58e05198aec1d8d50420ad0",
+    "analysis": "Analysis/backdrop_margin_group_execution_result.json",
+    "analysisSHA256": "f6e85e0e38e4e21f3b72845959bd00d2134a70fe92c1c6ac714d0214195854ba",
+    "case22InvocationCount": 76,
+    "case22TargetModuleOffset": 7781460,
+    "case22TargetAddressStableAcrossAllInvocations": true,
+    "case22TargetCodeCaptured": false,
+    "case22TargetArithmeticDecoded": false,
+    "discriminatorCases1To3And21Mapped": false,
+    "publicInputMarginLawDecoded": false,
+    "productionShaderChanged": false,
+    "liquidGlassParityEstablished": false
+  },
+  "profile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "profilePreviouslyOpened": true,
+    "case22TargetAddressPreviouslyOpened": true,
+    "case22TargetCodePreviouslyOpened": false
+  },
+  "selection": {
+    "groupInvocationIndex": 20,
+    "calibratedFromOpenedRunID": 31118243811,
+    "ordinalChoiceWasRetrospective": true,
+    "openedOrdinalReturnF64": 17.778189659118652,
+    "openedOrdinalReturnF64RawLittleEndianHex": "0000007037c73140",
+    "runtimeSelector": "fixed structural invocation ordinal only",
+    "runtimeSelectionReadsOpenedReturn": false,
+    "capturedMarginUsedForRuntimeSelection": false,
+    "capturedCropUsedForRuntimeSelection": false,
+    "capturedImageUsedForRuntimeSelection": false,
+    "capturedPixelUsedForRuntimeSelection": false,
+    "prospectiveTransferAuthority": false
+  },
+  "openedCallsite": {
+    "producerFunction": "SwiftUI.SDFStyle.Group.margin.getter : CoreGraphics.CGFloat",
+    "producerModuleOffset": 3610064,
+    "producerCodeSHA256": "5414dac1e2dce7753af9afe072ceb3b7f938ec894df81bd621866f50d03b015d",
+    "case22CallInstructionOffset": 616,
+    "case22CallInstructionHex": "910b3fd7",
+    "case22ReturnInstructionOffset": 620,
+    "authenticatedTargetModuleOffset": 7781460,
+    "swiftUICoreUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97"
+  },
+  "captureContract": {
+    "inheritedWriterAdapterUnchanged": true,
+    "inheritedProducerAdapterUnchanged": true,
+    "inheritedGroupAdapterUnchanged": true,
+    "newOverlayOnly": true,
+    "captureCompleteTargetSymbolAndCode": true,
+    "captureFullGeneralAndSIMDRegistersPerInstruction": true,
+    "captureStackPerInstruction": true,
+    "captureEntryAndReturnObject": true,
+    "captureBoundedEntryPointerGraph": true,
+    "captureOpaqueCalleeCompleteCodeAndBoundaries": true,
+    "manuallyRecordInheritedCase22ReturnStageOnce": true,
+    "restoreInheritedReturnBreakpoint": true,
+    "objectByteCount": 4096,
+    "stackByteCount": 1024,
+    "pointerProbeByteCount": 512,
+    "maximumPointerProbeCount": 128,
+    "maximumInstructionCount": 8192,
+    "maximumOpaqueCalleeCount": 512,
+    "maximumSymbolByteCount": 131072,
+    "maximumTotalOpaqueCodeByteCount": 8388608,
+    "zeroTolerance": true
+  },
+  "unknownBeforeCapture": {
+    "targetFunction": null,
+    "targetSymbolBounds": null,
+    "targetCodeBytes": null,
+    "targetCodeSHA256": null,
+    "objectBytes": null,
+    "pointerProbeBytes": null,
+    "instructionSequence": null,
+    "instructionRegisters": null,
+    "instructionStacks": null,
+    "opaqueCalleeIdentities": null,
+    "opaqueCalleeCodeBytes": null,
+    "returnWord": null,
+    "exactArithmetic": null
+  },
+  "acceptance": {
+    "requireUnchangedInheritedGroupValidation": true,
+    "requireExactAuthenticatedTargetOffset": true,
+    "requireCompleteTargetSymbolAndCode": true,
+    "requireCompleteSelectedInstructionTrace": true,
+    "requireFullGeneralAndSIMDRegisters": true,
+    "requireBoundedStackAndObjectSnapshots": true,
+    "requireOpaqueCalleeCodeAndBoundaries": true,
+    "requireExactReturnToGroupStage": true,
+    "requireNoValueBasedRuntimeSelection": true,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_backdrop_margin_writer_execution_lldb.py",
+        "sha256": "f91ba6afb61b491d949ea5dc9d4fc1c82c165e0016aefa84db00a0b15d435ecd"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_writer_producer_lldb.py",
+        "sha256": "4e5620a157021578a0bb79f3b8cbf49eed2d754e960ecc076a046ae13d575d76"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_group_execution_lldb.py",
+        "sha256": "718075227f950e75757987225f0c5e0a9a3c64aff69a5086a4a84face45f8ada"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_callee_lldb.py",
+        "sha256": "933ca44e12426856b4c7ed83255ad205d370f51c430df16e9aa4441c3aa5db19"
+      },
+      {
+        "path": "Analysis/test_capture_backdrop_margin_case22_callee_lldb_source.py",
+        "sha256": "5da8a71945480abfd2d9ac0437882af836b93ee071a5eeddb0423e978ddf6cac"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_group_execution.py",
+        "sha256": "2d609358164154933da7c4459ef2c89cf5256e22daeea900621b0a26dab5c761"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_callee.py",
+        "sha256": "9d4976e281bd58067c5d798d9402305e2e6bc2b517f5d177674b3fc4be2c506b"
+      },
+      {
+        "path": "Analysis/test_validate_backdrop_margin_case22_callee.py",
+        "sha256": "76608dfe7aa23f32091b2f98a78665560a9cf410ba0edb7847fffdb3f3f48c4c"
+      },
+      {
+        "path": "Analysis/analyze_backdrop_margin_group_execution.py",
+        "sha256": "e524f613cef9d7bdc80db4c24f048ef3d212b06080512ccd2ce5afeaadf9e9ac"
+      },
+      {
+        "path": "Analysis/backdrop_margin_group_execution_result.json",
+        "sha256": "f6e85e0e38e4e21f3b72845959bd00d2134a70fe92c1c6ac714d0214195854ba"
+      },
+      {
+        "path": "Analysis/test_analyze_backdrop_margin_group_execution.py",
+        "sha256": "cc5345d833d54a12287de6e1fafcc52baeee1ec7a2dca327f0cb8fff706e8a8b"
+      },
+      {
+        "path": "Analysis/backdrop_margin_group_execution_preregistration.json",
+        "sha256": "384317f11ae08bec7b5abcb11edda5e6a58aaa6d6188e09eb536b554e2fbb3d9"
+      },
+      {
+        "path": "Analysis/test_backdrop_margin_case22_callee_preregistration.py",
+        "sha256": "b4bfa9c00cf9113cb3c0f9b9f5605a1d42514ce06340447d8bc878b5a38ca930"
+      },
+      {
+        "path": ".github/workflows/backdrop-margin-case22-callee.yml",
+        "sha256": "b1e5503f3a9c6a00573910531c3aa18d6f212fb024de3a9fd89cdd7fb9684a3a"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "case22ArithmeticMayBeDecodedOnPass": true,
+    "publicInputMarginLawMayBeDeclaredDecoded": false,
+    "unobservedDiscriminatorBranchesMayBeDeclaredMapped": false,
+    "prospectiveUnseenProfileTransferMayBeClaimed": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "independentTemporalInputGenerationMayBeClaimed": false,
+    "physicalOutputTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}

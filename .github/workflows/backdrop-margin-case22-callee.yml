@@ -1,0 +1,183 @@
+name: Trace backdrop margin case-22 callee
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/backdrop-margin-case22-callee.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backdrop-margin-case22-callee-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  case22_callee:
+    name: regular-light-materialize-circle-127-case22-ordinal-20
+    runs-on: macos-26
+    timeout-minutes: 120
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-127-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_BACKDROP_MARGIN_WRITER_TRACE_OUTPUT: >-
+        backdrop-margin-case22-callee/backdrop-margin-writer-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen case-22 contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p backdrop-margin-case22-callee
+          set -o pipefail
+          for pattern in \
+            test_capture_backdrop_margin_writer_execution_lldb_source.py \
+            test_capture_backdrop_margin_writer_producer_lldb_source.py \
+            test_capture_backdrop_margin_group_execution_lldb_source.py \
+            test_capture_backdrop_margin_case22_callee_lldb_source.py \
+            test_validate_backdrop_margin_writer_execution.py \
+            test_validate_backdrop_margin_writer_execution_retry.py \
+            test_validate_backdrop_margin_group_execution.py \
+            test_validate_backdrop_margin_case22_callee.py \
+            test_analyze_backdrop_margin_writer_execution_retry.py \
+            test_analyze_backdrop_margin_group_execution.py \
+            test_backdrop_margin_group_execution_preregistration.py \
+            test_backdrop_margin_case22_callee_preregistration.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a backdrop-margin-case22-callee/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o backdrop-margin-case22-callee/MatrixBridge.o 2>&1 |
+            tee backdrop-margin-case22-callee/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            backdrop-margin-case22-callee/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a backdrop-margin-case22-callee/build.log
+
+      - name: Capture exact case-22 callee execution
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path backdrop-margin-case22-callee/runtime-stdout.log' \
+            -o 'settings set target.error-path backdrop-margin-case22-callee/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_backdrop_margin_case22_callee_lldb.py' \
+            -o run \
+            -o 'script capture_backdrop_margin_case22_callee_lldb.finalize()' \
+            -- ./glass-transition-introspect backdrop-margin-case22-callee \
+            > backdrop-margin-case22-callee/lldb-case22-callee.log 2>&1
+
+      - name: Validate exact case-22 callee execution
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_backdrop_margin_case22_callee.py \
+            backdrop-margin-case22-callee/backdrop-margin-writer-trace.json \
+            Analysis/backdrop_margin_group_execution_preregistration.json \
+            Analysis/backdrop_margin_case22_callee_preregistration.json \
+            --output backdrop-margin-case22-callee/case22-callee-validation.json
+
+      - name: Upload complete case-22 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-backdrop-margin-case22-callee-${{ github.run_id }}
+          path: backdrop-margin-case22-callee
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce the case-22 diagnostic gate
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s backdrop-margin-case22-callee/case22-callee-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "backdrop-margin-case22-callee/"
+                  "case22-callee-validation.json"
+              ).read_text(encoding="utf-8")
+          )
+          execution = result.get("case22Execution", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get("backdropMarginCase22CalleeValidationSchemaVersion")
+                  != 1
+              or result.get("conclusion") != "success"
+              or execution.get("selectedInvocationIndex") != 20
+              or execution.get("targetModuleOffset") != 0x76BC54
+              or execution.get("targetSymbolByteCount", 0) < 4
+              or execution.get("instructionStateCount", 0) < 1
+              or execution.get("completeExecutionChain") is not True
+              or sealed.get("completeCase22TargetCodeCaptured") is not True
+              or sealed.get(
+                  "completeSelectedCase22InstructionTraceCaptured"
+              ) is not True
+              or sealed.get("publicInputMarginLawDecoded") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("case-22 callee diagnostic gate differs")
+          PY
