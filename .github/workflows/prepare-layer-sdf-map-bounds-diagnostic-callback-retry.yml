@@ -1,0 +1,190 @@
+name: Retry regular-material SDF map-bounds callbacks
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: prepare-layer-sdf-map-bounds-diagnostic-callback-retry-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regular-sdf-map-bounds-callback-retry:
+    name: regular-light-materialize-top-level-callback-forwarding
+    runs-on: macos-26
+    timeout-minutes: 180
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-800-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_MASK_CAPTURE_MODE: selected
+      LG_PREPARE_LAYER_MASK_INVENTORY_VALIDATION: >-
+        Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-sdf-map-bounds-callback-retry/prepare-layer-sdf-map-bounds-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen callback-retry contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-sdf-map-bounds-callback-retry
+          set -o pipefail
+          for pattern in \
+            test_capture_prepare_layer_crop_transfer_lldb_source.py \
+            test_validate_prepare_layer_crop_transfer.py \
+            test_capture_prepare_layer_crop_union_operand_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py \
+            test_capture_prepare_layer_mask_instruction_trace_lldb_source.py \
+            test_capture_prepare_layer_mask_inventory_calibration_lldb_source.py \
+            test_validate_prepare_layer_mask_instruction_inventory.py \
+            test_capture_prepare_layer_crop_producer_callee_lldb_source.py \
+            test_validate_prepare_layer_crop_producer_callee.py \
+            test_capture_prepare_layer_filter_map_bounds_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds.py \
+            test_capture_prepare_layer_filter_map_bounds_regular_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds_regular_diagnostic.py \
+            test_capture_prepare_layer_sdf_map_bounds_diagnostic_lldb_source.py \
+            test_validate_prepare_layer_sdf_map_bounds_diagnostic.py \
+            test_dynamic_allocation_prepare_layer_sdf_map_bounds_diagnostic_preregistration.py \
+            test_dynamic_allocation_prepare_layer_sdf_map_bounds_diagnostic_null_result.py \
+            test_capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb_source.py \
+            test_dynamic_allocation_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_preregistration.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a transition-sdf-map-bounds-callback-retry/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-sdf-map-bounds-callback-retry/MatrixBridge.o 2>&1 |
+            tee transition-sdf-map-bounds-callback-retry/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-sdf-map-bounds-callback-retry/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-sdf-map-bounds-callback-retry/build.log
+
+      - name: Capture SDF execution with top-level callback forwarding
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-sdf-map-bounds-callback-retry/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-sdf-map-bounds-callback-retry/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb.trace_selected_sdf_filter_map_bounds()' \
+            -o 'script capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-sdf-map-bounds-callback-retry \
+            > transition-sdf-map-bounds-callback-retry/lldb-sdf-map-bounds.log 2>&1
+
+      - name: Validate callback-retry SDF diagnostic
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_sdf_map_bounds_diagnostic.py \
+            transition-sdf-map-bounds-callback-retry/prepare-layer-sdf-map-bounds-trace.json \
+            transition-sdf-map-bounds-callback-retry/transition-timeline.json \
+            Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json \
+            --output transition-sdf-map-bounds-callback-retry/sdf-map-bounds-validation.json
+
+      - name: Upload callback-retry SDF evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-prepare-layer-sdf-map-bounds-callback-retry-${{ github.run_id }}
+          path: transition-sdf-map-bounds-callback-retry
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce callback-retry SDF diagnostic
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s transition-sdf-map-bounds-callback-retry/sdf-map-bounds-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "transition-sdf-map-bounds-callback-retry/"
+                  "sdf-map-bounds-validation.json"
+              ).read_text(encoding="utf-8")
+          )
+          sdf = result.get("sdf", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get(
+                  "prepareLayerSDFMapBoundsDiagnosticValidationSchemaVersion"
+              ) != 1
+              or result.get("conclusion") != "success"
+              or sdf.get("relativeToPrepareLayer") != -56012
+              or sdf.get("symbolByteCount") != 160
+              or not isinstance(sdf.get("discoveredCodeSHA256"), str)
+              or len(sdf.get("discoveredCodeSHA256")) != 64
+              or sdf.get("instructionCount", 0) <= 0
+              or sdf.get("changedQwordOffsets") != [0, 8, 16, 24]
+              or sdf.get("completeInstructionChainValidated") is not True
+              or sdf.get("cropValuesUsedForSelection") is not False
+              or sdf.get("outputValuesUsedForSelection") is not False
+              or sealed.get("sdfMapBoundsDiagnosticPassed") is not True
+              or sealed.get("sdfCodeHashProspectivelyFrozen") is not False
+              or sealed.get("completeProfileMatrixPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("callback-retry SDF diagnostic differs")
+          PY

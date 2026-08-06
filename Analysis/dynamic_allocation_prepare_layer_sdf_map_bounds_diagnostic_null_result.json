@@ -1,0 +1,50 @@
+{
+  "prepareLayerSDFMapBoundsDiagnosticNullResultSchemaVersion": 1,
+  "classification": "immutable null result: the first SDF diagnostic command-script module nested the already callback-forwarding regular adapter but did not expose those inherited callback names from LLDB's top-level imported module, so execution stopped at the initial prepare_layer entry before the structural selector or any SDF instruction ran",
+  "runID": 31077148370,
+  "headSHA": "a5334f79d287db504304f6891164622a010725df",
+  "workflow": ".github/workflows/prepare-layer-sdf-map-bounds-diagnostic.yml",
+  "workflowConclusion": "failure",
+  "jobID": 92537561367,
+  "jobConclusion": "failure",
+  "artifact": {
+    "id": 8958020650,
+    "name": "liquid-glass-prepare-layer-sdf-map-bounds-31077148370",
+    "sizeBytes": 90772783,
+    "digest": "sha256:0cde26f28c9800f844def31c3e4bd8cbcd211544c95711babbe8259d96da92f5"
+  },
+  "retainedFiles": {
+    "traceSHA256": "410c747e922a880674bb50e2fb53f84ea4e9e601a4febd645b64e2b0032c8ad1",
+    "timelineSHA256": "feb9ddd2caf3f17ed5a4e96f8baccb842e8953f59036beadce3563fcd617e46a",
+    "lldbLogSHA256": "33cc37c18fe2835d87afd3ec5a9b941610a5a86595096eeb58473537a93189b2"
+  },
+  "observedFailure": {
+    "processStoppedAt": "prepare_layer+0",
+    "baseStatusBeforeFinalization": "initialized",
+    "filterStatusBeforeFinalization": "filter-map-bounds-instruction-trace-failed",
+    "sdfStatusBeforeFinalization": "initialized",
+    "message": "structurally selected mask call was not reached",
+    "callerContinuationStateCount": 0,
+    "dynamicDispatchCount": 0,
+    "filterInstructionStateCount": 0,
+    "sdfInstructionStateCount": 0,
+    "sdfOpaqueCalleeBoundaryCount": 0,
+    "targetCodeCaptured": false,
+    "cropOrOutputValuesReadForSelection": false
+  },
+  "rootCause": {
+    "newBreakpointRequired": false,
+    "selectorReached": false,
+    "captureRuleExercised": false,
+    "scientificHypothesisTested": false,
+    "description": "The directly imported command-script module was capture_prepare_layer_sdf_map_bounds_diagnostic_lldb, while inherited breakpoint callbacks were rebound to functions owned by its nested regular adapter. LLDB stopped without invoking those nested callback names. The established nested-adapter correction is to forward every inherited callback from the directly imported top-level module and rebind dynamically created callbacks after each prepare_layer entry."
+  },
+  "sealedConclusion": {
+    "nullRun": true,
+    "sdfCodeCaptured": false,
+    "sdfArithmeticDiagnosed": false,
+    "completeProfileMatrixPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

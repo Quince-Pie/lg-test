@@ -1,0 +1,129 @@
+{
+  "prepareLayerSDFMapBoundsDiagnosticCallbackRetryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T06:31:30Z",
+  "classification": "prospective output-blind callback-visibility retry of the unchanged SDFOp instruction diagnostic; the first run's pre-selector null outcome, exact top-level forwarding correction, frozen selector and capture implementation, acceptance boundary, and non-parity authority are committed before redispatch",
+  "baselineCommit": "a5334f79d287db504304f6891164622a010725df",
+  "priorNullRun": {
+    "runID": 31077148370,
+    "headSHA": "a5334f79d287db504304f6891164622a010725df",
+    "workflowConclusion": "failure",
+    "artifactID": 8958020650,
+    "artifactDigest": "sha256:0cde26f28c9800f844def31c3e4bd8cbcd211544c95711babbe8259d96da92f5",
+    "traceSHA256": "410c747e922a880674bb50e2fb53f84ea4e9e601a4febd645b64e2b0032c8ad1",
+    "processStoppedAt": "prepare_layer+0",
+    "message": "structurally selected mask call was not reached",
+    "dynamicDispatchCount": 0,
+    "sdfInstructionStateCount": 0,
+    "sdfCodeCaptured": false,
+    "selectorReached": false,
+    "captureRuleExercised": false,
+    "scientificHypothesisTested": false,
+    "cropOrOutputValuesReadForSelection": false,
+    "liquidGlassParityEstablished": false
+  },
+  "frozenCorrection": {
+    "directlyImportedModule": "Analysis/capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb.py",
+    "nestedFrozenCapture": "Analysis/capture_prepare_layer_sdf_map_bounds_diagnostic_lldb.py",
+    "callbacksForwarded": [
+      "prepare_layer_entry",
+      "crop_transfer_marker",
+      "crop_union_call",
+      "crop_union_return",
+      "nested_crop_store",
+      "prepare_layer_mask_entry"
+    ],
+    "dynamicCallbacksReboundAfterPrepareEntry": true,
+    "newBreakpointAdded": false,
+    "newMemoryReadAdded": false,
+    "newSteppingRuleAdded": false,
+    "selectorChanged": false,
+    "captureRuleChanged": false,
+    "validatorChanged": false,
+    "timelineChanged": false,
+    "cropOrOutputValuesReadForSelection": false
+  },
+  "unchangedDiagnostic": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-800-center",
+    "backingScaleFactor": 1,
+    "selectedSampleIndex": 2,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "dynamicDispatchOffset": 10340,
+    "dynamicDispatchOrdinal": 2,
+    "sdfRelativeToPrepareLayer": -56012,
+    "sdfSymbolByteCount": 160,
+    "sdfCodeSHA256": null,
+    "maximumInstructionCount": 256,
+    "maximumOpaqueCalleeCount": 64
+  },
+  "acceptance": {
+    "jobCount": 1,
+    "zeroCaptureFailuresRequired": true,
+    "existingRegularFilterValidatorMustPassUnchanged": true,
+    "completeSDFSymbolBytesRequired": true,
+    "internallyConsistentDiscoveredCodeSHA256Required": true,
+    "completeExecutedSDFInstructionChainRequired": true,
+    "everyInstructionMustMatchCapturedCodeBytes": true,
+    "everyExecutedOpaqueCalleeMustRetainCompleteInternallyHashedSymbolBytes": true,
+    "instructionAndOpaqueCalleeEventCoverageMustBeComplete": true,
+    "entryToReturnOutputAndRoleChainMustBeBitExact": true,
+    "syntheticOpaqueBoundaryMustMatchTraceEndpointsBitForBit": true,
+    "changedRectangleQwordOffsetsMustEqual": [0, 8, 16, 24],
+    "sdfArithmeticMayBeDiagnosed": true,
+    "sdfCodeIdentityMayBeCalledProspectivelyFrozen": false,
+    "completeProfileTransferMayBeClaimed": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "productAuthority": {
+    "callbackVisibilityCorrectionMayBeClaimed": true,
+    "sdfInstructionDiagnosticMayBeClaimed": true,
+    "sdfUnchangedRepeatMayBeClaimed": false,
+    "completeFilterOpCropProfileTransferMayBeClaimed": false,
+    "opticalMaterialAppearanceTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "independentWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb.py",
+        "sha256": "c79736aa152ebf1825f5b77ab2fed51f3438168f711a59af49205b6e237d5e68"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb_source.py",
+        "sha256": "c704b8f1df4533de2de724c61cd7536949cf948287dd1e1747a831e0b8d22247"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-sdf-map-bounds-diagnostic-callback-retry.yml",
+        "sha256": "7ff26db07e93419a211ef172acd234c6a60b607b1b4090bb43b02e8c8b535cfb"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_sdf_map_bounds_diagnostic_null_result.json",
+        "sha256": "f3c27fd87921d37a7b56d3ac331d112f78838de054a0c5ca3bbd1ef3c6589fe6"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_sdf_map_bounds_diagnostic_null_result.py",
+        "sha256": "1d6090b06efe7b42094ce8e1b6905b781b14b7946e62b4f31df0473da0cce9f4"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_sdf_map_bounds_diagnostic_lldb.py",
+        "sha256": "a9c35bfe48a3547bfb428022bb2d2a6151e11c33155d31a5748a94e1237424e0"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_sdf_map_bounds_diagnostic.py",
+        "sha256": "4609ed776d8b8976a28da94eef8df70cc0a649e8162d3d18ca7028e0c415bd0d"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}
