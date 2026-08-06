@@ -1,0 +1,136 @@
+{
+  "backdropMarginCase22ProviderObjectMatrixLocalMacOSPreregistrationSchemaVersion": 1,
+  "classification": "prospectively frozen output-blind capture of every live provider object on the exact Group.margin case-22 path in one already-opened local transition; useful for internal field covariance and branch discovery, but not a fresh public-input transfer case",
+  "frozenAtUTC": "2026-08-06",
+  "host": {
+    "sshTarget": "quince@10.0.41.19",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "architecture": "arm64",
+    "hardware": "Apple M1 Max",
+    "display": "built-in Retina 3456x2234 physical / 1728x1117 logical",
+    "windowBackingScaleFactor": 2,
+    "developerModeEnabled": true,
+    "swiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "designLibraryUUID": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "profile": {
+    "material": "regular",
+    "appearance": "light",
+    "geometry": "circle-127-center",
+    "direction": "materialize",
+    "carrier": "normal SwiftUI transition timeline",
+    "githubActionsRequired": false
+  },
+  "binary": {
+    "pathOnHost": "/Users/quince/lg-test/local-case22-field-build/glass-transition-introspect",
+    "sha256": "0064fa35159b0d4872370d54528742a93e41662110e3d5456cf3f9e9e234dcb8",
+    "sourceSHA256": "0a958523aadac6154cc1afe0fb9809de5c9cf33101a1ff3d60122fe362fa2202",
+    "fieldProbeEnvironmentDisabled": true,
+    "buildUsesNixDevelop": true,
+    "nativeAppleToolPathsExplicit": true,
+    "nixStorePathEmbeddedInCommand": false
+  },
+  "antecedentEvidence": {
+    "selectedProviderAnalysis": {
+      "path": "Analysis/backdrop_margin_case22_provider_local_macos_26_6_1_analysis.json",
+      "sha256": "c1c1b1f3024432d968eede7335153e99da5227b1ee18c335b09097f083e2b6dc",
+      "selectedInvocationCount": 1,
+      "selectedProviderObjectOffsetFromWrapper": 16,
+      "authority": "exact arithmetic for one retrospectively selected call only"
+    },
+    "copiedFilterInterventionResult": {
+      "path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_retry2_result.json",
+      "sha256": "0381ea6023d63f17a0fd62e021891332927341b60bacfeecffa5a42d25af1464",
+      "closedIntervalCount": 23,
+      "providerCallCount": 0,
+      "captureContractPassed": false,
+      "conclusion": "the provider must be observed upstream during live SwiftUI state construction rather than after copied-filter KVC mutation"
+    }
+  },
+  "symbols": {
+    "group": {
+      "module": "SwiftUICore",
+      "moduleOffset": 3610064,
+      "function": "SwiftUI.SDFStyle.Group.margin.getter : CoreGraphics.CGFloat",
+      "byteCount": 732,
+      "codeSHA256": "5414dac1e2dce7753af9afe072ceb3b7f938ec894df81bd621866f50d03b015d",
+      "case22CallOffset": 616,
+      "case22ReturnOffset": 620
+    },
+    "wrapper": {
+      "module": "SwiftUICore",
+      "moduleOffset": 7781460,
+      "function": "SwiftUI._AnyCAFilterProvider.sdfBackdropMargin.getter : CoreGraphics.CGFloat",
+      "byteCount": 116,
+      "codeSHA256": "922147f9c8b9cecdc273065e6677312965449069e4cf076e65daa1aba0a9d0ee",
+      "returnOffset": 104
+    },
+    "provider": {
+      "module": "DesignLibrary",
+      "moduleOffset": 749748,
+      "function": "___lldb_unnamed_symbol_2409180b4",
+      "byteCount": 984,
+      "codeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+      "objectByteCount": 384
+    }
+  },
+  "captureContract": {
+    "selection": "every structurally selected Group.margin case-22 indirect call at exact offset 0x268 in exact source order",
+    "requireExactGroupWrapperAndProviderCode": true,
+    "requireAuthenticatedIndirectTargetEqualsWrapper": true,
+    "requireProviderEntryObjectEqualsWrapperSelfPlus16": true,
+    "requireExact384ByteObjectAtEntryAndReturn": true,
+    "requireProviderObjectUnchangedByCall": true,
+    "requireExactBinary64ProviderReturn": true,
+    "requireProviderReturnEqualsGroupReturnBitwise": true,
+    "requireEverySelectedCase22CallToEnterAndReturn": true,
+    "requireAtLeastTwoDistinctProviderObjectsOrReturnsForCovarianceAuthority": true,
+    "maximumCallCount": 512,
+    "capturedObjectUsedForRuntimeSelection": false,
+    "capturedReturnUsedForRuntimeSelection": false,
+    "capturedMarginUsedForRuntimeSelection": false,
+    "capturedCropUsedForRuntimeSelection": false,
+    "capturedImageUsedForRuntimeSelection": false,
+    "capturedPixelUsedForRuntimeSelection": false,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "files": [
+      {"path": "Sources/GlassIntrospect/main.swift", "sha256": "0a958523aadac6154cc1afe0fb9809de5c9cf33101a1ff3d60122fe362fa2202"},
+      {"path": "Analysis/capture_backdrop_margin_group_execution_lldb.py", "sha256": "718075227f950e75757987225f0c5e0a9a3c64aff69a5086a4a84face45f8ada"},
+      {"path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py", "sha256": "6562cc403d46d84774d1eb1ee1cc07f0c61b1dfa7ea622eeb770e204e5d47780"},
+      {"path": "Analysis/capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb.py", "sha256": "964b03394b837e3d0e0f312a56f593ffdbb7be6c325d98a53d56fbc216efd25b"},
+      {"path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_retry_lldb.py", "sha256": "94085b4473ed0c63a7cc753ac56be67186394c8dba18d74162a09f365d202b1f"},
+      {"path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_local_macos_26_6_1_lldb.py", "sha256": "b7d0f8a9bc70c7b1d3ceb114eed3337fdc2e8411f8cfc45592c3972cef00fa82"},
+      {"path": "Analysis/test_capture_backdrop_margin_case22_provider_object_matrix_local_macos_26_6_1_lldb_source.py", "sha256": "a6454efbd70612261b08f580ffd14c499f01e28ccf69d57ff14d849c0f2914f2"}
+    ]
+  },
+  "unknownBeforeDispatch": {
+    "selectedGroupInvocationCount": null,
+    "providerCallCount": null,
+    "providerObjectAddressByCall": null,
+    "providerObjectBytesByCall": null,
+    "providerReturnWordsByCall": null,
+    "distinctProviderObjectCount": null,
+    "distinctProviderReturnCount": null,
+    "varyingProviderObjectOffsets": null,
+    "objectOffsetCovarianceWithReturn": null,
+    "branchRegimeByCall": null,
+    "matrixConclusion": null
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "authorityOnPass": {
+    "exactAllLiveCase22ProviderObjectsForThisOpenedProfile": true,
+    "exactObjectOffsetAndReturnCovarianceForThisOpenedProfile": true,
+    "completeFiniteProviderLaw": false,
+    "unobservedProviderBranches": false,
+    "publicSwiftUIGlassInputLaw": false,
+    "freshProfileTransfer": false,
+    "physicalOutputTransfer": false,
+    "independentWalleZeroByteFrameParity": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

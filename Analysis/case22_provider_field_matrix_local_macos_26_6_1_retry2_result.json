@@ -1,0 +1,44 @@
+{
+  "application": {
+    "allRequestedValuesMatchFrozenRawWords": true,
+    "executedInterventionCount": 23,
+    "interventionCount": 23
+  },
+  "captureContractPassed": false,
+  "case22ProviderFieldMatrixLocalMacOSRetry2ValidationSchemaVersion": 1,
+  "classification": "exact validation of a prospectively frozen intervention run whose application and marker transport passed but whose provider-call requirement failed",
+  "conclusion": "copied real glassBackground filters render after KVC intervention without re-entering SwiftUI's sdfBackdropMargin provider; provider construction or margin materialization is upstream of these CARenderer brackets",
+  "failedRequirement": "requireAtLeastOneProviderCallPerInterval",
+  "fieldMappingAuthority": false,
+  "inputs": {
+    "applicationReport": {
+      "path": "../artifacts/local-case22-field-matrix-639bf03-retry2-run1/case22-provider-field-probe.json",
+      "sha256": "f457e74a8e179166c13690c45cc73920f50f5a8d1e68aea0dffe617341b043f9"
+    },
+    "basePreregistration": {
+      "path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_preregistration.json",
+      "sha256": "57a7039661a966c177ba2f923051d095070e260b514623ad1ccb2b93759d50e0"
+    },
+    "retry2Preregistration": {
+      "path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_retry2_preregistration.json",
+      "sha256": "267356b525e41b4360a7f9b9bc9cf87a3e47582c65ba74c0c4644670d107c53e"
+    },
+    "retryPreregistration": {
+      "path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_retry_preregistration.json",
+      "sha256": "22ebed82398ad37311f0af8be0e15087301ca2e1a193f4d1ff4a3e4da17c39d8"
+    },
+    "trace": {
+      "path": "../artifacts/local-case22-field-matrix-639bf03-retry2-run1/case22-provider-field-trace.json",
+      "sha256": "f38bd2c049aeb917de1ef2d2430dee333a78ab745421d4e42f970779b377bdf8"
+    }
+  },
+  "productParityAuthority": false,
+  "trace": {
+    "closedIntervalCount": 23,
+    "exactWrapperAndProviderCodeAuthenticated": true,
+    "failureCount": 0,
+    "intervalCount": 23,
+    "markerEventCount": 46,
+    "providerCallCount": 0
+  }
+}

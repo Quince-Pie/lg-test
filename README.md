@@ -7855,3 +7855,63 @@ case. The production shader remains untouched at SHA-256
 Tracy, `amdgpu_top`, VRAM reduction, throughput, and latency optimization remain
 downstream of the immutable zero-byte quality gate so an optimization can
 never buy speed by degrading the shader.
+
+### Copied-filter matrix result and live provider-object successor
+
+The first controlled field matrix did not map any provider field. It produced
+two distinct harness failures before the real retry, and both remain preserved
+as non-authoritative evidence. Run `local-case22-field-matrix-87b5f7d-run1`
+used the historical CI SwiftUICore UUID inside one reused helper and therefore
+failed before opening an interval. Run
+`local-case22-field-matrix-5b3cf81-retry1` created the marker breakpoint but
+stopped at its first hit: LLDB exposes callback names through the directly
+imported script module, not a dependency-only module. The second retry exports
+the unchanged callbacks through that direct namespace; its preflight showed an
+explicit Python command on breakpoint 1 before Apple execution.
+
+Commit `639bf03` then completed the prospectively frozen 23-case matrix on the
+local Retina host. The application executed all 23 `CARenderer` interventions,
+and every requested KVC value matches its preregistered binary32 or two-lane
+binary64 word. The LLDB trace authenticated the exact SwiftUICore wrapper and
+DesignLibrary provider code, closed all 23 intervals in source order, retained
+all 46 before/after marker events, and recorded zero failures. It also recorded
+**zero provider calls**. The application-report and trace SHA-256 values are
+respectively
+`f457e74a8e179166c13690c45cc73920f50f5a8d1e68aea0dffe617341b043f9`
+and
+`f38bd2c049aeb917de1ef2d2430dee333a78ab745421d4e42f970779b377bdf8`.
+
+That zero is a failed experimental requirement, not a zero-valued optical
+result. The copied real `glassBackground` filters render successfully after KVC
+mutation without re-entering SwiftUI's `sdfBackdropMargin` provider. Provider
+construction or margin materialization is therefore upstream of the copied
+filter's later `CARenderer` use, so these interventions have no provider-field
+mapping authority. The exact negative validator is
+`Analysis/validate_case22_provider_field_matrix_local_macos_26_6_1_retry2.py`
+at SHA-256
+`246593cc200d52c4738b6dd4ccf4ae71fc96a0ba3df1996c4df49a7aa1729220`;
+its canonical result is
+`Analysis/case22_provider_field_matrix_local_macos_26_6_1_retry2_result.json`
+at SHA-256
+`0381ea6023d63f17a0fd62e021891332927341b60bacfeecffa5a42d25af1464`.
+
+The successor moves observation to the live SwiftUI construction path instead
+of changing the frozen interventions after the provider boundary.
+`Analysis/backdrop_margin_case22_provider_object_matrix_local_macos_26_6_1_preregistration.json`
+freezes every structurally selected `Group.margin` case-22 call in the already
+opened regular/light circle-127 materialize transition. The capture authenticates
+the exact Group, wrapper, and provider code; requires the provider's object
+pointer to equal wrapper self plus `0x10`; snapshots all 384 bytes at entry and
+return; and requires the provider binary64 return to equal the Group case-22
+return bit for bit. Its preregistration and LLDB adapter SHA-256 values are
+`8da5d1ec6536410aec5945dbb75bc74b1c02de02ea1ebd380b8bd63156df0474`
+and
+`b7d0f8a9bc70c7b1d3ceb114eed3337fdc2e8411f8cfc45592c3972cef00fa82`.
+No captured object byte or return participates in selection.
+
+A pass may expose which internal offsets vary across the live transition and
+which exact words covary with each return. It still cannot establish a public
+input law, unopened branch coverage, physical Retina/compositor transfer, or a
+real Walle-versus-Apple zero-byte frame. Formal parity therefore remains 0/1,
+and the production shader remains unchanged at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
