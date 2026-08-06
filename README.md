@@ -6666,13 +6666,14 @@ mov x2, x22
 bl  CA::Render::Updater::prepare_layer_mask(...)
 ```
 
-The 2,176-byte `prepare_layer_mask` helper writes the exact producer
-destination at role `+0x290`, but the old trace deliberately treated its body
-as opaque. A prospectively frozen, bounded helper-body trace must now retain
-its code hash, entry operands, exact instruction/register sequence, opaque
-callee boundaries, and returned output for a structurally selected call. That
-trace should resolve the remaining transform/union/intersection order without
-guessing another near-equivalent formula.
+The 2,176-byte `prepare_layer_mask` helper receives the exact candidate
+destination at role `+0x290`, but this trace deliberately treated its body as
+opaque. At this point in the chronology it was therefore only an ownership
+hypothesis. A prospectively frozen, bounded helper-body trace must retain its
+code hash, entry operands, exact instruction/register sequence, opaque callee
+boundaries, and returned output for a structurally selected call. That trace
+can accept or falsify the helper hypothesis without guessing another
+near-equivalent formula.
 
 Even an exact helper replay closes only clear/light/materialize at 1x. Full
 observational parity still requires frozen transfer gates for the remaining
@@ -6800,3 +6801,80 @@ capture the complete execution, and return the independent producer rectangle
 bit for bit. A pass will finally expose the true producer path for semantic
 decoding, but will still require a frozen decoder and unchanged blind repeat
 before exact producer arithmetic or any production change can be claimed.
+
+Run `31065907932`, from selected-trace commit `5fc325c`, proves the structural
+mapping and falsifies the helper ownership hypothesis. The selector reaches
+marker interval two, qualified ordinal 14, record 25, recursion depth seven,
+and caller role `6171882864`. The independently opened sample-two store is
+store 14 at the same depth and the same role, so the role delta is exactly
+zero. No crop or output value participates in that selection.
+
+The complete helper execution contains 52 instructions, no opaque callee, no
+trace failure, and a normal return. Its first rectangle is all-zero bits both
+at entry and return, while the independent producer is
+
+```
+ffffffff85007e40c0ffff7f818839c03033331dcd8e8140feffff0b01cc8140
+```
+
+or binary64
+
+```
+[480.03271484374994,
+ -25.533226013183366,
+ 561.8501533508297,
+ 569.5005111694334]
+```
+
+The helper changes only output qwords 112 and 120 at helper `+0xb4`
+(`str q0, [x20,#0x70]`) and qword 136 at `+0xbc`
+(`str q0, [x20,#0x80]`). It does not write qwords 0 through 24 and is therefore
+not the first-rectangle owner. The immutable opening is
+`Analysis/dynamic_allocation_prepare_layer_mask_inventory_selected_trace_result.json`.
+The workflow is correctly red because the prospective bitwise ownership gate
+failed; an uploaded artifact and a non-fatal validation step are not a pass.
+
+Frozen `prepare_layer` code then reduces the next search to one direct call,
+not another geometry matrix. The helper returns at `prepare_layer+0xd94`.
+Retained global-state byte 49 is zero, so the `+0xdac` branch reaches `+0xf28`,
+loads role `+0x1e0`, copies it to role `+0x280`, and reaches:
+
+```
+prepare_layer+0xf4c  add x1, x19, #0x420
+prepare_layer+0xf50  add x3, x19, #0x290
+prepare_layer+0xf54  mov x0, x21
+prepare_layer+0xf58  mov x2, x23
+prepare_layer+0xf5c  bl  prepare_layer-1206100
+prepare_layer+0xf60  ...
+```
+
+The call instruction is exactly `5462fb97` in little-endian byte order. Its
+target's identity and semantics are deliberately unknown before capture. The
+prospective trace in
+`Analysis/capture_prepare_layer_crop_producer_callee_lldb.py`, strict validator
+in `Analysis/validate_prepare_layer_crop_producer_callee.py`, preregistration
+in
+`Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_preregistration.json`,
+and workflow `.github/workflows/prepare-layer-crop-producer-callee.yml` reuse
+the output-blind ordinal-14 selector, follow the exact caller, retain the
+callee's complete code and instruction-level register/memory chain, and test
+its returned first rectangle against the independent producer bit for bit.
+
+Liquid Glass parity is still **not established**. The remaining gates are:
+
+1. establish the true first-rectangle owner and decode its exact arithmetic;
+2. freeze that decoder, pass an unchanged blind repeat, and make every crop
+   holdout bit-exact (the integer boundary is 512/512, while the best current
+   floating replay is only 211/256 rectangles);
+3. pass material, appearance, and direction transfer;
+4. pass physical Retina 2x and color-space/pixel-format transfer;
+5. produce independent Walle frames with zero unequal bytes over the declared
+   parity domain; and
+6. only then authorize a production renderer change. Tracy, VRAM, throughput,
+   and latency optimization follows under those immutable image gates.
+
+No fixed CI-run count is scientifically defensible before the `+0xf5c` callee
+capture returns: a bitwise match establishes ownership in this run; a mismatch
+still provides the complete instruction/mutation chain needed to choose the
+next structural owner. The production shader remains untouched at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.

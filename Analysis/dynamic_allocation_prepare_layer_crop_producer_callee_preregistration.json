@@ -1,0 +1,154 @@
+{
+  "prepareLayerCropProducerCalleePreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T03:06:23Z",
+  "classification": "prospective output-blind first-run calibration of the exact second direct callee reached by the structurally selected ordinal-fourteen prepare_layer caller; callee identity, complete code, execution, and returned destination are unknown before dispatch, and all semantic, repeat, production, and parity authority remains sealed",
+  "antecedents": {
+    "selectedHelperResult": {
+      "path": "Analysis/dynamic_allocation_prepare_layer_mask_inventory_selected_trace_result.json",
+      "sha256": "af7a6380a4eb6ffdd00d54fa800c426cf49980dbea38eb8dd02cfa832b9ad4ea",
+      "runID": 31065907932,
+      "markerInterval": 2,
+      "qualifiedHelperOrdinal": 14,
+      "callerRoleBase": 6171882864,
+      "prepareRecursionDepth": 7,
+      "structuralRoleMappingPassed": true,
+      "firstRectangleAtHelperReturnHex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "prepareLayerMaskFirstRectangleOwner": false
+    },
+    "completeInventory": {
+      "path": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json",
+      "sha256": "822f89af42d1d4b4982278582eaaf52f386bd352eb2bea78abb4d877813ef375",
+      "selectionUsesOnlyEventOrderRoleAndDepth": true,
+      "cropOrOutputValuesUsedForSelection": false
+    },
+    "prepareLayerCode": {
+      "path": "Analysis/dynamic_allocation_prepare_layer_frame_writer_result.json",
+      "sha256": "f855f60b0881961fe697063e895ea32028c195283ea8b207dbcfbe81bdf46ce1",
+      "sourceRunID": 31022198697,
+      "symbolByteCount": 40128,
+      "fullCodeSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+      "sameCodeSHA256ObservedInSelectedRun": true
+    }
+  },
+  "fixedStructuralTarget": {
+    "geometry": "circle-1025-center",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "callerContinuationStartOffset": 3476,
+    "globalStateByte49AtSelectedHelperEntry": 0,
+    "branchOffset": 3500,
+    "branchRawLittleEndianHex": "e10b0054",
+    "branchDestinationOffset": 3880,
+    "sourceBoundsLoadOffset": 3880,
+    "sourceBoundsLoadRawLittleEndianHex": "607ac03d",
+    "copiedBoundsStoreOffset": 3884,
+    "copiedBoundsStoreRawLittleEndianHex": "60a2803d",
+    "calleeCallOffset": 3932,
+    "calleeReturnOffset": 3936,
+    "calleeEntryRelativeToPrepareLayer": -1206100,
+    "calleeCallRawLittleEndianHex": "5462fb97",
+    "callerLocalStateOffset": 1056,
+    "callerOutputOffset": 656,
+    "callArgumentRule": "x0 equals the selected global state, x1 equals caller role plus 0x420, x2 is nonzero, and x3 equals caller role plus 0x290",
+    "calleeIdentityKnownBeforeDispatch": false,
+    "calleeCodeSHA256KnownBeforeDispatch": false,
+    "calleeReturnBytesKnownBeforeDispatch": false,
+    "selectionMayChangeAfterDispatch": false
+  },
+  "captureInvariants": {
+    "newBreakpointAdded": false,
+    "hardwareWatchpointUsed": false,
+    "debuggerMustBeSynchronous": true,
+    "allInheritedBreakpointsDisabledDuringManualTrace": true,
+    "sameSelectedThreadFrameAndCallerRoleRequired": true,
+    "maximumCallerInstructionCount": 1024,
+    "maximumCalleeInstructionCount": 16384,
+    "maximumOpaqueCalleeCount": 4096,
+    "traceCheckpointInstructionInterval": 128,
+    "traceCheckpointBoundaryInterval": 16,
+    "stackByteCountBeforeAndAfterEachInstruction": 256,
+    "argumentX2ByteCount": 1024,
+    "callerRoleByteCountBeforeAndAfterEachInstruction": 2048,
+    "outputByteCountBeforeAndAfterEachInstruction": 512,
+    "completeScalarAndSIMDRegistersBeforeAndAfterEachInstruction": true,
+    "completeResolvedCalleeSymbolCodeRequired": true,
+    "everyOtherCalleeMustBeAnExplicitStepOutBoundary": true,
+    "cropOrOutputValuesUsedForSelection": false
+  },
+  "acceptance": {
+    "inheritedInventoryTransportMustRevalidateBitForBit": true,
+    "originalSelectedHelperOwnershipFailureMustRevalidateExactly": true,
+    "fixedCallerPathAndRawCallInstructionMustMatch": true,
+    "calleeEntryMustEqualPrepareLayerPlusFixedRelativeOffset": true,
+    "completeCalleeSymbolCodeAndExecutionRequired": true,
+    "allExecutionEventsMustFormAnExactPCAndMemoryChain": true,
+    "returnedFirstRectangleMustMatchIndependentProducerBitForBit": true,
+    "selectedCallerRoleMustEqualIndependentProducerRole": true,
+    "zeroTraceFailuresRequired": true,
+    "normalTargetExitRequired": true,
+    "firstRunMayEstablishCalleeIdentityAndOwnershipOnly": true,
+    "exactCalleeSemanticsMayBeClaimed": false,
+    "unchangedRepeatMayBeClaimed": false,
+    "allCropHoldoutsMayBeClaimed": false,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "endToEndWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_mask_inventory_selected_trace_result.json",
+        "sha256": "af7a6380a4eb6ffdd00d54fa800c426cf49980dbea38eb8dd02cfa832b9ad4ea"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_producer_callee_lldb.py",
+        "sha256": "dca3f544b30db45bad7a6104fa838c5f241e4e869c1f46740afa352174abe40c"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_crop_producer_callee.py",
+        "sha256": "b8af91ae6bc8f137feefb927616cbbd36e4081e0dfdc240079fa7e924bb2046d"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_crop_producer_callee_lldb_source.py",
+        "sha256": "71015963a40c00728c98a65e82a1976e83d68d1172eb7a73e13242a4da0c1568"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_crop_producer_callee.py",
+        "sha256": "97a61f37998ed0f7dbe701ed314752f5ff1e43172420028c43aaf35b244cba76"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_mask_inventory_selected_trace_result.py",
+        "sha256": "45c3be1835e693566c8e7c9d9b660bc346ffa1d2964d982f927ddfe633491143"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_crop_producer_callee_preregistration.py",
+        "sha256": "efa77dd24b70d709f9212cced346c5fc72e71720cbd91e3b219e9718260807e0"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-crop-producer-callee.yml",
+        "sha256": "7bd946137b9e626ae9fda2949272c89dc6a5e236b9b9b15501664408c7acb314"
+      },
+      {
+        "path": "Sources/GlassIntrospect/main.swift",
+        "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}

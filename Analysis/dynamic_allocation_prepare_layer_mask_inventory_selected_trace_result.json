@@ -1,0 +1,114 @@
+{
+  "prepareLayerMaskInventorySelectedTraceResultSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T03:06:23Z",
+  "classification": "immutable retrospective opening of the prospectively selected marker-interval-two ordinal-fourteen prepare_layer_mask trace; the structural role mapping passes, complete helper execution is retained, and first-rectangle ownership is falsified without changing the selector",
+  "run": {
+    "runID": 31065907932,
+    "jobID": 92503464058,
+    "headSHA": "5fc325cef3db62f5ff769e403e30f5053a53cd9c",
+    "workflowConclusion": "failure",
+    "artifactID": 8953887110,
+    "artifactName": "liquid-glass-prepare-layer-mask-selected-trace-31065907932",
+    "artifactSizeBytes": 103694565,
+    "artifactDigest": "sha256:6dba3704a7ba0d49ae020bec4ed8ec42c55010baf73471ee4208ac9ddf43ca0a",
+    "traceSHA256": "c8ee91e4524d3d9a0b5c5e64b3d08d7be09a363535662193c1faa4a6585a703a",
+    "timelineSHA256": "8abdff06c7349fa9cfbbdbc358e0981b568025a3bed02d3a8765fd914344cf30",
+    "originalStrictFailure": "helper output does not match structural producer",
+    "githubStepCheckmarksAreNotTheScientificGate": true
+  },
+  "prospectiveSelectionRevalidated": {
+    "geometry": "circle-1025-center",
+    "markerInterval": 2,
+    "qualifiedHelperOrdinal": 14,
+    "helperRecordIndex": 25,
+    "threadID": 64424509442,
+    "callerRoleBase": 6171882864,
+    "outputAddress": 6171883520,
+    "prepareRecursionDepth": 7,
+    "independentProducerStoreIndex": 14,
+    "independentProducerRoleBase": 6171882864,
+    "independentProducerPrepareRecursionDepth": 7,
+    "callerRoleDelta": 0,
+    "cropValueUsedForSelection": false,
+    "outputValueUsedForSelection": false,
+    "structuralMappingPassed": true
+  },
+  "helperExecution": {
+    "function": "CA::Render::Updater::prepare_layer_mask(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::Updater::LayerShapes const&, CA::Render::Updater::LayerShapes&)",
+    "relativeToPrepareLayer": -1209388,
+    "symbolByteCount": 2176,
+    "codeSHA256": "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c",
+    "instructionStateCount": 52,
+    "opaqueCalleeBoundaryCount": 0,
+    "executionEventCount": 52,
+    "failureCount": 0,
+    "normalReturnObserved": true,
+    "firstRectangleAtEntryHex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "firstRectangleAtReturnHex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "independentProducerHex": "ffffffff85007e40c0ffff7f818839c03033331dcd8e8140feffff0b01cc8140",
+    "independentProducerF64": [
+      480.03271484374994,
+      -25.533226013183366,
+      561.8501533508297,
+      569.5005111694334
+    ],
+    "returnMatchesIndependentProducerBitForBit": false,
+    "changedOutputInstructions": [
+      {
+        "stateIndex": 29,
+        "helperOffset": 180,
+        "rawLittleEndianHex": "801e803d",
+        "mnemonic": "str",
+        "operands": "q0, [x20, #0x70]",
+        "changedOutputQwordOffsets": [112, 120]
+      },
+      {
+        "stateIndex": 31,
+        "helperOffset": 188,
+        "rawLittleEndianHex": "8022803d",
+        "mnemonic": "str",
+        "operands": "q0, [x20, #0x80]",
+        "changedOutputQwordOffsets": [136]
+      }
+    ],
+    "firstRectangleOwner": false
+  },
+  "nextStructuralGate": {
+    "derivation": "frozen prepare_layer code with the same SHA-256 as the selected run is followed from the first helper return at +0xd94; retained global-state byte 49 is zero, so the +0xdac b.ne branch reaches +0xf28 and then the second direct x3=x19+0x290 call at +0xf5c",
+    "prepareLayerFullCodeSHA256": "fe58001369708e0276599f26865be03fdf1dd2348524f92a72c1427be8d1817c",
+    "firstHelperReturnOffset": 3476,
+    "globalStateByte49AtSelectedEntry": 0,
+    "takenBranchOffset": 3500,
+    "takenBranchDestinationOffset": 3880,
+    "sourceBoundsLoadOffset": 3880,
+    "sourceBoundsRoleOffset": 480,
+    "copiedBoundsStoreOffset": 3884,
+    "copiedBoundsRoleOffset": 640,
+    "calleeCallOffset": 3932,
+    "calleeReturnOffset": 3936,
+    "calleeEntryRelativeToPrepareLayer": -1206100,
+    "calleeCallRawLittleEndianHex": "5462fb97",
+    "callArguments": {
+      "x0": "selected global state",
+      "x1": "selected caller role + 0x420",
+      "x2": "nonzero object loaded through x23",
+      "x3": "selected caller role + 0x290"
+    },
+    "calleeIdentityKnownBeforeCapture": false,
+    "calleeSemanticsKnownBeforeCapture": false,
+    "prospectiveOutputBlindTraceRequired": true
+  },
+  "sealedConclusion": {
+    "ordinalFourteenStructuralMappingPassed": true,
+    "prepareLayerMaskFirstRectangleOwnershipFalsified": true,
+    "postMaskSecondCalleeOwnershipEstablished": false,
+    "exactCropProducerSemanticsDecoded": false,
+    "unchangedRepeatPassed": false,
+    "allCropHoldoutsBitExact": false,
+    "materialAppearanceDirectionTransferPassed": false,
+    "physicalRetina2xAndColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
