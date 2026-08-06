@@ -1,0 +1,67 @@
+{
+  "prepareLayerMaskInstructionTraceFailedRunResultSchemaVersion": 1,
+  "classification": "opened technical failure before helper selection; complete inherited crop evidence and helper code identity are retained, but no helper instruction or output was selected and no semantic or parity conclusion follows",
+  "run": {
+    "id": 31063528744,
+    "headSHA": "d54f6cfff553d5e7a5c7198df00b725c58c5acc7",
+    "workflow": ".github/workflows/prepare-layer-mask-instruction-trace.yml",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "failure",
+    "startedAtUtc": "2026-08-06T01:42:59Z",
+    "completedAtUtc": "2026-08-06T01:47:01Z"
+  },
+  "artifact": {
+    "id": 8953061997,
+    "name": "liquid-glass-prepare-layer-mask-instruction-trace-31063528744",
+    "sizeBytes": 103650773,
+    "digest": "sha256:07c0d17afa4ebf2e3f7c174f75714d8ef4d125a4690de828ba224714af6f4d47",
+    "traceSHA256": "e6386f0244d028e2b669fbad5fe03f86448bc45e7aa92c73ad588e52eae7cf5c",
+    "timelineSHA256": "ca69b7574c333ff4d9d30bff97760924156831501da23f970a0d62b470947e9d"
+  },
+  "openedEvidence": {
+    "targetExitedNormally": true,
+    "targetExitStatus": 0,
+    "baseQualifiedMarkerCount": 32,
+    "baseQualifiedUnionRecordCount": 352,
+    "baseQualifiedStoreRecordCount": 352,
+    "helperEntryHitCount": 1,
+    "qualifiedHelperEntryCount": 0,
+    "selectedHelperEntryCount": 0,
+    "helperInstructionStateCount": 0,
+    "helperOpaqueCalleeBoundaryCount": 0,
+    "manualTraceStarted": false,
+    "manualTraceFinished": false,
+    "helperFunction": "CA::Render::Updater::prepare_layer_mask(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::Updater::LayerShapes const&, CA::Render::Updater::LayerShapes&)",
+    "helperRelativeToPrepareLayer": -1209388,
+    "helperSymbolByteCount": 2176,
+    "helperCodeSHA256": "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c",
+    "helperCodeCapturedBeforeFailure": true,
+    "traceFailures": [
+      {
+        "stage": "helper-entry",
+        "message": "module 'capture_prepare_layer_crop_transfer_lldb' has no attribute 'PREPARE_LAYER_FUNCTION'"
+      },
+      {
+        "stage": "manual-trace",
+        "message": "prepare_layer_mask target entry was not reached"
+      }
+    ]
+  },
+  "diagnosis": {
+    "failureClass": "Python module constant ownership",
+    "incorrectReference": "crop_base.PREPARE_LAYER_FUNCTION",
+    "authoritativeReference": "capture_base.PREPARE_LAYER_FUNCTION",
+    "firstFailureOccurredBeforeDirectCallerQualification": true,
+    "firstFailureOccurredBeforeFrozenOrdinalSelection": true,
+    "cropOrOutputValuesUsedForHelperSelection": false,
+    "selectedHelperOutputBytesCaptured": false,
+    "helperInstructionExecutedUnderManualTrace": false,
+    "selectorPassed": null,
+    "selectorFailed": null,
+    "helperOutputCorrelationPassed": null,
+    "exactSemanticsRecovered": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

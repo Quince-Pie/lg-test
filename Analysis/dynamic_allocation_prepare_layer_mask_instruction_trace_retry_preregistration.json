@@ -1,0 +1,175 @@
+{
+  "prepareLayerMaskInstructionTraceRetryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T01:54:19Z",
+  "classification": "prospective namespace-only technical retry of the frozen structurally selected prepare_layer_mask helper-body calibration; failed-run evidence, exact helper code, selector, capture ranges, stepping, validation, and sealed product authority are frozen before dispatch",
+  "failedRun": {
+    "runID": 31063528744,
+    "headSHA": "d54f6cfff553d5e7a5c7198df00b725c58c5acc7",
+    "workflowConclusion": "failure",
+    "artifactID": 8953061997,
+    "artifactDigest": "sha256:07c0d17afa4ebf2e3f7c174f75714d8ef4d125a4690de828ba224714af6f4d47",
+    "traceSHA256": "e6386f0244d028e2b669fbad5fe03f86448bc45e7aa92c73ad588e52eae7cf5c",
+    "timelineSHA256": "ca69b7574c333ff4d9d30bff97760924156831501da23f970a0d62b470947e9d",
+    "failedResult": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_trace_failed_run_result.json",
+    "failedResultSHA256": "60aa511c8d7b18cb312a54b81a32f6bca966acdddb5ad2c2fa0a542492696082",
+    "failureStage": "helper-entry",
+    "failureClass": "Python module constant ownership",
+    "failureMessage": "module 'capture_prepare_layer_crop_transfer_lldb' has no attribute 'PREPARE_LAYER_FUNCTION'",
+    "helperCodeSHA256": "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c",
+    "helperSymbolByteCount": 2176,
+    "helperEntryHitCount": 1,
+    "qualifiedHelperEntryCount": 0,
+    "selectedHelperEntryCount": 0,
+    "helperInstructionStateCount": 0,
+    "selectorOutcome": null,
+    "exactSemanticsRecovered": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  },
+  "originalProspectiveRegistration": {
+    "path": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_trace_preregistration.json",
+    "sha256": "d7d5e0019ffe19ba5b69523b0214066c13e6428dd9b606dcc78a42fff62fdbd3",
+    "runtimeOutcomeFrozenBeforeDispatch": null,
+    "selectorChangedByRetry": false,
+    "captureConfigurationChangedByRetry": false,
+    "acceptanceChangedByRetry": false
+  },
+  "technicalAmendment": {
+    "runtimeAlias": "crop_base.PREPARE_LAYER_FUNCTION = capture_base.PREPARE_LAYER_FUNCTION",
+    "reason": "the authoritative constant is declared by capture_base, while the immutable extension reads it from crop_base at direct-caller qualification and helper return detection",
+    "inheritedCallbacksForwardedAtTopLevel": true,
+    "newBreakpointAdded": false,
+    "newMemoryReadAdded": false,
+    "selectorChanged": false,
+    "captureByteRangeChanged": false,
+    "steppingRuleChanged": false,
+    "acceptanceChanged": false,
+    "cropOrOutputValueReadByAmendment": false,
+    "semanticFormulaAdded": false
+  },
+  "helper": {
+    "function": "CA::Render::Updater::prepare_layer_mask(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::Updater::LayerShapes const&, CA::Render::Updater::LayerShapes&)",
+    "relativeToPrepareLayer": -1209388,
+    "symbolByteCount": 2176,
+    "expectedCodeSHA256": "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c",
+    "codeIdentityOpenedBeforeFailedCallback": true,
+    "callOffset": "0xd90",
+    "callReturnOffset": "0xd94",
+    "callInstructionRawLittleEndianHex": "915ffb97",
+    "callerLocalStateOffset": "0x420",
+    "callerOutputOffset": "0x290"
+  },
+  "selection": {
+    "geometry": "circle-1025-center",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "markerInterval": 2,
+    "publicSampleIndexAfterMarker": 2,
+    "qualifiedHelperOrdinalWithinInterval": 8,
+    "directNormalCallerRequired": true,
+    "requiredX1Relationship": "x1 = x19 + 0x420",
+    "requiredX3Relationship": "x3 = x19 + 0x290",
+    "selectedHelperMustLaterCorrelateToStructuralProducer": true,
+    "cropValueUsed": false,
+    "outputValueUsed": false,
+    "eventCountMayBeChangedAfterCapture": false,
+    "geometrySpecificExceptionUsed": false
+  },
+  "captureInvariants": {
+    "maximumHelperEntryHitCount": 16384,
+    "maximumQualifiedHelperEntryCount": 4096,
+    "maximumHelperInstructionCount": 8192,
+    "maximumOpaqueCalleeCount": 2048,
+    "maximumUnexpectedTerminalStopCount": 8,
+    "stackByteCount": 256,
+    "argumentByteCount": 1024,
+    "callerRoleByteCount": 2048,
+    "outputByteCount": 512,
+    "hardwareWatchpointsUsed": false,
+    "completeScalarAndSIMDRegistersRequired": true,
+    "stackAndOutputBytesBeforeAndAfterEveryInstructionRequired": true,
+    "allOpaqueCalleesMustBeExplicitBoundaries": true
+  },
+  "acceptance": {
+    "knownHelperCodeMustRepassBitForBit": true,
+    "originalProspectiveCropFailureMustRemainPreserved": true,
+    "allInheritedMarkerUnionStoreAndSnapshotGatesMustRepass": true,
+    "originalStructuralSelectorMustPass": true,
+    "completeInstructionSequenceRequired": true,
+    "exactHelperReturnToProducerCorrelationRequired": true,
+    "zeroTraceFailuresRequired": true,
+    "normalTargetExitRequired": true,
+    "exactSemanticsMayBeClaimed": false,
+    "unchangedRepeatMayBeClaimed": false,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "endToEndWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_trace_failed_run_result.json",
+        "sha256": "60aa511c8d7b18cb312a54b81a32f6bca966acdddb5ad2c2fa0a542492696082"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_trace_preregistration.json",
+        "sha256": "d7d5e0019ffe19ba5b69523b0214066c13e6428dd9b606dcc78a42fff62fdbd3"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_mask_instruction_trace_lldb.py",
+        "sha256": "31de1f159556d1fa33986dd5fc2268c787e6cd81d36aab315e8ccfbbd4b188e5"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_mask_instruction_trace.py",
+        "sha256": "e2a02168261bfc7fe1ac923bd6bae7494c410abbaefe6cadf71134746715a11a"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_mask_instruction_trace_lldb_source.py",
+        "sha256": "0936a23b1a0509fe361cf3e65933cc18703b2e7d300ec8f49570066c93719ddf"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-mask-instruction-trace.yml",
+        "sha256": "36be360c9452f7ec8e22d8471a9a20e9fc35d6c9901a3e23f577f6d1861d8a14"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_mask_instruction_trace_retry_lldb.py",
+        "sha256": "9948ddf3131a8869c629989d1ef2d554bc697bfe5cd18f65dac531ee76e5579e"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_mask_instruction_trace_retry_lldb_source.py",
+        "sha256": "11fa8eb64a4df25c5590d0b35a83aefebd600f8037a16c575e3ae00ce4bd6473"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_mask_instruction_trace_retry.py",
+        "sha256": "32a564664ebe7ee5785d29806ed38615d0c6c0254005abd2eec4f41539407deb"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_mask_instruction_trace_retry_preregistration.py",
+        "sha256": "87410102c1e81d7211c19e1410f906ab629c45be57f5292c83897082b8e08cf2"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-mask-instruction-trace-retry.yml",
+        "sha256": "35f71e682b847405f03e277bcb930ebacca5b1a24c30d826dc123e1d8640e1e1"
+      },
+      {
+        "path": "Sources/GlassIntrospect/main.swift",
+        "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}

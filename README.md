@@ -6696,3 +6696,30 @@ values are unavailable to the selector. Because the helper's complete code
 hash has not previously been captured, the first passing run is explicitly a
 semantic calibration; its code and decoded replay must be frozen and pass an
 unchanged repeat before exact producer arithmetic can be claimed.
+
+Run `31063528744`, from commit `d54f6cf`, does **not** produce a helper
+selection or semantic result. Its target exits normally and the inherited
+capture is complete (32 qualified markers, 352 union records, and 352 retained
+stores), while the helper extension captures the exact 2,176-byte function at
+SHA-256
+`f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c`.
+The first helper-entry callback then raises
+`module 'capture_prepare_layer_crop_transfer_lldb' has no attribute
+'PREPARE_LAYER_FUNCTION'`. That occurs before direct-caller qualification,
+the frozen interval/ordinal selector, any instruction step, or any selected
+output snapshot. Therefore the selector outcome is unknown, rather than a
+pass or failure. The opened technical result is frozen in
+`Analysis/dynamic_allocation_prepare_layer_mask_instruction_trace_failed_run_result.json`.
+
+The authoritative constant is owned by the crop-transfer module's
+`capture_base` dependency, but the immutable helper extension reads it from
+`crop_base` in two places. The prospective retry is frozen in
+`Analysis/dynamic_allocation_prepare_layer_mask_instruction_trace_retry_preregistration.json`.
+`Analysis/capture_prepare_layer_mask_instruction_trace_retry_lldb.py` installs
+exactly the missing runtime alias and exposes inherited callbacks through the
+top-level LLDB module. It adds no breakpoint, memory read, selector, capture
+range, stepping rule, formula, or acceptance change. The retry validator also
+requires the code hash opened before the failed callback to match bit for bit.
+Until the retry passes and the instruction sequence is decoded and reproduced
+on an unchanged blind capture, exact producer arithmetic remains open and no
+production shader change is authorized.
