@@ -38,6 +38,7 @@
     "requireProviderEntryObjectEqualsWrapperSelfPlus16": true,
     "requireProviderObjectUnchangedByCall": true,
     "requireProviderReturnEqualsGroupInputBitwise": true,
+    "requireSelectedStageHistoricalReturnReproduction": true,
     "requireTimelineFailedSamples": 0,
     "requireTimelineSampleCount": 33,
     "requireTotalProviderCallCountEqualsSumOfPerCallerCounts": true,
@@ -96,6 +97,7 @@
     "path": "Analysis/backdrop_margin_case22_provider_object_matrix_domain_correction.json"
   },
   "profile": {
+    "LG_GEOMETRY_POLICY": "0",
     "LG_GLASS_APPEARANCE": "light",
     "LG_GLASS_GEOMETRY": "circle-127-center",
     "LG_GLASS_MATERIAL": "regular",
@@ -111,6 +113,16 @@
     "LG_TRANSITION_MATRIX_BASIS": "0",
     "LG_TRANSITION_TIMELINE": "1",
     "LG_TRANSITION_UNIFORMS": "1"
+  },
+  "prospectiveValidator": {
+    "artifactHashesUnknownUntilCapture": true,
+    "capturedOutputMayChangeStructuralAcceptance": false,
+    "path": "Analysis/validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.py",
+    "sha256": "e1c5635605af4dc129bf96c39b4664974f823a90b1d6b173b7e4ff1e27771e42",
+    "sourceTestPath": "Analysis/test_validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_source.py",
+    "sourceTestSHA256": "ac26b59d956517cd8592fd3f61bc2cacd81b3b61f2c4b054f07db084254c4013",
+    "structuralFailuresFailClosed": true,
+    "valueHypothesesReportedAsResults": true
   },
   "runtimeOutcomeFrozenBeforeDispatch": null,
   "sessionStateMotivation": {
@@ -155,6 +167,7 @@
       "capturePath": "Analysis/capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb.py",
       "captureSHA256": "964b03394b837e3d0e0f312a56f593ffdbb7be6c325d98a53d56fbc216efd25b",
       "dispatchRegardlessOfExpectedReturn": true,
+      "expectedReturnRawLittleEndianHex": "0000006002a22a40",
       "purpose": "prospectively isolate unlocked presentation-session transfer with the unchanged historical selector",
       "selectedInvocationIndex": 20,
       "stage": "fixed-selected-reproduction"
@@ -177,6 +190,7 @@
     "providerCallsPerSelectedCaller": null,
     "providerObjectBytesByCall": null,
     "providerReturnWordsByCall": null,
+    "selectedReproductionMatchesHistoricalReturn": null,
     "selectedReproductionObjectBytes": null,
     "selectedReproductionReturn": null,
     "sessionStateCausalConclusion": null

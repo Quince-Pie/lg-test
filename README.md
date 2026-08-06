@@ -8112,8 +8112,20 @@ fixed invocation 20 with the unchanged historical selector, then run the
 complete matrix regardless of that first return. The preregistration is
 `Analysis/backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_preregistration.json`,
 SHA-256
-`28f744a8781116ec90cbd4d2d5a05dd15e70b956cbf49062f1156e0a7b1d8321`.
-Captured objects and returns do not select either stage.
+`3966080c106fd7b625b318e756a61edf3208d3b0d6f8949fc900c4d4b02c3671`.
+The selected-stage expectation is the already observed exact return word
+`0000006002a22a40`; that expectation cannot suppress or alter the second
+stage. Captured objects and returns do not select either stage.
+
+The prospective two-stage validator was also frozen before either unlocked
+output. It is
+`Analysis/validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.py`,
+SHA-256
+`e1c5635605af4dc129bf96c39b4664974f823a90b1d6b173b7e4ff1e27771e42`.
+Session, code, ownership, object, return, timeline, and process-integrity
+violations fail closed. The historical-return reproduction and positive-branch
+requirements are reported as outcomes, so neither observed value can rewrite
+the structural acceptance rules.
 
 Formal parity remains 0/1. After this unlocked complete provider gate, the
 remaining product gates are still: authenticate public-input-to-provider

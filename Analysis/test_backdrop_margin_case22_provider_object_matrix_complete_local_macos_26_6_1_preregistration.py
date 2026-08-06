@@ -51,6 +51,10 @@ class CompleteProviderObjectMatrixPreregistrationTests(unittest.TestCase):
             ],
         )
         self.assertTrue(stages[0]["dispatchRegardlessOfExpectedReturn"])
+        self.assertEqual(
+            stages[0]["expectedReturnRawLittleEndianHex"],
+            "0000006002a22a40",
+        )
         self.assertTrue(stages[1]["dispatchRegardlessOfFirstStageOutcome"])
         self.assertFalse(
             VALUE["completeCapture"][
@@ -65,6 +69,19 @@ class CompleteProviderObjectMatrixPreregistrationTests(unittest.TestCase):
                 hashlib.sha256((REPOSITORY / item["path"]).read_bytes()).hexdigest(),
                 item["sha256"],
             )
+        validator = VALUE["prospectiveValidator"]
+        for path_key, hash_key in (
+            ("path", "sha256"),
+            ("sourceTestPath", "sourceTestSHA256"),
+        ):
+            self.assertEqual(
+                hashlib.sha256(
+                    (REPOSITORY / validator[path_key]).read_bytes()
+                ).hexdigest(),
+                validator[hash_key],
+            )
+        self.assertFalse(validator["capturedOutputMayChangeStructuralAcceptance"])
+        self.assertTrue(validator["valueHypothesesReportedAsResults"])
 
     def test_outcome_unknown_and_authority_remains_narrow(self) -> None:
         self.assertIsNone(VALUE["runtimeOutcomeFrozenBeforeDispatch"])
