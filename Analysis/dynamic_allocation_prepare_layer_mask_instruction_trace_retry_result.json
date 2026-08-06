@@ -1,0 +1,74 @@
+{
+  "prepareLayerMaskInstructionTraceRetryResultSchemaVersion": 1,
+  "classification": "opened prospective selector failure with a complete helper execution: interval-2 ordinal 8 is a real prepare_layer_mask call but maps to retained store 10 and an empty first rectangle, not to the independently identified structural producer at store 14; no exact producer or parity conclusion follows",
+  "run": {
+    "id": 31064203802,
+    "headSHA": "74bbae1036cc4a8d81c877ac34134037abd3cfce",
+    "workflow": ".github/workflows/prepare-layer-mask-instruction-trace-retry.yml",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "failure",
+    "startedAtUtc": "2026-08-06T01:57:04Z",
+    "completedAtUtc": "2026-08-06T02:01:36Z",
+    "captureStepOutcome": "success",
+    "validatorStepOutcome": "failure",
+    "validatorFailure": "helper output does not match structural producer"
+  },
+  "artifact": {
+    "id": 8953306872,
+    "name": "liquid-glass-prepare-layer-mask-instruction-trace-retry-31064203802",
+    "sizeBytes": 103692606,
+    "digest": "sha256:7fb598c12c5ee8e3299286b34dd14ba6786898981b0171219f01f467f04765eb",
+    "traceSHA256": "0a4059c33b86f5332b11dfbf9f517123bcc41c490875d25a06cda9307986ca8b",
+    "timelineSHA256": "4ac55fbaabe1965afc517dac68886f8da7e369d4b47291b4996645594ded86db"
+  },
+  "captureIntegrity": {
+    "targetExitedNormally": true,
+    "targetExitStatus": 0,
+    "traceFailureCount": 0,
+    "helperCodeSHA256": "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c",
+    "helperCodeIdentityRepassed": true,
+    "qualifiedHelperEntryCountBeforeSelection": 20,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedOrdinal": 8,
+    "selectedByOutputValue": false,
+    "instructionStateCount": 52,
+    "opaqueCalleeBoundaryCount": 0,
+    "executionEventCount": 52,
+    "manualTraceStarted": true,
+    "manualTraceFinished": true
+  },
+  "openedMapping": {
+    "selectedCallerRoleBase": 6171883072,
+    "selectedPrepareRecursionDepth": 7,
+    "selectedRoleMatchedRetainedStoreRecordIndex": 10,
+    "selectedRoleMatchedStorePrepareRecursionDepth": 7,
+    "selectedFirstRectangleAtEntryHex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "selectedFirstRectangleAtReturnHex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "structuralProducerStoreRecordIndex": 14,
+    "structuralProducerCallerRoleBase": 6171883040,
+    "structuralProducerPrepareRecursionDepth": 7,
+    "structuralProducerHex": "ffffffff33007e40c0ffffff4c8339c0feffffebcc8e8140feffff6700cc8140",
+    "structuralProducerF64": [
+      480.01269531249994,
+      -25.512893676757585,
+      561.8500595092771,
+      569.5001983642576
+    ],
+    "selectedToProducerRoleDeltaBytes": -32,
+    "selectedHelperReturnMatchesStructuralProducerBitForBit": false,
+    "frozenOrdinalEightMappingHypothesisPassed": false
+  },
+  "conclusion": {
+    "namespaceTransportRepairPassed": true,
+    "knownHelperCodeIdentityPassed": true,
+    "frozenStructuralCallSelectorExecuted": true,
+    "completeSelectedHelperExecutionCaptured": true,
+    "selectedCallWasTrueProducer": false,
+    "exactHelperSemanticsDecoded": false,
+    "unchangedRepeatPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false,
+    "nextGate": "retain every output-blind helper entry through all marker intervals, then correlate each caller role to the independently selected structural producer role and trace the resulting ordinal in a fresh process"
+  }
+}

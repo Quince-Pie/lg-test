@@ -6723,3 +6723,44 @@ requires the code hash opened before the failed callback to match bit for bit.
 Until the retry passes and the instruction sequence is decoded and reproduced
 on an unchanged blind capture, exact producer arithmetic remains open and no
 production shader change is authorized.
+
+Run `31064203802`, from retry commit `74bbae1`, closes the namespace transport
+defect but rejects the frozen call mapping. The capture has zero trace failures,
+exits normally, repasses helper code SHA-256
+`f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c`,
+and records a complete 52-instruction execution for marker interval two,
+qualified ordinal eight. The strict validator then rejects
+`helper output does not match structural producer`.
+
+This is a semantic selector result, not another instrumentation failure.
+Ordinal eight's caller role is `6171883072`; it maps exactly to retained store
+10 at prepare recursion depth seven and its first output rectangle remains all
+zero bits. The independently opened producer is store 14, also at depth seven,
+with caller role `6171883040` and binary64 rectangle
+
+```
+[480.01269531249994,
+ -25.512893676757585,
+ 561.8500595092771,
+ 569.5001983642576]
+```
+
+Thus the assumed equality between the eighth helper call and the eighth
+retained store is false. The immutable opened result is
+`Analysis/dynamic_allocation_prepare_layer_mask_instruction_trace_retry_result.json`.
+GitHub displays the non-fatal validator step with a checkmark because the
+workflow preserves artifacts on error; the final enforcement failure and the
+missing validation file are authoritative.
+
+The replacement calibration is prospectively frozen in
+`Analysis/dynamic_allocation_prepare_layer_mask_inventory_calibration_preregistration.json`.
+Its first process uses unreachable ordinal 4097 to retain every qualified
+helper entry plus one shared, monotonically ordered stream of helper, store,
+and marker identities. Offline selection uses only event order, caller role,
+and prepare recursion depth: within interval two it chooses the last helper
+entry before the independent producer-store event whose role and depth equal
+that producer. No rectangle or output value is read by the selector. A second,
+fresh process traces the derived ordinal and must return the producer bits
+exactly. This two-pass run remains a calibration; even a full pass cannot claim
+decoded semantics or an unchanged repeat, and it still cannot authorize a
+production shader change.

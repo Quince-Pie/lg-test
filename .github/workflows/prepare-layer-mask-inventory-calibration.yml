@@ -1,0 +1,237 @@
+name: Inventory and trace exact prepare_layer_mask producer
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: prepare-layer-mask-inventory-calibration-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inventory-and-trace:
+    name: output-blind-inventory-then-fresh-trace
+    runs-on: macos-26
+    timeout-minutes: 120
+    env:
+      LG_GLASS_MATERIAL: clear
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-1025-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen inventory contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-contracts
+          set -o pipefail
+          for pattern in \
+            test_capture_prepare_layer_crop_transfer_lldb_source.py \
+            test_validate_prepare_layer_crop_transfer.py \
+            test_capture_prepare_layer_crop_union_operand_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py \
+            test_analyze_prepare_layer_crop_policy_holdout_callback_retry.py \
+            test_capture_prepare_layer_mask_instruction_trace_lldb_source.py \
+            test_dynamic_allocation_prepare_layer_mask_instruction_trace_preregistration.py \
+            test_capture_prepare_layer_mask_instruction_trace_retry_lldb_source.py \
+            test_dynamic_allocation_prepare_layer_mask_instruction_trace_retry_preregistration.py \
+            test_capture_prepare_layer_mask_inventory_calibration_lldb_source.py \
+            test_validate_prepare_layer_mask_instruction_inventory.py \
+            test_dynamic_allocation_prepare_layer_mask_inventory_calibration_preregistration.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a transition-contracts/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          mkdir -p transition-build
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-build/MatrixBridge.o 2>&1 |
+            tee transition-build/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-build/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-build/build.log
+
+      - name: Capture complete output-blind helper inventory
+        id: inventory_capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          LG_PREPARE_LAYER_MASK_CAPTURE_MODE: inventory
+          LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+            transition-inventory/prepare-layer-mask-instruction-trace.json
+        run: |
+          mkdir -p transition-inventory
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-inventory/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-inventory/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_mask_inventory_calibration_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_mask_inventory_calibration_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-inventory \
+            > transition-inventory/lldb-inventory.log 2>&1
+
+      - name: Validate structural helper inventory
+        id: inventory_validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.inventory_capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_mask_instruction_inventory.py \
+            transition-inventory/prepare-layer-mask-instruction-trace.json \
+            transition-inventory/transition-timeline.json \
+            --expected-geometry circle-1025-center \
+            --output transition-inventory/inventory-validation.json
+
+      - name: Capture fresh structurally selected helper body
+        id: selected_capture
+        if: steps.inventory_validate.outcome == 'success'
+        continue-on-error: true
+        env:
+          LG_PREPARE_LAYER_MASK_CAPTURE_MODE: selected
+          LG_PREPARE_LAYER_MASK_INVENTORY_VALIDATION: >-
+            transition-inventory/inventory-validation.json
+          LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+            transition-selected/prepare-layer-mask-instruction-trace.json
+        run: |
+          mkdir -p transition-selected
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-selected/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-selected/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_mask_inventory_calibration_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_mask_inventory_calibration_lldb.trace_selected_helper()' \
+            -o 'script capture_prepare_layer_mask_inventory_calibration_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-selected \
+            > transition-selected/lldb-selected.log 2>&1
+
+      - name: Validate fresh producer helper trace
+        id: selected_validate
+        if: steps.selected_capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_mask_inventory_selected_trace.py \
+            transition-selected/prepare-layer-mask-instruction-trace.json \
+            transition-selected/transition-timeline.json \
+            transition-inventory/inventory-validation.json \
+            --expected-geometry circle-1025-center \
+            --output transition-selected/selected-validation.json
+
+      - name: Upload inventory and selected trace evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-prepare-layer-mask-inventory-calibration-${{ github.run_id }}
+          path: |
+            transition-contracts
+            transition-build
+            transition-inventory
+            transition-selected
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce inventory and selected trace evidence
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.inventory_capture.outcome }}" = success
+          test "${{ steps.inventory_validate.outcome }}" = success
+          test "${{ steps.selected_capture.outcome }}" = success
+          test "${{ steps.selected_validate.outcome }}" = success
+          test -s transition-inventory/inventory-validation.json
+          test -s transition-selected/selected-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          inventory = json.loads(
+              Path("transition-inventory/inventory-validation.json")
+              .read_text(encoding="utf-8")
+          )
+          selected = json.loads(
+              Path("transition-selected/selected-validation.json")
+              .read_text(encoding="utf-8")
+          )
+          inventory_selection = inventory.get("structuralSelection", {})
+          inventory_sealed = inventory.get("sealedConclusion", {})
+          ordinal = inventory_selection.get("sample2TargetQualifiedOrdinal")
+          helper = selected.get("helper", {})
+          correlation = selected.get("structuralCorrelation", {})
+          selected_calibration = selected.get("inventoryCalibration", {})
+          selected_sealed = selected.get("sealedConclusion", {})
+          if (
+              inventory.get("prepareLayerMaskInstructionInventoryValidationSchemaVersion") != 1
+              or inventory.get("conclusion") != "success"
+              or not isinstance(ordinal, int)
+              or ordinal <= 0
+              or inventory_selection.get("cropOrOutputValuesUsedForSelection") is not False
+              or inventory_sealed.get("allHelperEntriesRetainedWithoutSelection") is not True
+              or inventory_sealed.get("sample2ProducerRoleMappedByLastPriorHelper") is not True
+              or selected.get("prepareLayerMaskInstructionTraceValidationSchemaVersion") != 1
+              or selected.get("prepareLayerMaskInventorySelectedTraceValidationSchemaVersion") != 1
+              or selected.get("conclusion") != "success"
+              or helper.get("codeSHA256") != "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c"
+              or helper.get("selectedQualifiedOrdinal") != ordinal
+              or helper.get("instructionStateCount", 0) <= 0
+              or correlation.get("sampleIndex") != 2
+              or correlation.get("helperReturnMatchesProducerBitForBit") is not True
+              or selected_calibration.get("sample2TargetQualifiedOrdinal") != ordinal
+              or selected_calibration.get("cropOrOutputValuesUsedForSelection") is not False
+              or selected_calibration.get("selectedCaptureIsFreshProcess") is not True
+              or selected_sealed.get("completeOutputBlindInventoryPassed") is not True
+              or selected_sealed.get("freshStructuralSelectionPassed") is not True
+              or selected_sealed.get("exactHelperSemanticsDecoded") is not False
+              or selected_sealed.get("unchangedRepeatPassed") is not False
+              or selected_sealed.get("productionShaderAuthorized") is not False
+              or selected_sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("inventory calibration evidence differs")
+          PY
