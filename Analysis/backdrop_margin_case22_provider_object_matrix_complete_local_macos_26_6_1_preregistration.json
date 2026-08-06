@@ -1,0 +1,184 @@
+{
+  "authorityOnPass": {
+    "completeFiniteProviderLaw": false,
+    "exactAllCase22IterationsForEachSelectedCaller": true,
+    "exactCompleteProcessProviderObjectsForThisOpenedProfile": true,
+    "exactObjectOffsetAndReturnCovarianceForThisOpenedProfile": true,
+    "independentWalleZeroByteFrameParity": false,
+    "liquidGlassParityEstablished": false,
+    "physicalRetinaColorPixelCompositorTransfer": false,
+    "productionShaderAuthorized": false,
+    "publicSwiftUIGlassInputLaw": false,
+    "unlockedSessionTransferForSelectedInvocation": true,
+    "upstreamIntegerCropAllocationPolicy": false
+  },
+  "backdropMarginCase22ProviderObjectMatrixCompleteLocalMacOSPreregistrationSchemaVersion": 1,
+  "binary": {
+    "changed": false,
+    "pathOnHost": "/Users/quince/lg-test/glass-transition-introspect-721293f",
+    "sha256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "sourceCommit": "721293f1d6593849d4b85b9ad45688a24d2ca437"
+  },
+  "captureContract": {
+    "requireAll33CanonicalImages": true,
+    "requireAtLeastOneFinitePositiveProviderReturn": true,
+    "requireAtLeastOnePositiveGaussianInputAndGateObject": true,
+    "requireAtLeastOneProviderCallPerSelectedCaller": true,
+    "requireAtLeastOneSelectedCaller": true,
+    "requireAtLeastTwoDistinctProviderObjects": true,
+    "requireAtLeastTwoDistinctProviderReturnWords": true,
+    "requireBootstrapObserved": true,
+    "requireEveryProviderCallIndexOwnedByExactlyOneSelectedCaller": true,
+    "requireEverySelectedCallerReturnObserved": true,
+    "requireExact384ByteObjectAtEveryStage": true,
+    "requireExactCallerGroupWrapperAndProviderCode": true,
+    "requireNoPendingProviderOrSelectedCallerAtFinalization": true,
+    "requirePreflightPassBeforeEachStage": true,
+    "requireProcessExitStatus": 0,
+    "requireProviderEntryObjectEqualsWrapperSelfPlus16": true,
+    "requireProviderObjectUnchangedByCall": true,
+    "requireProviderReturnEqualsGroupInputBitwise": true,
+    "requireTimelineFailedSamples": 0,
+    "requireTimelineSampleCount": 33,
+    "requireTotalProviderCallCountEqualsSumOfPerCallerCounts": true,
+    "zeroTolerance": true
+  },
+  "classification": "prospective unlocked-Retina, native-LLDB, complete-process and all-case22-iteration provider-object transfer",
+  "completeCapture": {
+    "callerCallInstructionHex": "5526e997",
+    "callerCallOffset": 5760,
+    "callerReturnOffset": 5764,
+    "capturedObjectReturnMarginCropImageOrPixelUsedForSelection": false,
+    "capturesFirstExactCallerInvocation": true,
+    "forbidOverlappingSelectedCallerCalls": true,
+    "maximumProviderCallCount": 4096,
+    "path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_lldb.py",
+    "pendingExactCallerEntryBootstrap": true,
+    "perSelectedCallerStopCountFormula": "2 + 4 * case22ProviderCallCount",
+    "retainsEveryCase22IterationUntilCallerReturn": true,
+    "sha256": "05e12987979401fa79615d86fc119084a5126aeac1ba3b79b44eeaf80988b9b1"
+  },
+  "frozenAtUTC": "2026-08-06",
+  "nativeDebuggerTransport": {
+    "hardCodedNixStorePath": false,
+    "importCaptureBeforeRun": true,
+    "lldb": "/Library/Developer/CommandLineTools/usr/bin/lldb",
+    "reason": "native Apple compilation and debugging use the selected Command Line Tools environment; nix develop remains mandatory for repository validation and analysis",
+    "runInsideNixDevelop": false,
+    "stopAtExecutableMain": false
+  },
+  "nativeSessionPreflight": {
+    "failClosedBeforeAppLaunch": true,
+    "interpreter": "/Library/Developer/CommandLineTools/usr/bin/swift",
+    "path": "Analysis/check_local_retina_capture_session.swift",
+    "requireBackingScaleFactor": 2,
+    "requireDisplayActive": true,
+    "requireDisplayAsleep": false,
+    "requireExitStatus": 0,
+    "requireLogicalPoints": [
+      1728,
+      1117
+    ],
+    "requirePassed": true,
+    "requirePhysicalPixels": [
+      3456,
+      2234
+    ],
+    "requireSessionLocked": false,
+    "requireSessionOnConsole": true,
+    "runImmediatelyBeforeLLDB": true,
+    "sha256": "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
+  },
+  "parentCorrection": {
+    "completeProcessLifetimeSelectionEstablished": false,
+    "everyCase22IterationUntilSelectedCallerReturnEstablished": false,
+    "formalParityGate": "0/1",
+    "path": "Analysis/backdrop_margin_case22_provider_object_matrix_domain_correction.json"
+  },
+  "profile": {
+    "LG_GLASS_APPEARANCE": "light",
+    "LG_GLASS_GEOMETRY": "circle-127-center",
+    "LG_GLASS_MATERIAL": "regular",
+    "LG_TRANSITION_ALLOCATION_CALIBRATION": "0",
+    "LG_TRANSITION_ALLOCATION_DENSE": "1",
+    "LG_TRANSITION_ALLOCATION_FIXED_STATE": "0",
+    "LG_TRANSITION_ALLOCATION_MESH_CALIBRATION": "0",
+    "LG_TRANSITION_ALLOCATION_ONLY": "1",
+    "LG_TRANSITION_ALLOCATION_PATH_ISOLATION": "0",
+    "LG_TRANSITION_CONTROLLED_BACKDROP": "0",
+    "LG_TRANSITION_DIRECTION": "materialize",
+    "LG_TRANSITION_HIGHLIGHT_TRACE": "0",
+    "LG_TRANSITION_MATRIX_BASIS": "0",
+    "LG_TRANSITION_TIMELINE": "1",
+    "LG_TRANSITION_UNIFORMS": "1"
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "sessionStateMotivation": {
+    "causalStatusBeforeDispatch": "unknown; exact session chronology motivates the intervention but does not select a captured object or return",
+    "postLockZeroTraces": [
+      {
+        "finalizedLocal": "2026-08-06 16:58:17 -0500",
+        "sha256": "af6810fef84695cb936af5eb8af6a3becf7b0f0f69e5c8155d25359b968e32a6"
+      },
+      {
+        "finalizedLocal": "2026-08-06 17:29:58 -0500",
+        "sha256": "0e83312d2535ad6601b6bcae178e939e13a9ebae95d15efcc166ffde013e6d72"
+      },
+      {
+        "finalizedLocal": "2026-08-06 17:39:42 -0500",
+        "sha256": "32f82fab6a209831347bd2673a6c83fb304cdc72fb04045f37ed23c1ea0be614"
+      },
+      {
+        "finalizedLocal": "2026-08-06 17:47:40 -0500",
+        "sha256": "8539c9bb226831970b242a95530378bbad86cc3287bdaf1a6f541a91dcfa15fa"
+      },
+      {
+        "finalizedLocal": "2026-08-06 17:55:46 -0500",
+        "sha256": "84c334ad81683f2f9f2bc5375595bedeb9379acbb4774ab5499baa72289f4749"
+      },
+      {
+        "finalizedLocal": "2026-08-06 18:02:10 -0500",
+        "sha256": "e6c1075ae00dc9fb98a0768c72ed7155b9461bf6c643ba34bb26285c4439f040"
+      }
+    ],
+    "preLockPositiveTrace": {
+      "finalizedLocal": "2026-08-06 15:43:26 -0500",
+      "path": "../artifacts/mac-quince-macos-26.6.1-case22-provider-passed-42f9413/backdrop-margin-writer-trace.json",
+      "selectedReturn": 13.316424369812012,
+      "selectedReturnRawLittleEndianHex": "0000006002a22a40",
+      "sha256": "19e7d74f3aba55e5c6924d7119fddcf20578a98a4e7b946cc4a435918df4059f"
+    },
+    "sessionLockStartedLocal": "2026-08-06 16:03:54 -0500"
+  },
+  "unconditionalTwoStageDispatch": [
+    {
+      "capturePath": "Analysis/capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb.py",
+      "captureSHA256": "964b03394b837e3d0e0f312a56f593ffdbb7be6c325d98a53d56fbc216efd25b",
+      "dispatchRegardlessOfExpectedReturn": true,
+      "purpose": "prospectively isolate unlocked presentation-session transfer with the unchanged historical selector",
+      "selectedInvocationIndex": 20,
+      "stage": "fixed-selected-reproduction"
+    },
+    {
+      "capturePath": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_lldb.py",
+      "captureSHA256": "05e12987979401fa79615d86fc119084a5126aeac1ba3b79b44eeaf80988b9b1",
+      "dispatchRegardlessOfFirstStageOutcome": true,
+      "purpose": "close complete process-lifetime and all-iteration object/return coverage",
+      "stage": "complete-provider-matrix"
+    }
+  ],
+  "unknownBeforeDispatch": {
+    "completeProcessProviderCallCount": null,
+    "completeProviderDomainConclusion": null,
+    "distinctProviderObjectCount": null,
+    "distinctProviderReturnCount": null,
+    "multipleCase22RecordCallerCount": null,
+    "positiveGaussianGateCallCount": null,
+    "providerCallsPerSelectedCaller": null,
+    "providerObjectBytesByCall": null,
+    "providerReturnWordsByCall": null,
+    "selectedReproductionObjectBytes": null,
+    "selectedReproductionReturn": null,
+    "sessionStateCausalConclusion": null
+  }
+}

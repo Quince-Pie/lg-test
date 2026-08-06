@@ -1,0 +1,105 @@
+{
+  "backdropMarginCase22ProviderObjectMatrixDomainCorrectionSchemaVersion": 1,
+  "classification": "retrospective authority correction that preserves exact observed call joins while withdrawing unsupported complete-process and all-iteration claims",
+  "correctedAtUTC": "2026-08-06",
+  "correction": {
+    "completeProcessLifetimeSelectionEstablished": false,
+    "everyCase22IterationUntilSelectedCallerReturnEstablished": false,
+    "exactAllLiveProviderObjectsForOpenedProfileEstablished": false,
+    "exactObservedCallChainIntegrityEstablished": true,
+    "reason": "the callsite-gated adapter was imported only after executable main and disabled wrapper/provider/Group callbacks at the first Group+0x26c return; its caller-return contract proved one observed call, but could not observe an omitted earlier caller or a second case-22 record in the same Group invocation"
+  },
+  "correctiveImplementation": {
+    "capturedValueUsedForSelection": false,
+    "completeCapturePath": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_lldb.py",
+    "completeCaptureSHA256": "05e12987979401fa79615d86fc119084a5126aeac1ba3b79b44eeaf80988b9b1",
+    "importsBeforeProcessLaunch": true,
+    "pendingExactCallerEntryBootstrap": true,
+    "perSelectedCallerStopCountFormula": "2 + 4 * case22ProviderCallCount",
+    "retainsEveryCase22IterationUntilCallerReturn": true,
+    "sessionPreflightPath": "Analysis/check_local_retina_capture_session.swift",
+    "sessionPreflightSHA256": "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
+  },
+  "formalParityGate": "0/1",
+  "liquidGlassParityEstablished": false,
+  "presentationSessionConfound": {
+    "bothLockedDiagnosticsSelectedReturnRawLittleEndianHex": "0000000000000000",
+    "causalStatus": "strong exact chronological confound, not yet a prospective unlocked causal transfer",
+    "firstPostLockHeavyZeroTraceFinalizedLocal": "2026-08-06 16:58:17 -0500",
+    "laterPostLockZeroTraceFinalizedLocal": "2026-08-06 17:47:40 -0500",
+    "lockedCaffeinatedDiagnosticTraceSHA256": "e6c1075ae00dc9fb98a0768c72ed7155b9461bf6c643ba34bb26285c4439f040",
+    "lockedNativeDiagnosticTraceSHA256": "84c334ad81683f2f9f2bc5375595bedeb9379acbb4774ab5499baa72289f4749",
+    "preLockPositiveTraceFinalizedLocal": "2026-08-06 15:43:26 -0500",
+    "sessionLockStartedLocal": "2026-08-06 16:03:54 -0500",
+    "sessionLockStartedUnix": 1786050234
+  },
+  "retainedExactEvidence": {
+    "allObservedObjectsJoinedAtWrapperProviderAndReturn": true,
+    "allObservedObjectsUnchangedByProvider": true,
+    "allObservedProviderReturnsJoinedToGroupBitwise": true,
+    "allObservedReturnWords": [
+      "0000000000000000"
+    ],
+    "allocationObservedCallCount": 1228,
+    "liveObservedCallCount": 1222,
+    "normalObservedCallCount": 1232,
+    "productAuthority": false
+  },
+  "supersededAuthorityClaims": [
+    {
+      "observedCallCount": 1228,
+      "resultPath": "Analysis/backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1_result.json",
+      "resultSHA256": "3b6a51a98d7f631adb5f97cdf564d4398de358be90de6d121a5d977dc73483a7",
+      "withdrawnFields": [
+        "exactAllLiveProviderObjectsForOpenedAllocationProfile",
+        "exactObjectOffsetAndReturnCovarianceForOpenedAllocationProfile"
+      ]
+    },
+    {
+      "observedCallCount": 1232,
+      "resultPath": "Analysis/backdrop_margin_case22_provider_object_matrix_normal_local_macos_26_6_1_result.json",
+      "resultSHA256": "7309717854e6e594e36922b0ca6d16e043aa2917fc6985583c2e2d0fb4988638",
+      "withdrawnFields": [
+        "implicit complete selected-caller domain"
+      ]
+    },
+    {
+      "completeProcessDomainEstablished": false,
+      "observedCallCount": 1222,
+      "resultPath": "Analysis/backdrop_margin_case22_provider_object_matrix_live_local_macos_26_6_1_result.json",
+      "resultSHA256": "68ea94408c65ea8628206d8b87de737a38f5d2e96f94c60e83e8d475058fda48"
+    }
+  ],
+  "supportingEvidenceLimit": "the opened heavy traces observed one case-22 record in every retained Group invocation, so no missed second record has actually been observed; those traces are separate executions and cannot repair the narrower runtime selector retrospectively",
+  "supportingGroupStructureEvidence": [
+    {
+      "artifact": "../artifacts/mac-quince-macos-26.6.1-case22-provider-passed-42f9413/backdrop-margin-writer-trace.json",
+      "completeInvocationCount": 68,
+      "invocationCount": 68,
+      "recordCounts": [
+        1
+      ],
+      "selectedReturn": 13.316424369812012,
+      "selectedReturnRawLittleEndianHex": "0000006002a22a40",
+      "sha256": "19e7d74f3aba55e5c6924d7119fddcf20578a98a4e7b946cc4a435918df4059f",
+      "stageCounts": [
+        6
+      ]
+    },
+    {
+      "artifact": "../artifacts/local-case22-provider-object-matrix-87313eb-retry2/backdrop-margin-writer-trace.json",
+      "completeInvocationCount": 90,
+      "invocationCount": 90,
+      "recordCounts": [
+        1
+      ],
+      "returnWords": [
+        "0000000000000000"
+      ],
+      "sha256": "af6810fef84695cb936af5eb8af6a3becf7b0f0f69e5c8155d25359b968e32a6",
+      "stageCounts": [
+        6
+      ]
+    }
+  ]
+}

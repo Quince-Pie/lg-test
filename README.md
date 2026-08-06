@@ -7934,11 +7934,12 @@ immediate caller was `Group.margin+0x26c`; it had already retained 432 calls by
 sample 8 and was stopped before crossing its 512-call bound. The next adapter
 gated those callbacks at the exact authenticated
 `SDFLayer.updateSDFEffects+0x1680` call instruction (`5526e997`) and disarmed
-them at `+0x1684`. LLDB cannot resolve SwiftUICore's loaded address before the
-process reaches `main`, so the frozen launch transport now stops at the app's
-exact `main`, deletes that bootstrap breakpoint, imports the capture after all
-524 process images are loaded, and only then continues. Its preflight resolved
-one direct callback at the required `+0x1680` location.
+them at `+0x1684`. That adapter used a loaded-address breakpoint, so its launch
+transport stopped at the app's exact `main`, deleted that bootstrap breakpoint,
+imported the capture after all 524 process images were loaded, and only then
+continued. Its preflight resolved one direct callback at the required
+`+0x1680` location. This was an adapter limitation, not an LLDB limitation;
+the complete successor below uses a pending symbol breakpoint before launch.
 
 Commit `05e0962` completed all 33 Retina frames and the application exited zero,
 but the trace reached the inherited 512-call bound. It finalized with 699
@@ -7950,13 +7951,14 @@ raised the finite maximum to 4096 without changing the app, binary, profile,
 environment, callsite, wrapper/provider code, object capture, return join, or
 any value-based selector.
 
-That retry passes its complete narrow contract. On the developer-enabled local
-Retina host it produced:
+The original validator passed the contract it had frozen, but its later
+complete-process authority is superseded below. On the developer-enabled local
+Retina host the adapter exactly observed:
 
 - process exit status 0, 33/33 canonical images, no failed timeline sample,
   and backing scale 2;
-- 1,228/1,228 exact selected caller, wrapper, provider, wrapper-return, Group,
-  and caller-return chains;
+- 1,228/1,228 post-`main` selected caller, wrapper, provider, wrapper-return,
+  Group, and caller-return chains;
 - 1,228 exact 384-byte objects equal at wrapper entry, provider entry, and
   provider return, with 1,228 distinct object payloads;
 - 1,228 provider returns equal to the enclosing Group input bit for bit;
@@ -8038,12 +8040,86 @@ Walle render and does not establish product parity.
 
 The historical selected instruction trace on this same binary proves a live
 nonzero path exists: `+0x88` and `+0x90` are positive and the exact return is
-`13.316424369812012` (`0000006002a22a40`). That run did not record its dynamic
-uniform environment and its heavy debugger lost the application timeline, so
-it has no prospective transfer authority. It only motivates the next
-output-blind intervention. The newly frozen live-profile retry changes exactly
-`LG_TRANSITION_UNIFORMS=1` to `0`, leaving both allocation flags at zero and
-all code, binary, profile, call, object, and return gates unchanged. It requires
-33/33 images, at least one object with positive `+0x88` and `+0x90`, multiple
-exact return words, and at least one finite positive return before any branch
-decode is authorized.
+`13.316424369812012` (`0000006002a22a40`). Its exact launch command was later
+recovered: dynamic-uniform capture, allocation-only, and dense allocation were
+all enabled. Its heavy debugger still lost the application timeline, so it has
+no prospective transfer authority. The separately frozen live-profile retry
+changed exactly `LG_TRANSITION_UNIFORMS=1` to `0`, leaving both allocation flags
+at zero and all code, binary, profile, call, object, and return gates unchanged.
+
+### Provider-matrix domain correction and unlocked-session gate
+
+The live-profile retry is now closed as negative evidence. It completed 33/33
+images and exited zero. All 1,222 observed objects were distinct, unchanged,
+and joined from wrapper through provider and Group with zero failures. Every
+binary32 `+0x88`, binary64 `+0x90`, and provider return was exact positive zero.
+Disabling dynamic-uniform capture therefore did not open the nonzero branch.
+The strict validator and result are
+`Analysis/validate_backdrop_margin_case22_provider_object_matrix_live_local_macos_26_6_1.py`
+at SHA-256
+`beae25d16cde0c6588025291029850c3d6ccc8fa50a94b96803ac2e2310d039d`
+and
+`Analysis/backdrop_margin_case22_provider_object_matrix_live_local_macos_26_6_1_result.json`
+at SHA-256
+`68ea94408c65ea8628206d8b87de737a38f5d2e96f94c60e83e8d475058fda48`.
+
+Those 1,222 calls do not establish an all-live domain. The callsite adapter was
+imported only after executable `main` and disabled the wrapper/provider/Group
+callbacks at the first `Group+0x26c` return inside each selected caller. Its
+return gate proves the exact integrity of each call it observed, but cannot
+exclude an earlier caller or a second case-22 record in the same Group call.
+The allocation result's `exactAllLive...` fields and equivalent normal/live
+wording are withdrawn. The immutable correction is
+`Analysis/backdrop_margin_case22_provider_object_matrix_domain_correction.json`,
+SHA-256
+`de90efe0af512e965a4437e8bf4f6bc92213017522ce0cc48e8f744d46d6aa8f`.
+Raw calls, objects, and bitwise joins remain exact; only unsupported domain
+authority is removed.
+
+No missed second record has actually been observed. The pre-lock selected trace
+contains 68/68 complete Group invocations and the post-lock heavy matrix has
+90/90; every invocation in both has exactly one record and six stages. Separate
+executions cannot repair the narrow adapter retrospectively, so the successor
+keeps every case-22 callback armed until the enclosing caller returns. Its stop
+count is exactly `2 + 4N` for `N` provider calls. A pending full-name breakpoint
+at exact `updateSDFEffects` entry is installed before process launch, where it
+authenticates the complete caller and arms `+0x1680` in time for the first exact
+invocation. The implementation is
+`Analysis/capture_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_lldb.py`,
+SHA-256
+`05e12987979401fa79615d86fc119084a5126aeac1ba3b79b44eeaf80988b9b1`.
+
+The previously uncontrolled presentation-session state is also exact. The
+successful nonzero trace finalized at 15:43:26 local time. The macOS session
+locked at 16:03:54 (`CGSSessionScreenLockedTime = 1786050234`); the first heavy
+zero trace finalized at 16:58:17, and all later matrices were zero. Two native
+selected-invocation diagnostics while locked—including one with `caffeinate`
+asserting display activity—again returned zero. This is a strong chronological
+confound, not yet a prospective causal proof. `caffeinate` cannot unlock the
+login session.
+
+Every future Apple capture now fails closed before app launch unless the native
+preflight proves: session unlocked and on-console, display active and awake,
+3456x2234 physical pixels, 1728x1117 logical points, and backing scale 2. The
+preflight is `Analysis/check_local_retina_capture_session.swift`, SHA-256
+`72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981`.
+Native Apple LLDB runs directly from Command Line Tools; `nix develop` remains
+the required analysis/test environment and contributes no runtime variables to
+the Apple process. No Nix store path is embedded.
+
+The two stages are prospectively frozen and unconditional: first reproduce
+fixed invocation 20 with the unchanged historical selector, then run the
+complete matrix regardless of that first return. The preregistration is
+`Analysis/backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_preregistration.json`,
+SHA-256
+`28f744a8781116ec90cbd4d2d5a05dd15e70b956cbf49062f1156e0a7b1d8321`.
+Captured objects and returns do not select either stage.
+
+Formal parity remains 0/1. After this unlocked complete provider gate, the
+remaining product gates are still: authenticate public-input-to-provider
+mappings and every opened provider branch; close the upstream integer
+crop/allocation policy around the already exact resampling and DOD arithmetic;
+close physical Retina color/pixel/compositor transfer; and render real Walle
+frames with zero unequal bytes against Apple over the frozen domain. Only then
+can VRAM and latency work be accepted, with the production shader quality lock
+unchanged.

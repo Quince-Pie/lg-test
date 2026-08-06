@@ -1,0 +1,92 @@
+{
+  "application": {
+    "canonicalImageCount": 33,
+    "canonicalImageDimensions": [
+      [
+        2008,
+        2008
+      ]
+    ],
+    "dynamicEvidenceMode": "disabled",
+    "failedSamples": 0,
+    "processExitStatus": 0,
+    "sampleCount": 33,
+    "schemaVersion": 5,
+    "windowBackingScaleFactor": 2
+  },
+  "backdropMarginCase22ProviderObjectMatrixLiveLocalMacOSValidationSchemaVersion": 1,
+  "captureContractPassed": false,
+  "classification": "exact validation of 1,222 observed post-main call chains in a prospectively frozen live-profile retry; the nonzero branch and the corrected complete-process/all-iteration domain did not pass",
+  "completeFiniteProviderLaw": false,
+  "completeProcessDomainEstablished": false,
+  "conclusion": "disabling dynamic-uniform capture does not open the provider: all 1,222 observed objects retain exact zero gaussianInput and gaussianGate and return positive zero; this is a negative result, not evidence that the live provider is globally zero",
+  "dynamicUniformHypothesisPassed": false,
+  "failedRequirements": [
+    "requireCompleteProcessLifetimeSelection",
+    "requireEveryCase22IterationUntilSelectedCallerReturn",
+    "requireAtLeastTwoDistinctProviderReturnWords",
+    "requireAtLeastOneFinitePositiveProviderReturn",
+    "requireAtLeastOnePositiveGaussianInputAndGateObject"
+  ],
+  "independentWalleZeroByteFrameParity": false,
+  "inputs": {
+    "captureContext": {
+      "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/capture-context.txt",
+      "sha256": "e29b1c553c2e803211e1b2403f02820dc03a8a22e51d737c7514fec924f5eac9"
+    },
+    "lldbExitStatus": {
+      "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/lldb-exit-status.txt",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "lldbLog": {
+      "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/lldb.log",
+      "sha256": "f3eb98eabc460807fbb6878b5d2ea42c3a28dc997e9a1349f51a733a1e7671d7"
+    },
+    "preregistration": {
+      "path": "Analysis/backdrop_margin_case22_provider_object_matrix_live_local_macos_26_6_1_preregistration.json",
+      "sha256": "a63b70c878509ce6837810a9efc0861cfcfaf34155f5a8c1658aab1e397899aa"
+    },
+    "progress": {
+      "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/transition-progress.json",
+      "sha256": "53130eba7abb3b9c05877c68411b8e2f363d486546fdefcea5be6e25c46d2991"
+    },
+    "runtimeStderr": {
+      "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/runtime-stderr.log",
+      "sha256": "abac63a1355aa59a48f4ba13bc48d1d00c96cbdd4c0a0ad1280523efab3378dd"
+    },
+    "runtimeStdout": {
+      "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/runtime-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "timeline": {
+      "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/transition-timeline.json",
+      "sha256": "4df34cd327097767a802b52316e5b60b1dd5eef02731bbfab56c83b53c96c3cc"
+    },
+    "trace": {
+      "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/provider-object-matrix-trace.json",
+      "sha256": "8539c9bb226831970b242a95530378bbad86cc3287bdaf1a6f541a91dcfa15fa"
+    }
+  },
+  "liquidGlassParityEstablished": false,
+  "nextExactGate": "require an unlocked, awake Retina session before launch, import the pending caller-entry adapter before run, and retain every case-22 iteration until the enclosing caller returns",
+  "observedCallChainIntegrityPassed": true,
+  "productionShaderAuthorized": false,
+  "publicInputMappingAuthority": false,
+  "trace": {
+    "earlyProviderGates": {
+      "allCallGaussianGatePositiveGate": false,
+      "allCallGaussianInputPositiveGate": false,
+      "zeroGaussianGateCount": 1222,
+      "zeroGaussianInputCount": 1222
+    },
+    "observedCallCount": 1222,
+    "observedDistinctProviderObjectCount": 1222,
+    "observedDistinctProviderReturnCount": 1,
+    "observedFailureCount": 0,
+    "observedGroupLinkedCallCount": 1222,
+    "observedPendingCallCount": 0,
+    "observedProviderReturnWords": [
+      "0000000000000000"
+    ]
+  }
+}
