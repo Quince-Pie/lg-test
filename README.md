@@ -6559,3 +6559,34 @@ Walle frame comparisons. Only then may the exact model enter production; VRAM
 and Tracy optimization follow under those immutable image gates. The
 production shader is still untouched at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+Run `31059229769`, from holdout commit `35a149e`, has **no crop-policy
+outcome**. All eight jobs fail their final enforcement gate. The opened
+`holdout-096-padx-453` artifact `8951471420`, with GitHub digest
+`sha256:677a2edfbe9c965d9ba0d4a24d1823d8bb15acaa19c35bf8473a9832202deb53`,
+contains one qualified `prepare_layer+0x55c0` store and then leaves the target
+stopped at breakpoint `3.1`, the first `prepare_layer+0x85dc` call to
+`LayerShapes::union_bounds`. The target did not exit, no timeline or validation
+file exists, and the finalized trace contains zero marker records and zero
+union records. Consequently the frozen formula neither passed nor failed.
+
+The stop isolates an LLDB callback-name transport defect. The top-level
+holdout module's store callback executes, but the callback registered under an
+ordinarily imported dependency-module name is not resolved by LLDB when the
+union breakpoint fires. The GitHub job view displays the capture and validator
+steps as successful because they use non-fatal step semantics; that display is
+not the scientific gate. The eight final enforcement failures and the artifact
+contents are authoritative. The opened failure is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_callback_visibility_failure_result.json`.
+
+The callback-only retry is prospectively frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_callback_retry_preregistration.json`.
+`Analysis/capture_prepare_layer_crop_policy_holdout_callback_retry_lldb.py`
+adds no breakpoint, memory read, selector, crop rule, or tolerance. It only
+rebinds the inherited entry, marker, union-call, union-return, and store
+breakpoints to forwarding functions in the module imported directly by LLDB,
+after inherited dynamic installation has completed. The candidate formula,
+eight unseen geometries, capture bytes, validator, exact acceptance rules, and
+sealed production authority remain byte-for-byte unchanged. Until that retry
+produces 256-bit exact floating matches, the clear/light/materialize 1x crop
+producer remains unproven and Liquid Glass parity remains unestablished.

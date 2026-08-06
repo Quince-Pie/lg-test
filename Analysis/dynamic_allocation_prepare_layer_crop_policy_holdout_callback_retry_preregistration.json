@@ -1,0 +1,207 @@
+{
+  "prepareLayerCropPolicyHoldoutCallbackRetryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T00:27:17Z",
+  "classification": "prospective callback-visibility transport retry of the immutable unseen crop-policy holdout; the opened failure, antecedent candidate, matrix, capture bytes, validator, exact acceptance rules, and product-authority boundary are frozen before dispatch",
+  "openedFailedHoldout": {
+    "antecedentPreregistration": "Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_preregistration.json",
+    "antecedentPreregistrationSHA256": "2f0d77b7ce1ef3a20b5127cf53007a94736e30f214e30ad91f0c7b5a88bda68d",
+    "failureResult": "Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_callback_visibility_failure_result.json",
+    "failureResultSHA256": "332ea076d3244531fcf980267e09239dc9b68e87f436f0a3c3d52e73a83ba0e3",
+    "runID": 31059229769,
+    "headSHA": "35a149ebc0cdbcea34a36ce9c5f559cc33ea3b16",
+    "workflowConclusion": "failure",
+    "allEightEnforcementStepsFailed": true,
+    "openedRepresentativeTargetExited": false,
+    "openedRepresentativeStopOffset": "0x85dc",
+    "openedRepresentativeQualifiedMarkerCount": 0,
+    "openedRepresentativeQualifiedUnionRecordCount": 0,
+    "openedRepresentativeQualifiedStoreRecordCount": 1,
+    "cropPolicyOutcomeAvailable": false,
+    "formulaPassed": null,
+    "formulaFailed": null,
+    "parityEstablished": false
+  },
+  "transportOnlyAmendment": {
+    "failureClass": "LLDB script callback name visibility",
+    "mechanism": "top-level forwarding callbacks rebound after inherited dynamic breakpoint installation",
+    "topLevelCallbacks": [
+      "prepare_layer_entry",
+      "crop_union_call",
+      "crop_union_return",
+      "nested_crop_store",
+      "crop_transfer_marker",
+      "finalize"
+    ],
+    "sameBreakpointAddresses": true,
+    "sameMemoryReads": true,
+    "sameStructuralSelection": true,
+    "sameStoreUnionCorrelation": true,
+    "sameCandidateFormula": true,
+    "sameValidator": true,
+    "sameHoldoutMatrix": true,
+    "sameAcceptance": true,
+    "sameProductionShader": true,
+    "newBreakpointCount": 0,
+    "newMemoryReadCount": 0,
+    "newValueBasedSelectorCount": 0,
+    "scientificAmendment": false
+  },
+  "frozenCandidate": {
+    "publicLayerPath": [
+      1,
+      0,
+      1
+    ],
+    "symbols": {
+      "PxPy": "public carrier position from path [1]",
+      "BxByBwBh": "public bounds at path [1,0,1]",
+      "H": "public window height",
+      "D": "already-opened transformed Glass DOD rectangle"
+    },
+    "glassDODExpansion": "e = 2.8 * max(2 * inputBlurRadius, inputBleedBlurRadius)",
+    "support": "s = 9 + e",
+    "publicROIEdges": {
+      "lowerX": "Px + Bx - s",
+      "lowerY": "H - Py - (By + Bh) - 17",
+      "farX": "Px + (Bx + Bw) + s",
+      "farY": "H - Py - By + s"
+    },
+    "floatingComposition": "Form the four public ROI edges in the displayed binary64 grouping; intersect them with D by max lower edges and min far edges; form each nonnegative extent by far minus selected lower edge.",
+    "integerComposition": "Apply the opened finite clamp, floor lower edges, ceil far edges, and conditional one-pixel border to the floating intersection, then apply the opened signed integer intersection with the exact viewport.",
+    "finalComposition": "Convert the selected signed integer operand to binary64 and replay the opened LayerShapes::union_bounds instruction order against D.",
+    "calibrationRecordCount": 256,
+    "calibrationExactRecordCount": 256,
+    "calibrationExactIntegerComponentCount": 1024,
+    "toleranceUsed": false,
+    "exceptionFitUsed": false
+  },
+  "holdoutMatrix": {
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "normalSamplesPerJob": 32,
+    "jobs": [
+      {
+        "label": "holdout-065-center",
+        "geometry": "circle-065-center"
+      },
+      {
+        "label": "holdout-343-center",
+        "geometry": "circle-343-center"
+      },
+      {
+        "label": "holdout-513-center",
+        "geometry": "circle-513-center"
+      },
+      {
+        "label": "holdout-769-center",
+        "geometry": "circle-769-center"
+      },
+      {
+        "label": "holdout-1025-center",
+        "geometry": "circle-1025-center"
+      },
+      {
+        "label": "holdout-2048-center",
+        "geometry": "circle-2048-center"
+      },
+      {
+        "label": "holdout-256-crop-d",
+        "geometry": "circle-256-crop-d"
+      },
+      {
+        "label": "holdout-096-padx-453",
+        "geometry": "circle-096-padx-453"
+      }
+    ],
+    "excludedCalibrationGeometries": [
+      "circle-1536-center",
+      "circle-256-center",
+      "circle-512-offset",
+      "circle-640-center",
+      "circle-640-fractional",
+      "circle-640-phase-0500-even",
+      "circle-640-phase-0500-signed",
+      "circle-640-integer"
+    ],
+    "diversity": "Previously unused exact crop-operand states spanning small support, odd size, just-above power-of-two boundaries, subviewport and superviewport clipping, asymmetric two-axis crop, and near-boundary horizontal placement."
+  },
+  "acceptance": {
+    "jobCount": 8,
+    "normalMarkerCountPerJob": 32,
+    "allSchemaSevenMarkerGatesMustRepass": true,
+    "exactUnionCallAndReturnInstructionsRequired": true,
+    "twoDestinationMatchesPerMarkerRequired": true,
+    "lastDestinationMatchRequired": true,
+    "exactNestedCropStoreInstructionRequired": true,
+    "onePointerMatchedStorePerMarkerRequired": true,
+    "allStoreSIMDBytesMustEqualWorkingCropBytes": true,
+    "allPreIntegerF64WordsMustMatchBitForBit": true,
+    "allIntegerCropWordsMustMatchExactly": true,
+    "allFinalAggregateWordsMustMatchBitForBit": true,
+    "zeroTraceFailuresRequired": true,
+    "allEightJobsMustPass": true,
+    "clearLightMaterializeOneXUnseenCropTransferMayBeClaimed": true,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xTransferMayBeClaimed": false,
+    "endToEndWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_preregistration.json",
+        "sha256": "2f0d77b7ce1ef3a20b5127cf53007a94736e30f214e30ad91f0c7b5a88bda68d"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_callback_visibility_failure_result.json",
+        "sha256": "332ea076d3244531fcf980267e09239dc9b68e87f436f0a3c3d52e73a83ba0e3"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_policy_holdout_lldb.py",
+        "sha256": "5d5f243c40d400f2562445797780bb787ebfeb5197c21a4bf3c477b007aa2b46"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_crop_policy_holdout.py",
+        "sha256": "d6ea6752bb24d450a62762da4d2095ad676136ace6d0454a7938b1a87bea4964"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-crop-policy-holdout.yml",
+        "sha256": "04a47e0e26c42db9a54aa0925d10f48034602b8ff53c7eb6c86a8c8e8ab4c011"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_policy_holdout_callback_retry_lldb.py",
+        "sha256": "d8378936bf967d00ac692c89d4e85b7a198e751a26585b0c72c0bbefbd582bce"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py",
+        "sha256": "6b4d790497add18073da3aca32faed50bbed84de3d87fbf7a9c000430c726ca0"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_crop_policy_holdout_callback_retry_preregistration.py",
+        "sha256": "ec90f366a74d22983e71057ca0eb445763d1602d947cf028b6cdaa6936a8174d"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-crop-policy-holdout-callback-retry.yml",
+        "sha256": "19e3b6bc0153c5f6d07dab33299723935e376391e62b31efb2a2461e405e8400"
+      },
+      {
+        "path": "Sources/GlassIntrospect/main.swift",
+        "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}

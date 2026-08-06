@@ -1,0 +1,108 @@
+{
+  "prepareLayerCropPolicyHoldoutCallbackVisibilityFailureResultSchemaVersion": 1,
+  "classification": "opened failed prospective holdout; the workflow reached Apple prepare_layer but the LLDB target remained stopped at the first dependency-module union callback, so no crop-policy sample or parity result exists",
+  "run": {
+    "id": 31059229769,
+    "headSHA": "35a149ebc0cdbcea34a36ce9c5f559cc33ea3b16",
+    "workflow": ".github/workflows/prepare-layer-crop-policy-holdout.yml",
+    "workflowName": "Validate unseen prepare_layer crop policy",
+    "event": "workflow_dispatch",
+    "createdAtUtc": "2026-08-06T00:17:36Z",
+    "updatedAtUtc": "2026-08-06T00:23:31Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobCount": 8,
+    "failedJobCount": 8,
+    "failedEnforcementStepCount": 8,
+    "url": "https://github.com/Quince-Pie/lg-test/actions/runs/31059229769"
+  },
+  "artifactInventory": [
+    {
+      "label": "holdout-065-center",
+      "artifactID": 8951484520,
+      "sizeBytes": 84886547,
+      "digest": "sha256:97aaf631f9adadc65627a791ceee2f29c5fae3c660ef51d2efd665d41b25f514"
+    },
+    {
+      "label": "holdout-343-center",
+      "artifactID": 8951479719,
+      "sizeBytes": 87635398,
+      "digest": "sha256:e07fc7810205260e0e730df5a697fd078798f964ecf5076a78666da3fa5917ad"
+    },
+    {
+      "label": "holdout-513-center",
+      "artifactID": 8951483883,
+      "sizeBytes": 90718445,
+      "digest": "sha256:194b07252fccaad539f3fb345d3e215bad59c1fba174588fbc13757c50218120"
+    },
+    {
+      "label": "holdout-769-center",
+      "artifactID": 8951472706,
+      "sizeBytes": 96056123,
+      "digest": "sha256:a00615a0ea0488e12088c191b6d201e9a3391b0d8e21c0d6bbeafd684240df81"
+    },
+    {
+      "label": "holdout-1025-center",
+      "artifactID": 8951534736,
+      "sizeBytes": 101237212,
+      "digest": "sha256:4f77e7d6b2dabf9616b8430d9c9bede2b3771af4e2c6a421f1e6ee24e819ac89"
+    },
+    {
+      "label": "holdout-2048-center",
+      "artifactID": 8951531855,
+      "sizeBytes": 99738614,
+      "digest": "sha256:88e70067e1d94bb79f588a5113a59ed371272731453281ce3ac18dea75acd0ff"
+    },
+    {
+      "label": "holdout-256-crop-d",
+      "artifactID": 8951526510,
+      "sizeBytes": 86670787,
+      "digest": "sha256:8b0f8856cfc12b4b1cb9a04a9d9cb803652546a885c92ef7cb87dab73fd49958"
+    },
+    {
+      "label": "holdout-096-padx-453",
+      "artifactID": 8951471420,
+      "sizeBytes": 85033657,
+      "digest": "sha256:677a2edfbe9c965d9ba0d4a24d1823d8bb15acaa19c35bf8473a9832202deb53"
+    }
+  ],
+  "openedRepresentativeEvidence": {
+    "label": "holdout-096-padx-453",
+    "traceSHA256": "5925f6817cfa76e1dca17ae868dcef6e518f76c3b5dfb61e3d78226bf8456d75",
+    "lldbLogSHA256": "25d992452f5934fa0de6af4e8d238d9144d7921dd655160255a097d0b3ec1e56",
+    "targetStop": {
+      "processState": 5,
+      "exited": false,
+      "exitStatus": null,
+      "breakpointID": "3.1",
+      "prepareLayerOffset": 34268,
+      "prepareLayerOffsetHex": "0x85dc",
+      "instruction": "bl LayerShapes::union_bounds"
+    },
+    "trace": {
+      "failureCount": 0,
+      "qualifiedMarkerCount": 0,
+      "qualifiedUnionRecordCount": 0,
+      "unionCallHitCount": 0,
+      "unionReturnHitCount": 0,
+      "qualifiedStoreRecordCount": 1,
+      "storeHitCount": 1,
+      "timelinePresent": false,
+      "validationPresent": false
+    }
+  },
+  "diagnosis": {
+    "failureClass": "LLDB script callback name visibility",
+    "evidence": "The top-level holdout callback executed and installed the store and union breakpoints. The store callback in the top-level module executed once. LLDB then stopped at the first +0x85dc union breakpoint instead of invoking the callback registered under the ordinarily imported dependency module name.",
+    "captureOrFormulaMismatchObserved": false,
+    "cropPolicyOutcomeAvailable": false,
+    "formulaPassed": null,
+    "formulaFailed": null,
+    "parityEstablished": false
+  },
+  "workflowStepSemantics": {
+    "captureStepReportedSuccess": true,
+    "validatorStepReportedSuccess": true,
+    "explanation": "Both steps were continue-on-error shell steps; LLDB batch mode returned after a stopped target and the validator failure was intentionally non-fatal. Only the final enforcement step expresses the scientific gate, and it failed in all eight jobs."
+  }
+}
