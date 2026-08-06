@@ -1,0 +1,200 @@
+{
+  "prepareLayerMaskInstructionTracePreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T01:37:26Z",
+  "classification": "prospective structurally selected prepare_layer_mask helper-body calibration; antecedent failure, call identity, event selector, capture byte ranges, exact validation, and sealed product authority are frozen before dispatch",
+  "antecedent": {
+    "runID": 31059860458,
+    "headSHA": "6ff54c6bd01e6dea04002ca8c11fd1c0f7e4852c",
+    "workflowConclusion": "failure",
+    "prospectiveGatePassed": false,
+    "openedResult": "Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_callback_retry_result.json",
+    "openedResultSHA256": "8161ff4797735ac4ffa206e4347569f85c18ca519833ca13c163233a06f04847",
+    "capturedProducerRecordCount": 256,
+    "exactIntegerCropCount": 256,
+    "exactCombinedIntegerCropCount": 512,
+    "exactCollapsedFloatCount": 139,
+    "exactLocalFloatCount": 211,
+    "remainingLocalFloatMismatchCount": 45,
+    "exactBinary64ProducerArithmeticRecovered": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  },
+  "helper": {
+    "function": "CA::Render::Updater::prepare_layer_mask(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::Updater::LayerShapes const&, CA::Render::Updater::LayerShapes&)",
+    "relativeToPrepareLayer": -1209388,
+    "symbolByteCount": 2176,
+    "callOffset": "0xd90",
+    "callReturnOffset": "0xd94",
+    "callInstructionRawLittleEndianHex": "915ffb97",
+    "callerLocalStateOffset": "0x420",
+    "callerOutputOffset": "0x290",
+    "existingInstructionTraceRunID": 31048753297,
+    "existingInstructionTraceSHA256": "7cb1aa0f9f205bf57c4cea01539a2ac0860137b8be9c53112c0989e7488b51e5",
+    "existingTraceTreatment": "opaque callee stepped out from prepare_layer+0xd90",
+    "codeKnownBeforeCapture": false,
+    "expectedCodeSHA256": null,
+    "firstPassingCaptureAuthority": "open exact helper code and one selected execution for offline semantic calibration only; freeze the opened code and replay before an unchanged repeat"
+  },
+  "selection": {
+    "geometry": "circle-1025-center",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "markerInterval": 2,
+    "publicSampleIndexAfterMarker": 2,
+    "qualifiedHelperOrdinalWithinInterval": 8,
+    "derivation": "run 31059860458 sample 2 retains stores [7,17); its structurally opened producer is store 14, ordinal 8 in that interval; the new helper call is selected by the same frozen interval and ordinal before output bytes are captured",
+    "directNormalCallerRequired": true,
+    "requiredX1Relationship": "x1 = x19 + 0x420",
+    "requiredX3Relationship": "x3 = x19 + 0x290",
+    "selectedHelperMustLaterCorrelateToStructuralProducer": true,
+    "cropValueUsed": false,
+    "outputValueUsed": false,
+    "eventCountMayBeChangedAfterCapture": false,
+    "geometrySpecificExceptionUsed": false
+  },
+  "captureConfiguration": {
+    "helperFunction": "CA::Render::Updater::prepare_layer_mask(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::Updater::LayerShapes const&, CA::Render::Updater::LayerShapes&)",
+    "helperRelativeToPrepareLayer": -1209388,
+    "helperSymbolByteCount": 2176,
+    "helperExpectedSHA256": null,
+    "callOffset": 3472,
+    "callReturnOffset": 3476,
+    "callInstructionRawLittleEndianHex": "915ffb97",
+    "callerLocalStateOffset": 1056,
+    "callerOutputOffset": 656,
+    "targetMarkerInterval": 2,
+    "targetQualifiedOrdinal": 8,
+    "expectedGeometry": "circle-1025-center",
+    "maximumHelperEntryHitCount": 16384,
+    "maximumQualifiedHelperEntryCount": 4096,
+    "maximumHelperInstructionCount": 8192,
+    "maximumOpaqueCalleeCount": 2048,
+    "maximumUnexpectedTerminalStopCount": 8,
+    "stackByteCount": 256,
+    "argumentByteCount": 1024,
+    "callerRoleByteCount": 2048,
+    "outputByteCount": 512,
+    "entryRegisterNames": [
+      "x0",
+      "x1",
+      "x2",
+      "x3",
+      "x19",
+      "x29",
+      "sp",
+      "pc",
+      "cpsr"
+    ],
+    "entrySelectionRule": "among exact direct-normal transition callers, select marker interval 2 ordinal 8, then require x1=x19+0x420 and x3=x19+0x290; do not inspect any rectangle or output bytes",
+    "steppingRule": "set LLDB synchronous, disable every software breakpoint, retain complete scalar/SIMD registers, stack, and output bytes before and after every helper instruction; step into the helper and step out of non-helper callees as explicit input/output boundaries",
+    "correlationRule": "after normal capture resumes, require selected x3 to equal the marker-2 structural predecessor store role+0x290 and require helper return bytes to equal that later producer",
+    "hardwareWatchpointsUsed": false,
+    "cropValuesUsedForSelection": false
+  },
+  "acceptance": {
+    "originalProspectiveFailureMustRemainPublicCropProducerReplayDiffers": true,
+    "allInheritedMarkerUnionStoreAndSnapshotGatesMustRepass": true,
+    "completeHelperCodeRequired": true,
+    "helperSymbolBoundsAndModuleRequired": true,
+    "completeInstructionSequenceRequired": true,
+    "completeScalarAndSIMDRegistersRequired": true,
+    "stackAndOutputBytesBeforeAndAfterEveryInstructionRequired": true,
+    "allOpaqueCalleesMustBeExplicitBoundaries": true,
+    "exactExecutionPCChainRequired": true,
+    "exactHelperReturnToProducerCorrelationRequired": true,
+    "zeroTraceFailuresRequired": true,
+    "normalTargetExitRequired": true,
+    "exactSemanticsMayBeClaimed": false,
+    "unchangedRepeatMayBeClaimed": false,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "endToEndWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_callback_retry_result.json",
+        "sha256": "8161ff4797735ac4ffa206e4347569f85c18ca519833ca13c163233a06f04847"
+      },
+      {
+        "path": "Analysis/analyze_prepare_layer_crop_policy_holdout_callback_retry.py",
+        "sha256": "365a5ecf4a01bc3fd52db17b34449a557dbda3f54062765cbf199f84fe92b699"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_policy_holdout_callback_retry_lldb.py",
+        "sha256": "d8378936bf967d00ac692c89d4e85b7a198e751a26585b0c72c0bbefbd582bce"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_policy_holdout_lldb.py",
+        "sha256": "5d5f243c40d400f2562445797780bb787ebfeb5197c21a4bf3c477b007aa2b46"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_union_operand_lldb.py",
+        "sha256": "607f165b29d0324677725892833ba99a79d3fd9830bd9d52573d56d5aa0f51bb"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_transfer_lldb.py",
+        "sha256": "1e08267e1c24a7b75765b0f3d9ec09749e7f2673673ba1133bc569b5c87039b9"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_full_path_trace_lldb.py",
+        "sha256": "074b8078f841426829872dac4eee26e14ffb5afbffac31d582228a326ed2ffd0"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_crop_policy_holdout.py",
+        "sha256": "d6ea6752bb24d450a62762da4d2095ad676136ace6d0454a7938b1a87bea4964"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_crop_union_operand.py",
+        "sha256": "bd19b89360c15fe569f8f8ac033f1133eb3ad067f104f304cba671cde8938695"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_crop_transfer.py",
+        "sha256": "1681b93409bac765ea5569d0ac3203ef141bcd76a808d2e747b0c3cb670022b1"
+      },
+      {
+        "path": "Analysis/analyze_prepare_layer_crop_union_operand_matrix.py",
+        "sha256": "7fbd6885f428987536103633e4243dfd1e03d3d4cf62c71315ca02dd72496977"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_mask_instruction_trace_lldb.py",
+        "sha256": "31de1f159556d1fa33986dd5fc2268c787e6cd81d36aab315e8ccfbbd4b188e5"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_mask_instruction_trace.py",
+        "sha256": "e2a02168261bfc7fe1ac923bd6bae7494c410abbaefe6cadf71134746715a11a"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_mask_instruction_trace_lldb_source.py",
+        "sha256": "0936a23b1a0509fe361cf3e65933cc18703b2e7d300ec8f49570066c93719ddf"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_mask_instruction_trace_preregistration.py",
+        "sha256": "f5fa3901dcbdd337316b05bc46a0ea0c1df87179dd16abe62229eabb9bf9de96"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-mask-instruction-trace.yml",
+        "sha256": "36be360c9452f7ec8e22d8471a9a20e9fc35d6c9901a3e23f577f6d1861d8a14"
+      },
+      {
+        "path": "Sources/GlassIntrospect/main.swift",
+        "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}

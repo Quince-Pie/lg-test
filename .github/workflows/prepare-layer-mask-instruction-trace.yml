@@ -1,0 +1,195 @@
+name: Trace exact prepare_layer_mask producer
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: prepare-layer-mask-instruction-trace-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare-layer-mask-trace:
+    name: helper-body-1025-sample-02
+    runs-on: macos-26
+    timeout-minutes: 120
+    env:
+      LG_GLASS_MATERIAL: clear
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-1025-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-introspection/prepare-layer-mask-instruction-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify helper-trace contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-introspection
+          set -o pipefail
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_transfer_lldb_source.py' \
+            -v 2>&1 | tee transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_crop_transfer.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_union_operand_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_policy_holdout_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_analyze_prepare_layer_crop_policy_holdout_callback_retry.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_mask_instruction_trace_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_dynamic_allocation_prepare_layer_mask_instruction_trace_preregistration.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          mkdir -p transition-introspection
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-introspection/MatrixBridge.o 2>&1 |
+            tee transition-introspection/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-introspection/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-introspection/build.log
+
+      - name: Capture selected helper body
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-introspection/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-introspection/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_mask_instruction_trace_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_mask_instruction_trace_lldb.trace_selected_helper()' \
+            -o 'script capture_prepare_layer_mask_instruction_trace_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-introspection \
+            > transition-introspection/lldb-prepare-layer-mask-instruction.log 2>&1
+
+      - name: Validate selected helper trace
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_mask_instruction_trace.py \
+            transition-introspection/prepare-layer-mask-instruction-trace.json \
+            transition-introspection/transition-timeline.json \
+            --expected-geometry circle-1025-center \
+            --output \
+              transition-introspection/prepare-layer-mask-instruction-validation.json
+
+      - name: Upload helper-body evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-prepare-layer-mask-instruction-trace-${{ github.run_id }}
+          path: transition-introspection
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce helper-body evidence
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s transition-introspection/transition-timeline.json
+          test -s transition-introspection/prepare-layer-mask-instruction-trace.json
+          test -s transition-introspection/prepare-layer-mask-instruction-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("transition-introspection")
+          result = json.loads(
+              (root / "prepare-layer-mask-instruction-validation.json")
+              .read_text(encoding="utf-8")
+          )
+          helper = result.get("helper", {})
+          correlation = result.get("structuralCorrelation", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get("prepareLayerMaskInstructionTraceValidationSchemaVersion") != 1
+              or result.get("conclusion") != "success"
+              or result.get("prospectiveCaptureIntegrityGatePassed") is not True
+              or result.get("originalProspectiveGatePassed") is not False
+              or helper.get("symbolByteCount") != 2176
+              or helper.get("codeExpectedBeforeCapture") is not False
+              or helper.get("selectedMarkerInterval") != 2
+              or helper.get("selectedQualifiedOrdinal") != 8
+              or not isinstance(helper.get("instructionStateCount"), int)
+              or helper.get("instructionStateCount") <= 0
+              or correlation.get("sampleIndex") != 2
+              or correlation.get("helperReturnMatchesProducerBitForBit") is not True
+              or correlation.get("cropValuesUsedForSelection") is not False
+              or sealed.get("allInheritedMarkerUnionAndStoreEvidenceRevalidated") is not True
+              or sealed.get("originalProspectiveFailurePreserved") is not True
+              or sealed.get("helperCodeAndSymbolCapturedExactly") is not True
+              or sealed.get("helperCallSelectedStructurally") is not True
+              or sealed.get("completeHelperInstructionStateSequenceCaptured") is not True
+              or sealed.get("helperReturnCorrelatedToTrueProducer") is not True
+              or sealed.get("exactHelperSemanticsDecoded") is not False
+              or sealed.get("unchangedRepeatPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("prepare_layer_mask instruction validation differs")
+          PY

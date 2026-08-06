@@ -6590,3 +6590,109 @@ eight unseen geometries, capture bytes, validator, exact acceptance rules, and
 sealed production authority remain byte-for-byte unchanged. Until that retry
 produces 256-bit exact floating matches, the clear/light/materialize 1x crop
 producer remains unproven and Liquid Glass parity remains unestablished.
+
+Run `31059860458`, from callback-retry commit `6ff54c6`, repairs the LLDB
+transport and returns complete evidence for all eight frozen geometries. The
+GitHub workflow remains correctly red: seven jobs reach the frozen validator's
+`public crop producer replay differs` rejection, while the 2048-point job
+first falsifies the older `[3,4,...,4]` marker-topology assumption with 32
+depth-three markers. No failed gate is relabelled as a pass.
+
+The immutable retrospective opening is
+`Analysis/dynamic_allocation_prepare_layer_crop_policy_holdout_callback_retry_result.json`;
+its replayer is
+`Analysis/analyze_prepare_layer_crop_policy_holdout_callback_retry.py`. The
+replayer freezes all eight GitHub artifact IDs and digests, rehashes both raw
+files in every artifact, reruns the inherited marker/union/snapshot checks,
+and requires the original prospective failure before interpreting any new
+relationship. For the 2048-point artifact it accepts only the observed
+`[3]*32` topology in a temporary retrospective scope and restores the frozen
+validator constant afterward.
+
+The capture reveals why the public floating prediction failed. The sole store
+selected by the frozen LayerShapes-pointer correlation is a downstream mirror:
+its four binary64 lanes are simply the signed integer crop converted back to
+double. The actual pre-integer producer is exactly two retained store records
+earlier in every marker interval. This predecessor is identified without
+reading crop values:
+
+```
+producer store index + 2 = pointer-correlated mirror store index
+producer role base + 0xfb0 = mirror role base
+producer prepare depth = mirror prepare depth + 2
+```
+
+That rule selects all 256 records. Every selected producer rectangle passes
+the already opened finite floor/ceil enclosure, conditional one-pixel border,
+and integer viewport intersection to reproduce Apple's crop exactly. Thus the
+holdout contributes 256/256 exact integer crops; together with the prior
+calibration matrix, the measured downstream crop boundary is 512/512 exact.
+This closes the captured integer boundary, not the exact binary64 producer.
+
+The original collapsed canvas-coordinate expression bit-matches only 139 of
+256 producer rectangles (834 of 1,024 component words). Its 190 unequal words
+are at most `2.2737367544323206e-13` apart, but parity uses no tolerance. Doing
+the intersection in the recursive LayerShapes local coordinates before the
+carrier transform improves the result to 211/256 rectangles and 923/1,024
+component words. X origins are 256/256 exact and widths are 245/256 exact;
+the remaining failures concentrate in Y/far-edge construction. The maximum
+local residual is `4.547473508864641e-13`. These residuals are diagnostic,
+not an error budget and not production authority.
+
+The true producer roles retain the intermediate objects that the collapsed
+formula discarded. Across all 256 records:
+
+- the transform at role `+0x330` has translation lanes 12 and 13 bit-identical
+  to public `Bx,By`;
+- role `+0x620` is bit-identical to `[0,-0,Bw,Bh]`;
+- role `+0x5e0` is exactly the shadow offset `8`;
+- role `+0x640` is bit-identical to the nominal shape at `+0x600` with exactly
+  eight added to its height; and
+- role `+0x580` is the transformed dynamic bounds. Recomputing it from the
+  collapsed public expression is exact for 251/256 records, directly exposing
+  five lost transform-order cases. The 513-point nominal shape itself is one
+  ULP below 513 in all 32 states, further proving that algebraically equivalent
+  public arithmetic is insufficient for bit parity.
+
+The shortest exact next gate is therefore no longer a broader geometry grid.
+The accepted instruction trace already shows `prepare_layer+0xd80...+0xd90`
+executing
+
+```
+add x1, x19, #0x420
+add x3, x19, #0x290
+mov x0, x21
+mov x2, x22
+bl  CA::Render::Updater::prepare_layer_mask(...)
+```
+
+The 2,176-byte `prepare_layer_mask` helper writes the exact producer
+destination at role `+0x290`, but the old trace deliberately treated its body
+as opaque. A prospectively frozen, bounded helper-body trace must now retain
+its code hash, entry operands, exact instruction/register sequence, opaque
+callee boundaries, and returned output for a structurally selected call. That
+trace should resolve the remaining transform/union/intersection order without
+guessing another near-equivalent formula.
+
+Even an exact helper replay closes only clear/light/materialize at 1x. Full
+observational parity still requires frozen transfer gates for the remaining
+material, appearance, and direction combinations; physical Retina 2x plus
+color-space/pixel-format transfer; and independent Walle renders with zero
+unequal bytes. Only after those gates may the exact model enter production.
+Tracy and `amdgpu_top` VRAM/latency work follows under the immutable zero-byte
+image gates. The production shader remains untouched at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+That helper-body experiment is prospectively frozen in
+`Analysis/dynamic_allocation_prepare_layer_mask_instruction_trace_preregistration.json`.
+The capture, strict validator, and one-job workflow are
+`Analysis/capture_prepare_layer_mask_instruction_trace_lldb.py`,
+`Analysis/validate_prepare_layer_mask_instruction_trace.py`, and
+`.github/workflows/prepare-layer-mask-instruction-trace.yml`. The target is
+`circle-1025-center`, marker interval two, qualified helper ordinal eight. The
+selector then requires only the statically opened `x1=x19+0x420` and
+`x3=x19+0x290` relationships. Helper code bytes, rectangle bytes, and output
+values are unavailable to the selector. Because the helper's complete code
+hash has not previously been captured, the first passing run is explicitly a
+semantic calibration; its code and decoded replay must be frozen and pass an
+unchanged repeat before exact producer arithmetic can be claimed.
