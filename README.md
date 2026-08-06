@@ -6878,3 +6878,34 @@ capture returns: a bitwise match establishes ownership in this run; a mismatch
 still provides the complete instruction/mutation chain needed to choose the
 next structural owner. The production shader remains untouched at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
+
+Run `31068004888`, from commit `f92d6dd`, has **no `+0xf5c` ownership
+outcome**. LLDB stops at breakpoint `1.1`, the first `prepare_layer+0` entry,
+before any qualified crop record or helper entry exists. The manual trace then
+correctly refuses to run with `structurally selected mask call was not reached`.
+The finalized evidence contains zero selected helper, caller-continuation,
+callee, opaque-boundary, and execution-event records. Failure handling resumes
+the target to a normal exit, but that does not retroactively create a selector
+or ownership result.
+
+The failure is callback-name transport: the newly imported top-level module
+delegated initialization to a normally imported dependency, whose callback
+names LLDB did not resolve. The capture command appears successful only because
+the script deliberately preserves the artifact after an internal failure; the
+strict validator exits with
+`selected-helper antecedent differs: original prospective failure differs:
+crop transfer trace did not remain active to exit`, and final enforcement is
+red. The immutable null result is
+`Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_callback_visibility_failure_result.json`.
+
+The prospective transport-only retry is frozen in
+`Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_callback_retry_preregistration.json`.
+`Analysis/capture_prepare_layer_crop_producer_callee_callback_retry_lldb.py`
+exposes the inherited entry, marker, union-call, union-return, store, and helper
+callbacks through the module loaded by `command script import`, rebinding them
+after the entry callback installs the later breakpoints. It adds zero
+breakpoints, memory reads, instruction steps, or value-based selectors. The
+original capture, validator, `+0xf5c` target, output-blind ordinal-14 selector,
+memory ranges, step rules, checkpoint intervals, and acceptance remain
+byte-for-byte frozen. The retry workflow is
+`.github/workflows/prepare-layer-crop-producer-callee-callback-retry.yml`.

@@ -1,0 +1,72 @@
+{
+  "prepareLayerCropProducerCalleeCallbackVisibilityFailureResultSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T03:22:09Z",
+  "classification": "immutable opening of a callback-name transport failure before the frozen producer-callee selector; LLDB stopped at the first prepare_layer entry because dependency-module callback names were not visible, so no helper or callee ownership outcome exists",
+  "run": {
+    "runID": 31068004888,
+    "jobID": 92509787319,
+    "headSHA": "f92d6dd734a85e4ee2443ecaa83c28152aa3e91f",
+    "workflowConclusion": "failure",
+    "startedAt": "2026-08-06T03:17:02Z",
+    "completedAt": "2026-08-06T03:20:03Z",
+    "artifactID": 8954595652,
+    "artifactName": "liquid-glass-prepare-layer-crop-producer-callee-31068004888",
+    "artifactSizeBytes": 102985291,
+    "artifactDigest": "sha256:a409ee52ea91fbce65b69e5450d15c96c387a7e146fa5d35e997ab0c7a308ecf"
+  },
+  "rawEvidence": {
+    "traceByteCount": 15690,
+    "traceSHA256": "3e35652f9c1a37c76b90d27280cdfe8bc96ff17b5dcadad8f65fe12a357506a1",
+    "timelineByteCount": 46971831,
+    "timelineSHA256": "741368ffba8057a7ae813532e644b323df2cfed433ffdd41069d3ae23153bf8f",
+    "lldbLogSHA256": "bda9c125c8288fed82375f5acf1e6ec3a754288948f8a1c860d6455d91385ec3",
+    "runtimeStderrSHA256": "e20409ae3e9859c6b8c5c7d802c3f1a49b38082307844cf492e9b8d89771b620",
+    "contractsLogSHA256": "23c562192cda29b96bdb0a579233ef575659bdf4fd32c15bf92db1615d99af8f",
+    "captureCommandExitStatus": 0,
+    "validatorCommandExitStatus": 1,
+    "validatorFailure": "selected-helper antecedent differs: original prospective failure differs: crop transfer trace did not remain active to exit"
+  },
+  "openedFailure": {
+    "stopReason": "breakpoint 1.1",
+    "stopFunction": "CA::Render::Updater::prepare_layer(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::LayerNode*, CA::Render::Updater::LayerShapes&, unsigned long long&)",
+    "stopSymbolOffset": 0,
+    "rootStatusBeforeFinalization": "initialized",
+    "rootFailure": "structurally selected mask call was not reached",
+    "qualifiedCropRecordCount": 0,
+    "qualifiedMarkerCount": 0,
+    "qualifiedHelperEntryCount": 0,
+    "helperSelectionReached": false,
+    "manualTraceStarted": false,
+    "manualTraceFinished": false,
+    "callerContinuationInstructionCount": 0,
+    "calleeInstructionCount": 0,
+    "opaqueCalleeBoundaryCount": 0,
+    "executionEventCount": 0,
+    "targetEventuallyExitedNormallyAfterFailureHandling": true,
+    "failureClass": "LLDB script callback name visibility",
+    "scientificSelectorReached": false,
+    "producerOwnershipOutcomeAvailable": false
+  },
+  "transportRetryBoundary": {
+    "requiredChange": "rebind every inherited dynamic breakpoint to forwarding functions in the top-level module loaded by command script import, including rebinding after prepare_layer entry installs later breakpoints",
+    "sameBreakpointAddressesRequired": true,
+    "sameSelectorRequired": true,
+    "sameMemoryReadsRequired": true,
+    "sameInstructionSteppingRequired": true,
+    "sameValidatorRequired": true,
+    "newBreakpointCount": 0,
+    "newMemoryReadCount": 0,
+    "newValueBasedSelectorCount": 0
+  },
+  "sealedConclusion": {
+    "postMaskCalleeOwnershipEstablished": false,
+    "exactCalleeSemanticsDecoded": false,
+    "unchangedRepeatPassed": false,
+    "allCropHoldoutsBitExact": false,
+    "materialAppearanceDirectionTransferPassed": false,
+    "physicalRetina2xAndColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

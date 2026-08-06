@@ -1,0 +1,150 @@
+{
+  "prepareLayerCropProducerCalleeCallbackRetryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T03:22:09Z",
+  "classification": "prospective callback-name transport retry of the immutable output-blind post-mask producer-callee gate; the failed run stopped before selection, and this amendment only exposes inherited callbacks through the top-level LLDB module while every scientific input and acceptance rule remains frozen",
+  "openedFailedRun": {
+    "antecedentPreregistration": "Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_preregistration.json",
+    "antecedentPreregistrationSHA256": "8304d8ee6d068037c5e048345b1fd69b4b6086d702a25d4ea0fb9eae7dcbf9be",
+    "failureResult": "Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_callback_visibility_failure_result.json",
+    "failureResultSHA256": "b218b207eb32a28de9e2684ddc6d645c3ac64405e994841a85ca752d7a551904",
+    "runID": 31068004888,
+    "headSHA": "f92d6dd734a85e4ee2443ecaa83c28152aa3e91f",
+    "workflowConclusion": "failure",
+    "stopReason": "breakpoint 1.1",
+    "stopFunctionOffset": 0,
+    "qualifiedCropRecordCount": 0,
+    "qualifiedHelperEntryCount": 0,
+    "manualTraceStarted": false,
+    "callerContinuationInstructionCount": 0,
+    "calleeInstructionCount": 0,
+    "selectorReached": false,
+    "ownershipOutcomeAvailable": false,
+    "parityEstablished": false
+  },
+  "transportOnlyAmendment": {
+    "failureClass": "LLDB script callback name visibility",
+    "mechanism": "top-level forwarding callbacks are installed at initialization and rebound after inherited prepare_layer entry installs later breakpoints",
+    "topLevelCallbacks": [
+      "prepare_layer_entry",
+      "crop_union_call",
+      "crop_union_return",
+      "nested_crop_store",
+      "crop_transfer_marker",
+      "prepare_layer_mask_entry",
+      "trace_selected_producer_callee",
+      "finalize"
+    ],
+    "sameBreakpointAddresses": true,
+    "sameMemoryReads": true,
+    "sameStructuralSelector": true,
+    "sameCallerAndCalleeOffsets": true,
+    "sameInstructionStepping": true,
+    "sameCheckpointIntervals": true,
+    "sameValidator": true,
+    "sameAcceptance": true,
+    "sameProductionShader": true,
+    "newBreakpointCount": 0,
+    "newMemoryReadCount": 0,
+    "newInstructionStepCount": 0,
+    "newValueBasedSelectorCount": 0,
+    "scientificAmendment": false
+  },
+  "unchangedScientificGate": {
+    "geometry": "circle-1025-center",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "markerInterval": 2,
+    "qualifiedHelperOrdinal": 14,
+    "callerContinuationStartOffset": 3476,
+    "calleeCallOffset": 3932,
+    "calleeReturnOffset": 3936,
+    "calleeEntryRelativeToPrepareLayer": -1206100,
+    "calleeCallRawLittleEndianHex": "5462fb97",
+    "callerLocalStateOffset": 1056,
+    "callerOutputOffset": 656,
+    "cropOrOutputValuesUsedForSelection": false,
+    "calleeIdentityKnownBeforeRetry": false,
+    "calleeCodeSHA256KnownBeforeRetry": false,
+    "calleeReturnBytesKnownBeforeRetry": false
+  },
+  "acceptance": {
+    "inheritedInventoryTransportMustRevalidateBitForBit": true,
+    "originalSelectedHelperOwnershipFailureMustRevalidateExactly": true,
+    "fixedCallerPathAndRawCallInstructionMustMatch": true,
+    "completeCalleeSymbolCodeAndExecutionRequired": true,
+    "allExecutionEventsMustFormAnExactPCAndMemoryChain": true,
+    "returnedFirstRectangleMustMatchIndependentProducerBitForBit": true,
+    "zeroTraceFailuresRequired": true,
+    "normalTargetExitRequired": true,
+    "firstSuccessfulCaptureMayEstablishCalleeIdentityAndOwnershipOnly": true,
+    "exactCalleeSemanticsMayBeClaimed": false,
+    "unchangedRepeatMayBeClaimed": false,
+    "allCropHoldoutsMayBeClaimed": false,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "endToEndWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_preregistration.json",
+        "sha256": "8304d8ee6d068037c5e048345b1fd69b4b6086d702a25d4ea0fb9eae7dcbf9be"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_callback_visibility_failure_result.json",
+        "sha256": "b218b207eb32a28de9e2684ddc6d645c3ac64405e994841a85ca752d7a551904"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_producer_callee_lldb.py",
+        "sha256": "dca3f544b30db45bad7a6104fa838c5f241e4e869c1f46740afa352174abe40c"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_crop_producer_callee.py",
+        "sha256": "b8af91ae6bc8f137feefb927616cbbd36e4081e0dfdc240079fa7e924bb2046d"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-crop-producer-callee.yml",
+        "sha256": "7bd946137b9e626ae9fda2949272c89dc6a5e236b9b9b15501664408c7acb314"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_producer_callee_callback_retry_lldb.py",
+        "sha256": "305d2c2afd6c70c125d4eb04b47d0fd91cc872d2b989e3e80203ae1552e0e551"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_crop_producer_callee_callback_retry_lldb_source.py",
+        "sha256": "52d04cbb299f20103abde32875a780f68febccf987e24b41c57b43a4d64e6385"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_crop_producer_callee_callback_visibility_failure_result.py",
+        "sha256": "1d30682a795caa401b0c2f370d1c2f14e14325b180cec52918c88f0d7d48a939"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_crop_producer_callee_callback_retry_preregistration.py",
+        "sha256": "4ed5fb5da7a85a4732444fddf3235664dfa5d6750cea5e3b5a15fdf41e7937e6"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-crop-producer-callee-callback-retry.yml",
+        "sha256": "c0ed9724ac7e412590d8e93cdf2daad80ee4aa85e2e5fbe3dccf6027ec3a2da7"
+      },
+      {
+        "path": "Sources/GlassIntrospect/main.swift",
+        "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}
