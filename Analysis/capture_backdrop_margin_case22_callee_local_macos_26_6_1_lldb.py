@@ -71,6 +71,28 @@ def producer_stage(frame, breakpoint_location, internal_dict):
     return group.producer_stage(frame, breakpoint_location, internal_dict)
 
 
+def _selected_thread(process, thread_id):
+    debugger = base._state.get("debugger")
+    if debugger is None:
+        raise RuntimeError("local thread reacquisition lacks the debugger")
+    fresh_process = debugger.GetSelectedTarget().GetProcess()
+    if (
+        not fresh_process.IsValid()
+        or fresh_process.GetProcessID() != process.GetProcessID()
+    ):
+        raise RuntimeError("local thread reacquisition changed the process")
+    thread = fresh_process.GetThreadByID(thread_id)
+    if not thread.IsValid():
+        for index in range(fresh_process.GetNumThreads()):
+            candidate = fresh_process.GetThreadAtIndex(index)
+            if candidate.IsValid() and candidate.GetThreadID() == thread_id:
+                thread = candidate
+                break
+    if not thread.IsValid() or thread.GetThreadID() != thread_id:
+        raise RuntimeError("case-22 selected thread is unavailable")
+    return thread
+
+
 def _require_unchanged_structural_contract():
     expected = (
         (group.PRODUCER_BYTE_COUNT, 732, "Group byte count"),
@@ -134,6 +156,10 @@ def _new_trace():
         "setterCodeSHA256": LOCAL_SETTER_CODE_SHA256,
         "boundsCodeSHA256": LOCAL_BOUNDS_CODE_SHA256,
         "retinaBaselineBackingScaleFactor": 2,
+        "threadReacquisition": (
+            "fresh selected-target process after every synchronous LLDB step, "
+            "requiring unchanged process ID and exact thread ID"
+        ),
         "capturedMarginUsedForRuntimeSelection": False,
         "capturedCropUsedForRuntimeSelection": False,
         "capturedImageUsedForRuntimeSelection": False,
@@ -149,5 +175,6 @@ def finalize():
 def __lldb_init_module(debugger, internal_dict):
     _apply_local_host_profile()
     group._set_callback = _set_local_callback
+    case22._selected_thread = _selected_thread
     case22._new_trace = _new_trace
     case22.__lldb_init_module(debugger, internal_dict)

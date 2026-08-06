@@ -99,6 +99,28 @@
     "captureFieldsChanged": false,
     "authorityChanged": false
   },
+  "threadReacquisitionRetry": {
+    "callbackProxyCommit": "7ba5788",
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-case22-thread-attempt-2",
+    "traceSHA256": "947f03916a2299a5d1ed5b9d28b73c2e9346d9b63b1b78cf5aaa20602113bdb1",
+    "lldbLogSHA256": "98f304393e901992664fb3df1391343d63845e5684bd830c08f14642af499cec",
+    "baseEventCount": 93,
+    "completeGroupInvocationCount": 20,
+    "selectedInvocationIndex": 20,
+    "authenticatedTargetEntryReached": true,
+    "authenticatedTargetModuleOffset": 7781460,
+    "case22InstructionCount": 0,
+    "case22OpaqueCalleeCount": 0,
+    "failure": "the SBProcess instance retained across a synchronous callback StepInstruction could not resolve the unchanged thread ID",
+    "standaloneThreadAPIDiagnosticSHA256": "e2dbc7d0a885ec7bb9254c07b27eb7e6b30b5e74a05a8074d50e9fec2465dda0",
+    "standaloneDiagnosticFinding": "outside the callback, the process ID and main thread ID remain identical across the same instruction step and a freshly acquired SBProcess resolves that thread exactly",
+    "transportOnlyCorrection": "after every synchronous step, reacquire SBProcess from the selected target, require its process ID to equal the original, then resolve only the exact original thread ID",
+    "runtimeSelectionChanged": false,
+    "captureFieldsChanged": false,
+    "arithmeticInstructionOpened": false,
+    "returnWordOpened": false,
+    "authorityChanged": false
+  },
   "captureContract": {
     "originalCase22AdapterUnchanged": true,
     "localOverlayOnly": true,
@@ -134,11 +156,11 @@
     "files": [
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py",
-        "sha256": "45a37c0c90d1c46148c6fbb6bde2248dca8e74383ce506373d4e1bb6c9f2f703"
+        "sha256": "5fc1f5614f0ca096423bf80081d9a24becc3471c1496b4c55bb5b5c9b8904355"
       },
       {
         "path": "Analysis/test_capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb_source.py",
-        "sha256": "c1e69e7f8f96c8b4ac7c5784c9f456b3eeda6a25c79fd33ce9fdceafa831b954"
+        "sha256": "809f5f5218746d97e34df5fb45afeb22c0b090a18f9ec253256a717d3304502c"
       },
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_lldb.py",

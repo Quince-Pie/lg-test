@@ -28,6 +28,7 @@ class LocalMacOSCase22LLDBSourceTests(unittest.TestCase):
         self.assertIn("case22.__lldb_init_module(debugger, internal_dict)", self.text)
         self.assertIn("case22.finalize()", self.text)
         self.assertIn("group._set_callback = _set_local_callback", self.text)
+        self.assertIn("case22._selected_thread = _selected_thread", self.text)
         for callback in (
             "copy_entry",
             "margin_setter",
@@ -58,6 +59,19 @@ class LocalMacOSCase22LLDBSourceTests(unittest.TestCase):
             "group.SWIFTUICORE_UUID = LOCAL_SWIFTUICORE_UUID",
         ):
             self.assertIn(literal, self.text)
+
+    def test_thread_reacquisition_requires_exact_process_and_thread(self) -> None:
+        function = next(
+            node
+            for node in self.tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "_selected_thread"
+        )
+        source = ast.get_source_segment(self.text, function)
+        self.assertIsNotNone(source)
+        self.assertIn("debugger.GetSelectedTarget().GetProcess()", source)
+        self.assertIn("fresh_process.GetProcessID() != process.GetProcessID()", source)
+        self.assertIn("candidate.GetThreadID() == thread_id", source)
+        self.assertIn("thread.GetThreadID() != thread_id", source)
 
     def test_runtime_selection_remains_output_blind(self) -> None:
         for literal in (
