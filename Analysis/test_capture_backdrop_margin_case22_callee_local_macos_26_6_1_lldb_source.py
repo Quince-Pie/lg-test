@@ -27,6 +27,16 @@ class LocalMacOSCase22LLDBSourceTests(unittest.TestCase):
         self.assertIn("case22._new_trace = _new_trace", self.text)
         self.assertIn("case22.__lldb_init_module(debugger, internal_dict)", self.text)
         self.assertIn("case22.finalize()", self.text)
+        self.assertIn("group._set_callback = _set_local_callback", self.text)
+        for callback in (
+            "copy_entry",
+            "margin_setter",
+            "copy_margin_store",
+            "backdrop_bounds",
+            "producer_entry",
+            "producer_stage",
+        ):
+            self.assertIn(f"def {callback}(", self.text)
         for literal in (
             "case22.CASE22_CALL_OFFSET, 0x268",
             "case22.CASE22_RETURN_OFFSET, 0x26C",

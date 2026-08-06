@@ -77,6 +77,28 @@
     "capturedPixelUsedForRuntimeSelection": false,
     "prospectiveTransferAuthority": false
   },
+  "callbackBindingRetry": {
+    "firstAdapterCommit": "6b7ccf7",
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-case22-adapter-attempt-1",
+    "traceSHA256": "901eb4823d5b6784ea0c14f6acbc2589b6e3a0d843eb68d751eafc63273266b3",
+    "lldbLogSHA256": "dbc5fb49966c845617b45b401dce7763490707343a99cfc05613ca4bb882538b",
+    "processStoppedAtFirstGroupBreakpoint": true,
+    "baseEventCount": 0,
+    "groupInvocationCount": 0,
+    "case22InstructionCount": 0,
+    "case22OpaqueCalleeCount": 0,
+    "traceFailureCount": 0,
+    "appleTimelineCompleted": false,
+    "capturedMarginOpened": false,
+    "capturedCropOpened": false,
+    "capturedImageOpened": false,
+    "capturedPixelOpened": false,
+    "harnessFinding": "callbacks owned by transitively imported Python modules were not visible to this local LLDB command interpreter",
+    "transportOnlyCorrection": "bind all six inherited callbacks to proxy functions in the directly imported local overlay; each proxy delegates to the byte-identical frozen adapter function",
+    "runtimeSelectionChanged": false,
+    "captureFieldsChanged": false,
+    "authorityChanged": false
+  },
   "captureContract": {
     "originalCase22AdapterUnchanged": true,
     "localOverlayOnly": true,
@@ -112,11 +134,11 @@
     "files": [
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py",
-        "sha256": "ea9a41cd508ddc7535e8c097c9badc19da00817cfae48e5de6ee6abc95b4ea9e"
+        "sha256": "45a37c0c90d1c46148c6fbb6bde2248dca8e74383ce506373d4e1bb6c9f2f703"
       },
       {
         "path": "Analysis/test_capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb_source.py",
-        "sha256": "426d17fc4a859f45591a0ab2cec389bfd05c904f952e11bf363444de9d93a54a"
+        "sha256": "c1e69e7f8f96c8b4ac7c5784c9f456b3eeda6a25c79fd33ce9fdceafa831b954"
       },
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_lldb.py",

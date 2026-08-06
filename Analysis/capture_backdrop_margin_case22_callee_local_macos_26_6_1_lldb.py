@@ -41,6 +41,36 @@ LOCAL_CASE22_TARGET_FUNCTION = (
 _case22_new_trace = case22._new_trace
 
 
+def _set_local_callback(breakpoint, callback, label):
+    error = breakpoint.SetScriptCallbackFunction(__name__ + "." + callback)
+    if error is not None and hasattr(error, "Success") and not error.Success():
+        raise RuntimeError(error.GetCString() or label + " callback rejected")
+
+
+def copy_entry(frame, breakpoint_location, internal_dict):
+    return group.copy_entry(frame, breakpoint_location, internal_dict)
+
+
+def margin_setter(frame, breakpoint_location, internal_dict):
+    return group.margin_setter(frame, breakpoint_location, internal_dict)
+
+
+def copy_margin_store(frame, breakpoint_location, internal_dict):
+    return group.copy_margin_store(frame, breakpoint_location, internal_dict)
+
+
+def backdrop_bounds(frame, breakpoint_location, internal_dict):
+    return group.backdrop_bounds(frame, breakpoint_location, internal_dict)
+
+
+def producer_entry(frame, breakpoint_location, internal_dict):
+    return group.producer_entry(frame, breakpoint_location, internal_dict)
+
+
+def producer_stage(frame, breakpoint_location, internal_dict):
+    return group.producer_stage(frame, breakpoint_location, internal_dict)
+
+
 def _require_unchanged_structural_contract():
     expected = (
         (group.PRODUCER_BYTE_COUNT, 732, "Group byte count"),
@@ -118,5 +148,6 @@ def finalize():
 
 def __lldb_init_module(debugger, internal_dict):
     _apply_local_host_profile()
+    group._set_callback = _set_local_callback
     case22._new_trace = _new_trace
     case22.__lldb_init_module(debugger, internal_dict)
