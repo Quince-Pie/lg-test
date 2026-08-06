@@ -1,0 +1,80 @@
+{
+  "case22ProviderFieldMatrixLocalMacOSRetry2PreregistrationSchemaVersion": 1,
+  "classification": "fail-closed second retry of the prospectively frozen 23-case local matrix; the intervention binary, values, order, marker brackets, provider capture, bounds, and authority remain byte-identical, while callbacks are exported through the module namespace that LLDB directly imported",
+  "frozenAtUTC": "2026-08-06",
+  "baseContract": {
+    "path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_retry_preregistration.json",
+    "sha256": "22ebed82398ad37311f0af8be0e15087301ca2e1a193f4d1ff4a3e4da17c39d8",
+    "commit": "5b3cf81",
+    "interventionCount": 23,
+    "binarySHA256": "0064fa35159b0d4872370d54528742a93e41662110e3d5456cf3f9e9e234dcb8"
+  },
+  "failedAttempt": {
+    "pathOnHost": "local-case22-field-matrix-5b3cf81-retry1",
+    "traceSHA256": "27e9a9b85ad6d18341f1edc00af7739c81cfa248b759a7448817ce34c6ce2f62",
+    "lldbLogSHA256": "d654352624eecc7ad7a65a9f31d92d3587db4938a0ca932573cc612f0e6e2daf",
+    "runtimeStdoutSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "runtimeStderrSHA256": "8bf57b0095230bcbd78d44b16712f9101fa0f34390cb861bf7b57c4eae610c30",
+    "applicationReportPresent": false,
+    "statusBeforeFinalization": "marker-armed",
+    "statusAfterFinalization": "finalized",
+    "intervalCount": 0,
+    "providerCallCount": 0,
+    "eventCount": 0,
+    "failureCount": 0,
+    "rootFailure": "LLDB stopped at the first marker because breakpoint 1 had no associated callback command",
+    "rootCause": "the directly imported retry module delegated initialization to a dependency module; LLDB created the dependency's breakpoint but could not resolve a callable through that dependency-only module namespace",
+    "diagnosticObservation": "breakpoint command list 1 reported that Breakpoint 1 does not have an associated command",
+    "appleProviderObjectOrReturnCaptured": false,
+    "authority": false
+  },
+  "retryOverlay": {
+    "path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_retry2_lldb.py",
+    "sha256": "4bbba609bb0638f4657f1bddb501bfb53f88ea6782df2067c36c3c288c59ee9a",
+    "testPath": "Analysis/test_capture_case22_provider_field_matrix_local_macos_26_6_1_retry2_lldb_source.py",
+    "testSHA256": "64c01a26aa44f66fb1e3aad458eecff51b10cc8494a001681cb125c2dda363ca",
+    "onlyBehavioralChange": "export the frozen marker, provider-entry, and provider-return callables from the directly imported module and make the frozen callback installer name that module",
+    "baseCaptureImportedUnchanged": true,
+    "localUUIDOverlayImportedUnchanged": true,
+    "interventionSourceChanged": false,
+    "interventionValuesChanged": false,
+    "markerSelectionChanged": false,
+    "providerSelectionChanged": false,
+    "captureBoundsChanged": false,
+    "productAuthorityChanged": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {"path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_preregistration.json", "sha256": "57a7039661a966c177ba2f923051d095070e260b514623ad1ccb2b93759d50e0"},
+      {"path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_lldb.py", "sha256": "ac29cb987391b9748499c410d76d0c189996c8756f6543e394eba68b5ff52b63"},
+      {"path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_retry_preregistration.json", "sha256": "22ebed82398ad37311f0af8be0e15087301ca2e1a193f4d1ff4a3e4da17c39d8"},
+      {"path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_retry_lldb.py", "sha256": "94085b4473ed0c63a7cc753ac56be67186394c8dba18d74162a09f365d202b1f"},
+      {"path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_retry2_lldb.py", "sha256": "4bbba609bb0638f4657f1bddb501bfb53f88ea6782df2067c36c3c288c59ee9a"},
+      {"path": "Analysis/test_capture_case22_provider_field_matrix_local_macos_26_6_1_retry2_lldb_source.py", "sha256": "64c01a26aa44f66fb1e3aad458eecff51b10cc8494a001681cb125c2dda363ca"}
+    ]
+  },
+  "unknownBeforeRetryDispatch": {
+    "providerCallCountByIntervention": null,
+    "providerObjectWordsByIntervention": null,
+    "providerReturnWordsByIntervention": null,
+    "objectOffsetsAffectedByEachFilterInput": null,
+    "selectedBranchByIntervention": null,
+    "closedFormFieldMapping": null,
+    "prospectiveMatrixConclusion": null
+  },
+  "runtimeOutcomeFrozenBeforeRetryDispatch": null,
+  "productAuthority": {
+    "exactFilterInputToProviderObjectEffectsMayBeDecodedOnPass": true,
+    "observedProviderBranchEffectsMayBeDecodedOnPass": true,
+    "completeFiniteProviderLawDecodedOnPass": false,
+    "unobservedProviderBranchesValidatedOnPass": false,
+    "publicSwiftUIGlassInputLawDecodedOnPass": false,
+    "upstreamIntegerCropAllocationPolicyDecodedOnPass": false,
+    "prospectiveUnseenProfileTransferPassedOnPass": false,
+    "capturedInputOpticalParityPassedOnPass": false,
+    "physicalOutputTransferPassedOnPass": false,
+    "independentWalleZeroByteFrameParityPassedOnPass": false,
+    "productionShaderAuthorizedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false
+  }
+}
