@@ -1,0 +1,152 @@
+{
+  "prepareLayerMaskInventorySelectedTracePreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T02:30:41Z",
+  "classification": "prospective fresh-process prepare_layer_mask trace with marker interval two ordinal fourteen frozen from the complete output-blind helper/store/marker role inventory before dispatch; exact returned producer bytes and complete execution are required, while semantic and production authority remain sealed",
+  "antecedent": {
+    "runID": 31065261980,
+    "headSHA": "622c13179465b72bbffeb1c876e6c0970c44a91b",
+    "workflowConclusion": "failure",
+    "artifactID": 8953669729,
+    "artifactDigest": "sha256:df92d0eceae56d393bf5dc794020cb3b51e36fa107f179c5333b8190994cc0cf",
+    "traceSHA256": "1379bd443f1a80f654d0f052764c38f324ba2708cc76166ca57ee45446fc6b16",
+    "timelineSHA256": "56a86840da44b482c4deafc9d99ad0ec44b7c055aa4fb76b4cbd9ff62c91dbc5",
+    "originalValidatorPassed": false,
+    "originalValidatorFailure": "inventory helper marker links leave trailing entries",
+    "inventoryResult": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json",
+    "inventoryResultSHA256": "822f89af42d1d4b4982278582eaaf52f386bd352eb2bea78abb4d877813ef375",
+    "helperCodeSHA256": "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c",
+    "qualifiedHelperEntryCount": 447,
+    "markerLinkedHelperEntryCount": 446,
+    "trailingHelperEntryCount": 1,
+    "qualifiedStoreRecordCount": 352,
+    "qualifiedMarkerCount": 32,
+    "callbackEventCount": 831,
+    "exactObservedTrailingTopologyOpened": true,
+    "trailingTopologyUsedForSample2Selection": false,
+    "exactHelperSemanticsRecovered": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  },
+  "selection": {
+    "geometry": "circle-1025-center",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "markerInterval": 2,
+    "qualifiedHelperOrdinal": 14,
+    "helperRecordIndex": 25,
+    "helperEventIndex": 40,
+    "producerStoreRecordIndex": 14,
+    "producerStoreEventIndex": 41,
+    "producerPrepareRecursionDepth": 7,
+    "matchingPriorHelperCount": 1,
+    "derivationRule": "within marker interval 2 choose the last helper-entry event before the independently selected producer-store event whose caller role and prepare recursion depth equal that producer",
+    "allSamplesMapped": 32,
+    "samples2Through32ShareOrdinal14": true,
+    "requiredX1Relationship": "x1 = x19 + 0x420",
+    "requiredX3Relationship": "x3 = x19 + 0x290",
+    "cropValueUsed": false,
+    "outputValueUsed": false,
+    "toleranceUsed": false,
+    "selectionMayChangeAfterDispatch": false
+  },
+  "captureInvariants": {
+    "helperFunction": "CA::Render::Updater::prepare_layer_mask(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::Updater::LayerShapes const&, CA::Render::Updater::LayerShapes&)",
+    "helperRelativeToPrepareLayer": -1209388,
+    "helperSymbolByteCount": 2176,
+    "helperExpectedSHA256": "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c",
+    "callOffset": 3472,
+    "callReturnOffset": 3476,
+    "callerLocalStateOffset": 1056,
+    "callerOutputOffset": 656,
+    "maximumHelperEntryHitCount": 16384,
+    "maximumQualifiedHelperEntryCount": 4096,
+    "maximumHelperInstructionCount": 8192,
+    "maximumOpaqueCalleeCount": 2048,
+    "stackByteCount": 256,
+    "argumentByteCount": 1024,
+    "callerRoleByteCount": 2048,
+    "outputByteCount": 512,
+    "hardwareWatchpointsUsed": false,
+    "newBreakpointAddedByTransport": false,
+    "captureByteRangeChangedByTransport": false,
+    "steppingRuleChangedByTransport": false
+  },
+  "acceptance": {
+    "inventoryResultMustMatchBitForBit": true,
+    "knownHelperCodeMustRepassBitForBit": true,
+    "fixedMarkerIntervalAndOrdinalMustSelectUniquely": true,
+    "freshProcessRequired": true,
+    "allInheritedMarkerUnionStoreAndSnapshotGatesMustRepass": true,
+    "helperReturnMustMatchProducerBitForBit": true,
+    "completeInstructionSequenceRequired": true,
+    "completeScalarAndSIMDRegistersRequired": true,
+    "stackAndOutputBytesBeforeAndAfterEveryInstructionRequired": true,
+    "allOpaqueCalleesMustBeExplicitBoundaries": true,
+    "zeroTraceFailuresRequired": true,
+    "normalTargetExitRequired": true,
+    "exactSemanticsMayBeClaimed": false,
+    "unchangedRepeatMayBeClaimed": false,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "endToEndWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json",
+        "sha256": "822f89af42d1d4b4982278582eaaf52f386bd352eb2bea78abb4d877813ef375"
+      },
+      {
+        "path": "Analysis/analyze_prepare_layer_mask_instruction_inventory.py",
+        "sha256": "003a33d790ca111d3d87e35bd3a593d264847070f617ce5ddb2f38af6fb7b139"
+      },
+      {
+        "path": "Analysis/test_analyze_prepare_layer_mask_instruction_inventory.py",
+        "sha256": "38c170bc9b83ac84b776a4d4e28390d408a7c79d153edb8a41105ebb2e4885a3"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_mask_inventory_calibration_lldb.py",
+        "sha256": "cc0acf2a26e5f021ee2bef2f521c928cd132683052673fedcc7458d9a1c44b0a"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_mask_inventory_selected_trace.py",
+        "sha256": "f9868e70cb881e73326c09b3a062c19beb8824174f31c4238dc2c75a6bc73b0e"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_mask_inventory_calibration_lldb_source.py",
+        "sha256": "9a10d83f48f079694f66c7662322161699df6027f0f9ae9b33de4858891c548d"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_mask_instruction_inventory.py",
+        "sha256": "d7a1c72dd7719d492f03a50070d9543bd283e623a0d747eb7247ba8b6d514449"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_mask_inventory_selected_trace_preregistration.py",
+        "sha256": "37c4568c4d83744405ce6092eba604443f819667ab34c3591b322e72a80c414a"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-mask-inventory-selected-trace.yml",
+        "sha256": "7f1ed477e2902eeb70034b6f5c89ed684b8e6a3f350d34a6f4501d5ea12bf4ec"
+      },
+      {
+        "path": "Sources/GlassIntrospect/main.swift",
+        "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}

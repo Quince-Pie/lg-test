@@ -6764,3 +6764,39 @@ fresh process traces the derived ordinal and must return the producer bits
 exactly. This two-pass run remains a calibration; even a full pass cannot claim
 decoded semantics or an unchanged repeat, and it still cannot authorize a
 production shader change.
+
+Run `31065261980`, from inventory commit `622c131`, completes that inventory
+with zero capture failures: 447 qualified helper entries, 352 retained stores,
+32 markers, and 831 shared callback events. Its prospective validator remains
+red because it required the final marker link to consume every helper entry.
+Apple legitimately executes one additional helper entry and four already
+accounted stores after marker 32, in synthetic interval 33. The fresh selected
+process is therefore skipped; no trace or producer claim is made by the red
+workflow.
+
+The immutable retrospective opening is
+`Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json`,
+replayed by `Analysis/analyze_prepare_layer_mask_instruction_inventory.py`.
+It first requires the exact original rejection, raw trace SHA-256
+`1379bd443f1a80f654d0f052764c38f324ba2708cc76166ca57ee45446fc6b16`,
+and timeline SHA-256
+`56a86840da44b482c4deafc9d99ad0ec44b7c055aa4fb76b4cbd9ff62c91dbc5`.
+It then opens only the observed trailing sequence at event indices 826 through
+830 and proves that sequence is not used for sample-two selection.
+
+The inventory resolves the call mapping cleanly. Interval one contains 12
+qualified helpers; intervals 2 through 32 contain exactly 14 each. For every
+one of the 32 public samples there is exactly one prior helper event whose
+caller role and recursion depth equal the independently identified producer
+store. Sample two maps helper event 40 directly before producer-store event 41:
+qualified ordinal 14, not the previously guessed ordinal 8. No crop rectangle,
+helper output, or tolerance participates in this mapping.
+
+The fixed ordinal-14 fresh trace is prospectively frozen in
+`Analysis/dynamic_allocation_prepare_layer_mask_inventory_selected_trace_preregistration.json`
+and `.github/workflows/prepare-layer-mask-inventory-selected-trace.yml`. It must
+repass the known helper code, select marker interval two ordinal 14 uniquely,
+capture the complete execution, and return the independent producer rectangle
+bit for bit. A pass will finally expose the true producer path for semantic
+decoding, but will still require a frozen decoder and unchanged blind repeat
+before exact producer arithmetic or any production change can be claimed.

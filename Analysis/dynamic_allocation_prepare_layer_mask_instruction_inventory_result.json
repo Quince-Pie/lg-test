@@ -1,0 +1,98 @@
+{
+  "classification": "retrospectively opened exact trailing topology for the prospectively captured output-blind inventory; selection remains event-order, caller-role, and recursion-depth only",
+  "conclusion": "success",
+  "geometry": {
+    "centerX": 512,
+    "centerY": 512,
+    "extendsBeyondWindow": true,
+    "height": 1025,
+    "name": "circle-1025-center",
+    "shape": "circle",
+    "width": 1025,
+    "windowHeight": 1024,
+    "windowWidth": 1024
+  },
+  "helper": {
+    "callbackEventCount": 831,
+    "codeSHA256": "f78c5fd222dc429152882dffb0b88a5535050351e3a2a5d7102a5abeca5c4c0c",
+    "function": "CA::Render::Updater::prepare_layer_mask(CA::Render::Updater::GlobalState&, CA::Render::Updater::LocalState&, CA::Render::Updater::LayerShapes const&, CA::Render::Updater::LayerShapes&)",
+    "intervalEntryCountPattern": {
+      "interval1": 12,
+      "interval2Through32": 14,
+      "interval33": 1
+    },
+    "markerLinkedEntryCount": 446,
+    "qualifiedEntryCount": 447,
+    "symbolByteCount": 2176,
+    "trailingEntryCount": 1
+  },
+  "inputs": {
+    "timeline": "transition-inventory/transition-timeline.json",
+    "timelineSHA256": "56a86840da44b482c4deafc9d99ad0ec44b7c055aa4fb76b4cbd9ff62c91dbc5",
+    "trace": "transition-inventory/prepare-layer-mask-instruction-trace.json",
+    "traceSHA256": "1379bd443f1a80f654d0f052764c38f324ba2708cc76166ca57ee45446fc6b16"
+  },
+  "mappingSummary": {
+    "matchingPriorHelperCountOne": 32,
+    "sample1TargetQualifiedOrdinal": 12,
+    "sample2Through32TargetQualifiedOrdinal": 14,
+    "sampleCount": 32
+  },
+  "openedTrailingTopology": {
+    "eventIndices": [
+      826,
+      827,
+      828,
+      829,
+      830
+    ],
+    "eventKinds": [
+      "nested-crop-store",
+      "prepare-layer-mask-entry",
+      "nested-crop-store",
+      "nested-crop-store",
+      "nested-crop-store"
+    ],
+    "helperEntryCount": 1,
+    "markerEventCount": 0,
+    "markerIntervalIndex": 33,
+    "storeEventCount": 4,
+    "usedForSample2Selection": false
+  },
+  "originalProspectiveValidatorFailure": "inventory helper marker links leave trailing entries",
+  "originalProspectiveValidatorPassed": false,
+  "prepareLayerMaskInstructionInventoryOpenedResultSchemaVersion": 1,
+  "prepareLayerMaskInstructionInventoryValidationSchemaVersion": 1,
+  "runID": 31065261980,
+  "sealedConclusion": {
+    "allHelperEntriesRetainedWithoutSelection": true,
+    "allHelperStoreAndMarkerCallbackEventsAccounted": true,
+    "allInheritedMarkerUnionAndStoreEvidenceRevalidated": true,
+    "cropOrOutputValuesUsedForSelection": false,
+    "exactHelperSemanticsDecoded": false,
+    "exactObservedTrailingTopologyOpened": true,
+    "freshSelectedProcessPassed": false,
+    "knownHelperCodeIdentityRepassed": true,
+    "liquidGlassParityEstablished": false,
+    "originalProspectiveFailurePreserved": true,
+    "productionShaderAuthorized": false,
+    "sample2ProducerRoleMappedByLastPriorHelper": true,
+    "unchangedRepeatPassed": false
+  },
+  "structuralSelection": {
+    "cropOrOutputValuesUsedForSelection": false,
+    "rule": "within marker interval 2 choose the last helper-entry event before the independently selected producer-store event whose caller role and prepare recursion depth equal that producer",
+    "sample2HelperEventIndex": 40,
+    "sample2MatchingPriorHelperCount": 1,
+    "sample2MatchingPriorHelperOrdinals": [
+      14
+    ],
+    "sample2ProducerCallerRoleBase": 6171883008,
+    "sample2ProducerPrepareRecursionDepth": 7,
+    "sample2ProducerStoreEventIndex": 41,
+    "sample2ProducerStoreRecordIndex": 14,
+    "sample2TargetHelperRecordIndex": 25,
+    "sample2TargetQualifiedOrdinal": 14,
+    "sampleIndex": 2
+  }
+}
