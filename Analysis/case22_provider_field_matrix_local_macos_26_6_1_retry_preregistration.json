@@ -1,0 +1,74 @@
+{
+  "case22ProviderFieldMatrixLocalMacOSRetryPreregistrationSchemaVersion": 1,
+  "classification": "fail-closed retry of the prospectively frozen 23-case local matrix; the intervention binary, values, order, marker brackets, provider capture, bounds, and authority remain byte-identical, while a wrapper helper is overlaid solely to apply the already-frozen local SwiftUICore UUID",
+  "frozenAtUTC": "2026-08-06",
+  "baseContract": {
+    "path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_preregistration.json",
+    "sha256": "57a7039661a966c177ba2f923051d095070e260b514623ad1ccb2b93759d50e0",
+    "commit": "87b5f7d",
+    "interventionCount": 23,
+    "binarySHA256": "0064fa35159b0d4872370d54528742a93e41662110e3d5456cf3f9e9e234dcb8"
+  },
+  "failedAttempt": {
+    "pathOnHost": "local-case22-field-matrix-87b5f7d-run1",
+    "traceSHA256": "c83e6efe3bdcfc303d84723b29476d6e81083833ca4019b71384f2dff13f1020",
+    "applicationReportSHA256": "ec49280cacdb0a25ee814b41ed22889c289e30726e9d287ccb22fb589329e0eb",
+    "lldbLogSHA256": "42178055328c4cb2f6a1415c06e3c74dca3ef7b9357be1cc41bb81202f9dd55d",
+    "runtimeStderrSHA256": "d8d7506df98053d1c47815244c26899a7a8dba3dfc7792180ee74a53850147f8",
+    "statusBeforeFinalization": "failed",
+    "intervalCount": 0,
+    "providerCallCount": 0,
+    "eventCount": 0,
+    "failureCount": 46,
+    "rootFailure": "case-22 provider wrapper SwiftUICore identity differs",
+    "rootCause": "the reused case22._capture_symbol optional module-offset check consulted its historical group module's CI SwiftUICore UUID instead of the local UUID already required by the v1 matrix",
+    "appleProviderObjectOrReturnCaptured": false,
+    "authority": false
+  },
+  "retryOverlay": {
+    "path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_retry_lldb.py",
+    "sha256": "94085b4473ed0c63a7cc753ac56be67186394c8dba18d74162a09f365d202b1f",
+    "testPath": "Analysis/test_capture_case22_provider_field_matrix_local_macos_26_6_1_retry_lldb_source.py",
+    "testSHA256": "f56b8a4b53560ce3fd9f56e96c3209f7d7257a9d77997825a1bf715c03021640",
+    "onlyBehavioralChange": "call the frozen generic symbol capture without its stale optional CI UUID check, then require the local SwiftUICore UUID, path, load address, module offset, function, byte count, and code SHA-256 directly",
+    "baseCaptureImportedUnchanged": true,
+    "interventionSourceChanged": false,
+    "interventionValuesChanged": false,
+    "markerSelectionChanged": false,
+    "providerSelectionChanged": false,
+    "captureBoundsChanged": false,
+    "productAuthorityChanged": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {"path": "Analysis/case22_provider_field_matrix_local_macos_26_6_1_preregistration.json", "sha256": "57a7039661a966c177ba2f923051d095070e260b514623ad1ccb2b93759d50e0"},
+      {"path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_lldb.py", "sha256": "ac29cb987391b9748499c410d76d0c189996c8756f6543e394eba68b5ff52b63"},
+      {"path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_retry_lldb.py", "sha256": "94085b4473ed0c63a7cc753ac56be67186394c8dba18d74162a09f365d202b1f"},
+      {"path": "Analysis/test_capture_case22_provider_field_matrix_local_macos_26_6_1_retry_lldb_source.py", "sha256": "f56b8a4b53560ce3fd9f56e96c3209f7d7257a9d77997825a1bf715c03021640"}
+    ]
+  },
+  "unknownBeforeRetryDispatch": {
+    "providerCallCountByIntervention": null,
+    "providerObjectWordsByIntervention": null,
+    "providerReturnWordsByIntervention": null,
+    "objectOffsetsAffectedByEachFilterInput": null,
+    "selectedBranchByIntervention": null,
+    "closedFormFieldMapping": null,
+    "prospectiveMatrixConclusion": null
+  },
+  "runtimeOutcomeFrozenBeforeRetryDispatch": null,
+  "productAuthority": {
+    "exactFilterInputToProviderObjectEffectsMayBeDecodedOnPass": true,
+    "observedProviderBranchEffectsMayBeDecodedOnPass": true,
+    "completeFiniteProviderLawDecodedOnPass": false,
+    "unobservedProviderBranchesValidatedOnPass": false,
+    "publicSwiftUIGlassInputLawDecodedOnPass": false,
+    "upstreamIntegerCropAllocationPolicyDecodedOnPass": false,
+    "prospectiveUnseenProfileTransferPassedOnPass": false,
+    "capturedInputOpticalParityPassedOnPass": false,
+    "physicalOutputTransferPassedOnPass": false,
+    "independentWalleZeroByteFrameParityPassedOnPass": false,
+    "productionShaderAuthorizedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false
+  }
+}
