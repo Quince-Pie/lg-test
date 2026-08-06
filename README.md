@@ -6909,3 +6909,76 @@ original capture, validator, `+0xf5c` target, output-blind ordinal-14 selector,
 memory ranges, step rules, checkpoint intervals, and acceptance remain
 byte-for-byte frozen. The retry workflow is
 `.github/workflows/prepare-layer-crop-producer-callee-callback-retry.yml`.
+
+Run `31068498526`, from retry commit `428a350`, repairs callback transport and
+reaches the prospectively selected marker-two, ordinal-fourteen helper. Its
+red result falsifies the frozen `prepare_layer+0xf5c` target, rather than the
+selection or caller identity. The complete 1,024-state caller continuation
+keeps the same `x29` frame pointer throughout. At `+0xf3c`, Apple loads zero
+into `x23`; `cbz x23` at `+0xf48` therefore skips the hypothesized call. The
+earlier recursive-frame diagnosis was wrong and is superseded by the retained
+register and PC chain.
+
+The same trace localizes the actual floating producer without inspecting an
+output value to choose it. At the authenticated indirect call
+`prepare_layer+0x2864` (`10093fd7`, `blraa x8, x16`), the selected frame walks
+the following dynamic chain:
+
+```
+FlattenZOp::map_bounds
+SDFOp::map_bounds
+FlattenZOp::map_bounds
+FilterOp::map_bounds
+FlattenZOp::map_bounds
+```
+
+The fourth dispatch is the already code-hashed 788-byte
+`FilterOp::map_bounds` at `prepare_layer-61056`, SHA-256
+`e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0`.
+It changes the first rectangle bit-for-bit from
+
+```
+10000000329330c0c0ffffff316c31c0ffffff8ffd879040ffffff8ffd879040
+```
+
+or
+
+```
+[-16.574981689453182, -17.422637939452898,
+ 1057.997619628906, 1057.997619628906]
+```
+
+to
+
+```
+ffffffffc7fe7d40c0ffffff316c39c098999911cc8e8140feffff8ffdcb8140
+```
+
+or
+
+```
+[479.92382812499994, -25.422637939452898,
+ 561.8496429443358, 569.4988098144529]
+```
+
+All four binary64 qwords change inside that boundary and remain unchanged
+through the following `FlattenZOp`. At `prepare_layer+0x55c0`, the floating
+rectangle is still present at role `+0x290`, while `str q0,[x28,#0xb0]`
+stores the separately packed integer working crop `[478, 0, 546, 546]`.
+Accordingly, `FilterOp::map_bounds` is now the established owner of the exact
+floating crop producer for this selected path. Its internal executed
+arithmetic is not yet decoded.
+
+The immutable opening is
+`Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_callback_retry_result.json`.
+The next gate is a prospectively frozen, output-blind instruction trace of the
+fourth `+0x2864` dispatch, selected by call ordinal, function identity,
+relative address, byte count, and complete code hash. The same run opens every
+executed instruction in all seven already code-hashed arithmetic scopes:
+`FilterOp::map_bounds`, `FilterOp::apply_filter`, `Filter::apply_dod`, Glass
+background `DOD`, both rectangle transforms, and `LayerShapes::union_bounds`.
+Calls outside those frozen scopes remain explicit before/after boundaries.
+Only after that replay passes unchanged blind crop holdouts do the still-open
+material/appearance/direction, physical Retina/color-transfer, and independent
+Walle zero-byte gates become eligible. Liquid Glass parity and production
+shader changes remain unauthorized.

@@ -1,0 +1,222 @@
+{
+  "prepareLayerFilterMapBoundsPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T03:40:16Z",
+  "classification": "prospective output-blind complete instruction trace of the fourth authenticated prepare_layer+0x2864 dynamic dispatch after the frozen marker-two ordinal-fourteen helper; FilterOp::map_bounds is selected only by caller identity, dispatch order, function identity, relative address, symbol size, and a previously opened complete-code SHA-256",
+  "antecedents": {
+    "callbackRetryResult": {
+      "path": "Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_callback_retry_result.json",
+      "sha256": "a968fae4571253243d76b4c0fb01fae951eef93f122b59d53c5e6b30ae9fbcaf",
+      "runID": 31068498526,
+      "headSHA": "428a350df0d5d029fe9623e61f52079356861261",
+      "workflowConclusion": "failure",
+      "callbackTransportRepaired": true,
+      "selectedMarkerInterval": 2,
+      "selectedQualifiedHelperOrdinal": 14,
+      "callerFramePointerConstantAcrossAllStates": true,
+      "staticPlusF5CCalleeHypothesisFalsified": true,
+      "filterMapBoundsFloatingProducerOwner": true,
+      "exactInternalArithmeticDecoded": false,
+      "parityEstablished": false
+    },
+    "completeSymbolCode": {
+      "path": "Analysis/dynamic_allocation_prepare_layer_instruction_trace_result.json",
+      "sha256": "876f8a238cf30c6d91381f8527ae9ce01ebe45fecf2350995b31e0abe5dc0059",
+      "filterFunction": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+      "filterRelativeToPrepareLayer": -61056,
+      "filterSymbolByteCount": 788,
+      "filterCodeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0"
+    },
+    "outputBlindInventory": {
+      "path": "Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json",
+      "sha256": "822f89af42d1d4b4982278582eaaf52f386bd352eb2bea78abb4d877813ef375",
+      "selectedTraceResultPath": "Analysis/dynamic_allocation_prepare_layer_mask_inventory_selected_trace_result.json",
+      "selectedTraceResultSHA256": "af7a6380a4eb6ffdd00d54fa800c426cf49980dbea38eb8dd02cfa832b9ad4ea",
+      "markerInterval": 2,
+      "qualifiedHelperOrdinal": 14,
+      "cropOrOutputValuesUsedForMapping": false
+    }
+  },
+  "fixedStructuralTarget": {
+    "geometry": "circle-1025-center",
+    "material": "clear",
+    "appearance": "light",
+    "direction": "materialize",
+    "backingScaleFactor": 1,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "callerContinuationStartOffset": 3476,
+    "callerContinuationStartOffsetHex": "0xd94",
+    "dynamicCallOffset": 10340,
+    "dynamicCallOffsetHex": "0x2864",
+    "dynamicReturnOffset": 10344,
+    "dynamicReturnOffsetHex": "0x2868",
+    "dynamicCallRawLittleEndianHex": "10093fd7",
+    "dynamicCallInstruction": "blraa x8, x16",
+    "targetDispatchOrdinal": 4,
+    "expectedDispatchFunctions": [
+      "CA::Render::Updater::FlattenZOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+      "CA::Render::Updater::SDFOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+      "CA::Render::Updater::FlattenZOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+      "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)"
+    ],
+    "expectedDispatchCallerStateIndices": [343, 359, 375, 391],
+    "filterFunction": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+    "filterRelativeToPrepareLayer": -61056,
+    "filterSymbolByteCount": 788,
+    "filterCodeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "openedArithmeticScopes": [
+      {
+        "name": "rectApplyTransform",
+        "function": "CA::Rect::apply_transform(CA::SimpleTransform const&)",
+        "relativeToPrepareLayer": -1207212,
+        "symbolByteCount": 216,
+        "codeSHA256": "33690a5426ab0ea58626fd32bac7793953f0b9d4bf5a2b9de070701c2b3f1905"
+      },
+      {
+        "name": "rectUnapplyTransform",
+        "function": "CA::Rect::unapply_transform(CA::SimpleTransform const&)",
+        "relativeToPrepareLayer": -1202648,
+        "symbolByteCount": 216,
+        "codeSHA256": "6cfb69c5706fce5a48b722499d708ea7e76ffdcaba41b8b5ec77ad2e4481b046"
+      },
+      {
+        "name": "glassBackgroundDOD",
+        "function": "CA::OGL::GlassBackgroundFilter::DOD(CA::Render::Filter const*, CA::Render::Layer const*, CA::Rect&) const",
+        "relativeToPrepareLayer": -90584,
+        "symbolByteCount": 1136,
+        "codeSHA256": "8ac014e4a0e296c28b5ada0444a281d7609e93a239f4201f748d758defe6955e"
+      },
+      {
+        "name": "filterApplyDOD",
+        "function": "CA::Render::Filter::apply_dod(CA::Render::Layer const*, CA::Rect&) const",
+        "relativeToPrepareLayer": -609324,
+        "symbolByteCount": 1092,
+        "codeSHA256": "1fbe87e96831c11eee633b58c2b0a39968d75ea29a48673aa95ccb761eaa30dd"
+      },
+      {
+        "name": "filterApply",
+        "function": "CA::Render::Updater::FilterOp::apply_filter(CA::Rect&, bool)",
+        "relativeToPrepareLayer": -61476,
+        "symbolByteCount": 292,
+        "codeSHA256": "855b03e09d815f83985994344be2867e6ac40938e80897183bcd06afc89f252f"
+      },
+      {
+        "name": "filterMapBounds",
+        "function": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+        "relativeToPrepareLayer": -61056,
+        "symbolByteCount": 788,
+        "codeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0"
+      },
+      {
+        "name": "unionBounds",
+        "function": "CA::Render::Updater::LayerShapes::union_bounds(CA::Rect const&, bool)",
+        "relativeToPrepareLayer": -2720,
+        "symbolByteCount": 404,
+        "codeSHA256": "246257a9bc1a608f59dbc07345397a8851b49528c59407eb775e9b9895a2c4b7"
+      }
+    ],
+    "cropOrOutputValuesUsedForSelection": false,
+    "selectionMayChangeAfterDispatch": false
+  },
+  "captureInvariants": {
+    "selectionRule": "reuse marker interval 2 prepare_layer_mask ordinal 14 from the frozen output-blind helper/store/marker inventory; follow only its exact thread, x19 role, and frame; at prepare_layer+0x2864 require the frozen raw instruction and the exact first four dynamic function identities; select only ordinal 4 after its relative start, byte count, and complete code SHA-256 match; read no crop or output value",
+    "newBreakpointAdded": false,
+    "hardwareWatchpointUsed": false,
+    "cropOrOutputValuesUsedForSelection": false,
+    "callbackNamesExposedThroughTopLevelLLDBModule": true,
+    "allBreakpointsDisabledDuringManualTrace": true,
+    "synchronousInstructionSteppingRequired": true,
+    "completeScalarAndSIMDRegistersBeforeAndAfterEachInstruction": true,
+    "stackBytesBeforeAndAfterEachInstruction": 256,
+    "callerRoleBytesBeforeAndAfterEachInstruction": 2048,
+    "outputBytesBeforeAndAfterEachInstruction": 512,
+    "filterObjectBytesAtEntry": 1024,
+    "completeFilterSymbolCodeRequired": true,
+    "allPreviouslyHashedArithmeticScopesOpened": true,
+    "everyOtherCalleeMustBeAnExplicitStepOutBoundary": true,
+    "maximumCallerInstructionCount": 768,
+    "maximumFilterInstructionCount": 4096,
+    "maximumOpaqueCalleeCount": 4096,
+    "traceCheckpointInstructionInterval": 128,
+    "traceCheckpointBoundaryInterval": 16,
+    "outputBytesRetainedButUnavailableToSelector": true
+  },
+  "acceptance": {
+    "inheritedInventoryMustRevalidateBitForBit": true,
+    "selectedPrepareLayerMaskOwnershipFailureMustRemainExact": true,
+    "callbackRetryFalsificationMustRemainImmutable": true,
+    "sameCallerThreadRoleAndFrameRequired": true,
+    "allFourDynamicDispatchIdentitiesRequired": true,
+    "filterCompleteCodeSHA256MustMatchPriorFrozenCode": true,
+    "allExecutionEventsMustFormAnExactPCAndMemoryChain": true,
+    "completeFilterReturnRequired": true,
+    "filterReturnMustMatchProducerBitForBit": true,
+    "allFourFirstRectangleQwordsMustChange": true,
+    "zeroTraceFailuresRequired": true,
+    "normalTargetExitRequired": true,
+    "firstPassMayCaptureExecutedArithmeticForOfflineDecoding": true,
+    "exactFilterSemanticsMayBeClaimed": false,
+    "unchangedRepeatMayBeClaimed": false,
+    "allCropHoldoutsMayBeClaimed": false,
+    "materialAppearanceDirectionTransferMayBeClaimed": false,
+    "retina2xAndColorTransferMayBeClaimed": false,
+    "endToEndWalleParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_crop_producer_callee_callback_retry_result.json",
+        "sha256": "a968fae4571253243d76b4c0fb01fae951eef93f122b59d53c5e6b30ae9fbcaf"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_filter_map_bounds_lldb.py",
+        "sha256": "0755924cd34936f6cc433d1efe322989229f94423a832107a73ae087da0c1320"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_filter_map_bounds.py",
+        "sha256": "24fd0d7df9912738e3914eb146f5c4959c7bf737fc69a52ff10577fba88a19cc"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_filter_map_bounds_lldb_source.py",
+        "sha256": "4ac24ab12dad44dde46f2f20f86565e169cb5e70bfec4da2e5769296df38d0c4"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_filter_map_bounds.py",
+        "sha256": "38d9d849561dc0579202cad5a0202751b70ca0aa84df48033ff85bdd42ec860c"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_crop_producer_callee_callback_retry_result.py",
+        "sha256": "cab066c6d1d656ceb88bff4be29c023fb13e1f7f32b610a1ef1f4141fb1a37c8"
+      },
+      {
+        "path": "Analysis/test_dynamic_allocation_prepare_layer_filter_map_bounds_preregistration.py",
+        "sha256": "4661249e6023afb5b21fdfd05c62657505281f5825761b6deab9d08c88173056"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-filter-map-bounds.yml",
+        "sha256": "7b5cf0046f28fc15b716eb4f3b37142f77d6ab6e8c107beb0fd08d713cae43f8"
+      },
+      {
+        "path": "Sources/GlassIntrospect/main.swift",
+        "sha256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518"
+      },
+      {
+        "path": "README.md",
+        "sha256": "a67463b685aefa21a16167fa8f5a1e61a42af35e0cbc8abcec7a9e2b4c100903"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null
+}

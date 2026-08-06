@@ -1,0 +1,177 @@
+{
+  "prepareLayerCropProducerCalleeCallbackRetryResultSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T03:40:16Z",
+  "classification": "immutable opening of the transport-repaired post-mask caller trace; the prospectively frozen +0xf5c callee hypothesis is falsified because the selected execution skips it, while an output-blind dynamic-dispatch sequence independently localizes the exact floating crop mutation to FilterOp::map_bounds",
+  "run": {
+    "runID": 31068498526,
+    "jobID": 92511321658,
+    "headSHA": "428a350df0d5d029fe9623e61f52079356861261",
+    "workflowConclusion": "failure",
+    "startedAt": "2026-08-06T03:27:45Z",
+    "completedAt": "2026-08-06T03:31:39Z",
+    "artifactID": 8954795840,
+    "artifactName": "liquid-glass-prepare-layer-crop-producer-callee-callback-retry-31068498526",
+    "artifactSizeBytes": 104401129,
+    "artifactDigest": "sha256:57929dd3de5fa82481028977578c2f95c436e9b6f9fa89b4b888750a46a7273b",
+    "githubStepCheckmarksAreNotTheScientificGate": true
+  },
+  "rawEvidence": {
+    "traceByteCount": 44658753,
+    "traceSHA256": "e74ba953b239682118c91f5c9ed1b6d45ceef013b7690d3facfb202b386d9b71",
+    "timelineByteCount": 46971240,
+    "timelineSHA256": "15e3b4d2d82e32d0eccafd130efd99eb66a97ffe57574c3aa9144c30c85362c1",
+    "lldbLogSHA256": "c4d3563e1fc35bab0d64ac47ab1d9d2f86f52d9e451d0f644c5bd232a1acccc2",
+    "runtimeStderrSHA256": "0b077015aa943c96778d05674136614444b7800281a96ed1d286a9be014baa8e",
+    "contractsLogSHA256": "ddce8e0d68118b4a0b0a360d7c302299b56052daf5896ef7400695ff524cfd61",
+    "captureCommandExitStatus": 0,
+    "validatorCommandExitStatus": 1,
+    "validatorFailure": "selected-helper antecedent differs: original prospective failure differs: crop transfer trace contains failures",
+    "rootFailure": "crop producer call site was not reached"
+  },
+  "transportAndSelection": {
+    "topLevelCallbackTransportRepaired": true,
+    "lldbStopReason": "breakpoint 6.1",
+    "selectedHelperReached": true,
+    "markerInterval": 2,
+    "qualifiedHelperOrdinal": 14,
+    "threadID": 64424509442,
+    "callerRoleBase": 6171882832,
+    "outputAddress": 6171883488,
+    "callerFramePointer": 6171884784,
+    "callerFramePointerConstantAcrossAllStates": true,
+    "helperInstructionStateCount": 52,
+    "callerContinuationInstructionStateCount": 1024,
+    "opaqueCalleeBoundaryCount": 23,
+    "executionEventCount": 1047,
+    "cropOrOutputValuesUsedForSelection": false
+  },
+  "falsifiedStaticCalleeHypothesis": {
+    "hypothesizedCallOffset": 3932,
+    "hypothesizedCallOffsetHex": "0xf5c",
+    "hypothesizedCallRawLittleEndianHex": "5462fb97",
+    "hypothesizedCalleeRelativeToPrepareLayer": -1206100,
+    "branchOffset": 3500,
+    "branchOffsetHex": "0xdac",
+    "branchDestinationOffset": 3880,
+    "branchDestinationOffsetHex": "0xf28",
+    "x23LoadOffset": 3900,
+    "x23LoadOffsetHex": "0xf3c",
+    "x23AfterLoad": 0,
+    "skipBranchOffset": 3912,
+    "skipBranchOffsetHex": "0xf48",
+    "skipInstruction": "cbz x23, prepare_layer+0x1054",
+    "hypothesizedCallExecuted": false,
+    "wrongRecursiveFrameEntered": false,
+    "boundedTargetFailure": true,
+    "ownershipEstablishedByHypothesizedCallee": false
+  },
+  "openedDynamicDispatchChain": {
+    "callerCallOffset": 10340,
+    "callerCallOffsetHex": "0x2864",
+    "callerReturnOffset": 10344,
+    "callerReturnOffsetHex": "0x2868",
+    "callRawLittleEndianHex": "10093fd7",
+    "callInstruction": "blraa x8, x16",
+    "sameCallerRoleAndFrameRequired": true,
+    "dispatches": [
+      {
+        "ordinalAtCallSite": 1,
+        "callerStateIndex": 343,
+        "executionEventIndex": 356,
+        "opaqueBoundaryIndex": 13,
+        "function": "CA::Render::Updater::FlattenZOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+        "changedFirstRectangleQwordOffsets": []
+      },
+      {
+        "ordinalAtCallSite": 2,
+        "callerStateIndex": 359,
+        "executionEventIndex": 373,
+        "opaqueBoundaryIndex": 14,
+        "function": "CA::Render::Updater::SDFOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+        "changedFirstRectangleQwordOffsets": [0, 8, 16, 24]
+      },
+      {
+        "ordinalAtCallSite": 3,
+        "callerStateIndex": 375,
+        "executionEventIndex": 390,
+        "opaqueBoundaryIndex": 15,
+        "function": "CA::Render::Updater::FlattenZOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+        "changedFirstRectangleQwordOffsets": []
+      },
+      {
+        "ordinalAtCallSite": 4,
+        "callerStateIndex": 391,
+        "executionEventIndex": 407,
+        "opaqueBoundaryIndex": 16,
+        "function": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+        "changedFirstRectangleQwordOffsets": [0, 8, 16, 24]
+      },
+      {
+        "ordinalAtCallSite": 5,
+        "callerStateIndex": 407,
+        "executionEventIndex": 424,
+        "opaqueBoundaryIndex": 17,
+        "function": "CA::Render::Updater::FlattenZOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+        "changedFirstRectangleQwordOffsets": []
+      }
+    ],
+    "outputValuesUsedToChooseDispatch": false
+  },
+  "filterMapBoundsOwnership": {
+    "function": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+    "symbolRelativeToPrepareLayer": -61056,
+    "symbolByteCount": 788,
+    "codeSHA256FromPriorFrozenCompleteSymbol": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "entryPC": 6866406396,
+    "returnPC": 6866477796,
+    "returnOffset": 10344,
+    "firstRectangleBeforeHex": "10000000329330c0c0ffffff316c31c0ffffff8ffd879040ffffff8ffd879040",
+    "firstRectangleBeforeF64": [
+      -16.574981689453182,
+      -17.422637939452898,
+      1057.997619628906,
+      1057.997619628906
+    ],
+    "firstRectangleAfterHex": "ffffffffc7fe7d40c0ffffff316c39c098999911cc8e8140feffff8ffdcb8140",
+    "firstRectangleAfterF64": [
+      479.92382812499994,
+      -25.422637939452898,
+      561.8496429443358,
+      569.4988098144529
+    ],
+    "changedFirstRectangleQwordOffsets": [0, 8, 16, 24],
+    "firstRectangleUnchangedThroughFollowingFlattenZ": true,
+    "firstRectangleUnchangedThroughPrepareLayerStoreOffset": 21952,
+    "prepareLayerStoreOffsetHex": "0x55c0",
+    "prepareLayerStoreInstruction": "str q0, [x28, #0xb0]",
+    "prepareLayerStoreRawLittleEndianHex": "802f803d",
+    "packedIntegerWorkingCropAtStoreHex": "de010000000000002202000022020000",
+    "packedIntegerWorkingCropI32": [478, 0, 546, 546],
+    "floatingFirstRectangleOwnerEstablished": true,
+    "exactInternalArithmeticDecoded": false
+  },
+  "nextStructuralGate": {
+    "target": "the fourth dynamic dispatch at prepare_layer+0x2864 after the structurally selected marker-two ordinal-fourteen helper return",
+    "selectionUsesFunctionIdentityNotOutput": true,
+    "requiredFunction": "CA::Render::Updater::FilterOp::map_bounds(CA::Render::Updater::LayerShapes&, bool)",
+    "requiredRelativeStart": -61056,
+    "requiredSymbolByteCount": 788,
+    "requiredCodeSHA256": "e8766dcefdadc0074f7bb4e2bf62955072891858009dca6c72a7eef1c96789d0",
+    "completeInstructionRegisterStackRoleAndOutputTraceRequired": true,
+    "opaqueCalleeBoundariesRequired": true,
+    "prospectiveOutputBlindSelectionRequired": true
+  },
+  "sealedConclusion": {
+    "callbackTransportRepaired": true,
+    "staticPlusF5CCalleeHypothesisFalsified": true,
+    "filterMapBoundsFloatingProducerOwnershipEstablished": true,
+    "exactFilterMapBoundsSemanticsDecoded": false,
+    "unchangedRepeatPassed": false,
+    "allCropHoldoutsBitExact": false,
+    "materialAppearanceDirectionTransferPassed": false,
+    "physicalRetina2xAndColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
