@@ -1,0 +1,140 @@
+{
+  "backdropMarginWriterExecutionOpenedCalibrationResultSchemaVersion": 1,
+  "classification": "immutable retrospective calibration from the two complete materialize artifacts in failed run 31109847952, opened only after the first retry preregistration was committed but before that retry workflow was ever dispatched; establishes a material-specific holdout candidate but is not itself a prospective pass",
+  "openedAtUtc": "2026-08-06T14:46:07Z",
+  "run": {
+    "runID": 31109847952,
+    "headSHA": "7a0abe0857da5ab1bf63cad256ab2038ed326300",
+    "conclusion": "failure",
+    "transportFailureResult": "Analysis/backdrop_margin_writer_execution_transport_failure_result.json",
+    "transportFailureResultSHA256": "51fded30b16b8a05918ffd7f3dfa647ab1b986f3c0a96104706598c3bf9db171"
+  },
+  "retrySupersessionAudit": {
+    "initialRetryCommit": "c7e1a3f",
+    "initialRetryWorkflow": ".github/workflows/backdrop-margin-writer-execution-retry.yml",
+    "githubRunListQueriedAtUtc": "2026-08-06T14:46:07Z",
+    "workflowDispatchCountBeforeSupersession": 0,
+    "prospectiveCaseAppleOutputAvailable": false,
+    "initialRetryMayCountAsDispatchedPreregistration": false
+  },
+  "artifacts": [
+    {
+      "profile": "clear-light-materialize-circle-347-center",
+      "artifactID": 8971372675,
+      "artifactDigest": "sha256:a3e8f39091615b034d780158b623d18044b6ecbb25fc4782fb7d893de0557b4b",
+      "traceSHA256": "f0b9586261286e27306ac516cd9065e810c522898a493954628a751c95294522",
+      "timelineSHA256": "eb61d91c3c8c0e1c1bbfbd410292b903e1f369cf123bfdcd0a5397f4dbca144d"
+    },
+    {
+      "profile": "regular-dark-materialize-circle-896-center",
+      "artifactID": 8971354085,
+      "artifactDigest": "sha256:1ca60d431e37aaad43da9a12a1348ed2c45414e8389340f2ce5d13c9ef80bd3b",
+      "traceSHA256": "449895ab3225626f5763c7863d0a484e422c509e93ded37193bcade31c7bc79b",
+      "timelineSHA256": "308ca454c2ba3876b71b06a55a201151640aeebc672c821f6d2c15febb852297"
+    }
+  ],
+  "profiles": {
+    "clear-light-materialize-circle-347-center": {
+      "eventCount": 1195,
+      "marginSetterEventCount": 154,
+      "copyEntryEventCount": 476,
+      "copyMarginStoreEventCount": 277,
+      "backdropBoundsEventCount": 288,
+      "allMarginSetterF64RawLittleEndianHex": "0000000000000000",
+      "allCopyStoreF32RawLittleEndianHex": "00000000",
+      "allGetBoundsF32RawLittleEndianHex": "00000000",
+      "capturedInputTransitionMaximumF64": 83.0,
+      "capturedInputTransitionMaximumF64RawLittleEndianHex": "0000000000c05440",
+      "capturedInputTransitionMaximumF32": 83.0,
+      "capturedInputTransitionMaximumF32RawLittleEndianHex": "0000a642",
+      "structurallyCompleteChainCount": 32,
+      "exactZeroChainCount": 32,
+      "regularTransitionMaximumChainCount": 0
+    },
+    "regular-dark-materialize-circle-896-center": {
+      "eventCount": 1148,
+      "marginSetterEventCount": 138,
+      "copyEntryEventCount": 440,
+      "copyMarginStoreEventCount": 250,
+      "backdropBoundsEventCount": 320,
+      "uniqueMarginSetterF64WordCount": 134,
+      "transitionMaximumSetterEventCount": 3,
+      "zeroSetterEventCount": 3,
+      "uniqueCopyStoreF32WordCount": 134,
+      "transitionMaximumCopyStoreEventCount": 109,
+      "zeroCopyStoreEventCount": 9,
+      "uniqueGetBoundsF32WordCount": 1,
+      "transitionMaximumGetBoundsEventCount": 320,
+      "capturedInputTransitionMaximumF64": 313.59999999999997,
+      "capturedInputTransitionMaximumF64RawLittleEndianHex": "9999999999997340",
+      "capturedInputTransitionMaximumF32": 313.6000061035156,
+      "capturedInputTransitionMaximumF32RawLittleEndianHex": "cdcc9c43",
+      "structurallyCompleteChainCount": 32,
+      "transitionMaximumBitExactChainCount": 32
+    }
+  },
+  "sharedCaller": {
+    "module": "SwiftUICore",
+    "moduleUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97",
+    "function": "SwiftUI.SDFLayer.updateSDFEffects(for: SwiftUI.SDFStyle, at: inout Swift.Int, in: SwiftUI.DisplayList.ViewRenderer.Environment, backdropGroupID: Swift.Optional<SwiftUI.BackdropGroupID>, blend: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Blend, opacity: Swift.Float, options: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Options, gain: Swift.Float, maxColorComponent: Swift.Float) -> ()",
+    "symbolByteCount": 6844,
+    "codeSHA256": "65dff1ba1d4e0ae3376a6ad2e1946bb6ee8725c6380ff886e68111d92fff933e",
+    "symbolStartModuleOffset": 9594364,
+    "setterReturnSymbolOffset": 5772,
+    "allSetterEventsUseThisCallerAndOffset": true,
+    "callSiteInstructions": [
+      {
+        "symbolOffset": 5756,
+        "instructionHex": "f4830591",
+        "decoded": "add x20, sp, #0x160"
+      },
+      {
+        "symbolOffset": 5760,
+        "instructionHex": "5526e997",
+        "decoded": "bl Double-returning producer",
+        "targetModuleOffset": 3610064
+      },
+      {
+        "symbolOffset": 5764,
+        "instructionHex": "e0031caa",
+        "decoded": "mov x0, x28"
+      },
+      {
+        "symbolOffset": 5768,
+        "instructionHex": "dfcb1894",
+        "decoded": "bl setMarginWidth dispatch stub",
+        "targetModuleOffset": 16100352
+      }
+    ],
+    "producerCompleteCodePresentInOpenedArtifacts": false,
+    "producerArithmeticDecoded": false
+  },
+  "calibratedCandidate": {
+    "materialSelector": {
+      "clear": "exact binary64 +0.0",
+      "regular": "maximum over all 32 retained records of max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))"
+    },
+    "modelStorage": "binary64",
+    "renderStorage": "round-to-nearest-even binary32",
+    "openedAppleWriterValuesUsedToChooseCandidate": true,
+    "freshRetryCaseOutputUsedToChooseCandidate": false,
+    "eligibleForProspectiveFreshHoldout": true
+  },
+  "nextCaptureRequirement": {
+    "captureImmediateProducerCallAtSetterReturnPCMinus12": true,
+    "captureExactProducerCompleteCode": true,
+    "captureProducerSelfAtStackPointerPlus352": true,
+    "captureProducerSelfBytes": 96,
+    "requireProducerReturnToEqualSetterInputBitwise": true,
+    "capturedMarginUsedForProducerSelection": false
+  },
+  "sealedConclusion": {
+    "universalTransitionMaximumLawDisproved": true,
+    "clearExactZeroLawCalibrated": true,
+    "regularTransitionMaximumLawCalibrated": true,
+    "materialSpecificLawProspectivelyValidated": false,
+    "adjacentProducerArithmeticDecoded": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

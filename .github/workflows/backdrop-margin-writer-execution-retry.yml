@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: backdrop-margin-writer-execution-retry-v1-${{ github.ref }}
+  group: backdrop-margin-writer-execution-retry-v2-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -73,10 +73,12 @@ jobs:
           set -o pipefail
           for pattern in \
             test_capture_backdrop_margin_writer_execution_lldb_source.py \
+            test_capture_backdrop_margin_writer_producer_lldb_source.py \
             test_validate_backdrop_margin_writer_execution.py \
             test_backdrop_margin_writer_execution_preregistration.py \
             test_validate_backdrop_margin_writer_execution_retry.py \
             test_backdrop_margin_writer_execution_retry_preregistration.py \
+            test_backdrop_margin_writer_execution_opened_calibration_result.py \
             test_backdrop_margin_writer_execution_transport_failure_result.py
           do
             python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
@@ -119,9 +121,9 @@ jobs:
           xcrun lldb --batch \
             -o 'settings set target.output-path backdrop-margin-writer-retry/runtime-stdout.log' \
             -o 'settings set target.error-path backdrop-margin-writer-retry/runtime-stderr.log' \
-            -o 'command script import Analysis/capture_backdrop_margin_writer_execution_lldb.py' \
+            -o 'command script import Analysis/capture_backdrop_margin_writer_producer_lldb.py' \
             -o run \
-            -o 'script capture_backdrop_margin_writer_execution_lldb.finalize()' \
+            -o 'script capture_backdrop_margin_writer_producer_lldb.finalize()' \
             -- ./glass-transition-introspect backdrop-margin-writer-retry \
             > backdrop-margin-writer-retry/lldb-writer-execution.log 2>&1
 
@@ -174,14 +176,23 @@ jobs:
           profile = result.get("profile", {})
           execution = result.get("writerExecution", {})
           discovery = execution.get("opaqueEntryArgumentDiscovery", {})
+          producer = execution.get("producerProvenance", {})
           candidate = result.get("candidate", {})
           sealed = result.get("sealedConclusion", {})
+          material = os.environ["LG_GLASS_MATERIAL"]
+          expected_law = (
+              "clear material stores exact zero marginWidth; its separate "
+              "no-bleed backdrop path does not consume the regular transition maximum"
+              if material == "clear"
+              else "regular material stores the binary64 transition maximum and "
+              "rounds it once to binary32 in _copyRenderLayer"
+          )
           if (
               result.get(
                   "backdropMarginWriterExecutionRetryValidationSchemaVersion"
-              ) != 1
+              ) != 2
               or result.get("conclusion") != "success"
-              or profile.get("material") != os.environ["LG_GLASS_MATERIAL"]
+              or profile.get("material") != material
               or profile.get("appearance") != os.environ["LG_GLASS_APPEARANCE"]
               or profile.get("direction") != "materialize"
               or profile.get("geometry") != os.environ["LG_GLASS_GEOMETRY"]
@@ -197,7 +208,30 @@ jobs:
               ) < 1
               or discovery.get("capturedValueUsedForCorrection") is not False
               or discovery.get("marginValueUsedForCorrection") is not False
+              or candidate.get("selectedMaterialLaw") != expected_law
+              or producer.get("producerCalleeCount", 0) < 1
+              or producer.get("producerCalleeCodeByteCount", 0) < 1
+              or producer.get("setterInvocationCount", 0) < 1
+              or producer.get(
+                  "allSetterInvocationsExposeExactAdjacentProducer"
+              ) is not True
+              or producer.get(
+                  "allProducerReturnsEqualSetterInputsBitwise"
+              ) is not True
+              or producer.get(
+                  "capturedMarginUsedForProducerSelection"
+              ) is not False
               or sealed.get("opaqueCopyArgumentABIResolved") is not True
+              or sealed.get("materialSpecificMarginLawSelected") is not True
+              or sealed.get(
+                  "materialSpecificMarginCandidateProspectiveBitExactForThisCase"
+              ) is not True
+              or sealed.get(
+                  "clearZeroMarginLawProspectiveBitExactForThisCase"
+              ) is not (material == "clear")
+              or sealed.get(
+                  "regularTransitionMaximumLawProspectiveBitExactForThisCase"
+              ) is not (material == "regular")
               or sealed.get("selectedMarginSetterExecutionAuthenticated")
                   is not True
               or sealed.get("selectedRenderCopyExecutionAuthenticated")
@@ -206,9 +240,11 @@ jobs:
                   is not True
               or sealed.get(
                   "transitionMaximumCandidateProspectiveBitExactForThisCase"
-              ) is not True
+              ) is not (material == "regular")
               or sealed.get("setterCallerCodeOpened") is not True
               or sealed.get("setterCallerArithmeticDecoded") is not False
+              or sealed.get("adjacentMarginProducerCodeOpened") is not True
+              or sealed.get("adjacentMarginProducerArithmeticDecoded") is not False
               or sealed.get("independentTemporalInputGenerationPassed")
                   is not False
               or sealed.get("physicalOutputTransferPassed") is not False

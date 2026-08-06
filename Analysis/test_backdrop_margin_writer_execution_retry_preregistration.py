@@ -1,4 +1,4 @@
-"""Integrity tests for the fresh all-materialize retry holdout."""
+"""Integrity tests for the superseding material-specific fresh holdout."""
 
 from __future__ import annotations
 
@@ -20,24 +20,41 @@ class BackdropMarginWriterExecutionRetryPreregistrationTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.value = json.loads(PREREGISTRATION.read_text(encoding="utf-8"))
 
-    def test_retry_changes_only_the_output_blind_abi_assertion(self) -> None:
+    def test_v1_was_superseded_before_any_dispatch(self) -> None:
         self.assertEqual(
             self.value[
                 "backdropMarginWriterExecutionRetryPreregistrationSchemaVersion"
             ],
-            1,
+            2,
         )
-        correction = self.value["abiCorrection"]
-        self.assertFalse(correction["candidateMarginValueUsed"])
-        self.assertFalse(correction["cropValueUsed"])
-        self.assertFalse(correction["imageValueUsed"])
-        self.assertTrue(correction["opaqueX2RetainedAsEvidence"])
-        self.assertFalse(correction["otherValidatorRuleChanged"])
-        contract = self.value["captureContract"]
-        self.assertFalse(contract["captureAdapterChangedFromFirstDispatch"])
-        self.assertFalse(contract["breakpointSelectionChangedFromFirstDispatch"])
-        self.assertFalse(contract["exactCodeHashesChangedFromFirstDispatch"])
-        self.assertFalse(contract["eventBoundChangedFromFirstDispatch"])
+        supersession = self.value["supersedesUndispatchedVersion"]
+        self.assertEqual(supersession["commit"], "c7e1a3f")
+        self.assertEqual(supersession["workflowDispatchCountBeforeSupersession"], 0)
+        self.assertFalse(supersession["appleOutputForProspectiveCasesAvailable"])
+
+    def test_opened_calibration_selects_a_material_specific_law(self) -> None:
+        calibration = self.value["openedCalibration"]
+        result_path = ROOT / calibration["result"]
+        self.assertTrue(result_path.is_file())
+        self.assertEqual(
+            hashlib.sha256(result_path.read_bytes()).hexdigest(),
+            calibration["resultSHA256"],
+        )
+        self.assertTrue(calibration["openedAppleWriterValuesUsedToChooseCandidate"])
+        self.assertFalse(calibration["prospectiveCaseOutputUsedToChooseCandidate"])
+        self.assertTrue(calibration["universalTransitionMaximumLawDisproved"])
+        self.assertEqual(calibration["clearAllSetterEventCount"], 154)
+        self.assertEqual(calibration["clearAllSetterF64RawLittleEndianHex"], "0" * 16)
+        candidate = self.value["frozenCandidate"]
+        self.assertEqual(
+            candidate["materialSelector"],
+            {
+                "clear": "exact binary64 +0.0",
+                "regular": ("maximum over all 32 retained per-record required margins"),
+            },
+        )
+        self.assertTrue(candidate["candidateCalibratedFromOpenedAppleWriterValues"])
+        self.assertFalse(candidate["prospectiveCaseOutputUsedToChooseCandidate"])
 
     def test_four_exact_configurations_are_fresh_and_materialize_only(self) -> None:
         cases = self.value["prospectiveCases"]
@@ -66,19 +83,33 @@ class BackdropMarginWriterExecutionRetryPreregistrationTests(unittest.TestCase):
             self.assertIsNone(case["expectedMarginF32"])
             self.assertIsNone(case["expectedWriterPointers"])
             self.assertIsNone(case["expectedCallerIdentity"])
+            self.assertIsNone(case["expectedProducerIdentity"])
         self.assertIsNone(self.value["runtimeOutcomeFrozenBeforeDispatch"])
 
-    def test_failure_antecedent_did_not_open_the_candidate(self) -> None:
-        antecedent = self.value["antecedentFailure"]
-        self.assertEqual(antecedent["runID"], 31109847952)
-        self.assertFalse(antecedent["candidateTested"])
-        self.assertFalse(antecedent["candidateMarginValuesReadForDiagnosis"])
-        self.assertEqual(antecedent["modelEntryStorePointerMatchCount"], 527)
-        self.assertEqual(antecedent["opaqueX2EqualsRenderX21Count"], 0)
+    def test_abi_join_and_producer_selection_are_structural(self) -> None:
+        correction = self.value["abiCorrection"]
+        self.assertFalse(correction["candidateMarginValueUsed"])
+        self.assertFalse(correction["cropValueUsed"])
+        self.assertFalse(correction["imageValueUsed"])
+        self.assertTrue(correction["opaqueX2RetainedAsEvidence"])
+        contract = self.value["captureContract"]
+        self.assertTrue(contract["captureAdapterChangedFromFirstDispatch"])
+        self.assertTrue(contract["frozenBaseCaptureAdapterUnchanged"])
+        self.assertFalse(contract["breakpointSelectionChangedFromFirstDispatch"])
+        self.assertFalse(contract["exactCodeHashesChangedFromFirstDispatch"])
+        self.assertFalse(contract["eventBoundChangedFromFirstDispatch"])
+        self.assertFalse(contract["producerSelectedByCapturedMargin"])
+        self.assertEqual(contract["producerSelfOffsetFromStackPointer"], 0x160)
+        self.assertEqual(contract["producerSelfSnapshotByteCount"], 0x60)
+        caller = contract["openedSetterCaller"]
+        self.assertEqual(caller["returnSymbolOffset"], 5772)
+        self.assertEqual(caller["producerCallSymbolOffset"], 5760)
+        self.assertEqual(caller["bridgeInstructionHex"], "e0031caa")
+        self.assertEqual(caller["setterCallSymbolOffset"], 5768)
 
     def test_every_frozen_implementation_hash_is_current(self) -> None:
         entries = self.value["frozenImplementation"]["files"]
-        self.assertGreaterEqual(len(entries), 6)
+        self.assertGreaterEqual(len(entries), 10)
         paths = set()
         for entry in entries:
             path = ROOT / entry["path"]

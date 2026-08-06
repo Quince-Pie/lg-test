@@ -1,8 +1,16 @@
 {
   "backdropMarginWriterExecutionPreregistrationSchemaVersion": 1,
-  "backdropMarginWriterExecutionRetryPreregistrationSchemaVersion": 1,
-  "frozenAtUtc": "2026-08-06T14:25:20Z",
-  "classification": "prospective output-blind retry on four fresh all-materialize configurations after the first run stopped before candidate comparison; removes only the disproved accidental x2-equals-x21 ABI assertion while preserving the preregistered model x0-to-x20 and render x21-to-get_bounds-x0 object-identity joins, candidate formula, exact code gates, and zero-bit acceptance",
+  "backdropMarginWriterExecutionRetryPreregistrationSchemaVersion": 2,
+  "frozenAtUtc": "2026-08-06T14:46:07Z",
+  "classification": "prospective four-case all-materialize holdout for the material-specific margin law calibrated from the two opened antecedent materialize artifacts, with the ABI-correct model x0-to-x20 and render x21-to-get_bounds-x0 joins plus complete-code and invocation capture of the structurally adjacent Double-returning SwiftUICore producer; no Apple output for any prospective case exists at freeze time",
+  "supersedesUndispatchedVersion": {
+    "commit": "c7e1a3f",
+    "workflow": ".github/workflows/backdrop-margin-writer-execution-retry.yml",
+    "workflowDispatchCountBeforeSupersession": 0,
+    "githubRunListQueriedAtUtc": "2026-08-06T14:46:07Z",
+    "appleOutputForProspectiveCasesAvailable": false,
+    "reason": "opened antecedent materialize artifacts disproved a universal material law"
+  },
   "antecedentFailure": {
     "runID": 31109847952,
     "headSHA": "7a0abe0857da5ab1bf63cad256ab2038ed326300",
@@ -17,13 +25,38 @@
     "productionShaderChanged": false,
     "liquidGlassParityEstablished": false
   },
+  "openedCalibration": {
+    "result": "Analysis/backdrop_margin_writer_execution_opened_calibration_result.json",
+    "resultSHA256": "4d292cddf1b6f1187f63ad7d55c559e4242be020f38f20fcfa7850afd1d9d1b4",
+    "clearProfile": "clear-light-materialize-circle-347-center",
+    "regularProfile": "regular-dark-materialize-circle-896-center",
+    "openedAppleWriterValuesUsedToChooseCandidate": true,
+    "prospectiveCaseOutputUsedToChooseCandidate": false,
+    "universalTransitionMaximumLawDisproved": true,
+    "clearAllSetterEventCount": 154,
+    "clearAllSetterF64RawLittleEndianHex": "0000000000000000",
+    "clearAllCopyStoreEventCount": 277,
+    "clearAllCopyStoreF32RawLittleEndianHex": "00000000",
+    "clearAllGetBoundsEventCount": 288,
+    "clearAllGetBoundsF32RawLittleEndianHex": "00000000",
+    "regularCompleteBitExactChainCount": 32,
+    "regularTransitionMaximumF64RawLittleEndianHex": "9999999999997340",
+    "regularTransitionMaximumF32RawLittleEndianHex": "cdcc9c43"
+  },
   "frozenCandidate": {
     "perRecordRequiredMargin": "max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))",
     "transitionMargin": "max over all 32 retained records",
+    "materialSelector": {
+      "clear": "exact binary64 +0.0",
+      "regular": "maximum over all 32 retained per-record required margins"
+    },
     "modelStorage": "binary64",
     "renderStorage": "round-to-nearest-even binary32",
-    "operationOrderChangedFromFirstDispatch": false,
+    "operationOrderChangedFromFirstDispatch": true,
     "capturedTargetValueUsedToChooseCandidate": false,
+    "candidateCalibratedFromOpenedAppleWriterValues": true,
+    "prospectiveCaseOutputUsedToChooseCandidate": false,
+    "universalTransitionMaximumCandidateRetained": false,
     "candidateAcceptedAsGeneralBeforeThisRun": false
   },
   "abiCorrection": {
@@ -35,7 +68,8 @@
     "retainedModelJoin": "copy entry x0 equals copy store x20 on the same thread and invocation",
     "retainedRenderJoin": "copy store x21 equals the receiver x0 of a later get_bounds event",
     "opaqueX2RetainedAsEvidence": true,
-    "otherValidatorRuleChanged": false
+    "otherValidatorRuleChanged": true,
+    "additionalChange": "select clear exact zero versus regular transition maximum using material identity calibrated from opened antecedent cases; prospectively capture the structurally adjacent producer without selecting on its return value"
   },
   "prospectiveCases": [
     {
@@ -48,7 +82,8 @@
       "expectedMarginF64": null,
       "expectedMarginF32": null,
       "expectedWriterPointers": null,
-      "expectedCallerIdentity": null
+      "expectedCallerIdentity": null,
+      "expectedProducerIdentity": null
     },
     {
       "material": "clear",
@@ -60,7 +95,8 @@
       "expectedMarginF64": null,
       "expectedMarginF32": null,
       "expectedWriterPointers": null,
-      "expectedCallerIdentity": null
+      "expectedCallerIdentity": null,
+      "expectedProducerIdentity": null
     },
     {
       "material": "regular",
@@ -72,7 +108,8 @@
       "expectedMarginF64": null,
       "expectedMarginF32": null,
       "expectedWriterPointers": null,
-      "expectedCallerIdentity": null
+      "expectedCallerIdentity": null,
+      "expectedProducerIdentity": null
     },
     {
       "material": "regular",
@@ -84,11 +121,14 @@
       "expectedMarginF64": null,
       "expectedMarginF32": null,
       "expectedWriterPointers": null,
-      "expectedCallerIdentity": null
+      "expectedCallerIdentity": null,
+      "expectedProducerIdentity": null
     }
   ],
   "captureContract": {
-    "captureAdapterChangedFromFirstDispatch": false,
+    "captureAdapterChangedFromFirstDispatch": true,
+    "frozenBaseCaptureAdapterUnchanged": true,
+    "captureAdapterChange": "a new overlay preserves the frozen base adapter byte for byte and, for every setter invocation, decodes the BL at caller return PC minus 12, retains its complete target symbol, snapshots the 96-byte Swift self value at SP plus 0x160, and requires its binary64 return to equal the setter input word; breakpoint selection remains unchanged",
     "breakpointSelectionChangedFromFirstDispatch": false,
     "exactCodeHashesChangedFromFirstDispatch": false,
     "eventBoundChangedFromFirstDispatch": false,
@@ -97,10 +137,28 @@
     "capturedMarginUsedForSelection": false,
     "capturedCropUsedForSelection": false,
     "capturedImageUsedForSelection": false,
+    "producerSelectedByCapturedMargin": false,
+    "openedSetterCaller": {
+      "moduleUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97",
+      "function": "SwiftUI.SDFLayer.updateSDFEffects(for: SwiftUI.SDFStyle, at: inout Swift.Int, in: SwiftUI.DisplayList.ViewRenderer.Environment, backdropGroupID: Swift.Optional<SwiftUI.BackdropGroupID>, blend: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Blend, opacity: Swift.Float, options: SwiftUI.Material.Layer.SDFLayer.GroupLayer.Options, gain: Swift.Float, maxColorComponent: Swift.Float) -> ()",
+      "symbolByteCount": 6844,
+      "codeSHA256": "65dff1ba1d4e0ae3376a6ad2e1946bb6ee8725c6380ff886e68111d92fff933e",
+      "returnSymbolOffset": 5772,
+      "producerCallSymbolOffset": 5760,
+      "producerCallInstructionHex": "5526e997",
+      "producerTargetModuleOffset": 3610064,
+      "bridgeSymbolOffset": 5764,
+      "bridgeInstructionHex": "e0031caa",
+      "setterCallSymbolOffset": 5768,
+      "setterCallInstructionHex": "dfcb1894",
+      "setterStubTargetModuleOffset": 16100352
+    },
+    "producerSelfOffsetFromStackPointer": 352,
+    "producerSelfSnapshotByteCount": 96,
     "expectedEventCounts": null,
     "expectedObjectPointers": null,
-    "expectedCallerSymbols": null,
-    "expectedCallerCodeHashes": null
+    "expectedProducerSymbol": null,
+    "expectedProducerCodeHash": null
   },
   "acceptance": {
     "requireAllExactCodeGates": true,
@@ -113,6 +171,11 @@
     "requireCopyStoreBinary32WordExact": true,
     "requireGetBoundsBinary32WordExact": true,
     "requireCallerCodeToBeRetained": true,
+    "requireEveryStructurallyJoinedChainToMatchMaterialLawBitwise": true,
+    "requireEverySetterToExposeExactAdjacentProducer": true,
+    "requireExactOpenedSwiftUICoreCallerIdentity": true,
+    "requireProducerCompleteCode": true,
+    "requireProducerSelfSnapshot": true,
     "zeroTolerance": true
   },
   "frozenImplementation": {
@@ -122,16 +185,36 @@
         "sha256": "f91ba6afb61b491d949ea5dc9d4fc1c82c165e0016aefa84db00a0b15d435ecd"
       },
       {
+        "path": "Analysis/test_capture_backdrop_margin_writer_execution_lldb_source.py",
+        "sha256": "cb9833fc91ad148345725b4b85368ae51cf13783117c74029c14902f50fc12eb"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_writer_producer_lldb.py",
+        "sha256": "4e5620a157021578a0bb79f3b8cbf49eed2d754e960ecc076a046ae13d575d76"
+      },
+      {
+        "path": "Analysis/test_capture_backdrop_margin_writer_producer_lldb_source.py",
+        "sha256": "899d9a203d7cf4ac30420fe3165b36a7f7ffa34bfe90610c1ab46181fbf2b85a"
+      },
+      {
         "path": "Analysis/validate_backdrop_margin_writer_execution.py",
         "sha256": "47497743231b6e9183b75909d592033241f41a7bdc045017a3959e038beb465f"
       },
       {
         "path": "Analysis/validate_backdrop_margin_writer_execution_retry.py",
-        "sha256": "9343f8e51c3d9691cd8c007d22b99051c5005c1f7795c1e1ac67e0cf8b5c1d71"
+        "sha256": "239cbe938de332e3108a7b7153f6c66af6238baea329d81dd137a30591325db8"
       },
       {
         "path": "Analysis/test_validate_backdrop_margin_writer_execution_retry.py",
-        "sha256": "225d7eb2e71ecc15ad3cf6f6369e7ea0030072d8dfdf1e2a82d683aa5b8c08b0"
+        "sha256": "c552d03c052ec66354ea0ab98809e33af9103232c147c3fda858897c1d2fcdc3"
+      },
+      {
+        "path": "Analysis/backdrop_margin_writer_execution_opened_calibration_result.json",
+        "sha256": "4d292cddf1b6f1187f63ad7d55c559e4242be020f38f20fcfa7850afd1d9d1b4"
+      },
+      {
+        "path": "Analysis/test_backdrop_margin_writer_execution_opened_calibration_result.py",
+        "sha256": "623324d7fa275d61f966389ff9cf4f3ef76e5fbf73b76787e9a7830885833a84"
       },
       {
         "path": "Analysis/backdrop_margin_writer_execution_transport_failure_result.json",
@@ -143,11 +226,11 @@
       },
       {
         "path": "Analysis/test_backdrop_margin_writer_execution_retry_preregistration.py",
-        "sha256": "09d16e59892c8fbdf68d92f1bd28ca8871a8634fd01d01d9d21839aeefc56459"
+        "sha256": "9ae105719d01aaec533ab866dddad83dc3d547158f07b566d39384768e0e0c5a"
       },
       {
         "path": ".github/workflows/backdrop-margin-writer-execution-retry.yml",
-        "sha256": "f61e1b9ee28c9779b1828b4d9adc560bee4bf696c5db7bb8b329a1accb6e699a"
+        "sha256": "3e9cb505518444cf1785ed2e7003a0259a8127f8208145fc9561f892395c2d24"
       }
     ],
     "productionShader": {
@@ -164,7 +247,10 @@
   "runtimeOutcomeFrozenBeforeDispatch": null,
   "productAuthority": {
     "selectedWriterExecutionMayBeAuthenticatedOnPass": true,
-    "transitionMaximumCandidateMayBeAcceptedForCapturedInputsAfterAllFourPass": true,
+    "materialSpecificMarginLawMayBeAcceptedForCapturedInputsAfterAllFourPass": true,
+    "regularTransitionMaximumLawMayBeAcceptedForCapturedInputsAfterAllFourPass": true,
+    "clearExactZeroLawMayBeAcceptedForCapturedInputsAfterAllFourPass": true,
+    "adjacentProducerCodeMayBeOpenedOnPass": true,
     "setterCallerArithmeticMayBeDeclaredDecoded": false,
     "independentTemporalInputGenerationMayBeClaimed": false,
     "capturedInputOpticalParityMayBeClaimedByThisGate": false,

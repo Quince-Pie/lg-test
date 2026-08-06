@@ -7503,12 +7503,56 @@ transport failures, and the fact that validation never reached the formula are
 preserved in
 `Analysis/backdrop_margin_writer_execution_transport_failure_result.json`.
 
-The output-blind retry is separately frozen in
-`Analysis/backdrop_margin_writer_execution_retry_preregistration.json`. It
-keeps the capture adapter, exact QuartzCore hashes, event bounds, formula,
-operation order, and zero-bit gate unchanged; only the disproved `x2 == x21`
-assertion is removed. Four fresh all-materialize configurations replace the
-opened/unsupported jobs: clear/light circle-408, clear/dark
-circle-640-phase-0501, regular/light circle-768, and regular/dark circle-1535.
-This is again a preregistration rather than a pass, and grants no shader or
-product-parity authority before all four new artifacts return.
+Retry preregistration v1 was committed as `c7e1a3f`, but it was never
+dispatched. A GitHub workflow-history query at `2026-08-06T14:46:07Z` returned
+zero runs for `backdrop-margin-writer-execution-retry.yml`. The two complete
+materialize artifacts from the failed first dispatch were opened only after
+that commit. The resulting retrospective calibration is immutable in
+`Analysis/backdrop_margin_writer_execution_opened_calibration_result.json`;
+it supersedes v1 without converting the failed run into a prospective result.
+
+The opened values disprove the universal material law. Clear/light
+circle-347 wrote exact binary64 `+0.0` in all 154 setter events, exact binary32
+`+0.0` in all 277 copy stores, and exact binary32 `+0.0` in all 288
+`get_bounds` events. All 32 structurally selected chains are zero bit for bit,
+even though applying the regular transition-input maximum would produce
+binary64 `83.0` (`0000000000c05440`) and binary32 `83.0` (`0000a642`). Clear's
+no-bleed backdrop path therefore does not use the regular allocation maximum.
+
+Regular/dark circle-896 selects the other branch exactly. Its captured-input
+maximum is binary64 `313.59999999999997` (`9999999999997340`), whose one
+binary32 conversion is `313.6000061035156` (`cdcc9c43`). All 32 structurally
+selected setter/copy/consumer chains match those words exactly, and all 320
+`get_bounds` events consume `cdcc9c43`. The trace also contains transient and
+unselected objects: its 138 setter events span 134 words and only three carry
+the final maximum, while 109 of 250 copy stores carry `cdcc9c43`. The proof is
+therefore the object-identity/event-order join, not a global-value count.
+
+Both profiles use the same direct caller at the same call site:
+`SwiftUI.SDFLayer.updateSDFEffects`, SwiftUICore UUID
+`A8FC6D2D-DFE9-3557-A734-7F2B231F8C97`, 6,844 code bytes, SHA-256
+`65dff1ba1d4e0ae3376a6ad2e1946bb6ee8725c6380ff886e68111d92fff933e`,
+and return offset 5,772. The exact call-site sequence constructs Swift self at
+`SP+0x160`, calls a Double-returning producer at offset 5,760, moves the model
+object into `x0`, and dispatches `setMarginWidth:` at offset 5,768. The old
+artifact retained the caller but not that producer's target symbol, so its
+arithmetic is not yet decoded.
+
+Retry preregistration v2 in
+`Analysis/backdrop_margin_writer_execution_retry_preregistration.json` freezes
+the calibrated material selector before the same four still-unseen cases:
+clear/light circle-408, clear/dark circle-640-phase-0501, regular/light
+circle-768, and regular/dark circle-1535, all materialize. Clear must write
+exact zero; regular must write the exact 32-record transition maximum. The
+new overlay leaves the historically frozen base adapter byte-identical and
+also captures the structurally adjacent producer's complete code,
+its 96-byte Swift self value at `SP+0x160`, and its binary64 return for every
+setter invocation. Producer selection is determined only by the frozen call
+offsets and ARM64 `BL` encoding; no margin, crop, or pixel selects it.
+
+This remains a preregistration, not a pass. All four fresh jobs must validate
+with zero-bit tolerance. Even a pass closes only material-specific margin
+production from captured transition inputs and opens the next arithmetic
+callee; it does not independently generate the transition inputs, prove
+physical Retina/color/compositor transfer, authorize a production shader
+change, or establish real-Walle frame parity.
