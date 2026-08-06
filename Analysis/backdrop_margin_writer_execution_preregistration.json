@@ -1,0 +1,190 @@
+{
+  "backdropMarginWriterExecutionPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T14:09:38Z",
+  "classification": "prospective output-blind four-case test of the previously opened transition-maximum margin candidate, with exhaustive live object-identity joins from CABackdropLayer setMarginWidth: through the exact _copyRenderLayer binary64-to-binary32 store and the Render::BackdropLayer get_bounds consumer; no Apple output for any declared case exists at freeze time",
+  "antecedent": {
+    "runID": 31090638908,
+    "headSHA": "a27444af9bf97ccaf0c03568f91a962d0170f051",
+    "artifactID": 8963467627,
+    "artifactDigest": "sha256:196864e4082c96b00373d99108d506120ca7772fcbfd6633713d29e33ea9f426",
+    "traceSHA256": "d77b3d4bf59940765bd3d7c20adfd484ded247e76d086c715e9cccfa2a2753b4",
+    "timelineSHA256": "672b639cf56070ade9b664ae58e7255ecfac6cba11f8565595b028eff217f4df",
+    "ciValidationSHA256": "420fb76aed6e13fd53177ae497f595dba300a1c68bac50781f6e762c91262f68",
+    "independentValidationSHA256": "47789f0cf0fbb49f5af6f80d6ddd63a6e4f67d6612531e5b2e2b3413794997ca",
+    "analysis": "Analysis/dynamic_allocation_prepare_layer_backdrop_state_writer_discovery_analysis.json",
+    "analysisSHA256": "ffa2185538994ddeb74a144c4b12c925b1a2789ebf6d5e4695dfe6eadc74db43",
+    "retrospectiveDatasetCount": 15,
+    "retrospectiveRecordCount": 480,
+    "retrospectiveCandidateMismatchCount": 0,
+    "retrospectiveMaximumFloat32ULPDistance": 0,
+    "selectedLiveMarginF32": 83.0,
+    "selectedWriterStaticCodeDecoded": true,
+    "selectedWriterExecutionAuthenticated": false,
+    "prospectiveUnseenTransferPassed": false,
+    "liquidGlassParityEstablished": false
+  },
+  "frozenCandidate": {
+    "perRecordRequiredMargin": "max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))",
+    "transitionMargin": "max over all 32 retained records",
+    "modelStorage": "binary64",
+    "renderStorage": "round-to-nearest-even binary32",
+    "operationOrder": [
+      "decode inputShadowOffset as two little-endian binary64 values",
+      "take binary64 absolute value of each offset component",
+      "take their binary64 maximum",
+      "add that maximum to inputShadowAmount in binary64",
+      "take the binary64 maximum with inputBleedAmount",
+      "take the binary64 maximum across the 32 retained records",
+      "compare that binary64 word with the joined model setter input",
+      "round once to binary32 and compare the exact word with both the copy store and get_bounds consumer"
+    ],
+    "capturedTargetValueUsedToChooseCandidate": false,
+    "candidateOpenedFromPriorCorpus": true,
+    "candidateAcceptedAsGeneralBeforeThisRun": false
+  },
+  "prospectiveCases": [
+    {
+      "material": "clear",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-347-center",
+      "casePresentInAntecedentCorpus": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedMarginF64": null,
+      "expectedMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCallerIdentity": null
+    },
+    {
+      "material": "clear",
+      "appearance": "dark",
+      "direction": "dematerialize",
+      "geometry": "circle-640-fractional",
+      "casePresentInAntecedentCorpus": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedMarginF64": null,
+      "expectedMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCallerIdentity": null
+    },
+    {
+      "material": "regular",
+      "appearance": "light",
+      "direction": "dematerialize",
+      "geometry": "circle-769-center",
+      "casePresentInAntecedentCorpus": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedMarginF64": null,
+      "expectedMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCallerIdentity": null
+    },
+    {
+      "material": "regular",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-896-center",
+      "casePresentInAntecedentCorpus": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedMarginF64": null,
+      "expectedMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCallerIdentity": null
+    }
+  ],
+  "captureContract": {
+    "breakpointSelection": [
+      "every invocation of -[CABackdropLayer setMarginWidth:]",
+      "every invocation of -[CABackdropLayer _copyRenderLayer:layerFlags:commitFlags:]",
+      "the exact _copyRenderLayer instruction at fixed offset 948",
+      "every invocation of CA::Render::BackdropLayer::get_bounds"
+    ],
+    "requireExactQuartzCoreUUID": "4D34EB4E-2BBB-3751-A362-8E2EB74656E8",
+    "requireExactCompleteCodeHashes": true,
+    "retainEveryEventUpToBound": 8192,
+    "retainCompleteSetterBacktraces": true,
+    "retainCompleteBoundedDirectCallerCode": true,
+    "maximumDirectCallerCount": 64,
+    "maximumIndividualCallerCodeBytes": 131072,
+    "maximumTotalCallerCodeBytes": 2097152,
+    "joinRule": "for each get_bounds render pointer, use the most recent earlier copy-store event for the identical render pointer and then the most recent earlier setter event for that copy event's identical model pointer",
+    "capturedMarginUsedForSelection": false,
+    "capturedCropUsedForSelection": false,
+    "capturedImageUsedForSelection": false,
+    "expectedEventCounts": null,
+    "expectedObjectPointers": null,
+    "expectedCallerSymbols": null,
+    "expectedCallerCodeHashes": null
+  },
+  "acceptance": {
+    "requireAllExactCodeGates": true,
+    "requireEveryEventWithinBound": true,
+    "requireAtLeastOneCompleteSetterCopyBoundsChain": true,
+    "requireEveryStructurallyJoinedChainToMatchCandidateBitwise": true,
+    "requireNoCapturedValueForSelection": true,
+    "requireEveryOneOfFourMatrixJobsToPass": true,
+    "requireModelSetterBinary64WordExact": true,
+    "requireCopyStoreBinary32WordExact": true,
+    "requireGetBoundsBinary32WordExact": true,
+    "requireCallerCodeToBeRetained": true,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_backdrop_margin_writer_execution_lldb.py",
+        "sha256": "f91ba6afb61b491d949ea5dc9d4fc1c82c165e0016aefa84db00a0b15d435ecd"
+      },
+      {
+        "path": "Analysis/test_capture_backdrop_margin_writer_execution_lldb_source.py",
+        "sha256": "cb9833fc91ad148345725b4b85368ae51cf13783117c74029c14902f50fc12eb"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_writer_execution.py",
+        "sha256": "47497743231b6e9183b75909d592033241f41a7bdc045017a3959e038beb465f"
+      },
+      {
+        "path": "Analysis/test_validate_backdrop_margin_writer_execution.py",
+        "sha256": "3ee4bb2dac3437f65c2a6c68cf8df2c0094e558ae7ef0b4b3d50aeb6062ee004"
+      },
+      {
+        "path": "Analysis/test_backdrop_margin_writer_execution_preregistration.py",
+        "sha256": "406ee78f5719c610b0dca8891a8910f8f6bdd4c2ab5fc2df6a25bbb63baf7ea5"
+      },
+      {
+        "path": ".github/workflows/backdrop-margin-writer-execution.yml",
+        "sha256": "c12eee9eb702772da2ebf574844cb6e236807972373e3291b5d46e7ec7cc1aa0"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_backdrop_state_writer_discovery_analysis.json",
+        "sha256": "ffa2185538994ddeb74a144c4b12c925b1a2789ebf6d5e4695dfe6eadc74db43"
+      },
+      {
+        "path": "Analysis/analyze_prepare_layer_backdrop_state_writer_discovery.py",
+        "sha256": "1d8236bb7f9e6de8eecafbead1472eff82d87f57a64bfb4220f90c38d6735404"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "selectedWriterExecutionMayBeAuthenticatedOnPass": true,
+    "transitionMaximumCandidateMayBeAcceptedForCapturedInputsAfterAllFourPass": true,
+    "setterCallerArithmeticMayBeDeclaredDecoded": false,
+    "independentTemporalInputGenerationMayBeClaimed": false,
+    "capturedInputOpticalParityMayBeClaimedByThisGate": false,
+    "physicalOutputTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}

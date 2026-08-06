@@ -7434,3 +7434,52 @@ independent generation of temporal/mesh/SDF/source/backdrop inputs, physical
 Retina/color/pixel-format/compositor transfer, and new Apple-versus-real-Walle
 frames with zero unequal bytes. Liquid Glass parity is therefore not yet
 established, and the production shader remains unauthorized for change.
+
+### Frozen live margin-writer execution transfer
+
+The next gate narrows the preceding requirement and corrects two possible
+misreadings of the evidence ledger. First, the depth-three/depth-four value is
+the depth at which the LLDB adapter encounters the structurally selected
+Filter/SDF node inside QuartzCore's linked child traversal. The authenticated
+`prepare_layer` loop passes the current child at `+10824`, loads its next link
+at `+10828`, and recursively calls `prepare_layer` at `+10852`. It is therefore
+capture-tree topology, not an optical equation that an independent Walle
+renderer must reproduce. Future adapters must accept either structural depth;
+final rectangles, uniforms, texture coordinates, and pixels remain the actual
+product gates. No width-threshold rule is promoted from the opened corpus.
+
+Second, captured-input optics are not wholly open. Runs `30685084902` and
+`30685461769` already passed the prospectively frozen v2 source fields for all
+four clear/regular and light/dark endpoint profiles, then passed an unchanged
+repeat: 33,554,432 Apple-versus-independent-AMD output bytes per run with zero
+differences. That closes the centered 800-point, 1x, sRGB SDR endpoint source,
+color, sampler, and profile-fragment scope only. Geometry transfer, animated
+private-input generation, backdrop production, physical 2x/color/pixel-format
+transfer, compositor equivalence, and real Walle frames remain open.
+
+`Analysis/backdrop_margin_writer_execution_preregistration.json` freezes the
+previously opened transition-maximum candidate before four new Apple cases:
+clear/light circle-347 materialize, clear/dark fractional-circle-640
+dematerialize, regular/light circle-769 dematerialize, and regular/dark
+circle-896 materialize. None occurs in the 15-dataset antecedent corpus, and
+all Apple margins, object pointers, event counts, and caller identities are
+null at freeze time.
+
+The standalone LLDB adapter
+`Analysis/capture_backdrop_margin_writer_execution_lldb.py` records every
+invocation of `setMarginWidth:`, the exact `_copyRenderLayer` store at offset
+948, and every render `get_bounds` consumer. The validator joins only identical
+model/render pointers in event order. Every joined model binary64 word must
+equal the maximum required margin over the 32 captured input records; the copy
+store and consumer must both equal its single round-to-nearest-even binary32
+conversion. It also retains bounded complete code for every direct setter
+caller so a pass can authenticate the selected execution and open the upstream
+caller without inferring it from a value.
+
+This section records a preregistration, not a result. Until all four matrix jobs
+return and independently validate with zero-bit tolerance, the candidate
+remains retrospective. Even a four-job pass covers allocation from captured
+transition inputs; it does not independently generate those inputs, authorize a
+production shader change, or establish Liquid Glass parity. The production
+shader SHA-256 remains
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`.
