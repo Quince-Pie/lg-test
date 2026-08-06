@@ -7117,3 +7117,25 @@ direction transfer. Exact parity still requires, in order:
 
 Accordingly, Liquid Glass parity is still not established and the production
 shader is still unauthorized for change.
+
+The next crop gate is now frozen rather than left as an informal follow-up.
+`Analysis/dynamic_allocation_prepare_layer_filter_map_bounds_regular_geometry_transfer_preregistration.json`
+crosses all eight previously unopened regular FilterOp producer geometries
+(`127`, `128`, `255`, `257`, `511`, `512`, `1023`, and `1024`) with both
+appearances and both directions: 32 macOS jobs plus a mandatory aggregate.
+Before any target producer is opened, it predicts the regular source DOD as
+
+```
+[-280, -280, geometryWidth + 560, geometryWidth + 560]
+```
+
+and requires the independent recursive-child witness
+`[0, 0, geometryWidth + 560, geometryWidth + 560]`. The validator then reuses
+the unchanged structural producer/SDF selectors, exact float32 SDF state,
+endpoint branch, binary64 Filter arithmetic, and two-stage integer crop chain.
+The aggregate accepts only 1,024/1,024 rectangles, 4,096/4,096 components,
+1,024 authenticated SDF states, and 32 endpoint records at zero ULP and zero
+absolute error. Workflow
+`.github/workflows/prepare-layer-filter-map-bounds-regular-geometry-transfer.yml`
+may establish regular crop transfer over this declared geometry/profile
+product; it still cannot establish optical or Walle product parity.

@@ -1,0 +1,344 @@
+name: Exact regular FilterOp geometry profile transfer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-layer-filter-map-bounds-regular-geometry-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regular_geometry_transfer:
+    name: ${{ matrix.geometry }}-${{ matrix.appearance }}-${{ matrix.direction }}
+    runs-on: macos-26
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        geometry:
+          - circle-127-center
+          - circle-128-center
+          - circle-255-center
+          - circle-257-center
+          - circle-511-center
+          - circle-512-center
+          - circle-1023-center
+          - circle-1024-center
+        appearance:
+          - light
+          - dark
+        direction:
+          - materialize
+          - dematerialize
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
+      LG_GLASS_GEOMETRY: ${{ matrix.geometry }}
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: ${{ matrix.direction }}
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-introspection/prepare-layer-crop-policy-holdout-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen regular-geometry contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-introspection
+          set -o pipefail
+          python3 -m unittest discover -s Analysis \
+            -p 'test_prepare_dematerialize_uniform_capture_source.py' \
+            -v 2>&1 | tee transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_filter_map_bounds_profile_transfer_retry.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_filter_map_bounds_regular_geometry_transfer.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_aggregate_prepare_layer_filter_map_bounds_regular_geometry_transfer.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_dynamic_allocation_prepare_layer_filter_map_bounds_regular_geometry_transfer_preregistration.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_transfer_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_crop_transfer.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_union_operand_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+
+      - name: Prepare reverse-direction-capable source
+        id: source
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/prepare_dematerialize_uniform_capture_source.py \
+            Sources/GlassIntrospect/main.swift \
+            transition-introspection/main-regular-geometry-transfer.swift
+          test "$(shasum -a 256 transition-introspection/main-regular-geometry-transfer.swift | cut -d' ' -f1)" = \
+            247ad3094bec2c82244d02c5cff6815805c56bdafb59a57c6b24109009480ede
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.source.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-introspection/MatrixBridge.o 2>&1 |
+            tee transition-introspection/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            transition-introspection/main-regular-geometry-transfer.swift \
+            transition-introspection/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-introspection/build.log
+
+      - name: Capture target-output-blind regular operands
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-introspection/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-introspection/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_crop_policy_holdout_callback_retry_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_crop_policy_holdout_callback_retry_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-introspection \
+            > transition-introspection/lldb-prepare-layer-filter-map-bounds-regular-geometry-transfer.log 2>&1
+
+      - name: Validate exact regular geometry transfer
+        id: regular_geometry
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_filter_map_bounds_regular_geometry_transfer.py \
+            transition-introspection/prepare-layer-crop-policy-holdout-trace.json \
+            transition-introspection/transition-timeline.json \
+            --expected-geometry '${{ matrix.geometry }}' \
+            --expected-appearance '${{ matrix.appearance }}' \
+            --expected-direction '${{ matrix.direction }}' \
+            --output \
+              transition-introspection/prepare-layer-filter-map-bounds-regular-geometry-transfer-validation.json
+
+      - name: Upload complete regular-geometry evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-filter-map-bounds-regular-geometry-${{ matrix.geometry }}-${{ matrix.appearance }}-${{ matrix.direction }}-${{ github.run_id }}
+          path: transition-introspection
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload Cartesian result shard
+        if: steps.regular_geometry.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-filter-map-bounds-regular-geometry-result-${{ matrix.geometry }}-${{ matrix.appearance }}-${{ matrix.direction }}-${{ github.run_id }}
+          path: >-
+            transition-introspection/prepare-layer-filter-map-bounds-regular-geometry-transfer-validation.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce exact regular geometry transfer
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.source.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.regular_geometry.outcome }}" = success
+          test -s transition-introspection/transition-timeline.json
+          test -s transition-introspection/prepare-layer-crop-policy-holdout-trace.json
+          test -s transition-introspection/prepare-layer-filter-map-bounds-regular-geometry-transfer-validation.json
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "transition-introspection/prepare-layer-filter-map-bounds-regular-geometry-transfer-validation.json"
+              ).read_text(encoding="utf-8")
+          )
+          profile = result.get("profile", {})
+          source = result.get("sourceBounds", {})
+          sdf = result.get("sdfState", {})
+          endpoint = result.get("endpointYOffset", {})
+          replay = result.get("floatingReplay", {})
+          selection = result.get("structuralSelection", {})
+          sealed = result.get("sealedConclusion", {})
+          geometry = os.environ["LG_GLASS_GEOMETRY"]
+          width = {
+              "circle-127-center": 127,
+              "circle-128-center": 128,
+              "circle-255-center": 255,
+              "circle-257-center": 257,
+              "circle-511-center": 511,
+              "circle-512-center": 512,
+              "circle-1023-center": 1023,
+              "circle-1024-center": 1024,
+          }[geometry]
+          expected_source = [-280.0, -280.0, float(width + 560), float(width + 560)]
+          if (
+              result.get(
+                  "prepareLayerFilterMapBoundsRegularGeometryTransferValidationSchemaVersion"
+              ) != 1
+              or result.get("conclusion") != "success"
+              or profile.get("material") != "regular"
+              or profile.get("appearance") != os.environ["LG_GLASS_APPEARANCE"]
+              or profile.get("direction") != os.environ["LG_TRANSITION_DIRECTION"]
+              or profile.get("geometry") != geometry
+              or source.get("f64") != expected_source
+              or source.get("geometryWidth") != width
+              or source.get("exactExpansionPerEdge") != 280.0
+              or source.get("geometryOrProducerOutputUsedToFitRule") is not False
+              or sdf.get("expectedParametersHex")
+              != "04db2942000000000000000000000000"
+              or sdf.get("recordCount") != 32
+              or endpoint.get("appliedRecordCount") != 1
+              or replay.get("rectangleCount") != 32
+              or replay.get("componentCount") != 128
+              or replay.get("exactRectangleCount") != 32
+              or replay.get("exactComponentCount") != 128
+              or replay.get("mismatchedRectangleCount") != 0
+              or replay.get("mismatchedComponentCount") != 0
+              or replay.get("maximumAbsoluteErrorsXYWH") != [0.0, 0.0, 0.0, 0.0]
+              or replay.get("maximumULPDistancesXYWH") != [0, 0, 0, 0]
+              or selection.get("cropOrProducerValuesUsedForSelection") is not False
+              or selection.get("twoStageRegularCropChainExactCount") != 32
+              or sealed.get("singleRegularGeometryProfileExactCropReplayPassed") is not True
+              or sealed.get("regularGeometryProfileCartesianTransferPassed") is not False
+              or sealed.get("regularUnseenGeometryTransferPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("regular geometry transfer validation differs")
+          PY
+
+  aggregate_regular_geometry_matrix:
+    name: Aggregate 32-case exact regular geometry matrix
+    needs: regular_geometry_transfer
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require all 32 macOS geometry/profile jobs
+        run: test "${{ needs.regular_geometry_transfer.result }}" = success
+
+      - name: Download exact Cartesian result shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: liquid-glass-filter-map-bounds-regular-geometry-result-*-${{ github.run_id }}
+          path: matrix-results
+
+      - name: Aggregate zero-tolerance Cartesian matrix
+        run: |
+          python3 Analysis/aggregate_prepare_layer_filter_map_bounds_regular_geometry_transfer.py \
+            matrix-results \
+            --run-id '${{ github.run_id }}' \
+            --head-sha '${{ github.sha }}' \
+            --output prepare-layer-filter-map-bounds-regular-geometry-transfer-matrix.json
+
+      - name: Upload complete regular geometry matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-filter-map-bounds-regular-geometry-matrix-${{ github.run_id }}
+          path: prepare-layer-filter-map-bounds-regular-geometry-transfer-matrix.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce complete exact Cartesian matrix
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "prepare-layer-filter-map-bounds-regular-geometry-transfer-matrix.json"
+              ).read_text(encoding="utf-8")
+          )
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get(
+                  "prepareLayerFilterMapBoundsRegularGeometryTransferAggregateSchemaVersion"
+              ) != 1
+              or result.get("conclusion") != "success"
+              or result.get("geometryCount") != 8
+              or result.get("profilePerGeometryCount") != 4
+              or result.get("caseCount") != 32
+              or result.get("exactRectangleCount") != 1024
+              or result.get("exactComponentCount") != 4096
+              or result.get("sdfStateRecordCount") != 1024
+              or result.get("endpointYOffsetAppliedRecordCount") != 32
+              or result.get("maximumULPDistance") != 0
+              or result.get("maximumAbsoluteError") != 0.0
+              or len(result.get("cases", [])) != 32
+              or sealed.get("regularGeometryProfileCartesianTransferPassed") is not True
+              or sealed.get("regularUnseenGeometryTransferPassed") is not True
+              or sealed.get("filterOpCropProfileTransferPassed") is not True
+              or sealed.get("currentShaderCapturedInputOpticalTransferPassed") is not False
+              or sealed.get("independentPrivateInputGenerationPassed") is not False
+              or sealed.get("opticalMaterialAppearanceDirectionTransferPassed") is not False
+              or sealed.get("physicalRetina2xAndColorTransferPassed") is not False
+              or sealed.get("independentWalleZeroByteFrameParityPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("complete regular geometry matrix differs")
+          PY
