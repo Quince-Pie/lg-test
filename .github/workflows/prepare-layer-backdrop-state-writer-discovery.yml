@@ -1,0 +1,218 @@
+name: Capture live backdrop state and writer code
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-layer-backdrop-state-writer-discovery-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backdrop_state_writer_discovery:
+    name: circle-127-live-state-and-class-code
+    runs-on: macos-26
+    timeout-minutes: 180
+    env:
+      LG_GLASS_MATERIAL: regular
+      LG_GLASS_APPEARANCE: light
+      LG_GLASS_GEOMETRY: circle-127-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: materialize
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_MASK_CAPTURE_MODE: selected
+      LG_PREPARE_LAYER_MASK_INVENTORY_VALIDATION: >-
+        Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-backdrop-state-writer-discovery/prepare-layer-backdrop-state-writer-discovery-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen backdrop-state contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-backdrop-state-writer-discovery
+          set -o pipefail
+          for pattern in \
+            test_capture_prepare_layer_crop_transfer_lldb_source.py \
+            test_validate_prepare_layer_crop_transfer.py \
+            test_capture_prepare_layer_crop_union_operand_lldb_source.py \
+            test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py \
+            test_capture_prepare_layer_mask_instruction_trace_lldb_source.py \
+            test_validate_prepare_layer_mask_instruction_inventory.py \
+            test_capture_prepare_layer_crop_producer_callee_lldb_source.py \
+            test_validate_prepare_layer_crop_producer_callee.py \
+            test_capture_prepare_layer_filter_map_bounds_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds.py \
+            test_capture_prepare_layer_filter_map_bounds_regular_lldb_source.py \
+            test_validate_prepare_layer_filter_map_bounds_regular_diagnostic.py \
+            test_capture_prepare_layer_sdf_map_bounds_diagnostic_lldb_source.py \
+            test_validate_prepare_layer_sdf_map_bounds_diagnostic.py \
+            test_capture_prepare_layer_sdf_map_bounds_diagnostic_callback_retry_lldb_source.py \
+            test_capture_prepare_layer_filter_sdf_small_geometry_lldb_source.py \
+            test_validate_prepare_layer_filter_sdf_small_geometry.py \
+            test_analyze_prepare_layer_filter_sdf_small_geometry.py \
+            test_capture_prepare_layer_small_geometry_helper_code_lldb_source.py \
+            test_validate_prepare_layer_small_geometry_helper_code.py \
+            test_capture_prepare_layer_small_geometry_helper_code_callback_retry_lldb_source.py \
+            test_dynamic_allocation_prepare_layer_small_geometry_helper_code_callback_retry_preregistration.py \
+            test_analyze_prepare_layer_small_geometry_helper_code.py \
+            test_capture_prepare_layer_small_geometry_helper_semantics_lldb_source.py \
+            test_validate_prepare_layer_small_geometry_helper_semantics.py \
+            test_dynamic_allocation_prepare_layer_small_geometry_helper_semantics_preregistration.py \
+            test_analyze_prepare_layer_small_geometry_helper_semantics.py \
+            test_capture_prepare_layer_backdrop_state_writer_discovery_lldb_source.py \
+            test_validate_prepare_layer_backdrop_state_writer_discovery.py \
+            test_dynamic_allocation_prepare_layer_backdrop_state_writer_discovery_preregistration.py
+          do
+            python3 -m unittest discover -s Analysis -p "$pattern" -v 2>&1 |
+              tee -a transition-backdrop-state-writer-discovery/contracts.log
+          done
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-backdrop-state-writer-discovery/MatrixBridge.o 2>&1 |
+            tee transition-backdrop-state-writer-discovery/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            Sources/GlassIntrospect/main.swift \
+            transition-backdrop-state-writer-discovery/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-backdrop-state-writer-discovery/build.log
+
+      - name: Capture live backdrop state and class-scoped writer code
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-backdrop-state-writer-discovery/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-backdrop-state-writer-discovery/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_backdrop_state_writer_discovery_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_backdrop_state_writer_discovery_lldb.trace_selected_sdf_filter_map_bounds()' \
+            -o 'script capture_prepare_layer_backdrop_state_writer_discovery_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-backdrop-state-writer-discovery \
+            > transition-backdrop-state-writer-discovery/lldb-backdrop-state.log 2>&1
+
+      - name: Validate live backdrop state and writer discovery
+        id: validate
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_backdrop_state_writer_discovery.py \
+            transition-backdrop-state-writer-discovery/prepare-layer-backdrop-state-writer-discovery-trace.json \
+            transition-backdrop-state-writer-discovery/transition-timeline.json \
+            Analysis/dynamic_allocation_prepare_layer_mask_instruction_inventory_result.json \
+            --output transition-backdrop-state-writer-discovery/backdrop-state-writer-validation.json
+
+      - name: Upload complete backdrop-state evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-prepare-layer-backdrop-state-writer-discovery-${{ github.run_id }}
+          path: transition-backdrop-state-writer-discovery
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce backdrop-state discovery
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.validate.outcome }}" = success
+          test -s transition-backdrop-state-writer-discovery/backdrop-state-writer-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(
+              Path(
+                  "transition-backdrop-state-writer-discovery/"
+                  "backdrop-state-writer-validation.json"
+              ).read_text(encoding="utf-8")
+          )
+          selection = result.get("selection", {})
+          state = result.get("liveBackdropState", {})
+          symbols = result.get("backdropLayerSymbolInventory", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get(
+                  "prepareLayerBackdropStateWriterDiscoveryValidationSchemaVersion"
+              )
+              != 1
+              or result.get("conclusion") != "success"
+              or selection.get("liveFieldValuesAcceptedBeforeCapture") is not False
+              or selection.get("selfLayerPointerDeltaAcceptedBeforeCapture") is not False
+              or selection.get("symbolInventoryAcceptedBeforeCapture") is not False
+              or selection.get("newBreakpointsAdded") != 0
+              or selection.get("newInstructionStepsAdded") != 0
+              or state.get("bitExact") is not True
+              or state.get("inputObjectsUnchanged") is not True
+              or not isinstance(state.get("marginRawLittleEndianHex"), str)
+              or len(state.get("marginRawLittleEndianHex")) != 8
+              or not isinstance(state.get("selfMinusLayer"), int)
+              or not 0 < symbols.get("uniqueRangeCount", 0) <= 256
+              or not 0 < symbols.get("totalCodeByteCount", 0) <= 2097152
+              or not isinstance(symbols.get("canonicalSHA256"), str)
+              or len(symbols.get("canonicalSHA256")) != 64
+              or sealed.get("liveBackdropBaseAndMarginFieldsCaptured") is not True
+              or sealed.get("selectedBackdropBoundsReplayBitExact") is not True
+              or sealed.get("classScopedBackdropWriterCodeInventoryOpened") is not True
+              or sealed.get("backdropMarginWriterDecoded") is not False
+              or sealed.get("dynamicTopologyLawDecoded") is not False
+              or sealed.get("prospectiveUnseenGeometryTransferPassed") is not False
+              or sealed.get("capturedInputOpticalParityPassed") is not False
+              or sealed.get("independentPrivateInputGenerationPassed") is not False
+              or sealed.get("physicalOutputTransferPassed") is not False
+              or sealed.get("independentWalleZeroByteFrameParityPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("backdrop-state writer-discovery gate differs")
+          PY

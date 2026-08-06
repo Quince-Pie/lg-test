@@ -1,0 +1,181 @@
+{
+  "prepareLayerBackdropStateWriterDiscoveryPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-06T09:42:43Z",
+  "classification": "prospective output-blind live-object capture at the already accepted BackdropLayer::get_bounds opaque boundary plus complete bounded static inventory of QuartzCore code symbols containing BackdropLayer; all object bytes, field values, pointer relationships, output bytes, symbol names, code bytes, code hashes, counts, and writer identity are unknown before dispatch",
+  "antecedent": {
+    "runID": 31088316959,
+    "headSHA": "a16e7545a83ee2a2f0cc160694b3bbe7f68c9b10",
+    "artifactID": 8962518110,
+    "artifactDigest": "sha256:1911d52945e3e3a223dd640ca7b31bb6886fade3af215fcaa2e685703590f0c3",
+    "traceSHA256": "eb0c54f6550f29c1b987806334f20dd20df5329e8e482928567a9986cb79de08",
+    "timelineSHA256": "a3983d0361c190cf98258bccbf9d86605e8dfec99fb5e7e19c24d9b80135810d",
+    "ciValidationSHA256": "0cdb6e48bcc60ecc72b9218c0f934790cd74723000a598a1e0b339e01b7fc9bd",
+    "analysis": "Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_semantics_analysis.json",
+    "analysisSHA256": "9089ee86b9500514ac1c143a6a321567b863743777195d4baf250252f58183d2",
+    "gaussianExactPiecewiseLawDecoded": true,
+    "getBackdropBoundsCompleteSemanticsDecoded": true,
+    "liveBackdropBaseAndMarginFieldsCaptured": false,
+    "backdropMarginWriterDecoded": false,
+    "dynamicTopologyLawDecoded": false,
+    "prospectiveUnseenGeometryTransferPassed": false,
+    "liquidGlassParityEstablished": false
+  },
+  "frozenProfile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "selectedSampleIndex": 2,
+    "selectedMarkerInterval": 2,
+    "selectedQualifiedHelperOrdinal": 14,
+    "filterDispatchOrdinal": 4,
+    "sdfDispatchOrdinal": 2,
+    "selectorChangedFromRun31088316959": false,
+    "cropOrOutputValuesUsedForSelection": false
+  },
+  "liveBoundaryTarget": {
+    "function": "CA::Render::BackdropLayer::get_bounds(CA::Render::Layer const*, CA::Rect&, CA::Rect*) const",
+    "relativeToPrepareLayer": 364616,
+    "symbolByteCount": 80,
+    "codeSHA256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+    "delegatedCodeSHA256": "3296daa4d858acc2a259be7771e48c312ff7010fa3d7cd590a9f28bd17a4ff17",
+    "quartzCoreUUID": "4D34EB4E-2BBB-3751-A362-8E2EB74656E8",
+    "backdropObjectByteCount": 144,
+    "layerObjectByteCount": 320,
+    "primaryRectByteCount": 32,
+    "backdropMarginOffset": 36,
+    "backdropOriginOffset": 96,
+    "backdropSizeOffset": 112,
+    "layerOriginOffset": 72,
+    "layerSizeOffset": 88,
+    "expectedSelfAddress": null,
+    "expectedLayerAddress": null,
+    "expectedOutputAddress": null,
+    "expectedSelfMinusLayer": null,
+    "expectedBackdropObjectBytes": null,
+    "expectedLayerObjectBytes": null,
+    "expectedPrimaryRectBeforeBytes": null,
+    "expectedPrimaryRectAfterBytes": null,
+    "expectedMarginF32": null,
+    "expectedBackdropRectF64": null,
+    "expectedLayerRectF64": null,
+    "expectedSelectedBaseSource": null
+  },
+  "writerDiscoveryTarget": {
+    "module": "QuartzCore",
+    "quartzCoreUUID": "4D34EB4E-2BBB-3751-A362-8E2EB74656E8",
+    "symbolType": "code",
+    "symbolNameSubstring": "BackdropLayer",
+    "maximumMatchedCodeSymbolCount": 256,
+    "maximumIndividualSymbolByteCount": 65536,
+    "maximumTotalSymbolByteCount": 2097152,
+    "expectedMatchedNameCount": null,
+    "expectedUniqueRangeCount": null,
+    "expectedTotalCodeByteCount": null,
+    "expectedSymbolNames": null,
+    "expectedSymbolAddresses": null,
+    "expectedCodeBytes": null,
+    "expectedCodeSHA256": null,
+    "expectedWriterIdentity": null,
+    "expectedWriterArithmetic": null
+  },
+  "captureContract": {
+    "reuseExistingOpaqueBoundaryStep": true,
+    "newBreakpointsAdded": 0,
+    "newInstructionStepsAdded": 0,
+    "retainCompleteGeneralAndSimdRegistersAtWrapperEntry": true,
+    "retainBackdropObjectBeforeAndAfter": true,
+    "retainLayerObjectBeforeAndAfter": true,
+    "retainPrimaryRectBeforeAndAfter": true,
+    "requireInputObjectsUnchanged": true,
+    "retainEveryMatchedCompleteCodeRange": true,
+    "retainEveryMatchedSymbolNameIncludingDuplicateAliases": true,
+    "retainEveryStaticArm64Instruction": true,
+    "fieldValueAcceptedBeforeCapture": false,
+    "pointerRelationshipAcceptedBeforeCapture": false,
+    "outputValueAcceptedBeforeCapture": false,
+    "symbolInventoryAcceptedBeforeCapture": false,
+    "writerCandidateAcceptedBeforeCapture": false,
+    "cropOrOutputValueUsedForSelection": false,
+    "inheritedCaptureChanged": false
+  },
+  "acceptance": {
+    "requireInheritedHelperSemanticsGatePass": true,
+    "requireExactWrapperAndDelegatedCodeIdentity": true,
+    "requireExactlyOneStructurallySelectedWrapperBoundary": true,
+    "requireEntryRegistersToMatchCapturedObjectPointers": true,
+    "requireCompleteAuthenticatedObjectAndOutputSnapshots": true,
+    "requireInputObjectsBitwiseUnchangedAcrossWrapper": true,
+    "requireExactFieldDrivenReplayOfPrimaryRect": true,
+    "requireEveryBoundedMatchingCodeSymbolAndCompleteInstructionCoverage": true,
+    "requireEveryRangeDigestDerivedFromRetainedBytes": true,
+    "liveBackdropFieldCaptureMayBeClaimed": true,
+    "selectedBackdropBoundsReplayMayBeClaimed": true,
+    "classScopedWriterCodeInventoryMayBeClaimed": true,
+    "writerIdentityOrArithmeticMayBeClaimed": false,
+    "dynamicTopologyLawMayBeClaimed": false,
+    "regularGeometryTransferMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_prepare_layer_backdrop_state_writer_discovery_lldb.py",
+        "sha256": "a405b13465841fc28da111071b38b3e3e2a25cd1c90d4e039f160d8ea1a78f2b"
+      },
+      {
+        "path": "Analysis/test_capture_prepare_layer_backdrop_state_writer_discovery_lldb_source.py",
+        "sha256": "cfd27023ca0495be909101e824b091f301a0cae0a030a7dff550e085a2617d62"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_backdrop_state_writer_discovery.py",
+        "sha256": "d2622e395c556413a986d07cfd044c364efed72d21f0110250780769f0f37f6f"
+      },
+      {
+        "path": "Analysis/test_validate_prepare_layer_backdrop_state_writer_discovery.py",
+        "sha256": "68f273d29d9609890aacf2af0958627e5535cdf9a280a7382869b7ce497d17a3"
+      },
+      {
+        "path": ".github/workflows/prepare-layer-backdrop-state-writer-discovery.yml",
+        "sha256": "ef83745b360135610764e784eb37ea032d4fdc51bef3021953767a00537b7aee"
+      },
+      {
+        "path": "Analysis/dynamic_allocation_prepare_layer_small_geometry_helper_semantics_analysis.json",
+        "sha256": "9089ee86b9500514ac1c143a6a321567b863743777195d4baf250252f58183d2"
+      },
+      {
+        "path": "Analysis/analyze_prepare_layer_small_geometry_helper_semantics.py",
+        "sha256": "3104b13151e017045250a7c78aaeeabe2480ba3ee60cd9a8c8efab162989f482"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_small_geometry_helper_semantics_lldb.py",
+        "sha256": "256754d43caa26a575559bb39a127448999e3b2493e735d13e7fdcb3fb4c6653"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_small_geometry_helper_semantics.py",
+        "sha256": "61aa25ff1c6e07e65e34449ff4c414e56757598919ed7f9d9f8d268224fd474c"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "liveBackdropFieldCaptureMayBeOpened": true,
+    "selectedBackdropBoundsReplayMayBeOpened": true,
+    "classScopedBackdropWriterCodeInventoryMayBeOpened": true,
+    "backdropMarginWriterMayBeDeclaredDecoded": false,
+    "dynamicTopologyLawMayBeDeclaredDecoded": false,
+    "completeRegularCropLawMayBeClaimed": false,
+    "capturedInputOpticalParityMayBeClaimed": false,
+    "independentPrivateInputGenerationMayBeClaimed": false,
+    "physicalOutputTransferMayBeClaimed": false,
+    "independentWalleZeroByteParityMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  }
+}

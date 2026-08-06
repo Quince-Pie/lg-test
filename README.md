@@ -7322,3 +7322,27 @@ The next exact gate must retain those object fields and identify the writer and
 arithmetic for `BackdropLayer+0x24`, then close the dynamic topology and unseen
 geometry/profile transfer. All downstream optical, private-input,
 Retina/color/compositor, and independent Walle zero-byte gates remain open.
+
+That live-state gate is now prospectively frozen in
+`Analysis/dynamic_allocation_prepare_layer_backdrop_state_writer_discovery_preregistration.json`.
+The LLDB adapter
+`Analysis/capture_prepare_layer_backdrop_state_writer_discovery_lldb.py` adds no
+breakpoint or instruction step: it wraps the already accepted opaque
+`BackdropLayer::get_bounds` step and retains the complete `0x90`-byte receiver,
+the complete `0x140`-byte layer, and the 32-byte primary rectangle before and
+after the call. It also retains every complete bounded QuartzCore code-symbol
+range whose demangled name contains `BackdropLayer`, with every symbol name,
+instruction, byte, and derived digest. Object addresses, pointer distance,
+field values, output bytes, symbol inventory, code hashes, and writer identity
+are all explicitly unknown before dispatch.
+
+The strict validator
+`Analysis/validate_prepare_layer_backdrop_state_writer_discovery.py` will decode
+`self+0x24`, `self+0x60/+0x70`, and `layer+0x48/+0x58` only from authenticated
+live bytes, replay the accepted 188-byte callee in exact operation order, and
+require the returned rectangle to match bit for bit. A pass can establish the
+live selected-state relationship and open a bounded class-code inventory for
+offline writer analysis. It cannot by itself establish the writer's upstream
+arithmetic, dynamic topology, unseen geometry transfer, optical parity, or
+product parity. Those claims remain sealed until the corresponding prospective
+gates pass.
