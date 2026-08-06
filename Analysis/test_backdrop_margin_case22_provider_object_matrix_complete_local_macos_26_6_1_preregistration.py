@@ -82,6 +82,21 @@ class CompleteProviderObjectMatrixPreregistrationTests(unittest.TestCase):
             )
         self.assertFalse(validator["capturedOutputMayChangeStructuralAcceptance"])
         self.assertTrue(validator["valueHypothesesReportedAsResults"])
+        runner = VALUE["nativeRunner"]
+        self.assertEqual(
+            hashlib.sha256((REPOSITORY / runner["path"]).read_bytes()).hexdigest(),
+            runner["sha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(
+                (REPOSITORY / runner["sourceTestPath"]).read_bytes()
+            ).hexdigest(),
+            runner["sourceTestSHA256"],
+        )
+        self.assertTrue(runner["directNativeCommandLineTools"])
+        self.assertTrue(runner["preflightImmediatelyBeforeEachStage"])
+        self.assertTrue(runner["secondStageIndependentOfFirstStageValue"])
+        self.assertFalse(runner["usesNixStorePath"])
 
     def test_outcome_unknown_and_authority_remains_narrow(self) -> None:
         self.assertIsNone(VALUE["runtimeOutcomeFrozenBeforeDispatch"])

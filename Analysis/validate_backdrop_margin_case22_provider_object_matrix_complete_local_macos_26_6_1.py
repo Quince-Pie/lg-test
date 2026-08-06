@@ -127,6 +127,19 @@ def validate_preregistration(
         == EXPECTED_PREFLIGHT_SHA256,
         "preflight source bytes differ",
     )
+    runner = mapping(preregistration.get("nativeRunner"), "native runner")
+    require(
+        sha256(repository_root / str(runner.get("path")))
+        == runner.get("sha256"),
+        "native runner source bytes differ",
+    )
+    for key in (
+        "directNativeCommandLineTools",
+        "preflightImmediatelyBeforeEachStage",
+        "secondStageIndependentOfFirstStageValue",
+        "trackedRepositoryMustBeClean",
+    ):
+        require(runner.get(key) is True, f"native runner field {key} differs")
     stages = sequence(
         preregistration.get("unconditionalTwoStageDispatch"),
         "unconditional dispatch",

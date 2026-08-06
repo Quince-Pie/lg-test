@@ -68,6 +68,19 @@
     "runInsideNixDevelop": false,
     "stopAtExecutableMain": false
   },
+  "nativeRunner": {
+    "clearsInheritedLGVariables": true,
+    "createsFreshOutputDirectories": true,
+    "directNativeCommandLineTools": true,
+    "path": "Analysis/run_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.sh",
+    "preflightImmediatelyBeforeEachStage": true,
+    "secondStageIndependentOfFirstStageValue": true,
+    "sha256": "086aad33bb2a952b652a27ba0a0a5fbfebaab72fd5a8a671abfb8be90aaa1be4",
+    "sourceTestPath": "Analysis/test_run_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_source.py",
+    "sourceTestSHA256": "0dffd5fec3e2c33180677b8f9c2e92e85eef44000b0dcec5fff7a8a267165d15",
+    "trackedRepositoryMustBeClean": true,
+    "usesNixStorePath": false
+  },
   "nativeSessionPreflight": {
     "failClosedBeforeAppLaunch": true,
     "interpreter": "/Library/Developer/CommandLineTools/usr/bin/swift",
@@ -118,9 +131,9 @@
     "artifactHashesUnknownUntilCapture": true,
     "capturedOutputMayChangeStructuralAcceptance": false,
     "path": "Analysis/validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.py",
-    "sha256": "e1c5635605af4dc129bf96c39b4664974f823a90b1d6b173b7e4ff1e27771e42",
+    "sha256": "4911054a462b804246862960f46cd5ec3f4b7f7f8018cdfee0c543cf76821b86",
     "sourceTestPath": "Analysis/test_validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_source.py",
-    "sourceTestSHA256": "ac26b59d956517cd8592fd3f61bc2cacd81b3b61f2c4b054f07db084254c4013",
+    "sourceTestSHA256": "bff530c9b19e36f4a809ab2e5a13021951ae813868dbeb3b1eb0de550e5df9a4",
     "structuralFailuresFailClosed": true,
     "valueHypothesesReportedAsResults": true
   },

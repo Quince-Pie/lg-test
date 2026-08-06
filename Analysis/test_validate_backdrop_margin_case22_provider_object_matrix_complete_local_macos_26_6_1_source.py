@@ -70,6 +70,14 @@ class CompleteProviderObjectMatrixValidatorSourceTests(unittest.TestCase):
         ):
             self.assertIn(needle, SOURCE)
 
+    def test_native_runner_is_part_of_the_frozen_input(self) -> None:
+        self.assertIn(
+            'mapping(preregistration.get("nativeRunner"), "native runner")',
+            SOURCE,
+        )
+        self.assertIn('== runner.get("sha256")', SOURCE)
+        self.assertIn('"secondStageIndependentOfFirstStageValue"', SOURCE)
+
     def test_product_authority_remains_closed(self) -> None:
         for needle in (
             '"completeFiniteProviderLaw": False',

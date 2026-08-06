@@ -8112,7 +8112,7 @@ fixed invocation 20 with the unchanged historical selector, then run the
 complete matrix regardless of that first return. The preregistration is
 `Analysis/backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_preregistration.json`,
 SHA-256
-`3966080c106fd7b625b318e756a61edf3208d3b0d6f8949fc900c4d4b02c3671`.
+`5a32eb62c4ec2bce03060f86ad4884a580340f12386cd70cdf0f6ade7ec46c94`.
 The selected-stage expectation is the already observed exact return word
 `0000006002a22a40`; that expectation cannot suppress or alter the second
 stage. Captured objects and returns do not select either stage.
@@ -8121,11 +8121,21 @@ The prospective two-stage validator was also frozen before either unlocked
 output. It is
 `Analysis/validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.py`,
 SHA-256
-`e1c5635605af4dc129bf96c39b4664974f823a90b1d6b173b7e4ff1e27771e42`.
+`4911054a462b804246862960f46cd5ec3f4b7f7f8018cdfee0c543cf76821b86`.
 Session, code, ownership, object, return, timeline, and process-integrity
 violations fail closed. The historical-return reproduction and positive-branch
 requirements are reported as outcomes, so neither observed value can rewrite
 the structural acceptance rules.
+
+The exact native runner is
+`Analysis/run_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.sh`,
+SHA-256
+`086aad33bb2a952b652a27ba0a0a5fbfebaab72fd5a8a671abfb8be90aaa1be4`.
+It clears inherited `LG_*` variables, verifies the frozen binary and source
+hashes, refuses dirty tracked state or existing output directories, executes
+both preflights, and dispatches the complete stage independently of the first
+stage's observed return. It invokes native Command Line Tools directly and
+contains no Nix store path.
 
 Formal parity remains 0/1. After this unlocked complete provider gate, the
 remaining product gates are still: authenticate public-input-to-provider
