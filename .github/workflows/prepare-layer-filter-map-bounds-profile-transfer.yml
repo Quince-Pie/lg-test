@@ -1,0 +1,270 @@
+name: Exact prepare_layer FilterOp profile transfer
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: prepare-layer-filter-map-bounds-profile-transfer-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  filter-map-bounds-profile-transfer:
+    name: ${{ matrix.label }}
+    runs-on: macos-26
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: profile-clear-light-materialize
+            material: clear
+            appearance: light
+            direction: materialize
+          - label: profile-clear-light-dematerialize
+            material: clear
+            appearance: light
+            direction: dematerialize
+          - label: profile-clear-dark-materialize
+            material: clear
+            appearance: dark
+            direction: materialize
+          - label: profile-clear-dark-dematerialize
+            material: clear
+            appearance: dark
+            direction: dematerialize
+          - label: profile-regular-light-materialize
+            material: regular
+            appearance: light
+            direction: materialize
+          - label: profile-regular-light-dematerialize
+            material: regular
+            appearance: light
+            direction: dematerialize
+          - label: profile-regular-dark-materialize
+            material: regular
+            appearance: dark
+            direction: materialize
+          - label: profile-regular-dark-dematerialize
+            material: regular
+            appearance: dark
+            direction: dematerialize
+    env:
+      LG_GLASS_MATERIAL: ${{ matrix.material }}
+      LG_GLASS_APPEARANCE: ${{ matrix.appearance }}
+      LG_GLASS_GEOMETRY: circle-800-center
+      LG_TRANSITION_TIMELINE: "1"
+      LG_TRANSITION_DIRECTION: ${{ matrix.direction }}
+      LG_TRANSITION_UNIFORMS: "1"
+      LG_TRANSITION_CONTROLLED_BACKDROP: "0"
+      LG_TRANSITION_ALLOCATION_ONLY: "1"
+      LG_TRANSITION_ALLOCATION_DENSE: "1"
+      LG_TRANSITION_ALLOCATION_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_MESH_CALIBRATION: "0"
+      LG_TRANSITION_ALLOCATION_FIXED_STATE: "0"
+      LG_TRANSITION_ALLOCATION_PATH_ISOLATION: "0"
+      LG_TRANSITION_HIGHLIGHT_TRACE: "0"
+      LG_TRANSITION_MATRIX_BASIS: "0"
+      LG_PREPARE_LAYER_CROP_TRANSFER_TRACE_OUTPUT: >-
+        transition-introspection/prepare-layer-crop-policy-holdout-trace.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require macOS 26+
+        run: |
+          sw_vers
+          test "$(sw_vers -productVersion | cut -d. -f1)" -ge 26
+
+      - name: Select standard visual accessibility state
+        run: |
+          defaults write com.apple.universalAccess reduceTransparency -bool false
+          defaults write com.apple.universalAccess reduceMotion -bool false
+          defaults write com.apple.universalAccess increaseContrast -bool false
+          killall cfprefsd 2>/dev/null || true
+
+      - name: Verify frozen profile-transfer contracts
+        id: contracts
+        continue-on-error: true
+        run: |
+          mkdir -p transition-introspection
+          set -o pipefail
+          python3 -m unittest discover -s Analysis \
+            -p 'test_prepare_dematerialize_uniform_capture_source.py' \
+            -v 2>&1 | tee transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_filter_map_bounds_profile_transfer.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_transfer_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_crop_transfer.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_union_operand_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_policy_holdout_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_capture_prepare_layer_crop_policy_holdout_callback_retry_lldb_source.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_validate_prepare_layer_filter_map_bounds_blind_replay.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+          python3 -m unittest discover -s Analysis \
+            -p 'test_dynamic_allocation_prepare_layer_filter_map_bounds_profile_transfer_preregistration.py' \
+            -v 2>&1 | tee -a transition-introspection/contracts.log
+
+      - name: Prepare reverse-direction-capable source
+        id: source
+        if: steps.contracts.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/prepare_dematerialize_uniform_capture_source.py \
+            Sources/GlassIntrospect/main.swift \
+            transition-introspection/main-profile-transfer.swift
+          test "$(shasum -a 256 transition-introspection/main-profile-transfer.swift | cut -d' ' -f1)" = \
+            247ad3094bec2c82244d02c5cff6815805c56bdafb59a57c6b24109009480ede
+
+      - name: Build transition introspection probe
+        id: build
+        if: steps.source.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcrun clang \
+            -std=c23 \
+            -O2 \
+            -Wall \
+            -Wextra \
+            -Werror \
+            -target "$(uname -m)-apple-macos26.0" \
+            -c Sources/GlassIntrospect/MatrixBridge.c \
+            -o transition-introspection/MatrixBridge.o 2>&1 |
+            tee transition-introspection/build.log
+          swiftc -O -parse-as-library \
+            -target "$(uname -m)-apple-macos26.0" \
+            -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
+            Sources/GlassIntrospect/HalfBlendProbe.swift \
+            Sources/GlassIntrospect/HalfDotProbe.swift \
+            Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
+            Sources/GlassIntrospect/SDFStageProbe.swift \
+            transition-introspection/main-profile-transfer.swift \
+            transition-introspection/MatrixBridge.o \
+            -o glass-transition-introspect 2>&1 |
+            tee -a transition-introspection/build.log
+
+      - name: Capture target-output-blind profile operands
+        id: capture
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          xcrun lldb --batch \
+            -o 'settings set target.output-path transition-introspection/runtime-stdout.log' \
+            -o 'settings set target.error-path transition-introspection/runtime-stderr.log' \
+            -o 'command script import Analysis/capture_prepare_layer_crop_policy_holdout_callback_retry_lldb.py' \
+            -o run \
+            -o 'script capture_prepare_layer_crop_policy_holdout_callback_retry_lldb.finalize()' \
+            -- ./glass-transition-introspect transition-introspection \
+            > transition-introspection/lldb-prepare-layer-filter-map-bounds-profile-transfer.log 2>&1
+
+      - name: Validate exact profile transfer
+        id: profile_transfer
+        if: >-
+          steps.build.outcome == 'success' &&
+          steps.capture.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python3 Analysis/validate_prepare_layer_filter_map_bounds_profile_transfer.py \
+            transition-introspection/prepare-layer-crop-policy-holdout-trace.json \
+            transition-introspection/transition-timeline.json \
+            --expected-geometry circle-800-center \
+            --expected-material '${{ matrix.material }}' \
+            --expected-appearance '${{ matrix.appearance }}' \
+            --expected-direction '${{ matrix.direction }}' \
+            --output \
+              transition-introspection/prepare-layer-filter-map-bounds-profile-transfer-validation.json
+
+      - name: Upload profile-transfer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            liquid-glass-filter-map-bounds-${{ matrix.label }}-${{ github.run_id }}
+          path: transition-introspection
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce exact profile transfer
+        if: always()
+        run: |
+          test "${{ steps.contracts.outcome }}" = success
+          test "${{ steps.source.outcome }}" = success
+          test "${{ steps.build.outcome }}" = success
+          test "${{ steps.capture.outcome }}" = success
+          test "${{ steps.profile_transfer.outcome }}" = success
+          test -s transition-introspection/transition-timeline.json
+          test -s transition-introspection/prepare-layer-crop-policy-holdout-trace.json
+          test -s transition-introspection/prepare-layer-filter-map-bounds-profile-transfer-validation.json
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path("transition-introspection")
+          result = json.loads(
+              (root / "prepare-layer-filter-map-bounds-profile-transfer-validation.json")
+              .read_text(encoding="utf-8")
+          )
+          profile = result.get("profile", {})
+          adapter = result.get("metadataAdapter", {})
+          source = result.get("sourceBounds", {})
+          replay = result.get("floatingReplay", {})
+          selection = result.get("structuralSelection", {})
+          sealed = result.get("sealedConclusion", {})
+          if (
+              result.get(
+                  "prepareLayerFilterMapBoundsProfileTransferValidationSchemaVersion"
+              ) != 1
+              or result.get("conclusion") != "success"
+              or profile.get("material") != os.environ["LG_GLASS_MATERIAL"]
+              or profile.get("appearance") != os.environ["LG_GLASS_APPEARANCE"]
+              or profile.get("direction") != os.environ["LG_TRANSITION_DIRECTION"]
+              or profile.get("geometry") != os.environ["LG_GLASS_GEOMETRY"]
+              or profile.get("backingScaleFactor") != 1
+              or adapter.get("actualProfileAuthenticatedBeforeNormalization") is not True
+              or adapter.get("onlyMaterialAppearanceDirectionNormalized") is not True
+              or adapter.get("traceBytesChanged") is not False
+              or adapter.get("timelineBytesChanged") is not False
+              or adapter.get("cropOrProducerValuesInspected") is not False
+              or source.get("sampleIndex") != 32
+              or source.get("cropOrProducerValuesUsed") is not False
+              or replay.get("rectangleCount") != 32
+              or replay.get("componentCount") != 128
+              or replay.get("exactRectangleCount") != 32
+              or replay.get("exactComponentCount") != 128
+              or replay.get("mismatchedRectangleCount") != 0
+              or replay.get("mismatchedComponentCount") != 0
+              or replay.get("maximumAbsoluteErrorsXYWH") != [0.0, 0.0, 0.0, 0.0]
+              or replay.get("maximumULPDistancesXYWH") != [0, 0, 0, 0]
+              or replay.get("toleranceUsed") is not False
+              or replay.get("allRectanglesExact") is not True
+              or replay.get("allComponentsExact") is not True
+              or len(replay.get("records", [])) != 32
+              or not all(record.get("exact") is True for record in replay["records"])
+              or selection.get("cropOrProducerValuesUsedForSelection") is not False
+              or selection.get("destinationMatchedUnionCount") != 64
+              or selection.get("rejectedUnionCallCount") != 0
+              or selection.get("rejectedStoreCount") != 0
+              or sealed.get("singleProfileExactCropReplayPassed") is not True
+              or sealed.get("completeProfileMatrixPassed") is not False
+              or sealed.get("allFloatingProducerRectanglesBitExact") is not True
+              or sealed.get("allDownstreamIntegerCropsExact") is not True
+              or sealed.get("materialAppearanceDirectionTransferPassed") is not False
+              or sealed.get("physicalRetina2xAndColorTransferPassed") is not False
+              or sealed.get("independentWalleZeroByteFrameParityPassed") is not False
+              or sealed.get("productionShaderAuthorized") is not False
+              or sealed.get("liquidGlassParityEstablished") is not False
+          ):
+              raise SystemExit("FilterOp profile-transfer validation differs")
+          PY
