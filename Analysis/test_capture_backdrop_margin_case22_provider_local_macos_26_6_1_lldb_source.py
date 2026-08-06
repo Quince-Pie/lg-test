@@ -52,6 +52,25 @@ class LocalMacOSCase22ProviderSourceTests(unittest.TestCase):
         self.assertIn("_trace_provider(", source)
         self.assertIn('"kind": "opaque-callee"', source)
 
+    def test_callbacks_bind_to_the_directly_imported_provider_module(self) -> None:
+        self.assertIn("local._set_local_callback = _set_provider_callback", self.text)
+        for callback in (
+            "copy_entry",
+            "margin_setter",
+            "copy_margin_store",
+            "backdrop_bounds",
+            "producer_entry",
+            "producer_stage",
+        ):
+            function = next(
+                node
+                for node in self.tree.body
+                if isinstance(node, ast.FunctionDef) and node.name == callback
+            )
+            source = ast.get_source_segment(self.text, function)
+            self.assertIsNotNone(source)
+            self.assertIn("return local.", source)
+
     def test_live_trace_is_bounded_and_complete(self) -> None:
         function = next(
             node

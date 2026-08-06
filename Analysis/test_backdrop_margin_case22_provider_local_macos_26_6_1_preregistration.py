@@ -48,6 +48,28 @@ class LocalMacOSCase22ProviderPreregistrationTests(unittest.TestCase):
         ):
             self.assertFalse(selection[key])
 
+    def test_callback_retry_changes_only_transport(self) -> None:
+        retry = self.value["callbackBindingRetry"]
+        self.assertEqual(retry["firstProviderCommit"], "b4243f7")
+        self.assertTrue(retry["processStoppedAtFirstGroupEntry"])
+        for key in (
+            "baseEventCount",
+            "groupInvocationCount",
+            "case22InstructionCount",
+            "providerInstructionCount",
+            "providerHelperCount",
+            "providerFailureCount",
+        ):
+            self.assertEqual(retry[key], 0)
+        for key in (
+            "runtimeSelectionChanged",
+            "captureFieldsChanged",
+            "providerInstructionOpened",
+            "providerReturnWordOpened",
+            "authorityChanged",
+        ):
+            self.assertFalse(retry[key])
+
     def test_frozen_implementation_hashes_match(self) -> None:
         for record in self.value["frozenImplementation"]["files"]:
             payload = (ANALYSIS.parent / record["path"]).read_bytes()

@@ -1,6 +1,6 @@
 {
   "backdropMarginCase22ProviderLocalMacOSPreregistrationSchemaVersion": 1,
-  "frozenAtUtc": "2026-08-06T20:37:59Z",
+  "frozenAtUtc": "2026-08-06T20:41:17Z",
   "classification": "retrospective output-blind nested instruction diagnostic of the exact DesignLibrary provider opened by the frozen case-22 ordinal on the authenticated local macOS 26.6.1 host; selected-call arithmetic may be decoded on pass, but public-input transfer, optical parity, physical-output parity, production authority, and product parity remain closed",
   "host": {
     "sshHost": "quince@10.0.41.19",
@@ -70,6 +70,26 @@
     "capturedPixelUsedForRuntimeSelection": false,
     "prospectiveTransferAuthority": false
   },
+  "callbackBindingRetry": {
+    "firstProviderCommit": "b4243f7",
+    "externalPath": "../artifacts/mac-quince-macos-26.6.1-case22-provider-callback-attempt-1",
+    "traceSHA256": "fdc2b5a4283b25e08c9e03031d1d5c277b0884ebc2a342dc60f11375127d8871",
+    "lldbLogSHA256": "dc9b0390b15400b781c1c83bdc3d57f331c9e73c4e19c904284bc0f3dcd4d496",
+    "processStoppedAtFirstGroupEntry": true,
+    "baseEventCount": 0,
+    "groupInvocationCount": 0,
+    "case22InstructionCount": 0,
+    "providerInstructionCount": 0,
+    "providerHelperCount": 0,
+    "providerFailureCount": 0,
+    "harnessFinding": "callbacks bound to the transitively imported parent adapter are not visible to LLDB when the provider overlay is the directly imported command module",
+    "transportOnlyCorrection": "bind all six inherited callbacks to top-level proxy functions in the directly imported provider overlay; every proxy delegates to the unchanged parent adapter function",
+    "runtimeSelectionChanged": false,
+    "captureFieldsChanged": false,
+    "providerInstructionOpened": false,
+    "providerReturnWordOpened": false,
+    "authorityChanged": false
+  },
   "captureContract": {
     "parentCase22AdapterUnchanged": true,
     "localProviderOverlayOnly": true,
@@ -104,11 +124,11 @@
     "files": [
       {
         "path": "Analysis/capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb.py",
-        "sha256": "d858d47a0bc5680499c6d54c84588d2425ef525447ae216315e8d905638987d8"
+        "sha256": "964b03394b837e3d0e0f312a56f593ffdbb7be6c325d98a53d56fbc216efd25b"
       },
       {
         "path": "Analysis/test_capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb_source.py",
-        "sha256": "0ee44b13cc9f1248ff9b3f53f816ed61ce12894f3be52843c6e65b671902f3f7"
+        "sha256": "5752c95e16c9c9570c6339a2307739392019ee21b009e9aa29555eb481eeb445"
       },
       {
         "path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py",

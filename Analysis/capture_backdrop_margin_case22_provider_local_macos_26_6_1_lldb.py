@@ -50,6 +50,36 @@ _local_new_trace = local._new_trace
 _case22_capture_opaque_callee = case22._capture_opaque_callee
 
 
+def _set_provider_callback(breakpoint, callback, label):
+    error = breakpoint.SetScriptCallbackFunction(__name__ + "." + callback)
+    if error is not None and hasattr(error, "Success") and not error.Success():
+        raise RuntimeError(error.GetCString() or label + " callback rejected")
+
+
+def copy_entry(frame, breakpoint_location, internal_dict):
+    return local.copy_entry(frame, breakpoint_location, internal_dict)
+
+
+def margin_setter(frame, breakpoint_location, internal_dict):
+    return local.margin_setter(frame, breakpoint_location, internal_dict)
+
+
+def copy_margin_store(frame, breakpoint_location, internal_dict):
+    return local.copy_margin_store(frame, breakpoint_location, internal_dict)
+
+
+def backdrop_bounds(frame, breakpoint_location, internal_dict):
+    return local.backdrop_bounds(frame, breakpoint_location, internal_dict)
+
+
+def producer_entry(frame, breakpoint_location, internal_dict):
+    return local.producer_entry(frame, breakpoint_location, internal_dict)
+
+
+def producer_stage(frame, breakpoint_location, internal_dict):
+    return local.producer_stage(frame, breakpoint_location, internal_dict)
+
+
 def _extension():
     trace = base._state.get("trace")
     if trace is None:
@@ -504,5 +534,6 @@ def finalize():
 
 def __lldb_init_module(debugger, internal_dict):
     local._new_trace = _new_trace
+    local._set_local_callback = _set_provider_callback
     case22._capture_opaque_callee = _capture_provider_dispatch
     local.__lldb_init_module(debugger, internal_dict)
