@@ -11109,8 +11109,11 @@ setMarginWidth input = the identical binary64 +0 word
 copy render margin   = binary32 +0
 regular get_bounds consumer = absent
 presentation glassBackground removal = sample N, 24 <= N <= 32
-pre-removal images = one contiguous sequence 00 through N-1
+retained images = one contiguous sequence 00 through N
 ```
+
+Image `N` is written before the presentation-layer lookup reports that the
+clear backdrop has been removed.
 
 The exact copy/setter code, live SwiftUICore caller, 732-byte Group getter,
 producer-return/setter equality, opaque copy `x2`, event bounds, and

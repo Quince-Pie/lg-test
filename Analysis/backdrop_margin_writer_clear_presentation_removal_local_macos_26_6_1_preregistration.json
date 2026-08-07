@@ -43,7 +43,7 @@
     "minimumRemovalSample": 24,
     "maximumRemovalSample": 32,
     "removalErrorPattern": "presentation glassBackground snapshot unavailable at sample N",
-    "preRemovalImageSequence": "exact contiguous materialize images 00 through N-1",
+    "retainedImageSequence": "exact contiguous materialize images 00 through N; image N is written before the presentation-layer lookup reports removal",
     "candidateCalibratedFromOpenedClearLightRemoval": true,
     "clearZeroLawPredatesOpenedClearLightRemoval": true,
     "prospectiveHoldoutOutputUsedToChooseCandidate": false,
@@ -159,7 +159,7 @@
     },
     {
       "path": "Analysis/validate_backdrop_margin_writer_clear_presentation_removal_local_macos_26_6_1.py",
-      "sha256": "79524662dea32b76c87a6de72be21bc3f31cca87d10b9e4999e2d407690ea55b"
+      "sha256": "a1d929856600a86f435e9d16c683447671bd8d4fc17a7be5f1d0228961421999"
     },
     {
       "path": "Analysis/run_backdrop_margin_writer_clear_presentation_removal_local_macos_26_6_1.sh",
@@ -167,7 +167,7 @@
     },
     {
       "path": "Analysis/test_validate_backdrop_margin_writer_clear_presentation_removal_local_macos_26_6_1.py",
-      "sha256": "7306f404f0214e3c24795e360bca4b67a493a4da291cae92d2153d8c48386080"
+      "sha256": "7a4418cf16a392aa0becdb913bd1b4f4fa2c9dcdf4bc8121c16bd8bdba6b5e40"
     },
     {
       "path": "Analysis/test_run_backdrop_margin_writer_clear_presentation_removal_local_macos_26_6_1_source.py",
@@ -175,7 +175,7 @@
     },
     {
       "path": "Analysis/test_backdrop_margin_writer_clear_presentation_removal_local_macos_26_6_1_preregistration.py",
-      "sha256": "1abaa283665dcd6ba9dad48da73aa7d123c028bb4a83a75f5e6b15ddb5da829c"
+      "sha256": "b826b77833f50cc52f05081f164b7d0500f65c0796f8914fd10eb340099d1285"
     },
     {
       "path": "Analysis/test_backdrop_margin_writer_provider_composition_36588cf_matrix_interim_result.py",

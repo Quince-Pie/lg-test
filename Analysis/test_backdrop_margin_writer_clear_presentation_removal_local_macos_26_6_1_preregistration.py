@@ -56,6 +56,7 @@ class BackdropMarginWriterClearPresentationRemovalPreregistrationTests(
         self.assertTrue(candidate["presentationBackdropRemovalExpected"])
         self.assertEqual(candidate["minimumRemovalSample"], 24)
         self.assertEqual(candidate["maximumRemovalSample"], 32)
+        self.assertIn("images 00 through N", candidate["retainedImageSequence"])
         self.assertFalse(candidate["prospectiveHoldoutOutputUsedToChooseCandidate"])
 
     def test_v6_partial_clear_runs_are_not_relabelled_as_passes(self) -> None:

@@ -17,7 +17,7 @@ class BackdropMarginWriterClearPresentationRemovalTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory_name:
             directory = Path(directory_name)
             removal_sample = 30
-            for index in range(removal_sample):
+            for index in range(removal_sample + 1):
                 (directory / f"transition-materialize-{index:02d}-rgba8.png").touch()
             (directory / "transition-progress.json").write_text(
                 json.dumps(
@@ -42,7 +42,7 @@ class BackdropMarginWriterClearPresentationRemovalTests(unittest.TestCase):
             self.assertEqual(
                 validator.validate_removal_timeline(timeline, directory), 30
             )
-            (directory / "transition-materialize-29-rgba8.png").unlink()
+            (directory / "transition-materialize-30-rgba8.png").unlink()
             with self.assertRaisesRegex(ValueError, "image sequence"):
                 validator.validate_removal_timeline(timeline, directory)
 

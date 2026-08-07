@@ -216,7 +216,7 @@ def validate_removal_timeline(timeline: dict[str, Any], directory: Path) -> int:
     images = sorted(directory.glob("transition-materialize-*-rgba8.png"))
     expected_names = [
         f"transition-materialize-{index:02d}-rgba8.png"
-        for index in range(removal_sample)
+        for index in range(removal_sample + 1)
     ]
     require(
         [path.name for path in images] == expected_names,
@@ -415,7 +415,8 @@ def validate(
         },
         "presentationRemoval": {
             "sampleIndex": removal_sample,
-            "preRemovalImageCount": removal_sample,
+            "retainedImageCount": removal_sample + 1,
+            "lastRetainedImageIndex": removal_sample,
             "regularBoundsCodeGatePresent": False,
             "regularBoundsEventCount": 0,
             "clearBackdropRemovedBeforeRegularBoundsConsumption": True,
