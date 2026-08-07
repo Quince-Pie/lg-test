@@ -1,0 +1,880 @@
+{
+  "allPresentPath": {
+    "all491WrittenByteOriginsProvedExactly": true,
+    "arithmeticAppliedToPresentPayloadBytes": false,
+    "executedInstructionCount": 214,
+    "groups": [
+      "shadow",
+      "blur",
+      "refraction",
+      "faceEffects",
+      "edgeBleed",
+      "sdrAdjustment"
+    ],
+    "parameterReadRanges": [
+      [
+        24,
+        169
+      ],
+      [
+        176,
+        249
+      ],
+      [
+        256,
+        309
+      ],
+      [
+        312,
+        386
+      ],
+      [
+        392,
+        498
+      ],
+      [
+        784,
+        796
+      ],
+      [
+        800,
+        817
+      ]
+    ],
+    "pathMask": 63,
+    "transfers": [
+      {
+        "byteCount": 8,
+        "outputStart": 0,
+        "source": "layerIndex",
+        "sourceStart": 0
+      },
+      {
+        "byteCount": 144,
+        "outputStart": 8,
+        "source": "parameters",
+        "sourceStart": 24
+      },
+      {
+        "byteCount": 72,
+        "outputStart": 152,
+        "source": "parameters",
+        "sourceStart": 176
+      },
+      {
+        "byteCount": 52,
+        "outputStart": 224,
+        "source": "parameters",
+        "sourceStart": 256
+      },
+      {
+        "byteCount": 73,
+        "outputStart": 276,
+        "source": "parameters",
+        "sourceStart": 312
+      },
+      {
+        "byteCount": 106,
+        "outputStart": 352,
+        "source": "parameters",
+        "sourceStart": 392
+      },
+      {
+        "byteCount": 12,
+        "outputStart": 464,
+        "source": "parameters",
+        "sourceStart": 784
+      },
+      {
+        "byteCount": 16,
+        "outputStart": 480,
+        "source": "parameters",
+        "sourceStart": 800
+      },
+      {
+        "byteCount": 8,
+        "outputStart": 496,
+        "source": "environmentFlags",
+        "sourceStart": 0
+      }
+    ],
+    "unwrittenPaddingRanges": [
+      [
+        349,
+        352
+      ],
+      [
+        458,
+        464
+      ],
+      [
+        476,
+        480
+      ]
+    ],
+    "writtenByteCount": 491,
+    "writtenRanges": [
+      [
+        0,
+        349
+      ],
+      [
+        352,
+        458
+      ],
+      [
+        464,
+        476
+      ],
+      [
+        480,
+        504
+      ]
+    ]
+  },
+  "claims": {
+    "allOptionalPresencePathsExecutedSymbolically": true,
+    "constructorPerformsCrossFieldOpticalArithmetic": false,
+    "environmentFlagsCopiedExactly": true,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "layerIndexCopiedExactly": true,
+    "liquidGlassParityEstablished": false,
+    "nilPathIndeterminateNestedPaddingByteCount": 25,
+    "optionalPresencePathCount": 64,
+    "presentBlurBytesCopiedExactly": true,
+    "presentEdgeBleedBytesCopiedExactly": true,
+    "presentFaceEffectsBytesCopiedExactly": true,
+    "presentRefractionBytesCopiedExactly": true,
+    "presentSDRAdjustmentSemanticBytesCopiedExactly": true,
+    "presentShadowBytesCopiedExactly": true,
+    "productionShaderChangeAuthorized": false,
+    "publicParametersConstructionLawEstablished": false,
+    "upstreamCropAllocationPolicyEstablished": false
+  },
+  "classification": "native static symbolic byte-origin proof over every one of the 64 optional-presence paths; no Apple application launch, render, image, pixel, or captured runtime value",
+  "constructor": {
+    "byteCount": 1044,
+    "endExclusive": "0x24091c114",
+    "instructionCount": 261,
+    "sha256": "71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d",
+    "start": "0x24091bd00"
+  },
+  "designLibraryBackgroundFilterConstructorSemanticsAnalysisSchemaVersion": 1,
+  "host": {
+    "designLibraryUUID": "1E980802-69F5-3E69-89EF-50088297FCF5",
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "optionalBranchContracts": [
+    {
+      "branchAddress": "0x24091bd90",
+      "branchMnemonic": "b.ne",
+      "group": "shadow",
+      "precedingCompare": "w0, #0x1",
+      "takenWhenPresent": true
+    },
+    {
+      "branchAddress": "0x24091be4c",
+      "branchMnemonic": "b.eq",
+      "group": "blur",
+      "precedingCompare": "w12, #0x1",
+      "takenWhenPresent": false
+    },
+    {
+      "branchAddress": "0x24091be78",
+      "branchMnemonic": "b.eq",
+      "group": "refraction",
+      "precedingCompare": "w12, #0x1",
+      "takenWhenPresent": false
+    },
+    {
+      "branchAddress": "0x24091be94",
+      "branchMnemonic": "b.ne",
+      "group": "faceEffects",
+      "precedingCompare": "w12, #0x1",
+      "takenWhenPresent": true
+    },
+    {
+      "branchAddress": "0x24091bf00",
+      "branchMnemonic": "b.ne",
+      "group": "edgeBleed",
+      "precedingCompare": "w15, #0x200",
+      "takenWhenPresent": true
+    },
+    {
+      "branchAddress": "0x24091bf94",
+      "branchMnemonic": "b.ne",
+      "group": "sdrAdjustment",
+      "precedingCompare": "w2, #0x1",
+      "takenWhenPresent": true
+    }
+  ],
+  "optionalPresenceProof": {
+    "allAbsentPath": {
+      "absentGroups": [
+        "shadow",
+        "blur",
+        "refraction",
+        "faceEffects",
+        "edgeBleed",
+        "sdrAdjustment"
+      ],
+      "constantOutputRanges": [
+        [
+          8,
+          93
+        ],
+        [
+          96,
+          113
+        ],
+        [
+          116,
+          133
+        ],
+        [
+          136,
+          140
+        ],
+        [
+          144,
+          309
+        ],
+        [
+          312,
+          329
+        ],
+        [
+          332,
+          349
+        ],
+        [
+          352,
+          417
+        ],
+        [
+          420,
+          437
+        ],
+        [
+          440,
+          458
+        ],
+        [
+          464,
+          476
+        ],
+        [
+          480,
+          496
+        ]
+      ],
+      "executedInstructionCount": 178,
+      "indeterminateOutputRanges": [
+        [
+          93,
+          96
+        ],
+        [
+          113,
+          116
+        ],
+        [
+          133,
+          136
+        ],
+        [
+          140,
+          144
+        ],
+        [
+          309,
+          312
+        ],
+        [
+          329,
+          332
+        ],
+        [
+          417,
+          420
+        ],
+        [
+          437,
+          440
+        ]
+      ],
+      "parameterOriginOutputRanges": [],
+      "parameterReadRanges": [
+        [
+          24,
+          169
+        ],
+        [
+          248,
+          249
+        ],
+        [
+          308,
+          309
+        ],
+        [
+          385,
+          386
+        ],
+        [
+          496,
+          498
+        ],
+        [
+          816,
+          817
+        ]
+      ],
+      "pathMask": 0,
+      "presentGroups": []
+    },
+    "allPathsPreserveExact491ByteWriteCoverage": true,
+    "executedInstructionCountRange": [
+      178,
+      214
+    ],
+    "indeterminateNestedPaddingByteCountAcrossAnyNilPath": 25,
+    "indeterminateOriginKinds": [
+      "unknown:gpr11",
+      "unknown:stack"
+    ],
+    "indeterminateOutputRangesAcrossAnyNilPath": [
+      [
+        93,
+        96
+      ],
+      [
+        113,
+        116
+      ],
+      [
+        133,
+        136
+      ],
+      [
+        140,
+        144
+      ],
+      [
+        309,
+        312
+      ],
+      [
+        329,
+        332
+      ],
+      [
+        417,
+        420
+      ],
+      [
+        437,
+        440
+      ]
+    ],
+    "pathCount": 64,
+    "pathMatrixSHA256": "3688ac0fa948e51ea5b0f467fdd3b4e5a2cd58f2515ebc9267b88215cd7d6b98",
+    "singleAbsentPaths": [
+      {
+        "absentGroups": [
+          "shadow"
+        ],
+        "constantOutputRanges": [
+          [
+            8,
+            93
+          ],
+          [
+            96,
+            113
+          ],
+          [
+            116,
+            133
+          ],
+          [
+            136,
+            140
+          ],
+          [
+            144,
+            152
+          ]
+        ],
+        "executedInstructionCount": 203,
+        "indeterminateOutputRanges": [
+          [
+            93,
+            96
+          ],
+          [
+            113,
+            116
+          ],
+          [
+            133,
+            136
+          ],
+          [
+            140,
+            144
+          ]
+        ],
+        "parameterOriginOutputRanges": [
+          [
+            152,
+            349
+          ],
+          [
+            352,
+            458
+          ],
+          [
+            464,
+            476
+          ],
+          [
+            480,
+            496
+          ]
+        ],
+        "parameterReadRanges": [
+          [
+            24,
+            169
+          ],
+          [
+            176,
+            249
+          ],
+          [
+            256,
+            309
+          ],
+          [
+            312,
+            386
+          ],
+          [
+            392,
+            498
+          ],
+          [
+            784,
+            796
+          ],
+          [
+            800,
+            817
+          ]
+        ],
+        "pathMask": 62,
+        "presentGroups": [
+          "blur",
+          "refraction",
+          "faceEffects",
+          "edgeBleed",
+          "sdrAdjustment"
+        ]
+      },
+      {
+        "absentGroups": [
+          "blur"
+        ],
+        "constantOutputRanges": [
+          [
+            152,
+            224
+          ]
+        ],
+        "executedInstructionCount": 211,
+        "indeterminateOutputRanges": [],
+        "parameterOriginOutputRanges": [
+          [
+            8,
+            152
+          ],
+          [
+            224,
+            349
+          ],
+          [
+            352,
+            458
+          ],
+          [
+            464,
+            476
+          ],
+          [
+            480,
+            496
+          ]
+        ],
+        "parameterReadRanges": [
+          [
+            24,
+            169
+          ],
+          [
+            248,
+            249
+          ],
+          [
+            256,
+            309
+          ],
+          [
+            312,
+            386
+          ],
+          [
+            392,
+            498
+          ],
+          [
+            784,
+            796
+          ],
+          [
+            800,
+            817
+          ]
+        ],
+        "pathMask": 61,
+        "presentGroups": [
+          "shadow",
+          "refraction",
+          "faceEffects",
+          "edgeBleed",
+          "sdrAdjustment"
+        ]
+      },
+      {
+        "absentGroups": [
+          "refraction"
+        ],
+        "constantOutputRanges": [
+          [
+            224,
+            276
+          ]
+        ],
+        "executedInstructionCount": 211,
+        "indeterminateOutputRanges": [],
+        "parameterOriginOutputRanges": [
+          [
+            8,
+            224
+          ],
+          [
+            276,
+            349
+          ],
+          [
+            352,
+            458
+          ],
+          [
+            464,
+            476
+          ],
+          [
+            480,
+            496
+          ]
+        ],
+        "parameterReadRanges": [
+          [
+            24,
+            169
+          ],
+          [
+            176,
+            249
+          ],
+          [
+            308,
+            309
+          ],
+          [
+            312,
+            386
+          ],
+          [
+            392,
+            498
+          ],
+          [
+            784,
+            796
+          ],
+          [
+            800,
+            817
+          ]
+        ],
+        "pathMask": 59,
+        "presentGroups": [
+          "shadow",
+          "blur",
+          "faceEffects",
+          "edgeBleed",
+          "sdrAdjustment"
+        ]
+      },
+      {
+        "absentGroups": [
+          "faceEffects"
+        ],
+        "constantOutputRanges": [
+          [
+            276,
+            309
+          ],
+          [
+            312,
+            329
+          ],
+          [
+            332,
+            349
+          ]
+        ],
+        "executedInstructionCount": 204,
+        "indeterminateOutputRanges": [
+          [
+            309,
+            312
+          ],
+          [
+            329,
+            332
+          ]
+        ],
+        "parameterOriginOutputRanges": [
+          [
+            8,
+            276
+          ],
+          [
+            352,
+            458
+          ],
+          [
+            464,
+            476
+          ],
+          [
+            480,
+            496
+          ]
+        ],
+        "parameterReadRanges": [
+          [
+            24,
+            169
+          ],
+          [
+            176,
+            249
+          ],
+          [
+            256,
+            309
+          ],
+          [
+            385,
+            386
+          ],
+          [
+            392,
+            498
+          ],
+          [
+            784,
+            796
+          ],
+          [
+            800,
+            817
+          ]
+        ],
+        "pathMask": 55,
+        "presentGroups": [
+          "shadow",
+          "blur",
+          "refraction",
+          "edgeBleed",
+          "sdrAdjustment"
+        ]
+      },
+      {
+        "absentGroups": [
+          "edgeBleed"
+        ],
+        "constantOutputRanges": [
+          [
+            352,
+            417
+          ],
+          [
+            420,
+            437
+          ],
+          [
+            440,
+            458
+          ]
+        ],
+        "executedInstructionCount": 205,
+        "indeterminateOutputRanges": [
+          [
+            417,
+            420
+          ],
+          [
+            437,
+            440
+          ]
+        ],
+        "parameterOriginOutputRanges": [
+          [
+            8,
+            349
+          ],
+          [
+            464,
+            476
+          ],
+          [
+            480,
+            496
+          ]
+        ],
+        "parameterReadRanges": [
+          [
+            24,
+            169
+          ],
+          [
+            176,
+            249
+          ],
+          [
+            256,
+            309
+          ],
+          [
+            312,
+            386
+          ],
+          [
+            496,
+            498
+          ],
+          [
+            784,
+            796
+          ],
+          [
+            800,
+            817
+          ]
+        ],
+        "pathMask": 47,
+        "presentGroups": [
+          "shadow",
+          "blur",
+          "refraction",
+          "faceEffects",
+          "sdrAdjustment"
+        ]
+      },
+      {
+        "absentGroups": [
+          "sdrAdjustment"
+        ],
+        "constantOutputRanges": [
+          [
+            464,
+            476
+          ],
+          [
+            480,
+            496
+          ]
+        ],
+        "executedInstructionCount": 214,
+        "indeterminateOutputRanges": [],
+        "parameterOriginOutputRanges": [
+          [
+            8,
+            349
+          ],
+          [
+            352,
+            458
+          ]
+        ],
+        "parameterReadRanges": [
+          [
+            24,
+            169
+          ],
+          [
+            176,
+            249
+          ],
+          [
+            256,
+            309
+          ],
+          [
+            312,
+            386
+          ],
+          [
+            392,
+            498
+          ],
+          [
+            816,
+            817
+          ]
+        ],
+        "pathMask": 31,
+        "presentGroups": [
+          "shadow",
+          "blur",
+          "refraction",
+          "faceEffects",
+          "edgeBleed"
+        ]
+      }
+    ]
+  },
+  "shadowOptionalHelper": {
+    "byteCount": 28,
+    "endExclusive": "0x240917f80",
+    "instructionCount": 7,
+    "law": "return 0 when the copied Shadow optional tag byte at +0x90 is zero; otherwise return uint32_at_0 + 1",
+    "sha256": "31156c1bee375fc0b5dd502966dbc45ddfd7902d61538e88bbd9fe2752126d28",
+    "start": "0x240917f64"
+  },
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "python": "3.9.6",
+    "source": "Analysis/analyze_designlibrary_background_filter_constructor_semantics_local_macos_26_6_1.py",
+    "sourceSHA256": "128ff559e4dc4952164d57244f05343363b5d9bced2b5350c3364433c475b5a1"
+  }
+}

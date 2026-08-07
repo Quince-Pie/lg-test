@@ -8595,15 +8595,15 @@ For every provider call in the render interval it preserves the prior
 384-byte projection required by the already-frozen public/provider validator
 and additionally retains the complete 504-byte entry and return values. The
 new validator projects away the constructor-only records and reruns the old
-validator unchanged. Static stores prove that 491 of the 504 bytes are
-initialized by the constructor. The remaining 13 are Swift layout padding at
+validator unchanged. Static stores prove that 491 of the 504 bytes are written
+by the constructor. The remaining 13 are top-level Swift layout padding at
 `[0x15d,0x160)`, `[0x1ca,0x1d0)`, and `[0x1dc,0x1e0)` and are never written by
-the constructor. The causal gate therefore requires every one of the 491
-initialized bytes in each public-signature-matched provider to equal a
-same-sample constructor output; it retains and reports all padding bytes but
-does not allow indeterminate padding to decide the optical result. Full
-504-byte equality is reported independently. All matching outputs for a
-sample must identify one distinct 1,025-byte `Parameters` value.
+the constructor. The frozen causal gate uses the historical name
+"initialized bytes" for this exact 491-byte terminal-store set. It requires
+same-sample provider equality over that whole set as a structural transfer
+check; semantic optical conclusions remain separate. Full 504-byte equality
+is reported independently. All matching outputs for a sample must identify
+one distinct 1,025-byte `Parameters` value.
 
 This initialized-byte boundary is itself machine-checked rather than inferred
 from field sizes. The native static analyzer
@@ -8620,6 +8620,49 @@ SHA-256
 and normalized-instruction SHA-256
 `49708bacdc1cd086ea0337a69afe90b9a41098a08f91b5d561093526e3c33505`.
 This analysis launches no Apple application and reads no render outcome.
+
+A second native analyzer now closes the constructor's byte semantics rather
+than stopping at store coverage. It symbolically executes all 64 presence/nil
+combinations of `Shadow`, `Blur`, `Refraction`, `FaceEffects`, `EdgeBleed`,
+and `SDRAdjustment`, while authenticating the same 1,044 constructor bytes,
+all 261 instructions, all six exact compare/branch contracts, and the
+separate 28-byte Shadow-optional helper. On the all-present path, every one of
+the 491 written output bytes has one exact origin and no optical arithmetic is
+performed:
+
+```text
+output [  0,   8) <- layerIndex       [  0,   8)
+output [  8, 152) <- Parameters       [ 24, 168)
+output [152, 224) <- Parameters       [176, 248)
+output [224, 276) <- Parameters       [256, 308)
+output [276, 349) <- Parameters       [312, 385)
+output [352, 458) <- Parameters       [392, 498)
+output [464, 476) <- Parameters       [784, 796)
+output [480, 496) <- Parameters       [800, 816)
+output [496, 504) <- environmentFlags [  0,   8)
+```
+
+The 64-path proof also refines the padding boundary. When an optional group
+is nil, 25 constructor-written nested-padding bytes can originate from
+uninitialized stack slots or `w11`: `[93,96)`, `[113,116)`, `[133,136)`,
+`[140,144)`, `[309,312)`, `[329,332)`, `[417,420)`, and `[437,440)`.
+They are distinct from the 13 top-level bytes that receive no constructor
+store at all. Present values copy those 25 byte positions from `Parameters`,
+but neither class may be treated as optical state merely because a bitwise
+same-object transfer preserves it.
+
+The semantic analyzer and canonical result SHA-256 values are respectively
+`128ff559e4dc4952164d57244f05343363b5d9bced2b5350c3364433c475b5a1`
+and
+`f2502d578a87e33b8db738846d0278522d75d6a317f14bb169408f1d0a6fe690`.
+The exact optional-path matrix SHA-256 is
+`3688ac0fa948e51ea5b0f467fdd3b4e5a2cd58f2515ebc9267b88215cd7d6b98`,
+and the helper SHA-256 is
+`31156c1bee375fc0b5dd502966dbc45ddfd7902d61538e88bbd9fe2752126d28`.
+This proves the constructor is an optional-unwrapping/copy boundary, not a
+remaining optical-arithmetic black box. The unresolved law is upstream in
+public `Parameters` production and downstream in crop/allocation and physical
+composition.
 
 The gate is preregistered in
 `Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json`.
