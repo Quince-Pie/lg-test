@@ -11696,3 +11696,124 @@ optical/temporal/mesh/source/mip/color inputs rather than Apple-captured private
 inputs; physical Retina pixel-format/color/display/compositor transfer; and
 fresh Walle frames with zero unequal bytes. This pass does not authorize a
 production-shader change.
+
+### Current-build four-profile numeric temporal calibration
+
+The retained direct-Retina materialize timelines contain a complete 32-state
+dynamic `glassBackground` input sequence for clear/light circle 451,
+clear/dark circle 459, regular/light circle 467, and regular/dark circle 475.
+All four were produced on macOS 26.6.1 build 25G76 by the same arm64 capture
+binary, SHA-256
+`b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd`.
+Their timeline SHA-256 values are respectively:
+
+```text
+clear/light    20390dd67902eb8411e1d368fdb1f112d49714ba5c630a0ffc744ec040c0f54a
+clear/dark     ae643a8dbab081ce95153533c6119926be97eb04e12ce2c9e4bdfb7113a66280
+regular/light  c83c91e2bdf32ff82fb303a25179f4d705e9c9e9aa0426475fa5fe51a9e2c8b3
+regular/dark   387f609c8bc1d98386ae84318590294673e47680193e5bfb20eea349d6e8daff
+```
+
+Let `k` be the captured binary32 transition fraction, `D` the circle diameter,
+and
+
+```text
+G = k * (D + 16 * (1 - k))
+w = binary32(k * mix32(0.2, 0.5, k))
+```
+
+where `G` uses the observed binary64 structural arithmetic and `mix32` rounds
+`1-k`, both products, and the final add separately to binary32. One
+profile-aware model predicts 46 numeric inputs directly. Common terms include
+bleed distance `k`; blur distances `[-G/2,-k,0,0]`; blur opacities
+`[k,w,w,2w,2w]`; face opacity `k`; inner refraction `[-60k,20k]`; outer
+refraction `[G/5,G/8]`; maximum headroom `mix32(1.2,9999,k)`; holding white
+`mix32(1,.97,k)`; SDR shadow opacity `mix32(0,.24,k)`; shadow amount `75k`;
+and shadow height `2G/5`. Clear disables the regular-only bleed, refraction,
+and shadow terms. Regular uses bleed amount and height `.35G`, bleed blur
+`160k`, blur radius `4k`, blur distance 4 `G/5`, refraction opacity ending at
+`.3`, shadow blur `40k`, radius `24k`, opacity ending at `.25`, and vibrancy
+`k`. The face, bleed, and shadow matrix scalars use the same exact `mix32`
+operation against the profile endpoints recorded in the canonical result.
+
+The remaining numeric input, `inputClamp`, requires Darwin's `powf` rather than
+a Linux libm approximation. A standalone native Swift analyzer executes
+separate binary32 operations:
+
+```text
+encoded = binary32((1-k)*1 + k*faceWhite)
+inverse = Float(1) / Float(1.055)
+offset  = Float(.055) / Float(1.055)
+base    = binary32(encoded*inverse + offset)
+clamp   = max(Float(1), Darwin.powf(base, Float(2.4)))
+```
+
+The face-white endpoint is `1.15` for clear light and dark, `1.03` for regular
+light, and `.6` for regular dark. The native analyzer matches all 128 clamp
+words exactly. Combined with the other 46 fields, the calibration has
+6,016/6,016 exact IEEE-754 binary32 comparisons, zero mismatches, and 128
+complete structured-record checks. This current-build evidence also corrects
+older historical models: `inputRefractionDistance1 = -k/2`,
+`inputSDRGradientDistance0 = -k`, and `inputSDRGradientDistance1 = -k/2`.
+
+The reproducible analyzer, native arithmetic evidence, canonical result, and
+tests are:
+
+```text
+Analysis/analyze_transition_uniform_profile_calibration.py
+  SHA-256 0fe38fbe4a55689af2157524545698bad021b39f3da830cbd86f6540c0370c5b
+Analysis/analyze_transition_uniform_profile_clamp_local_macos_26_6_1.swift
+  SHA-256 d1b3a8a2e95c54bcadea836560c9091f211cb2cf8ad2efc03d43e15040da01af
+Analysis/transition_uniform_profile_clamp_local_macos_26_6_1_calibration_result.json
+  SHA-256 79efd92179c5ef702f012bee87ebc13a0eac114b4363ece18ae0d1aea7c57900
+Analysis/transition_uniform_profile_calibration_result.json
+  SHA-256 3f3c9e657378e528653bd8c255fe7ac8bb632331a0bfe8a6a39ab870045a77d5
+```
+
+This is deliberately classified as opened calibration because the same four
+timelines exposed the model. It does not establish transfer, dematerialize
+behavior, physical pixel parity, or Walle parity, and it does not authorize a
+production-shader change. The next gate must freeze this complete model before
+opening four new materialize geometries, then require all 6,016 numeric words
+and the frozen structured invariants to match with zero tolerance.
+
+That prospective gate is now frozen before dispatch. None of its four Apple
+timelines, uniform words, clamp words, or images exists at registration:
+
+```text
+clear/light    circle-454-center
+clear/dark     circle-462-center
+regular/light  circle-470-center
+regular/dark   circle-478-center
+```
+
+Each case must run the unchanged stable binary directly on the active Retina
+Mac without a debugger, with timeline, uniform, allocation-only, and dense
+capture enabled. The model must match all 47 numeric inputs in all 32 dynamic
+states as exact binary32 words. The clamp word is independently recomputed by
+the frozen native Darwin analyzer. The per-case gate is therefore 1,504 exact
+numeric comparisons; the matrix gate is exactly 6,016/6,016 with zero
+mismatches. It also requires exact structured optionality, Booleans, shadow
+offset, source name, and color alpha; 33 distinct WindowServer frames per case;
+one source commit across all four cases; and the exact active-Retina preflight.
+The already proved `Color.Resolved` mixer remains separate from this numeric
+gate, so a pass does not by itself close nested resolved-color transfer.
+
+The output-blind registration and complete frozen implementation are:
+
+```text
+Analysis/transition_uniform_profile_holdout_preregistration.json
+  SHA-256 29672bc86b220e21ff513712eb2cfa15f5db650a5c2db11b15caee525f999a71
+Analysis/validate_transition_uniform_profile_holdout.py
+  SHA-256 90ff6ccb954c08d958d24b0d17a7611ad42ab26c92c538b622ea9e67c796fb98
+Analysis/aggregate_transition_uniform_profile_holdout.py
+  SHA-256 22e582baaeafe00027a534b565c830b68e84fcce6582688a61793f41de243dcc
+Analysis/run_transition_uniform_profile_holdout_local_macos_26_6_1.sh
+  SHA-256 2d723a4b2c5ab74e8d64b4fd26c8bc4bc6f4f3ba3e0e9744bead23f220a8c937
+```
+
+A complete pass establishes only four-profile numeric materialize transfer.
+Dematerialize, the nested resolved-color join, independently generated
+mesh/source/backdrop/mips, physical Retina compositor/color transfer, and a
+zero-unequal-byte Walle frame remain open. The production shader remains
+unchanged and unauthorized for parity-sensitive edits.

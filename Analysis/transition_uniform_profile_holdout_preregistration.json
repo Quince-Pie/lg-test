@@ -1,0 +1,164 @@
+{
+  "transitionUniformProfileHoldoutPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-07T23:21:55Z",
+  "classification": "prospectively frozen direct-Retina transfer of the complete 47-field numeric glassBackground materialize model across clear and regular crossed with light and dark; all Apple outputs are unknown at freeze",
+  "sourceStateBeforeFreeze": {
+    "branch": "main",
+    "baseCommit": "ab371e65af3d7ab1d7ece7258acc215084da5630",
+    "githubActionsUsedForThisGate": false,
+    "nativeHost": "quince@10.0.41.19",
+    "nativeHostArchitecture": "arm64",
+    "nativeHostModel": "Apple M1 Max",
+    "nativeHostMacOS": "26.6.1",
+    "nativeHostBuild": "25G76",
+    "physicalDisplay": "built-in 3456x2234 Retina at exact 2x backing scale"
+  },
+  "openedCalibrationEvidence": {
+    "path": "Analysis/transition_uniform_profile_calibration_result.json",
+    "sha256": "3f3c9e657378e528653bd8c255fe7ac8bb632331a0bfe8a6a39ab870045a77d5",
+    "profileCount": 4,
+    "dynamicStateCount": 128,
+    "numericFieldCount": 47,
+    "numericComparisonCount": 6016,
+    "numericMismatchCount": 0,
+    "targetOpened": true,
+    "prospectiveAuthority": false
+  },
+  "frozenCandidate": {
+    "fraction": "the exact binary32 dynamic record remaining value",
+    "diameter": "the frozen circle diameter in logical points",
+    "geometryTerm": "k * (D + 16 * (1 - k)) with observed binary64 structural arithmetic",
+    "scalarMix": "separately rounded binary32 start product, end product, and add after binary32 rounding of 1-k",
+    "inputClamp": "separate binary32 encoded mix, Float divisions by 1.055, separate base multiply/add, Darwin.powf(base, Float(2.4)), then max(Float(1), decoded)",
+    "modelSourceContainsAllFortySevenFieldLaws": true,
+    "capturedValueUsedToSelectCase": false,
+    "capturedValueUsedToChangeCandidate": false,
+    "capturedImageUsedToSelectCase": false,
+    "candidateCalibratedFromOpenedOutputs": true,
+    "holdoutOutputAvailableAtFreeze": false
+  },
+  "caseMatrix": [
+    {
+      "caseId": "clear-light-circle454",
+      "role": "prospective-holdout",
+      "material": "clear",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-454-center",
+      "appleOutputAvailableAtFreeze": false,
+      "timelineSHA256": null,
+      "numericFieldWords": null,
+      "inputClampWords": null
+    },
+    {
+      "caseId": "clear-dark-circle462",
+      "role": "prospective-holdout",
+      "material": "clear",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-462-center",
+      "appleOutputAvailableAtFreeze": false,
+      "timelineSHA256": null,
+      "numericFieldWords": null,
+      "inputClampWords": null
+    },
+    {
+      "caseId": "regular-light-circle470",
+      "role": "prospective-holdout",
+      "material": "regular",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-470-center",
+      "appleOutputAvailableAtFreeze": false,
+      "timelineSHA256": null,
+      "numericFieldWords": null,
+      "inputClampWords": null
+    },
+    {
+      "caseId": "regular-dark-circle478",
+      "role": "prospective-holdout",
+      "material": "regular",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-478-center",
+      "appleOutputAvailableAtFreeze": false,
+      "timelineSHA256": null,
+      "numericFieldWords": null,
+      "inputClampWords": null
+    }
+  ],
+  "captureContract": {
+    "directPhysicalMacOnly": true,
+    "githubActionsForbidden": true,
+    "activeRetinaSessionPreflightRequired": true,
+    "nativeAppleCommandLineToolsOnly": true,
+    "nixStorePathInNativeEnvironmentForbidden": true,
+    "nixDevelopPythonUsedOnlyAfterNativeCapture": true,
+    "debuggerForbidden": true,
+    "stablePresentationBinary": "glass-transition-introspect-721293f",
+    "stablePresentationBinarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "transitionTimelineEnabled": true,
+    "dynamicUniformCaptureEnabled": true,
+    "allocationOnly": true,
+    "denseAllocation": true,
+    "controlledBackdrop": false,
+    "animationCurve": "linear",
+    "animationDurationSeconds": 60,
+    "sampleCount": 33,
+    "dynamicSampleIndices": "1...32",
+    "windowCaptureBackend": "CGWindowListCreateImage",
+    "canonicalPixelEncoding": "RGBA8 premultiplied-last sRGB top-left"
+  },
+  "acceptance": {
+    "numericFieldCountPerState": 47,
+    "dynamicStateCountPerCase": 32,
+    "numericComparisonCountPerCase": 1504,
+    "numericComparisonCountAcrossMatrix": 6016,
+    "requiredNumericMismatchCount": 0,
+    "requireExactBinary32Words": true,
+    "requireNativeDarwinPowfClamp": true,
+    "requireExactStructuredOptionalityBooleansShadowOffsetAndColorAlpha": true,
+    "requireAllFourCasesFromOneFrozenCommit": true,
+    "requireDirectActiveRetinaSession": true,
+    "requireAllThirtyThreeWindowServerFrames": true,
+    "requireAllWindowServerFramesDistinct": true,
+    "requireNoDebugger": true,
+    "zeroTolerance": true
+  },
+  "frozenImplementation": {
+    "model": "Analysis/analyze_transition_uniform_profile_calibration.py",
+    "modelSHA256": "0fe38fbe4a55689af2157524545698bad021b39f3da830cbd86f6540c0370c5b",
+    "nativeClamp": "Analysis/analyze_transition_uniform_profile_clamp_local_macos_26_6_1.swift",
+    "nativeClampSHA256": "d1b3a8a2e95c54bcadea836560c9091f211cb2cf8ad2efc03d43e15040da01af",
+    "validator": "Analysis/validate_transition_uniform_profile_holdout.py",
+    "validatorSHA256": "90ff6ccb954c08d958d24b0d17a7611ad42ab26c92c538b622ea9e67c796fb98",
+    "aggregator": "Analysis/aggregate_transition_uniform_profile_holdout.py",
+    "aggregatorSHA256": "22e582baaeafe00027a534b565c830b68e84fcce6582688a61793f41de243dcc",
+    "preflight": "Analysis/check_local_retina_capture_session_v2.swift",
+    "preflightSHA256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "qualityLocks": {
+    "productionShader": {
+      "path": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "path": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    },
+    "shaderQualityRegressionPermitted": false
+  },
+  "productAuthority": {
+    "fourProfileNumericMaterializeTransferEstablishedOnCompletePass": true,
+    "dematerializeTransferEstablishedOnPass": false,
+    "nestedResolvedColorTransferEstablishedOnPass": false,
+    "meshSourceBackdropMipGenerationEstablishedOnPass": false,
+    "physicalRetinaColorPixelCompositorTransferEstablishedOnPass": false,
+    "independentWalleZeroByteFrameParityEstablishedOnPass": false,
+    "productionShaderAuthorizedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false
+  }
+}

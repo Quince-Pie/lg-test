@@ -1,0 +1,949 @@
+{
+  "aggregate": {
+    "dynamicSampleCount": 128,
+    "numericComparisonCount": 6016,
+    "numericExactMatchCount": 6016,
+    "numericMismatchCount": 0,
+    "profileCount": 4,
+    "structuredRecordCount": 128
+  },
+  "cases": [
+    {
+      "appearance": "light",
+      "diameter": 451,
+      "direction": "materialize",
+      "dynamicSampleCount": 32,
+      "fieldExactMatchCounts": {
+        "inputBleedAmount": 32,
+        "inputBleedBlurRadius": 32,
+        "inputBleedColorMatrixBlack": 32,
+        "inputBleedColorMatrixSaturation": 32,
+        "inputBleedColorMatrixWhite": 32,
+        "inputBleedDistance0": 32,
+        "inputBleedDistance1": 32,
+        "inputBleedHeight": 32,
+        "inputBleedOpacity": 32,
+        "inputBlurDistance0": 32,
+        "inputBlurDistance1": 32,
+        "inputBlurDistance2": 32,
+        "inputBlurDistance3": 32,
+        "inputBlurDistance4": 32,
+        "inputBlurOpacity0": 32,
+        "inputBlurOpacity1": 32,
+        "inputBlurOpacity2": 32,
+        "inputBlurOpacity3": 32,
+        "inputBlurOpacity4": 32,
+        "inputBlurRadius": 32,
+        "inputClamp": 32,
+        "inputFaceColorMatrixBlack": 32,
+        "inputFaceColorMatrixSaturation": 32,
+        "inputFaceColorMatrixWhite": 32,
+        "inputFaceOpacity": 32,
+        "inputInnerRefractionAmount": 32,
+        "inputInnerRefractionHeight": 32,
+        "inputMaxHeadroom": 32,
+        "inputOuterRefractionAmount": 32,
+        "inputOuterRefractionHeight": 32,
+        "inputRefractionDistance0": 32,
+        "inputRefractionDistance1": 32,
+        "inputRefractionOpacity": 32,
+        "inputSDRGradientDistance0": 32,
+        "inputSDRGradientDistance1": 32,
+        "inputSDRHoldingToneWhite": 32,
+        "inputSDRShadowOpacity": 32,
+        "inputShadowAmount": 32,
+        "inputShadowBlurRadius": 32,
+        "inputShadowColorMatrixBlack": 32,
+        "inputShadowColorMatrixSaturation": 32,
+        "inputShadowColorMatrixWhite": 32,
+        "inputShadowDistanceOffset": 32,
+        "inputShadowHeight": 32,
+        "inputShadowOpacity": 32,
+        "inputShadowRadius": 32,
+        "inputShadowVibrancyContribution": 32
+      },
+      "geometry": "circle-451-center",
+      "material": "clear",
+      "name": "clear-light-circle451",
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "numericFieldCount": 47,
+      "records": [
+        {
+          "fractionBits": "3d049e00",
+          "inputClampBits": "3f816b31",
+          "sampleIndex": 1
+        },
+        {
+          "fractionBits": "3d81ba80",
+          "inputClampBits": "3f82c8c0",
+          "sampleIndex": 2
+        },
+        {
+          "fractionBits": "3dc04b80",
+          "inputClampBits": "3f8423b5",
+          "sampleIndex": 3
+        },
+        {
+          "fractionBits": "3e002700",
+          "inputClampBits": "3f8588d5",
+          "sampleIndex": 4
+        },
+        {
+          "fractionBits": "3e209580",
+          "inputClampBits": "3f86f4f1",
+          "sampleIndex": 5
+        },
+        {
+          "fractionBits": "3e40b840",
+          "inputClampBits": "3f885ff4",
+          "sampleIndex": 6
+        },
+        {
+          "fractionBits": "3e607280",
+          "inputClampBits": "3f89c887",
+          "sampleIndex": 7
+        },
+        {
+          "fractionBits": "3e800180",
+          "inputClampBits": "3f8b3164",
+          "sampleIndex": 8
+        },
+        {
+          "fractionBits": "3e906ce0",
+          "inputClampBits": "3f8cab1c",
+          "sampleIndex": 9
+        },
+        {
+          "fractionBits": "3ea013c0",
+          "inputClampBits": "3f8e1555",
+          "sampleIndex": 10
+        },
+        {
+          "fractionBits": "3eb04a60",
+          "inputClampBits": "3f8f8ec8",
+          "sampleIndex": 11
+        },
+        {
+          "fractionBits": "3ec05cc0",
+          "inputClampBits": "3f91072e",
+          "sampleIndex": 12
+        },
+        {
+          "fractionBits": "3ed05b80",
+          "inputClampBits": "3f927ffe",
+          "sampleIndex": 13
+        },
+        {
+          "fractionBits": "3ee0c940",
+          "inputClampBits": "3f94055a",
+          "sampleIndex": 14
+        },
+        {
+          "fractionBits": "3ef01340",
+          "inputClampBits": "3f9571cc",
+          "sampleIndex": 15
+        },
+        {
+          "fractionBits": "3f0064c0",
+          "inputClampBits": "3f970282",
+          "sampleIndex": 16
+        },
+        {
+          "fractionBits": "3f080a20",
+          "inputClampBits": "3f98734b",
+          "sampleIndex": 17
+        },
+        {
+          "fractionBits": "3f104430",
+          "inputClampBits": "3f9a0260",
+          "sampleIndex": 18
+        },
+        {
+          "fractionBits": "3f182620",
+          "inputClampBits": "3f9b82fe",
+          "sampleIndex": 19
+        },
+        {
+          "fractionBits": "3f202e70",
+          "inputClampBits": "3f9d0d29",
+          "sampleIndex": 20
+        },
+        {
+          "fractionBits": "3f286f40",
+          "inputClampBits": "3f9ea485",
+          "sampleIndex": 21
+        },
+        {
+          "fractionBits": "3f305b70",
+          "inputClampBits": "3fa02dce",
+          "sampleIndex": 22
+        },
+        {
+          "fractionBits": "3f382e80",
+          "inputClampBits": "3fa1b46b",
+          "sampleIndex": 23
+        },
+        {
+          "fractionBits": "3f403b30",
+          "inputClampBits": "3fa34881",
+          "sampleIndex": 24
+        },
+        {
+          "fractionBits": "3f481330",
+          "inputClampBits": "3fa4d479",
+          "sampleIndex": 25
+        },
+        {
+          "fractionBits": "3f505360",
+          "inputClampBits": "3fa67756",
+          "sampleIndex": 26
+        },
+        {
+          "fractionBits": "3f582530",
+          "inputClampBits": "3fa80689",
+          "sampleIndex": 27
+        },
+        {
+          "fractionBits": "3f600110",
+          "inputClampBits": "3fa999ef",
+          "sampleIndex": 28
+        },
+        {
+          "fractionBits": "3f686e20",
+          "inputClampBits": "3fab4ce4",
+          "sampleIndex": 29
+        },
+        {
+          "fractionBits": "3f706e20",
+          "inputClampBits": "3facec30",
+          "sampleIndex": 30
+        },
+        {
+          "fractionBits": "3f7840d0",
+          "inputClampBits": "3fae8483",
+          "sampleIndex": 31
+        },
+        {
+          "fractionBits": "3f800000",
+          "inputClampBits": "3fb01b04",
+          "sampleIndex": 32
+        }
+      ],
+      "structuredRecordCount": 32,
+      "timelineSHA256": "20390dd67902eb8411e1d368fdb1f112d49714ba5c630a0ffc744ec040c0f54a"
+    },
+    {
+      "appearance": "dark",
+      "diameter": 459,
+      "direction": "materialize",
+      "dynamicSampleCount": 32,
+      "fieldExactMatchCounts": {
+        "inputBleedAmount": 32,
+        "inputBleedBlurRadius": 32,
+        "inputBleedColorMatrixBlack": 32,
+        "inputBleedColorMatrixSaturation": 32,
+        "inputBleedColorMatrixWhite": 32,
+        "inputBleedDistance0": 32,
+        "inputBleedDistance1": 32,
+        "inputBleedHeight": 32,
+        "inputBleedOpacity": 32,
+        "inputBlurDistance0": 32,
+        "inputBlurDistance1": 32,
+        "inputBlurDistance2": 32,
+        "inputBlurDistance3": 32,
+        "inputBlurDistance4": 32,
+        "inputBlurOpacity0": 32,
+        "inputBlurOpacity1": 32,
+        "inputBlurOpacity2": 32,
+        "inputBlurOpacity3": 32,
+        "inputBlurOpacity4": 32,
+        "inputBlurRadius": 32,
+        "inputClamp": 32,
+        "inputFaceColorMatrixBlack": 32,
+        "inputFaceColorMatrixSaturation": 32,
+        "inputFaceColorMatrixWhite": 32,
+        "inputFaceOpacity": 32,
+        "inputInnerRefractionAmount": 32,
+        "inputInnerRefractionHeight": 32,
+        "inputMaxHeadroom": 32,
+        "inputOuterRefractionAmount": 32,
+        "inputOuterRefractionHeight": 32,
+        "inputRefractionDistance0": 32,
+        "inputRefractionDistance1": 32,
+        "inputRefractionOpacity": 32,
+        "inputSDRGradientDistance0": 32,
+        "inputSDRGradientDistance1": 32,
+        "inputSDRHoldingToneWhite": 32,
+        "inputSDRShadowOpacity": 32,
+        "inputShadowAmount": 32,
+        "inputShadowBlurRadius": 32,
+        "inputShadowColorMatrixBlack": 32,
+        "inputShadowColorMatrixSaturation": 32,
+        "inputShadowColorMatrixWhite": 32,
+        "inputShadowDistanceOffset": 32,
+        "inputShadowHeight": 32,
+        "inputShadowOpacity": 32,
+        "inputShadowRadius": 32,
+        "inputShadowVibrancyContribution": 32
+      },
+      "geometry": "circle-459-center",
+      "material": "clear",
+      "name": "clear-dark-circle459",
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "numericFieldCount": 47,
+      "records": [
+        {
+          "fractionBits": "3d1d5f00",
+          "inputClampBits": "3f81af3e",
+          "sampleIndex": 1
+        },
+        {
+          "fractionBits": "3d918d80",
+          "inputClampBits": "3f83204f",
+          "sampleIndex": 2
+        },
+        {
+          "fractionBits": "3dcb4800",
+          "inputClampBits": "3f8460d8",
+          "sampleIndex": 3
+        },
+        {
+          "fractionBits": "3e01c780",
+          "inputClampBits": "3f859b09",
+          "sampleIndex": 4
+        },
+        {
+          "fractionBits": "3e3a1a80",
+          "inputClampBits": "3f881507",
+          "sampleIndex": 5
+        },
+        {
+          "fractionBits": "3e3a1a80",
+          "inputClampBits": "3f881507",
+          "sampleIndex": 6
+        },
+        {
+          "fractionBits": "3e7f1440",
+          "inputClampBits": "3f8b26b3",
+          "sampleIndex": 7
+        },
+        {
+          "fractionBits": "3e7f1440",
+          "inputClampBits": "3f8b26b3",
+          "sampleIndex": 8
+        },
+        {
+          "fractionBits": "3e95f3e0",
+          "inputClampBits": "3f8d2ac9",
+          "sampleIndex": 9
+        },
+        {
+          "fractionBits": "3ea50620",
+          "inputClampBits": "3f8e8840",
+          "sampleIndex": 10
+        },
+        {
+          "fractionBits": "3ece67e0",
+          "inputClampBits": "3f9251e9",
+          "sampleIndex": 11
+        },
+        {
+          "fractionBits": "3ece67e0",
+          "inputClampBits": "3f9251e9",
+          "sampleIndex": 12
+        },
+        {
+          "fractionBits": "3ece67e0",
+          "inputClampBits": "3f9251e9",
+          "sampleIndex": 13
+        },
+        {
+          "fractionBits": "3efff880",
+          "inputClampBits": "3f96eee0",
+          "sampleIndex": 14
+        },
+        {
+          "fractionBits": "3efff880",
+          "inputClampBits": "3f96eee0",
+          "sampleIndex": 15
+        },
+        {
+          "fractionBits": "3efff880",
+          "inputClampBits": "3f96eee0",
+          "sampleIndex": 16
+        },
+        {
+          "fractionBits": "3f090480",
+          "inputClampBits": "3f98a29c",
+          "sampleIndex": 17
+        },
+        {
+          "fractionBits": "3f2a2890",
+          "inputClampBits": "3f9ef9e7",
+          "sampleIndex": 18
+        },
+        {
+          "fractionBits": "3f2a2890",
+          "inputClampBits": "3f9ef9e7",
+          "sampleIndex": 19
+        },
+        {
+          "fractionBits": "3f2a2890",
+          "inputClampBits": "3f9ef9e7",
+          "sampleIndex": 20
+        },
+        {
+          "fractionBits": "3f2a2890",
+          "inputClampBits": "3f9ef9e7",
+          "sampleIndex": 21
+        },
+        {
+          "fractionBits": "3f2a2890",
+          "inputClampBits": "3f9ef9e7",
+          "sampleIndex": 22
+        },
+        {
+          "fractionBits": "3f384480",
+          "inputClampBits": "3fa1b8b7",
+          "sampleIndex": 23
+        },
+        {
+          "fractionBits": "3f487be0",
+          "inputClampBits": "3fa4e92c",
+          "sampleIndex": 24
+        },
+        {
+          "fractionBits": "3f487be0",
+          "inputClampBits": "3fa4e92c",
+          "sampleIndex": 25
+        },
+        {
+          "fractionBits": "3f521f00",
+          "inputClampBits": "3fa6d2ce",
+          "sampleIndex": 26
+        },
+        {
+          "fractionBits": "3f6647f0",
+          "inputClampBits": "3faaddb5",
+          "sampleIndex": 27
+        },
+        {
+          "fractionBits": "3f6647f0",
+          "inputClampBits": "3faaddb5",
+          "sampleIndex": 28
+        },
+        {
+          "fractionBits": "3f6647f0",
+          "inputClampBits": "3faaddb5",
+          "sampleIndex": 29
+        },
+        {
+          "fractionBits": "3f743720",
+          "inputClampBits": "3fadb17b",
+          "sampleIndex": 30
+        },
+        {
+          "fractionBits": "3f743720",
+          "inputClampBits": "3fadb17b",
+          "sampleIndex": 31
+        },
+        {
+          "fractionBits": "3f800000",
+          "inputClampBits": "3fb01b04",
+          "sampleIndex": 32
+        }
+      ],
+      "structuredRecordCount": 32,
+      "timelineSHA256": "ae643a8dbab081ce95153533c6119926be97eb04e12ce2c9e4bdfb7113a66280"
+    },
+    {
+      "appearance": "light",
+      "diameter": 467,
+      "direction": "materialize",
+      "dynamicSampleCount": 32,
+      "fieldExactMatchCounts": {
+        "inputBleedAmount": 32,
+        "inputBleedBlurRadius": 32,
+        "inputBleedColorMatrixBlack": 32,
+        "inputBleedColorMatrixSaturation": 32,
+        "inputBleedColorMatrixWhite": 32,
+        "inputBleedDistance0": 32,
+        "inputBleedDistance1": 32,
+        "inputBleedHeight": 32,
+        "inputBleedOpacity": 32,
+        "inputBlurDistance0": 32,
+        "inputBlurDistance1": 32,
+        "inputBlurDistance2": 32,
+        "inputBlurDistance3": 32,
+        "inputBlurDistance4": 32,
+        "inputBlurOpacity0": 32,
+        "inputBlurOpacity1": 32,
+        "inputBlurOpacity2": 32,
+        "inputBlurOpacity3": 32,
+        "inputBlurOpacity4": 32,
+        "inputBlurRadius": 32,
+        "inputClamp": 32,
+        "inputFaceColorMatrixBlack": 32,
+        "inputFaceColorMatrixSaturation": 32,
+        "inputFaceColorMatrixWhite": 32,
+        "inputFaceOpacity": 32,
+        "inputInnerRefractionAmount": 32,
+        "inputInnerRefractionHeight": 32,
+        "inputMaxHeadroom": 32,
+        "inputOuterRefractionAmount": 32,
+        "inputOuterRefractionHeight": 32,
+        "inputRefractionDistance0": 32,
+        "inputRefractionDistance1": 32,
+        "inputRefractionOpacity": 32,
+        "inputSDRGradientDistance0": 32,
+        "inputSDRGradientDistance1": 32,
+        "inputSDRHoldingToneWhite": 32,
+        "inputSDRShadowOpacity": 32,
+        "inputShadowAmount": 32,
+        "inputShadowBlurRadius": 32,
+        "inputShadowColorMatrixBlack": 32,
+        "inputShadowColorMatrixSaturation": 32,
+        "inputShadowColorMatrixWhite": 32,
+        "inputShadowDistanceOffset": 32,
+        "inputShadowHeight": 32,
+        "inputShadowOpacity": 32,
+        "inputShadowRadius": 32,
+        "inputShadowVibrancyContribution": 32
+      },
+      "geometry": "circle-467-center",
+      "material": "regular",
+      "name": "regular-light-circle467",
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "numericFieldCount": 47,
+      "records": [
+        {
+          "fractionBits": "3d083b00",
+          "inputClampBits": "3f804a6e",
+          "sampleIndex": 1
+        },
+        {
+          "fractionBits": "3daded80",
+          "inputClampBits": "3f80be3d",
+          "sampleIndex": 2
+        },
+        {
+          "fractionBits": "3dcb7a80",
+          "inputClampBits": "3f80dea1",
+          "sampleIndex": 3
+        },
+        {
+          "fractionBits": "3e0f46c0",
+          "inputClampBits": "3f8139c8",
+          "sampleIndex": 4
+        },
+        {
+          "fractionBits": "3e34cec0",
+          "inputClampBits": "3f818c41",
+          "sampleIndex": 5
+        },
+        {
+          "fractionBits": "3e758c80",
+          "inputClampBits": "3f821ad0",
+          "sampleIndex": 6
+        },
+        {
+          "fractionBits": "3e758c80",
+          "inputClampBits": "3f821ad0",
+          "sampleIndex": 7
+        },
+        {
+          "fractionBits": "3e758c80",
+          "inputClampBits": "3f821ad0",
+          "sampleIndex": 8
+        },
+        {
+          "fractionBits": "3e95e7a0",
+          "inputClampBits": "3f829292",
+          "sampleIndex": 9
+        },
+        {
+          "fractionBits": "3eabdfa0",
+          "inputClampBits": "3f82f3ba",
+          "sampleIndex": 10
+        },
+        {
+          "fractionBits": "3eabdfa0",
+          "inputClampBits": "3f82f3ba",
+          "sampleIndex": 11
+        },
+        {
+          "fractionBits": "3ec4c420",
+          "inputClampBits": "3f836202",
+          "sampleIndex": 12
+        },
+        {
+          "fractionBits": "3ed972e0",
+          "inputClampBits": "3f83bdce",
+          "sampleIndex": 13
+        },
+        {
+          "fractionBits": "3ef75240",
+          "inputClampBits": "3f8442a6",
+          "sampleIndex": 14
+        },
+        {
+          "fractionBits": "3ef75240",
+          "inputClampBits": "3f8442a6",
+          "sampleIndex": 15
+        },
+        {
+          "fractionBits": "3f0e8a60",
+          "inputClampBits": "3f84eb00",
+          "sampleIndex": 16
+        },
+        {
+          "fractionBits": "3f0e8a60",
+          "inputClampBits": "3f84eb00",
+          "sampleIndex": 17
+        },
+        {
+          "fractionBits": "3f0e8a60",
+          "inputClampBits": "3f84eb00",
+          "sampleIndex": 18
+        },
+        {
+          "fractionBits": "3f210fe0",
+          "inputClampBits": "3f8590a0",
+          "sampleIndex": 19
+        },
+        {
+          "fractionBits": "3f210fe0",
+          "inputClampBits": "3f8590a0",
+          "sampleIndex": 20
+        },
+        {
+          "fractionBits": "3f2eaf80",
+          "inputClampBits": "3f860ac0",
+          "sampleIndex": 21
+        },
+        {
+          "fractionBits": "3f2eaf80",
+          "inputClampBits": "3f860ac0",
+          "sampleIndex": 22
+        },
+        {
+          "fractionBits": "3f49d0c0",
+          "inputClampBits": "3f86feb7",
+          "sampleIndex": 23
+        },
+        {
+          "fractionBits": "3f49d0c0",
+          "inputClampBits": "3f86feb7",
+          "sampleIndex": 24
+        },
+        {
+          "fractionBits": "3f49d0c0",
+          "inputClampBits": "3f86feb7",
+          "sampleIndex": 25
+        },
+        {
+          "fractionBits": "3f56d220",
+          "inputClampBits": "3f877405",
+          "sampleIndex": 26
+        },
+        {
+          "fractionBits": "3f56d220",
+          "inputClampBits": "3f877405",
+          "sampleIndex": 27
+        },
+        {
+          "fractionBits": "3f663780",
+          "inputClampBits": "3f87ff31",
+          "sampleIndex": 28
+        },
+        {
+          "fractionBits": "3f663780",
+          "inputClampBits": "3f87ff31",
+          "sampleIndex": 29
+        },
+        {
+          "fractionBits": "3f78fed0",
+          "inputClampBits": "3f88a961",
+          "sampleIndex": 30
+        },
+        {
+          "fractionBits": "3f78fed0",
+          "inputClampBits": "3f88a961",
+          "sampleIndex": 31
+        },
+        {
+          "fractionBits": "3f800000",
+          "inputClampBits": "3f88e8fc",
+          "sampleIndex": 32
+        }
+      ],
+      "structuredRecordCount": 32,
+      "timelineSHA256": "c83c91e2bdf32ff82fb303a25179f4d705e9c9e9aa0426475fa5fe51a9e2c8b3"
+    },
+    {
+      "appearance": "dark",
+      "diameter": 475,
+      "direction": "materialize",
+      "dynamicSampleCount": 32,
+      "fieldExactMatchCounts": {
+        "inputBleedAmount": 32,
+        "inputBleedBlurRadius": 32,
+        "inputBleedColorMatrixBlack": 32,
+        "inputBleedColorMatrixSaturation": 32,
+        "inputBleedColorMatrixWhite": 32,
+        "inputBleedDistance0": 32,
+        "inputBleedDistance1": 32,
+        "inputBleedHeight": 32,
+        "inputBleedOpacity": 32,
+        "inputBlurDistance0": 32,
+        "inputBlurDistance1": 32,
+        "inputBlurDistance2": 32,
+        "inputBlurDistance3": 32,
+        "inputBlurDistance4": 32,
+        "inputBlurOpacity0": 32,
+        "inputBlurOpacity1": 32,
+        "inputBlurOpacity2": 32,
+        "inputBlurOpacity3": 32,
+        "inputBlurOpacity4": 32,
+        "inputBlurRadius": 32,
+        "inputClamp": 32,
+        "inputFaceColorMatrixBlack": 32,
+        "inputFaceColorMatrixSaturation": 32,
+        "inputFaceColorMatrixWhite": 32,
+        "inputFaceOpacity": 32,
+        "inputInnerRefractionAmount": 32,
+        "inputInnerRefractionHeight": 32,
+        "inputMaxHeadroom": 32,
+        "inputOuterRefractionAmount": 32,
+        "inputOuterRefractionHeight": 32,
+        "inputRefractionDistance0": 32,
+        "inputRefractionDistance1": 32,
+        "inputRefractionOpacity": 32,
+        "inputSDRGradientDistance0": 32,
+        "inputSDRGradientDistance1": 32,
+        "inputSDRHoldingToneWhite": 32,
+        "inputSDRShadowOpacity": 32,
+        "inputShadowAmount": 32,
+        "inputShadowBlurRadius": 32,
+        "inputShadowColorMatrixBlack": 32,
+        "inputShadowColorMatrixSaturation": 32,
+        "inputShadowColorMatrixWhite": 32,
+        "inputShadowDistanceOffset": 32,
+        "inputShadowHeight": 32,
+        "inputShadowOpacity": 32,
+        "inputShadowRadius": 32,
+        "inputShadowVibrancyContribution": 32
+      },
+      "geometry": "circle-475-center",
+      "material": "regular",
+      "name": "regular-dark-circle475",
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "numericFieldCount": 47,
+      "records": [
+        {
+          "fractionBits": "3d086c00",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 1
+        },
+        {
+          "fractionBits": "3d84bf00",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 2
+        },
+        {
+          "fractionBits": "3decd680",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 3
+        },
+        {
+          "fractionBits": "3e028100",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 4
+        },
+        {
+          "fractionBits": "3e21ae80",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 5
+        },
+        {
+          "fractionBits": "3e48c5c0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 6
+        },
+        {
+          "fractionBits": "3e624080",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 7
+        },
+        {
+          "fractionBits": "3e8798c0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 8
+        },
+        {
+          "fractionBits": "3eaa0020",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 9
+        },
+        {
+          "fractionBits": "3eaa0020",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 10
+        },
+        {
+          "fractionBits": "3eaa0020",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 11
+        },
+        {
+          "fractionBits": "3ec0d6e0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 12
+        },
+        {
+          "fractionBits": "3edd1240",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 13
+        },
+        {
+          "fractionBits": "3edd1240",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 14
+        },
+        {
+          "fractionBits": "3f04c140",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 15
+        },
+        {
+          "fractionBits": "3f04c140",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 16
+        },
+        {
+          "fractionBits": "3f04c140",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 17
+        },
+        {
+          "fractionBits": "3f190e90",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 18
+        },
+        {
+          "fractionBits": "3f190e90",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 19
+        },
+        {
+          "fractionBits": "3f28c680",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 20
+        },
+        {
+          "fractionBits": "3f28c680",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 21
+        },
+        {
+          "fractionBits": "3f36a3d0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 22
+        },
+        {
+          "fractionBits": "3f36a3d0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 23
+        },
+        {
+          "fractionBits": "3f479aa0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 24
+        },
+        {
+          "fractionBits": "3f479aa0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 25
+        },
+        {
+          "fractionBits": "3f510df0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 26
+        },
+        {
+          "fractionBits": "3f651350",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 27
+        },
+        {
+          "fractionBits": "3f651350",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 28
+        },
+        {
+          "fractionBits": "3f651350",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 29
+        },
+        {
+          "fractionBits": "3f759cb0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 30
+        },
+        {
+          "fractionBits": "3f759cb0",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 31
+        },
+        {
+          "fractionBits": "3f800000",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 32
+        }
+      ],
+      "structuredRecordCount": 32,
+      "timelineSHA256": "387f609c8bc1d98386ae84318590294673e47680193e5bfb20eea349d6e8daff"
+    }
+  ],
+  "classification": "opened four-profile materialize calibration of the complete numeric glassBackground input model; no prospective transfer authority",
+  "conclusion": {
+    "dematerializeTransferEstablished": false,
+    "independentWalleZeroByteFrameEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "openedCalibrationExact": true,
+    "physicalPixelParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "prospectiveTransferEstablished": false
+  },
+  "model": {
+    "comparisonPrecision": "IEEE-754 binary32 words",
+    "geometryTerm": "k * (D + 16 * (1 - k)) in binary64",
+    "historicalCorrection": {
+      "inputRefractionDistance1": "-k/2",
+      "inputSDRGradientDistance0": "-k",
+      "inputSDRGradientDistance1": "-k/2"
+    },
+    "nativeDarwinPowfField": "inputClamp",
+    "numericFieldCount": 47,
+    "pythonPredictedFieldCount": 46,
+    "scalarMix": "separately rounded binary32 products and binary32 add after binary32 rounding of 1-k"
+  },
+  "nativeClampResult": {
+    "comparisonCount": 128,
+    "path": "transition_uniform_profile_clamp_local_macos_26_6_1_calibration_result.json",
+    "sha256": "79efd92179c5ef702f012bee87ebc13a0eac114b4363ece18ae0d1aea7c57900",
+    "sourceSHA256": "d1b3a8a2e95c54bcadea836560c9091f211cb2cf8ad2efc03d43e15040da01af"
+  },
+  "target": {
+    "architecture": "arm64",
+    "build": "25G76",
+    "captureBinarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "display": "built-in Retina 3456x2234 physical, 1728x1117 points, 2x",
+    "os": "macOS 26.6.1"
+  },
+  "transitionUniformProfileCalibrationAnalysisSchemaVersion": 1
+}
