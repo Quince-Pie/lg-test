@@ -11235,3 +11235,24 @@ presentation lifetime, physical Retina color/pixel-format/compositor transfer,
 and an independent Walle render with zero unequal bytes remain open. Formal
 Liquid Glass parity is still false, and production shader changes remain
 unauthorized.
+
+The embedded-code transport was then calibrated on the already-open
+`circle-485-center` profile at commit `39b462c`. All six complete-symbol hashes,
+the physical Retina scale, 32 marker records, 33 pointer-matching stores with
+one real pointer-reuse event, and the v2 geometry model authenticated. The
+result is again exactly 32/32 rectangles and 128/128 components with zero ULP
+error. Its trace, timeline, and validation hashes are
+`ead52711acab925a8d3fc1f99f009e71eb102349d2edddfa0b9cbcf3caed63c2`,
+`e2a377a3414deb1b01e53b238aef27c4bb39bbee1ad1478a2d0c91479c1e3c48`,
+and `76a564391615e1e750151ff80afc683de2a11a9339e5fb7b7f1e550422e3a45d`.
+The compact calibration result is
+`Analysis/prepare_layer_live_crop_replay_v2_39b462c_calibration_result.json`.
+
+Before opening another runtime value, `circle-487-center` was frozen as the
+v2 transfer holdout in
+`Analysis/prepare_layer_live_crop_replay_v2_holdout_local_macos_26_6_1_preregistration.json`.
+That geometry existed as a stable-binary input but had zero retained runtime
+evidence at freeze time. The candidate, source rule, exact SDF/Filter operation
+order, last-store pointer selector, live code hashes, direct Retina host,
+zero-tolerance acceptance, and no-product-authority boundary are immutable for
+the dispatch.

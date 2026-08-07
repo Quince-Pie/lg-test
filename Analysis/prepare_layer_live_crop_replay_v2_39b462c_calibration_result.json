@@ -1,0 +1,77 @@
+{
+  "prepareLayerLiveCropReplayV2CalibrationResultSchemaVersion": 1,
+  "classification": "retrospective direct-Retina circle-485 calibration of the embedded six-symbol live arithmetic identity and exact v2 replay; no unseen geometry, selected-region, color, compositor, product, or parity authority",
+  "conclusion": "success",
+  "captureCommit": "39b462c650d4867ea379d43e10247aaeb5e9fdde",
+  "capturedAtUtc": "2026-08-07T20:26:01Z",
+  "inputs": {
+    "traceSHA256": "ead52711acab925a8d3fc1f99f009e71eb102349d2edddfa0b9cbcf3caed63c2",
+    "timelineSHA256": "e2a377a3414deb1b01e53b238aef27c4bb39bbee1ad1478a2d0c91479c1e3c48",
+    "validationSHA256": "76a564391615e1e750151ff80afc683de2a11a9339e5fb7b7f1e550422e3a45d"
+  },
+  "profile": {
+    "geometry": "circle-485-center",
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "materialize",
+    "backingScaleFactor": 2
+  },
+  "liveCropArithmeticCodeIdentity": {
+    "embeddedInTrace": true,
+    "recordCount": 6,
+    "allCompleteSymbolHashesExact": true
+  },
+  "liveStorePointerReuse": {
+    "recordCount": 32,
+    "matchingStoreRecordCount": 33,
+    "pointerReuseRecordCount": 1,
+    "discardedEarlierMatchCount": 1,
+    "cropOrProducerValuesUsedForSelection": false
+  },
+  "regularGeometryModel": {
+    "terminalInputBleedAmountF64": 169.75,
+    "sourceBoundsF64": [
+      -169.75,
+      -169.75,
+      824.5,
+      824.5
+    ],
+    "sourceBoundsHex": "00000000003865c000000000003865c00000000000c489400000000000c48940",
+    "recursiveChildF64": [
+      0.0,
+      0.0,
+      824.5,
+      824.5
+    ],
+    "cropOrProducerValuesUsed": false
+  },
+  "floatingReplay": {
+    "rectangleCount": 32,
+    "exactRectangleCount": 32,
+    "componentCount": 128,
+    "exactComponentCount": 128,
+    "maximumAbsoluteErrorsXYWH": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "maximumULPDistancesXYWH": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "toleranceUsed": false
+  },
+  "sealedConclusion": {
+    "nativeCaptureAndEmbeddedCodeTransportPassed": true,
+    "v2OpenedGeometryReplayPassed": true,
+    "v2UnseenGeometryTransferPassed": false,
+    "selectedRegionOriginTransferPassed": false,
+    "physicalRetinaColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
