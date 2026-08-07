@@ -11879,3 +11879,32 @@ four-profile numeric materialize transfer; it still cannot establish
 dematerialize, nested color, independent optical-input generation, physical
 pixel behavior, Walle frame parity, or permission to change the production
 shader.
+
+The v2 matrix passes prospectively from the single frozen source commit
+`13e2ddaa33fb9c21a4ec291480794b370c02cd9f`. All four direct-Retina cases
+return native, native-clamp, and validation status zero. Each contributes
+1,504/1,504 exact numeric words; the complete matrix therefore matches all
+6,016/6,016 IEEE-754 binary32 words with zero mismatches and checks 128
+structured records. No debugger or GitHub Actions process is involved.
+
+The corrected image relation also transfers exactly: all four cases contain
+33 internally distinct WindowServer frames; the matrix contains 132 frames,
+exactly 129 distinct hashes, and exactly one duplicate class. That class is
+the four sample-zero absent endpoints with the prospectively fixed SHA-256
+`f93a15f6884c8eccdf4b94203f748def9512e3137538aea2b99a53ece39b48a8`.
+Every other frame is globally distinct. An independent `nix develop`
+re-aggregation on Linux is byte-identical to the Mac aggregate.
+
+The canonical result is
+`Analysis/transition_uniform_profile_v2_13e2dda_holdout_result.json`, SHA-256
+`9292576228ea619e3c50ff6c5bf57edcfa7f235ac0619f03166fc6ca13b540af`.
+This prospectively establishes the complete 47-field numeric materialize law
+for clear and regular crossed with light and dark over the frozen profile and
+geometry family. Walle may implement this numeric path behind immutable tests
+without changing the production shader.
+
+The transfer remains deliberately narrower than Liquid Glass parity. It does
+not establish dematerialize, the nested resolved-color join, independently
+generated mesh/source/backdrop/mips, physical Retina pixel/color/compositor
+behavior, or a zero-unequal-byte Walle frame. The production shader remains
+unchanged and unauthorized for parity-sensitive edits.

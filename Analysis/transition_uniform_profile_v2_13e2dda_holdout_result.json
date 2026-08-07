@@ -1,0 +1,107 @@
+{
+  "aggregate": {
+    "commonAbsentEndpointOccurrences": [
+      {
+        "caseId": "clear-dark-circle463",
+        "frame": "transition-materialize-00-rgba8.png"
+      },
+      {
+        "caseId": "clear-light-circle455",
+        "frame": "transition-materialize-00-rgba8.png"
+      },
+      {
+        "caseId": "regular-dark-circle479",
+        "frame": "transition-materialize-00-rgba8.png"
+      },
+      {
+        "caseId": "regular-light-circle471",
+        "frame": "transition-materialize-00-rgba8.png"
+      }
+    ],
+    "commonAbsentEndpointSHA256": "f93a15f6884c8eccdf4b94203f748def9512e3137538aea2b99a53ece39b48a8",
+    "distinctWindowServerFrameCount": 129,
+    "duplicateFrameClassCount": 1,
+    "dynamicStateCount": 128,
+    "numericComparisonCount": 6016,
+    "numericExactMatchCount": 6016,
+    "numericFieldCount": 47,
+    "numericMismatchCount": 0,
+    "profileCount": 4,
+    "structuredRecordCount": 128,
+    "windowServerFrameCount": 132
+  },
+  "captureCommit": "13e2ddaa33fb9c21a4ec291480794b370c02cd9f",
+  "cases": [
+    {
+      "caseId": "clear-dark-circle463",
+      "nativeClampResultSHA256": "a98dc9a65e4c85d9798084c200cbba9a3c592235aeedf2735153827351f9b348",
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "profile": {
+        "appearance": "dark",
+        "direction": "materialize",
+        "geometry": "circle-463-center",
+        "material": "clear"
+      },
+      "timelineSHA256": "51be1573be9aade902a0c3630f7d1fae6a2b0d4be9f7886d28b07976fc7d2aa2",
+      "validationSHA256": "0ace2f10f0841af6dbaa7d1650407cde770543ae702f066fc19e1d51bf9e5212"
+    },
+    {
+      "caseId": "clear-light-circle455",
+      "nativeClampResultSHA256": "9a42a67fb07e8bf835f282b3bd77ef9157e47c8f15ca4b7abcc637f634852a14",
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "profile": {
+        "appearance": "light",
+        "direction": "materialize",
+        "geometry": "circle-455-center",
+        "material": "clear"
+      },
+      "timelineSHA256": "a037ea8c762f0ba7db875a04944f50d81127e7036a6c4b2509292ee75c4ca4cd",
+      "validationSHA256": "eece6e867a37ee822eea76300e784555e9c0c65b52504cf9d8e0d3ab10846782"
+    },
+    {
+      "caseId": "regular-dark-circle479",
+      "nativeClampResultSHA256": "b73bcc3171a519f0ac4e888d3e4541ef426af1ef43304834cb2cf3f429bad9c8",
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "profile": {
+        "appearance": "dark",
+        "direction": "materialize",
+        "geometry": "circle-479-center",
+        "material": "regular"
+      },
+      "timelineSHA256": "2c0416417b4bc5b21752d13344a9ee44e6ceda801b2d9693e9fa0c4786282b90",
+      "validationSHA256": "56937d2092cf30d45b3f195cac76818d057f5a3cb9017c9a13a2e534e3057015"
+    },
+    {
+      "caseId": "regular-light-circle471",
+      "nativeClampResultSHA256": "dcdcc7a4b8b583faab7813d7ee0b8af66feffacc9285b8f27db370bc9b25f564",
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "profile": {
+        "appearance": "light",
+        "direction": "materialize",
+        "geometry": "circle-471-center",
+        "material": "regular"
+      },
+      "timelineSHA256": "d50f0ee922edbd2e0c1c1fc03f7e0a9d4e83e05d3e3e340e92ae0ea197318c29",
+      "validationSHA256": "e6b82b91574cb7620ede8f5d93d0c82470f6214e8bcb8e9e79cf963c7dd0c8d1"
+    }
+  ],
+  "classification": "corrected prospective direct-Retina transfer of all 47 numeric materialize glassBackground inputs across four profiles",
+  "conclusion": {
+    "allSixThousandSixteenNumericWordsExact": true,
+    "commonAbsentEndpointRelationTransferred": true,
+    "dematerializeTransferEstablished": false,
+    "fourProfileNumericMaterializeTransferEstablished": true,
+    "independentWalleZeroByteFrameEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "meshSourceBackdropMipGenerationEstablished": false,
+    "nestedResolvedColorTransferEstablished": false,
+    "physicalPixelParityEstablished": false,
+    "productionShaderChangeAuthorized": false
+  },
+  "openedCalibrationSHA256": "3f3c9e657378e528653bd8c255fe7ac8bb632331a0bfe8a6a39ab870045a77d5",
+  "transitionUniformProfileHoldoutV2AggregateSchemaVersion": 1
+}
