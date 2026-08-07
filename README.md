@@ -8327,3 +8327,65 @@ intervene on the constant and co-varying inputs. Upstream crop/allocation,
 physical Retina color/pixel/compositor transfer, and a real Apple-versus-Walle
 zero-unequal-byte frame remain open. Liquid Glass parity is still not
 established, and no production shader change is authorized by this result.
+
+### Frozen public-render/provider interval transfer
+
+The next gate removes the remaining causal ambiguity without modifying the
+application. The successful binary
+`glass-transition-introspect-721293f`, SHA-256
+`b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd`,
+already calls `localTransitionCARendererEvidence` once for each saved public
+sample inside `transitionBackgroundUniformEvidence`. In that exact binary the
+caller is 9,136 bytes at main-module offset `0x881b0`, SHA-256
+`1ca54720d237eb6970b65dd2ecc88b8372b64667f4ea2d28ef4bc8414668e2fd`.
+Its direct call at caller offset `+0x1000` is ARM64 word `dfcfff97`; decoding
+that word lands exactly on the 1,256-byte render function at main-module
+offset `0x7d12c`, SHA-256
+`0c661f1010199a56e6730d897079fda69fc4a267f7f48d1e2054b14ff9270e0c`.
+The adjacent instruction at `+0x1004` is therefore an exact synchronous
+return boundary.
+
+`Analysis/capture_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_lldb.py`
+bootstraps at the complete authenticated caller, verifies both main-executable
+functions and the decoded `BL` target, and enables the exact DesignLibrary
+provider and SwiftUICore wrapper-return breakpoints only between that call and
+return. The zero-based structural interval ordinal maps to public sample index
+ordinal plus one. Captured objects, returns, public values, margins, crops,
+images, and pixels cannot select an interval or call.
+
+The prospective contract freezes, before dispatch:
+
+- all 32 render intervals in order and every provider call within them;
+- exactly one four-word full match for each sample 1--31;
+- exactly two full matches for the repeated endpoint sample 32, because the
+  earlier out-of-interval static endpoint call is intentionally absent;
+- zero one-, two-, or three-word signature collisions in every interval;
+- all 18 loaded-field predictions recorded by the retrospective analysis;
+  and
+- exact zero provider returns for every matched object.
+
+The preregistration is
+`Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json`,
+SHA-256
+`afecb715da4a73cedff1169eb6e75353121becf95973384d74953caf42016061`.
+The capture source SHA-256 is
+`9ef07e96861ba53e6189f7aafd5dd967cb3d00437ab634b72a3f81692e573639`,
+the validator SHA-256 is
+`ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1`,
+and the native runner SHA-256 is
+`48d40db2ba6c9a22d58e460824380b6b4a85f92e00782098b8d983e33fab63ba`.
+The runner uses Apple's Command Line Tools directly and contains no Nix store
+path. The validator independently decodes the frozen ARM64 `BL`, requires the
+exact five-breakpoint map, and proves that every captured provider entry and
+return is a complete partition of the events strictly inside its corresponding
+render-call interval.
+
+The Retina host preflight on 2026-08-06 reported the exact expected 2x display
+geometry but `sessionLocked: true`, `displayAsleep: true`, and `passed: false`.
+Consequently no application was dispatched and every runtime outcome in the
+preregistration remains `null`. Once the already-authorized host is unlocked,
+the unchanged blind run can establish an authenticated per-render callback
+join for this profile. Even a complete pass will not disambiguate constant or
+co-varying semantic sources, transfer a fresh material/appearance/geometry
+profile, close crop/allocation or Retina compositor output, authorize a shader
+change, or establish Liquid Glass parity.
