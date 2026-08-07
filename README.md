@@ -11256,3 +11256,44 @@ evidence at freeze time. The candidate, source rule, exact SDF/Filter operation
 order, last-store pointer selector, live code hashes, direct Retina host,
 zero-tolerance acceptance, and no-product-authority boundary are immutable for
 the dispatch.
+
+The direct Retina dispatch at commit `a311a12` is a genuine prospective v2
+falsification. Native capture was complete and failure-free: 32 qualified
+markers, 352 unions, 352 stores, all six live symbol identities, 33 timeline
+samples, and physical backing scale 2 authenticated. The frozen validator
+nevertheless exited 1 at `regular recursive child differs`. V2 predicted
+`[0,0,827.9,827.9]`; Apple produced exactly
+`[0,0,827.8999938964844,827.8999938964844]`. The trace and timeline hashes are
+`537e2f7068009f6873ffb63e788c41965d4902de96b246fe4adcef0ac6288927`
+and `fea52975827939fd5bce84dd8451c16676d8d16b5408905e4d7c48311816637c`.
+The immutable result is
+`Analysis/prepare_layer_live_crop_replay_v2_a311a12_holdout_falsification_result.json`.
+
+Opening the failed target isolates a single precision boundary. The public
+terminal bleed is binary64 `170.45`; Apple converts it to binary32
+`170.4499969482422` and promotes that value back to binary64 before deriving
+the regular source DOD, recursive child, and endpoint term:
+
+```text
+e = binary64(binary32(terminal public inputBleedAmount))
+source DOD = [-e, -e, geometry width + 2e, geometry height + 2e]
+recursive child = [0, 0, geometry width + 2e, geometry height + 2e]
+```
+
+That one correction replays all 32 opened `circle-487-center` rectangles and
+all 128 binary64 components exactly with maximum ULP distance `[0,0,0,0]`.
+Because the correction was derived after opening this target, it is calibration
+evidence only. V2 remains failed; a separately frozen runtime-unseen v3 geometry
+must pass before this crop-arithmetic law has prospective authority. Formal
+Liquid Glass parity and permission to change Walle's production shader remain
+false.
+
+Crop replay v3 applies exactly that single conversion while preserving the
+authenticated v2 SDF transform round-trip, direct DOD-source intersection, and
+last pointer-matching store rule. Retrospective reanalysis of both 485 captures,
+the 800 calibration, and the failed 487 holdout is bit-exact: 128/128 rectangles
+and 512/512 binary64 components, with maximum ULP distance `[0,0,0,0]` and no
+tolerance. The canonical result is
+`Analysis/prepare_layer_live_crop_replay_v3_reanalysis_result.json`. This remains
+opened calibration evidence; it does not convert the failed v2 holdout into a
+pass and does not replace the required fresh v3 holdout.

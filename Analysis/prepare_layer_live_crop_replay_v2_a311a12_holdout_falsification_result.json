@@ -1,0 +1,105 @@
+{
+  "prepareLayerLiveCropReplayV2HoldoutFalsificationResultSchemaVersion": 1,
+  "classification": "immutable prospective bitwise falsification of crop replay v2 on a runtime-unseen geometry captured directly on the physical Retina M1; the opened target diagnoses one binary32 precision boundary but supplies no prospective v3 or product authority",
+  "conclusion": "falsified",
+  "captureCommit": "a311a12320033c87a345e661d578efd26657ce24",
+  "capturedAtUtc": "2026-08-07T20:32:15Z",
+  "inputs": {
+    "traceSHA256": "537e2f7068009f6873ffb63e788c41965d4902de96b246fe4adcef0ac6288927",
+    "timelineSHA256": "fea52975827939fd5bce84dd8451c16676d8d16b5408905e4d7c48311816637c",
+    "preregistrationPath": "Analysis/prepare_layer_live_crop_replay_v2_holdout_local_macos_26_6_1_preregistration.json",
+    "preregistrationSHA256": "3a2cdd236e46169810a7bf89866a640b6f8c254db8ed8d62efa08b80c5ca3b36",
+    "holdoutValidatorPath": "Analysis/validate_prepare_layer_live_crop_replay_v2_holdout_local_macos_26_6_1.py",
+    "holdoutValidatorSHA256": "708f9907c6a187d44a566105bea7c8216d2687095fb74798ed7a7a7d3aa6b8a4",
+    "v2ModelPath": "Analysis/validate_prepare_layer_live_crop_replay_v2_local_macos_26_6_1.py",
+    "v2ModelSHA256": "0f742ac9071ff552680d7a4661cfe2abe55e663a5cfd315ba0414824d26ffb98"
+  },
+  "profile": {
+    "geometry": "circle-487-center",
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "materialize",
+    "backingScaleFactor": 2,
+    "runtimeEvidenceMatchCountAtFreeze": 0,
+    "targetOutputsOpenedAtFreeze": false
+  },
+  "capture": {
+    "nativeLLDBExitStatus": 0,
+    "v2ValidationExitStatus": 1,
+    "v2ValidationFailure": "ValueError: regular recursive child differs",
+    "traceFinalized": true,
+    "traceFailureCount": 0,
+    "qualifiedMarkerRecordCount": 32,
+    "qualifiedUnionRecordCount": 352,
+    "qualifiedStoreRecordCount": 352,
+    "liveCodeIdentityAuthenticated": true,
+    "liveCodeIdentityRecordCount": 6,
+    "timelineSampleCount": 33,
+    "failedTimelineSampleCount": 0
+  },
+  "frozenV2Prediction": {
+    "publicTerminalInputBleedAmountF64": 170.45,
+    "publicTerminalInputBleedAmountF64RawLittleEndianHex": "66666666664e6540",
+    "sourceBoundsF64": [
+      -170.45,
+      -170.45,
+      827.9,
+      827.9
+    ],
+    "sourceBoundsHex": "66666666664e65c066666666664e65c03333333333df89403333333333df8940",
+    "recursiveChildF64": [
+      0.0,
+      0.0,
+      827.9,
+      827.9
+    ],
+    "recursiveChildHex": "000000000000000000000000000000003333333333df89403333333333df8940",
+    "toleranceUsed": false
+  },
+  "observedAppleTarget": {
+    "recursiveChildF64": [
+      0.0,
+      0.0,
+      827.8999938964844,
+      827.8999938964844
+    ],
+    "recursiveChildHex": "000000000000000000000000000000000000003033df89400000003033df8940",
+    "frozenV2RecursiveChildMatchedBitwise": false
+  },
+  "openedDiagnosis": {
+    "hiddenConversion": "terminal public binary64 inputBleedAmount is converted once to binary32 and promoted back to binary64 before regular source-DOD, recursive-child, and endpoint arithmetic",
+    "publicBleedF64": 170.45,
+    "internalBleedF32": 170.4499969482422,
+    "internalBleedF32RawLittleEndianHex": "33732a43",
+    "internalBleedPromotedF64RawLittleEndianHex": "00000060664e6540",
+    "correctedSourceBoundsF64": [
+      -170.4499969482422,
+      -170.4499969482422,
+      827.8999938964844,
+      827.8999938964844
+    ],
+    "correctedSourceBoundsHex": "00000060664e65c000000060664e65c00000003033df89400000003033df8940",
+    "retrospectiveCorrectedRectangleCount": 32,
+    "retrospectiveCorrectedExactRectangleCount": 32,
+    "retrospectiveCorrectedComponentCount": 128,
+    "retrospectiveCorrectedExactComponentCount": 128,
+    "retrospectiveCorrectedMaximumULPDistancesXYWH": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "targetOutputsUsedToDeriveCorrection": true,
+    "correctedCandidateProspectivelyEstablished": false
+  },
+  "sealedConclusion": {
+    "v2UnseenGeometryTransferPassed": false,
+    "v2UnseenGeometryTransferFalsified": true,
+    "v3UnseenGeometryTransferPassed": false,
+    "selectedRegionOriginTransferPassed": false,
+    "physicalRetinaColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
