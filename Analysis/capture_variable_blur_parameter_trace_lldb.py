@@ -120,8 +120,10 @@ def _file_spec_path(file_spec):
 
 def _stack(frame):
     records = []
-    current = frame
-    for index in range(32):
+    thread = frame.GetThread()
+    frame_count = min(thread.GetNumFrames(), 32)
+    for index in range(frame_count):
+        current = thread.GetFrameAtIndex(index)
         if not current.IsValid():
             break
         address = current.GetPCAddress()
@@ -136,7 +138,6 @@ def _stack(frame):
                 else "",
             }
         )
-        current = current.GetParentFrame()
     return records
 
 

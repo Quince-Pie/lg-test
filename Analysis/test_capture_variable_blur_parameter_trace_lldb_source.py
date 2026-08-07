@@ -16,6 +16,8 @@ class VariableBlurParameterTraceSourceTests(unittest.TestCase):
     def test_selection_is_stack_structural(self) -> None:
         self.assertIn("CAPTURE_BACKDROP_NAME", self.source)
         self.assertIn("_contains_capture_backdrop", self.source)
+        self.assertIn("GetFrameAtIndex", self.source)
+        self.assertNotIn("GetParentFrame", self.source)
         self.assertIn('"capturedResultUsedForSelection": False', self.source)
 
     def test_complete_code_and_operands_are_retained(self) -> None:
