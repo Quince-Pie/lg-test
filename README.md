@@ -9560,3 +9560,88 @@ transition-progress production, the remaining integer crop-allocation
 policy, physical Retina compositor/color transfer, an independent Walle
 zero-unequal-byte frame, or Liquid Glass parity. No production shader change
 is authorized.
+
+### Exact headless public `Configuration` to `Parameters` table
+
+The public material boundary now reaches Apple's real
+`ResolvedRecipe.Parameters` constructor without a presentation session. A
+native C23 probe constructs the exact exported `Configuration`, provider,
+initial `State`, default `EnvironmentValues`, and `Material.Context` values,
+then calls `Resolved.resolveLayers(in:)`. This is the same Apple production
+path that creates the `Material.Layer`; it is not a reimplementation or a
+model fitted to images.
+
+The capture prospectively fixes 42 intervals before execution:
+
+```text
+27  exported static configurations
+ 7  regular -> clear mixes at -0.25, 0, 0.25, 0.5, 0.75, 1, and 1.25
+ 8  regular color-scheme/adaptive modifiers
+42  total
+```
+
+An LLDB adapter is armed only between the fixed before/after markers. It
+authenticates the complete Parameters builder at DesignLibrary module offset
+`0x120b4c` (4,916 bytes, SHA-256
+`07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4`)
+and its complete caller at offset `0x11f1bc` (3,452 bytes, SHA-256
+`ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6`).
+The fixed caller return is `+0xd38`. Every interval reaches exactly one
+builder call and returns one 1,025-byte Parameters value. Captured builder
+arguments and Parameters bytes never select a case, call, byte, or
+breakpoint.
+
+Three fresh native processes reproduce all 42 semantic payloads exactly.
+Normalization zeros only the 34 padding ranges already established by the
+independent 102-field Parameters layout. Forty-one raw payloads are also
+byte-stable. `monogram` changes only within those known padding ranges across
+the three processes, while all 873 semantic bytes remain identical. This is
+direct evidence that raw struct-padding equality would be a false parity
+gate.
+
+The 42 cases collapse to 27 distinct normalized Parameters values. The exact
+equivalence groups include:
+
+```text
+regular = bubbles = sidebar
+        = every measured regular color/adaptive modifier
+
+clear = avplayer = facetime = controlCenter
+focusBorder = focusPlatter
+notificationCenter = carplayUltra
+```
+
+All seven regular-to-clear mixes produce distinct Parameters values. Even the
+exact `t = 0` and `t = 1` cases remain distinct from the direct regular and
+clear Parameters values, matching the previously established rule that the
+public mix remains an indirect mix at both endpoints. Consequently, replacing
+an exact public mix endpoint with a direct endpoint would not be
+observationally exact.
+
+The capture, exact-code adapter, native probe, assembly bridge, and canonical
+result are:
+
+```text
+Analysis/capture_designlibrary_public_parameters_local_macos_26_6_1.py
+  SHA-256 ff54baa77b1d2d8d3b6dedf05a4ce5edf341a8b86966726701107a3dcd288610
+Analysis/capture_designlibrary_public_parameters_local_macos_26_6_1_lldb.py
+  SHA-256 c82fc09d0c3bcef58f40ff6fb13ac593c85bb01ceab65bf12380f4f344cadfb9
+Analysis/probe_designlibrary_public_parameters_local_macos_26_6_1.c
+  SHA-256 59c54e502eceb9a2d789f3729c7f4ba2de8067e83086a4cd8d5c7343e10cee8f
+Analysis/invoke_designlibrary_public_parameters_arm64.S
+  SHA-256 8abad01a65462ff5f25bb77710733a7b38d1e5809e6065631e42d232c1d73b90
+Analysis/designlibrary_public_parameters_local_macos_26_6_1_result.json
+  SHA-256 9cbf0a22a9c313b46147dfb2dacb6d64be4e5a928e0199470e08439ec070e02a
+```
+
+Compilation, LLDB, and Python use Apple's Command Line Tools directly. The
+probe executable is checked for an embedded Nix store path and none is
+present. No GUI, application render, image, or crop participates, so the
+locked Retina session does not affect this result.
+
+This closes the default-context public configuration/mix/modifier-to-
+Parameters table. It does **not** establish the live SwiftUI environment and
+transition-progress producers, the general integer crop-allocation policy,
+physical Retina compositor/color transfer, an independent Walle
+zero-unequal-byte frame, or Liquid Glass parity. No production shader change
+is authorized.

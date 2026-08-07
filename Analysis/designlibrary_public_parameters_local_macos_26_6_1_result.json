@@ -1,0 +1,947 @@
+{
+  "cases": [
+    {
+      "category": "static",
+      "index": 0,
+      "name": "regular",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "static:regular",
+      "rawParametersSHA256ByFreshProcess": [
+        "af93b62b53e6e5a83643c0a3a80a1865cd1aeed148c9310d7dcea49eaa592cc5",
+        "af93b62b53e6e5a83643c0a3a80a1865cd1aeed148c9310d7dcea49eaa592cc5",
+        "af93b62b53e6e5a83643c0a3a80a1865cd1aeed148c9310d7dcea49eaa592cc5"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 1,
+      "name": "clear",
+      "normalizedParametersSHA256": "674750a4c9c700ee0f1e1b63cf340e7b4f5ac4288acd5f5ebcdfc443304b2e98",
+      "qualifiedName": "static:clear",
+      "rawParametersSHA256ByFreshProcess": [
+        "ff6f60ea1d52d5dbfe47dddaf9769ba6918e19f84568a7b431b9cb6cfdee56ed",
+        "ff6f60ea1d52d5dbfe47dddaf9769ba6918e19f84568a7b431b9cb6cfdee56ed",
+        "ff6f60ea1d52d5dbfe47dddaf9769ba6918e19f84568a7b431b9cb6cfdee56ed"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 2,
+      "name": "control",
+      "normalizedParametersSHA256": "f71f7bdee06307ec3abfbd7b3bd7f879216877cfc3e460d99856ba9fe7deecdb",
+      "qualifiedName": "static:control",
+      "rawParametersSHA256ByFreshProcess": [
+        "bda838cc145580d8cd94b95b95a689d7b5f93fba1582141a609b8986f2972e7c",
+        "bda838cc145580d8cd94b95b95a689d7b5f93fba1582141a609b8986f2972e7c",
+        "bda838cc145580d8cd94b95b95a689d7b5f93fba1582141a609b8986f2972e7c"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 3,
+      "name": "text",
+      "normalizedParametersSHA256": "678a6d794aed3931f191242f1aca05d01019c06f90ab132b7ac451d150cfa87b",
+      "qualifiedName": "static:text",
+      "rawParametersSHA256ByFreshProcess": [
+        "803b077a8b0282a2a6c9cf0b628acd0af907126b41ec28a2d8a85c5c7374b6c5",
+        "803b077a8b0282a2a6c9cf0b628acd0af907126b41ec28a2d8a85c5c7374b6c5",
+        "803b077a8b0282a2a6c9cf0b628acd0af907126b41ec28a2d8a85c5c7374b6c5"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 4,
+      "name": "identity",
+      "normalizedParametersSHA256": "fec541eea0dd1816429e51c56164354ea86d8fcf51d60b502df5bce78aa20a8b",
+      "qualifiedName": "static:identity",
+      "rawParametersSHA256ByFreshProcess": [
+        "7a993754b854debd1e98ec1d776a5440e7456a4f29b36ef191fc0713b3c05088",
+        "7a993754b854debd1e98ec1d776a5440e7456a4f29b36ef191fc0713b3c05088",
+        "7a993754b854debd1e98ec1d776a5440e7456a4f29b36ef191fc0713b3c05088"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 5,
+      "name": "menu",
+      "normalizedParametersSHA256": "1dc60a57d0569caa06c7f9b69cd02cc9b1e4fca0f00feb56edfb32843ee89754",
+      "qualifiedName": "static:menu",
+      "rawParametersSHA256ByFreshProcess": [
+        "355060a28b4e6321ea16598250e970fa3a2f85cb2fdb49c2cace6f27a24e2f06",
+        "355060a28b4e6321ea16598250e970fa3a2f85cb2fdb49c2cace6f27a24e2f06",
+        "355060a28b4e6321ea16598250e970fa3a2f85cb2fdb49c2cace6f27a24e2f06"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 6,
+      "name": "dock",
+      "normalizedParametersSHA256": "4ca67ef45ae8f07620952759ba81c8be8c0986124fe789592660a6e1bf3d60fa",
+      "qualifiedName": "static:dock",
+      "rawParametersSHA256ByFreshProcess": [
+        "365b6794e7e497e8f9051381a5fcc1a7dd8551d078e1102681739e0815ff85a9",
+        "365b6794e7e497e8f9051381a5fcc1a7dd8551d078e1102681739e0815ff85a9",
+        "365b6794e7e497e8f9051381a5fcc1a7dd8551d078e1102681739e0815ff85a9"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 7,
+      "name": "appIcons",
+      "normalizedParametersSHA256": "fe31dec831fa181d1cf268dd348faf0f8fdd4761cc1492c150a961c934d96095",
+      "qualifiedName": "static:appIcons",
+      "rawParametersSHA256ByFreshProcess": [
+        "86513622e17d95720d3270a5e22549e9367f8acebc296be11dc0fd25d4b1f085",
+        "86513622e17d95720d3270a5e22549e9367f8acebc296be11dc0fd25d4b1f085",
+        "86513622e17d95720d3270a5e22549e9367f8acebc296be11dc0fd25d4b1f085"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 8,
+      "name": "widgets",
+      "normalizedParametersSHA256": "f8ee08486257c43059d473e2b96775899e670a2a7e5aadcabac3ecf05420d05d",
+      "qualifiedName": "static:widgets",
+      "rawParametersSHA256ByFreshProcess": [
+        "16d41046685b81fb7ae9651781a39ddbe8efb1886eeb2491d27b69479498e987",
+        "16d41046685b81fb7ae9651781a39ddbe8efb1886eeb2491d27b69479498e987",
+        "16d41046685b81fb7ae9651781a39ddbe8efb1886eeb2491d27b69479498e987"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 9,
+      "name": "avplayer",
+      "normalizedParametersSHA256": "674750a4c9c700ee0f1e1b63cf340e7b4f5ac4288acd5f5ebcdfc443304b2e98",
+      "qualifiedName": "static:avplayer",
+      "rawParametersSHA256ByFreshProcess": [
+        "680e5c233f4d37bfd78793b00f6103ea38c4c3bb4cfc3067dbf1642367434dc6",
+        "680e5c233f4d37bfd78793b00f6103ea38c4c3bb4cfc3067dbf1642367434dc6",
+        "680e5c233f4d37bfd78793b00f6103ea38c4c3bb4cfc3067dbf1642367434dc6"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 10,
+      "name": "facetime",
+      "normalizedParametersSHA256": "674750a4c9c700ee0f1e1b63cf340e7b4f5ac4288acd5f5ebcdfc443304b2e98",
+      "qualifiedName": "static:facetime",
+      "rawParametersSHA256ByFreshProcess": [
+        "bb791b4d5cb955cf75d984a068b818964cd7375cf5c733b10e09545600200581",
+        "bb791b4d5cb955cf75d984a068b818964cd7375cf5c733b10e09545600200581",
+        "bb791b4d5cb955cf75d984a068b818964cd7375cf5c733b10e09545600200581"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 11,
+      "name": "controlCenter",
+      "normalizedParametersSHA256": "674750a4c9c700ee0f1e1b63cf340e7b4f5ac4288acd5f5ebcdfc443304b2e98",
+      "qualifiedName": "static:controlCenter",
+      "rawParametersSHA256ByFreshProcess": [
+        "da6eb91dc6797759c8d440e9198643446fe9c58546fda4a94421fc4c7f888389",
+        "da6eb91dc6797759c8d440e9198643446fe9c58546fda4a94421fc4c7f888389",
+        "da6eb91dc6797759c8d440e9198643446fe9c58546fda4a94421fc4c7f888389"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 12,
+      "name": "notificationCenter",
+      "normalizedParametersSHA256": "a42f73ce540be06be4900a3017a969a988f74574d87746f575810761d7015ac3",
+      "qualifiedName": "static:notificationCenter",
+      "rawParametersSHA256ByFreshProcess": [
+        "2c9bcf18b785a41e0811e2b03b206ff6e409cd1773aa19b19fc6d968bab68b9e",
+        "2c9bcf18b785a41e0811e2b03b206ff6e409cd1773aa19b19fc6d968bab68b9e",
+        "2c9bcf18b785a41e0811e2b03b206ff6e409cd1773aa19b19fc6d968bab68b9e"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 13,
+      "name": "monogram",
+      "normalizedParametersSHA256": "c678baa49a6c129f4f0c893450bc4c53fd4ad53aa8b7dad5a76984cbe7c7640b",
+      "qualifiedName": "static:monogram",
+      "rawParametersSHA256ByFreshProcess": [
+        "9b6ba20e9e327890f4d6b8b14d00fb3e273089447ecc390852270afab8a6fb5c",
+        "38c33f538569ef5abde5bee6da0f39def2f0ca6079202912e65464f08d29d686",
+        "7b44c91333886557d0050e028f41c717b308e8c7fdd5fd1cf668e84f314cc881"
+      ],
+      "rawParametersStableAcrossFreshProcesses": false
+    },
+    {
+      "category": "static",
+      "index": 14,
+      "name": "bubbles",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "static:bubbles",
+      "rawParametersSHA256ByFreshProcess": [
+        "839282579011adc4703c7c7089fa10d8bfd37110075e53db9965455d762f175e",
+        "839282579011adc4703c7c7089fa10d8bfd37110075e53db9965455d762f175e",
+        "839282579011adc4703c7c7089fa10d8bfd37110075e53db9965455d762f175e"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 15,
+      "name": "focusBorder",
+      "normalizedParametersSHA256": "2478d0cfdfe46aae6ecf12f947fd82aca87a6b25d8c6b74dfd941e02a2dcbbf9",
+      "qualifiedName": "static:focusBorder",
+      "rawParametersSHA256ByFreshProcess": [
+        "eeca5de81d004e860c4c64cffd9bbe00e5323620c6fd5803a63d75db7091901a",
+        "eeca5de81d004e860c4c64cffd9bbe00e5323620c6fd5803a63d75db7091901a",
+        "eeca5de81d004e860c4c64cffd9bbe00e5323620c6fd5803a63d75db7091901a"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 16,
+      "name": "focusPlatter",
+      "normalizedParametersSHA256": "2478d0cfdfe46aae6ecf12f947fd82aca87a6b25d8c6b74dfd941e02a2dcbbf9",
+      "qualifiedName": "static:focusPlatter",
+      "rawParametersSHA256ByFreshProcess": [
+        "e20dc5c0291502655edf5bbc5525c115770d5329899a1bfdf072014d6167b24e",
+        "e20dc5c0291502655edf5bbc5525c115770d5329899a1bfdf072014d6167b24e",
+        "e20dc5c0291502655edf5bbc5525c115770d5329899a1bfdf072014d6167b24e"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 17,
+      "name": "keyboard",
+      "normalizedParametersSHA256": "5b0e132b8d644c370efd349cbf7754c5c0f038690e444aeb7f488aaea73196b3",
+      "qualifiedName": "static:keyboard",
+      "rawParametersSHA256ByFreshProcess": [
+        "f0c664343c1e2829eae0222fd72c96bd747b1ee4a2c155bc502fdbc1e0334736",
+        "f0c664343c1e2829eae0222fd72c96bd747b1ee4a2c155bc502fdbc1e0334736",
+        "f0c664343c1e2829eae0222fd72c96bd747b1ee4a2c155bc502fdbc1e0334736"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 18,
+      "name": "sidebar",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "static:sidebar",
+      "rawParametersSHA256ByFreshProcess": [
+        "7add476837cff39af5df67be52060ad7ae4136e08f66b85a08cadc130b4e76b1",
+        "7add476837cff39af5df67be52060ad7ae4136e08f66b85a08cadc130b4e76b1",
+        "7add476837cff39af5df67be52060ad7ae4136e08f66b85a08cadc130b4e76b1"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 19,
+      "name": "abuttedSidebar",
+      "normalizedParametersSHA256": "09c510a7c6576f6e59703eb933b2f8b7da3d72699781ea40156993518bceab71",
+      "qualifiedName": "static:abuttedSidebar",
+      "rawParametersSHA256ByFreshProcess": [
+        "2ae3918b6033c26cb64a1afee69d199525b1246edde00da9ec78063470a902dc",
+        "2ae3918b6033c26cb64a1afee69d199525b1246edde00da9ec78063470a902dc",
+        "2ae3918b6033c26cb64a1afee69d199525b1246edde00da9ec78063470a902dc"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 20,
+      "name": "inspector",
+      "normalizedParametersSHA256": "d33bff45b7fb5549f6861ac8c7b8d1bb824e842cc75c9d13607a88c0a446aadc",
+      "qualifiedName": "static:inspector",
+      "rawParametersSHA256ByFreshProcess": [
+        "b0170b1d25c3bfb9cf5357f9a617268a1eb5d59fe30680f4419768aaa1b83c5f",
+        "b0170b1d25c3bfb9cf5357f9a617268a1eb5d59fe30680f4419768aaa1b83c5f",
+        "b0170b1d25c3bfb9cf5357f9a617268a1eb5d59fe30680f4419768aaa1b83c5f"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 21,
+      "name": "loupe",
+      "normalizedParametersSHA256": "db61e6e6db2e174dba5afc2cef3c8d9c2af84c7accf8aa6ccc73b46d8475a609",
+      "qualifiedName": "static:loupe",
+      "rawParametersSHA256ByFreshProcess": [
+        "3c4d97f47ca68ac3b4fa65c2e9c148121485f73d3c75794adacbc05f85115751",
+        "3c4d97f47ca68ac3b4fa65c2e9c148121485f73d3c75794adacbc05f85115751",
+        "3c4d97f47ca68ac3b4fa65c2e9c148121485f73d3c75794adacbc05f85115751"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 22,
+      "name": "slider",
+      "normalizedParametersSHA256": "2315141c00d22f8fcfa3b80fad30ba0e2fc682e64e64802392b171df2607a915",
+      "qualifiedName": "static:slider",
+      "rawParametersSHA256ByFreshProcess": [
+        "b853bd730626cc7023b052e43b9998d6ee27f6be87a2c0f4f875d4aad2fc02fa",
+        "b853bd730626cc7023b052e43b9998d6ee27f6be87a2c0f4f875d4aad2fc02fa",
+        "b853bd730626cc7023b052e43b9998d6ee27f6be87a2c0f4f875d4aad2fc02fa"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 23,
+      "name": "camera",
+      "normalizedParametersSHA256": "80dd95d48eef087247ca92dc5cac8224874f40c5851863bc6fe35ed6e8ffba41",
+      "qualifiedName": "static:camera",
+      "rawParametersSHA256ByFreshProcess": [
+        "cffe28d8c952e0f0e0cfbe5c60414a2c9a7c6841fe8669f79cf2ed3a5f030f8e",
+        "cffe28d8c952e0f0e0cfbe5c60414a2c9a7c6841fe8669f79cf2ed3a5f030f8e",
+        "cffe28d8c952e0f0e0cfbe5c60414a2c9a7c6841fe8669f79cf2ed3a5f030f8e"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 24,
+      "name": "cartouchePopover",
+      "normalizedParametersSHA256": "960834d75395c4178c4691f179d0cdc1694186f7787e270b88494f9873389e4c",
+      "qualifiedName": "static:cartouchePopover",
+      "rawParametersSHA256ByFreshProcess": [
+        "aca9627550159a85c2b9daa2033e3d3f65a50b17383e1a1cff7070478cde8f8d",
+        "aca9627550159a85c2b9daa2033e3d3f65a50b17383e1a1cff7070478cde8f8d",
+        "aca9627550159a85c2b9daa2033e3d3f65a50b17383e1a1cff7070478cde8f8d"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 25,
+      "name": "siriSnippet",
+      "normalizedParametersSHA256": "f39986253243dee6e56b160d2b88cac3cf25f9fdde9f795dadf3dbb9bad8adee",
+      "qualifiedName": "static:siriSnippet",
+      "rawParametersSHA256ByFreshProcess": [
+        "4e64777cb520d4d9dbdffb39422da5154332cbd74134c4fac87f6786a08df4e1",
+        "4e64777cb520d4d9dbdffb39422da5154332cbd74134c4fac87f6786a08df4e1",
+        "4e64777cb520d4d9dbdffb39422da5154332cbd74134c4fac87f6786a08df4e1"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "static",
+      "index": 26,
+      "name": "carplayUltra",
+      "normalizedParametersSHA256": "a42f73ce540be06be4900a3017a969a988f74574d87746f575810761d7015ac3",
+      "qualifiedName": "static:carplayUltra",
+      "rawParametersSHA256ByFreshProcess": [
+        "a4b05f9c46dad468e42f5368b747144a401a618c80f0ca1e48e8e8626bdfaab9",
+        "a4b05f9c46dad468e42f5368b747144a401a618c80f0ca1e48e8e8626bdfaab9",
+        "a4b05f9c46dad468e42f5368b747144a401a618c80f0ca1e48e8e8626bdfaab9"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "mix",
+      "index": 27,
+      "name": "negative_quarter",
+      "normalizedParametersSHA256": "f104ed7023fd4dab0ef8a643f4ab6b97bb71cb26c633c6d23123a74e5932dfe1",
+      "qualifiedName": "mix:negative_quarter",
+      "rawParametersSHA256ByFreshProcess": [
+        "2aeb9d137ae218a8b94ca38d596b17c98cff4a54cc1670946ece61da8e014c30",
+        "2aeb9d137ae218a8b94ca38d596b17c98cff4a54cc1670946ece61da8e014c30",
+        "2aeb9d137ae218a8b94ca38d596b17c98cff4a54cc1670946ece61da8e014c30"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "mix",
+      "index": 28,
+      "name": "zero",
+      "normalizedParametersSHA256": "b995c1f53d66cb1b2cb4e0eacbd6186f5262c1299afdc9f27581780221f10a57",
+      "qualifiedName": "mix:zero",
+      "rawParametersSHA256ByFreshProcess": [
+        "eceddf193b187378d140ac188e6c4479c26c9a98ff3f135c620861d693d24b99",
+        "eceddf193b187378d140ac188e6c4479c26c9a98ff3f135c620861d693d24b99",
+        "eceddf193b187378d140ac188e6c4479c26c9a98ff3f135c620861d693d24b99"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "mix",
+      "index": 29,
+      "name": "quarter",
+      "normalizedParametersSHA256": "06e4889a2f320f5a14271b6fd1427ad2e1a92d81590b8ac09dd13f920f43da11",
+      "qualifiedName": "mix:quarter",
+      "rawParametersSHA256ByFreshProcess": [
+        "e273bfe20998547b3e2688d9d6b5e4cc3a9187eeb4eb89891645fc213972753f",
+        "e273bfe20998547b3e2688d9d6b5e4cc3a9187eeb4eb89891645fc213972753f",
+        "e273bfe20998547b3e2688d9d6b5e4cc3a9187eeb4eb89891645fc213972753f"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "mix",
+      "index": 30,
+      "name": "half",
+      "normalizedParametersSHA256": "7d3f8f946fa850131f633e4ba231cd9386022932dd6ff3282e330db3dbe0c188",
+      "qualifiedName": "mix:half",
+      "rawParametersSHA256ByFreshProcess": [
+        "ed6affe6b8fbe6649919f6eb369b7f2a6798687070559925bce21dd1dc405039",
+        "ed6affe6b8fbe6649919f6eb369b7f2a6798687070559925bce21dd1dc405039",
+        "ed6affe6b8fbe6649919f6eb369b7f2a6798687070559925bce21dd1dc405039"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "mix",
+      "index": 31,
+      "name": "three_quarters",
+      "normalizedParametersSHA256": "2c0654dbf2fc092816933b25832bb2af211e60c8606d1ef6842d1d93c1b34798",
+      "qualifiedName": "mix:three_quarters",
+      "rawParametersSHA256ByFreshProcess": [
+        "828c5940ef9d9a8236e4f692e69146c2666ba9f8f2c1d4de604a758019a06c15",
+        "828c5940ef9d9a8236e4f692e69146c2666ba9f8f2c1d4de604a758019a06c15",
+        "828c5940ef9d9a8236e4f692e69146c2666ba9f8f2c1d4de604a758019a06c15"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "mix",
+      "index": 32,
+      "name": "one",
+      "normalizedParametersSHA256": "dc6d9c5a0730e33a8acd31afc28283202434dccae9f4a6fa4e92da0b65ebb231",
+      "qualifiedName": "mix:one",
+      "rawParametersSHA256ByFreshProcess": [
+        "af4cbd87b63e273c0444ddcab5152896551eec5d190db1befd4f5c9b9ea66f4a",
+        "af4cbd87b63e273c0444ddcab5152896551eec5d190db1befd4f5c9b9ea66f4a",
+        "af4cbd87b63e273c0444ddcab5152896551eec5d190db1befd4f5c9b9ea66f4a"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "mix",
+      "index": 33,
+      "name": "five_quarters",
+      "normalizedParametersSHA256": "b2921d45e792c3b9af01ddf78f1b248aedcd5b19858c88082fbef75744692762",
+      "qualifiedName": "mix:five_quarters",
+      "rawParametersSHA256ByFreshProcess": [
+        "71b7a55ddad073ddf4800e3e87495094239c5556be524f65e8b34116c98585ef",
+        "71b7a55ddad073ddf4800e3e87495094239c5556be524f65e8b34116c98585ef",
+        "71b7a55ddad073ddf4800e3e87495094239c5556be524f65e8b34116c98585ef"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "modifier",
+      "index": 34,
+      "name": "color_scheme_light",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "modifier:color_scheme_light",
+      "rawParametersSHA256ByFreshProcess": [
+        "5bd41b765a905786651e27835aeb44033e7fb2ad732f624c1a0c489204d1d40a",
+        "5bd41b765a905786651e27835aeb44033e7fb2ad732f624c1a0c489204d1d40a",
+        "5bd41b765a905786651e27835aeb44033e7fb2ad732f624c1a0c489204d1d40a"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "modifier",
+      "index": 35,
+      "name": "color_scheme_dark",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "modifier:color_scheme_dark",
+      "rawParametersSHA256ByFreshProcess": [
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "modifier",
+      "index": 36,
+      "name": "adaptive_false",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "modifier:adaptive_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "modifier",
+      "index": 37,
+      "name": "adaptive_true",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "modifier:adaptive_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "modifier",
+      "index": 38,
+      "name": "adaptive_light",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "modifier:adaptive_light",
+      "rawParametersSHA256ByFreshProcess": [
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "modifier",
+      "index": 39,
+      "name": "adaptive_dark",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "modifier:adaptive_dark",
+      "rawParametersSHA256ByFreshProcess": [
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "modifier",
+      "index": 40,
+      "name": "adaptive_animatable_false",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "modifier:adaptive_animatable_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    },
+    {
+      "category": "modifier",
+      "index": 41,
+      "name": "adaptive_animatable_true",
+      "normalizedParametersSHA256": "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862",
+      "qualifiedName": "modifier:adaptive_animatable_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7",
+        "778e26b18582dce5a4e2de3db4879c97139aedebbc970eee220e421dd1c269f7"
+      ],
+      "rawParametersStableAcrossFreshProcesses": true
+    }
+  ],
+  "claims": {
+    "defaultContextPublicConfigurationToParametersTableEstablished": true,
+    "defaultContextPublicMixToParametersTableEstablished": true,
+    "defaultContextPublicModifierToParametersTableEstablished": true,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveSwiftUIEnvironmentSelectionLawEstablished": false,
+    "liveTransitionProgressProductionLawEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "classification": "direct native invocation of Apple's exported Configuration, provider, EnvironmentValues, Material.Context, and resolveLayers Swift ABIs under an exact-code LLDB gate; default context only; no GUI session, application render, image, crop, or Nix store path",
+  "designLibraryPublicParametersCaptureSchemaVersion": 1,
+  "exactCodeGate": {
+    "parametersBuilderByteCount": 4916,
+    "parametersBuilderCodeSHA256": "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4",
+    "parametersBuilderModuleOffset": 1182540,
+    "parametersCallerByteCount": 3452,
+    "parametersCallerCodeSHA256": "ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6",
+    "parametersCallerModuleOffset": 1175996,
+    "parametersCallerReturnOffset": 3384
+  },
+  "frameworks": {
+    "DesignLibrary": {
+      "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+      "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+    },
+    "SwiftUICore": {
+      "path": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+      "uuid": "99606D45-C40A-3C69-AE51-5F0C4E32E531"
+    }
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "measuredInvariants": {
+    "capturedBuilderArgumentsUsedForSelection": false,
+    "capturedParametersUsedForSelection": false,
+    "everyFixedIntervalRetained": true,
+    "freshProcessSemanticStabilityEstablished": true,
+    "materialLayerArrayAllocationBytes": 96,
+    "parametersBuildsPerCase": 1,
+    "regularModifierCount": 8,
+    "regularToClearMixCount": 7,
+    "staticConfigurationCount": 27,
+    "totalCaseCount": 42,
+    "uniqueNormalizedParametersCount": 27
+  },
+  "parametersLayout": {
+    "byteCount": 1025,
+    "normalizedPaddingRanges": [
+      [
+        4,
+        8
+      ],
+      [
+        20,
+        24
+      ],
+      [
+        109,
+        112
+      ],
+      [
+        129,
+        132
+      ],
+      [
+        149,
+        152
+      ],
+      [
+        156,
+        160
+      ],
+      [
+        169,
+        176
+      ],
+      [
+        216,
+        224
+      ],
+      [
+        249,
+        256
+      ],
+      [
+        309,
+        312
+      ],
+      [
+        345,
+        348
+      ],
+      [
+        365,
+        368
+      ],
+      [
+        386,
+        392
+      ],
+      [
+        457,
+        460
+      ],
+      [
+        477,
+        480
+      ],
+      [
+        498,
+        500
+      ],
+      [
+        517,
+        520
+      ],
+      [
+        524,
+        528
+      ],
+      [
+        548,
+        552
+      ],
+      [
+        605,
+        608
+      ],
+      [
+        625,
+        628
+      ],
+      [
+        645,
+        648
+      ],
+      [
+        668,
+        672
+      ],
+      [
+        725,
+        728
+      ],
+      [
+        745,
+        748
+      ],
+      [
+        765,
+        768
+      ],
+      [
+        777,
+        784
+      ],
+      [
+        796,
+        800
+      ],
+      [
+        817,
+        824
+      ],
+      [
+        873,
+        880
+      ],
+      [
+        905,
+        912
+      ],
+      [
+        937,
+        944
+      ],
+      [
+        961,
+        968
+      ],
+      [
+        985,
+        992
+      ]
+    ],
+    "semanticByteCount": 873
+  },
+  "tool": {
+    "assemblyBridge": "Analysis/invoke_designlibrary_public_parameters_arm64.S",
+    "assemblyBridgeSHA256": "8abad01a65462ff5f25bb77710733a7b38d1e5809e6065631e42d232c1d73b90",
+    "captureSource": "Analysis/capture_designlibrary_public_parameters_local_macos_26_6_1.py",
+    "captureSourceSHA256": "ff54baa77b1d2d8d3b6dedf05a4ce5edf341a8b86966726701107a3dcd288610",
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "freshProcessCount": 3,
+    "lldb": "lldb-2100.0.17.203",
+    "lldbAdapter": "Analysis/capture_designlibrary_public_parameters_local_macos_26_6_1_lldb.py",
+    "lldbAdapterSHA256": "c82fc09d0c3bcef58f40ff6fb13ac593c85bb01ceab65bf12380f4f344cadfb9",
+    "lldbLogSHA256ByFreshProcess": [
+      "9994e925c37225f26b09891bd966ba44d2b4389a037bd0b19e93daaa4969877e",
+      "d119f6a65d6678fd56a754be1be9008e39cd53b6e0438d874f1d3d3de34fdfd1",
+      "a27edddb64bac5e238c6ad1b45da6aeb5522f645fc85d1880e0790da5081c664"
+    ],
+    "parametersBasisSource": "Analysis/capture_designlibrary_parameters_mixer_basis_local_macos_26_6_1.py",
+    "parametersBasisSourceSHA256": "829e758062d1905ed5635b09bf458337bebce3e41f506ec301d80c66112d2442",
+    "probeExecutableContainsNixStorePath": false,
+    "probeExecutableSHA256": "a8e1f1de069ff0be873b7d08167f4f3e8d8b1c4083cfe3472bb09823d2f80958",
+    "probeSource": "Analysis/probe_designlibrary_public_parameters_local_macos_26_6_1.c",
+    "probeSourceSHA256": "59c54e502eceb9a2d789f3729c7f4ba2de8067e83086a4cd8d5c7343e10cee8f",
+    "python": "3.9.6"
+  },
+  "uniqueNormalizedParameters": {
+    "06e4889a2f320f5a14271b6fd1427ad2e1a92d81590b8ac09dd13f920f43da11": {
+      "caseNames": [
+        "mix:quarter"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003240000000000000803f3233d33f0000000000000000000000001e85eb3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000c03e0000000000000000000000000000000000000000000000000000044000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000a4703d0ad7a32a4067666666666644c000000000000018403433333333332340000000000000f0bf00000000000000006766663e000000000000803f9a99c93e14ae873f85eb813f0000803f0000803f0000803f9a99993e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000323333333333294032333333333329400000000000000000000000000000803f00000000cccc5c3f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "09c510a7c6576f6e59703eb933b2f8b7da3d72699781ea40156993518bceab71": {
+      "caseNames": [
+        "static:abuttedSidebar"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000f03f00000000000000000000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000000000000000000000000000000000000f0bf00000000000000009a99993e000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862": {
+      "caseNames": [
+        "static:regular",
+        "static:bubbles",
+        "static:sidebar",
+        "modifier:color_scheme_light",
+        "modifier:color_scheme_dark",
+        "modifier:adaptive_false",
+        "modifier:adaptive_true",
+        "modifier:adaptive_light",
+        "modifier:adaptive_dark",
+        "modifier:adaptive_animatable_false",
+        "modifier:adaptive_animatable_true"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000001040000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "1dc60a57d0569caa06c7f9b69cd02cc9b1e4fca0f00feb56edfb32843ee89754": {
+      "caseNames": [
+        "static:menu"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002840000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803fcdcc4c3f8fc2753f0000803f0352693f0352693f0352693f0ad7233d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "2315141c00d22f8fcfa3b80fad30ba0e2fc682e64e64802392b171df2607a915": {
+      "caseNames": [
+        "static:slider"
+      ],
+      "normalizedHex": "0000803f0000000000000000000000000000803f0000000000000000000000000000000000001c4000000000000028400000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803fe2debe3d69a82a3eb8938d3e0000803f00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000048e17a14ae47214000000000000038c000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f00000000000000000000803f0000803f0000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f000000000000f03f000000000000e03fcdcc4c3e0000003f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000eee6463e0000803f0000003f000000000000000000000000000000000000f03f0000000000000000a915a15ddeec0b40000000000000f03f000000000000d03f6666663f0000a03f9a99993f0000000000000000000000000000000001000000dc98073ddc98073ddc98073d0000803f000000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005555d54165732d3852c1d0bf9a9919c1000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000048400000000000002840000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "2478d0cfdfe46aae6ecf12f947fd82aca87a6b25d8c6b74dfd941e02a2dcbbf9": {
+      "caseNames": [
+        "static:focusBorder",
+        "static:focusPlatter"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f0000000000000000000000000000000000003440000000000000f03f000000000000f03f000000000000000000000000000000000000000000000000000000000000803f0000803f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f0bf00000000000000009a99993e0000000000000000000000000000803f0000803f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f00000000000000003fd038c6a6f1f43f000000000000f03f000000000000e03f6666663f0000803f0000c03f0000803f0000803f0000803f8fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f000000000000f03f000000000000e03f6666663f0000803f0000c03f0000803f0000803f0000803f0ad7a33d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000004100000000333353c0333353400000000000000000182d4454fb21f93f0000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000cdcccc3dcdcc4c3e000000000000e83f0000000000000000cdcc4c3f9a99993e00000000000020400000000000000000000000000000f03fb81e85eb51b8cebfcdccccccccccfc3f0000000000003e4000"
+    },
+    "2c0654dbf2fc092816933b25832bb2af211e60c8606d1ef6842d1d93c1b34798": {
+      "caseNames": [
+        "mix:three_quarters"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000001840000000000000803fcdccac3f0000000000000000000000003e0ad73d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003e0000000000000000000000000000000000000000555555555555014000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000ec51b81e85eb2f40cdcccccccccc46c000000000000018403433333333332340000000000000f0bf00000000000000009a99993d000000000000803f9a99393e285c8f3f8fc2853f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc1040cccccccccccc10400000000000000000000000000000803f000000009a99493f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "4ca67ef45ae8f07620952759ba81c8be8c0986124fe789592660a6e1bf3d60fa": {
+      "caseNames": [
+        "static:dock"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f9a99993f000000000000000000000000cdcccc3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000fca9f1d24d621840295c8fc2f52834c000000000000000000000000000000000000000000000f0bf0000000000000000cdcc4c3e000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000000000403f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666263f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666263f0000803f9a99993f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "5b0e132b8d644c370efd349cbf7754c5c0f038690e444aeb7f488aaea73196b3": {
+      "caseNames": [
+        "static:keyboard"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000048e17a14ae47314000000000000048c000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f00000000000000003fd038c6a6f1f43f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000182d4454fb21e93f000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "674750a4c9c700ee0f1e1b63cf340e7b4f5ac4288acd5f5ebcdfc443304b2e98": {
+      "caseNames": [
+        "static:clear",
+        "static:avplayer",
+        "static:facetime",
+        "static:controlCenter"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f9a99993f000000000000000000000000cdcccc3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000048e17a14ae47314000000000000048c000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000000000403f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "678a6d794aed3931f191242f1aca05d01019c06f90ab132b7ac451d150cfa87b": {
+      "caseNames": [
+        "static:text"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000184000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000003f0000803f0000003f0000803f0000803f0000803f00000000000000000000000000001840dedddddddddd4cc000000000000000000000000000000000000000000000f0bf000000000000244000000000000000000000000000000000cdcc4c3f0000803f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000005040000000000000204000000000000044400000803f0000803f00000000000000000000803f0000803f0000803f0000803f0000803f0000000000000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000803f000080bf0000000000000000000000009a99993f000000000000000000000000000000000000e83f0000803f00000000a915a15ddeeceb3f666666666666e63f000000000000e03fcdcccc3e9a99193f0000c03f00000000000000000000000000000000010000009218a33e9218a33e9218a33e0000803f0000000000000000000000000000000000000000010000000000000000000000000000000000e83f0000803f00000000a915a15ddeeceb3f666666666666e63f000000000000e03fcdcccc3e9a99193f0000c03f00000000000000000000000000000000010000009218a33e9218a33e9218a33e0000803f000000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f0ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "7d3f8f946fa850131f633e4ba231cd9386022932dd6ff3282e330db3dbe0c188": {
+      "caseNames": [
+        "mix:half"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000002840000000000000803f0000c03f000000000000000000000000ae47e13d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000803e0000000000000000000000000000000000000000aaaaaaaaaaaa024000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000048e17a14ae472d409a999999999945c000000000000018403433333333332340000000000000f0bf00000000000000009a99193e000000000000803f3333933e1e858b3f0ad7833f0000803f0000803f0000803fcdcc4c3e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc2040cccccccccccc20400000000000000000000000000000803f000000003333533f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "80dd95d48eef087247ca92dc5cac8224874f40c5851863bc6fe35ed6e8ffba41": {
+      "caseNames": [
+        "static:camera"
+      ],
+      "normalizedHex": "0000803e00000000111111111111a13f0000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f9a99193e0000803f0000c03f0000000000000000000000000000000001000000a20e083ea20e083ea20e083e0000803f0000000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f9a99193e0000803f0000c03f0000000000000000000000000000000001000000a20e083ea20e083ea20e083e0000803f000000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "960834d75395c4178c4691f179d0cdc1694186f7787e270b88494f9873389e4c": {
+      "caseNames": [
+        "static:cartouchePopover"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000144034333333333343c000000000000000000000000000000000000000000000f0bf00000000000000009a99993e000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "a42f73ce540be06be4900a3017a969a988f74574d87746f575810761d7015ac3": {
+      "caseNames": [
+        "static:notificationCenter",
+        "static:carplayUltra"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000000000000000000000000000000000000f0bf00000000000000009a99993e000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "b2921d45e792c3b9af01ddf78f1b248aedcd5b19858c88082fbef75744692762": {
+      "caseNames": [
+        "mix:five_quarters"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e4034333333333333400000000000000000000000000000000000000000000018c0000000000000803f6666863f000000000000000000000000cdcccc3d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000be0000000000000000000000000000000000000000565555555555fd3f00000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f00000000000000009a9999999999324033333333333349c000000000000018403433333333332340000000000000f0bf00000000000000009a9999bd000000000000803f000000bd3e0a973f9999893f0000803f0000803f0000803f00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc10c0cccccccccccc10c00000000000000000000000000000803f000000006666363f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33ded51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "b995c1f53d66cb1b2cb4e0eacbd6186f5262c1299afdc9f27581780221f10a57": {
+      "caseNames": [
+        "mix:zero"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "c678baa49a6c129f4f0c893450bc4c53fd4ad53aa8b7dad5a76984cbe7c7640b": {
+      "caseNames": [
+        "static:monogram"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f000000000000000000000000cdcccccccccc044000000000000000000000000000000000000000000000000000000000000034400000000000000000000000006666663f0000803f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000344000000000000049c0000000000000304000000000000024400000000000001040000000000000f0bf000000000000000000000000000000000000803f0000803f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f0000000000000000000000000000000000000c40cdcc4c3f00000000a915a15ddeeceb3f000000000000f03f000000000000e03f0000803e000000400000803f0000803f0000803f0000803f0000003f000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000c403333333f00000000a915a15ddeeceb3f000000000000f03f000000000000e03f0000803e000000400000803f0000803f0000803f0000803f0000003f0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f0ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "d33bff45b7fb5549f6861ac8c7b8d1bb824e842cc75c9d13607a88c0a446aadc": {
+      "caseNames": [
+        "static:inspector"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000f0bf00000000000000000000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000000000000000000000000000000000000f0bf00000000000000009a99993e000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "db61e6e6db2e174dba5afc2cef3c8d9c2af84c7accf8aa6ccc73b46d8475a609": {
+      "caseNames": [
+        "static:loupe"
+      ],
+      "normalizedHex": "0000803f0000000000000000000000000000803f0000000000000000000000000000000000001c4000000000000028400000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000000000000000000000000000803f00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000000000000000000000003e0ad7a3703d1240cccccccccccc2cc000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f00000000000000000000803f0000803f0000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f9a9999999999e93f000000000000e03f6666663f0000a03f9a99993f0000000000000000000000000000000001000000dc98073ddc98073ddc98073d0000803f0000000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f9a9999999999e93f000000000000e03f6666663f0000a03f9a99993f0000000000000000000000000000000001000000dc98073ddc98073ddc98073d0000803f000000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b5b4344102c25689f5b0c93f00000000295ccfc0000000000000803f0000000000000000343333333333234000000000000028c00000000000000000000000000000000000000000000048400000000000002840000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "dc6d9c5a0730e33a8acd31afc28283202434dccae9f4a6fa4e92da0b65ebb231": {
+      "caseNames": [
+        "mix:one"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f9a99993f000000000000000000000000cdcccc3d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000004000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000048e17a14ae47314000000000000048c000000000000018403433333333332340000000000000f0bf000000000000000000000000000000000000803f9a99993d3333933f14ae873f0000803f0000803f0000803f00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000000000403f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "f104ed7023fd4dab0ef8a643f4ab6b97bb71cb26c633c6d23123a74e5932dfe1": {
+      "caseNames": [
+        "mix:negative_quarter"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003e40000000000000803f9a99f93f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000203f0000000000000000000000000000000000000000aaaaaaaaaaaa064000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f00000000000000005c8fc2f5285c254001000000000042c000000000000018403433333333332340000000000000f0bf00000000000000000000c03e000000000000803f33331b3ffeff7f3ff6287c3f0000803f0000803f0000803fcdcccc3e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000ffffffffffff3440ffffffffffff34400000000000000000000000000000803f000000000000703f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33ded51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "f39986253243dee6e56b160d2b88cac3cf25f9fdde9f795dadf3dbb9bad8adee": {
+      "caseNames": [
+        "static:siriSnippet"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803f0000003f000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f0ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "f71f7bdee06307ec3abfbd7b3bd7f879216877cfc3e460d99856ba9fe7deecdb": {
+      "caseNames": [
+        "static:control"
+      ],
+      "normalizedHex": "0000803f0000000000000000000000000000803f0000000000000000000000000000000000001c4000000000000028400000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000000000000000000000000000803f00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000002440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000343333333333134000000000000028c000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f00000000000000000000803f0000803f0000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f9a9999999999e93f000000000000e03f6666663f0000a03f9a99993f0000000000000000000000000000000001000000dc98073ddc98073ddc98073d0000803f0000000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f9a9999999999e93f000000000000e03f6666663f0000a03f9a99993f0000000000000000000000000000000001000000dc98073ddc98073ddc98073d0000803f000000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005555d54165732d3852c1d0bf9a9919c1000000000000803f000000000000000000000000343333333333234000000000000028c00000000000000000000000000000000000000000000048400000000000002840000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "f8ee08486257c43059d473e2b96775899e670a2a7e5aadcabac3ecf05420d05d": {
+      "caseNames": [
+        "static:widgets"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052406766666666665040000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000003440000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf00000000000000000000003f000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000000000000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f9a99193f0000803fcdcc8c3f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f9a99193f0000803fcdcc8c3f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "fe31dec831fa181d1cf268dd348faf0f8fdd4761cc1492c150a961c934d96095": {
+      "caseNames": [
+        "static:appIcons"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f000000000000000000000000000000000000204000000000000044409a99999999993940000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000001cc7711cc7712840000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f00000000000000003333333333332340cdcccccccccc44c000000000000000000000000000000000000000000000f0bf00000000000000000000003f000000000000803fcdcc4c3e3333733f0000803f0000803f0000803f0000803fcdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000000000000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f9a99193f0000803fcdcc8c3f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f9a99193f0000803fcdcc8c3f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "fec541eea0dd1816429e51c56164354ea86d8fcf51d60b502df5bce78aa20a8b": {
+      "caseNames": [
+        "static:identity"
+      ],
+      "normalizedHex": "0000803f0000000000000000000000000000803f000000000000000000000000000000000000204000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803fcdcc4c3ecdcc4c3ecdcccc3ecdcccc3e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000803f0000803f0000803f0000803f0000803f00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000101000000000000000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000804100000000333353c0000000000000000000000000182d4454fb21f93f0000000000000000000000000000803f0000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    }
+  }
+}
