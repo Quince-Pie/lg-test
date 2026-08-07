@@ -26,12 +26,12 @@ EXPECTED_BINARY_SHA256 = (
 EXPECTED_PREFLIGHT_SHA256 = (
     "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
 )
-EXPECTED_PREDECESSOR_COMMIT = "72a73594907c50710182515661f367fbf0d85542"
+EXPECTED_PREDECESSOR_COMMIT = "d18aca7fe2638d25eb347df96fe9d5d3a3428060"
 EXPECTED_PREDECESSOR_PREREGISTRATION_SHA256 = (
-    "dc7b05fcc587549dce2520e3d3e39d22ac3a0fa9f57e859a46145b2c11b91a04"
+    "1f9e756a20e563b11018085e74520763d67f84df43209fdeb5e2f0a55a8aa9c4"
 )
 EXPECTED_PREDECESSOR_VALIDATOR_SHA256 = (
-    "7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6"
+    "1f7ff6bd50b67404dcc86db4e73990b7247bdc52198c16923034764eef18781d"
 )
 DESIGN_LIBRARY_UUID = "1E980802-69F5-3E69-89EF-50088297FCF5"
 
@@ -359,6 +359,22 @@ def validate_preregistration(
         },
         "symbol-presentation operational amendment differs",
     )
+    framework_amendment = mapping(
+        preregistration.get("frameworkSymbolIdentityOperationalAmendment"),
+        "framework-identity operational amendment",
+    )
+    require(
+        framework_amendment
+        == {
+            "failedCaptureFinalCallCount": 0,
+            "failedCaptureFinalIntervalCount": 0,
+            "opticalPredictionsEvaluatedBeforeCorrection": False,
+            "path": public.FRAMEWORK_IDENTITY_CORRECTION_PATH,
+            "prospectiveOpticalPredictionsUnchanged": True,
+            "sha256": public.FRAMEWORK_IDENTITY_CORRECTION_SHA256,
+        },
+        "framework-identity operational amendment differs",
+    )
     binary = mapping(preregistration.get("binary"), "binary")
     require(binary.get("sha256") == EXPECTED_BINARY_SHA256, "binary hash differs")
     profile = mapping(preregistration.get("profile"), "profile")
@@ -463,7 +479,7 @@ def validate_preregistration(
         predecessor
         == {
             "artifactDirectory": (
-                "local-case22-provider-public-render-interval-72a7359-run1"
+                "local-case22-provider-public-render-interval-d18aca7-run1"
             ),
             "captureCommit": EXPECTED_PREDECESSOR_COMMIT,
             "captureContractMustPass": True,

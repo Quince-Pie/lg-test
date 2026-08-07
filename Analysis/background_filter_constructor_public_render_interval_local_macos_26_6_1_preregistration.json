@@ -77,6 +77,14 @@
     "unityRegister": "d12",
     "workingParametersFrameOffset": 3168
   },
+  "frameworkSymbolIdentityOperationalAmendment": {
+    "failedCaptureFinalCallCount": 0,
+    "failedCaptureFinalIntervalCount": 0,
+    "opticalPredictionsEvaluatedBeforeCorrection": false,
+    "path": "Analysis/public_render_framework_symbol_identity_correction_local_macos_26_6_1.json",
+    "prospectiveOpticalPredictionsUnchanged": true,
+    "sha256": "1771020d81ddde0926b23246666e50dd33e4e28819312cd3074e0081f6dfff63"
+  },
   "frozenAtUTC": "2026-08-07",
   "frozenImplementation": {
     "files": [
@@ -86,11 +94,11 @@
       },
       {
         "path": "Analysis/validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
-        "sha256": "307cf135a627fa8e6276145c4cf976d23258e5d73ac0e5ea333d8901196c7348"
+        "sha256": "bf24f979bc6edfa9e8ed8b2fbcf4b7ec88bf3e90249e2fd4ece87883e787ea0c"
       },
       {
         "path": "Analysis/run_background_filter_constructor_public_render_interval_local_macos_26_6_1.sh",
-        "sha256": "b7d3f2a26a4595533918239cdce53b7371f3e2953a63046d09852b9285cec4d8"
+        "sha256": "f1c9d5c4b07abe0af6eeeebe6bc9eb4e6d50961b28e3934920e25829b41bedfe"
       },
       {
         "path": "Analysis/test_capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb_source.py",
@@ -98,15 +106,15 @@
       },
       {
         "path": "Analysis/test_validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
-        "sha256": "0e59ecb77c7feeea8d6028cc74cc25ef8888037a2f0f3e3f100644fc54d6df08"
+        "sha256": "cc8d4ff880f4b97bbfc3ad2240d95f4d2d42486dc5b453af2bbcd6ee86f6e738"
       },
       {
         "path": "Analysis/test_run_background_filter_constructor_public_render_interval_local_macos_26_6_1_source.py",
-        "sha256": "b03b738068ed8c515c37dc8e31934c2cb68dc81667dbbe6a47f3bf9e461939a7"
+        "sha256": "2002011de220bb8cc296540ac96807534554d3cf380e55b776a30fa5b2c4611c"
       },
       {
         "path": "Analysis/test_background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.py",
-        "sha256": "1859409da72eea714fe6658c2a42e4ad4a8957b0c78e384534156813b66fd1ca"
+        "sha256": "7be9ebb10fed6e0e9f5d5632c3db2d23291951f0adeab526b98362eec1ec3325"
       },
       {
         "path": "Analysis/check_local_retina_capture_session_v2.swift",
@@ -118,19 +126,19 @@
       },
       {
         "path": "Analysis/capture_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_lldb.py",
-        "sha256": "b709c9130d6b0d55e3fac3ce516c6d125edfe20f08a16d610822e41d70890812"
+        "sha256": "a4aeb03e77b0a16b2f0013e07bc5d7ece75189a945aeb759a6b8835318310bdb"
       },
       {
         "path": "Analysis/validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.py",
-        "sha256": "7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6"
+        "sha256": "1f7ff6bd50b67404dcc86db4e73990b7247bdc52198c16923034764eef18781d"
       },
       {
         "path": "Analysis/run_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.sh",
-        "sha256": "e44fd57711d3ce055121505e62d5d3cada237f7d7f4852146d95842fe15b0549"
+        "sha256": "d5074f47a7c40ac8b2171fb4eef6d74cc3d618e14fe1ca15b526774ddc5ffd8e"
       },
       {
         "path": "Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json",
-        "sha256": "dc7b05fcc587549dce2520e3d3e39d22ac3a0fa9f57e859a46145b2c11b91a04"
+        "sha256": "1f9e756a20e563b11018085e74520763d67f84df43209fdeb5e2f0a55a8aa9c4"
       },
       {
         "path": "Analysis/diagnose_public_render_main_symbol_identity_lldb.py",
@@ -143,6 +151,18 @@
       {
         "path": "Analysis/public_render_main_symbol_presentation_correction_local_macos_26_6_1.json",
         "sha256": "0caa2811f60cbc72b0895ed4367d14b117c695ba3075b5f956464459ac24c474"
+      },
+      {
+        "path": "Analysis/diagnose_public_render_framework_symbol_identity_lldb.py",
+        "sha256": "25b360ee6fc90811cb3843ff5b653d674f654976df0a1f87195dae1c9c252bd3"
+      },
+      {
+        "path": "Analysis/test_diagnose_public_render_framework_symbol_identity_lldb_source.py",
+        "sha256": "b7cea88ea65efd5fd970535e8242b5ca73af0b5b488b37b32ab7c26afbf3618f"
+      },
+      {
+        "path": "Analysis/public_render_framework_symbol_identity_correction_local_macos_26_6_1.json",
+        "sha256": "1771020d81ddde0926b23246666e50dd33e4e28819312cd3074e0081f6dfff63"
       },
       {
         "path": "Analysis/analyze_designlibrary_background_filter_metadata_local_macos_26_6_1.py",
@@ -264,11 +284,11 @@
     "unityRegisterIsExactOneAtEveryDecision": true
   },
   "requiredPredecessor": {
-    "artifactDirectory": "local-case22-provider-public-render-interval-72a7359-run1",
-    "captureCommit": "72a73594907c50710182515661f367fbf0d85542",
+    "artifactDirectory": "local-case22-provider-public-render-interval-d18aca7-run1",
+    "captureCommit": "d18aca7fe2638d25eb347df96fe9d5d3a3428060",
     "captureContractMustPass": true,
-    "preregistrationSHA256": "dc7b05fcc587549dce2520e3d3e39d22ac3a0fa9f57e859a46145b2c11b91a04",
-    "validatorSHA256": "7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6"
+    "preregistrationSHA256": "1f9e756a20e563b11018085e74520763d67f84df43209fdeb5e2f0a55a8aa9c4",
+    "validatorSHA256": "1f7ff6bd50b67404dcc86db4e73990b7247bdc52198c16923034764eef18781d"
   },
   "selectionPolicy": {
     "blendDecisions": "every execution of the fixed builder +0xfb8 decision instruction; collection count, d9 factor, d12 unity constant, current Parameters, and accumulator bytes are retained only after the structural breakpoint fires",

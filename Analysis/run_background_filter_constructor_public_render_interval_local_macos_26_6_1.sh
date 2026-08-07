@@ -17,7 +17,7 @@ readonly capture=Analysis/capture_background_filter_constructor_public_render_in
 readonly preflight=Analysis/check_local_retina_capture_session_v2.swift
 readonly preregistration=Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json
 readonly validator=Analysis/validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py
-readonly predecessor_directory=local-case22-provider-public-render-interval-72a7359-run1
+readonly predecessor_directory=local-case22-provider-public-render-interval-d18aca7-run1
 readonly predecessor_preregistration=Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json
 readonly predecessor_validator=Analysis/validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.py
 readonly output_directory="local-background-filter-constructor-public-render-interval-${run_label}"
@@ -47,8 +47,8 @@ require_sha256() {
 require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd
 require_sha256 "$capture" 38d8829faf92397dfd85e631ac2336ab3c4d702f03a1e7eb7d5cbd221d279c6c
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
-require_sha256 "$validator" 307cf135a627fa8e6276145c4cf976d23258e5d73ac0e5ea333d8901196c7348
-require_sha256 "$predecessor_validator" 7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6
+require_sha256 "$validator" bf24f979bc6edfa9e8ed8b2fbcf4b7ec88bf3e90249e2fd4ece87883e787ea0c
+require_sha256 "$predecessor_validator" 1f7ff6bd50b67404dcc86db4e73990b7247bdc52198c16923034764eef18781d
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
     echo "tracked repository state is dirty" >&2

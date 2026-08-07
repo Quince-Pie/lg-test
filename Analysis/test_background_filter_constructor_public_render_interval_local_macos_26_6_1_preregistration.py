@@ -68,12 +68,12 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
         predecessor = self.value["requiredPredecessor"]
         self.assertEqual(
             predecessor["captureCommit"],
-            "72a73594907c50710182515661f367fbf0d85542",
+            "d18aca7fe2638d25eb347df96fe9d5d3a3428060",
         )
         self.assertTrue(predecessor["captureContractMustPass"])
         self.assertEqual(
             predecessor["artifactDirectory"],
-            "local-case22-provider-public-render-interval-72a7359-run1",
+            "local-case22-provider-public-render-interval-d18aca7-run1",
         )
 
     def test_preflight_correction_precedes_dispatch_and_preserves_predictions(self) -> None:
@@ -84,6 +84,13 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
 
     def test_symbol_presentation_correction_saw_no_optical_intervals(self) -> None:
         amendment = self.value["symbolIdentityOperationalAmendment"]
+        self.assertEqual(amendment["failedCaptureFinalIntervalCount"], 0)
+        self.assertEqual(amendment["failedCaptureFinalCallCount"], 0)
+        self.assertFalse(amendment["opticalPredictionsEvaluatedBeforeCorrection"])
+        self.assertTrue(amendment["prospectiveOpticalPredictionsUnchanged"])
+
+    def test_framework_identity_correction_saw_no_optical_intervals(self) -> None:
+        amendment = self.value["frameworkSymbolIdentityOperationalAmendment"]
         self.assertEqual(amendment["failedCaptureFinalIntervalCount"], 0)
         self.assertEqual(amendment["failedCaptureFinalCallCount"], 0)
         self.assertFalse(amendment["opticalPredictionsEvaluatedBeforeCorrection"])

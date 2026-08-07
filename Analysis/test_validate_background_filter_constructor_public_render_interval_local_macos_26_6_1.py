@@ -16,6 +16,11 @@ SOURCE = SOURCE_PATH.read_text(encoding="utf-8")
 
 
 class BackgroundFilterConstructorValidatorTests(unittest.TestCase):
+    def test_framework_identity_correction_is_mandatory(self) -> None:
+        self.assertIn("frameworkSymbolIdentityOperationalAmendment", SOURCE)
+        self.assertIn("public.FRAMEWORK_IDENTITY_CORRECTION_PATH", SOURCE)
+        self.assertIn("public.FRAMEWORK_IDENTITY_CORRECTION_SHA256", SOURCE)
+
     def test_source_remains_python_3_9_parseable(self) -> None:
         ast.parse(SOURCE, feature_version=(3, 9))
 

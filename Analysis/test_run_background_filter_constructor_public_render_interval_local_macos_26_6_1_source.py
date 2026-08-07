@@ -36,15 +36,17 @@ class BackgroundFilterConstructorRunnerSourceTests(unittest.TestCase):
         self.assertLess(predecessor, preflight)
         self.assertLess(preflight, lldb)
         self.assertIn(
-            "local-case22-provider-public-render-interval-72a7359-run1",
+            "local-case22-provider-public-render-interval-d18aca7-run1",
             SOURCE,
         )
 
     def test_exact_sources_are_hashed_without_placeholders(self) -> None:
         for digest in (
             "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+            "38d8829faf92397dfd85e631ac2336ab3c4d702f03a1e7eb7d5cbd221d279c6c",
             "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
-            "7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6",
+            "bf24f979bc6edfa9e8ed8b2fbcf4b7ec88bf3e90249e2fd4ece87883e787ea0c",
+            "1f7ff6bd50b67404dcc86db4e73990b7247bdc52198c16923034764eef18781d",
         ):
             self.assertIn(digest, SOURCE)
         self.assertNotIn("PLACEHOLDER", SOURCE)
