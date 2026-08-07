@@ -1,0 +1,140 @@
+{
+  "backgroundFilterConstructorTimelineMarkerCensusLocalMacOSPreregistrationSchemaVersion": 1,
+  "classification": "prospectively frozen value-blind structural census of the exact ResolvedRecipe Parameters-builder and BackgroundFilter-constructor direct-call boundaries during the already-authenticated live M1 Retina timeline; this experiment locates the correct producer window and makes no prediction about observed call counts or captured values",
+  "frozenAtUTC": "2026-08-07",
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "host": {
+    "architecture": "arm64",
+    "developerModeEnabled": true,
+    "display": "built-in Retina 3456x2234 physical / 1728x1117 logical / 2x",
+    "hardware": "Apple M1 Max",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "sshTarget": "quince@10.0.41.19"
+  },
+  "parentProviderGate": {
+    "captureCommit": "1864f6489baf3209bd78e5769f3ca754a7cc2b6c",
+    "prospectiveValidationPassed": true,
+    "resultPath": "Analysis/backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1_result.json",
+    "resultSHA256": "9ce1e32be073ef9ff0684fe8537d7fd44870f4b6566ac55498a25772bad7bc2e"
+  },
+  "selectionPolicy": {
+    "captureWindow": "strictly after marker 0 through entry of marker 32",
+    "constructorCalls": "fixed authenticated producer BL and matching immediate return",
+    "parametersBuilderCalls": "fixed authenticated caller BL and matching immediate return",
+    "markerSelection": "exact main-module function entry and zero-based ordinal only",
+    "capturedValuesMaySelectCalls": false,
+    "minimumObservedCallCount": null,
+    "selectionFrozenBeforeDispatch": true
+  },
+  "captureContract": {
+    "activeRetinaSessionPreflightRequired": true,
+    "all33TimelineMarkersRequired": true,
+    "parentProviderPredictionsRevalidatedInSameRun": true,
+    "allSelectedDirectCallsAndReturnsRetained": true,
+    "pendingCallsAtMarkerBoundariesRetainedAsTopologyEvidence": true,
+    "noParametersOrBackgroundFilterBytesRead": true,
+    "noRegisterArgumentsRead": true,
+    "noObservedCallCountPredicted": true,
+    "maximumConstructorCalls": 4096,
+    "maximumParametersBuilderCalls": 4096,
+    "nativeAppleCommandLineToolsOnly": true,
+    "zeroToleranceForStructuralIdentity": true
+  },
+  "authenticatedBoundaries": {
+    "designLibraryUUID": "1E980802-69F5-3E69-89EF-50088297FCF5",
+    "constructor": {
+      "moduleOffset": 765184,
+      "byteCount": 1044,
+      "codeSHA256": "71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d"
+    },
+    "constructorProducer": {
+      "moduleOffset": 753576,
+      "byteCount": 1644,
+      "codeSHA256": "0729f7b0f874c0fb9fb64fa3383a6f2ed328d1dc55fdce53b82038a188df6f97",
+      "callOffset": 908,
+      "callInstructionHex": "730a0094",
+      "returnOffset": 912
+    },
+    "parametersBuilder": {
+      "moduleOffset": 1182540,
+      "byteCount": 4916,
+      "codeSHA256": "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4"
+    },
+    "parametersBuilderCaller": {
+      "moduleOffset": 1175996,
+      "byteCount": 3452,
+      "codeSHA256": "ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6",
+      "callOffset": 3380,
+      "callInstructionHex": "17030094",
+      "returnOffset": 3384
+    }
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_background_filter_constructor_timeline_marker_census_local_macos_26_6_1_lldb.py",
+        "sha256": "e6b6656aabddcc240c3d4fa327a4c7114feedaea3c6d02cab9433bfe416be3c3"
+      },
+      {
+        "path": "Analysis/validate_background_filter_constructor_timeline_marker_census_local_macos_26_6_1.py",
+        "sha256": "244e0c73694a5e5e467bc35cc2e07ea35049a2e335a53814edce9ba9164cc72c"
+      },
+      {
+        "path": "Analysis/run_background_filter_constructor_timeline_marker_census_local_macos_26_6_1.sh",
+        "sha256": "4585d585549036efad36376d90353ecacc53fd056f095cc239e3225589f964e4"
+      },
+      {
+        "path": "Analysis/test_capture_background_filter_constructor_timeline_marker_census_local_macos_26_6_1_lldb_source.py",
+        "sha256": "54b30b036aef5e097f8b6d1f121c47cd80ad2b1798324250ada93583b8d03bb4"
+      },
+      {
+        "path": "Analysis/test_validate_background_filter_constructor_timeline_marker_census_local_macos_26_6_1.py",
+        "sha256": "9c5dad37f3910b6f6a746cf319181cdab59e7587152d65ab94791c79e4e6b364"
+      },
+      {
+        "path": "Analysis/test_run_background_filter_constructor_timeline_marker_census_local_macos_26_6_1_source.py",
+        "sha256": "e40a8c8e381b5c826d091140796d5058a66b29a0b5f000ed458b4157a1f495b7"
+      },
+      {
+        "path": "Analysis/test_background_filter_constructor_timeline_marker_census_local_macos_26_6_1_preregistration.py",
+        "sha256": "6cf80534d5fd37fb87778ac4edefa828871ece6e2ede454bdeec16c37d9a4cdb"
+      },
+      {
+        "path": "Analysis/check_local_retina_capture_session_v2.swift",
+        "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+      },
+      {
+        "path": "Analysis/backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1_result.json",
+        "sha256": "9ce1e32be073ef9ff0684fe8537d7fd44870f4b6566ac55498a25772bad7bc2e"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1_lldb.py",
+        "sha256": "145cf4d04650769f150f865e32f90671f9ab7f3d536d907e970b9f01bf690a59"
+      },
+      {
+        "path": "Analysis/capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb.py",
+        "sha256": "38d8829faf92397dfd85e631ac2336ab3c4d702f03a1e7eb7d5cbd221d279c6c"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1.py",
+        "sha256": "574c671f1c61a519365f724c1481d1c12c53a0b0cb13bb9351a0d0a3f5d835cd"
+      },
+      {
+        "path": "Analysis/validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
+        "sha256": "bf24f979bc6edfa9e8ed8b2fbcf4b7ec88bf3e90249e2fd4ece87883e787ea0c"
+      }
+    ]
+  },
+  "productAuthority": {
+    "liveProducerTemporalTopologyMeasuredOnPass": true,
+    "sameRunProviderTransferRevalidatedOnPass": true,
+    "parametersBytesJoinedToConstructorOnPass": false,
+    "constructorOutputJoinedToProviderOnPass": false,
+    "upstreamCropAllocationPolicyEstablishedOnPass": false,
+    "physicalRetinaColorPixelCompositorTransferEstablishedOnPass": false,
+    "independentWalleZeroByteFrameParityEstablishedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false,
+    "productionShaderAuthorizedOnPass": false
+  }
+}

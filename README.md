@@ -10659,3 +10659,58 @@ with SHA-256
 `9ce1e32be073ef9ff0684fe8537d7fd44870f4b6566ac55498a25772bad7bc2e`.
 This closes the active-Retina same-profile provider-construction/temporal-join
 gate; it does not change the remaining parity exclusions above.
+
+### Frozen direct-M1 live producer census
+
+The next native experiment runs directly over SSH on the active built-in
+Retina display at `quince@10.0.41.19`. Here, “runner” means only the checked-in
+local shell wrapper that invokes Apple Swift, LLDB, and Python on that M1; it is
+not a GitHub Actions runner. No Nix store path enters the native command.
+
+The already accepted provider experiment locates the exact object consumed by
+Apple for each live public sample, but it does not yet locate the actual
+`ResolvedRecipe.Parameters` production and `BackgroundFilter` construction on
+the same timeline. The old constructor gate was attached to later static
+`CARenderer` replays, where the accepted evidence proved that no provider calls
+occur. It remains parked rather than being retroactively widened.
+
+The replacement first performs a value-blind temporal census. Between exact
+timeline markers 0 and 32, it authenticates and stops only at two fixed ARM64
+`BL` instructions and their immediate returns:
+
+```text
+ResolvedRecipe Parameters builder caller +0xd34 / +0xd38
+BackgroundFilter producer               +0x38c / +0x390
+```
+
+The complete builder, caller, constructor, and producer code regions and both
+direct branch targets must match their frozen SHA-256 identities. The census
+records call/return event order, thread identity, and marker ordinal only. It
+does not read a Parameters byte, a `BackgroundFilter` byte, an argument
+register, an image, or a pixel. No minimum call count is predicted: zero calls
+would pass the structural contract and prove that this live window is not the
+producer window. Calls spanning a marker are retained as topology evidence
+rather than discarded or assigned using values.
+
+The same execution also revalidates the full accepted live provider gate: 33
+markers, stable provider objects, exact object-return arithmetic, all 18 loaded
+fields, and all 32 public return predictions. The census is therefore anchored
+to the same physical profile instead of being joined across unrelated runs.
+Its pre-dispatch identities are:
+
+```text
+Analysis/background_filter_constructor_timeline_marker_census_local_macos_26_6_1_preregistration.json
+  SHA-256 d4331797fa5cace51956334a5b96aae4b34398265377b1a0fd2d665bb7b74b2b
+Analysis/capture_background_filter_constructor_timeline_marker_census_local_macos_26_6_1_lldb.py
+  SHA-256 e6b6656aabddcc240c3d4fa327a4c7114feedaea3c6d02cab9433bfe416be3c3
+Analysis/validate_background_filter_constructor_timeline_marker_census_local_macos_26_6_1.py
+  SHA-256 244e0c73694a5e5e467bc35cc2e07ea35049a2e335a53814edce9ba9164cc72c
+Analysis/run_background_filter_constructor_timeline_marker_census_local_macos_26_6_1.sh
+  SHA-256 4585d585549036efad36376d90353ecacc53fd056f095cc239e3225589f964e4
+```
+
+A passing census establishes only where the live producer calls occur. The
+complete 1,025-byte Parameters-to-constructor join, initialized 491-byte
+constructor-to-provider join, crop/allocation policy, physical compositor and
+color transfer, and independent zero-unequal-byte Walle frame remain open.
+Liquid Glass parity and production shader changes remain unauthorized.
