@@ -1,0 +1,1342 @@
+{
+  "allocationExtentComponentCount": 64,
+  "allocationExtentMismatchedComponents": 0,
+  "appearanceDependentPresentationLifetimePassed": false,
+  "authority": "holdout",
+  "capturedInputOpticalTransferPassed": false,
+  "classification": "unseen selected-region origin/allocation transfer",
+  "desiredExtentComponentCount": 64,
+  "desiredExtentMismatchedComponents": 0,
+  "geometry": "circle-500-center",
+  "helperCodeSHA256": "a00a4e174475ce1e6baf29b7dfea28528332f4a1f8bc0bc0e17becdeba98ee8c",
+  "independentWalleZeroByteParityPassed": false,
+  "liquidGlassParityEstablished": false,
+  "originComponentCount": 64,
+  "originMismatchedComponents": 0,
+  "physicalRetinaOutputTransferPassed": false,
+  "productionShaderChanged": false,
+  "radiusBinary32Count": 32,
+  "radiusBinary32Mismatches": 0,
+  "sampleCount": 32,
+  "selectedRegionAllocationTransferPassed": true,
+  "selectedRegionOriginTransferPassed": true,
+  "states": [
+    {
+      "alignmentExponent": 4,
+      "alignmentScale": 16,
+      "allocatedExtent": [
+        704,
+        704
+      ],
+      "backdropScale": 0.9755432605743408,
+      "bounds": [
+        321,
+        0,
+        677,
+        678
+      ],
+      "copyOffset": [
+        -17,
+        -16
+      ],
+      "destinationMipCount": 4,
+      "effectiveOrigin": [
+        304,
+        -16
+      ],
+      "helperDesiredExtent": [
+        704,
+        704
+      ],
+      "helperIntegerBounds": [
+        304,
+        -16,
+        704,
+        704
+      ],
+      "producerCropOrigin": [
+        321,
+        0
+      ],
+      "radius1": 2.5449180603027344,
+      "remaining": 0.032608985900878906,
+      "sampleIndex": 1
+    },
+    {
+      "alignmentExponent": 4,
+      "alignmentScale": 16,
+      "allocatedExtent": [
+        704,
+        704
+      ],
+      "backdropScale": 0.953134298324585,
+      "bounds": [
+        307,
+        0,
+        669,
+        669
+      ],
+      "copyOffset": [
+        -19,
+        -16
+      ],
+      "destinationMipCount": 4,
+      "effectiveOrigin": [
+        288,
+        -16
+      ],
+      "helperDesiredExtent": [
+        704,
+        704
+      ],
+      "helperIntegerBounds": [
+        288,
+        -16,
+        704,
+        704
+      ],
+      "producerCropOrigin": [
+        307,
+        0
+      ],
+      "radius1": 4.764726161956787,
+      "remaining": 0.06248760223388672,
+      "sampleIndex": 2
+    },
+    {
+      "alignmentExponent": 5,
+      "alignmentScale": 32,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.9284586906433105,
+      "bounds": [
+        291,
+        0,
+        659,
+        659
+      ],
+      "copyOffset": [
+        -35,
+        -32
+      ],
+      "destinationMipCount": 5,
+      "effectiveOrigin": [
+        256,
+        -32
+      ],
+      "helperDesiredExtent": [
+        736,
+        736
+      ],
+      "helperIntegerBounds": [
+        256,
+        -32,
+        736,
+        736
+      ],
+      "producerCropOrigin": [
+        291,
+        0
+      ],
+      "radius1": 7.0851359367370605,
+      "remaining": 0.09538841247558594,
+      "sampleIndex": 3
+    },
+    {
+      "alignmentExponent": 5,
+      "alignmentScale": 32,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.9061226844787598,
+      "bounds": [
+        278,
+        0,
+        649,
+        650
+      ],
+      "copyOffset": [
+        -54,
+        -32
+      ],
+      "destinationMipCount": 5,
+      "effectiveOrigin": [
+        224,
+        -32
+      ],
+      "helperDesiredExtent": [
+        736,
+        736
+      ],
+      "helperIntegerBounds": [
+        224,
+        -32,
+        736,
+        736
+      ],
+      "producerCropOrigin": [
+        278,
+        0
+      ],
+      "radius1": 9.073532104492188,
+      "remaining": 0.1251697540283203,
+      "sampleIndex": 4
+    },
+    {
+      "alignmentExponent": 6,
+      "alignmentScale": 64,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.8819971084594727,
+      "bounds": [
+        263,
+        0,
+        640,
+        640
+      ],
+      "copyOffset": [
+        -71,
+        -64
+      ],
+      "destinationMipCount": 6,
+      "effectiveOrigin": [
+        192,
+        -64
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        192,
+        -64,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        263,
+        0
+      ],
+      "radius1": 11.101675987243652,
+      "remaining": 0.15733718872070312,
+      "sampleIndex": 5
+    },
+    {
+      "alignmentExponent": 6,
+      "alignmentScale": 64,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.8584465980529785,
+      "bounds": [
+        249,
+        0,
+        630,
+        630
+      ],
+      "copyOffset": [
+        -57,
+        -64
+      ],
+      "destinationMipCount": 6,
+      "effectiveOrigin": [
+        192,
+        -64
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        192,
+        -64,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        249,
+        0
+      ],
+      "radius1": 12.961710929870605,
+      "remaining": 0.1887378692626953,
+      "sampleIndex": 6
+    },
+    {
+      "alignmentExponent": 6,
+      "alignmentScale": 64,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.8350076675415039,
+      "bounds": [
+        236,
+        0,
+        619,
+        619
+      ],
+      "copyOffset": [
+        -44,
+        -64
+      ],
+      "destinationMipCount": 6,
+      "effectiveOrigin": [
+        192,
+        -64
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        192,
+        -64,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        236,
+        0
+      ],
+      "radius1": 14.695451736450195,
+      "remaining": 0.21998977661132812,
+      "sampleIndex": 7
+    },
+    {
+      "alignmentExponent": 6,
+      "alignmentScale": 64,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.8117783069610596,
+      "bounds": [
+        223,
+        0,
+        608,
+        608
+      ],
+      "copyOffset": [
+        -95,
+        -64
+      ],
+      "destinationMipCount": 6,
+      "effectiveOrigin": [
+        128,
+        -64
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        128,
+        -64,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        223,
+        0
+      ],
+      "radius1": 16.298057556152344,
+      "remaining": 0.2509622573852539,
+      "sampleIndex": 8
+    },
+    {
+      "alignmentExponent": 6,
+      "alignmentScale": 64,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.7882442474365234,
+      "bounds": [
+        210,
+        0,
+        597,
+        597
+      ],
+      "copyOffset": [
+        -82,
+        -64
+      ],
+      "destinationMipCount": 6,
+      "effectiveOrigin": [
+        128,
+        -64
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        128,
+        -64,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        210,
+        0
+      ],
+      "radius1": 17.80429458618164,
+      "remaining": 0.28234100341796875,
+      "sampleIndex": 9
+    },
+    {
+      "alignmentExponent": 6,
+      "alignmentScale": 64,
+      "allocatedExtent": [
+        768,
+        704
+      ],
+      "backdropScale": 0.7643840312957764,
+      "bounds": [
+        198,
+        0,
+        584,
+        585
+      ],
+      "copyOffset": [
+        -70,
+        -64
+      ],
+      "destinationMipCount": 6,
+      "effectiveOrigin": [
+        128,
+        -64
+      ],
+      "helperDesiredExtent": [
+        768,
+        704
+      ],
+      "helperIntegerBounds": [
+        128,
+        -64,
+        768,
+        704
+      ],
+      "producerCropOrigin": [
+        198,
+        0
+      ],
+      "radius1": 19.210783004760742,
+      "remaining": 0.31415462493896484,
+      "sampleIndex": 10
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.7416746616363525,
+      "bounds": [
+        187,
+        0,
+        572,
+        573
+      ],
+      "copyOffset": [
+        -59,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        128,
+        -128,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        187,
+        0
+      ],
+      "radius1": 20.43662452697754,
+      "remaining": 0.3444337844848633,
+      "sampleIndex": 11
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        896,
+        768
+      ],
+      "backdropScale": 0.7183408737182617,
+      "bounds": [
+        175,
+        0,
+        560,
+        560
+      ],
+      "copyOffset": [
+        -175,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        896,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        896,
+        768
+      ],
+      "producerCropOrigin": [
+        175,
+        0
+      ],
+      "radius1": 21.581575393676758,
+      "remaining": 0.3755455017089844,
+      "sampleIndex": 12
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        896,
+        768
+      ],
+      "backdropScale": 0.6951115131378174,
+      "bounds": [
+        164,
+        0,
+        547,
+        548
+      ],
+      "copyOffset": [
+        -164,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        896,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        896,
+        768
+      ],
+      "producerCropOrigin": [
+        164,
+        0
+      ],
+      "radius1": 22.60602569580078,
+      "remaining": 0.40651798248291016,
+      "sampleIndex": 13
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.6710495948791504,
+      "bounds": [
+        153,
+        0,
+        534,
+        534
+      ],
+      "copyOffset": [
+        -153,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        153,
+        0
+      ],
+      "radius1": 23.54581642150879,
+      "remaining": 0.4386005401611328,
+      "sampleIndex": 14
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.648129940032959,
+      "bounds": [
+        143,
+        0,
+        520,
+        521
+      ],
+      "copyOffset": [
+        -143,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        143,
+        0
+      ],
+      "radius1": 24.326135635375977,
+      "remaining": 0.4691600799560547,
+      "sampleIndex": 15
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.6248104572296143,
+      "bounds": [
+        133,
+        0,
+        506,
+        507
+      ],
+      "copyOffset": [
+        -133,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        133,
+        0
+      ],
+      "radius1": 25.005050659179688,
+      "remaining": 0.5002527236938477,
+      "sampleIndex": 16
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.6012656688690186,
+      "bounds": [
+        123,
+        0,
+        492,
+        492
+      ],
+      "copyOffset": [
+        -123,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        123,
+        0
+      ],
+      "radius1": 25.57282829284668,
+      "remaining": 0.5316457748413086,
+      "sampleIndex": 17
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.5772988796234131,
+      "bounds": [
+        114,
+        0,
+        477,
+        477
+      ],
+      "copyOffset": [
+        -114,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        114,
+        0
+      ],
+      "radius1": 26.029321670532227,
+      "remaining": 0.5636014938354492,
+      "sampleIndex": 18
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        768,
+        768
+      ],
+      "backdropScale": 0.5544865131378174,
+      "bounds": [
+        105,
+        0,
+        462,
+        463
+      ],
+      "copyOffset": [
+        -105,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        768,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        768,
+        768
+      ],
+      "producerCropOrigin": [
+        105,
+        0
+      ],
+      "radius1": 26.34999656677246,
+      "remaining": 0.5940179824829102,
+      "sampleIndex": 19
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        640,
+        768
+      ],
+      "backdropScale": 0.5308408737182617,
+      "bounds": [
+        96,
+        0,
+        447,
+        447
+      ],
+      "copyOffset": [
+        -96,
+        -128
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        640,
+        768
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        640,
+        768
+      ],
+      "producerCropOrigin": [
+        96,
+        0
+      ],
+      "radius1": 26.565210342407227,
+      "remaining": 0.6255455017089844,
+      "sampleIndex": 20
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        640,
+        640
+      ],
+      "backdropScale": 0.5077052116394043,
+      "bounds": [
+        88,
+        1,
+        431,
+        431
+      ],
+      "copyOffset": [
+        -88,
+        -129
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        640,
+        640
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        640,
+        640
+      ],
+      "producerCropOrigin": [
+        88,
+        1
+      ],
+      "radius1": 26.66033363342285,
+      "remaining": 0.6563930511474609,
+      "sampleIndex": 21
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        640,
+        640
+      ],
+      "backdropScale": 0.48313117027282715,
+      "bounds": [
+        80,
+        5,
+        410,
+        410
+      ],
+      "copyOffset": [
+        -80,
+        -133
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        0,
+        -128
+      ],
+      "helperDesiredExtent": [
+        640,
+        640
+      ],
+      "helperIntegerBounds": [
+        0,
+        -128,
+        640,
+        640
+      ],
+      "producerCropOrigin": [
+        80,
+        5
+      ],
+      "radius1": 26.636314392089844,
+      "remaining": 0.6891584396362305,
+      "sampleIndex": 22
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        768,
+        640
+      ],
+      "backdropScale": 0.4607350826263428,
+      "bounds": [
+        73,
+        8,
+        391,
+        391
+      ],
+      "copyOffset": [
+        -201,
+        -136
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        768,
+        640
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        768,
+        640
+      ],
+      "producerCropOrigin": [
+        73,
+        8
+      ],
+      "radius1": 26.502214431762695,
+      "remaining": 0.719019889831543,
+      "sampleIndex": 23
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        640,
+        640
+      ],
+      "backdropScale": 0.43716883659362793,
+      "bounds": [
+        66,
+        11,
+        370,
+        371
+      ],
+      "copyOffset": [
+        -194,
+        -139
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        640,
+        640
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        640,
+        640
+      ],
+      "producerCropOrigin": [
+        66,
+        11
+      ],
+      "radius1": 26.245573043823242,
+      "remaining": 0.7504415512084961,
+      "sampleIndex": 24
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        640,
+        640
+      ],
+      "backdropScale": 0.4140803813934326,
+      "bounds": [
+        59,
+        14,
+        351,
+        351
+      ],
+      "copyOffset": [
+        -187,
+        -142
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        640,
+        640
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        640,
+        640
+      ],
+      "producerCropOrigin": [
+        59,
+        14
+      ],
+      "radius1": 25.879234313964844,
+      "remaining": 0.7812261581420898,
+      "sampleIndex": 25
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        640,
+        640
+      ],
+      "backdropScale": 0.38949131965637207,
+      "bounds": [
+        52,
+        16,
+        331,
+        330
+      ],
+      "copyOffset": [
+        -180,
+        -144
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        640,
+        640
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        640,
+        640
+      ],
+      "producerCropOrigin": [
+        52,
+        16
+      ],
+      "radius1": 25.36403465270996,
+      "remaining": 0.8140115737915039,
+      "sampleIndex": 26
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        640,
+        640
+      ],
+      "backdropScale": 0.3668820858001709,
+      "bounds": [
+        47,
+        18,
+        311,
+        311
+      ],
+      "copyOffset": [
+        -175,
+        -146
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        640,
+        640
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        640,
+        640
+      ],
+      "producerCropOrigin": [
+        47,
+        18
+      ],
+      "radius1": 24.776493072509766,
+      "remaining": 0.8441572189331055,
+      "sampleIndex": 27
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        640,
+        512
+      ],
+      "backdropScale": 0.3433380126953125,
+      "bounds": [
+        41,
+        20,
+        291,
+        291
+      ],
+      "copyOffset": [
+        -169,
+        -148
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        640,
+        512
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        640,
+        512
+      ],
+      "producerCropOrigin": [
+        41,
+        20
+      ],
+      "radius1": 24.048749923706055,
+      "remaining": 0.87554931640625,
+      "sampleIndex": 28
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        512,
+        512
+      ],
+      "backdropScale": 0.32010936737060547,
+      "bounds": [
+        36,
+        21,
+        271,
+        271
+      ],
+      "copyOffset": [
+        -164,
+        -149
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        512,
+        512
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        512,
+        512
+      ],
+      "producerCropOrigin": [
+        36,
+        21
+      ],
+      "radius1": 23.21486473083496,
+      "remaining": 0.9065208435058594,
+      "sampleIndex": 29
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        512,
+        512
+      ],
+      "backdropScale": 0.29554104804992676,
+      "bounds": [
+        31,
+        22,
+        250,
+        250
+      ],
+      "copyOffset": [
+        -159,
+        -150
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        512,
+        512
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        512,
+        512
+      ],
+      "producerCropOrigin": [
+        31,
+        22
+      ],
+      "radius1": 22.207630157470703,
+      "remaining": 0.9392786026000977,
+      "sampleIndex": 30
+    },
+    {
+      "alignmentExponent": 7,
+      "alignmentScale": 128,
+      "allocatedExtent": [
+        512,
+        512
+      ],
+      "backdropScale": 0.2730255126953125,
+      "bounds": [
+        26,
+        22,
+        231,
+        231
+      ],
+      "copyOffset": [
+        -154,
+        -150
+      ],
+      "destinationMipCount": 7,
+      "effectiveOrigin": [
+        -128,
+        -128
+      ],
+      "helperDesiredExtent": [
+        512,
+        512
+      ],
+      "helperIntegerBounds": [
+        -128,
+        -128,
+        512,
+        512
+      ],
+      "producerCropOrigin": [
+        26,
+        22
+      ],
+      "radius1": 21.171476364135742,
+      "remaining": 0.96929931640625,
+      "sampleIndex": 31
+    },
+    {
+      "alignmentExponent": 6,
+      "alignmentScale": 64,
+      "allocatedExtent": [
+        384,
+        384
+      ],
+      "backdropScale": 0.25,
+      "bounds": [
+        22,
+        22,
+        212,
+        212
+      ],
+      "copyOffset": [
+        -86,
+        -86
+      ],
+      "destinationMipCount": 6,
+      "effectiveOrigin": [
+        -64,
+        -64
+      ],
+      "helperDesiredExtent": [
+        384,
+        384
+      ],
+      "helperIntegerBounds": [
+        -64,
+        -64,
+        384,
+        384
+      ],
+      "producerCropOrigin": [
+        22,
+        22
+      ],
+      "radius1": 20.0,
+      "remaining": 1.0,
+      "sampleIndex": 32
+    }
+  ],
+  "status": "passed",
+  "temporalMeshSourceMipTransferPassed": false,
+  "timelineSHA256": "29f8c3ad12543e2408fda166d5123816f60a1c10dc0c44c0b2ceed8827dfbe10",
+  "traceSHA256": "2401bd4eac0dd05d5f46240f62c9db8513c0fd9243902501cdc3c4eeb003d761",
+  "variableBlurSelectedRegionOriginResultSchemaVersion": 1
+}

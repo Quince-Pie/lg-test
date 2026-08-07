@@ -11508,3 +11508,86 @@ frames reproduced through Walle with zero unequal bytes. The production shader
 therefore remains unchanged at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`
 and is not yet authorized for parity-sensitive changes.
+
+The selected-region origin is no longer a fitted phase rule. A value-blind
+direct-Retina calibration at commit `f6293cf` retained exactly 32 calls to the
+complete 1,124-byte
+`CA::OGL::compute_variable_blur_parameters(unsigned int, unsigned int,
+CA::Bounds const&, float, float)` body, SHA-256
+`a00a4e174475ce1e6baf29b7dfea28528332f4a1f8bc0bc0e17becdeba98ee8c`.
+Calls were selected only by a live `CA::OGL::capture_backdrop` ancestor; no
+crop, result, image, or pixel selected a record. The trace and timeline
+SHA-256 values are
+`05763deca2bb68d2105a6f42da74c780cb35ead1ef9a78bb2ed9702759acbfec`
+and `cc56633adc0ce56bba73a953748ceb0160a8373cfe23fd9c6aba8d20ad4b92b2`.
+
+The helper's exact regular-material allocation sequence is:
+
+```text
+r = binary32(0.5 * max(2 * inputBlurRadius, inputBleedBlurRadius)
+             * capturedBackdropScale)
+t = binary32(binary32(r) * binary32(1.6))
+maximumLevelCount = floor(binary32(log2f(max(selectedWidth,
+                                             selectedHeight)))) + 1
+requestedLevelCount = max(ceil(binary32(log2f(t))), 0) + 1
+if t != 0 and requestedLevelCount == 1: requestedLevelCount = 2
+m = min(maximumLevelCount, requestedLevelCount)
+A = 2 ** min(m, 7)
+e = 2.8 * binary64(r)
+O = A * floor((producerCropOrigin - e) / A)
+U = A * ceil((producerCropOrigin + selectedExtent + e) / A)
+desiredExtent = U - O
+allocatedExtent = 64 * ceil(desiredExtent / 64)
+copyBaseOffset = O - producerCropOrigin
+```
+
+The instruction order matters. The lower edge uses a separate binary64
+multiply by exact `2.8`; the size uses a fused multiply-add with exact `-5.6`;
+Apple then executes `frintm` on the reduced lower edge and `frintp` on the
+reduced upper edge before restoring the power-of-two phase. Nearest rounding
+is false. The phase `A` is the live mip-derived sequence 16, 32, 64, or 128 in
+this calibration, not the older four-pixel clear-material fit. It is also
+separate from the final 64-pixel Metal storage allocation.
+
+The opened `circle-499-center` calibration matches all 64 origin components,
+all 64 desired-extent components, all 64 final-allocation components, and all
+32 public-to-helper binary32 radius values exactly. Every helper origin equals
+the producer crop transform plus the signed copy-base uniform. Two states are
+an explicit discriminator: the helper requests 736x736, while the final Metal
+allocation is 768x768. The immutable calibration result is
+`Analysis/variable_blur_selected_region_origin_circle499_calibration_result.json`.
+It remains calibration rather than transfer authority.
+
+Before any `circle-500-center` output was opened, the same arithmetic,
+1,124-byte helper identity, execution-order join, exact component counts, and
+zero-tolerance gate were frozen at commit `f72d4da` in
+`Analysis/variable_blur_selected_region_origin_circle500_holdout_preregistration.json`.
+That geometry had zero retained runtime evidence. The direct Retina executor
+is
+`Analysis/run_variable_blur_selected_region_origin_circle500_holdout_local_macos_26_6_1.sh`;
+GitHub Actions is not used.
+
+The unseen circle-500 dispatch passes. Native LLDB and the frozen validator
+both exit zero, and an independent local `nix develop` validation is
+byte-identical. The trace, timeline, and validation SHA-256 values are
+respectively
+`2401bd4eac0dd05d5f46240f62c9db8513c0fd9243902501cdc3c4eeb003d761`,
+`29f8c3ad12543e2408fda166d5123816f60a1c10dc0c44c0b2ceed8827dfbe10`,
+and `eb780c4bc6e7376a3a5857b51dda939d2766ce236e0bf023e4bd53668902a3a1`.
+All 64 origin, 64 desired-extent, 64 allocation-extent, and 32 binary32 radius
+checks match exactly. The phase again traverses 16, 32, 64, and 128, including
+the endpoint return from 128 to 64; the two 736-to-768 allocation
+discriminators recur. The immutable result is
+`Analysis/variable_blur_selected_region_origin_circle500_holdout_result.json`.
+
+This prospectively closes selected-region origin and storage allocation for
+the tested regular/dark/materialize family, in addition to the earlier exact
+crop/DOD gate. Walle can now implement that geometry path behind immutable
+tests without changing the production shader. Four independent product gates
+still remain before Liquid Glass parity can be claimed: appearance-dependent
+presentation lifetime; captured-input optical transfer plus temporal,
+mesh/source, mip, and color behavior; physical Retina color/display/compositor
+transfer; and fresh Walle frames with zero unequal bytes. The production
+shader and development flake remain unchanged at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`
+and `b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01`.
