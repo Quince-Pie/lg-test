@@ -10638,3 +10638,24 @@ public-to-provider construction and temporal join. Fresh material/profile
 interventions, the upstream integer crop/allocation policy, physical compositor
 and color transfer, and an independent zero-unequal-byte Walle frame remain
 open. Liquid Glass parity and production shader changes remain unauthorized.
+
+The frozen successor subsequently ran at commit
+`1864f6489baf3209bd78e5769f3ca754a7cc2b6c` on the same active M1 Retina
+session and passed without amendment. The independent local validator confirms
+1,309 complete provider calls, 1,309 distinct stable objects, 1,309 distinct
+bitwise-linked returns, one exact initial positive-zero return, 1,308 exact
+noninitial object-law returns, and zero capture failures. All 32 structurally
+selected last calls were unique global signature matches; all 576 loaded-field
+predictions and all 32 public return predictions passed bit for bit. The final
+endpoint remained exactly 83.0.
+
+The accepted trace, timeline, and validation SHA-256 values are respectively
+`9819742a69ddd6cf09ca6633100633e7b69aa5f653e197a0b0a41777e3dc0a1f`,
+`1155105eb2ec062eb52df06dc9af48263e859cf4c09a5443fc35ea8de25cb95b`,
+and `285b87e7f7a47cd738c243b0dac8f41a99326fe88a1daa451f43efbaa6e9ee86`.
+The canonical result is
+`Analysis/backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1_result.json`
+with SHA-256
+`9ce1e32be073ef9ff0684fe8537d7fd44870f4b6566ac55498a25772bad7bc2e`.
+This closes the active-Retina same-profile provider-construction/temporal-join
+gate; it does not change the remaining parity exclusions above.

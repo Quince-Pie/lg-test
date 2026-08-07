@@ -1,0 +1,76 @@
+{
+  "artifact": {
+    "artifactDirectory": "local-case22-provider-timeline-marker-retina-transfer-1864f64-run1",
+    "captureCommit": "1864f6489baf3209bd78e5769f3ca754a7cc2b6c",
+    "captureContextSHA256": "c633eb35654183e09ad8de7ec079b90a14f456adf170ddb1cbe5a2e365586a7d",
+    "captureSessionPreflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "lldbLogSHA256": "63eac1acd660eacba04d7d6b1555dc5855f2b65418508282898c79a04cbc3b98",
+    "providerTraceSHA256": "9819742a69ddd6cf09ca6633100633e7b69aa5f653e197a0b0a41777e3dc0a1f",
+    "transitionTimelineSHA256": "1155105eb2ec062eb52df06dc9af48263e859cf4c09a5443fc35ea8de25cb95b",
+    "validationSHA256": "285b87e7f7a47cd738c243b0dac8f41a99326fe88a1daa451f43efbaa6e9ee86"
+  },
+  "authority": {
+    "authenticatedMarkerLastCallTemporalJoinEstablishedSamples1Through32": true,
+    "freshMaterialAppearanceGeometryProfileTransferEstablished": false,
+    "generalPublicInputConstructionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "productionShaderAuthorized": false,
+    "sameProfileAll18PublicProviderLoadedFieldsTransferredProspectively": true,
+    "sameProfileExactPublicProviderReturnLawTransferredProspectively": true,
+    "upstreamCropAllocationPolicyEstablished": false
+  },
+  "backdropMarginCase22ProviderTimelineMarkerRetinaTransferLocalMacOSResultSchemaVersion": 1,
+  "capture": {
+    "allProviderObjectsUnchanged": true,
+    "canonicalImageCount": 33,
+    "distinctCanonicalImageCount": 33,
+    "distinctProviderObjectCount": 1309,
+    "distinctProviderReturnCount": 1309,
+    "failedSampleCount": 0,
+    "initialPositiveZeroReturnCount": 1,
+    "lldbExitStatus": 0,
+    "noninitialExactObjectReturnLawCount": 1308,
+    "providerCallCount": 1309,
+    "providerGroupLinkedCallCount": 1309,
+    "timelineMarkerCount": 33,
+    "validationExitStatus": 0
+  },
+  "classification": "successful prospective active-Retina value-blind last-completed-call transfer of all 18 loaded provider fields and the exact public return law for samples 1 through 32",
+  "predictions": {
+    "all32SamplesAcceptanceGated": true,
+    "distinctStructurallySelectedProviderCallCount": 32,
+    "firstSelectedProviderCallIndex": 48,
+    "lastSelectedProviderCallIndex": 1308,
+    "loadedFieldPredictionCount": 576,
+    "openedSampleCount": 32,
+    "returnPredictionCount": 32,
+    "returnLaw": "abs(inputShadowOffset.y) + abs(inputShadowAmount)",
+    "sample32ReturnF64": 83.0,
+    "selectionUsesCapturedValues": false,
+    "structurallySelectedCallRule": "last completed provider call in the preceding exact marker interval"
+  },
+  "preregistration": {
+    "path": "Analysis/backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1_preregistration.json",
+    "runtimeOutcomeFrozenBeforeDispatch": null,
+    "sha256": "60d1a55bb4f6438762723011c4ef02f3315c61a8c3ffa33c97415f0929f59204"
+  },
+  "retinaSession": {
+    "backingScaleFactor": 2,
+    "displayActive": true,
+    "displayAsleep": false,
+    "logicalPoints": [
+      1728,
+      1117
+    ],
+    "physicalPixels": [
+      3456,
+      2234
+    ],
+    "preflightPassed": true,
+    "sessionLocked": false,
+    "sessionLoginDone": true,
+    "sessionOnConsole": true
+  }
+}
