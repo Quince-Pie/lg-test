@@ -9112,3 +9112,70 @@ the upstream animation-progress law, public/environment endpoint selection,
 integer crop/allocation policy, physical Retina compositor/color behavior, a
 real Walle zero-unequal-byte frame, or Liquid Glass parity. No production
 shader change is authorized.
+
+### Direct native `Parameters` mixer basis and field policies
+
+The dedicated mixer can now be invoked independently of a render, public
+provider return, GUI session, or crop. A C23 arm64 probe loads the authenticated
+DesignLibrary image, calls Apple's default `Parameters` initializer, and uses a
+minimal assembly bridge to supply the private Swift ABI exactly: `from` in
+`x20`, `to` in `x0`, fraction in `d0`, and the indirect result in `x8`. The
+probe is compiled directly with Apple's Command Line Tools and never embeds a
+Nix store path.
+
+The default value revealed an important evidence-handling detail. The semantic
+value is 1,025 bytes with a 1,032-byte stride, but Swift leaves 34 disjoint
+padding ranges unspecified. Raw hashes may therefore vary even when every
+semantic bit is identical. The capture constructs a semantic-byte mask from
+the frozen field layout, zeroes only those padding bytes, repeats every mixer
+call, and compares the normalized 1,025-byte result bitwise. The normalized
+Apple default has SHA-256
+`9de341bfd47d97aa6f14b3228c8654e3eace7066cf4294879e130b1dd73607d3`.
+
+All 102 enumerated non-color numeric fields now have measured bitwise policies
+at fractions 0, 0.25, 0.5, 0.75, and 1 in valid Apple-initialized containers:
+
+* 99 fields use the mixer's declared weighted arithmetic, with binary64 or
+  binary32 rounding according to their stored type;
+* `updateRate` and `contentOpacity` preserve the `from` endpoint for every
+  fraction, including exactly 1;
+* `backdropScale` returns `from` at `t <= 0`, `to` at `t >= 1`, and the ordered
+  maximum endpoint in the strict interior. The reverse-direction basis proves
+  that this is a maximum rule, not an accidental preference for `to`.
+
+All 14 optional top-level effect containers use zero extension: a missing
+endpoint is nil only at its exact endpoint and is represented by a present,
+zero-valued container throughout the open interval. The edge-bleed
+`useDarkenBlending` Boolean is discrete and chooses `to` at exactly `t >= 0.5`
+in both directions. These results include the distinct edge-bleed nil extra
+inhabitant rather than assuming the ordinary Optional tag used elsewhere.
+
+All 15 nested `Optional<Color.Resolved>` locations produce identical 17
+semantic output bytes for the same endpoints and fraction. Alpha is exact
+binary32 weighted interpolation. RGB is deliberately not raw component-wise
+linear interpolation: for endpoints `(0.2, 0.3, 0.4, 0.5)` and
+`(0.8, 0.7, 0.6, 0.9)`, the `t = 0.25` result is exactly
+`(0.3069762885570526, 0.38193514943122864, 0.4456043839454651,
+0.6000000238418579)`. That isolates one shared resolved-color conversion helper
+as the final unknown inside the `Parameters` mixer; the capture does not yet
+claim its transfer law.
+
+The capture, native bridge, and canonical result are:
+
+```text
+Analysis/capture_designlibrary_parameters_mixer_basis_local_macos_26_6_1.py
+  SHA-256 829e758062d1905ed5635b09bf458337bebce3e41f506ec301d80c66112d2442
+Analysis/probe_designlibrary_parameters_mixer_local_macos_26_6_1.c
+  SHA-256 d2241e57c6667b3c259ef5b9dbb6963323535b968b7a8f722cebc6ceedeabc6f
+Analysis/invoke_designlibrary_parameters_mixer_arm64.S
+  SHA-256 3c2587d7bc178abe7ff2b1c2ba7f583a7b7b7e615f1a9d3aca90428e4713103d
+Analysis/designlibrary_parameters_mixer_basis_local_macos_26_6_1_result.json
+  SHA-256 d07da93bc93981b3d5d2cdc123531e9695a3673834f9482a69d3a74507cc0c77
+```
+
+This closes every non-color field policy and proves one common color policy
+boundary. It does **not** yet establish the exact resolved-color RGB transfer,
+upstream animation-progress law, public/environment endpoint selection,
+integer crop/allocation policy, physical Retina compositor/color behavior, an
+independent Walle zero-unequal-byte frame, or Liquid Glass parity. No
+production shader change is authorized.
