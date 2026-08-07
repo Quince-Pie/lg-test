@@ -8150,6 +8150,32 @@ select the validation path. The validation result also records the validator's
 own path and SHA-256, while unresolved scientific outcomes remain `null` rather
 than being inferred from transport success.
 
+While that prospective run awaited a legitimately unlocked console, a separate
+offline analysis made no new Apple observation. The retrospective,
+output-blind replayer is
+`Analysis/analyze_backdrop_margin_case22_provider_complete_semantics.py`,
+SHA-256
+`3fffc6c9052df11c2ebdb7e010c5afc2ba24c6304de4f6c1c83cb9edd28b0d62`.
+It disassembles the already authenticated 984-byte provider as
+`arm64e-apple-darwin`, interprets its exact floating comparisons, raw
+`FCSEL` choices, branches, object loads, and Gaussian helper call, and checks
+the raw binary64 return instead of fitting a formula to the outputs.
+
+Across the prior selected instruction trace and three opened object matrices,
+all 3,683/3,683 finite returns replay bit for bit. The selected nonzero sample
+also reproduces all 74 retained instruction offsets exactly. The corpus opens
+three execution paths and 101/246 static instructions, but only 13/41
+conditional branches; just five branches have both outcomes. Twenty-eight
+branches remain unexecuted and eight remain one-sided. This establishes exact
+replay over the retained objects, not a complete finite provider law, public
+field mapping, or unseen transfer. The canonical result is
+`Analysis/backdrop_margin_case22_provider_complete_semantics_retrospective_result.json`,
+SHA-256
+`eee1d6a08646395ab7cd6af7c7752e498558fe6e5fe4ea71700cf421bd60fafd`.
+The next unlocked complete matrix will be passed through the same instruction
+replayer, so its incremental path and branch coverage are measured rather than
+described qualitatively.
+
 Formal parity remains 0/1. After this unlocked complete provider gate, the
 remaining product gates are still: authenticate public-input-to-provider
 mappings and every opened provider branch; close the upstream integer

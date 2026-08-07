@@ -1,0 +1,292 @@
+{
+  "authority": {
+    "authenticatedProviderCodeReplayed": true,
+    "everyStaticBranchOutcomeObserved": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "publicInputFieldMappingEstablished": false,
+    "retainedFiniteObjectReturnsReplayedBitwise": true,
+    "unseenObjectTransferEstablished": false
+  },
+  "backdropMarginCase22ProviderCompleteSemanticsAnalysisSchemaVersion": 1,
+  "classification": "retrospective output-blind instruction-level replay of the authenticated finite DesignLibrary case-22 provider over retained object matrices",
+  "disassembler": {
+    "executable": "llvm-mc",
+    "targetTriple": "arm64e-apple-darwin",
+    "version": "LLVM (http://llvm.org/): | LLVM version 22.1.8 | Optimized build."
+  },
+  "inputs": {
+    "analysisSource": {
+      "path": "Analysis/analyze_backdrop_margin_case22_provider_complete_semantics.py",
+      "sha256": "3fffc6c9052df11c2ebdb7e010c5afc2ba24c6304de4f6c1c83cb9edd28b0d62"
+    },
+    "traces": [
+      {
+        "matchingReturnCount": 1,
+        "path": "../artifacts/mac-quince-macos-26.6.1-case22-provider-passed-42f9413/backdrop-margin-writer-trace.json",
+        "sampleCount": 1,
+        "sha256": "19e7d74f3aba55e5c6924d7119fddcf20578a98a4e7b946cc4a435918df4059f"
+      },
+      {
+        "matchingReturnCount": 1222,
+        "path": "../artifacts/local-case22-provider-object-matrix-live-3a3a64b-run1/provider-object-matrix-trace.json",
+        "sampleCount": 1222,
+        "sha256": "8539c9bb226831970b242a95530378bbad86cc3287bdaf1a6f541a91dcfa15fa"
+      },
+      {
+        "matchingReturnCount": 1232,
+        "path": "../artifacts/local-case22-provider-object-matrix-normal-d28806a-run1/provider-object-matrix-trace.json",
+        "sampleCount": 1232,
+        "sha256": "32f82fab6a209831347bd2673a6c83fb304cdc72fb04045f37ed23c1ea0be614"
+      },
+      {
+        "matchingReturnCount": 1228,
+        "path": "../artifacts/local-case22-provider-object-matrix-minimal-retry2-b694a91-run1/provider-object-matrix-trace.json",
+        "sampleCount": 1228,
+        "sha256": "0e83312d2535ad6601b6bcae178e939e13a9ebae95d15efcc166ffde013e6d72"
+      }
+    ]
+  },
+  "provider": {
+    "codeByteCount": 984,
+    "codeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+    "instructionCount": 246
+  },
+  "replay": {
+    "allReturnWordsMatchedBitwise": true,
+    "bothOutcomeConditionalBranchCount": 5,
+    "branchOutcomes": [
+      {
+        "instructionOffset": 120,
+        "observedNotTaken": true,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 128,
+        "observedNotTaken": false,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 152,
+        "observedNotTaken": true,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 160,
+        "observedNotTaken": true,
+        "observedTaken": false
+      },
+      {
+        "instructionOffset": 168,
+        "observedNotTaken": false,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 292,
+        "observedNotTaken": true,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 304,
+        "observedNotTaken": true,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 328,
+        "observedNotTaken": false,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 360,
+        "observedNotTaken": false,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 376,
+        "observedNotTaken": true,
+        "observedTaken": false
+      },
+      {
+        "instructionOffset": 384,
+        "observedNotTaken": false,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 452,
+        "observedNotTaken": true,
+        "observedTaken": true
+      },
+      {
+        "instructionOffset": 528,
+        "observedNotTaken": true,
+        "observedTaken": false
+      }
+    ],
+    "distinctExecutionPathCount": 3,
+    "distinctExpectedReturnWords": [
+      "0000000000000000",
+      "0000006002a22a40"
+    ],
+    "distinctReplayedReturnWords": [
+      "0000000000000000",
+      "0000006002a22a40"
+    ],
+    "executedInstructionCount": 101,
+    "executedInstructionOffsets": [
+      0,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28,
+      32,
+      36,
+      40,
+      44,
+      48,
+      52,
+      56,
+      60,
+      64,
+      68,
+      72,
+      76,
+      80,
+      84,
+      88,
+      92,
+      96,
+      100,
+      104,
+      108,
+      112,
+      116,
+      120,
+      124,
+      128,
+      132,
+      136,
+      140,
+      144,
+      148,
+      152,
+      156,
+      160,
+      164,
+      168,
+      256,
+      260,
+      264,
+      268,
+      272,
+      276,
+      280,
+      284,
+      288,
+      292,
+      296,
+      300,
+      304,
+      308,
+      312,
+      316,
+      320,
+      324,
+      328,
+      332,
+      336,
+      340,
+      344,
+      348,
+      352,
+      356,
+      360,
+      364,
+      368,
+      372,
+      376,
+      380,
+      384,
+      436,
+      440,
+      444,
+      448,
+      452,
+      456,
+      460,
+      464,
+      468,
+      472,
+      476,
+      480,
+      484,
+      488,
+      492,
+      496,
+      500,
+      504,
+      508,
+      512,
+      516,
+      520,
+      524,
+      528,
+      532
+    ],
+    "executionPathSampleCounts": [
+      3679,
+      3,
+      1
+    ],
+    "finiteLoadedObjectSampleCount": 3683,
+    "matchingRetainedInstructionPathSampleCount": 1,
+    "matchingReturnCount": 3683,
+    "mismatches": [],
+    "observedConditionalBranchCount": 13,
+    "retainedInstructionPathSampleCount": 1,
+    "sampleCount": 3683,
+    "singleOutcomeConditionalBranchOffsets": [
+      128,
+      160,
+      168,
+      328,
+      360,
+      376,
+      384,
+      528
+    ],
+    "staticConditionalBranchCount": 41,
+    "unobservedConditionalBranchOffsets": [
+      176,
+      184,
+      204,
+      212,
+      232,
+      240,
+      248,
+      540,
+      560,
+      568,
+      620,
+      628,
+      688,
+      696,
+      704,
+      724,
+      740,
+      748,
+      760,
+      768,
+      788,
+      800,
+      812,
+      848,
+      872,
+      904,
+      932,
+      944
+    ]
+  }
+}
