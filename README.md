@@ -9645,3 +9645,70 @@ transition-progress producers, the general integer crop-allocation policy,
 physical Retina compositor/color transfer, an independent Walle
 zero-unequal-byte frame, or Liquid Glass parity. No production shader change
 is authorized.
+
+### Direct public `Parameters` to `BackgroundFilter` margin join
+
+The default-context table above is now joined to the immediate allocation-
+margin provider through Apple code rather than an offline reconstruction. For
+each of the 42 frozen Parameters values, a native probe directly invokes the
+complete 1,044-byte `BackgroundFilter` constructor at DesignLibrary module
+offset `0xbad00`, then invokes the complete 984-byte
+`sdfBackdropMargin` provider at offset `0xb70b4` on the resulting 504-byte
+value. The exact code hashes are, respectively:
+
+```text
+constructor  71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d
+provider     a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b
+```
+
+Both complete code regions and the DesignLibrary UUID are authenticated and
+printed before the parent writes any Parameters input. Captured constructor
+objects and margin returns never select a case or code path. The controlled
+constructor arguments are layer index zero and environment-flags raw value
+zero; neither is presented as the production live-transition value.
+
+Three fresh processes reproduce all 42 complete objects and returns bit for
+bit. The objects collapse to the same 27 equivalence classes as the normalized
+Parameters table. Every present optional provider group exactly copies its
+already-proved Parameters payload range; the identity configuration's absent
+refraction group produces the exact 52-byte zero value.
+
+Only three binary64 margin words occur:
+
+```text
++0.0                  0000000000000000  35 cases
+64.0                  0000000000005040  text
+9.6000000000000014    3433333333332340  siriSnippet and regular->clear
+                                            t = -0.25, 0, 0.25, 0.5, 0.75
+```
+
+The exact `t = 1` and `t = 1.25` regular-to-clear mixes return `+0.0`.
+All eight measured regular modifiers also construct the regular object and
+return `+0.0`. These are default-context values. They do not contradict the
+positive margins in animated live-transition captures: those captures use
+time-varying Parameters and a transition-wide allocation maximum that this
+headless table deliberately does not claim to produce.
+
+The capture, native probe, arm64 bridge, and canonical result are:
+
+```text
+Analysis/capture_designlibrary_public_parameters_background_filter_local_macos_26_6_1.py
+  SHA-256 51b6bd9e723373ad45d6235750f793dec4ca2fd1e7817982fc1cc8477ff7739b
+Analysis/probe_designlibrary_public_parameters_background_filter_local_macos_26_6_1.c
+  SHA-256 674bec9de543da7827e283ef493ec5f10bd82458b1afec6bc3c65d09e403ef06
+Analysis/invoke_designlibrary_public_parameters_background_filter_arm64.S
+  SHA-256 47f243595c69d779a5d40e205d255b0b5922164039a5f5da6f9f47f784d850e0
+Analysis/designlibrary_public_parameters_background_filter_local_macos_26_6_1_result.json
+  SHA-256 6abfb22e24c5868db0154a3b83038920f76625f7174494ea1dd01d816e0d038f
+```
+
+The run uses Apple Command Line Tools directly on the local Mac and verifies
+that the probe executable embeds no Nix store path. It requires no unlocked
+display, GUI, render, image, crop, or pixel.
+
+This closes the controlled default-context Parameters-to-concrete-provider-
+margin table. The live transition Parameters producer, transition-wide margin
+maximum, direction-dependent allocation topology, general integer crop
+policy, physical Retina/color/compositor transfer, and independent Walle
+zero-unequal-byte frames remain open. Liquid Glass parity and production
+shader changes remain unauthorized.
