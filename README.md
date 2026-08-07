@@ -9813,3 +9813,64 @@ production, transition-wide margin allocation, direction-dependent crop
 topology, physical Retina/color/compositor transfer, or an independent Walle
 zero-unequal-byte frame. Liquid Glass parity and production shader changes
 remain unauthorized.
+
+### Exact flags-produced Environment to concrete filter and margin
+
+The flags-produced Parameters table is now joined directly to Apple's concrete
+504-byte `BackgroundFilter` and `sdfBackdropMargin` result. For each of the 36
+frozen Environment cases, the probe passes both the exact normalized Parameters
+blob and that case's real `EnvironmentFlags` word to the authenticated
+constructor at DesignLibrary module offset `0xbad00`. It then calls the complete
+authenticated margin provider at `0xb70b4`. The constructor and provider code
+regions remain 1,044 bytes with SHA-256
+`71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d`
+and 984 bytes with SHA-256
+`a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b`.
+Both complete code identities are checked before the first input is written.
+
+Three fresh processes reproduce all 36 full objects and margin words bit for
+bit. The cases collapse to 11 concrete objects, rather than the eight
+Parameters states. Apple copies each exact flags word into object bytes
+`496..<504` (`0x1f0..<0x1f8`). Consequently, equal Parameters do not imply an
+equal concrete object: `appears_active_false` and
+`has_tinted_elements_true` retain the baseline Parameters blob but differ from
+its object through their exact flags. Likewise, window-inactive and
+non-foreground glass share Parameters bytes but retain distinct objects.
+
+Only two binary64 margin words occur:
+
+```text
++0.0                  0000000000000000   3 cases
+9.6000000000000014    3433333333332340  33 cases
+```
+
+The exact zero-margin cases are window inactive, non-foreground glass, and
+Reduce Transparency. Every other measured case, including the flags-produced
+regular baseline, returns exact `9.6000000000000014`. This is intentionally
+different from the earlier zero-flags `initialState` regular case, which
+returns `+0.0`; the two input boundaries must not be conflated.
+
+The capture, native probe, inherited arm64 bridge, and canonical result are:
+
+```text
+Analysis/capture_designlibrary_environment_parameters_background_filter_local_macos_26_6_1.py
+  SHA-256 08708c0f4717d9496202ed14c03278a4084407816e18d1dfbd8ec58779eb7ac5
+Analysis/probe_designlibrary_environment_parameters_background_filter_local_macos_26_6_1.c
+  SHA-256 9536abaf99ae6d78663981c90afcd80aab5654fde12366c996039dd71b01f52c
+Analysis/invoke_designlibrary_public_parameters_background_filter_arm64.S
+  SHA-256 47f243595c69d779a5d40e205d255b0b5922164039a5f5da6f9f47f784d850e0
+Analysis/designlibrary_environment_parameters_background_filter_local_macos_26_6_1_result.json
+  SHA-256 69c19f885c9de3a4b052f602931b2aba6c5fcf76e8831df0f626a050cb95655a
+```
+
+The native capture uses Apple Command Line Tools directly on the local Mac,
+requires no unlocked display, and verifies that the executable embeds no Nix
+store path. Captured object or margin bytes never select a case.
+
+This closes the controlled flags-produced Environment/Parameters-to-concrete-
+filter-and-margin table. It does **not** establish the live SwiftUI Environment
+updater, transition-progress producer, transition-wide margin maximum,
+direction-dependent allocation topology, general integer crop policy,
+physical Retina/color/compositor transfer, or an independent Walle
+zero-unequal-byte frame. Liquid Glass parity and production shader changes
+remain unauthorized.
