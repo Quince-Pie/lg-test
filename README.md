@@ -11339,3 +11339,41 @@ the 128 arithmetic components must match bit-for-bit. If pointer reuse occurs,
 all earlier matches must be discarded exactly; the allocator is not required
 to make that branch occur in this particular process. The earlier unseen 487
 capture already supplies a frozen 33-match/one-reuse instance of that branch.
+
+The split `circle-497-center` dispatch at commit `7f0807a` then produced a real
+arithmetic falsification. Native capture and the split pointer gate passed, and
+31/32 rectangles were bit-exact. The endpoint-adjacent sample differed only in
+Y by two binary64 ULP and height by one ULP. The cause is another observable
+operation-order boundary. V3 evaluated:
+
+```text
+(-(localUnionHeight + localUnionOriginY) + carrierY) + endpointOffset
+```
+
+Apple groups the endpoint offset into the translation first:
+
+```text
+-(localUnionHeight + localUnionOriginY) + (carrierY + endpointOffset)
+```
+
+For the opened discriminator this changes Y from `205.17254632701298` to
+Apple's exact `205.17254632701292` and height from `488.74735933552364` to
+`488.7473593355237`. The corrected grouping replays all 32 rectangles and all
+128 components exactly, but it was derived from the opened target and therefore
+has no prospective authority. V3 remains failed. The immutable result is
+`Analysis/prepare_layer_live_crop_replay_v3_7f0807a_split_holdout_falsification_result.json`;
+the trace and timeline hashes are
+`b40239659cd4f53054c232fb42b603c82450ccdd55c9c28061ecbfb793f666e5`
+and `36e7f816610b45b6c382241eb7991d542ca28ad0e9efb69817132e1d62416fb0`.
+
+Crop replay v4 changes only that final parenthesization. The public-to-binary32
+bleed conversion, exact SDF unapply/apply round-trip, DOD intersection, Filter
+FMA order, and last-store selector remain unchanged.
+
+Retrospective v4 replay is now exact across all six opened live captures: the
+two 485 traces, the 800 calibration, the 487 precision discriminator, the 496
+arithmetic pass, and the failed 497 endpoint discriminator. All 192 rectangles
+and all 768 binary64 components match with maximum ULP distance `[0,0,0,0]`
+and no tolerance. The canonical result is
+`Analysis/prepare_layer_live_crop_replay_v4_reanalysis_result.json`. This is
+calibration evidence only; a fresh runtime-unseen v4 geometry remains mandatory.

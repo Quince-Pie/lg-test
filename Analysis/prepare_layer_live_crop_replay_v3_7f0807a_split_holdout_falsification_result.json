@@ -1,0 +1,128 @@
+{
+  "prepareLayerLiveCropReplayV3SplitHoldoutFalsificationResultSchemaVersion": 1,
+  "classification": "immutable prospective bitwise falsification of v3 endpoint arithmetic on runtime-unseen circle-497; native capture, split pointer selection, and 31 other rectangles passed, but the frozen left-associated endpoint translation differed in two binary64 components",
+  "conclusion": "falsified",
+  "captureCommit": "7f0807af3b34318cd8491aea0424e7313c6c4f94",
+  "capturedAtUtc": "2026-08-07T20:50:42Z",
+  "inputs": {
+    "traceSHA256": "b40239659cd4f53054c232fb42b603c82450ccdd55c9c28061ecbfb793f666e5",
+    "timelineSHA256": "36e7f816610b45b6c382241eb7991d542ca28ad0e9efb69817132e1d62416fb0",
+    "preregistrationSHA256": "2b7958c6586c1c774b452204fdb31a1aaaa99e8905cab5e6ef1a188b3dc43510",
+    "splitValidatorSHA256": "507b97d7ec76e20312fb89052b6018fd86261a064f7bef68bb28a1289760326e",
+    "v3ArithmeticModelSHA256": "ee5fed1aaa98423abafc2ad415a8de2ee599340ee084eb5fb975ee0bf52b3e47"
+  },
+  "profile": {
+    "geometry": "circle-497-center",
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "materialize",
+    "backingScaleFactor": 2,
+    "runtimeEvidenceMatchCountAtFreeze": 0,
+    "targetOutputsOpenedAtFreeze": false
+  },
+  "capture": {
+    "nativeLLDBExitStatus": 0,
+    "validationExitStatus": 1,
+    "validationFailure": "ValueError: exact FilterOp profile-transfer retry replay differs",
+    "traceFinalized": true,
+    "traceFailureCount": 0,
+    "qualifiedMarkerRecordCount": 32,
+    "qualifiedUnionRecordCount": 352,
+    "qualifiedStoreRecordCount": 352,
+    "liveCodeIdentityAuthenticated": true,
+    "liveCodeIdentityRecordCount": 6,
+    "timelineSampleCount": 33,
+    "failedTimelineSampleCount": 0
+  },
+  "splitPointerGate": {
+    "recordCount": 32,
+    "matchingStoreRecordCount": 33,
+    "pointerReuseRecordCount": 1,
+    "discardedEarlierMatchCount": 1,
+    "everySelectedStoreWasLastMatchingStore": true,
+    "pointerGatePassed": true
+  },
+  "frozenV3Model": {
+    "terminalPublicInputBleedAmountF64": 173.95,
+    "internalInputBleedAmountF32": 173.9499969482422,
+    "internalInputBleedAmountF32RawLittleEndianHex": "33f32d43",
+    "sourceBoundsF64": [
+      -173.9499969482422,
+      -173.9499969482422,
+      844.8999938964844,
+      844.8999938964844
+    ],
+    "sourceBoundsHex": "0000006066be65c00000006066be65c00000003033678a400000003033678a40",
+    "endpointApplyOrder": "(-(localUnionHeight + localUnionOriginY) + carrierY) + endpointOffset"
+  },
+  "prospectiveReplay": {
+    "rectangleCount": 32,
+    "exactRectangleCount": 31,
+    "componentCount": 128,
+    "exactComponentCount": 126,
+    "exactComponentCountsXYWH": [
+      32,
+      31,
+      32,
+      31
+    ],
+    "maximumAbsoluteErrorsXYWH": [
+      0.0,
+      5.684341886080802e-14,
+      0.0,
+      5.684341886080802e-14
+    ],
+    "maximumULPDistancesXYWH": [
+      0,
+      2,
+      0,
+      1
+    ],
+    "toleranceUsed": false
+  },
+  "failingEndpointSample": {
+    "sampleIndex": 1,
+    "endpointYOffsetF64": -0.09005647907832781,
+    "endpointYOffsetHex": "00306f00f10db7bf",
+    "frozenReplayF64": [
+      330.0800943374634,
+      205.17254632701298,
+      487.84144592285156,
+      488.74735933552364
+    ],
+    "frozenReplayHex": "0000001148a174401af2df7f85a5694000000090767d7e40f306102ff58b7e40",
+    "observedAppleF64": [
+      330.0800943374634,
+      205.17254632701292,
+      487.84144592285156,
+      488.7473593355237
+    ],
+    "observedAppleHex": "0000001148a1744018f2df7f85a5694000000090767d7e40f406102ff58b7e40"
+  },
+  "openedDiagnosis": {
+    "correctedEndpointApplyOrder": "-(localUnionHeight + localUnionOriginY) + (carrierY + endpointOffset)",
+    "endpointOffsetIsGroupedIntoYTranslation": true,
+    "retrospectiveCorrectedRectangleCount": 32,
+    "retrospectiveCorrectedExactRectangleCount": 32,
+    "retrospectiveCorrectedComponentCount": 128,
+    "retrospectiveCorrectedExactComponentCount": 128,
+    "retrospectiveCorrectedMaximumULPDistancesXYWH": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "targetOutputsUsedToDeriveCorrection": true,
+    "correctedCandidateProspectivelyEstablished": false
+  },
+  "sealedConclusion": {
+    "v3UnseenGeometryTransferPassed": false,
+    "v3UnseenGeometryTransferFalsified": true,
+    "v4UnseenGeometryTransferPassed": false,
+    "selectedRegionOriginTransferPassed": false,
+    "physicalRetinaColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
