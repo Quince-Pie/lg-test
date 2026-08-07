@@ -1,0 +1,909 @@
+{
+  "claims": {
+    "allParametersFieldBlendSemanticsEstablished": false,
+    "allRuntimeWeightProductionLawEstablished": false,
+    "builderKeyResolvedConfigurationConsumerJoinEstablished": true,
+    "builderSeparatesResolvedConfigurationAndColorScheme": true,
+    "cropAllocationPolicyEstablished": false,
+    "environmentToResolvedConfigurationSelectionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "parametersMixerBackdropScalePolicyEstablished": true,
+    "parametersMixerCompleteCodeRegionEstablished": true,
+    "parametersMixerCompleteDirectCallGraphEstablished": true,
+    "parametersMixerExactInputAndOutputByteCountsEstablished": true,
+    "parametersMixerUniversalWeightDerivationEstablished": true,
+    "productionShaderChangeAuthorized": false,
+    "publicControlsToResolvedConfigurationSelectionLawEstablished": false,
+    "resolvedConfigurationMixDispatchEstablished": true,
+    "resolvedConfigurationMixEndpointsRecursivelyConsumed": true,
+    "resolvedConfigurationMixFractionPassedToMixerBitwiseUnchanged": true,
+    "retinaCompositorColorLawEstablished": false,
+    "transitionProgressToPublicConfigurationMixByLawEstablished": false
+  },
+  "classification": "native static Swift metadata/code/control-flow analysis; no Apple application, render, image, public timeline sample, crop, or provider return is read",
+  "codeRegions": {
+    "builderKeyConsumerSlice": {
+      "byteCount": 380,
+      "endExclusive": "0x240982ab8",
+      "instructionCount": 95,
+      "sha256": "f3b19e0951d50fd0c70dcf815ac0518e68781838ffec820dadc14f8a342797ab",
+      "start": "0x24098293c"
+    },
+    "parametersMixer": {
+      "byteCount": 7488,
+      "endExclusive": "0x2409423e8",
+      "instructionCount": 1872,
+      "sha256": "5b7a4251a998d06a37ed3eea775f2886e286ce91fe7f34e01b8c40551fbbb28a",
+      "start": "0x2409406a8"
+    },
+    "resolvedConfigurationParametersConsumer": {
+      "byteCount": 6600,
+      "endExclusive": "0x240943db0",
+      "instructionCount": 1650,
+      "sha256": "d868539b5a430eeb94351221e6f8bacb7d4dd6cd8fc39be56996f84ef3b5d78a",
+      "start": "0x2409423e8"
+    }
+  },
+  "consumerModel": {
+    "builderInput": "the first 48 bytes of each ResolvedComposite.Key, independently of its following ColorScheme field",
+    "endpointOperation": "invoke the same ResolvedConfiguration-to-Parameters consumer recursively once for from and once for to",
+    "fractionOperation": "load the stored binary64 fraction directly into d0 immediately before the Parameters mixer call",
+    "mixDiscriminatorValue": 2,
+    "mixPayloadBoxOffsets": {
+      "fraction": 112,
+      "from": 16,
+      "to": 64
+    },
+    "mixPayloadSemanticOffsets": {
+      "fraction": 96,
+      "from": 0,
+      "to": 48
+    },
+    "resolvedConfigurationByteCount": 48
+  },
+  "designLibraryResolvedConfigurationMixParametersConsumerAnalysisSchemaVersion": 1,
+  "directBLCallsites": {
+    "parametersMixer": [
+      "0x240942a6c",
+      "0x24096a9e8",
+      "0x24096b398",
+      "0x24096be5c"
+    ],
+    "resolvedConfigurationParametersConsumer": [
+      "0x2409429f8",
+      "0x240942a50",
+      "0x240982a44"
+    ]
+  },
+  "floatingInstructionInventories": {
+    "builderKeyConsumerSlice": {
+      "fcmp": 1,
+      "fmov": 1
+    },
+    "parametersMixer": {
+      "fadd": 16,
+      "fadd.2d": 8,
+      "fadd.2s": 3,
+      "fcmeq.2d": 6,
+      "fcmeq.4s": 1,
+      "fcmp": 36,
+      "fcsel": 17,
+      "fcvt": 2,
+      "fmov": 62,
+      "fmul": 32,
+      "fmul.2d": 16,
+      "fmul.2s": 6,
+      "fsub": 1
+    },
+    "resolvedConfigurationParametersConsumer": {
+      "fadd": 3,
+      "fcmp": 2,
+      "fcsel": 8,
+      "fmov": 16,
+      "fmul": 1
+    }
+  },
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "sharedCacheSlide": "0x8a9c000",
+    "sharedCacheSlideMetadataMatchCount": 219,
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "instructionContracts": [
+    {
+      "address": "0x2409406f4",
+      "mnemonic": "mov",
+      "operands": "x22, x20"
+    },
+    {
+      "address": "0x2409406f8",
+      "mnemonic": "str",
+      "operands": "q0, [sp, #0x180]"
+    },
+    {
+      "address": "0x2409406fc",
+      "mnemonic": "mov",
+      "operands": "x21, x0"
+    },
+    {
+      "address": "0x240940700",
+      "mnemonic": "str",
+      "operands": "x8, [sp, #0x148]"
+    },
+    {
+      "address": "0x24094070c",
+      "mnemonic": "add",
+      "operands": "x0, sp, #0x600"
+    },
+    {
+      "address": "0x240940710",
+      "mnemonic": "mov",
+      "operands": "x1, x22"
+    },
+    {
+      "address": "0x240940714",
+      "mnemonic": "mov",
+      "operands": "w2, #0x401"
+    },
+    {
+      "address": "0x24094071c",
+      "mnemonic": "ldr",
+      "operands": "q1, [sp, #0x180]"
+    },
+    {
+      "address": "0x240940720",
+      "mnemonic": "fcmp",
+      "operands": "d1, #0.0"
+    },
+    {
+      "address": "0x240940724",
+      "mnemonic": "b.ls",
+      "operands": "0x240940750"
+    },
+    {
+      "address": "0x240940728",
+      "mnemonic": "fmov",
+      "operands": "d0, #1.00000000"
+    },
+    {
+      "address": "0x24094072c",
+      "mnemonic": "fcmp",
+      "operands": "d1, d0"
+    },
+    {
+      "address": "0x240940730",
+      "mnemonic": "b.ge",
+      "operands": "0x240940748"
+    },
+    {
+      "address": "0x240940734",
+      "mnemonic": "ldr",
+      "operands": "s0, [x22]"
+    },
+    {
+      "address": "0x240940738",
+      "mnemonic": "ldr",
+      "operands": "s1, [x21]"
+    },
+    {
+      "address": "0x24094073c",
+      "mnemonic": "fcmp",
+      "operands": "s0, s1"
+    },
+    {
+      "address": "0x240940740",
+      "mnemonic": "fcsel",
+      "operands": "s0, s1, s0, ls"
+    },
+    {
+      "address": "0x240940748",
+      "mnemonic": "ldr",
+      "operands": "s0, [x21]"
+    },
+    {
+      "address": "0x24094074c",
+      "mnemonic": "str",
+      "operands": "s0, [sp, #0x600]"
+    },
+    {
+      "address": "0x240940cec",
+      "mnemonic": "ldr",
+      "operands": "q19, [sp, #0x180]"
+    },
+    {
+      "address": "0x240940d20",
+      "mnemonic": "fmov",
+      "operands": "d16, #1.00000000"
+    },
+    {
+      "address": "0x240940d24",
+      "mnemonic": "fsub",
+      "operands": "d16, d16, d19"
+    },
+    {
+      "address": "0x240940d4c",
+      "mnemonic": "str",
+      "operands": "q16, [sp, #0x150]"
+    },
+    {
+      "address": "0x240940d50",
+      "mnemonic": "fcvt",
+      "operands": "s6, d16"
+    },
+    {
+      "address": "0x240940d58",
+      "mnemonic": "fcvt",
+      "operands": "s7, d19"
+    },
+    {
+      "address": "0x240941f50",
+      "mnemonic": "ldr",
+      "operands": "x0, [sp, #0x148]"
+    },
+    {
+      "address": "0x2409423a8",
+      "mnemonic": "add",
+      "operands": "x1, sp, #0x600"
+    },
+    {
+      "address": "0x2409423ac",
+      "mnemonic": "mov",
+      "operands": "w2, #0x401"
+    },
+    {
+      "address": "0x24094243c",
+      "mnemonic": "mov",
+      "operands": "x20, x0"
+    },
+    {
+      "address": "0x240942440",
+      "mnemonic": "mov",
+      "operands": "x21, x8"
+    },
+    {
+      "address": "0x24094259c",
+      "mnemonic": "ldp",
+      "operands": "q0, q1, [x20]"
+    },
+    {
+      "address": "0x2409425a8",
+      "mnemonic": "ldr",
+      "operands": "q0, [x20, #0x20]"
+    },
+    {
+      "address": "0x240942638",
+      "mnemonic": "ldr",
+      "operands": "x16, [x19, #0x2320]"
+    },
+    {
+      "address": "0x24094263c",
+      "mnemonic": "ldrb",
+      "operands": "w8, [x10, #0x8fc]"
+    },
+    {
+      "address": "0x240942640",
+      "mnemonic": "lsr",
+      "operands": "w9, w8, #6"
+    },
+    {
+      "address": "0x240942958",
+      "mnemonic": "cmp",
+      "operands": "w9, #0x2"
+    },
+    {
+      "address": "0x240942960",
+      "mnemonic": "b.ne",
+      "operands": "0x240942e54"
+    },
+    {
+      "address": "0x240942964",
+      "mnemonic": "ldp",
+      "operands": "q0, q1, [x16, #0x40]"
+    },
+    {
+      "address": "0x240942970",
+      "mnemonic": "ldr",
+      "operands": "q0, [x16, #0x60]"
+    },
+    {
+      "address": "0x240942978",
+      "mnemonic": "ldr",
+      "operands": "x8, [x16, #0x70]"
+    },
+    {
+      "address": "0x24094297c",
+      "mnemonic": "str",
+      "operands": "x8, [x19, #0x11b0]"
+    },
+    {
+      "address": "0x240942980",
+      "mnemonic": "ldp",
+      "operands": "q0, q1, [x16, #0x10]"
+    },
+    {
+      "address": "0x24094298c",
+      "mnemonic": "ldr",
+      "operands": "q0, [x16, #0x30]"
+    },
+    {
+      "address": "0x2409429e4",
+      "mnemonic": "add",
+      "operands": "x8, x19, #0x160"
+    },
+    {
+      "address": "0x2409429e8",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x2409429ec",
+      "mnemonic": "add",
+      "operands": "x0, x0, #0xa30"
+    },
+    {
+      "address": "0x2409429f8",
+      "mnemonic": "bl",
+      "operands": "0x2409423e8"
+    },
+    {
+      "address": "0x240942a38",
+      "mnemonic": "add",
+      "operands": "x8, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240942a3c",
+      "mnemonic": "add",
+      "operands": "x8, x8, #0xa30"
+    },
+    {
+      "address": "0x240942a40",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240942a44",
+      "mnemonic": "add",
+      "operands": "x0, x0, #0x560"
+    },
+    {
+      "address": "0x240942a50",
+      "mnemonic": "bl",
+      "operands": "0x2409423e8"
+    },
+    {
+      "address": "0x240942a54",
+      "mnemonic": "ldr",
+      "operands": "d0, [x19, #0x11b0]"
+    },
+    {
+      "address": "0x240942a58",
+      "mnemonic": "add",
+      "operands": "x8, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240942a5c",
+      "mnemonic": "add",
+      "operands": "x8, x8, #0x560"
+    },
+    {
+      "address": "0x240942a60",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240942a64",
+      "mnemonic": "add",
+      "operands": "x0, x0, #0xa30"
+    },
+    {
+      "address": "0x240942a68",
+      "mnemonic": "add",
+      "operands": "x20, x19, #0x160"
+    },
+    {
+      "address": "0x240942a6c",
+      "mnemonic": "bl",
+      "operands": "0x2409406a8"
+    },
+    {
+      "address": "0x24098293c",
+      "mnemonic": "mov",
+      "operands": "x0, x28"
+    },
+    {
+      "address": "0x240982940",
+      "mnemonic": "ldr",
+      "operands": "x24, [x19, #0x90]"
+    },
+    {
+      "address": "0x240982944",
+      "mnemonic": "mov",
+      "operands": "x1, x24"
+    },
+    {
+      "address": "0x240982948",
+      "mnemonic": "bl",
+      "operands": "0x24092e834"
+    },
+    {
+      "address": "0x2409829d8",
+      "mnemonic": "ldp",
+      "operands": "q0, q1, [x24]"
+    },
+    {
+      "address": "0x2409829e4",
+      "mnemonic": "ldr",
+      "operands": "q0, [x24, #0x20]"
+    },
+    {
+      "address": "0x2409829e8",
+      "mnemonic": "ldp",
+      "operands": "q2, q1, [x24]"
+    },
+    {
+      "address": "0x2409829f8",
+      "mnemonic": "ldr",
+      "operands": "q0, [x24, #0x20]"
+    },
+    {
+      "address": "0x240982a24",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0xb70"
+    },
+    {
+      "address": "0x240982a28",
+      "mnemonic": "add",
+      "operands": "x1, x19, #0x980"
+    },
+    {
+      "address": "0x240982a2c",
+      "mnemonic": "bl",
+      "operands": "0x240944850"
+    },
+    {
+      "address": "0x240982a30",
+      "mnemonic": "add",
+      "operands": "x8, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240982a34",
+      "mnemonic": "add",
+      "operands": "x8, x8, #0x68"
+    },
+    {
+      "address": "0x240982a38",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x480"
+    },
+    {
+      "address": "0x240982a3c",
+      "mnemonic": "mov",
+      "operands": "x1, x20"
+    },
+    {
+      "address": "0x240982a40",
+      "mnemonic": "mov",
+      "operands": "x2, x23"
+    },
+    {
+      "address": "0x240982a44",
+      "mnemonic": "bl",
+      "operands": "0x2409423e8"
+    },
+    {
+      "address": "0x240982aa8",
+      "mnemonic": "add",
+      "operands": "x0, x24, x25"
+    }
+  ],
+  "parametersMixerDirectCallGraph": {
+    "0x240917f64": [
+      "0x2409407a0",
+      "0x240940918"
+    ],
+    "0x240917f80": [
+      "0x240941854",
+      "0x240941a68"
+    ],
+    "0x24093acac": [
+      "0x240940b14"
+    ],
+    "0x24093acd0": [
+      "0x240940b7c"
+    ],
+    "0x24093b6c4": [
+      "0x240941e9c"
+    ],
+    "0x24093d0e0": [
+      "0x240940a5c"
+    ],
+    "0x24093d8c8": [
+      "0x240940c70"
+    ],
+    "0x24093e070": [
+      "0x2409414dc"
+    ],
+    "0x24093e8ac": [
+      "0x2409417ac"
+    ],
+    "0x24093e9e4": [
+      "0x240941d3c",
+      "0x240941e88"
+    ],
+    "0x240995160": [
+      "0x240941008",
+      "0x240941150",
+      "0x2409411f8"
+    ],
+    "0x2409a40e0": [
+      "0x2409417e8"
+    ],
+    "0x2409a5910": [
+      "0x240940718",
+      "0x24094184c",
+      "0x240941a60",
+      "0x2409423b0"
+    ]
+  },
+  "parametersMixerModel": {
+    "backdropScale": {
+      "strictInteriorOrderedInputs": "larger of from and to",
+      "tGreaterThanOrEqualToOne": "to",
+      "tLessThanOrEqualToZero": "from",
+      "type": "Float"
+    },
+    "binary32WeightConversionCount": 2,
+    "finalTransfer": "copy all 1,025 working bytes to the output pointer",
+    "fractionRegister": "d0",
+    "fromRegister": "x20",
+    "initialTransfer": "copy all 1,025 from bytes into working output",
+    "outputRegister": "x8",
+    "parametersByteCount": 1025,
+    "specializedBranchesRemain": "optional-zero canonicalization, endpoint selection, and nested helper policies still require field-by-field semantic decoding",
+    "toRegister": "x0",
+    "universalBinary64Weights": {
+      "from": "1.0 - t",
+      "operation": "one binary64 fsub",
+      "to": "t"
+    }
+  },
+  "swiftDescriptors": {
+    "parameters": {
+      "descriptorAddress": "0x2409d2878",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d7b28",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "backdropScale",
+          "offset": 0,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "updateRate",
+          "offset": 8,
+          "typeReference": "Sd",
+          "typeReferenceAddress": "0x2409bccca"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "contentOpacity",
+          "offset": 16,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_shadow",
+          "offset": 24,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV6ShadowV",
+          "typeReferenceAddress": "0x2409c7588"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_blur",
+          "offset": 176,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV4BlurV",
+          "typeReferenceAddress": "0x2409c7590"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_refraction",
+          "offset": 256,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV10RefractionV",
+          "typeReferenceAddress": "0x2409c7598"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_faceEffects",
+          "offset": 312,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV11FaceEffectsV",
+          "typeReferenceAddress": "0x2409c75a0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_edgeBleed",
+          "offset": 392,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9EdgeBleedV",
+          "typeReferenceAddress": "0x2409c75a8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_tinting",
+          "offset": 500,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV7TintingV",
+          "typeReferenceAddress": "0x2409c75b0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_highlights",
+          "offset": 520,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV10HighlightsV",
+          "typeReferenceAddress": "0x2409c75b8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_sdrAdjustment",
+          "offset": 784,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV13SDRAdjustmentV",
+          "typeReferenceAddress": "0x2409c75c0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_lensing",
+          "offset": 824,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV7LensingV",
+          "typeReferenceAddress": "0x2409c75c8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_controlContentLensing",
+          "offset": 880,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12DisplacementV",
+          "typeReferenceAddress": "0x2409c75d0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_controlDisplacement",
+          "offset": 912,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12DisplacementV",
+          "typeReferenceAddress": "0x2409c75d0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_contrastEdge",
+          "offset": 944,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12ContrastEdgeV",
+          "typeReferenceAddress": "0x2409c75d8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_innerGlow",
+          "offset": 968,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9InnerGlowV",
+          "typeReferenceAddress": "0x2409c75e0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "_radiosity",
+          "offset": 992,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9RadiosityV",
+          "typeReferenceAddress": "0x2409c75e8"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 253,
+        "fieldOffsets": [
+          0,
+          8,
+          16,
+          24,
+          176,
+          256,
+          312,
+          392,
+          500,
+          520,
+          784,
+          824,
+          880,
+          912,
+          944,
+          968,
+          992
+        ],
+        "metadataAddress": "0x29bdf5ad0",
+        "metadataDescriptorRuntimeAddress": "0x24946e878",
+        "size": 1025,
+        "stride": 1032,
+        "valueWitnessFlags": "0x02020007",
+        "valueWitnessTableAddress": "0x29bdf5a68",
+        "valueWitnessTableMapped": true
+      },
+      "name": "Parameters"
+    },
+    "resolvedCompositeKey": {
+      "descriptorAddress": "0x2409d2e4c",
+      "descriptorFlags": "0x00110051",
+      "fieldDescriptorAddress": "0x2409d87dc",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "resolved",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "colorScheme",
+          "offset": null,
+          "typeReference": "_____ 7SwiftUI11ColorSchemeO",
+          "typeReferenceAddress": "0x2409bcc56"
+        }
+      ],
+      "metadata": null,
+      "name": "Key"
+    },
+    "resolvedConfiguration": {
+      "descriptorAddress": "0x2409d2e90",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d882c",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "base",
+          "offset": 0,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV4BaseO",
+          "typeReferenceAddress": "0x2409c7a6c"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "subvariant",
+          "offset": 13,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10SubvariantV",
+          "typeReferenceAddress": "0x2409c6dd6"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "frost",
+          "offset": 14,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV5FrostO",
+          "typeReferenceAddress": "0x2409c7af0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "options",
+          "offset": 16,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV7OptionsV",
+          "typeReferenceAddress": "0x2409c6e12"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "flags",
+          "offset": 24,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV16EnvironmentFlagsV",
+          "typeReferenceAddress": "0x2409c7028"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "interaction",
+          "offset": 32,
+          "typeReference": "_____ 13DesignLibrary16InteractionStateO",
+          "typeReferenceAddress": "0x2409bc548"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "optimizationLevel",
+          "offset": 33,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV25ResolvedOptimizationLevelO",
+          "typeReferenceAddress": "0x2409c6e00"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "contentEffect",
+          "offset": 34,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedContentEffectO",
+          "typeReferenceAddress": "0x2409c6f38"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "layers",
+          "offset": 40,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV6LayersV",
+          "typeReferenceAddress": "0x2409c707a"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 2044,
+        "fieldOffsets": [
+          0,
+          13,
+          14,
+          16,
+          24,
+          32,
+          33,
+          34,
+          40
+        ],
+        "metadataAddress": "0x29bdf6f80",
+        "metadataDescriptorRuntimeAddress": "0x24946ee90",
+        "size": 48,
+        "stride": 48,
+        "valueWitnessFlags": "0x02030007",
+        "valueWitnessTableAddress": "0x29bdf6f18",
+        "valueWitnessTableMapped": true
+      },
+      "name": "ResolvedConfiguration"
+    },
+    "resolvedConfigurationMix": {
+      "descriptorAddress": "0x2409d2eac",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d8a40",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "from",
+          "offset": 0,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "to",
+          "offset": 48,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "fraction",
+          "offset": 96,
+          "typeReference": "Sd",
+          "typeReferenceAddress": "0x2409bccca"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 2044,
+        "fieldOffsets": [
+          0,
+          48,
+          96
+        ],
+        "metadataAddress": "0x29bdf7020",
+        "metadataDescriptorRuntimeAddress": "0x24946eeac",
+        "size": 104,
+        "stride": 104,
+        "valueWitnessFlags": "0x02030007",
+        "valueWitnessTableAddress": "0x29bdf6fb8",
+        "valueWitnessTableMapped": true
+      },
+      "name": "Mix"
+    }
+  },
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "metadataAnalyzerSHA256": "a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff",
+    "provenanceAnalyzerSHA256": "7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145",
+    "python": "3.9.6",
+    "selectionAnalyzerSHA256": "93c95c65c326765c675f3f4e727285706bf48adb5d42d5bdcd11ad0c3600d1de",
+    "source": "Analysis/analyze_designlibrary_resolved_configuration_mix_parameters_consumer_local_macos_26_6_1.py",
+    "sourceSHA256": "611ef68e46ec5f1cd962e6e870fa2b140ba73c5da4cf7b3f95408a90d6be1b0f",
+    "weightAnalyzerSHA256": "530922f37038ca23dbfe3cca43c3fe3a703fdf337dde7f393afda180b41ea3d0"
+  }
+}

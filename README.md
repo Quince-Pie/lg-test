@@ -9060,3 +9060,55 @@ environment states choose every endpoint configuration, how the downstream
 recipe consumes every recursive mix, the integer crop/allocation policy,
 physical Retina compositor/color behavior, a real Walle zero-unequal-byte
 frame, or Liquid Glass parity. No production shader change is authorized.
+
+### Exact recursive `ResolvedConfiguration.Mix` to `Parameters` consumer
+
+The downstream mix route is no longer anonymous. The authenticated recipe
+builder materializes a `ResolvedComposite.Key`, copies its first 48 bytes as a
+complete `ResolvedConfiguration`, and passes that value to one exact
+configuration-to-`Parameters` consumer. The key's following `ColorScheme` is
+read separately after that call; it is not part of the 48-byte configuration
+input.
+
+The consumer decodes resolved base discriminator 2 as
+`ResolvedConfiguration.Mix`. Its indirect box contains the first complete
+configuration at box offset `0x10`, the second at `0x40`, and the original
+binary64 fraction at `0x70`, exactly matching semantic payload offsets 0, 48,
+and 96. The consumer invokes itself recursively once for each endpoint. It
+then reloads the fraction directly into `d0`, without intervening floating
+arithmetic, and passes the two resulting complete `Parameters` values to the
+dedicated mixer at `0x2409406a8`.
+
+That mixer is now frozen as one 7,488-byte region with 1,872 instructions and
+all 13 direct callees authenticated. Its ABI is exact: `from` in `x20`, `to`
+in `x0`, fraction in `d0`, and indirect output in `x8`. It initially copies
+all 1,025 bytes of `from` into working storage and finally copies all 1,025
+working bytes to the output. The common weights are the incoming binary64
+`t` and one binary64 subtraction `1.0 - t`; the function's only two `fcvt`
+instructions create their binary32 forms. `backdropScale` has a deliberately
+nonlinear policy: retain `from` for `t <= 0`, select `to` for `t >= 1`, and,
+for ordered inputs with `0 < t < 1`, select the larger endpoint.
+
+The fail-closed analyzer and canonical result are
+`Analysis/analyze_designlibrary_resolved_configuration_mix_parameters_consumer_local_macos_26_6_1.py`,
+SHA-256
+`611ef68e46ec5f1cd962e6e870fa2b140ba73c5da4cf7b3f95408a90d6be1b0f`,
+and
+`Analysis/designlibrary_resolved_configuration_mix_parameters_consumer_local_macos_26_6_1_result.json`,
+SHA-256
+`596aae0aa2d366a61fc964877b594ffcf23c6b6151adbe449c4c391c4918e30e`.
+It authenticates four Swift descriptors, the complete 7,488-byte mixer, the
+complete 6,600-byte recursive consumer including its cold cases, the exact
+builder join, every direct caller of both functions, the mixer's complete
+direct call graph, and every floating-instruction inventory on macOS 26.6.1
+build 25G76. It launches no Apple application and reads no captured render or
+public value.
+
+This closes recursive mix routing, unchanged fraction delivery, complete
+input/output transfer width, universal weight construction, and the
+`backdropScale` rule. It does **not** yet assign semantic formulas to every
+optional and discrete nested `Parameters` branch. It also does not establish
+the upstream animation-progress law, public/environment endpoint selection,
+integer crop/allocation policy, physical Retina compositor/color behavior, a
+real Walle zero-unequal-byte frame, or Liquid Glass parity. No production
+shader change is authorized.
