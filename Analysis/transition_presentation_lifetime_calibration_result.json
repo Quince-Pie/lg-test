@@ -1,0 +1,131 @@
+{
+  "transitionPresentationLifetimeCalibrationResultSchemaVersion": 1,
+  "classification": "target-opened direct-Retina calibration correcting the earlier appearance-dependent presentation-lifetime inference",
+  "nativeHost": {
+    "host": "quince@10.0.41.19",
+    "architecture": "arm64",
+    "model": "Apple M1 Max",
+    "macOS": "26.6.1",
+    "build": "25G76",
+    "physicalDisplay": "built-in 3456x2234 Retina at exact 2x backing scale",
+    "githubActionsUsed": false
+  },
+  "historicalInferenceAudit": {
+    "clearLightObservedFailures": {
+      "profile": "clear/light/materialize/circle-451-center",
+      "captureCount": 2,
+      "reportedFailure": "presentation glassBackground snapshot unavailable at sample 30",
+      "commonTimelineSHA256": "6b2971dfe2bf5689c4ef1ad2364451fb306d76335b6e2692a48aba55e6ad8820"
+    },
+    "regularDarkControl": {
+      "profile": "regular/dark/materialize/circle-475-center",
+      "firstCaptureFailure": "presentation glassBackground snapshot unavailable at sample 31",
+      "unchangedSecondCaptureCompleted": true,
+      "sourceResult": "Analysis/backdrop_margin_writer_provider_composition_36588cf_matrix_interim_result.json",
+      "sourceResultSHA256": "29c6eecc539b8a288a9f8a8ed8575c27eafddd48be201578b6f866d02bf63f02"
+    },
+    "clearDarkControl": {
+      "profile": "clear/dark/materialize/circle-459-center",
+      "completedSampleCount": 33,
+      "sourceResult": "Analysis/backdrop_margin_writer_clear_dark_0e39ce7_result.json",
+      "sourceResultSHA256": "ec28169d573e8507dc170a5c30f8575f47128e57918d5f004151eb0a1953af5f"
+    },
+    "snapshotHelperSource": {
+      "commit": "721293f",
+      "completeSourceSHA256": "c4398a9ae82d8bddd22038c228989dc6398e9ba790e7c5451a555e9ecd265518",
+      "nilConditions": [
+        "presentation and model trees both lack a glassBackground target",
+        "glassBackground NSCopying fails",
+        "copied glassBackground lacks numeric inputFaceOpacity",
+        "required glassForeground target or copy is absent"
+      ],
+      "historicalErrorDistinguishesNilConditions": false,
+      "historicalErrorProvesBackdropRemoval": false
+    },
+    "appearanceDependentProductLifetimeWasEstablished": false
+  },
+  "directRetinaCalibrations": [
+    {
+      "profile": "clear/light/materialize/circle-451-center",
+      "mode": "complete topology and WindowServer frames with dynamic-uniform collection disabled",
+      "timelineSHA256": "45063095515a174df420760de09bcbcde05b93d96f4bed389d4e52f50b8045db",
+      "sampleCount": 33,
+      "uniquePixelSHA256Count": 33,
+      "presentationStateCount": 66,
+      "glassBackgroundPresenceCount": 64,
+      "glassForegroundPresenceCount": 62,
+      "maximumStateBracketSeconds": 0.04345491666754242,
+      "maximumWindowCaptureSeconds": 0.041472208336927,
+      "maximumAbsoluteRequestedProgressError": 0.0020292357638633796,
+      "sample30GlassBackgroundPresent": true,
+      "sample31GlassBackgroundPresent": true,
+      "materializedEndpointGlassBackgroundPresent": true,
+      "materializedEndpointInputFaceOpacity": 1.0
+    },
+    {
+      "profile": "clear/light/materialize/circle-451-center",
+      "mode": "the exact dense dynamic-uniform collector without LLDB",
+      "timelineSHA256": "20390dd67902eb8411e1d368fdb1f112d49714ba5c630a0ffc744ec040c0f54a",
+      "sampleCount": 33,
+      "uniquePixelSHA256Count": 33,
+      "dynamicUniformRecordCount": 32,
+      "dynamicUniformCollectorExecuted": true,
+      "presentationStateCount": 66,
+      "glassBackgroundPresenceCount": 64,
+      "glassForegroundPresenceCount": 62,
+      "maximumStateBracketSeconds": 0.044726916661602445,
+      "maximumWindowCaptureSeconds": 0.04278674999659415,
+      "maximumAbsoluteRequestedProgressError": 0.0019135833332256658,
+      "sample30SnapshotPresent": true,
+      "sample31SnapshotPresent": true,
+      "endpointSuppliedByFreshStaticCarrier": true
+    },
+    {
+      "profile": "clear/light/dematerialize/circle-451-center",
+      "mode": "complete topology and WindowServer frames with dynamic-uniform collection disabled",
+      "timelineSHA256": "f7349993b6d01bf2503fffc643564ca3984e67305a77039bec5a78bd6630edcf",
+      "sampleCount": 33,
+      "uniquePixelSHA256Count": 33,
+      "presentationStateCount": 66,
+      "glassBackgroundPresenceCount": 64,
+      "glassForegroundPresenceCount": 62,
+      "maximumStateBracketSeconds": 0.04578495833266061,
+      "maximumWindowCaptureSeconds": 0.03747770833433606,
+      "maximumAbsoluteRequestedProgressError": 0.0017689375000675689,
+      "initialEndpointGlassBackgroundPresent": true,
+      "initialEndpointInputFaceOpacity": 1.0,
+      "sample31GlassBackgroundPresent": true,
+      "dematerializedEndpointHasNoGlassFilters": true
+    }
+  ],
+  "commonRetinaPreflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+  "calibratedObservableContract": {
+    "materializeSample0": "no glassBackground or glassForeground",
+    "materializeSamples1Through31": "one glassBackground and one glassForeground with strictly increasing 0<inputFaceOpacity<1",
+    "materializeSample32": "one glassBackground at exact inputFaceOpacity=1 and no transition-only glassForeground",
+    "dematerializeSample0": "one glassBackground at exact inputFaceOpacity=1 and no transition-only glassForeground",
+    "dematerializeSamples1Through31": "one glassBackground and one glassForeground with strictly decreasing 0<inputFaceOpacity<1",
+    "dematerializeSample32": "no glassBackground or glassForeground",
+    "presentationStateBracketsPerSample": 2,
+    "expectedLayerCounts": {
+      "absentEndpoint": 2,
+      "dynamicTransition": 16,
+      "materializedEndpoint": 13
+    },
+    "maximumAllowedStateBracketSecondsForHoldout": 0.1,
+    "maximumAllowedWindowCaptureSecondsForHoldout": 0.1,
+    "maximumAllowedAbsoluteRequestedProgressErrorForHoldout": 0.01
+  },
+  "calibrationConclusion": {
+    "historicalMissingSnapshotIsNotEvidenceOfAppleRemovingClearLightBackdrop": true,
+    "sameProfileCompletesWithExactCollectorWhenLLDBIsAbsent": true,
+    "observerIndependentProductLifetimeTransferPassed": false,
+    "reasonTransferNotYetPassed": "the corrected contract was recovered from opened outputs and requires a prospectively frozen unseen profile/direction matrix"
+  },
+  "qualityLocks": {
+    "productionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "walleFlakeSHA256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+    "productionShaderChanged": false,
+    "shaderQualityRegressionPermitted": false
+  }
+}

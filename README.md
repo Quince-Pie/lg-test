@@ -11591,3 +11591,78 @@ transfer; and fresh Walle frames with zero unequal bytes. The production
 shader and development flake remain unchanged at SHA-256
 `6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`
 and `b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01`.
+
+### Corrected presentation-lifetime gate
+
+The earlier clear/light writer captures did not prove that Apple removes the
+presentation `glassBackground`. Their application error combined four distinct
+failure modes: a missing background target, a failed background copy, a
+missing numeric `inputFaceOpacity`, or a missing/uncopyable transition-only
+`glassForeground`. The error text named only the background. It therefore
+could not identify which guard failed. The same observer had already lost a
+regular/dark snapshot at sample 31 and then completed the identical case on an
+unchanged retry, independently contradicting an appearance-causal lifetime
+interpretation.
+
+Three new direct-Retina calibrations run the stable presentation binary without
+a debugger. Clear/light circle-451 materialize completes all 33 WindowServer
+frames and both presentation-state brackets per frame, retains the background
+at samples 30 and 31, and reaches an exact `inputFaceOpacity = 1` materialized
+endpoint. Its timeline SHA-256 is
+`45063095515a174df420760de09bcbcde05b93d96f4bed389d4e52f50b8045db`.
+The exact dense dynamic-uniform collector also completes without a debugger:
+all 32 requested records exist, including samples 30 and 31, with timeline
+SHA-256
+`20390dd67902eb8411e1d368fdb1f112d49714ba5c630a0ffc744ec040c0f54a`.
+The reverse clear/light dematerialize control likewise completes all 33 frames,
+retains the dynamic filters through sample 31, and reaches the empty endpoint;
+its timeline SHA-256 is
+`f7349993b6d01bf2503fffc643564ca3984e67305a77039bec5a78bd6630edcf`.
+Every calibration has 33 distinct pixel hashes, 66 complete state brackets,
+maximum state-bracket duration below 46 ms, maximum window acquisition below
+43 ms, and maximum requested-progress error below 0.0021. The immutable opened
+diagnosis is
+`Analysis/transition_presentation_lifetime_calibration_result.json`. It is
+calibration, not prospective transfer authority.
+
+The observer-independent topology candidate is now frozen before eight new
+Apple outputs:
+
+```text
+clear   light  materialize    circle-452-center
+clear   light  dematerialize  circle-453-center
+clear   dark   materialize    circle-460-center
+clear   dark   dematerialize  circle-461-center
+regular light  materialize    circle-468-center
+regular light  dematerialize  circle-469-center
+regular dark   materialize    circle-476-center
+regular dark   dematerialize  circle-477-center
+```
+
+For either direction, samples 1 through 31 must contain exactly one background
+and one foreground at the frozen paths, with exact bracketed face opacity
+strictly monotonic inside `(0,1)`. The materialized endpoint contains one
+background at exact face opacity one and no transition foreground; the absent
+endpoint contains neither filter. Layer counts are frozen as 16, 13, and 2 for
+dynamic, materialized, and absent topology. Every case must retain 33 distinct
+WindowServer frames, both state brackets, every PNG digest, a physical 2x
+Retina preflight, at most 100 ms acquisition/bracket time, and at most 0.01
+requested-progress error. No debugger or dynamic-uniform replay participates
+in capture. Native execution uses Apple tools with no Nix store path; only the
+post-capture Python 3.14 validation runs through `nix develop`.
+
+The frozen files are:
+
+```text
+Analysis/transition_presentation_lifetime_holdout_preregistration.json
+Analysis/validate_transition_presentation_lifetime_holdout.py
+Analysis/aggregate_transition_presentation_lifetime_holdout.py
+Analysis/run_transition_presentation_lifetime_holdout_local_macos_26_6_1.sh
+```
+
+At freeze time all timeline, image, and face-opacity outputs for those eight
+geometries are null. Only an eight-case pass from one committed source state
+can close the product presentation-lifetime gate. It cannot close optical
+input generation, physical Retina color/compositor transfer, independent
+Walle zero-byte parity, or Liquid Glass parity. The production shader remains
+unchanged and unauthorized for parity-sensitive edits.

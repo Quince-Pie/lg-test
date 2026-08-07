@@ -1,0 +1,261 @@
+{
+  "transitionPresentationLifetimeHoldoutPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-07T22:39:37Z",
+  "classification": "prospective direct-Retina observer-independent presentation-lifetime transfer across both materials, both appearances, and both transition directions; corrects but does not erase the historical combined-snapshot instrumentation failures",
+  "sourceStateBeforeFreeze": {
+    "branch": "main",
+    "baseCommit": "3e0d5c1a8a64cd439b564864f4775f3373a6b942",
+    "githubActionsUsedForThisGate": false,
+    "nativeHost": "quince@10.0.41.19",
+    "nativeHostArchitecture": "arm64",
+    "nativeHostModel": "Apple M1 Max",
+    "nativeHostMacOS": "26.6.1",
+    "nativeHostBuild": "25G76",
+    "physicalDisplay": "built-in 3456x2234 Retina at exact 2x backing scale"
+  },
+  "calibrationEvidence": {
+    "path": "Analysis/transition_presentation_lifetime_calibration_result.json",
+    "sha256": "f21fcbfb16ae7c4e5b64b42f2f2c874c72c3efaeca5cd1732a32a567554608b6",
+    "targetOpened": true,
+    "prospectiveAuthority": false,
+    "sameClearLightMaterializeProfileCompletedWithoutLLDB": true,
+    "sameClearLightMaterializeProfileCompletedExactDynamicUniformCollectorWithoutLLDB": true,
+    "clearLightDematerializeCompletedWithoutLLDB": true,
+    "historicalSnapshotErrorProvesBackdropRemoval": false
+  },
+  "frozenCandidate": {
+    "sampleCount": 33,
+    "dynamicSampleIndices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "backgroundPath": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "foregroundPath": [
+      1,
+      0,
+      1,
+      1,
+      0
+    ],
+    "materialize": {
+      "sample0": "no glassBackground or glassForeground",
+      "samples1Through31": "one glassBackground and one glassForeground; exact bracketed inputFaceOpacity is strictly increasing and inside (0,1)",
+      "sample32": "one glassBackground at exact inputFaceOpacity 1 and no glassForeground"
+    },
+    "dematerialize": {
+      "sample0": "one glassBackground at exact inputFaceOpacity 1 and no glassForeground",
+      "samples1Through31": "one glassBackground and one glassForeground; exact bracketed inputFaceOpacity is strictly decreasing and inside (0,1)",
+      "sample32": "no glassBackground or glassForeground"
+    },
+    "dynamicLayerCount": 16,
+    "materializedEndpointLayerCount": 13,
+    "absentEndpointLayerCount": 2,
+    "presentationStateBracketsPerSample": 2,
+    "windowServerFrameCount": 33,
+    "allWindowServerFramesPixelDistinct": true,
+    "maximumStateBracketSeconds": 0.1,
+    "maximumWindowCaptureSeconds": 0.1,
+    "maximumAbsoluteRequestedProgressError": 0.01,
+    "capturedTopologyUsedToSelectSample": false,
+    "capturedFaceOpacityUsedToSelectSample": false,
+    "capturedImageUsedToSelectSample": false,
+    "candidateCalibratedFromOpenedOutputs": true,
+    "holdoutOutputUsedToChooseCandidate": false
+  },
+  "caseMatrix": [
+    {
+      "caseId": "clear-light-materialize-circle452",
+      "role": "prospective-holdout",
+      "material": "clear",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-452-center",
+      "appleOutputAvailableAtFreeze": false,
+      "expectedTimelineSHA256": null,
+      "expectedImageSHA256": null,
+      "expectedFaceOpacityValues": null
+    },
+    {
+      "caseId": "clear-light-dematerialize-circle453",
+      "role": "prospective-holdout",
+      "material": "clear",
+      "appearance": "light",
+      "direction": "dematerialize",
+      "geometry": "circle-453-center",
+      "appleOutputAvailableAtFreeze": false,
+      "expectedTimelineSHA256": null,
+      "expectedImageSHA256": null,
+      "expectedFaceOpacityValues": null
+    },
+    {
+      "caseId": "clear-dark-materialize-circle460",
+      "role": "prospective-holdout",
+      "material": "clear",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-460-center",
+      "appleOutputAvailableAtFreeze": false,
+      "expectedTimelineSHA256": null,
+      "expectedImageSHA256": null,
+      "expectedFaceOpacityValues": null
+    },
+    {
+      "caseId": "clear-dark-dematerialize-circle461",
+      "role": "prospective-holdout",
+      "material": "clear",
+      "appearance": "dark",
+      "direction": "dematerialize",
+      "geometry": "circle-461-center",
+      "appleOutputAvailableAtFreeze": false,
+      "expectedTimelineSHA256": null,
+      "expectedImageSHA256": null,
+      "expectedFaceOpacityValues": null
+    },
+    {
+      "caseId": "regular-light-materialize-circle468",
+      "role": "prospective-holdout",
+      "material": "regular",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-468-center",
+      "appleOutputAvailableAtFreeze": false,
+      "expectedTimelineSHA256": null,
+      "expectedImageSHA256": null,
+      "expectedFaceOpacityValues": null
+    },
+    {
+      "caseId": "regular-light-dematerialize-circle469",
+      "role": "prospective-holdout",
+      "material": "regular",
+      "appearance": "light",
+      "direction": "dematerialize",
+      "geometry": "circle-469-center",
+      "appleOutputAvailableAtFreeze": false,
+      "expectedTimelineSHA256": null,
+      "expectedImageSHA256": null,
+      "expectedFaceOpacityValues": null
+    },
+    {
+      "caseId": "regular-dark-materialize-circle476",
+      "role": "prospective-holdout",
+      "material": "regular",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-476-center",
+      "appleOutputAvailableAtFreeze": false,
+      "expectedTimelineSHA256": null,
+      "expectedImageSHA256": null,
+      "expectedFaceOpacityValues": null
+    },
+    {
+      "caseId": "regular-dark-dematerialize-circle477",
+      "role": "prospective-holdout",
+      "material": "regular",
+      "appearance": "dark",
+      "direction": "dematerialize",
+      "geometry": "circle-477-center",
+      "appleOutputAvailableAtFreeze": false,
+      "expectedTimelineSHA256": null,
+      "expectedImageSHA256": null,
+      "expectedFaceOpacityValues": null
+    }
+  ],
+  "captureContract": {
+    "directPhysicalMacOnly": true,
+    "githubActionsForbidden": true,
+    "activeRetinaSessionPreflightRequired": true,
+    "nativeAppleCommandLineToolsOnly": true,
+    "nixStorePathInNativeEnvironmentForbidden": true,
+    "nixDevelopPythonUsedOnlyAfterNativeCapture": true,
+    "debuggerForbidden": true,
+    "dynamicUniformReplayForbidden": true,
+    "stablePresentationBinary": "glass-transition-introspect-721293f",
+    "stablePresentationBinarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "animationCurve": "linear",
+    "animationDurationSeconds": 60,
+    "sampleProgressRule": "index/(sampleCount-1)",
+    "windowCaptureBackend": "CGWindowListCreateImage",
+    "canonicalPixelEncoding": "RGBA8 premultiplied-last sRGB top-left",
+    "capturedValueUsedForCaptureSelection": false,
+    "capturedImageUsedForCaptureSelection": false
+  },
+  "acceptance": {
+    "requireNoDebugger": true,
+    "requireNoDynamicUniformReplay": true,
+    "requireExactRetinaSession": true,
+    "requireAllThirtyThreeWindowServerFrames": true,
+    "requireAllFramesPixelDistinct": true,
+    "requireBothPresentationBrackets": true,
+    "requireExactEndpointTopology": true,
+    "requireExactDynamicTopology": true,
+    "requireStrictFaceOpacityMonotonicity": true,
+    "requireEveryPngDigest": true,
+    "requireAllEightCasesFromOneFrozenCommit": true,
+    "zeroToleranceForTopologyAndEndpointValues": true
+  },
+  "frozenImplementation": {
+    "validator": "Analysis/validate_transition_presentation_lifetime_holdout.py",
+    "validatorSHA256": "d980712c71f7d2c9cf2cd72fc773c6c9e3900efca87b01e8dfd4991d5edb2881",
+    "aggregator": "Analysis/aggregate_transition_presentation_lifetime_holdout.py",
+    "aggregatorSHA256": "8352491a5de7c71ad6b0e09f3e5fd7409ff2b44a436a6733265d8c3c8dff728e",
+    "preflight": "Analysis/check_local_retina_capture_session_v2.swift",
+    "preflightSHA256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+  },
+  "qualityLocks": {
+    "productionShader": {
+      "path": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "path": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    },
+    "shaderQualityRegressionPermitted": false
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "observerIndependentPresentationLifetimeTransferEstablishedOnEightCasePass": true,
+    "historicalCombinedSnapshotFailureMayBeRelabelledAsProductRemoval": false,
+    "capturedInputOpticalTemporalMeshSourceMipColorTransferEstablishedOnPass": false,
+    "physicalRetinaColorPixelCompositorTransferEstablishedOnPass": false,
+    "independentWalleZeroByteFrameParityEstablishedOnPass": false,
+    "productionShaderAuthorizedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false
+  }
+}
