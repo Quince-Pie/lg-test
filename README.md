@@ -10848,3 +10848,50 @@ This is not yet Liquid Glass pixel parity. The general 49-field public
 Parameters construction law, upstream integer crop/allocation policy, physical
 Retina compositor/color transfer, and an independent zero-unequal-byte Walle
 frame gate remain open. Production shader changes remain unauthorized.
+
+The unchanged pre-capture 49-field mapping was then applied to the 32 accepted
+live Parameters payloads. It passed 1,536 of 1,568 bitwise comparisons: 48 of
+49 fields were exact in every sample. The only rejected field was the disclosed
+controlled-getter prediction that `inputBlurDistance4` would be constant
+positive zero. It was nonzero in all 32 live samples. This failed prediction is
+preserved unchanged in
+`Analysis/background_filter_constructor_return_join_live_public_boundary_local_macos_26_6_1_result.json`;
+it is not rewritten as a pass.
+
+The mismatch has an exact structural resolution. The independently decoded
+constructor copies the complete 72-byte blur block from Parameters `[176,248)`
+to provider `[152,224)` without arithmetic. Thus Parameters bytes `[216,224)`
+are the fifth binary64 `blur.distances` lane and become provider bytes
+`[192,200)`, the already authenticated `inputBlurDistance4` load at `+0xc0`.
+Across the accepted capture:
+
+```text
+Parameters blur.distances[4] -> constructor +0xc0   1,526 / 1,526
+constructor +0xc0 -> provider +0xc0                 1,526 / 1,526
+Parameters/provider/public inputBlurDistance4          32 / 32
+distinct live blur-distance-4 binary64 words         1,526
+corrected live scalar/discrete boundary             1,568 / 1,568
+corrected fields exact                                  49 / 49
+```
+
+The live profile numerically aliases `blur.distances[4]` with
+`refraction.outerAmount`, but that does not make their storage ambiguous. The
+constructor's independent byte origins map Parameters `+0xd8` to provider
+`+0xc0`, while Parameters `+0x118` maps to provider `+0xf8`. The earlier
+constant-zero intervention remains valid for its controlled getter/export
+path; it does not describe the actual live producer path.
+
+The exact compositional analyzer and result are:
+
+```text
+Analysis/analyze_background_filter_constructor_return_join_blur_distance4_composition.py
+  SHA-256 8c505c1a86670eece62a53a5dac803874eff459ebfe6fb5652f668c640402e92
+Analysis/background_filter_constructor_return_join_blur_distance4_composition_result.json
+  SHA-256 68a78e4d61262d3373530079f745ab140b0dc9ab532df41b5a9bda623ecb541f
+```
+
+This closes the live scalar/discrete 49-field Parameters construction law for
+the all-present profile. It still does not establish upstream integer
+crop/allocation, physical Retina compositor/color transfer, or an independent
+zero-unequal-byte Walle frame. Liquid Glass parity and production shader
+changes remain unauthorized.

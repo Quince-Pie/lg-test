@@ -1,0 +1,482 @@
+{
+  "allChainEvidence": {
+    "chainCount": 1526,
+    "constructorBlurDistance4ToProviderBitwiseMatchCount": 1526,
+    "constructorOuterAmountToProviderBitwiseMatchCount": 1526,
+    "distinctParametersBlurDistance4WordCount": 1526,
+    "liveProfileBlurDistance4OuterAmountAliasCount": 1526,
+    "parametersBlurDistance4ToConstructorBitwiseMatchCount": 1526,
+    "parametersOuterAmountToConstructorBitwiseMatchCount": 1526
+  },
+  "authority": {
+    "generalPublicParameters49FieldConstructionLawEstablished": true,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveParametersBuilderToProviderTransferEstablished": true,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "productionShaderAuthorized": false,
+    "upstreamCropAllocationPolicyEstablished": false
+  },
+  "backgroundFilterConstructorReturnJoinBlurDistance4CompositionSchemaVersion": 1,
+  "classification": "retrospective exact structural composition after the frozen constant-zero prediction failed; the rejected prediction remains preserved unchanged",
+  "constructorTransferLaw": {
+    "arithmeticApplied": false,
+    "byteCount": 72,
+    "parametersBlurBlockRange": [
+      176,
+      248
+    ],
+    "parametersBlurDistance4Offset": 216,
+    "parametersOuterAmountOffset": 280,
+    "providerBlurBlockRange": [
+      152,
+      224
+    ],
+    "providerBlurDistance4Offset": 192,
+    "providerOuterAmountOffset": 248
+  },
+  "corrected49FieldBoundary": {
+    "correctedBitwiseMatchCount": 32,
+    "correctedParametersByteRange": [
+      216,
+      224
+    ],
+    "correctedParametersField": "blur.distances.4",
+    "correctedPublicInput": "inputBlurDistance4",
+    "correctedTransform": "binary64 identity",
+    "fullyExactMappedFieldCount": 49,
+    "inheritedExactMappedComponentCount": 1536,
+    "mappedComponentBitwiseMatchCount": 1568,
+    "mappedComponentBitwiseMismatchCount": 0,
+    "mappedComponentCount": 1568,
+    "preservedRejectedPrediction": "filterArrayGetter.inputBlurDistance4.constantZero",
+    "rejectedMappedFieldCount": 0
+  },
+  "inputs": {
+    "analysisSource": {
+      "path": "Analysis/analyze_background_filter_constructor_return_join_blur_distance4_composition.py",
+      "sha256": "8c505c1a86670eece62a53a5dac803874eff459ebfe6fb5652f668c640402e92"
+    },
+    "constructorSemantics": {
+      "path": "/tmp/walle/lg-test/Analysis/designlibrary_background_filter_constructor_semantics_local_macos_26_6_1_result.json",
+      "sha256": "f2502d578a87e33b8db738846d0278522d75d6a317f14bb169408f1d0a6fe690"
+    },
+    "falsified49FieldResult": {
+      "path": "/tmp/walle/lg-test/Analysis/background_filter_constructor_return_join_live_public_boundary_local_macos_26_6_1_result.json",
+      "sha256": "d55d1749fe8a3824029f811c87d3f7f416046e5b01e710ae8304e8fd21f80e83"
+    },
+    "returnJoinResult": {
+      "path": "/tmp/walle/lg-test/Analysis/background_filter_constructor_timeline_marker_return_join_4bda1b4_result.json",
+      "sha256": "e21834578e16099d06fd8fde52589b53cd67f97cd295a555e5d5c839a28cda44"
+    },
+    "timeline": {
+      "path": "/tmp/walle/artifacts/local-background-filter-constructor-timeline-marker-return-join-4bda1b4-run1/transition-timeline.json",
+      "sha256": "ebdd4a6ad942b21ab88eec7a5bd22b6b4ef399d5370279c46c904e3e272da2c2"
+    },
+    "trace": {
+      "path": "/tmp/walle/artifacts/local-background-filter-constructor-timeline-marker-return-join-4bda1b4-run1/background-filter-direct-join-trace.json",
+      "sha256": "b13b08a1d5e9d90aa60dea3c46f06074a00eba3609a96e9bc36e92b2e0dd831d"
+    },
+    "validation": {
+      "path": "/tmp/walle/artifacts/local-background-filter-constructor-timeline-marker-return-join-4bda1b4-run1/validation.json",
+      "sha256": "93ea10f0d2a6981d652d66ff5a2f113622b2cf393a8115490ca9b0a2bbaabe6f"
+    }
+  },
+  "interpretation": {
+    "controlledGetterDistinction": "the earlier exact constant-zero intervention remains valid for its controlled getter/export path and does not describe this live producer path",
+    "established": "the actual live producer supplies inputBlurDistance4 from the fifth binary64 lane of Parameters.blur.distances; the authenticated constructor copies that byte range directly to provider +0xc0",
+    "semanticDisambiguation": "blur distance 4 and refraction outer amount alias numerically in this profile, but independent constructor byte origins map Parameters +0xd8 to provider +0xc0 and Parameters +0x118 to provider +0xf8"
+  },
+  "sameRunPublicEvidence": {
+    "observations": [
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "0000560c72fced3f",
+        "parametersOuterAmountRawLittleEndianHex": "0000560c72fced3f",
+        "providerBlurDistance4RawLittleEndianHex": "0000560c72fced3f",
+        "providerOuterAmountRawLittleEndianHex": "0000560c72fced3f",
+        "publicInputBlurDistance4RawLittleEndianHex": "0000560c72fced3f",
+        "publicOuterAmountRawLittleEndianHex": "0000560c72fced3f",
+        "sampleIndex": 1,
+        "structurallySelectedChainIndex": 58
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "33339f3fd22bfe3f",
+        "parametersOuterAmountRawLittleEndianHex": "33339f3fd22bfe3f",
+        "providerBlurDistance4RawLittleEndianHex": "33339f3fd22bfe3f",
+        "providerOuterAmountRawLittleEndianHex": "33339f3fd22bfe3f",
+        "publicInputBlurDistance4RawLittleEndianHex": "33339f3fd22bfe3f",
+        "publicOuterAmountRawLittleEndianHex": "33339f3fd22bfe3f",
+        "sampleIndex": 2,
+        "structurallySelectedChainIndex": 111
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "0000967593dd0640",
+        "parametersOuterAmountRawLittleEndianHex": "0000967593dd0640",
+        "providerBlurDistance4RawLittleEndianHex": "0000967593dd0640",
+        "providerOuterAmountRawLittleEndianHex": "0000967593dd0640",
+        "publicInputBlurDistance4RawLittleEndianHex": "0000967593dd0640",
+        "publicOuterAmountRawLittleEndianHex": "0000967593dd0640",
+        "sampleIndex": 3,
+        "structurallySelectedChainIndex": 165
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "34330b5e9cd00c40",
+        "parametersOuterAmountRawLittleEndianHex": "34330b5e9cd00c40",
+        "providerBlurDistance4RawLittleEndianHex": "34330b5e9cd00c40",
+        "providerOuterAmountRawLittleEndianHex": "34330b5e9cd00c40",
+        "publicInputBlurDistance4RawLittleEndianHex": "34330b5e9cd00c40",
+        "publicOuterAmountRawLittleEndianHex": "34330b5e9cd00c40",
+        "sampleIndex": 4,
+        "structurallySelectedChainIndex": 206
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "cdcc1841b5dd1140",
+        "parametersOuterAmountRawLittleEndianHex": "cdcc1841b5dd1140",
+        "providerBlurDistance4RawLittleEndianHex": "cdcc1841b5dd1140",
+        "providerOuterAmountRawLittleEndianHex": "cdcc1841b5dd1140",
+        "publicInputBlurDistance4RawLittleEndianHex": "cdcc1841b5dd1140",
+        "publicOuterAmountRawLittleEndianHex": "cdcc1841b5dd1140",
+        "sampleIndex": 5,
+        "structurallySelectedChainIndex": 255
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "00c0fca6e7351540",
+        "parametersOuterAmountRawLittleEndianHex": "00c0fca6e7351540",
+        "providerBlurDistance4RawLittleEndianHex": "00c0fca6e7351540",
+        "providerOuterAmountRawLittleEndianHex": "00c0fca6e7351540",
+        "publicInputBlurDistance4RawLittleEndianHex": "00c0fca6e7351540",
+        "publicOuterAmountRawLittleEndianHex": "00c0fca6e7351540",
+        "sampleIndex": 6,
+        "structurallySelectedChainIndex": 302
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "000093b4159f1840",
+        "parametersOuterAmountRawLittleEndianHex": "000093b4159f1840",
+        "providerBlurDistance4RawLittleEndianHex": "000093b4159f1840",
+        "providerOuterAmountRawLittleEndianHex": "000093b4159f1840",
+        "publicInputBlurDistance4RawLittleEndianHex": "000093b4159f1840",
+        "publicOuterAmountRawLittleEndianHex": "000093b4159f1840",
+        "sampleIndex": 7,
+        "structurallySelectedChainIndex": 350
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "0000c074123f1c40",
+        "parametersOuterAmountRawLittleEndianHex": "0000c074123f1c40",
+        "providerBlurDistance4RawLittleEndianHex": "0000c074123f1c40",
+        "providerOuterAmountRawLittleEndianHex": "0000c074123f1c40",
+        "publicInputBlurDistance4RawLittleEndianHex": "0000c074123f1c40",
+        "publicOuterAmountRawLittleEndianHex": "0000c074123f1c40",
+        "sampleIndex": 8,
+        "structurallySelectedChainIndex": 403
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "9a59485614401f40",
+        "parametersOuterAmountRawLittleEndianHex": "9a59485614401f40",
+        "providerBlurDistance4RawLittleEndianHex": "9a59485614401f40",
+        "providerOuterAmountRawLittleEndianHex": "9a59485614401f40",
+        "publicInputBlurDistance4RawLittleEndianHex": "9a59485614401f40",
+        "publicOuterAmountRawLittleEndianHex": "9a59485614401f40",
+        "sampleIndex": 9,
+        "structurallySelectedChainIndex": 446
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "cd2ccb1b3f7c2140",
+        "parametersOuterAmountRawLittleEndianHex": "cd2ccb1b3f7c2140",
+        "providerBlurDistance4RawLittleEndianHex": "cd2ccb1b3f7c2140",
+        "providerOuterAmountRawLittleEndianHex": "cd2ccb1b3f7c2140",
+        "publicInputBlurDistance4RawLittleEndianHex": "cd2ccb1b3f7c2140",
+        "publicOuterAmountRawLittleEndianHex": "cd2ccb1b3f7c2140",
+        "sampleIndex": 10,
+        "structurallySelectedChainIndex": 500
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "67c6aaac9a212340",
+        "parametersOuterAmountRawLittleEndianHex": "67c6aaac9a212340",
+        "providerBlurDistance4RawLittleEndianHex": "67c6aaac9a212340",
+        "providerOuterAmountRawLittleEndianHex": "67c6aaac9a212340",
+        "publicInputBlurDistance4RawLittleEndianHex": "67c6aaac9a212340",
+        "publicOuterAmountRawLittleEndianHex": "67c6aaac9a212340",
+        "sampleIndex": 11,
+        "structurallySelectedChainIndex": 547
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "00001868e8952440",
+        "parametersOuterAmountRawLittleEndianHex": "00001868e8952440",
+        "providerBlurDistance4RawLittleEndianHex": "00001868e8952440",
+        "providerOuterAmountRawLittleEndianHex": "00001868e8952440",
+        "publicInputBlurDistance4RawLittleEndianHex": "00001868e8952440",
+        "publicOuterAmountRawLittleEndianHex": "00001868e8952440",
+        "sampleIndex": 12,
+        "structurallySelectedChainIndex": 589
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "00609382cf522640",
+        "parametersOuterAmountRawLittleEndianHex": "00609382cf522640",
+        "providerBlurDistance4RawLittleEndianHex": "00609382cf522640",
+        "providerOuterAmountRawLittleEndianHex": "00609382cf522640",
+        "publicInputBlurDistance4RawLittleEndianHex": "00609382cf522640",
+        "publicOuterAmountRawLittleEndianHex": "00609382cf522640",
+        "sampleIndex": 13,
+        "structurallySelectedChainIndex": 640
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "0060cedca3d32740",
+        "parametersOuterAmountRawLittleEndianHex": "0060cedca3d32740",
+        "providerBlurDistance4RawLittleEndianHex": "0060cedca3d32740",
+        "providerOuterAmountRawLittleEndianHex": "0060cedca3d32740",
+        "publicInputBlurDistance4RawLittleEndianHex": "0060cedca3d32740",
+        "publicOuterAmountRawLittleEndianHex": "0060cedca3d32740",
+        "sampleIndex": 14,
+        "structurallySelectedChainIndex": 684
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "67668caa8b7d2940",
+        "parametersOuterAmountRawLittleEndianHex": "67668caa8b7d2940",
+        "providerBlurDistance4RawLittleEndianHex": "67668caa8b7d2940",
+        "providerOuterAmountRawLittleEndianHex": "67668caa8b7d2940",
+        "publicInputBlurDistance4RawLittleEndianHex": "67668caa8b7d2940",
+        "publicOuterAmountRawLittleEndianHex": "67668caa8b7d2940",
+        "sampleIndex": 15,
+        "structurallySelectedChainIndex": 734
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "cdcce418ea162b40",
+        "parametersOuterAmountRawLittleEndianHex": "cdcce418ea162b40",
+        "providerBlurDistance4RawLittleEndianHex": "cdcce418ea162b40",
+        "providerOuterAmountRawLittleEndianHex": "cdcce418ea162b40",
+        "publicInputBlurDistance4RawLittleEndianHex": "cdcce418ea162b40",
+        "publicOuterAmountRawLittleEndianHex": "cdcce418ea162b40",
+        "sampleIndex": 16,
+        "structurallySelectedChainIndex": 781
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "000016e70acc2c40",
+        "parametersOuterAmountRawLittleEndianHex": "000016e70acc2c40",
+        "providerBlurDistance4RawLittleEndianHex": "000016e70acc2c40",
+        "providerOuterAmountRawLittleEndianHex": "000016e70acc2c40",
+        "publicInputBlurDistance4RawLittleEndianHex": "000016e70acc2c40",
+        "publicOuterAmountRawLittleEndianHex": "000016e70acc2c40",
+        "sampleIndex": 17,
+        "structurallySelectedChainIndex": 833
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "cdccb219e8402e40",
+        "parametersOuterAmountRawLittleEndianHex": "cdccb219e8402e40",
+        "providerBlurDistance4RawLittleEndianHex": "cdccb219e8402e40",
+        "providerOuterAmountRawLittleEndianHex": "cdccb219e8402e40",
+        "publicInputBlurDistance4RawLittleEndianHex": "cdccb219e8402e40",
+        "publicOuterAmountRawLittleEndianHex": "cdccb219e8402e40",
+        "sampleIndex": 18,
+        "structurallySelectedChainIndex": 877
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "000056a306c82f40",
+        "parametersOuterAmountRawLittleEndianHex": "000056a306c82f40",
+        "providerBlurDistance4RawLittleEndianHex": "000056a306c82f40",
+        "providerOuterAmountRawLittleEndianHex": "000056a306c82f40",
+        "publicInputBlurDistance4RawLittleEndianHex": "000056a306c82f40",
+        "publicOuterAmountRawLittleEndianHex": "000056a306c82f40",
+        "sampleIndex": 19,
+        "structurallySelectedChainIndex": 923
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "0030dda4e3b33040",
+        "parametersOuterAmountRawLittleEndianHex": "0030dda4e3b33040",
+        "providerBlurDistance4RawLittleEndianHex": "0030dda4e3b33040",
+        "providerOuterAmountRawLittleEndianHex": "0030dda4e3b33040",
+        "publicInputBlurDistance4RawLittleEndianHex": "0030dda4e3b33040",
+        "publicOuterAmountRawLittleEndianHex": "0030dda4e3b33040",
+        "sampleIndex": 20,
+        "structurallySelectedChainIndex": 973
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "672635752f7b3140",
+        "parametersOuterAmountRawLittleEndianHex": "672635752f7b3140",
+        "providerBlurDistance4RawLittleEndianHex": "672635752f7b3140",
+        "providerOuterAmountRawLittleEndianHex": "672635752f7b3140",
+        "publicInputBlurDistance4RawLittleEndianHex": "672635752f7b3140",
+        "publicOuterAmountRawLittleEndianHex": "672635752f7b3140",
+        "sampleIndex": 21,
+        "structurallySelectedChainIndex": 1021
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "00c06280a4303240",
+        "parametersOuterAmountRawLittleEndianHex": "00c06280a4303240",
+        "providerBlurDistance4RawLittleEndianHex": "00c06280a4303240",
+        "providerOuterAmountRawLittleEndianHex": "00c06280a4303240",
+        "publicInputBlurDistance4RawLittleEndianHex": "00c06280a4303240",
+        "publicOuterAmountRawLittleEndianHex": "00c06280a4303240",
+        "sampleIndex": 22,
+        "structurallySelectedChainIndex": 1065
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "33e3a7ef100a3340",
+        "parametersOuterAmountRawLittleEndianHex": "33e3a7ef100a3340",
+        "providerBlurDistance4RawLittleEndianHex": "33e3a7ef100a3340",
+        "providerOuterAmountRawLittleEndianHex": "33e3a7ef100a3340",
+        "publicInputBlurDistance4RawLittleEndianHex": "33e3a7ef100a3340",
+        "publicOuterAmountRawLittleEndianHex": "33e3a7ef100a3340",
+        "sampleIndex": 23,
+        "structurallySelectedChainIndex": 1118
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "6766267300be3340",
+        "parametersOuterAmountRawLittleEndianHex": "6766267300be3340",
+        "providerBlurDistance4RawLittleEndianHex": "6766267300be3340",
+        "providerOuterAmountRawLittleEndianHex": "6766267300be3340",
+        "publicInputBlurDistance4RawLittleEndianHex": "6766267300be3340",
+        "publicOuterAmountRawLittleEndianHex": "6766267300be3340",
+        "sampleIndex": 24,
+        "structurallySelectedChainIndex": 1161
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "00307f64ef723440",
+        "parametersOuterAmountRawLittleEndianHex": "00307f64ef723440",
+        "providerBlurDistance4RawLittleEndianHex": "00307f64ef723440",
+        "providerOuterAmountRawLittleEndianHex": "00307f64ef723440",
+        "publicInputBlurDistance4RawLittleEndianHex": "00307f64ef723440",
+        "publicOuterAmountRawLittleEndianHex": "00307f64ef723440",
+        "sampleIndex": 25,
+        "structurallySelectedChainIndex": 1205
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "67161c6124373540",
+        "parametersOuterAmountRawLittleEndianHex": "67161c6124373540",
+        "providerBlurDistance4RawLittleEndianHex": "67161c6124373540",
+        "providerOuterAmountRawLittleEndianHex": "67161c6124373540",
+        "publicInputBlurDistance4RawLittleEndianHex": "67161c6124373540",
+        "publicOuterAmountRawLittleEndianHex": "67161c6124373540",
+        "sampleIndex": 26,
+        "structurallySelectedChainIndex": 1254
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "00c01e0ddee03540",
+        "parametersOuterAmountRawLittleEndianHex": "00c01e0ddee03540",
+        "providerBlurDistance4RawLittleEndianHex": "00c01e0ddee03540",
+        "providerOuterAmountRawLittleEndianHex": "00c01e0ddee03540",
+        "publicInputBlurDistance4RawLittleEndianHex": "00c01e0ddee03540",
+        "publicOuterAmountRawLittleEndianHex": "00c01e0ddee03540",
+        "sampleIndex": 27,
+        "structurallySelectedChainIndex": 1296
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "00c0b03ee1b23640",
+        "parametersOuterAmountRawLittleEndianHex": "00c0b03ee1b23640",
+        "providerBlurDistance4RawLittleEndianHex": "00c0b03ee1b23640",
+        "providerOuterAmountRawLittleEndianHex": "00c0b03ee1b23640",
+        "publicInputBlurDistance4RawLittleEndianHex": "00c0b03ee1b23640",
+        "publicOuterAmountRawLittleEndianHex": "00c0b03ee1b23640",
+        "sampleIndex": 28,
+        "structurallySelectedChainIndex": 1350
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "33f369f5e0583740",
+        "parametersOuterAmountRawLittleEndianHex": "33f369f5e0583740",
+        "providerBlurDistance4RawLittleEndianHex": "33f369f5e0583740",
+        "providerOuterAmountRawLittleEndianHex": "33f369f5e0583740",
+        "publicInputBlurDistance4RawLittleEndianHex": "33f369f5e0583740",
+        "publicOuterAmountRawLittleEndianHex": "33f369f5e0583740",
+        "sampleIndex": 29,
+        "structurallySelectedChainIndex": 1391
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "671611bdc70c3840",
+        "parametersOuterAmountRawLittleEndianHex": "671611bdc70c3840",
+        "providerBlurDistance4RawLittleEndianHex": "671611bdc70c3840",
+        "providerOuterAmountRawLittleEndianHex": "671611bdc70c3840",
+        "publicInputBlurDistance4RawLittleEndianHex": "671611bdc70c3840",
+        "publicOuterAmountRawLittleEndianHex": "671611bdc70c3840",
+        "sampleIndex": 30,
+        "structurallySelectedChainIndex": 1436
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "00c01694ecc23840",
+        "parametersOuterAmountRawLittleEndianHex": "00c01694ecc23840",
+        "providerBlurDistance4RawLittleEndianHex": "00c01694ecc23840",
+        "providerOuterAmountRawLittleEndianHex": "00c01694ecc23840",
+        "publicInputBlurDistance4RawLittleEndianHex": "00c01694ecc23840",
+        "publicOuterAmountRawLittleEndianHex": "00c01694ecc23840",
+        "sampleIndex": 31,
+        "structurallySelectedChainIndex": 1483
+      },
+      {
+        "blurDistance4MatchedBitwise": true,
+        "outerAmountMatchedBitwise": true,
+        "parametersBlurDistance4RawLittleEndianHex": "6766666666663940",
+        "parametersOuterAmountRawLittleEndianHex": "6766666666663940",
+        "providerBlurDistance4RawLittleEndianHex": "6766666666663940",
+        "providerOuterAmountRawLittleEndianHex": "6766666666663940",
+        "publicInputBlurDistance4RawLittleEndianHex": "6766666666663940",
+        "publicOuterAmountRawLittleEndianHex": "6766666666663940",
+        "sampleIndex": 32,
+        "structurallySelectedChainIndex": 1525
+      }
+    ],
+    "parametersProviderPublicBlurDistance4BitwiseMatchCount": 32,
+    "parametersProviderPublicOuterAmountBitwiseMatchCount": 32,
+    "sampleCount": 32,
+    "selectionUsesCapturedValues": false
+  }
+}
