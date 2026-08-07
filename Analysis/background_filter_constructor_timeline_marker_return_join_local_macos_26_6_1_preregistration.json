@@ -1,0 +1,137 @@
+{
+  "backgroundFilterConstructorTimelineMarkerReturnJoinLocalMacOSPreregistrationSchemaVersion": 1,
+  "classification": "prospectively frozen value-blind five-stop live direct join that captures the complete 504-byte BackgroundFilter constructor value at the authenticated immediate post-BL producer instruction before temporary stack storage may be reused",
+  "frozenAtUTC": "2026-08-07",
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "host": {
+    "architecture": "arm64",
+    "developerModeEnabled": true,
+    "display": "built-in Retina 3456x2234 physical / 1728x1117 logical / 2x",
+    "hardware": "Apple M1 Max",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "sshTarget": "quince@10.0.41.19"
+  },
+  "rejectedDirectJoinPredecessor": {
+    "captureCommit": "7d2f8ab",
+    "failureResultPath": "Analysis/background_filter_constructor_timeline_marker_direct_join_7d2f8ab_failure_result.json",
+    "failureResultSHA256": "b9aaccf97ee9883ee532551909a81b171c5a69315c8b34193157fc3d042cb1ea",
+    "validationExitStatus": 2,
+    "frozenGateRemainsFailed": true,
+    "builderConstructorAndPublicProviderJoinsPassedRetrospectively": true,
+    "constructorOutputWasObservedAfterTemporaryLifetime": true
+  },
+  "selectionPolicy": {
+    "captureWindow": "strictly after marker 0 through entry of marker 32",
+    "chainSelection": "exact builder BL/return, exact constructor BL/immediate return, then exact provider entry on the same thread",
+    "sampleSelection": "last structurally completed chain in each preceding marker interval",
+    "markerSelection": "exact main-module function entry and zero-based ordinal only",
+    "capturedValuesMaySelectCalls": false,
+    "selectionFrozenBeforeDispatch": true
+  },
+  "captureContract": {
+    "activeRetinaSessionPreflightRequired": true,
+    "all33TimelineMarkersRequired": true,
+    "all32NoninitialMarkerBatchesMustBeNonempty": true,
+    "exactFiveEventsRequiredPerChain": true,
+    "noChainMayCrossAMarker": true,
+    "complete1025ByteBuilderOutputAndConstructorInputRequired": true,
+    "complete504ByteConstructorOutputRequiredAtImmediateReturn": true,
+    "lateConstructorOutputSnapshotForbidden": true,
+    "complete504ByteProviderObjectRequiredAtEntry": true,
+    "all491InitializedBytesAcceptanceGated": true,
+    "all13PaddingBytesRetainedButNotAcceptanceGated": true,
+    "maximumChainCount": 4096,
+    "nativeAppleCommandLineToolsOnly": true,
+    "zeroTolerance": true
+  },
+  "prospectivePredictions": {
+    "all32MarkerBatchesAreNonempty": true,
+    "everyChainHasExactFiveEventSequence": true,
+    "everyBuilderOutputMatchesConstructorParametersBitwise": true,
+    "everyInitializedConstructorReturnByteMatchesProviderObjectBitwise": true,
+    "all32SelectedChainsAreUniqueGlobalPublicSignatureMatches": true,
+    "all32SelectedProviderObjectsMatchAll18LoadedPublicFieldsBitwise": true,
+    "constructorAndProviderAddressEqualityPredicted": null,
+    "paddingByteEqualityAcceptanceGated": false,
+    "publicParameters49FieldMatchCountPredicted": null
+  },
+  "authenticatedConstructorReturn": {
+    "designLibraryUUID": "1E980802-69F5-3E69-89EF-50088297FCF5",
+    "producerModuleOffset": 753576,
+    "producerByteCount": 1644,
+    "producerCodeSHA256": "0729f7b0f874c0fb9fb64fa3383a6f2ed328d1dc55fdce53b82038a188df6f97",
+    "constructorCallOffset": 908,
+    "constructorCallInstructionHex": "730a0094",
+    "constructorReturnOffset": 912,
+    "snapshotTiming": "before execution of the first producer instruction after the constructor BL",
+    "backgroundFilterByteCount": 504,
+    "initializedByteCount": 491,
+    "paddingByteCount": 13
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1_lldb.py",
+        "sha256": "d0af920027d06500a46cb82e8bd60a9b9e2891dfad0478777dc35f0dfd88eacb"
+      },
+      {
+        "path": "Analysis/validate_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1.py",
+        "sha256": "4db2cd6c8bedcfb33d2e63cf05fc3c273f62c34e85dd4de4de5ad2775ae27f76"
+      },
+      {
+        "path": "Analysis/run_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1.sh",
+        "sha256": "740f5c84e8d9a9a3d669c02f9d9e2dd4d8e9ecc7004acd87905f7f5a46f3f99f"
+      },
+      {
+        "path": "Analysis/test_capture_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1_lldb_source.py",
+        "sha256": "6d7e85f2c9af1731720f33650e5dce4f9507c942b13aad250229f8eae0064f61"
+      },
+      {
+        "path": "Analysis/test_validate_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1.py",
+        "sha256": "3cd7c9e9e54ea249a241d258a814101773ddce310ca360eb26f61e87b446c2e9"
+      },
+      {
+        "path": "Analysis/test_run_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1_source.py",
+        "sha256": "e4a95c9188a8c7ffab98dbe3bbd19911949984a39e1ac933a90a6fc67e57df79"
+      },
+      {
+        "path": "Analysis/test_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1_preregistration.py",
+        "sha256": "66a1a92ae9d93cea05bfa75c0ee538ed0c9eb6bc27b1cdd91dafc95b93fbcb65"
+      },
+      {
+        "path": "Analysis/background_filter_constructor_timeline_marker_direct_join_7d2f8ab_failure_result.json",
+        "sha256": "b9aaccf97ee9883ee532551909a81b171c5a69315c8b34193157fc3d042cb1ea"
+      },
+      {
+        "path": "Analysis/capture_background_filter_constructor_timeline_marker_direct_join_local_macos_26_6_1_lldb.py",
+        "sha256": "14d6ea6368f9ff6766821d5b516afebeae00dc5d9ae9646532c9b7e716e4b573"
+      },
+      {
+        "path": "Analysis/validate_background_filter_constructor_timeline_marker_direct_join_local_macos_26_6_1.py",
+        "sha256": "2273638e6e176f5b4f5453e0db5d0f9844ecac813d3849b02ac9b1b5ca09c929"
+      },
+      {
+        "path": "Analysis/check_local_retina_capture_session_v2.swift",
+        "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+      },
+      {
+        "path": "Analysis/capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb.py",
+        "sha256": "38d8829faf92397dfd85e631ac2336ab3c4d702f03a1e7eb7d5cbd221d279c6c"
+      },
+      {
+        "path": "Analysis/validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
+        "sha256": "bf24f979bc6edfa9e8ed8b2fbcf4b7ec88bf3e90249e2fd4ece87883e787ea0c"
+      }
+    ]
+  },
+  "productAuthority": {
+    "liveConstructorReturnJoinMayPassProspectively": true,
+    "generalPublicParameters49FieldConstructionLawEstablishedOnPass": false,
+    "upstreamCropAllocationPolicyEstablishedOnPass": false,
+    "physicalRetinaColorPixelCompositorTransferEstablishedOnPass": false,
+    "independentWalleZeroByteFrameParityEstablishedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false,
+    "productionShaderAuthorizedOnPass": false
+  }
+}

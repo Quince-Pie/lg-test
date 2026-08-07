@@ -10774,3 +10774,47 @@ A pass closes the actual live Parameters-to-provider construction gap for this
 profile. It still does not by itself establish the general 49-field Parameters
 law, crop/allocation, physical compositor/color behavior, or independent Walle
 pixel parity.
+
+The four-stop successor ran directly on the M1 at commit `7d2f8ab`. Native
+capture completed with 33 markers, 1,918 complete chains, zero pending calls,
+zero ignored providers, zero trace failures, and 48 to 74 chains in every
+noninitial marker batch. All 1,918 complete 1,025-byte builder outputs equalled
+the constructor inputs bit for bit. All 32 structurally selected last chains
+were the unique batch-and-global public signature match and passed all 576
+provider-field comparisons.
+
+The frozen gate nevertheless rejected chain 0 because the constructor output
+was first read later at provider entry. The constructor output addresses are
+temporary main-thread stack slots near `0x16fdfxxxx`; provider objects reside in
+separate persistent storage near `0x79b860xxx`. There were zero equal addresses
+and eight observed address deltas. By provider entry, producer code had already
+copied the returned value and reused the stack slot. The rejected gate remains
+failed; it is preserved at
+`Analysis/background_filter_constructor_timeline_marker_direct_join_7d2f8ab_failure_result.json`
+with SHA-256
+`b9aaccf97ee9883ee532551909a81b171c5a69315c8b34193157fc3d042cb1ea`.
+
+The next gate restores exactly one stop: DesignLibrary producer `+0x390`, the
+first instruction immediately after the authenticated constructor `BL` at
+`+0x38c`. It snapshots the complete 504-byte returned value before producer
+code executes another instruction. Provider entry remains the later comparison
+boundary. The resulting five-stop chain is still lighter than the accepted
+six-stop provider experiment and preserves the healthy cadence demonstrated by
+the four-stop run. Captured bytes still cannot select a call or sample.
+
+The immediate-return gate freezes the same 1,025-byte builder-to-constructor
+identity, all 491 initialized constructor-to-provider bytes, 32 nonempty marker
+batches, the unique last-chain selection, and all 18 provider fields. It does
+not predict address equality, padding equality, or the later 49-field mapping
+outcome. Its direct-M1 pre-dispatch identities are:
+
+```text
+Analysis/background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1_preregistration.json
+  SHA-256 26d61690f6b1f177da679e4fe13324689b36322a3ced3b91bb7f987377cbb44e
+Analysis/capture_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1_lldb.py
+  SHA-256 d0af920027d06500a46cb82e8bd60a9b9e2891dfad0478777dc35f0dfd88eacb
+Analysis/validate_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1.py
+  SHA-256 4db2cd6c8bedcfb33d2e63cf05fc3c273f62c34e85dd4de4de5ad2775ae27f76
+Analysis/run_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1.sh
+  SHA-256 740f5c84e8d9a9a3d669c02f9d9e2dd4d8e9ecc7004acd87905f7f5a46f3f99f
+```
