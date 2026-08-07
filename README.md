@@ -8328,6 +8328,63 @@ physical Retina color/pixel/compositor transfer, and a real Apple-versus-Walle
 zero-unequal-byte frame remain open. Liquid Glass parity is still not
 established, and no production shader change is authorized by this result.
 
+### Retrospective cross-capture public/provider replication
+
+The four-word join above is not confined to one timing realization. A second,
+independently timed capture at commit `d28806a` used normal controlled-replay
+flags rather than allocation-metadata flags. Its trace and timeline SHA-256
+values are respectively
+`32f82fab6a209831347bd2673a6c83fb304cdc72fb04045f37ed23c1ea0be614`
+and
+`e6fa2d9a2f9916f077f2af1b02d9e24a26a90bc60d72a84e0bb27fda5ef65345`.
+The original normal-run prospective contract remains failed because it
+incorrectly required multiple and positive provider returns; all 1,232
+captured returns are exact zero. Its independently authenticated object
+transport, public timeline, and zero-byte controlled pass replays remain valid
+evidence. The failed contract is not relabelled as a pass.
+
+Applying the already opened selector unchanged to normal-run public samples
+`1,4,8,12,16,20,24,28,32` gives unique non-endpoint provider calls
+
+```text
+70, 177, 331, 497, 657, 817, 964, 1091
+```
+
+in strict order. Each other call matches zero of the four words and there are
+no one-, two-, or three-word collisions. Endpoint sample 32 independently
+reproduces the same ambiguity shape: the initial call and two terminal calls,
+now indices `0,1230,1231` instead of allocation-run `0,1226,1227`.
+
+The eight overlapping non-endpoint samples provide a stronger intervention in
+the captured state than equal sample numbers imply. All four signature words
+differ between the two captures at every sample: 32/32 raw binary64 word
+comparisons changed. Despite that change, each word still equals its declared
+public-input transform in its own provider object. Across the 18 fields loaded
+by the exact provider path, all 112/112 comparisons for the 14 constant fields
+remain equal between capture modes, while all 32/32 comparisons for the four
+varying fields change with their corresponding public values. Replaying the
+authenticated provider code over all eight normal-run matches produces the
+captured exact-zero return bit for bit, follows one execution path, and
+reopens the same 18 loaded fields.
+
+The reproducible analysis is
+`Analysis/analyze_backdrop_margin_case22_provider_public_timeline_cross_capture_replication.py`,
+SHA-256
+`25ef74783562ee43a0ad63f6a3c1c022e0e62179c72f5d726659ddbf565c884d`.
+Its immutable result is
+`Analysis/backdrop_margin_case22_provider_public_timeline_cross_capture_replication_retrospective_result.json`,
+SHA-256
+`141d61e04d2addb06eb40beb136fcfdaa5cab42c33ff9422f57c0d52ed467d83`.
+
+This establishes exact retrospective cross-capture replication under changed
+diagnostic flags and changed public input words. It still does not authenticate
+which provider call occurred inside each public render callback, intervene on
+a fresh material/appearance/geometry profile, or prove a general constructor.
+Those claims remain reserved for the frozen structural interval transfer and
+its later fresh-profile successors. Crop/allocation, physical Retina output,
+independent Walle frame parity, Liquid Glass parity, and shader authority all
+remain open.
+
 ### Frozen public-render/provider interval transfer
 
 The next gate removes the remaining causal ambiguity without modifying the

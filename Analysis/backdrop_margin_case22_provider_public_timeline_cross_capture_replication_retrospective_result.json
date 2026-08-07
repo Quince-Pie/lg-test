@@ -1,0 +1,634 @@
+{
+  "authority": {
+    "allFourWordsChangedAtEveryOverlappingNonEndpointSample": true,
+    "authenticatedPerCallbackTemporalJoinEstablished": false,
+    "constantLoadedFieldsStableAcrossCaptureModes": true,
+    "freshMaterialAppearanceGeometryProfileTransferEstablished": false,
+    "generalPublicInputObjectConstructionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "normalOriginalProspectiveFailureRelabelledAsPass": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "productionShaderAuthorized": false,
+    "prospectivePublicInputToProviderConstructionTransferEstablished": false,
+    "retrospectiveCrossCaptureReplicationEstablished": true,
+    "sameFourWordRelationsReplicatedAcrossDifferentCapturedInputWords": true,
+    "upstreamCropAllocationPolicyEstablished": false
+  },
+  "backdropMarginCase22ProviderPublicTimelineCrossCaptureReplicationAnalysisSchemaVersion": 1,
+  "classification": "exact retrospective replication of the four-word public/provider join across independently timed allocation and normal diagnostic captures",
+  "inputs": {
+    "allocationCapture": {
+      "evidenceMode": "allocation-metadata-v1",
+      "originalProspectiveContractPassed": true,
+      "preregistrationSHA256": "2e4b4bc919d90fb7abed939641cfce37bd0d3c48acd89b5dfb1c50623d35c918",
+      "providerTraceSHA256": "0e83312d2535ad6601b6bcae178e939e13a9ebae95d15efcc166ffde013e6d72",
+      "publicTimelineSHA256": "1dd73cfa4e696c43a0612c107e9a5edcb78c72b14ba80e67a53e4e99b06d931f",
+      "sourceCommit": "b694a919a7dd2e6c3a06b24fd1705a1bcb6646f3"
+    },
+    "analysisSource": {
+      "path": "Analysis/analyze_backdrop_margin_case22_provider_public_timeline_cross_capture_replication.py",
+      "sha256": "25ef74783562ee43a0ad63f6a3c1c022e0e62179c72f5d726659ddbf565c884d"
+    },
+    "normalCapture": {
+      "evidenceMode": "controlled-replay-v1",
+      "originalFailedRequirementsPreserved": [
+        "requireAtLeastTwoDistinctProviderReturnWords",
+        "requireAtLeastOneFinitePositiveProviderReturn"
+      ],
+      "originalProspectiveContractPassed": false,
+      "preregistrationSHA256": "b63b45c0b9be9d48a2c472a5be028f5bee2e38995fdd071b1eef6d29efeedbe6",
+      "providerTraceSHA256": "32f82fab6a209831347bd2673a6c83fb304cdc72fb04045f37ed23c1ea0be614",
+      "publicTimelineSHA256": "e6fa2d9a2f9916f077f2af1b02d9e24a26a90bc60d72a84e0bb27fda5ef65345",
+      "sourceCommit": "d28806a1ad328e6a56f2c7fd33e3d3a6b91d8d26",
+      "transportAndObjectCapturePassed": true
+    },
+    "openedAllocationJoinResult": {
+      "path": "Analysis/backdrop_margin_case22_provider_public_timeline_join_retrospective_result.json",
+      "sha256": "00fab84d0c6163629da387ea4e0f50884ee40b9f04842646fe01a36936b50e3d"
+    }
+  },
+  "nextExactGate": "execute the already frozen value-blind public-render interval transfer; on pass, freeze fresh profile and independent-input interventions at the same authenticated boundary",
+  "normalProviderExecution": {
+    "allEightReturnsExactZero": true,
+    "allEightReturnsReplayedBitwise": true,
+    "distinctExecutedPathCount": 1,
+    "loadedFieldCount": 18,
+    "loadedFieldObservations": [
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "exact-observational-public-word-equality",
+          "exactMatchCount": 8,
+          "publicInput": "inputShadowOffset",
+          "publicInputBinary64Lane": 0,
+          "semanticSourceDisambiguatedWithinProfile": false,
+          "transform": "identity"
+        },
+        "providerObjectOffset": 8,
+        "providerObjectOffsetHex": "0x008",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000002040"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "exact-observational-public-word-equality",
+          "exactMatchCount": 8,
+          "publicInput": "inputShadowOffset",
+          "publicInputBinary64Lane": 1,
+          "semanticSourceDisambiguatedWithinProfile": false,
+          "transform": "identity"
+        },
+        "providerObjectOffset": 16,
+        "providerObjectOffsetHex": "0x010",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000045b52440",
+          "0000000091a90f40",
+          "00000030bdff3240",
+          "00000034f47b5040",
+          "0000006051454840",
+          "000000a0db943c40",
+          "000000a8bf574340",
+          "000000a8f9d74c40"
+        ],
+        "distinctRawWordCount": 8,
+        "joinedSampleCount": 8,
+        "observation": {
+          "candidateRelations": [
+            {
+              "binary64Scale": 1.0,
+              "exactMatchCount": 8,
+              "publicInput": "inputShadowAmount"
+            }
+          ],
+          "classification": "exact-observational-public-word-equality",
+          "semanticSourceDisambiguatedWithinProfile": true
+        },
+        "providerObjectOffset": 24,
+        "providerObjectOffsetHex": "0x018",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 40,
+        "providerObjectOffsetHex": "0x028",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 56,
+        "providerObjectOffsetHex": "0x038",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 4,
+        "distinctRawLittleEndianHex": [
+          "00000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "00000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 136,
+        "providerObjectOffsetHex": "0x088",
+        "storage": "binary32"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 144,
+        "providerObjectOffsetHex": "0x090",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000902ed227f03f",
+          "00209996404a0d40",
+          "0090d4109d641540",
+          "2589605c9d60fd3f",
+          "49220407343b1840",
+          "4992ed24882e1240",
+          "92a45582e8df0540",
+          "dbb6311fbfddd83f"
+        ],
+        "distinctRawWordCount": 8,
+        "joinedSampleCount": 8,
+        "observation": {
+          "candidateRelations": [
+            {
+              "binary64Scale": 2.0,
+              "exactMatchCount": 8,
+              "publicInput": "inputBlurRadius"
+            }
+          ],
+          "classification": "exact-observational-public-word-equality",
+          "semanticSourceDisambiguatedWithinProfile": true
+        },
+        "providerObjectOffset": 152,
+        "providerObjectOffsetHex": "0x098",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 160,
+        "providerObjectOffsetHex": "0x0a0",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 168,
+        "providerObjectOffsetHex": "0x0a8",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 176,
+        "providerObjectOffsetHex": "0x0b0",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 184,
+        "providerObjectOffsetHex": "0x0b8",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 192,
+        "providerObjectOffsetHex": "0x0c0",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "00000000049120c0",
+          "00000000745409c0",
+          "000000202e1347c0",
+          "00000020ed5f4ac0",
+          "00000040ccf23ec0",
+          "000000807cdd36c0",
+          "00000080a76a43c0",
+          "00000080fb652ec0"
+        ],
+        "distinctRawWordCount": 8,
+        "joinedSampleCount": 8,
+        "observation": {
+          "candidateRelations": [
+            {
+              "binary64Scale": 1.0,
+              "exactMatchCount": 8,
+              "publicInput": "inputInnerRefractionAmount"
+            },
+            {
+              "binary64Scale": -0.8,
+              "exactMatchCount": 8,
+              "publicInput": "inputShadowAmount"
+            }
+          ],
+          "classification": "exact-observational-public-word-equality",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 232,
+        "providerObjectOffsetHex": "0x0e8",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 248,
+        "providerObjectOffsetHex": "0x0f8",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 4,
+        "distinctRawLittleEndianHex": [
+          "00000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "00000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 272,
+        "providerObjectOffsetHex": "0x110",
+        "storage": "binary32"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "000014f222361b40",
+          "00500f0696423240",
+          "00947bb883533840",
+          "00a85cc47aa32840",
+          "00aafe6e34d64340",
+          "9963041b81974140",
+          "cd4c03532d010540",
+          "ff3f795a2e0c3e40"
+        ],
+        "distinctRawWordCount": 8,
+        "joinedSampleCount": 8,
+        "observation": {
+          "candidateRelations": [
+            {
+              "binary64Scale": 1.0,
+              "exactMatchCount": 8,
+              "publicInput": "inputBleedAmount"
+            },
+            {
+              "binary64Scale": 1.0,
+              "exactMatchCount": 8,
+              "publicInput": "inputBleedHeight"
+            }
+          ],
+          "classification": "exact-observational-public-word-equality",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 352,
+        "providerObjectOffsetHex": "0x160",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 4,
+        "distinctRawLittleEndianHex": [
+          "00000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 8,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "00000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 376,
+        "providerObjectOffsetHex": "0x178",
+        "storage": "binary32"
+      }
+    ],
+    "loadedObjectRanges": [
+      {
+        "byteCount": 16,
+        "providerObjectOffset": 8
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 24
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 40
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 56
+      },
+      {
+        "byteCount": 4,
+        "providerObjectOffset": 136
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 144
+      },
+      {
+        "byteCount": 16,
+        "providerObjectOffset": 152
+      },
+      {
+        "byteCount": 16,
+        "providerObjectOffset": 168
+      },
+      {
+        "byteCount": 16,
+        "providerObjectOffset": 184
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 232
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 248
+      },
+      {
+        "byteCount": 4,
+        "providerObjectOffset": 272
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 352
+      },
+      {
+        "byteCount": 4,
+        "providerObjectOffset": 376
+      }
+    ],
+    "matchingReplayReturnCount": 8,
+    "providerCodeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b"
+  },
+  "replication": {
+    "allUniqueJoinsHaveZeroPartialCollisions": true,
+    "allUniqueJoinsStrictlyIncreasingWithinCapture": true,
+    "allocationEndpoint": {
+      "classification": "ambiguous-initial-and-two-terminal-endpoint-calls",
+      "fullMatchCallIndices": [
+        0,
+        1226,
+        1227
+      ],
+      "partialMatchCallCount": 0,
+      "providerCallMatchHistogram": [
+        {
+          "matchingSignatureWordCount": 0,
+          "providerCallCount": 1225
+        },
+        {
+          "matchingSignatureWordCount": 4,
+          "providerCallCount": 3
+        }
+      ],
+      "sampleIndex": 32,
+      "signatureWordsRawLittleEndianHex": [
+        "0000000000c05240",
+        "9224499224491b40",
+        "0000000000004ec0",
+        "9999999999394640"
+      ]
+    },
+    "allocationProviderCallCount": 1228,
+    "allocationUniqueNonEndpointJoinCount": 31,
+    "changedSignatureWordComparisonCount": 32,
+    "changedVaryingLoadedFieldComparisonCount": 32,
+    "crossCapturePairs": [
+      {
+        "allocationProviderCallIndex": 50,
+        "allocationProviderObjectSHA256": "84950f46ca8074950468bbd429ecfc22f0cf0b0119e4f234293952754c6a869c",
+        "changedSignatureWordCount": 4,
+        "changedVaryingLoadedFieldCount": 4,
+        "equalConstantLoadedFieldCount": 14,
+        "normalProviderCallIndex": 70,
+        "normalProviderObjectSHA256": "96c82bab61f1cbde26d08a4b4d63822cb56488d284ac11c59a74dafc2de5918e",
+        "sampleIndex": 1
+      },
+      {
+        "allocationProviderCallIndex": 163,
+        "allocationProviderObjectSHA256": "33775c37fbb049e1fbc6375b8ee5c8fc4032cac07b0c1a58f6a3af553d420d01",
+        "changedSignatureWordCount": 4,
+        "changedVaryingLoadedFieldCount": 4,
+        "equalConstantLoadedFieldCount": 14,
+        "normalProviderCallIndex": 177,
+        "normalProviderObjectSHA256": "482ca456b262122ebe72b4cd4dfcc641817734a561825635113798c9237e7e48",
+        "sampleIndex": 4
+      },
+      {
+        "allocationProviderCallIndex": 330,
+        "allocationProviderObjectSHA256": "2a01fe455b364deba2f0c295ea425f1cb697817824aab60614c4135eb137f333",
+        "changedSignatureWordCount": 4,
+        "changedVaryingLoadedFieldCount": 4,
+        "equalConstantLoadedFieldCount": 14,
+        "normalProviderCallIndex": 331,
+        "normalProviderObjectSHA256": "ff4be04ec9992da6a15c04b285d276f98402c1c214365db03c1f266a8f1286eb",
+        "sampleIndex": 8
+      },
+      {
+        "allocationProviderCallIndex": 482,
+        "allocationProviderObjectSHA256": "76d0fbec604f3e9ea967b8b4f21a0a4aba7cdef5c18e61147458790ca472ec97",
+        "changedSignatureWordCount": 4,
+        "changedVaryingLoadedFieldCount": 4,
+        "equalConstantLoadedFieldCount": 14,
+        "normalProviderCallIndex": 497,
+        "normalProviderObjectSHA256": "08e3cca6b4b3b7152ebeded4a4f30a5595b6175e75189f98a745e85d44b6bd93",
+        "sampleIndex": 12
+      },
+      {
+        "allocationProviderCallIndex": 642,
+        "allocationProviderObjectSHA256": "cdc0aa6910e8d9c1cf7565bbfad647c205a23c48491ef0cbaa582843c9291d52",
+        "changedSignatureWordCount": 4,
+        "changedVaryingLoadedFieldCount": 4,
+        "equalConstantLoadedFieldCount": 14,
+        "normalProviderCallIndex": 657,
+        "normalProviderObjectSHA256": "af11f531de062d237bd81ad25178f607001e4944f316f367e942079c5a66b9e8",
+        "sampleIndex": 16
+      },
+      {
+        "allocationProviderCallIndex": 790,
+        "allocationProviderObjectSHA256": "3f701aad65155151c4dd58dd5ba58a771b8556d0d0169755b4d3a00b9eea641b",
+        "changedSignatureWordCount": 4,
+        "changedVaryingLoadedFieldCount": 4,
+        "equalConstantLoadedFieldCount": 14,
+        "normalProviderCallIndex": 817,
+        "normalProviderObjectSHA256": "a0c095e8061e0febc16f8bc75cbdc3e1e96cfaf5a4a874d7b2603d2f22d4a3a3",
+        "sampleIndex": 20
+      },
+      {
+        "allocationProviderCallIndex": 948,
+        "allocationProviderObjectSHA256": "f09c251727a243d81d0a51f635d865bc186d811d03491fc0d61552b0d12c70eb",
+        "changedSignatureWordCount": 4,
+        "changedVaryingLoadedFieldCount": 4,
+        "equalConstantLoadedFieldCount": 14,
+        "normalProviderCallIndex": 964,
+        "normalProviderObjectSHA256": "066eb84af8d3d434cc5333e4d35c3103c24865649454976a07af42ba6d7b3e8e",
+        "sampleIndex": 24
+      },
+      {
+        "allocationProviderCallIndex": 1102,
+        "allocationProviderObjectSHA256": "d642617dfbd5d0e2a31dbee9d27512fb9f5f8a696bb9da238494191b66e7ce7f",
+        "changedSignatureWordCount": 4,
+        "changedVaryingLoadedFieldCount": 4,
+        "equalConstantLoadedFieldCount": 14,
+        "normalProviderCallIndex": 1091,
+        "normalProviderObjectSHA256": "4126e946ee94ee8ee73d1436174112b88d4ea4fc2a23c3f0fe8eb10ca4fdfd32",
+        "sampleIndex": 28
+      }
+    ],
+    "endpointPatternReplicatedAsInitialPlusTwoTerminalCalls": true,
+    "equalConstantLoadedFieldComparisonCount": 112,
+    "independentCaptureCount": 2,
+    "normalEndpoint": {
+      "classification": "ambiguous-initial-and-two-terminal-endpoint-calls",
+      "fullMatchCallIndices": [
+        0,
+        1230,
+        1231
+      ],
+      "partialMatchCallCount": 0,
+      "providerCallMatchHistogram": [
+        {
+          "matchingSignatureWordCount": 0,
+          "providerCallCount": 1229
+        },
+        {
+          "matchingSignatureWordCount": 4,
+          "providerCallCount": 3
+        }
+      ],
+      "sampleIndex": 32,
+      "signatureWordsRawLittleEndianHex": [
+        "0000000000c05240",
+        "9224499224491b40",
+        "0000000000004ec0",
+        "9999999999394640"
+      ]
+    },
+    "normalMatchedProviderCallIndices": [
+      70,
+      177,
+      331,
+      497,
+      657,
+      817,
+      964,
+      1091
+    ],
+    "normalProviderCallCount": 1232,
+    "normalUniqueNonEndpointJoinCount": 8,
+    "overlappingNonEndpointSampleCount": 8
+  }
+}
