@@ -8605,6 +8605,22 @@ does not allow indeterminate padding to decide the optical result. Full
 504-byte equality is reported independently. All matching outputs for a
 sample must identify one distinct 1,025-byte `Parameters` value.
 
+This initialized-byte boundary is itself machine-checked rather than inferred
+from field sizes. The native static analyzer
+`Analysis/analyze_designlibrary_background_filter_constructor_write_coverage_local_macos_26_6_1.py`,
+SHA-256
+`4a993541b521f6dc71319c516ecd65e19900cfcf19f52d3632ee3dddbdb0ca22`,
+authenticates all 1,044 code bytes and all 261 disassembled instructions. It
+finds exactly 59 terminal stores based only on output-derived `x20`, `x1`, and
+`x8`; their union is exactly the four initialized ranges above. Across the
+whole constructor every memory-store base is one of `sp`, `x20`, `x1`, and
+`x8`, never the `x22` `Parameters` source. The canonical native result has
+SHA-256
+`4673360ec9cd843d67c528f9c1d7870a6c2dd45244a093f3c77f68399a4cd8c6`
+and normalized-instruction SHA-256
+`49708bacdc1cd086ea0337a69afe90b9a41098a08f91b5d561093526e3c33505`.
+This analysis launches no Apple application and reads no render outcome.
+
 The gate is preregistered in
 `Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json`.
 Its runner first revalidates the frozen `c1bfabd` predecessor artifact and
