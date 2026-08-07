@@ -11032,3 +11032,50 @@ that value-blind live inventory. The formula remains frozen, the target margin
 for circle-467 remains unseen, and the other three exact cases remain wholly
 unseen. The next capture can therefore falsify the 83.0 prediction rather than
 silently fitting it.
+
+That direct-Retina capture at commit `662e294` is a clean prospective
+falsification. It completed all 33 frames with 32 public records and no trace
+failure, retaining 149 setter, 270 copy-store, and 303 bounds events. All 149
+adjacent `Group.margin` producer returns equal their setter inputs bit for bit,
+and all 32 structurally joined writer chains carry binary64 163.45
+(`66666666666e6440`) through the single binary32 conversion as
+163.4499969482422 (`33732343`). The frozen provider-only candidate was binary64
+83.0 (`0000000000c05440`), so it is rejected without tolerance.
+
+The missing winning contribution is exposed in the already captured public
+input: the maximum `inputBleedAmount` is exactly binary64 163.45 with the same
+raw word as the writer target. Version 6 therefore freezes the corrected
+regular contribution explicitly as
+
+```text
+provider = max(abs(inputShadowOffset.x), abs(inputShadowOffset.y))
+         + abs(inputShadowAmount)
+per-record regular contribution = max(inputBleedAmount, provider)
+regular Group.margin = max over all 32 per-record regular contributions
+clear Group.margin   = exact binary64 positive zero
+```
+
+This correction is honestly target-calibrated: circle-467 is no longer called
+prospective evidence. The regular/dark `circle-475-center` case and both clear
+cases remain wholly unseen holdouts, and no holdout output, crop, image, or
+pixel was used to choose the corrected law. Version 6 also pins the live
+6,844-byte SwiftUICore caller at SHA-256
+`d60a0510382f913b937ceb2c20111c4dcf1b4dd9d6d49388c2fe5c4d2683168c`
+and preserves its exact producer/bridge/setter instructions at offsets 5760,
+5764, and 5768. A fresh bitwise pass on circle-475 is required before the
+corrected regular composition has prospective transfer authority. The two
+clear holdouts are separately required to close the positive-zero branch.
+
+The corrected gate is isolated from the immutable v5 sources in:
+
+```text
+Analysis/backdrop_margin_writer_provider_composition_local_macos_26_6_1_v6_preregistration.json
+Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1_v6.py
+Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1_v6.sh
+```
+
+The immutable falsification is
+`Analysis/backdrop_margin_writer_provider_composition_662e294_falsification_result.json`.
+It does not establish selected-region/origin allocation, physical Retina
+compositor/color behavior, an independent zero-unequal-byte Walle frame, or
+Liquid Glass parity.
