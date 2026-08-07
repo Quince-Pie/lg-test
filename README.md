@@ -8111,11 +8111,27 @@ asserting display activity—again returned zero. This is a strong chronological
 confound, not yet a prospective causal proof. `caffeinate` cannot unlock the
 login session.
 
-Every future Apple capture now fails closed before app launch unless the native
-preflight proves: session unlocked and on-console, display active and awake,
-3456x2234 physical pixels, 1728x1117 logical points, and backing scale 2. The
-preflight is `Analysis/check_local_retina_capture_session.swift`, SHA-256
+The original native capture gate was intended to fail closed before app launch
+unless it proved: session unlocked and on-console, display active and awake,
+3456x2234 physical pixels, 1728x1117 logical points, and backing scale 2. That
+historical preflight is `Analysis/check_local_retina_capture_session.swift`,
+SHA-256
 `72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981`.
+An operational diagnosis on 2026-08-07, before the next Apple application was
+dispatched and while every prospective runtime outcome remained `null`, found
+that macOS 26.6.1 represents the unlocked GUI session by omitting
+`CGSSessionScreenIsLocked`. The historical source incorrectly supplied `true`
+for an absent key, so it reported a visibly open, logged-in GUI as locked.
+
+The corrected fail-closed implementation is
+`Analysis/check_local_retina_capture_session_v2.swift`, SHA-256
+`f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1`.
+It maps an absent lock key to unlocked, an explicit true or malformed present
+key to locked, and still requires a nonempty session dictionary, completed GUI
+login, on-console ownership, active/awake display, and exact 2x Retina
+geometry. A direct native run on the authorized host reported all requirements
+true and `passed: true`. No capture prediction or optical value changed; the
+preregistration records this operational amendment explicitly.
 Native Apple LLDB runs directly from Command Line Tools; `nix develop` remains
 the required analysis/test environment and contributes no runtime variables to
 the Apple process. No Nix store path is embedded.
@@ -8437,13 +8453,13 @@ The prospective contract freezes, before dispatch:
 The preregistration is
 `Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json`,
 SHA-256
-`afecb715da4a73cedff1169eb6e75353121becf95973384d74953caf42016061`.
+`1ea2ae5351f1c20ab36343678b35e22011771c4e0903848afe92f1bb39fc0f0b`.
 The capture source SHA-256 is
 `9ef07e96861ba53e6189f7aafd5dd967cb3d00437ab634b72a3f81692e573639`,
 the validator SHA-256 is
-`ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1`,
+`5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d`,
 and the native runner SHA-256 is
-`48d40db2ba6c9a22d58e460824380b6b4a85f92e00782098b8d983e33fab63ba`.
+`f6301d3cd7d8f709ce18ae78ece703c2a10648a3695e12293185da253a291965`.
 The runner uses Apple's Command Line Tools directly and contains no Nix store
 path. The validator independently decodes the frozen ARM64 `BL`, requires the
 exact five-breakpoint map, and proves that every captured provider entry and
@@ -8452,10 +8468,13 @@ render-call interval.
 
 The Retina host preflight on 2026-08-06 reported the exact expected 2x display
 geometry but `sessionLocked: true`, `displayAsleep: true`, and `passed: false`.
-Consequently no application was dispatched and every runtime outcome in the
-preregistration remains `null`. Once the already-authorized host is unlocked,
-the unchanged blind run can establish an authenticated per-render callback
-join for this profile. Even a complete pass will not disambiguate constant or
+Consequently no application was dispatched. On 2026-08-07 the corrected v2
+preflight proved the authorized GUI session logged in and on-console, the
+display active and awake, exact 3456x2234 physical / 1728x1117 logical / 2x
+geometry, `sessionLocked: false`, and `passed: true`; every prospective runtime
+outcome was still `null` at that operational amendment. The unchanged blind
+predictions can now establish an authenticated per-render callback join for
+this profile. Even a complete pass will not disambiguate constant or
 co-varying semantic sources, transfer a fresh material/appearance/geometry
 profile, close crop/allocation or Retina compositor output, authorize a shader
 change, or establish Liquid Glass parity.
@@ -8679,10 +8698,10 @@ composition.
 
 The gate is preregistered in
 `Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json`.
-Its runner first revalidates the frozen `c1bfabd` predecessor artifact and
-refuses to launch otherwise. It also retains the fail-closed unlocked,
-active, exact-2x Retina preflight and direct Command Line Tools paths; no Nix
-store path enters the native process. The gate can establish the same-profile
+Its runner first revalidates the frozen predecessor artifact and refuses to
+launch otherwise. It also retains the corrected fail-closed unlocked,
+logged-in, active, exact-2x Retina preflight and direct Command Line Tools
+paths; no Nix store path enters the native process. The gate can establish the same-profile
 public-to-`Parameters` construction join. It cannot establish a fresh-profile
 law, general crop/allocation, physical compositor/color behavior, Walle frame
 parity, or Liquid Glass parity, and it does not authorize a shader change.

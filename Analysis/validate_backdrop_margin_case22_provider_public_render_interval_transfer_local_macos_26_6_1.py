@@ -24,7 +24,7 @@ EXPECTED_BINARY_SHA256 = (
     "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd"
 )
 EXPECTED_PREFLIGHT_SHA256 = (
-    "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
+    "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
 )
 MAIN_UUID = "F8B0B6E3-3270-3C94-817F-B4914852D04C"
 BACKGROUND_MANGLED = (
@@ -81,17 +81,23 @@ EXPECTED_ENVIRONMENT = {
 }
 EXPECTED_PREFLIGHT = {
     "backingScaleFactor": 2,
-    "classification": "fail-closed native macOS presentation-session preflight",
+    "classification": (
+        "fail-closed native macOS 26.6.1 presentation-session preflight v2"
+    ),
     "displayActive": True,
     "displayAsleep": False,
     "expectedBackingScaleFactor": 2,
     "expectedLogicalPoints": [1728, 1117],
     "expectedPhysicalPixels": [3456, 2234],
-    "localRetinaCaptureSessionPreflightSchemaVersion": 1,
+    "localRetinaCaptureSessionPreflightSchemaVersion": 2,
     "logicalPoints": [1728, 1117],
     "passed": True,
     "physicalPixels": [3456, 2234],
+    "sessionDictionaryAvailable": True,
+    "sessionLockFieldPresent": False,
+    "sessionLockFieldValid": True,
     "sessionLocked": False,
+    "sessionLoginDone": True,
     "sessionOnConsole": True,
 }
 
@@ -133,6 +139,27 @@ def validate_preregistration(value: Any, repository_root: Path) -> Mapping[str, 
     require(
         preregistration.get("runtimeOutcomeFrozenBeforeDispatch") is None,
         "runtime outcome was not sealed",
+    )
+    amendment = mapping(
+        preregistration.get("operationalAmendment"),
+        "preflight operational amendment",
+    )
+    require(
+        amendment.get("noAppleApplicationDispatchedBeforeCorrection") is True,
+        "preflight correction followed application dispatch",
+    )
+    require(
+        amendment.get("prospectivePredictionsUnchanged") is True,
+        "preflight correction changed a prediction",
+    )
+    require(
+        amendment.get("runtimeOutcomeStillNull") is True,
+        "preflight correction observed a runtime outcome",
+    )
+    require(
+        amendment.get("supersededPreflightSHA256")
+        == "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981",
+        "superseded preflight identity differs",
     )
     profile = mapping(preregistration.get("profile"), "preregistered profile")
     require(
@@ -845,7 +872,7 @@ def validate(
         / "Analysis/run_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.sh"
     )
     preflight_path = (
-        repository_root / "Analysis/check_local_retina_capture_session.swift"
+        repository_root / "Analysis/check_local_retina_capture_session_v2.swift"
     )
     require(
         sha256(preflight_path) == EXPECTED_PREFLIGHT_SHA256,

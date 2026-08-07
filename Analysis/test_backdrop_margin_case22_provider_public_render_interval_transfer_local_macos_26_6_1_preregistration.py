@@ -58,6 +58,17 @@ class PublicRenderIntervalTransferPreregistrationTests(unittest.TestCase):
         self.assertEqual(preflight["requireLogicalPoints"], [1728, 1117])
         self.assertEqual(preflight["requireBackingScaleFactor"], 2)
 
+    def test_preflight_correction_precedes_dispatch_and_preserves_predictions(self) -> None:
+        amendment = VALUE["operationalAmendment"]
+        self.assertTrue(amendment["noAppleApplicationDispatchedBeforeCorrection"])
+        self.assertTrue(amendment["prospectivePredictionsUnchanged"])
+        self.assertTrue(amendment["runtimeOutcomeStillNull"])
+        self.assertFalse(
+            amendment["observedUnlockedSessionEvidence"][
+                "cgSessionScreenIsLockedKeyPresent"
+            ]
+        )
+
     def test_product_authority_remains_narrow_even_on_pass(self) -> None:
         authority = VALUE["productAuthority"]
         self.assertTrue(authority["authenticatedPerRenderCallbackIntervalJoinMayPass"])

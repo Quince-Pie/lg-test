@@ -14,7 +14,7 @@ readonly run_label=$1
 readonly repository=$(cd "$(dirname "$0")/.." && pwd -P)
 readonly binary=glass-transition-introspect-721293f
 readonly capture=Analysis/capture_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_lldb.py
-readonly preflight=Analysis/check_local_retina_capture_session.swift
+readonly preflight=Analysis/check_local_retina_capture_session_v2.swift
 readonly preregistration=Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json
 readonly validator=Analysis/validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.py
 readonly output_directory="local-case22-provider-public-render-interval-${run_label}"
@@ -43,8 +43,8 @@ require_sha256() {
 
 require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd
 require_sha256 "$capture" 9ef07e96861ba53e6189f7aafd5dd967cb3d00437ab634b72a3f81692e573639
-require_sha256 "$preflight" 72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981
-require_sha256 "$validator" ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1
+require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
+require_sha256 "$validator" 5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
     echo "tracked repository state is dirty" >&2

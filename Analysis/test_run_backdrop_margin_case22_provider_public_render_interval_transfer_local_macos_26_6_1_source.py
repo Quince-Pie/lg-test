@@ -33,8 +33,8 @@ class PublicRenderIntervalRunnerSourceTests(unittest.TestCase):
         for digest in (
             "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
             "9ef07e96861ba53e6189f7aafd5dd967cb3d00437ab634b72a3f81692e573639",
-            "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981",
-            "ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1",
+            "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
+            "5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d",
         ):
             self.assertIn(digest, SOURCE)
         self.assertNotIn("PLACEHOLDER", SOURCE)
