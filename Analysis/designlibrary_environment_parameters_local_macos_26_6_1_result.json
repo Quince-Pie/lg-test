@@ -1,0 +1,2070 @@
+{
+  "cases": [
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 0,
+      "mutationOffset": null,
+      "mutationStorageHex": "",
+      "name": "baseline",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:baseline",
+      "rawParametersSHA256ByFreshProcess": [
+        "ea218e7641243b609062fe4a6bca7e3a562fe5e5ace21858fb9fa5ba8841b7b6",
+        "ea218e7641243b609062fe4a6bca7e3a562fe5e5ace21858fb9fa5ba8841b7b6",
+        "ea218e7641243b609062fe4a6bca7e3a562fe5e5ace21858fb9fa5ba8841b7b6"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 1,
+      "mutationOffset": 0,
+      "mutationStorageHex": "000000000000e03f",
+      "name": "pixel_length_half",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:pixel_length_half",
+      "rawParametersSHA256ByFreshProcess": [
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 2,
+      "mutationOffset": 0,
+      "mutationStorageHex": "0000000000000040",
+      "name": "pixel_length_two",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:pixel_length_two",
+      "rawParametersSHA256ByFreshProcess": [
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 3,
+      "mutationOffset": 8,
+      "mutationStorageHex": "00",
+      "name": "color_scheme_light",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:color_scheme_light",
+      "rawParametersSHA256ByFreshProcess": [
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.ycc.white",
+          "offset": 84,
+          "rawLittleEndianHex": "0000003f",
+          "value": 0.5
+        },
+        {
+          "baselineRawLittleEndianHex": "6666e63f",
+          "baselineValue": 1.7999999523162842,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.ycc.saturation",
+          "offset": 88,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineHex": "000000000000000000000000cdcc4c3d00",
+          "hex": "0000000000000000000000000000000001",
+          "kind": "color",
+          "name": "shadow.ycc.normalFill",
+          "offset": 92
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.opacity",
+          "offset": 152,
+          "rawLittleEndianHex": "cdcccc3e",
+          "value": 0.4000000059604645
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "cdcccc3d",
+          "value": 0.10000000149011612
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7833f",
+          "baselineValue": 1.0299999713897705,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.white",
+          "offset": 320,
+          "rawLittleEndianHex": "6666e63e",
+          "value": 0.44999998807907104
+        },
+        {
+          "baselineHex": "0000803f0000803f0000803f0000803e00",
+          "hex": "0000000000000000000000000000803e00",
+          "kind": "color",
+          "name": "faceEffects.ycc.normalFill",
+          "offset": 328
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "edgeBleed.ycc.black",
+          "offset": 428,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "edgeBleed.ycc.white",
+          "offset": 432,
+          "rawLittleEndianHex": "0000003f",
+          "value": 0.5
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99993f",
+          "baselineValue": 1.2000000476837158,
+          "format": "f",
+          "kind": "scalar",
+          "name": "edgeBleed.ycc.saturation",
+          "offset": 436,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineStorage": 1,
+          "kind": "presence",
+          "name": "edgeBleed.presence",
+          "offset": 497,
+          "storage": 0
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.black",
+          "offset": 576,
+          "rawLittleEndianHex": "8fc2753d",
+          "value": 0.05999999865889549
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.white",
+          "offset": 580,
+          "rawLittleEndianHex": "9a99193f",
+          "value": 0.6000000238418579
+        },
+        {
+          "baselineRawLittleEndianHex": "0000c03f",
+          "baselineValue": 1.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.saturation",
+          "offset": 584,
+          "rawLittleEndianHex": "9a99993f",
+          "value": 1.2000000476837158
+        },
+        {
+          "baselineHex": "0000000000000000000000000000000001",
+          "hex": "9218a33e9218a33e9218a33e0000803f00",
+          "kind": "color",
+          "name": "highlights.key.ycc.dodgeFill",
+          "offset": 608
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.black",
+          "offset": 696,
+          "rawLittleEndianHex": "8fc2753d",
+          "value": 0.05999999865889549
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.white",
+          "offset": 700,
+          "rawLittleEndianHex": "9a99193f",
+          "value": 0.6000000238418579
+        },
+        {
+          "baselineRawLittleEndianHex": "0000c03f",
+          "baselineValue": 1.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.saturation",
+          "offset": 704,
+          "rawLittleEndianHex": "9a99993f",
+          "value": 1.2000000476837158
+        },
+        {
+          "baselineHex": "0000000000000000000000000000000001",
+          "hex": "9218a33e9218a33e9218a33e0000803f00",
+          "kind": "color",
+          "name": "highlights.fill.ycc.dodgeFill",
+          "offset": 728
+        }
+      ],
+      "changedSemanticByteOffsetsFromBaseline": [
+        86,
+        88,
+        89,
+        90,
+        104,
+        105,
+        106,
+        107,
+        108,
+        152,
+        153,
+        154,
+        155,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        330,
+        331,
+        334,
+        335,
+        338,
+        339,
+        428,
+        429,
+        430,
+        431,
+        434,
+        436,
+        437,
+        438,
+        497,
+        576,
+        577,
+        578,
+        579,
+        580,
+        581,
+        582,
+        584,
+        585,
+        586,
+        608,
+        609,
+        610,
+        611,
+        612,
+        613,
+        614,
+        615,
+        616,
+        617,
+        618,
+        619,
+        622,
+        623,
+        624,
+        696,
+        697,
+        698,
+        699,
+        700,
+        701,
+        702,
+        704,
+        705,
+        706,
+        728,
+        729,
+        730,
+        731,
+        732,
+        733,
+        734,
+        735,
+        736,
+        737,
+        738,
+        739,
+        742,
+        743,
+        744
+      ],
+      "index": 4,
+      "mutationOffset": 8,
+      "mutationStorageHex": "01",
+      "name": "color_scheme_dark",
+      "normalizedParametersSHA256": "488ee52fdd44f1e979de78e53ef95ffe53c2880c8dfa2e65c3e9d1c07f848978",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:color_scheme_dark",
+      "rawParametersSHA256ByFreshProcess": [
+        "4a837b8f31bbdf1ce724841f286218b9814e8e652d064961163da75511022a88",
+        "4a837b8f31bbdf1ce724841f286218b9814e8e652d064961163da75511022a88",
+        "4a837b8f31bbdf1ce724841f286218b9814e8e652d064961163da75511022a88"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 5,
+      "mutationOffset": 9,
+      "mutationStorageHex": "00",
+      "name": "contrast_standard",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:contrast_standard",
+      "rawParametersSHA256ByFreshProcess": [
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [
+        {
+          "baselineHex": "000000000000000000000000cdcc4c3d00",
+          "hex": "0000000000000000000000008fc2f53d00",
+          "kind": "color",
+          "name": "shadow.ycc.normalFill",
+          "offset": 92
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "0000403f",
+          "value": 0.75
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.saturation",
+          "offset": 324,
+          "rawLittleEndianHex": "cdcc4c3f",
+          "value": 0.800000011920929
+        },
+        {
+          "baselineHex": "0000803f0000803f0000803f0000803e00",
+          "hex": "0000803f0000803f0000803fcdcc4c3f00",
+          "kind": "color",
+          "name": "faceEffects.ycc.normalFill",
+          "offset": 328
+        }
+      ],
+      "changedSemanticByteOffsetsFromBaseline": [
+        104,
+        105,
+        106,
+        316,
+        317,
+        318,
+        324,
+        325,
+        326,
+        340,
+        341,
+        342,
+        343
+      ],
+      "index": 6,
+      "mutationOffset": 9,
+      "mutationStorageHex": "01",
+      "name": "contrast_increased",
+      "normalizedParametersSHA256": "7c6f134ec1ec9e7f3728c458e18ebdee04feed191a4dec6d6c4fe8e246b02274",
+      "producedFlagsBits": "0x000000000109918b",
+      "qualifiedName": "environment:contrast_increased",
+      "rawParametersSHA256ByFreshProcess": [
+        "9b8f349650d9dd911a660a63fdb79777ca0a2c8c4711f8bd3c2dbc4c353dc5b0",
+        "9b8f349650d9dd911a660a63fdb79777ca0a2c8c4711f8bd3c2dbc4c353dc5b0",
+        "9b8f349650d9dd911a660a63fdb79777ca0a2c8c4711f8bd3c2dbc4c353dc5b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 7,
+      "mutationOffset": 243,
+      "mutationStorageHex": "00",
+      "name": "appears_active_false",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099182",
+      "qualifiedName": "environment:appears_active_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 8,
+      "mutationOffset": 243,
+      "mutationStorageHex": "01",
+      "name": "appears_active_true",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:appears_active_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6",
+        "a27265dfc994caad5e2aa516a0ada679fea7c545a47304290474c68eb12a19b6"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [
+        {
+          "baselineRawLittleEndianHex": "0000000000003840",
+          "baselineValue": 24.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "shadow.shadowRadius",
+          "offset": 72,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.opacity",
+          "offset": 152,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "5555555555550540",
+          "baselineValue": 2.6666666666666665,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.radius",
+          "offset": 176,
+          "rawLittleEndianHex": "0000000000001040",
+          "value": 4.0
+        },
+        {
+          "baselineRawLittleEndianHex": "00000000000038c0",
+          "baselineValue": -24.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.distances.0",
+          "offset": 184,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "000000000000f0bf",
+          "baselineValue": -1.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.distances.1",
+          "offset": 192,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "blur.opacities.1",
+          "offset": 228,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "blur.opacities.2",
+          "offset": 232,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000001840",
+          "baselineValue": 6.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.outerHeight",
+          "offset": 272,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "3433333333332340",
+          "baselineValue": 9.600000000000001,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.outerAmount",
+          "offset": 280,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99993e",
+          "baselineValue": 0.30000001192092896,
+          "format": "f",
+          "kind": "scalar",
+          "name": "refraction.outerOpacity",
+          "offset": 304,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "cdcc4c3f",
+          "value": 0.800000011920929
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7833f",
+          "baselineValue": 1.0299999713897705,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.white",
+          "offset": 320,
+          "rawLittleEndianHex": "ec51783f",
+          "value": 0.9700000286102295
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.opacity",
+          "offset": 544,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.opacity",
+          "offset": 664,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7a33d",
+          "baselineValue": 0.07999999821186066,
+          "format": "f",
+          "kind": "scalar",
+          "name": "sdrAdjustment.shadowOpacityShift",
+          "offset": 788,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "ec51783f",
+          "baselineValue": 0.9700000286102295,
+          "format": "f",
+          "kind": "scalar",
+          "name": "sdrAdjustment.faceDimming.whitePointShift",
+          "offset": 792,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineRawLittleEndianHex": "00000000000000c0",
+          "baselineValue": -2.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "sdrAdjustment.faceDimming.distances.0",
+          "offset": 800,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "000000000000f0bf",
+          "baselineValue": -1.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "sdrAdjustment.faceDimming.distances.1",
+          "offset": 808,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        }
+      ],
+      "changedSemanticByteOffsetsFromBaseline": [
+        78,
+        79,
+        155,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        190,
+        191,
+        198,
+        199,
+        230,
+        234,
+        278,
+        279,
+        280,
+        281,
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        304,
+        305,
+        306,
+        307,
+        316,
+        317,
+        318,
+        320,
+        321,
+        322,
+        546,
+        547,
+        666,
+        667,
+        788,
+        789,
+        790,
+        791,
+        792,
+        793,
+        794,
+        807,
+        814,
+        815
+      ],
+      "index": 9,
+      "mutationOffset": 244,
+      "mutationStorageHex": "00",
+      "name": "window_active_false",
+      "normalizedParametersSHA256": "fd619380accab5cbe7e2bb99e16d2b1790ea3c9706ce58e887ca7f0ae9a7fbf5",
+      "producedFlagsBits": "0x0000000000019181",
+      "qualifiedName": "environment:window_active_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "2ee5283ed2137f09dc495b2f7519cab5b201bc30eaea680f7cd985fe3e83e25c",
+        "2ee5283ed2137f09dc495b2f7519cab5b201bc30eaea680f7cd985fe3e83e25c",
+        "2ee5283ed2137f09dc495b2f7519cab5b201bc30eaea680f7cd985fe3e83e25c"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 10,
+      "mutationOffset": 244,
+      "mutationStorageHex": "01",
+      "name": "window_active_true",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:window_active_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "966aa9acaff075f09261840dcc359d1bd971b8a3821b316761f04d5633e2f8ae",
+        "966aa9acaff075f09261840dcc359d1bd971b8a3821b316761f04d5633e2f8ae",
+        "966aa9acaff075f09261840dcc359d1bd971b8a3821b316761f04d5633e2f8ae"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 11,
+      "mutationOffset": 245,
+      "mutationStorageHex": "00",
+      "name": "window_opaque_false",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:window_opaque_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 12,
+      "mutationOffset": 245,
+      "mutationStorageHex": "01",
+      "name": "window_opaque_true",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:window_opaque_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [
+        {
+          "baselineRawLittleEndianHex": "0000000000003840",
+          "baselineValue": 24.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "shadow.shadowRadius",
+          "offset": 72,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.opacity",
+          "offset": 152,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "5555555555550540",
+          "baselineValue": 2.6666666666666665,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.radius",
+          "offset": 176,
+          "rawLittleEndianHex": "0000000000001040",
+          "value": 4.0
+        },
+        {
+          "baselineRawLittleEndianHex": "00000000000038c0",
+          "baselineValue": -24.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.distances.0",
+          "offset": 184,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "000000000000f0bf",
+          "baselineValue": -1.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.distances.1",
+          "offset": 192,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "blur.opacities.1",
+          "offset": 228,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "blur.opacities.2",
+          "offset": 232,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000001840",
+          "baselineValue": 6.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.outerHeight",
+          "offset": 272,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "3433333333332340",
+          "baselineValue": 9.600000000000001,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.outerAmount",
+          "offset": 280,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99993e",
+          "baselineValue": 0.30000001192092896,
+          "format": "f",
+          "kind": "scalar",
+          "name": "refraction.outerOpacity",
+          "offset": 304,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "cdcc4c3f",
+          "value": 0.800000011920929
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7833f",
+          "baselineValue": 1.0299999713897705,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.white",
+          "offset": 320,
+          "rawLittleEndianHex": "ec51783f",
+          "value": 0.9700000286102295
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.opacity",
+          "offset": 544,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.opacity",
+          "offset": 664,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7a33d",
+          "baselineValue": 0.07999999821186066,
+          "format": "f",
+          "kind": "scalar",
+          "name": "sdrAdjustment.shadowOpacityShift",
+          "offset": 788,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "ec51783f",
+          "baselineValue": 0.9700000286102295,
+          "format": "f",
+          "kind": "scalar",
+          "name": "sdrAdjustment.faceDimming.whitePointShift",
+          "offset": 792,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineRawLittleEndianHex": "00000000000000c0",
+          "baselineValue": -2.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "sdrAdjustment.faceDimming.distances.0",
+          "offset": 800,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "000000000000f0bf",
+          "baselineValue": -1.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "sdrAdjustment.faceDimming.distances.1",
+          "offset": 808,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        }
+      ],
+      "changedSemanticByteOffsetsFromBaseline": [
+        78,
+        79,
+        155,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        190,
+        191,
+        198,
+        199,
+        230,
+        234,
+        278,
+        279,
+        280,
+        281,
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        304,
+        305,
+        306,
+        307,
+        316,
+        317,
+        318,
+        320,
+        321,
+        322,
+        546,
+        547,
+        666,
+        667,
+        788,
+        789,
+        790,
+        791,
+        792,
+        793,
+        794,
+        807,
+        814,
+        815
+      ],
+      "index": 13,
+      "mutationOffset": 246,
+      "mutationStorageHex": "00",
+      "name": "glass_foreground_false",
+      "normalizedParametersSHA256": "fd619380accab5cbe7e2bb99e16d2b1790ea3c9706ce58e887ca7f0ae9a7fbf5",
+      "producedFlagsBits": "0x0000000000099187",
+      "qualifiedName": "environment:glass_foreground_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "2ee5283ed2137f09dc495b2f7519cab5b201bc30eaea680f7cd985fe3e83e25c",
+        "2ee5283ed2137f09dc495b2f7519cab5b201bc30eaea680f7cd985fe3e83e25c",
+        "2ee5283ed2137f09dc495b2f7519cab5b201bc30eaea680f7cd985fe3e83e25c"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 14,
+      "mutationOffset": 246,
+      "mutationStorageHex": "01",
+      "name": "glass_foreground_true",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:glass_foreground_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "966aa9acaff075f09261840dcc359d1bd971b8a3821b316761f04d5633e2f8ae",
+        "966aa9acaff075f09261840dcc359d1bd971b8a3821b316761f04d5633e2f8ae",
+        "966aa9acaff075f09261840dcc359d1bd971b8a3821b316761f04d5633e2f8ae"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 15,
+      "mutationOffset": 247,
+      "mutationStorageHex": "00",
+      "name": "has_tinted_elements_false",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:has_tinted_elements_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 16,
+      "mutationOffset": 247,
+      "mutationStorageHex": "01",
+      "name": "has_tinted_elements_true",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x00000000000d9183",
+      "qualifiedName": "environment:has_tinted_elements_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 17,
+      "mutationOffset": 248,
+      "mutationStorageHex": "00",
+      "name": "reduce_transparency_false",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:reduce_transparency_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [
+        {
+          "baselineHex": "000000000000000000000000cdcc4c3d00",
+          "hex": "0000000000000000000000008fc2f53d00",
+          "kind": "color",
+          "name": "shadow.ycc.normalFill",
+          "offset": 92
+        },
+        {
+          "baselineRawLittleEndianHex": "5555555555550540",
+          "baselineValue": 2.6666666666666665,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.radius",
+          "offset": 176,
+          "rawLittleEndianHex": "0000000000805140",
+          "value": 70.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "blur.opacities.1",
+          "offset": 228,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "blur.opacities.2",
+          "offset": 232,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000002840",
+          "baselineValue": 12.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.innerHeight",
+          "offset": 256,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "34333333333343c0",
+          "baselineValue": -38.400000000000006,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.innerAmount",
+          "offset": 264,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000001840",
+          "baselineValue": 6.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.outerHeight",
+          "offset": 272,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "3433333333332340",
+          "baselineValue": 9.600000000000001,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.outerAmount",
+          "offset": 280,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99993e",
+          "baselineValue": 0.30000001192092896,
+          "format": "f",
+          "kind": "scalar",
+          "name": "refraction.outerOpacity",
+          "offset": 304,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "6666663f",
+          "value": 0.8999999761581421
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7833f",
+          "baselineValue": 1.0299999713897705,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.white",
+          "offset": 320,
+          "rawLittleEndianHex": "6666663f",
+          "value": 0.8999999761581421
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.saturation",
+          "offset": 324,
+          "rawLittleEndianHex": "6666663f",
+          "value": 0.8999999761581421
+        },
+        {
+          "baselineHex": "0000803f0000803f0000803f0000803e00",
+          "hex": "0000803f0000803f0000803fcdcc4c3f00",
+          "kind": "color",
+          "name": "faceEffects.ycc.normalFill",
+          "offset": 328
+        }
+      ],
+      "changedSemanticByteOffsetsFromBaseline": [
+        104,
+        105,
+        106,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        230,
+        234,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        278,
+        279,
+        280,
+        281,
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        304,
+        305,
+        306,
+        307,
+        316,
+        317,
+        318,
+        320,
+        321,
+        322,
+        324,
+        325,
+        326,
+        340,
+        341,
+        342,
+        343
+      ],
+      "index": 18,
+      "mutationOffset": 248,
+      "mutationStorageHex": "01",
+      "name": "reduce_transparency_true",
+      "normalizedParametersSHA256": "42638040b06bdf03dbecb090941aa22b5ab5194a1185ad154e1088b47403e132",
+      "producedFlagsBits": "0x0000000001088193",
+      "qualifiedName": "environment:reduce_transparency_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "45acd3db171f2d0ef997432eb1f56f9ce9d26e6e09c82f37f2ff99b6c2c83ca3",
+        "45acd3db171f2d0ef997432eb1f56f9ce9d26e6e09c82f37f2ff99b6c2c83ca3",
+        "45acd3db171f2d0ef997432eb1f56f9ce9d26e6e09c82f37f2ff99b6c2c83ca3"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 19,
+      "mutationOffset": 249,
+      "mutationStorageHex": "00",
+      "name": "reduce_motion_false",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:reduce_motion_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "18f5c78e9137c84955597c36178f0944e42048aa259089db29e8d95956a4824b",
+        "18f5c78e9137c84955597c36178f0944e42048aa259089db29e8d95956a4824b",
+        "18f5c78e9137c84955597c36178f0944e42048aa259089db29e8d95956a4824b"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [
+        {
+          "baselineRawLittleEndianHex": "5555555555550540",
+          "baselineValue": 2.6666666666666665,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.radius",
+          "offset": 176,
+          "rawLittleEndianHex": "5555555555552540",
+          "value": 10.666666666666666
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000002840",
+          "baselineValue": 12.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.innerHeight",
+          "offset": 256,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        }
+      ],
+      "changedSemanticByteOffsetsFromBaseline": [
+        182,
+        262,
+        263
+      ],
+      "index": 20,
+      "mutationOffset": 249,
+      "mutationStorageHex": "01",
+      "name": "reduce_motion_true",
+      "normalizedParametersSHA256": "3cb774f9c05fb8c1830ecf8aef8063145b3f5a9d43e07a1a0e0bfd98ba79b652",
+      "producedFlagsBits": "0x00000000000991a3",
+      "qualifiedName": "environment:reduce_motion_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "80d1d019c184b0fd121a965ef168997d107264a67d2b381a030a6ee3aea46b68",
+        "80d1d019c184b0fd121a965ef168997d107264a67d2b381a030a6ee3aea46b68",
+        "80d1d019c184b0fd121a965ef168997d107264a67d2b381a030a6ee3aea46b68"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 21,
+      "mutationOffset": 250,
+      "mutationStorageHex": "00",
+      "name": "show_button_shapes_false",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:show_button_shapes_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "f3cd44dea88fc522303a92b28d462bc8a443a00b7eeb5bc9485ebd304a2cd9d3",
+        "f3cd44dea88fc522303a92b28d462bc8a443a00b7eeb5bc9485ebd304a2cd9d3",
+        "f3cd44dea88fc522303a92b28d462bc8a443a00b7eeb5bc9485ebd304a2cd9d3"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.opacity",
+          "offset": 544,
+          "rawLittleEndianHex": "cdcc4c3e",
+          "value": 0.20000000298023224
+        },
+        {
+          "baselineRawLittleEndianHex": "182d4454fb21f93f",
+          "baselineValue": 1.5707963267948966,
+          "format": "d",
+          "kind": "scalar",
+          "name": "highlights.key.spread",
+          "offset": 552,
+          "rawLittleEndianHex": "182d4454fb210940",
+          "value": 3.141592653589793
+        },
+        {
+          "baselineRawLittleEndianHex": "666666666666e63f",
+          "baselineValue": 0.7,
+          "format": "d",
+          "kind": "scalar",
+          "name": "highlights.key.curvature",
+          "offset": 560,
+          "rawLittleEndianHex": "9a9999999999c93f",
+          "value": 0.2
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.black",
+          "offset": 576,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.white",
+          "offset": 580,
+          "rawLittleEndianHex": "cdcc4c3d",
+          "value": 0.05000000074505806
+        },
+        {
+          "baselineHex": "0000000000000000000000000000000001",
+          "hex": "0000000000000000000000000000803f00",
+          "kind": "color",
+          "name": "highlights.key.ycc.dodgeFill",
+          "offset": 608
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.opacity",
+          "offset": 664,
+          "rawLittleEndianHex": "cdcc4c3e",
+          "value": 0.20000000298023224
+        },
+        {
+          "baselineRawLittleEndianHex": "182d4454fb21f93f",
+          "baselineValue": 1.5707963267948966,
+          "format": "d",
+          "kind": "scalar",
+          "name": "highlights.fill.spread",
+          "offset": 672,
+          "rawLittleEndianHex": "182d4454fb210940",
+          "value": 3.141592653589793
+        },
+        {
+          "baselineRawLittleEndianHex": "666666666666e63f",
+          "baselineValue": 0.7,
+          "format": "d",
+          "kind": "scalar",
+          "name": "highlights.fill.curvature",
+          "offset": 680,
+          "rawLittleEndianHex": "9a9999999999c93f",
+          "value": 0.2
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.black",
+          "offset": 696,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.white",
+          "offset": 700,
+          "rawLittleEndianHex": "cdcc4c3d",
+          "value": 0.05000000074505806
+        },
+        {
+          "baselineHex": "0000000000000000000000000000000001",
+          "hex": "0000000000000000000000000000803f00",
+          "kind": "color",
+          "name": "highlights.fill.ycc.dodgeFill",
+          "offset": 728
+        }
+      ],
+      "changedSemanticByteOffsetsFromBaseline": [
+        544,
+        545,
+        546,
+        547,
+        558,
+        559,
+        560,
+        561,
+        562,
+        563,
+        564,
+        565,
+        566,
+        576,
+        577,
+        578,
+        579,
+        580,
+        581,
+        582,
+        583,
+        622,
+        623,
+        624,
+        664,
+        665,
+        666,
+        667,
+        678,
+        679,
+        680,
+        681,
+        682,
+        683,
+        684,
+        685,
+        686,
+        696,
+        697,
+        698,
+        699,
+        700,
+        701,
+        702,
+        703,
+        742,
+        743,
+        744
+      ],
+      "index": 22,
+      "mutationOffset": 250,
+      "mutationStorageHex": "01",
+      "name": "show_button_shapes_true",
+      "normalizedParametersSHA256": "57c972e5947bf0e33edab2889047d119f9a3dd2a138ff23758582856af383a93",
+      "producedFlagsBits": "0x0000000000899183",
+      "qualifiedName": "environment:show_button_shapes_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "3212be7847e330d58c51002566f7cb6bb9fd70ca800cd269704a73e37caee135",
+        "3212be7847e330d58c51002566f7cb6bb9fd70ca800cd269704a73e37caee135",
+        "3212be7847e330d58c51002566f7cb6bb9fd70ca800cd269704a73e37caee135"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 23,
+      "mutationOffset": 251,
+      "mutationStorageHex": "00",
+      "name": "low_power_false",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:low_power_false",
+      "rawParametersSHA256ByFreshProcess": [
+        "6831515e0514b5d87deea426e1df9c9cd4d2ba4955b51bfb5cb8ec8ecb684365",
+        "6831515e0514b5d87deea426e1df9c9cd4d2ba4955b51bfb5cb8ec8ecb684365",
+        "6831515e0514b5d87deea426e1df9c9cd4d2ba4955b51bfb5cb8ec8ecb684365"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 24,
+      "mutationOffset": 251,
+      "mutationStorageHex": "01",
+      "name": "low_power_true",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:low_power_true",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 25,
+      "mutationOffset": 242,
+      "mutationStorageHex": "00",
+      "name": "idiom_universal",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_universal",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 26,
+      "mutationOffset": 242,
+      "mutationStorageHex": "01",
+      "name": "idiom_mac",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_mac",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 27,
+      "mutationOffset": 242,
+      "mutationStorageHex": "02",
+      "name": "idiom_phone",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_phone",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 28,
+      "mutationOffset": 242,
+      "mutationStorageHex": "03",
+      "name": "idiom_pad",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_pad",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 29,
+      "mutationOffset": 242,
+      "mutationStorageHex": "04",
+      "name": "idiom_tv",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_tv",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 30,
+      "mutationOffset": 242,
+      "mutationStorageHex": "05",
+      "name": "idiom_watch",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_watch",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 31,
+      "mutationOffset": 242,
+      "mutationStorageHex": "06",
+      "name": "idiom_spatial",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_spatial",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 32,
+      "mutationOffset": 242,
+      "mutationStorageHex": "07",
+      "name": "idiom_car_play",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_car_play",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 33,
+      "mutationOffset": 242,
+      "mutationStorageHex": "08",
+      "name": "idiom_touch_bar",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:idiom_touch_bar",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [],
+      "changedSemanticByteOffsetsFromBaseline": [],
+      "index": 34,
+      "mutationOffset": 262,
+      "mutationStorageHex": "00",
+      "name": "diffusion_automatic",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "environment:diffusion_automatic",
+      "rawParametersSHA256ByFreshProcess": [
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0",
+        "e2951bb4f7c168082fa3ae44aa02cba369b31d32cfe5030c00d45e04319646b0"
+      ]
+    },
+    {
+      "changedFieldsFromBaseline": [
+        {
+          "baselineHex": "000000000000000000000000cdcc4c3d00",
+          "hex": "0000000000000000000000008fc2f53d00",
+          "kind": "color",
+          "name": "shadow.ycc.normalFill",
+          "offset": 92
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "0000803e",
+          "value": 0.25
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.saturation",
+          "offset": 324,
+          "rawLittleEndianHex": "00000040",
+          "value": 2.0
+        },
+        {
+          "baselineHex": "0000803f0000803f0000803f0000803e00",
+          "hex": "0000803f0000803f0000803fcdcc4c3f00",
+          "kind": "color",
+          "name": "faceEffects.ycc.normalFill",
+          "offset": 328
+        }
+      ],
+      "changedSemanticByteOffsetsFromBaseline": [
+        104,
+        105,
+        106,
+        316,
+        317,
+        318,
+        319,
+        326,
+        327,
+        340,
+        341,
+        342,
+        343
+      ],
+      "index": 35,
+      "mutationOffset": 262,
+      "mutationStorageHex": "01",
+      "name": "diffusion_increased",
+      "normalizedParametersSHA256": "4a3368cd4b5373be37192ae5fb885b61bb85943133300ad3516e77efe277476a",
+      "producedFlagsBits": "0x0000000001099183",
+      "qualifiedName": "environment:diffusion_increased",
+      "rawParametersSHA256ByFreshProcess": [
+        "0a63ed861e78fcf520d93e67c6678c08a24d730cee19372b277746a74c8389af",
+        "0a63ed861e78fcf520d93e67c6678c08a24d730cee19372b277746a74c8389af",
+        "0a63ed861e78fcf520d93e67c6678c08a24d730cee19372b277746a74c8389af"
+      ]
+    }
+  ],
+  "claims": {
+    "controlledInternalEnvironmentToParametersTableEstablished": true,
+    "environmentFlagsProducerToParametersJoinEstablished": true,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveSwiftUIEnvironmentUpdaterEstablished": false,
+    "liveTransitionProgressProductionLawEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "classification": "direct exact-code EnvironmentFlags production followed by Apple provider resolution and ResolvedRecipe.Parameters construction for 36 frozen internal Environment mutations under a default Material.Context; no live SwiftUI updater, GUI, render, image, crop, pixel, or Nix store path",
+  "designLibraryEnvironmentParametersCaptureSchemaVersion": 1,
+  "exactCodeGate": {
+    "environmentFlagsProducerByteCount": 1252,
+    "environmentFlagsProducerModuleOffset": 1124344,
+    "environmentFlagsProducerSHA256": "69bd75dcc4daad7956b6b41560fc39a1ec5bd4187712c945788477ec6dd97090",
+    "parametersBuilderByteCount": 4916,
+    "parametersBuilderModuleOffset": 1182540,
+    "parametersBuilderSHA256": "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4",
+    "parametersCallerByteCount": 3452,
+    "parametersCallerModuleOffset": 1175996,
+    "parametersCallerSHA256": "ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6"
+  },
+  "frameworks": {
+    "DesignLibrary": {
+      "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+      "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+    },
+    "SwiftUICore": {
+      "path": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+      "uuid": "99606D45-C40A-3C69-AE51-5F0C4E32E531"
+    }
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "measuredInvariants": {
+    "capturedParametersUsedForSelection": false,
+    "defaultMaterialContextUsed": true,
+    "environmentCaseCount": 36,
+    "environmentFlagsMatchedPredecessorBitwise": true,
+    "freshProcessSemanticStabilityEstablished": true,
+    "parametersBuildsPerCase": 1,
+    "uniqueNormalizedParametersCount": 8
+  },
+  "parametersLayout": {
+    "byteCount": 1025,
+    "normalizedPaddingRanges": [
+      [
+        4,
+        8
+      ],
+      [
+        20,
+        24
+      ],
+      [
+        109,
+        112
+      ],
+      [
+        129,
+        132
+      ],
+      [
+        149,
+        152
+      ],
+      [
+        156,
+        160
+      ],
+      [
+        169,
+        176
+      ],
+      [
+        216,
+        224
+      ],
+      [
+        249,
+        256
+      ],
+      [
+        309,
+        312
+      ],
+      [
+        345,
+        348
+      ],
+      [
+        365,
+        368
+      ],
+      [
+        386,
+        392
+      ],
+      [
+        457,
+        460
+      ],
+      [
+        477,
+        480
+      ],
+      [
+        498,
+        500
+      ],
+      [
+        517,
+        520
+      ],
+      [
+        524,
+        528
+      ],
+      [
+        548,
+        552
+      ],
+      [
+        605,
+        608
+      ],
+      [
+        625,
+        628
+      ],
+      [
+        645,
+        648
+      ],
+      [
+        668,
+        672
+      ],
+      [
+        725,
+        728
+      ],
+      [
+        745,
+        748
+      ],
+      [
+        765,
+        768
+      ],
+      [
+        777,
+        784
+      ],
+      [
+        796,
+        800
+      ],
+      [
+        817,
+        824
+      ],
+      [
+        873,
+        880
+      ],
+      [
+        905,
+        912
+      ],
+      [
+        937,
+        944
+      ],
+      [
+        961,
+        968
+      ],
+      [
+        985,
+        992
+      ]
+    ],
+    "semanticByteCount": 873
+  },
+  "predecessor": {
+    "caseCount": 36,
+    "path": "Analysis/designlibrary_environment_flags_resolution_local_macos_26_6_1_result.json",
+    "sha256": "3b65ba5764c786a7f82eb3f92084653e0a9f9e85267d70eca7108243dfc8d597"
+  },
+  "tool": {
+    "assemblyBridge": "Analysis/invoke_designlibrary_public_parameters_arm64.S",
+    "assemblyBridgeSHA256": "8abad01a65462ff5f25bb77710733a7b38d1e5809e6065631e42d232c1d73b90",
+    "baseLldbAdapter": "Analysis/capture_designlibrary_public_parameters_local_macos_26_6_1_lldb.py",
+    "baseLldbAdapterSHA256": "c82fc09d0c3bcef58f40ff6fb13ac593c85bb01ceab65bf12380f4f344cadfb9",
+    "baseProbeSource": "Analysis/probe_designlibrary_public_parameters_local_macos_26_6_1.c",
+    "baseProbeSourceSHA256": "59c54e502eceb9a2d789f3729c7f4ba2de8067e83086a4cd8d5c7343e10cee8f",
+    "captureSource": "Analysis/capture_designlibrary_environment_parameters_local_macos_26_6_1.py",
+    "captureSourceSHA256": "d0be2b9956ab636d2b7ba1a6226b7df632248bbde46fdced9e118a3b557f8127",
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "freshProcessCount": 3,
+    "lldbAdapter": "Analysis/capture_designlibrary_environment_parameters_local_macos_26_6_1_lldb.py",
+    "lldbAdapterSHA256": "16982e972aacc7f7470fc96a3d85c5a81357d6627f87ed2907767af1d9f60898",
+    "lldbLogSHA256ByFreshProcess": [
+      "42a81e65c0cd48889790ebbc14e5467911c10577a9e2b028d6317ab9f690efce",
+      "139743bd1bd09588ac867c12d51ef9cd2fab7de22161e0cf4ffbd25ab59ceffa",
+      "f51fd41a5125a69428e16d2cd0e3f120252d62c0fc8ee53de19802aa649d7b72"
+    ],
+    "parametersBasisSourceSHA256": "829e758062d1905ed5635b09bf458337bebce3e41f506ec301d80c66112d2442",
+    "probeExecutableContainsNixStorePath": false,
+    "probeExecutableSHA256": "f944b88ce610dd6b59232398652725ce842fa7c18b65d95f9bd9a8a113dcb860",
+    "probeSource": "Analysis/probe_designlibrary_environment_parameters_local_macos_26_6_1.c",
+    "probeSourceSHA256": "a1e327337d9754cc16381a73d7e5ccef3c6c25e50f49bc8256fd93af43d2a8d7",
+    "publicParametersCaptureSourceSHA256": "ff54baa77b1d2d8d3b6dedf05a4ce5edf341a8b86966726701107a3dcd288610",
+    "python": "3.9.6"
+  },
+  "uniqueNormalizedParameters": {
+    "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155": {
+      "caseNames": [
+        "baseline",
+        "pixel_length_half",
+        "pixel_length_two",
+        "color_scheme_light",
+        "contrast_standard",
+        "appears_active_false",
+        "appears_active_true",
+        "window_active_true",
+        "window_opaque_false",
+        "window_opaque_true",
+        "glass_foreground_true",
+        "has_tinted_elements_false",
+        "has_tinted_elements_true",
+        "reduce_transparency_false",
+        "reduce_motion_false",
+        "show_button_shapes_false",
+        "low_power_false",
+        "low_power_true",
+        "idiom_universal",
+        "idiom_mac",
+        "idiom_phone",
+        "idiom_pad",
+        "idiom_tv",
+        "idiom_watch",
+        "idiom_spatial",
+        "idiom_car_play",
+        "idiom_touch_bar",
+        "diffusion_automatic"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f000000000000000000000000cdcc4c3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803f9a99593f0ad7833f0000803f0000803f0000803f0000803f0000803e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "3cb774f9c05fb8c1830ecf8aef8063145b3f5a9d43e07a1a0e0bfd98ba79b652": {
+      "caseNames": [
+        "reduce_motion_true"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f000000000000000000000000cdcc4c3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000555555555555254000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000000034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803f9a99593f0ad7833f0000803f0000803f0000803f0000803f0000803e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "42638040b06bdf03dbecb090941aa22b5ab5194a1185ad154e1088b47403e132": {
+      "caseNames": [
+        "reduce_transparency_true"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000000000000080514000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f6666663f6666663f6666663f0000803f0000803f0000803fcdcc4c3f000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "488ee52fdd44f1e979de78e53ef95ffe53c2880c8dfa2e65c3e9d1c07f848978": {
+      "caseNames": [
+        "color_scheme_dark"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000003f0000803f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000cdcccc3e0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803fcdcccc3d6666e63e0000803f0000000000000000000000000000803e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f00000000000000000000003f0000803f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f8fc2753d9a99193f9a99993f00000000000000000000000000000000010000009218a33e9218a33e9218a33e0000803f0000000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f8fc2753d9a99193f9a99993f00000000000000000000000000000000010000009218a33e9218a33e9218a33e0000803f00000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "4a3368cd4b5373be37192ae5fb885b61bb85943133300ad3516e77efe277476a": {
+      "caseNames": [
+        "diffusion_increased"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803f0000803e0ad7833f000000400000803f0000803f0000803fcdcc4c3f000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "57c972e5947bf0e33edab2889047d119f9a3dd2a138ff23758582856af383a93": {
+      "caseNames": [
+        "show_button_shapes_true"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f000000000000000000000000cdcc4c3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803f9a99593f0ad7833f0000803f0000803f0000803f0000803f0000803e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03fcdcc4c3e00000000182d4454fb2109409a9999999999c93f000000000000e03f00000000cdcc4c3d0000c03f00000000000000000000000000000000010000000000000000000000000000000000803f0000000000000000000000000000000000000000010000000000000000000000000000000000f03fcdcc4c3e00000000182d4454fb2109409a9999999999c93f000000000000e03f00000000cdcc4c3d0000c03f00000000000000000000000000000000010000000000000000000000000000000000803f00000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "7c6f134ec1ec9e7f3728c458e18ebdee04feed191a4dec6d6c4fe8e246b02274": {
+      "caseNames": [
+        "contrast_increased"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803f0000403f0ad7833fcdcc4c3f0000803f0000803f0000803fcdcc4c3f000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "fd619380accab5cbe7e2bb99e16d2b1790ea3c9706ce58e887ca7f0ae9a7fbf5": {
+      "caseNames": [
+        "window_active_false",
+        "glass_foreground_false"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f6666e63f000000000000000000000000cdcc4c3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000001040000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803fcdcc4c3fec51783f0000803f0000803f0000803f0000803f0000803e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c46000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    }
+  }
+}

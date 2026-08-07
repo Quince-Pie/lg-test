@@ -9639,8 +9639,9 @@ probe executable is checked for an embedded Nix store path and none is
 present. No GUI, application render, image, or crop participates, so the
 locked Retina session does not affect this result.
 
-This closes the default-context public configuration/mix/modifier-to-
-Parameters table. It does **not** establish the live SwiftUI environment and
+This closes the zero-flags `initialState`/default-`Material.Context` public
+configuration/mix/modifier-to-Parameters table. It does **not** establish the
+flags-produced baseline or the live SwiftUI environment and
 transition-progress producers, the general integer crop-allocation policy,
 physical Retina compositor/color transfer, an independent Walle
 zero-unequal-byte frame, or Liquid Glass parity. No production shader change
@@ -9648,8 +9649,9 @@ is authorized.
 
 ### Direct public `Parameters` to `BackgroundFilter` margin join
 
-The default-context table above is now joined to the immediate allocation-
-margin provider through Apple code rather than an offline reconstruction. For
+The zero-flags `initialState` table above is now joined to the immediate
+allocation-margin provider through Apple code rather than an offline
+reconstruction. For
 each of the 42 frozen Parameters values, a native probe directly invokes the
 complete 1,044-byte `BackgroundFilter` constructor at DesignLibrary module
 offset `0xbad00`, then invokes the complete 984-byte
@@ -9684,10 +9686,10 @@ Only three binary64 margin words occur:
 
 The exact `t = 1` and `t = 1.25` regular-to-clear mixes return `+0.0`.
 All eight measured regular modifiers also construct the regular object and
-return `+0.0`. These are default-context values. They do not contradict the
-positive margins in animated live-transition captures: those captures use
-time-varying Parameters and a transition-wide allocation maximum that this
-headless table deliberately does not claim to produce.
+return `+0.0`. These are zero-flags `initialState` values. They do not
+contradict the positive margins in animated live-transition captures: those
+captures use time-varying Parameters and a transition-wide allocation maximum
+that this headless table deliberately does not claim to produce.
 
 The capture, native probe, arm64 bridge, and canonical result are:
 
@@ -9706,9 +9708,108 @@ The run uses Apple Command Line Tools directly on the local Mac and verifies
 that the probe executable embeds no Nix store path. It requires no unlocked
 display, GUI, render, image, crop, or pixel.
 
-This closes the controlled default-context Parameters-to-concrete-provider-
+This closes the controlled zero-flags Parameters-to-concrete-provider-
 margin table. The live transition Parameters producer, transition-wide margin
 maximum, direction-dependent allocation topology, general integer crop
 policy, physical Retina/color/compositor transfer, and independent Walle
 zero-unequal-byte frames remain open. Liquid Glass parity and production
 shader changes remain unauthorized.
+
+### Exact flags-produced Environment to `Parameters` table
+
+The zero-flags boundary above is no longer confused with the normal
+flags-produced baseline. A second headless probe starts from Apple's
+`GlassMaterialProvider.initialState`, applies each of the 36 already frozen
+263-byte internal Environment mutations, invokes the authenticated
+EnvironmentFlags producer, regenerates the consumed State, installs the exact
+flags word, resolves regular material, and reaches the real
+`ResolvedRecipe.Parameters` builder under a default `Material.Context`.
+
+The complete EnvironmentFlags producer at DesignLibrary module offset
+`0x1127f8` is 1,252 bytes with SHA-256
+`69bd75dcc4daad7956b6b41560fc39a1ec5bd4187712c945788477ec6dd97090`.
+The Parameters builder and caller remain the independently authenticated
+`0x120b4c` and `0x11f1bc` code regions. Every code identity and all 36 case
+names are fixed before any Parameters output exists. The inherited LLDB gate
+retains exactly one 1,025-byte build per case and captured bytes never select a
+case or breakpoint.
+
+Three fresh processes reproduce all 36 normalized values bit for bit. They
+collapse to eight distinct Parameters states. Twenty-eight cases equal the
+flags-produced baseline exactly, including both pixel-length controls, light
+color scheme, standard contrast, both application-activity values, both
+window-opacity values, tinted-elements presence, all nine idioms, both
+low-power values, and automatic diffusion. The eight changes are:
+
+```text
+dark color scheme
+increased contrast
+window inactive
+non-foreground glass
+Reduce Transparency
+Reduce Motion
+Button Shapes
+increased diffusion
+```
+
+Window-inactive and non-foreground glass produce the same Parameters bytes
+despite their distinct exact flags words. Their shared state zeros the shadow
+radius/opacity, outer refraction, and both highlight opacities, while changing
+blur radius from `2.6666666666666665` to exact `4.0`.
+
+The other changes are now field-exact rather than visual guesses. Among them:
+
+```text
+Reduce Transparency  blur.radius               70.0
+                     refraction.innerAmount      0.0
+                     refraction.outerAmount      0.0
+
+Reduce Motion        blur.radius                10.666666666666666
+                     refraction.innerHeight      0.0
+
+Button Shapes        key/fill opacity            0.20000000298023224
+                     key/fill spread             pi
+                     key/fill curvature          0.2
+
+increased diffusion  face black                  0.25
+                     face saturation             2.0
+```
+
+Dark mode changes the shadow, face, bleed, and both highlight YCC/color
+recipes; it also changes the edge-bleed presence storage. Increased contrast
+and increased diffusion share one flags high bit but produce different exact
+face recipes. The canonical result retains every changed semantic byte, named
+field, raw little-endian word, and decoded scalar value.
+
+The flags-produced baseline uses exact flags `0x0000000000099183` and
+normalized Parameters SHA-256
+`3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155`.
+It differs from the earlier zero-flags regular Parameters SHA-256
+`1cdc1edddebd996c4aba8ab0bb42a02ecab33665316a9f2e2fc41ca1559b5862`.
+The earlier table remains valid for its declared `initialState` input, but it
+must not be substituted for the flags-produced baseline.
+
+The capture, LLDB overlay, native probe, and canonical result are:
+
+```text
+Analysis/capture_designlibrary_environment_parameters_local_macos_26_6_1.py
+  SHA-256 d0be2b9956ab636d2b7ba1a6226b7df632248bbde46fdced9e118a3b557f8127
+Analysis/capture_designlibrary_environment_parameters_local_macos_26_6_1_lldb.py
+  SHA-256 16982e972aacc7f7470fc96a3d85c5a81357d6627f87ed2907767af1d9f60898
+Analysis/probe_designlibrary_environment_parameters_local_macos_26_6_1.c
+  SHA-256 a1e327337d9754cc16381a73d7e5ccef3c6c25e50f49bc8256fd93af43d2a8d7
+Analysis/designlibrary_environment_parameters_local_macos_26_6_1_result.json
+  SHA-256 8a2048183aae7ebca49b8385891408e0fccbf75bc25e71d1e7b3b13be9d3d595
+```
+
+The native path uses Apple Command Line Tools directly and the executable is
+verified to contain no Nix store path. It requires no unlocked display, GUI,
+render, image, crop, or pixel.
+
+This closes the controlled internal-Environment/flags-to-Parameters table for
+regular material under the default Context. It does **not** prove the live
+SwiftUI updater that creates those Environment values, animation-progress
+production, transition-wide margin allocation, direction-dependent crop
+topology, physical Retina/color/compositor transfer, or an independent Walle
+zero-unequal-byte frame. Liquid Glass parity and production shader changes
+remain unauthorized.
