@@ -1,0 +1,2164 @@
+{
+  "authority": {
+    "allProviderLoadedFieldsCharacterizedForJoinedOpenedPath": true,
+    "authenticatedPerCallbackTemporalJoinEstablished": false,
+    "generalPublicInputObjectConstructionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "productionShaderAuthorized": false,
+    "prospectivePublicInputToProviderConstructionTransferEstablished": false,
+    "retrospectiveUniqueCrossArtifactValueJoinEstablished": true,
+    "strictMonotonicCallSequenceAlignmentObserved": true,
+    "upstreamCropAllocationPolicyEstablished": false,
+    "varyingLoadedWordRelationsExactAcrossJoinedSamples": true
+  },
+  "backdropMarginCase22ProviderPublicTimelineJoinAnalysisSchemaVersion": 1,
+  "classification": "exact retrospective unique cross-artifact value-signature join between public glassBackground inputs and authenticated finite case-22 provider objects in one retained Retina capture",
+  "inputs": {
+    "analysisSource": {
+      "path": "Analysis/analyze_backdrop_margin_case22_provider_public_timeline_join.py",
+      "sha256": "4bc9d96947819b324f29c91262ca13b4f04fe52ad9a7e61eafdc3f532cc0436b"
+    },
+    "captureContractPassed": true,
+    "preregistration": {
+      "path": "Analysis/backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1_preregistration.json",
+      "sha256": "2e4b4bc919d90fb7abed939641cfce37bd0d3c48acd89b5dfb1c50623d35c918"
+    },
+    "providerCodeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+    "providerTrace": {
+      "path": "artifacts/local-case22-provider-object-matrix-minimal-retry2-b694a91-run1/provider-object-matrix-trace.json",
+      "sha256": "0e83312d2535ad6601b6bcae178e939e13a9ebae95d15efcc166ffde013e6d72"
+    },
+    "publicTimeline": {
+      "path": "artifacts/local-case22-provider-object-matrix-minimal-retry2-b694a91-run1/transition-timeline.json",
+      "sha256": "1dd73cfa4e696c43a0612c107e9a5edcb78c72b14ba80e67a53e4e99b06d931f"
+    }
+  },
+  "nextExactGate": "freeze these four selector words and all 18 provider-loaded field predictions before a fresh public transition profile, then require a unique callback-time join and exact blind transfer; constant and co-varying aliases require independent public-input interventions",
+  "providerExecution": {
+    "allJoinedReturnsReplayedBitwise": true,
+    "constantLoadedFieldCount": 14,
+    "distinctExecutedPathCount": 1,
+    "joinedSampleCount": 31,
+    "loadedFieldCount": 18,
+    "loadedFieldObservations": [
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "exact-observational-public-word-equality",
+          "exactMatchCount": 31,
+          "publicInput": "inputShadowOffset",
+          "publicInputBinary64Lane": 0,
+          "semanticSourceDisambiguatedWithinProfile": false,
+          "transform": "identity"
+        },
+        "providerObjectOffset": 8,
+        "providerObjectOffsetHex": "0x008",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000002040"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "exact-observational-public-word-equality",
+          "exactMatchCount": 31,
+          "publicInput": "inputShadowOffset",
+          "publicInputBinary64Lane": 1,
+          "semanticSourceDisambiguatedWithinProfile": false,
+          "transform": "identity"
+        },
+        "providerObjectOffset": 16,
+        "providerObjectOffsetHex": "0x010",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "000000000d992d40",
+          "000000002f182340",
+          "00000000d9071f40",
+          "00000010d9c13840",
+          "0000002087032940",
+          "00000024c92d5240",
+          "00000028aaa34140",
+          "00000040a5d34940",
+          "00000040e4c71340",
+          "000000442a9f5040",
+          "00000048eff04340",
+          "000000507f4c3140",
+          "0000006012873540",
+          "00000060408c3e40",
+          "0000008092b90540",
+          "00000080955b4640",
+          "00000080a9734740",
+          "000000886ec34840",
+          "0000009052ee4f40",
+          "00000098f9584540",
+          "000000b05c005140",
+          "000000b0a4613c40",
+          "000000b0da584c40",
+          "000000b8a9534d40",
+          "000000c017ae4040",
+          "000000c08b913340",
+          "000000d826ee4240",
+          "000000f01e7c3a40",
+          "000000f0aedb4b40",
+          "000000f0bcb95140",
+          "000000f882934e40"
+        ],
+        "distinctRawWordCount": 31,
+        "joinedSampleCount": 31,
+        "observation": {
+          "candidateRelations": [
+            {
+              "binary64Scale": 1.0,
+              "exactMatchCount": 31,
+              "publicInput": "inputShadowAmount"
+            }
+          ],
+          "classification": "exact-observational-public-word-equality",
+          "semanticSourceDisambiguatedWithinProfile": true
+        },
+        "providerObjectOffset": 24,
+        "providerObjectOffsetHex": "0x018",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 40,
+        "providerObjectOffsetHex": "0x028",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 56,
+        "providerObjectOffsetHex": "0x038",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 4,
+        "distinctRawLittleEndianHex": [
+          "00000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "00000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 136,
+        "providerObjectOffsetHex": "0x088",
+        "storage": "binary32"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 144,
+        "providerObjectOffsetHex": "0x090",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000904377991140",
+          "0010a15989971640",
+          "0010da9974ba1540",
+          "2469ef7ce9ce0a40",
+          "25492284eafbf63f",
+          "2589c4d9dacbfa3f",
+          "49229ce5e5171040",
+          "4992b46175d11040",
+          "49d22053eab41440",
+          "6edbbe4b3546e83f",
+          "6edbdad934481340",
+          "6edbff0834ef1840",
+          "6eeb4d2bee871240",
+          "9224694082d1ed3f",
+          "9234784b286b1840",
+          "923493c3a5851a40",
+          "9244053e49280e40",
+          "9244fe57d9b00c40",
+          "9264613cc9851740",
+          "92646bba2f0c1540",
+          "9324d1e201670940",
+          "b7ad7b308d78f33f",
+          "db361a06ae540740",
+          "db364a7974990040",
+          "dbb616396c15d13f",
+          "dbd6368de4b90540",
+          "dbd6ab46ac500440",
+          "dcd68bca53060340",
+          "ffff30a2b6e91940",
+          "ffffc3c56e3dfe3f",
+          "fffff0fcc609df3f"
+        ],
+        "distinctRawWordCount": 31,
+        "joinedSampleCount": 31,
+        "observation": {
+          "candidateRelations": [
+            {
+              "binary64Scale": 2.0,
+              "exactMatchCount": 31,
+              "publicInput": "inputBlurRadius"
+            }
+          ],
+          "classification": "exact-observational-public-word-equality",
+          "semanticSourceDisambiguatedWithinProfile": true
+        },
+        "providerObjectOffset": 152,
+        "providerObjectOffsetHex": "0x098",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 160,
+        "providerObjectOffsetHex": "0x0a0",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 168,
+        "providerObjectOffsetHex": "0x0a8",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 176,
+        "providerObjectOffsetHex": "0x0b0",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 184,
+        "providerObjectOffsetHex": "0x0b8",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 192,
+        "providerObjectOffsetHex": "0x0c0",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000014d318c0",
+          "00000000188d1ec0",
+          "0000000026b03ac0",
+          "000000003aa60fc0",
+          "00000000426101c0",
+          "00000000464f2fc0",
+          "0000000051a944c0",
+          "00000000a4ad27c0",
+          "00000000dee241c0",
+          "00000000eec242c0",
+          "0000004010393cc0",
+          "0000004047ce33c0",
+          "00000040758b49c0",
+          "00000040e5e73fc0",
+          "00000060027648c0",
+          "00000060217647c0",
+          "00000080337038c0",
+          "00000080615c4cc0",
+          "0000008098ad2bc0",
+          "00000080c7334bc0",
+          "00000080d20224c0",
+          "00000080db3831c0",
+          "000000a00e164dc0",
+          "000000a043984ac0",
+          "000000a08bcf43c0",
+          "000000c0183035c0",
+          "000000c0584946c0",
+          "000000c07bad46c0",
+          "000000c083b436c0",
+          "000000c0d7493ec0",
+          "000000e0fa1341c0"
+        ],
+        "distinctRawWordCount": 31,
+        "joinedSampleCount": 31,
+        "observation": {
+          "candidateRelations": [
+            {
+              "binary64Scale": 1.0,
+              "exactMatchCount": 31,
+              "publicInput": "inputInnerRefractionAmount"
+            },
+            {
+              "binary64Scale": -0.8,
+              "exactMatchCount": 31,
+              "publicInput": "inputShadowAmount"
+            }
+          ],
+          "classification": "exact-observational-public-word-equality",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 232,
+        "providerObjectOffsetHex": "0x0e8",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "0000000000000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "0000000000000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 248,
+        "providerObjectOffsetHex": "0x0f8",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 4,
+        "distinctRawLittleEndianHex": [
+          "00000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "00000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 272,
+        "providerObjectOffsetHex": "0x110",
+        "storage": "binary32"
+      },
+      {
+        "byteCount": 8,
+        "distinctRawLittleEndianHex": [
+          "00000de983273540",
+          "0000257c59d03f40",
+          "000094627cd93b40",
+          "0000b45b2c1f1940",
+          "0000fdafd7771440",
+          "001a32f4038b4240",
+          "0028f77d087e2640",
+          "00501361e2743340",
+          "00683b0ca00b4140",
+          "0074c6b800083940",
+          "008076e5e25a2940",
+          "00a06cf19c634440",
+          "00a0c2c237cf2b40",
+          "00b4c509d4f93040",
+          "00bafaf574a14540",
+          "00da0c76eafb4340",
+          "327344f2c5e0fc3f",
+          "331b31288e612040",
+          "3333dde1c8502340",
+          "3347a5d2b54d3640",
+          "3387bea556ad3a40",
+          "33c7fc2c50233240",
+          "66ce097d7ed22f40",
+          "9953de22b8db4140",
+          "99adca0bacd63740",
+          "99c1f6dd25514140",
+          "cd6cdaf5be340a40",
+          "cd6ce2b9c1274540",
+          "cdb45d504a474340",
+          "ffb34b1de09b3e40",
+          "ffff5332341c3d40"
+        ],
+        "distinctRawWordCount": 31,
+        "joinedSampleCount": 31,
+        "observation": {
+          "candidateRelations": [
+            {
+              "binary64Scale": 1.0,
+              "exactMatchCount": 31,
+              "publicInput": "inputBleedAmount"
+            },
+            {
+              "binary64Scale": 1.0,
+              "exactMatchCount": 31,
+              "publicInput": "inputBleedHeight"
+            }
+          ],
+          "classification": "exact-observational-public-word-equality",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 352,
+        "providerObjectOffsetHex": "0x160",
+        "storage": "binary64"
+      },
+      {
+        "byteCount": 4,
+        "distinctRawLittleEndianHex": [
+          "00000000"
+        ],
+        "distinctRawWordCount": 1,
+        "joinedSampleCount": 31,
+        "observation": {
+          "classification": "constant-zero-in-opened-profile",
+          "exactRawLittleEndianHex": "00000000",
+          "semanticSourceDisambiguatedWithinProfile": false
+        },
+        "providerObjectOffset": 376,
+        "providerObjectOffsetHex": "0x178",
+        "storage": "binary32"
+      }
+    ],
+    "loadedObjectRanges": [
+      {
+        "byteCount": 16,
+        "providerObjectOffset": 8
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 24
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 40
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 56
+      },
+      {
+        "byteCount": 4,
+        "providerObjectOffset": 136
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 144
+      },
+      {
+        "byteCount": 16,
+        "providerObjectOffset": 152
+      },
+      {
+        "byteCount": 16,
+        "providerObjectOffset": 168
+      },
+      {
+        "byteCount": 16,
+        "providerObjectOffset": 184
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 232
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 248
+      },
+      {
+        "byteCount": 4,
+        "providerObjectOffset": 272
+      },
+      {
+        "byteCount": 8,
+        "providerObjectOffset": 352
+      },
+      {
+        "byteCount": 4,
+        "providerObjectOffset": 376
+      }
+    ],
+    "matchingInstructionReplayReturnCount": 31,
+    "varyingLoadedFieldCount": 4
+  },
+  "selector": {
+    "allNonEndpointJoinsStrictlyIncreasing": true,
+    "allNonEndpointOtherCallsMatchedZeroSignatureWords": true,
+    "classification": "four exact endpoint candidate equalities reused unchanged as a retrospective raw-binary64 selector",
+    "endpoint": {
+      "classification": "ambiguous-repeated-endpoint-excluded-from-unique-join",
+      "fullMatchCallIndices": [
+        0,
+        1226,
+        1227
+      ],
+      "partialMatchCallCount": 0,
+      "providerCallMatchHistogram": [
+        {
+          "matchingSignatureWordCount": 0,
+          "providerCallCount": 1225
+        },
+        {
+          "matchingSignatureWordCount": 4,
+          "providerCallCount": 3
+        }
+      ],
+      "sampleIndex": 32,
+      "signatureWords": [
+        {
+          "binary64Scale": 1.0,
+          "providerObjectOffset": 24,
+          "publicInput": "inputShadowAmount",
+          "rawLittleEndianHex": "0000000000c05240"
+        },
+        {
+          "binary64Scale": 2.0,
+          "providerObjectOffset": 152,
+          "publicInput": "inputBlurRadius",
+          "rawLittleEndianHex": "9224499224491b40"
+        },
+        {
+          "binary64Scale": 1.0,
+          "providerObjectOffset": 232,
+          "publicInput": "inputInnerRefractionAmount",
+          "rawLittleEndianHex": "0000000000004ec0"
+        },
+        {
+          "binary64Scale": 1.0,
+          "providerObjectOffset": 352,
+          "publicInput": "inputBleedAmount",
+          "rawLittleEndianHex": "9999999999394640"
+        }
+      ]
+    },
+    "joinedSamples": [
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          50
+        ],
+        "matchedProviderCallIndex": 50,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "84950f46ca8074950468bbd429ecfc22f0cf0b0119e4f234293952754c6a869c",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 1,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "0000008092b90540"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "dbb616396c15d13f"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000000426101c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "327344f2c5e0fc3f"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          87
+        ],
+        "matchedProviderCallIndex": 87,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "d6e14819b43186ae976eaf73832b29335770ddacdae6737908e1faacf3f7ae47",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 2,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000040e4c71340"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "fffff0fcc609df3f"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000003aa60fc0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "cd6cdaf5be340a40"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          134
+        ],
+        "matchedProviderCallIndex": 134,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "d0b30c412005fb7ee19f726f9fd7237b347644658fd8880574ca0794c1d0cee6",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 3,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000000d9071f40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "6edbbe4b3546e83f"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "0000000014d318c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "0000fdafd7771440"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          163
+        ],
+        "matchedProviderCallIndex": 163,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "33775c37fbb049e1fbc6375b8ee5c8fc4032cac07b0c1a58f6a3af553d420d01",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 4,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000002f182340"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "9224694082d1ed3f"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000000188d1ec0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "0000b45b2c1f1940"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          213
+        ],
+        "matchedProviderCallIndex": 213,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "0099eab83ccacefc9d00a2d6ed169725aeb1b3c2a7791ad5def5a40055f108b2",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 5,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "0000002087032940"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "b7ad7b308d78f33f"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000080d20224c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "331b31288e612040"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          254
+        ],
+        "matchedProviderCallIndex": 254,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "5c56922a9b892d039ac5a833eab4ee8c533e8c9b64f624c1d2d3f9a74bb8c0fe",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 6,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000000d992d40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "25492284eafbf63f"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000000a4ad27c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "3333dde1c8502340"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          297
+        ],
+        "matchedProviderCallIndex": 297,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "eefafd2b012138a7e4f2f5821fc5a875439c0f8df6724c5218f530daca797500",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 7,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000507f4c3140"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "2589c4d9dacbfa3f"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "0000008098ad2bc0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "0028f77d087e2640"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          330
+        ],
+        "matchedProviderCallIndex": 330,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "2a01fe455b364deba2f0c295ea425f1cb697817824aab60614c4135eb137f333",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 8,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000c08b913340"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "ffffc3c56e3dfe3f"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000000464f2fc0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "008076e5e25a2940"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          365
+        ],
+        "matchedProviderCallIndex": 365,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "74eb18e6ba5024b72f82fc31bd400eb407bbd356718cd7f1137af8048a019977",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 9,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "0000006012873540"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "db364a7974990040"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000080db3831c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "00a0c2c237cf2b40"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          421
+        ],
+        "matchedProviderCallIndex": 421,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "0e6bc0ed4cee03db179a78148b70538795b92d97649195c7a14413f3f9bf55e8",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 10,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000010d9c13840"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "dcd68bca53060340"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "0000004047ce33c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "66ce097d7ed22f40"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          450
+        ],
+        "matchedProviderCallIndex": 450,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "8b4f835c44594353e399665e5fb1362f2a9c19b8b37dab9b496df2b456c48e84",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 11,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000f01e7c3a40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "dbd6ab46ac500440"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000c0183035c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "00b4c509d4f93040"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          482
+        ],
+        "matchedProviderCallIndex": 482,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "76d0fbec604f3e9ea967b8b4f21a0a4aba7cdef5c18e61147458790ca472ec97",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 12,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000b0a4613c40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "dbd6368de4b90540"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000c083b436c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "33c7fc2c50233240"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          520
+        ],
+        "matchedProviderCallIndex": 520,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "400df391a3e456fa96092ab8565ea172de327724ef3838183e0f066b33ad7165",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 13,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000060408c3e40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "db361a06ae540740"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000080337038c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "00501361e2743340"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          568
+        ],
+        "matchedProviderCallIndex": 568,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "5146c05f3fd82aa857e3872983357e7d71d071a35cc64ffd800bda36a26ad29b",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 14,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000c017ae4040"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "9324d1e201670940"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "0000000026b03ac0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "00000de983273540"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          600
+        ],
+        "matchedProviderCallIndex": 600,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "8ea95c0c31d16c3ac34e0eee85532202c5c93fc5a3fe7b210bcaa0422d514c7e",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 15,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000028aaa34140"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "2469ef7ce9ce0a40"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "0000004010393cc0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "3347a5d2b54d3640"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          642
+        ],
+        "matchedProviderCallIndex": 642,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "cdc0aa6910e8d9c1cf7565bbfad647c205a23c48491ef0cbaa582843c9291d52",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 16,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000d826ee4240"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "9244fe57d9b00c40"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000c0d7493ec0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "99adca0bacd63740"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          675
+        ],
+        "matchedProviderCallIndex": 675,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "392825f7849203306f043dcd0d05937ddc1e44588d4d7b6adf1905101ea21857",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 17,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000048eff04340"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "9244053e49280e40"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000040e5e73fc0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "0074c6b800083940"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          721
+        ],
+        "matchedProviderCallIndex": 721,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "2852f6dc3e70aac2d887e230a7ffb150e237588c185aaf94d118fc2b7d12dcd1",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 18,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000098f9584540"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "49229ce5e5171040"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000e0fa1341c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "3387bea556ad3a40"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          753
+        ],
+        "matchedProviderCallIndex": 753,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "62b9b40621b80d70da076fe61d571a94e61654ef0a098a95f22b872dc0ac8b4c",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 19,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000080955b4640"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "4992b46175d11040"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000000dee241c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "000094627cd93b40"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          790
+        ],
+        "matchedProviderCallIndex": 790,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "3f701aad65155151c4dd58dd5ba58a771b8556d0d0169755b4d3a00b9eea641b",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 20,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000080a9734740"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "0000904377991140"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000000eec242c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "ffff5332341c3d40"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          832
+        ],
+        "matchedProviderCallIndex": 832,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "2e8daf8bd7ad2dd316599d9c04789ea78af20f11aecbc3f2793309d0664438f1",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 21,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000886ec34840"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "6eeb4d2bee871240"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000a08bcf43c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "ffb34b1de09b3e40"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          866
+        ],
+        "matchedProviderCallIndex": 866,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "b6a11a93f796fcb2b956f397a011e94e5b418ae884f389698d1641c6e439ee70",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 22,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000040a5d34940"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "6edbdad934481340"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "0000000051a944c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "0000257c59d03f40"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          934
+        ],
+        "matchedProviderCallIndex": 934,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "7ca8a7040b99e47fbd1508c12dcc32aeb115d7146c266693400fa096d488f476",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 23,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000f0aedb4b40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "49d22053eab41440"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000c0584946c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "00683b0ca00b4140"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          948
+        ],
+        "matchedProviderCallIndex": 948,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "f09c251727a243d81d0a51f635d865bc186d811d03491fc0d61552b0d12c70eb",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 24,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000b0da584c40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "92646bba2f0c1540"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000c07bad46c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "99c1f6dd25514140"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          977
+        ],
+        "matchedProviderCallIndex": 977,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "b319110fc6ccb12f318d84c17c32ea3730221b57df09fb21d357a43540c8b0c5",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 25,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000b8a9534d40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "0010da9974ba1540"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000060217647c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "9953de22b8db4140"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          1018
+        ],
+        "matchedProviderCallIndex": 1018,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "d92c17e109ea9b6cac6f1f9efc6c082beba138cb3996e4c3f781e65ef9c118a8",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 26,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000f882934e40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "0010a15989971640"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000060027648c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "001a32f4038b4240"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          1059
+        ],
+        "matchedProviderCallIndex": 1059,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "ac3d5291722bba1a0a369c4304de3b486413c8d929cbc3fe94d891efd4457396",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 27,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "0000009052ee4f40"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "9264613cc9851740"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000040758b49c0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "cdb45d504a474340"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          1102
+        ],
+        "matchedProviderCallIndex": 1102,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "d642617dfbd5d0e2a31dbee9d27512fb9f5f8a696bb9da238494191b66e7ce7f",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 28,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000442a9f5040"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "9234784b286b1840"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000a043984ac0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "00da0c76eafb4340"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          1120
+        ],
+        "matchedProviderCallIndex": 1120,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "c730ce7de047a417f1bd865ade999b3b932850ceb11ce4aa4f5932abd5de0df3",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 29,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000b05c005140"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "6edbff0834ef1840"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000080c7334bc0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "00a06cf19c634440"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          1166
+        ],
+        "matchedProviderCallIndex": 1166,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "fe0e33b7455b5fef363d0bc83ed3cf97d913fa0f58c0fce350fe73afc934645c",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 30,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "000000f0bcb95140"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "ffff30a2b6e91940"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "00000080615c4cc0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "cd6ce2b9c1274540"
+          }
+        ]
+      },
+      {
+        "classification": "unique-retrospective-cross-artifact-value-signature-join",
+        "fullMatchCallIndices": [
+          1190
+        ],
+        "matchedProviderCallIndex": 1190,
+        "matchedProviderThreadID": 64424509442,
+        "partialMatchCallCount": 0,
+        "providerCallMatchHistogram": [
+          {
+            "matchingSignatureWordCount": 0,
+            "providerCallCount": 1227
+          },
+          {
+            "matchingSignatureWordCount": 4,
+            "providerCallCount": 1
+          }
+        ],
+        "providerObjectSHA256": "1751053baca92e07f37323ac6e654890637fe73812e551b97427c78dc8fddb41",
+        "providerReturnRawLittleEndianHex": "0000000000000000",
+        "replayedReturnRawLittleEndianHex": "0000000000000000",
+        "sampleIndex": 31,
+        "signatureWords": [
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 24,
+            "publicInput": "inputShadowAmount",
+            "rawLittleEndianHex": "00000024c92d5240"
+          },
+          {
+            "binary64Scale": 2.0,
+            "providerObjectOffset": 152,
+            "publicInput": "inputBlurRadius",
+            "rawLittleEndianHex": "923493c3a5851a40"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 232,
+            "publicInput": "inputInnerRefractionAmount",
+            "rawLittleEndianHex": "000000a00e164dc0"
+          },
+          {
+            "binary64Scale": 1.0,
+            "providerObjectOffset": 352,
+            "publicInput": "inputBleedAmount",
+            "rawLittleEndianHex": "00bafaf574a14540"
+          }
+        ]
+      }
+    ],
+    "matchedProviderCallIndices": [
+      50,
+      87,
+      134,
+      163,
+      213,
+      254,
+      297,
+      330,
+      365,
+      421,
+      450,
+      482,
+      520,
+      568,
+      600,
+      642,
+      675,
+      721,
+      753,
+      790,
+      832,
+      866,
+      934,
+      948,
+      977,
+      1018,
+      1059,
+      1102,
+      1120,
+      1166,
+      1190
+    ],
+    "providerCallCount": 1228,
+    "publicRecordCount": 32,
+    "uniqueNonEndpointJoinCount": 31
+  }
+}

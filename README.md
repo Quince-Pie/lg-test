@@ -8246,3 +8246,84 @@ around the already exact resampling and DOD arithmetic, then close physical
 Retina compositor/color transfer and require zero unequal Walle frame bytes.
 The production shader remains unchanged and unauthorized for any
 quality-reducing substitution.
+
+### Retrospective exact public/provider sequence join
+
+The earlier endpoint observation correctly withheld mapping authority because
+the LLDB provider stream and public `glassBackground` timeline did not record a
+callback-time sample identifier. The retained capture nevertheless contains a
+stronger cross-artifact fact that had not been tested: the four already opened
+endpoint candidate words can be reused unchanged as a raw binary64 signature
+over every public sample and every provider call. This is still retrospective;
+no value selected a call during capture and no post-capture join can become a
+prospective constructor intervention by assertion.
+
+`Analysis/analyze_backdrop_margin_case22_provider_public_timeline_join.py`
+authenticates the complete original matrix capture before performing that
+join. Its provider trace SHA-256 is
+`0e83312d2535ad6601b6bcae178e939e13a9ebae95d15efcc166ffde013e6d72`,
+the public timeline SHA-256 is
+`1dd73cfa4e696c43a0612c107e9a5edcb78c72b14ba80e67a53e4e99b06d931f`,
+and the exact four-word selector is:
+
+- provider `+0x018` = public `inputShadowAmount`;
+- provider `+0x098` = `2 * inputBlurRadius`;
+- provider `+0x0e8` = public `inputInnerRefractionAmount`; and
+- provider `+0x160` = public `inputBleedAmount`.
+
+For each non-endpoint public sample 1 through 31, exactly one of all 1,228
+provider calls matches all four words. Every one of the other 1,227 calls
+matches **zero** words; there are no one-, two-, or three-word collisions. The
+unique call indices are, in sample order:
+
+```text
+50, 87, 134, 163, 213, 254, 297, 330, 365, 421, 450, 482,
+520, 568, 600, 642, 675, 721, 753, 790, 832, 866, 934, 948,
+977, 1018, 1059, 1102, 1120, 1166, 1190
+```
+
+They are strictly increasing and never reuse a call. Endpoint sample 32 is
+not forced into that result: its repeated four-word signature matches calls
+0, 1226, and 1227, so it is explicitly classified as ambiguous and excluded
+from the unique join.
+
+The authenticated ARM64 instruction replay then establishes which bytes the
+provider actually reads on all 31 joined calls. They execute one identical
+path and load exactly 18 scalar fields. Every loaded field is accounted for
+with raw bytes and no tolerance:
+
+- `+0x008` and `+0x010` equal the two binary64 lanes of public
+  `inputShadowOffset`, exactly `[0, 8]` in this profile;
+- `+0x018` has 31 distinct words and equals `inputShadowAmount` exactly;
+- `+0x098` has 31 distinct words and equals the binary64 operation
+  `2 * inputBlurRadius` exactly;
+- `+0x0e8` has 31 distinct words and equals both
+  `inputInnerRefractionAmount` and `-0.8 * inputShadowAmount`; those
+  co-varying public sources are not disambiguated by this profile;
+- `+0x160` has 31 distinct words and equals both `inputBleedAmount` and
+  `inputBleedHeight`, which are identical in this profile; and
+- binary64 fields `+0x028`, `+0x038`, `+0x090`, `+0x0a0`, `+0x0a8`,
+  `+0x0b0`, `+0x0b8`, `+0x0c0`, and `+0x0f8`, plus binary32 fields
+  `+0x088`, `+0x110`, and `+0x178`, are exact positive zero throughout.
+  Their semantic sources remain intentionally unnamed because the public
+  profile contains many co-varying zeros.
+
+All 31 joined objects also replay to their captured provider returns bit for
+bit. The analysis-source SHA-256 is
+`4bc9d96947819b324f29c91262ca13b4f04fe52ad9a7e61eafdc3f532cc0436b`.
+The canonical result is
+`Analysis/backdrop_margin_case22_provider_public_timeline_join_retrospective_result.json`,
+SHA-256
+`00fab84d0c6163629da387ea4e0f50884ee40b9f04842646fe01a36936b50e3d`.
+
+This removes the earlier *unaligned covariance* limitation for samples 1--31
+inside this retained capture: there is now an exact, unique, monotonically
+ordered public/provider dataset. It does **not** create an authenticated
+per-callback temporal join, a blind fresh-profile transfer, or a general
+SwiftUI object-construction law. The next exact gate is to freeze the four
+selector words and predictions for all 18 loaded fields before dispatching a
+fresh public profile, then require a unique callback-time join and independently
+intervene on the constant and co-varying inputs. Upstream crop/allocation,
+physical Retina color/pixel/compositor transfer, and a real Apple-versus-Walle
+zero-unequal-byte frame remain open. Liquid Glass parity is still not
+established, and no production shader change is authorized by this result.
