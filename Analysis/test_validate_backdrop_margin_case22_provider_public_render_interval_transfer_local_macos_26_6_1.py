@@ -31,6 +31,11 @@ class PublicRenderIntervalValidatorTests(unittest.TestCase):
         ):
             self.assertIn(value, SOURCE)
 
+    def test_demangled_presentation_is_diagnostic_not_identity(self) -> None:
+        self.assertNotIn('record.get("function") == function', SOURCE)
+        self.assertIn('f"{label} function presentation is absent"', SOURCE)
+        self.assertIn('record.get("codeSHA256") == digest', SOURCE)
+
     def test_direct_branch_target_is_independently_decoded(self) -> None:
         call_address = 0x100000000 + validator.BACKGROUND_MODULE_OFFSET + 0x1000
         expected = 0x100000000 + validator.RENDER_MODULE_OFFSET

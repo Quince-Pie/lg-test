@@ -8453,13 +8453,13 @@ The prospective contract freezes, before dispatch:
 The preregistration is
 `Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json`,
 SHA-256
-`1ea2ae5351f1c20ab36343678b35e22011771c4e0903848afe92f1bb39fc0f0b`.
+`dc7b05fcc587549dce2520e3d3e39d22ac3a0fa9f57e859a46145b2c11b91a04`.
 The capture source SHA-256 is
-`9ef07e96861ba53e6189f7aafd5dd967cb3d00437ab634b72a3f81692e573639`,
+`b709c9130d6b0d55e3fac3ce516c6d125edfe20f08a16d610822e41d70890812`,
 the validator SHA-256 is
-`5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d`,
+`7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6`,
 and the native runner SHA-256 is
-`f6301d3cd7d8f709ce18ae78ece703c2a10648a3695e12293185da253a291965`.
+`e44fd57711d3ce055121505e62d5d3cada237f7d7f4852146d95842fe15b0549`.
 The runner uses Apple's Command Line Tools directly and contains no Nix store
 path. The validator independently decodes the frozen ARM64 `BL`, requires the
 exact five-breakpoint map, and proves that every captured provider entry and
@@ -8478,6 +8478,25 @@ this profile. Even a complete pass will not disambiguate constant or
 co-varying semantic sources, transfer a fresh material/appearance/geometry
 profile, close crop/allocation or Retina compositor output, authorize a shader
 change, or establish Liquid Glass parity.
+
+The first v2-preflight run at commit
+`6ce148581b505516970968cd2328113dd6790553` exited the Apple application
+cleanly but failed at the LLDB bootstrap before recording any authenticated
+render interval, provider call, or optical value. A one-shot structural
+diagnostic proved both functions had the exact frozen main UUID, module
+offsets, symbol byte counts, complete-code SHA-256 values, and direct ARM64
+call edge. Only LLDB's human-readable Swift demangling differed: it printed
+`Swift.Array`/`Swift.Dictionary` and omitted private-discriminator decoration.
+That presentation string is not binary identity and is now retained only as a
+nonempty diagnostic. Acceptance still requires all exact binary identities,
+the exact mangled bootstrap name, and the decoded direct-call target. The
+immutable correction is
+`Analysis/public_render_main_symbol_presentation_correction_local_macos_26_6_1.json`,
+SHA-256
+`0caa2811f60cbc72b0895ed4367d14b117c695ba3075b5f956464459ac24c474`.
+The failed trace had `finalIntervalCount: 0`, `finalCallCount: 0`, and no
+optical prediction was evaluated, so no prospective value or selection rule
+changed.
 
 ### Native `BackgroundFilter` metadata and constructor boundary
 

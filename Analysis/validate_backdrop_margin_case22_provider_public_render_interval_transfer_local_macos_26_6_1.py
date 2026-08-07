@@ -26,31 +26,22 @@ EXPECTED_BINARY_SHA256 = (
 EXPECTED_PREFLIGHT_SHA256 = (
     "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
 )
+SYMBOL_PRESENTATION_CORRECTION_PATH = (
+    "Analysis/public_render_main_symbol_presentation_correction_local_macos_26_6_1.json"
+)
+SYMBOL_PRESENTATION_CORRECTION_SHA256 = (
+    "0caa2811f60cbc72b0895ed4367d14b117c695ba3075b5f956464459ac24c474"
+)
 MAIN_UUID = "F8B0B6E3-3270-3C94-817F-B4914852D04C"
 BACKGROUND_MANGLED = (
     "$s4main35transitionBackgroundUniformEvidence029_12232F587A4C5CD8B1EEDF696793G2FCLL"
     "9rootLayer9snapshots20matrixBasisRequested14allocationOnly010fixedStateR0013pathIsolationR0"
     "15outputDirectorySDySSypGSo7CALayerC_SayAA010TransitionC14FilterSnapshotACLLVGS4b10Foundation3URLVtF"
 )
-BACKGROUND_FUNCTION = (
-    "main.(transitionBackgroundUniformEvidence in "
-    "_12232F587A4C5CD8B1EEDF696793A4FC)(rootLayer: __C.CALayer, "
-    "snapshots: [main.(TransitionBackgroundFilterSnapshot in "
-    "_12232F587A4C5CD8B1EEDF696793A4FC)], matrixBasisRequested: "
-    "Swift.Bool, allocationOnly: Swift.Bool, fixedStateRequested: "
-    "Swift.Bool, pathIsolationRequested: Swift.Bool, outputDirectory: "
-    "Foundation.URL) -> [Swift.String : Any]"
-)
 BACKGROUND_MODULE_OFFSET = 0x881B0
 BACKGROUND_BYTE_COUNT = 0x23B0
 BACKGROUND_CODE_SHA256 = (
     "1ca54720d237eb6970b65dd2ecc88b8372b64667f4ea2d28ef4bc8414668e2fd"
-)
-RENDER_FUNCTION = (
-    "main.(localTransitionCARendererEvidence in "
-    "_12232F587A4C5CD8B1EEDF696793A4FC)(rootLayer: __C.CALayer, "
-    "device: __C.MTLDevice, capture: Swift.String, outputDirectory: "
-    "Foundation.URL?) -> [Swift.String : Any]"
 )
 RENDER_MODULE_OFFSET = 0x7D12C
 RENDER_BYTE_COUNT = 0x4E8
@@ -160,6 +151,54 @@ def validate_preregistration(value: Any, repository_root: Path) -> Mapping[str, 
         amendment.get("supersededPreflightSHA256")
         == "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981",
         "superseded preflight identity differs",
+    )
+    symbol_amendment = mapping(
+        preregistration.get("symbolIdentityOperationalAmendment"),
+        "symbol-presentation operational amendment",
+    )
+    require(
+        symbol_amendment
+        == {
+            "failedCaptureFinalCallCount": 0,
+            "failedCaptureFinalIntervalCount": 0,
+            "opticalPredictionsEvaluatedBeforeCorrection": False,
+            "path": SYMBOL_PRESENTATION_CORRECTION_PATH,
+            "prospectiveOpticalPredictionsUnchanged": True,
+            "sha256": SYMBOL_PRESENTATION_CORRECTION_SHA256,
+        },
+        "symbol-presentation operational amendment differs",
+    )
+    correction_path = repository_root / SYMBOL_PRESENTATION_CORRECTION_PATH
+    require(
+        sha256(correction_path) == SYMBOL_PRESENTATION_CORRECTION_SHA256,
+        "symbol-presentation correction hash differs",
+    )
+    correction = mapping(
+        load_json(correction_path, "symbol-presentation correction"),
+        "symbol-presentation correction",
+    )
+    require(
+        correction.get("publicRenderMainSymbolPresentationCorrectionSchemaVersion")
+        == 1,
+        "symbol-presentation correction schema differs",
+    )
+    failed_capture = mapping(
+        correction.get("failedCapture"), "failed symbol-presentation capture"
+    )
+    require(
+        failed_capture.get("finalIntervalCount") == 0
+        and failed_capture.get("finalCallCount") == 0
+        and failed_capture.get("opticalPredictionsEvaluated") is False,
+        "failed symbol-presentation capture crossed an optical boundary",
+    )
+    correction_contract = mapping(
+        correction.get("correction"), "symbol-presentation correction contract"
+    )
+    require(
+        correction_contract.get("functionPresentationUsedAsBinaryIdentity") is False
+        and correction_contract.get("opticalPredictionsChanged") is False
+        and correction_contract.get("runtimeCaptureSelectionChanged") is False,
+        "symbol-presentation correction changed capture semantics",
     )
     profile = mapping(preregistration.get("profile"), "preregistered profile")
     require(
@@ -286,7 +325,6 @@ def validate_context(
 def validate_main_symbol(
     value: Any,
     module: Mapping[str, Any],
-    function: str,
     offset: int,
     byte_count: int,
     digest: str,
@@ -301,7 +339,10 @@ def validate_main_symbol(
         record_module.get("loadAddress") == module.get("loadAddress"),
         f"{label} load address differs",
     )
-    require(record.get("function") == function, f"{label} function differs")
+    require(
+        isinstance(record.get("function"), str) and bool(record["function"]),
+        f"{label} function presentation is absent",
+    )
     require(
         record.get("symbolStart") == module.get("loadAddress") + offset,
         f"{label} offset differs",
@@ -389,7 +430,6 @@ def validate_trace(value: Any) -> tuple[dict[str, Any], list[Mapping[str, Any]]]
     background = validate_main_symbol(
         trace.get("backgroundFunction"),
         main_module,
-        BACKGROUND_FUNCTION,
         BACKGROUND_MODULE_OFFSET,
         BACKGROUND_BYTE_COUNT,
         BACKGROUND_CODE_SHA256,
@@ -398,7 +438,6 @@ def validate_trace(value: Any) -> tuple[dict[str, Any], list[Mapping[str, Any]]]
     render = validate_main_symbol(
         trace.get("renderFunction"),
         main_module,
-        RENDER_FUNCTION,
         RENDER_MODULE_OFFSET,
         RENDER_BYTE_COUNT,
         RENDER_CODE_SHA256,

@@ -23,25 +23,10 @@ BACKGROUND_MANGLED = (
     "9rootLayer9snapshots20matrixBasisRequested14allocationOnly010fixedStateR0013pathIsolationR0"
     "15outputDirectorySDySSypGSo7CALayerC_SayAA010TransitionC14FilterSnapshotACLLVGS4b10Foundation3URLVtF"
 )
-BACKGROUND_FUNCTION = (
-    "main.(transitionBackgroundUniformEvidence in "
-    "_12232F587A4C5CD8B1EEDF696793A4FC)(rootLayer: __C.CALayer, "
-    "snapshots: [main.(TransitionBackgroundFilterSnapshot in "
-    "_12232F587A4C5CD8B1EEDF696793A4FC)], matrixBasisRequested: "
-    "Swift.Bool, allocationOnly: Swift.Bool, fixedStateRequested: "
-    "Swift.Bool, pathIsolationRequested: Swift.Bool, outputDirectory: "
-    "Foundation.URL) -> [Swift.String : Any]"
-)
 BACKGROUND_MODULE_OFFSET = 0x881B0
 BACKGROUND_BYTE_COUNT = 0x23B0
 BACKGROUND_CODE_SHA256 = (
     "1ca54720d237eb6970b65dd2ecc88b8372b64667f4ea2d28ef4bc8414668e2fd"
-)
-RENDER_FUNCTION = (
-    "main.(localTransitionCARendererEvidence in "
-    "_12232F587A4C5CD8B1EEDF696793A4FC)(rootLayer: __C.CALayer, "
-    "device: __C.MTLDevice, capture: Swift.String, outputDirectory: "
-    "Foundation.URL?) -> [Swift.String : Any]"
 )
 RENDER_MODULE_OFFSET = 0x7D12C
 RENDER_BYTE_COUNT = 0x4E8
@@ -176,14 +161,15 @@ def _append_event(kind, record_index):
     return event["eventIndex"]
 
 
-def _capture_main_symbol(process, module, offset, function, byte_count, digest, label):
+def _capture_main_symbol(process, module, offset, byte_count, digest, label):
     record = case22._capture_symbol(
         process,
         module["loadAddress"] + offset,
         label,
     )
     if (
-        record.get("function") != function
+        not isinstance(record.get("function"), str)
+        or not record["function"]
         or record.get("symbolStart") != module["loadAddress"] + offset
         or record.get("symbolByteCount") != byte_count
         or record.get("codeSHA256") != digest
@@ -230,7 +216,6 @@ def _install_capture(frame):
         process,
         main_module,
         BACKGROUND_MODULE_OFFSET,
-        BACKGROUND_FUNCTION,
         BACKGROUND_BYTE_COUNT,
         BACKGROUND_CODE_SHA256,
         "transition background uniform function",
@@ -239,7 +224,6 @@ def _install_capture(frame):
         process,
         main_module,
         RENDER_MODULE_OFFSET,
-        RENDER_FUNCTION,
         RENDER_BYTE_COUNT,
         RENDER_CODE_SHA256,
         "local transition CARenderer function",

@@ -30,6 +30,12 @@ class PublicRenderIntervalCaptureSourceTests(unittest.TestCase):
         ):
             self.assertIn(value, SOURCE)
 
+    def test_demangled_presentation_cannot_override_exact_binary_identity(self) -> None:
+        self.assertNotIn('record.get("function") != function', SOURCE)
+        self.assertIn('not isinstance(record.get("function"), str)', SOURCE)
+        self.assertIn('record.get("codeSHA256") != digest', SOURCE)
+        self.assertIn('record.get("symbolByteCount") != byte_count', SOURCE)
+
     def test_callbacks_are_bound_to_this_directly_imported_module(self) -> None:
         self.assertIn(
             'breakpoint.SetScriptCallbackFunction(__name__ + "." + callback)',

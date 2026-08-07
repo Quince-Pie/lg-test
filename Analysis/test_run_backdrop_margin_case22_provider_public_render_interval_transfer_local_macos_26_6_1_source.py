@@ -32,9 +32,9 @@ class PublicRenderIntervalRunnerSourceTests(unittest.TestCase):
     def test_exact_binary_capture_preflight_and_validator_are_hashed(self) -> None:
         for digest in (
             "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
-            "9ef07e96861ba53e6189f7aafd5dd967cb3d00437ab634b72a3f81692e573639",
+            "b709c9130d6b0d55e3fac3ce516c6d125edfe20f08a16d610822e41d70890812",
             "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
-            "5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d",
+            "7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6",
         ):
             self.assertIn(digest, SOURCE)
         self.assertNotIn("PLACEHOLDER", SOURCE)

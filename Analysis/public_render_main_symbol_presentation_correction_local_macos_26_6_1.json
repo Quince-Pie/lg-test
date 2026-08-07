@@ -1,0 +1,67 @@
+{
+  "classification": "post-failure structural correction of an LLDB demangled-presentation gate; the failed trace contained zero authenticated intervals and zero provider calls, while UUID, module offsets, symbol byte counts, and complete-code SHA-256 identities were exact",
+  "correctedAtUTC": "2026-08-07",
+  "correction": {
+    "acceptedFunctionPresentationRequirement": "nonempty diagnostic string",
+    "exactAcceptanceIdentity": [
+      "main module UUID and path",
+      "exact module-relative symbol start",
+      "exact symbol byte count",
+      "exact complete-code SHA-256",
+      "exact mangled bootstrap breakpoint name",
+      "exact direct ARM64 BL instruction and decoded target"
+    ],
+    "functionPresentationRetainedInTrace": true,
+    "functionPresentationUsedAsBinaryIdentity": false,
+    "opticalPredictionsChanged": false,
+    "runtimeCaptureSelectionChanged": false
+  },
+  "diagnostic": {
+    "artifactSHA256": "deb368695a8be33f7eed9794b0fda2e9c0375f9b4dcc2744276df193d04ae156",
+    "sourcePath": "Analysis/diagnose_public_render_main_symbol_identity_lldb.py",
+    "sourceSHA256": "25efdaeda46e62970d7ef8e512b35ad0ffa76a57a7fe11e75baa8b62494a9d1e",
+    "testPath": "Analysis/test_diagnose_public_render_main_symbol_identity_lldb_source.py",
+    "testSHA256": "a3bbfe19f860ec505016c1668ea26cf31a3f0ebfb57db281d37a29454401d857"
+  },
+  "failedCapture": {
+    "artifactDirectory": "local-case22-provider-public-render-interval-6ce1485-run1",
+    "captureCommit": "6ce148581b505516970968cd2328113dd6790553",
+    "captureSessionPreflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "failureMessage": "transition background uniform function exact identity differs",
+    "failureStage": "bootstrap",
+    "finalCallCount": 0,
+    "finalEventCount": 0,
+    "finalIntervalCount": 0,
+    "opticalPredictionsEvaluated": false,
+    "traceSHA256": "3fc70eb8697db8facda18510a0097a53bd00a2d4a8c5d0cc0d4463506e22839d",
+    "validationStatus": 2
+  },
+  "identityEvidence": {
+    "allBinaryIdentityFieldsExact": true,
+    "background": {
+      "codeSHA256": "1ca54720d237eb6970b65dd2ecc88b8372b64667f4ea2d28ef4bc8414668e2fd",
+      "moduleOffset": 557488,
+      "observedFunctionPresentation": "main.transitionBackgroundUniformEvidence(rootLayer: __C.CALayer, snapshots: Swift.Array<main.TransitionBackgroundFilterSnapshot>, matrixBasisRequested: Swift.Bool, allocationOnly: Swift.Bool, fixedStateRequested: Swift.Bool, pathIsolationRequested: Swift.Bool, outputDirectory: Foundation.URL) -> Swift.Dictionary<Swift.String, Any>",
+      "rejectedHistoricalFunctionPresentation": "main.(transitionBackgroundUniformEvidence in _12232F587A4C5CD8B1EEDF696793A4FC)(rootLayer: __C.CALayer, snapshots: [main.(TransitionBackgroundFilterSnapshot in _12232F587A4C5CD8B1EEDF696793A4FC)], matrixBasisRequested: Swift.Bool, allocationOnly: Swift.Bool, fixedStateRequested: Swift.Bool, pathIsolationRequested: Swift.Bool, outputDirectory: Foundation.URL) -> [Swift.String : Any]",
+      "symbolByteCount": 9136
+    },
+    "mainUUID": "F8B0B6E3-3270-3C94-817F-B4914852D04C",
+    "onlyFunctionPresentationDiffered": true,
+    "render": {
+      "codeSHA256": "0c661f1010199a56e6730d897079fda69fc4a267f7f48d1e2054b14ff9270e0c",
+      "moduleOffset": 512300,
+      "observedFunctionPresentation": "main.localTransitionCARendererEvidence(rootLayer: __C.CALayer, device: __C.MTLDevice, capture: Swift.String, outputDirectory: Swift.Optional<Foundation.URL>) -> Swift.Dictionary<Swift.String, Any>",
+      "rejectedHistoricalFunctionPresentation": "main.(localTransitionCARendererEvidence in _12232F587A4C5CD8B1EEDF696793A4FC)(rootLayer: __C.CALayer, device: __C.MTLDevice, capture: Swift.String, outputDirectory: Foundation.URL?) -> [Swift.String : Any]",
+      "symbolByteCount": 1256
+    }
+  },
+  "productAuthority": {
+    "cropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "publicProviderOpticalTransferEstablished": false,
+    "shaderChangeAuthorized": false
+  },
+  "publicRenderMainSymbolPresentationCorrectionSchemaVersion": 1
+}
