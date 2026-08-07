@@ -1,0 +1,624 @@
+{
+  "authenticatedByteCopies": [
+    {
+      "byteCount": 276,
+      "callsite": "0x240932040",
+      "target": "0x2409a5910"
+    },
+    {
+      "byteCount": 1153,
+      "callsite": "0x24093a0b0",
+      "target": "0x2409a5910"
+    },
+    {
+      "byteCount": 261,
+      "callsite": "0x24093a590",
+      "target": "0x2409a5910"
+    },
+    {
+      "byteCount": 261,
+      "callsite": "0x24093a5a4",
+      "target": "0x2409a5910"
+    },
+    {
+      "byteCount": 261,
+      "callsite": "0x24093a658",
+      "target": "0x2409a5910"
+    },
+    {
+      "byteCount": 1153,
+      "callsite": "0x24093abac",
+      "target": "0x2409a5910"
+    },
+    {
+      "byteCount": 1153,
+      "callsite": "0x2409820f0",
+      "target": "0x2409a5910"
+    },
+    {
+      "byteCount": 1025,
+      "callsite": "0x240982b28",
+      "target": "0x2409a5910"
+    }
+  ],
+  "claims": {
+    "addPathFloatingArithmeticIsAdditionOnly": true,
+    "allNestedConversionSemanticsDecoded": false,
+    "cropAllocationPolicyEstablished": false,
+    "environmentToLayerSelectionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "optionalAwareScaleAndAddBranchesAuthenticated": true,
+    "parametersToAnimatableDataNotWrittenByteCount": 164,
+    "parametersToAnimatableDataWrittenByteCount": 989,
+    "productionShaderChangeAuthorized": false,
+    "publicControlsToLayerSelectionLawEstablished": false,
+    "retinaCompositorColorLawEstablished": false,
+    "runtimeWeightProductionLawEstablished": false,
+    "scalePathFloatingArithmeticIsMultiplicationOnly": true,
+    "singleValueUnityFastPathAvoidsFloatingRoundTrip": true,
+    "singleValueUnityFastPathCopiesAll1025ParametersBytes": true,
+    "singleValueUnityFastPathEstablished": true,
+    "singleValueUnityFastPathSkipsFinalResolver": true,
+    "weightedParametersBlendPipelineEstablished": true,
+    "weightedRecurrenceIsConvertScaleAdd": true
+  },
+  "classification": "native static metadata/code/control-flow/arithmetic analysis; no Apple application, render, image, public value, selected layer, runtime weight, crop, or provider return is read",
+  "codeRegions": {
+    "animatableAdd": {
+      "byteCount": 2932,
+      "endExclusive": "0x24093abd4",
+      "instructionCount": 733,
+      "sha256": "416a882870d2fec1cbef5e99cb812e224a42a360f9c4bbfd0cad7e3e44092fbb",
+      "start": "0x24093a060"
+    },
+    "animatableScaleBy": {
+      "byteCount": 752,
+      "endExclusive": "0x240931044",
+      "instructionCount": 188,
+      "sha256": "090ef1a9d96be5ffc1e91bd3ef08d0576a4e1ee2cb716bc9634507db0d7d6527",
+      "start": "0x240930d54"
+    },
+    "edgeBleedScaleHelper": {
+      "byteCount": 92,
+      "endExclusive": "0x240931168",
+      "instructionCount": 23,
+      "sha256": "a3d58707e8853ed55fe635e7ac59996de4fc4619f48e6e4295a0e6a9914b50fb",
+      "start": "0x24093110c"
+    },
+    "highlightsScaleHelper": {
+      "byteCount": 104,
+      "endExclusive": "0x240935190",
+      "instructionCount": 26,
+      "sha256": "14734fbf39301e6d45e00642ccdbc21f34a4367e2481d1f6ba64f0d416856be2",
+      "start": "0x240935128"
+    },
+    "highlightsZeroHelper": {
+      "byteCount": 52,
+      "endExclusive": "0x24093ac2c",
+      "instructionCount": 13,
+      "sha256": "a5ccdc8d3fe442067db3e61ce8f0b84fd2a318a2d9d3db58de6540c1f5357314",
+      "start": "0x24093abf8"
+    },
+    "packedAddHelper": {
+      "byteCount": 24,
+      "endExclusive": "0x240939c48",
+      "instructionCount": 6,
+      "sha256": "721101551c278cd2d282bafc6adbc3de11665f72e5c8e26a16a129a136a328ea",
+      "start": "0x240939c30"
+    },
+    "parametersToAnimatableData": {
+      "byteCount": 1996,
+      "endExclusive": "0x2409320f0",
+      "instructionCount": 499,
+      "sha256": "e80427b6ae84bdc570a114238b931c9734fc981ee354a556b3b743579ba64f01",
+      "start": "0x240931924"
+    },
+    "radiosityAddHelper": {
+      "byteCount": 112,
+      "endExclusive": "0x240931298",
+      "instructionCount": 28,
+      "sha256": "829d19eeab78001b7c4c9eb9683d1dd561e6de1a08eddd2dda3d74ea6c184b0c",
+      "start": "0x240931228"
+    },
+    "shadowScaleHelper": {
+      "byteCount": 96,
+      "endExclusive": "0x2409310a4",
+      "instructionCount": 24,
+      "sha256": "5162a7f79fda3078ef34cb2fc747f9b3be273c2a775b03b967776a928e22ba34",
+      "start": "0x240931044"
+    },
+    "shadowZeroHelper": {
+      "byteCount": 36,
+      "endExclusive": "0x24093abf8",
+      "instructionCount": 9,
+      "sha256": "031224f600de8437c62b369f2a7b5ee61532012200ea05d8297d96c43a3ab2b0",
+      "start": "0x24093abd4"
+    }
+  },
+  "designLibraryParametersAnimatableBlendPipelineAnalysisSchemaVersion": 1,
+  "directBLCallsites": {
+    "animatableAdd": [
+      "0x24098210c"
+    ],
+    "animatableScaleBy": [
+      "0x2409820dc"
+    ],
+    "edgeBleedScaleHelper": [
+      "0x240930e74"
+    ],
+    "highlightsScaleHelper": [
+      "0x240930ebc",
+      "0x240930ec8",
+      "0x24093146c",
+      "0x240931478",
+      "0x2409356f0",
+      "0x2409356fc"
+    ],
+    "highlightsZeroHelper": [
+      "0x240931638",
+      "0x240931c98",
+      "0x240981da8"
+    ],
+    "packedAddHelper": [
+      "0x240934600",
+      "0x240934654",
+      "0x240939cb0",
+      "0x240939db0",
+      "0x240939e08",
+      "0x240939f2c",
+      "0x24093a010",
+      "0x24093a228",
+      "0x24093a454",
+      "0x24093a4f8",
+      "0x24093a738",
+      "0x24093a7b8"
+    ],
+    "parametersToAnimatableData": [
+      "0x24093320c",
+      "0x240933278",
+      "0x2409820d0"
+    ],
+    "radiosityAddHelper": [
+      "0x24093ab9c"
+    ],
+    "shadowScaleHelper": [
+      "0x240930d98",
+      "0x2409394d8"
+    ],
+    "shadowZeroHelper": [
+      "0x240931630",
+      "0x2409319c4",
+      "0x240981d9c"
+    ]
+  },
+  "floatingInstructionInventories": {
+    "animatableAdd": {
+      "fadd": 10,
+      "fadd.2d": 16,
+      "fadd.2s": 4,
+      "fadd.4s": 10,
+      "fmov": 22
+    },
+    "animatableScaleBy": {
+      "fcvt": 1,
+      "fmul": 4,
+      "fmul.2d": 9,
+      "fmul.2s": 4,
+      "fmul.4s": 13,
+      "fmul.s": 7
+    },
+    "edgeBleedScaleHelper": {
+      "fcvt": 1,
+      "fmul": 1,
+      "fmul.2d": 1,
+      "fmul.4s": 5,
+      "fmul.s": 1
+    },
+    "highlightsScaleHelper": {
+      "fcvt": 1,
+      "fmul": 2,
+      "fmul.2d": 2,
+      "fmul.4s": 4,
+      "fmul.s": 1
+    },
+    "highlightsZeroHelper": {},
+    "packedAddHelper": {
+      "fadd.4s": 4
+    },
+    "parametersToAnimatableData": {
+      "fcsel": 1,
+      "fcvt": 2,
+      "fcvtn": 2,
+      "fmov": 2
+    },
+    "radiosityAddHelper": {
+      "fadd.2d": 2,
+      "fmov": 2
+    },
+    "shadowScaleHelper": {
+      "fcvt": 1,
+      "fmul": 1,
+      "fmul.2d": 4,
+      "fmul.4s": 4,
+      "fmul.s": 1
+    },
+    "shadowZeroHelper": {}
+  },
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "instructionContracts": [
+    {
+      "address": "0x240982020",
+      "mnemonic": "fmov",
+      "operands": "d12, #1.00000000"
+    },
+    {
+      "address": "0x24098203c",
+      "mnemonic": "mov",
+      "operands": "w8, #0x1"
+    },
+    {
+      "address": "0x2409820a8",
+      "mnemonic": "str",
+      "operands": "w8, [x19, #0x7c]"
+    },
+    {
+      "address": "0x2409820c4",
+      "mnemonic": "add",
+      "operands": "x8, x19, #0x480"
+    },
+    {
+      "address": "0x2409820c8",
+      "mnemonic": "add",
+      "operands": "x20, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x2409820cc",
+      "mnemonic": "add",
+      "operands": "x20, x20, #0x68"
+    },
+    {
+      "address": "0x2409820d0",
+      "mnemonic": "bl",
+      "operands": "0x240931924"
+    },
+    {
+      "address": "0x2409820d4",
+      "mnemonic": "add",
+      "operands": "x20, x19, #0x480"
+    },
+    {
+      "address": "0x2409820d8",
+      "mnemonic": "mov.16b",
+      "operands": "v0, v9"
+    },
+    {
+      "address": "0x2409820dc",
+      "mnemonic": "bl",
+      "operands": "0x240930d54"
+    },
+    {
+      "address": "0x2409820e0",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x2409820e4",
+      "mnemonic": "add",
+      "operands": "x0, x0, #0xd90"
+    },
+    {
+      "address": "0x2409820e8",
+      "mnemonic": "add",
+      "operands": "x1, x19, #0x480"
+    },
+    {
+      "address": "0x2409820ec",
+      "mnemonic": "mov",
+      "operands": "w2, #0x481"
+    },
+    {
+      "address": "0x2409820f4",
+      "mnemonic": "add",
+      "operands": "x8, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x2409820f8",
+      "mnemonic": "add",
+      "operands": "x8, x8, #0x470"
+    },
+    {
+      "address": "0x2409820fc",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240982100",
+      "mnemonic": "add",
+      "operands": "x0, x0, #0x900"
+    },
+    {
+      "address": "0x240982104",
+      "mnemonic": "add",
+      "operands": "x1, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240982108",
+      "mnemonic": "add",
+      "operands": "x1, x1, #0xd90"
+    },
+    {
+      "address": "0x24098210c",
+      "mnemonic": "bl",
+      "operands": "0x24093a060"
+    },
+    {
+      "address": "0x240982938",
+      "mnemonic": "ldr",
+      "operands": "d9, [x28, x8]"
+    },
+    {
+      "address": "0x240982b04",
+      "mnemonic": "ldr",
+      "operands": "x8, [x19, #0xb0]"
+    },
+    {
+      "address": "0x240982b08",
+      "mnemonic": "cmp",
+      "operands": "x8, #0x1"
+    },
+    {
+      "address": "0x240982b0c",
+      "mnemonic": "b.ne",
+      "operands": "0x2409820c4"
+    },
+    {
+      "address": "0x240982b10",
+      "mnemonic": "fcmp",
+      "operands": "d9, d12"
+    },
+    {
+      "address": "0x240982b14",
+      "mnemonic": "b.ne",
+      "operands": "0x2409820c4"
+    },
+    {
+      "address": "0x240982b18",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0xc60"
+    },
+    {
+      "address": "0x240982b1c",
+      "mnemonic": "add",
+      "operands": "x1, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240982b20",
+      "mnemonic": "add",
+      "operands": "x1, x1, #0x68"
+    },
+    {
+      "address": "0x240982b24",
+      "mnemonic": "mov",
+      "operands": "w2, #0x401"
+    },
+    {
+      "address": "0x240982be4",
+      "mnemonic": "str",
+      "operands": "wzr, [x19, #0x7c]"
+    },
+    {
+      "address": "0x240982cc0",
+      "mnemonic": "ldr",
+      "operands": "w8, [x19, #0x7c]"
+    },
+    {
+      "address": "0x240982cc4",
+      "mnemonic": "tbz",
+      "operands": "w8, #0x0, 0x240982cd8"
+    },
+    {
+      "address": "0x240982cc8",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240982ccc",
+      "mnemonic": "add",
+      "operands": "x0, x0, #0x900"
+    },
+    {
+      "address": "0x240982cd0",
+      "mnemonic": "add",
+      "operands": "x20, x19, #0xc60"
+    },
+    {
+      "address": "0x240982cd4",
+      "mnemonic": "bl",
+      "operands": "0x2409323f4"
+    }
+  ],
+  "parametersToAnimatableDataWriteCoverage": {
+    "notWrittenByteCount": 164,
+    "notWrittenRanges": [
+      {
+        "byteCount": 11,
+        "endExclusive": 160,
+        "start": 149
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 240,
+        "start": 233
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 304,
+        "start": 289
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 400,
+        "start": 385
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 528,
+        "start": 513
+      },
+      {
+        "byteCount": 11,
+        "endExclusive": 832,
+        "start": 821
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 880,
+        "start": 865
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 960,
+        "start": 945
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 1008,
+        "start": 993
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 1056,
+        "start": 1041
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 1088,
+        "start": 1073
+      },
+      {
+        "byteCount": 15,
+        "endExclusive": 1120,
+        "start": 1105
+      }
+    ],
+    "writtenByteCount": 989,
+    "writtenRanges": [
+      {
+        "byteCount": 149,
+        "endExclusive": 149,
+        "start": 0
+      },
+      {
+        "byteCount": 73,
+        "endExclusive": 233,
+        "start": 160
+      },
+      {
+        "byteCount": 49,
+        "endExclusive": 289,
+        "start": 240
+      },
+      {
+        "byteCount": 81,
+        "endExclusive": 385,
+        "start": 304
+      },
+      {
+        "byteCount": 113,
+        "endExclusive": 513,
+        "start": 400
+      },
+      {
+        "byteCount": 293,
+        "endExclusive": 821,
+        "start": 528
+      },
+      {
+        "byteCount": 33,
+        "endExclusive": 865,
+        "start": 832
+      },
+      {
+        "byteCount": 65,
+        "endExclusive": 945,
+        "start": 880
+      },
+      {
+        "byteCount": 33,
+        "endExclusive": 993,
+        "start": 960
+      },
+      {
+        "byteCount": 33,
+        "endExclusive": 1041,
+        "start": 1008
+      },
+      {
+        "byteCount": 17,
+        "endExclusive": 1073,
+        "start": 1056
+      },
+      {
+        "byteCount": 17,
+        "endExclusive": 1105,
+        "start": 1088
+      },
+      {
+        "byteCount": 33,
+        "endExclusive": 1153,
+        "start": 1120
+      }
+    ]
+  },
+  "resolvedRecipeBuilder": {
+    "byteCount": 4916,
+    "endExclusive": "0x240982e80",
+    "sha256": "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4",
+    "start": "0x240981b4c"
+  },
+  "singleValueUnityFastPath": {
+    "blendResolverFlagOffset": 124,
+    "collectionCountPredicate": "equal to 1",
+    "collectionCountSlot": "builder stack + 0xb0",
+    "factorPredicate": "ordered equal to 1.0",
+    "fastPathSkipsResolver": true,
+    "finalResolverGate": "tbz bit 0 at 0x240982cc4",
+    "flagClearedAfterFullCopy": true,
+    "fullParametersCopyByteCount": 1025,
+    "fullParametersCopyCallsite": "0x240982b28",
+    "parametersDestination": "builder stack + 0xc60",
+    "parametersSource": "builder stack + 0x1068",
+    "runtimeFactorRegister": "d9",
+    "unityConstant": 1.0,
+    "unityConstantRegister": "d12"
+  },
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "provenanceAnalyzerSHA256": "7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145",
+    "python": "3.9.6",
+    "resolverAnalyzerSHA256": "516bbfa6098c32404c289cd5ee9230f480aefac373f35c6f45c57c11583ecd5d",
+    "source": "Analysis/analyze_designlibrary_parameters_animatable_blend_pipeline_local_macos_26_6_1.py",
+    "sourceSHA256": "bb89ef7135b3a0f955ff46b0afd20a6df3480fda1e7b053882333362a11dec33"
+  },
+  "weightedRecurrence": {
+    "addCallsite": "0x24098210c",
+    "equation": "A_next = A + scale(parameters.animatableData, factor)",
+    "parametersToAnimatableDataCallsite": "0x2409820d0",
+    "resolverCallsite": "0x240982cd4",
+    "scaleCallsite": "0x2409820dc",
+    "scaleFactorRegister": "d9/v9",
+    "scaledValueStableCopyByteCount": 1153,
+    "scaledValueStableCopyCallsite": "0x2409820f0"
+  }
+}

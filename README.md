@@ -8810,3 +8810,77 @@ environment, recipe branches, and interpolation construct each
 Crop/allocation, Retina compositor/color behavior, independent Walle
 zero-unequal-byte frame parity, and Liquid Glass parity remain open. No
 production shader change is authorized.
+
+### Exact weighted `Parameters` blend and unity fast path
+
+The upstream recipe arithmetic is no longer an undifferentiated part of the
+4,916-byte builder. Native control-flow analysis proves that genuinely
+weighted values use this exact recurrence:
+
+```text
+A0 = Parameters.AnimatableData.zero
+A(i + 1) = A(i) + scale(parameters(i).animatableData, factor(i))
+Parameters = resolve(seed, A(final))
+```
+
+For each weighted value, the builder calls the exact 1,996-byte
+`Parameters`-to-`AnimatableData` converter at `0x2409820d0`, places the
+1,153-byte result at builder stack offset `0x480`, moves the runtime factor
+from `v9` into `v0`, and calls the exact scaler at `0x2409820dc`. It then
+copies all 1,153 scaled bytes to stable storage and calls the exact optional-
+aware adder at `0x24098210c`, with the prior accumulator and scaled value as
+its two inputs. The previously proved resolver is called at `0x240982cd4`.
+
+This classification is backed by the complete floating-instruction
+inventories, not function-name inference. The 752-byte scale region and all
+three nested scale helpers contain only floating conversion and
+multiplication: 64 `fmul*` instructions in total. The 2,932-byte add region
+and its two arithmetic helpers contain only moves and addition: 46 `fadd*`
+instructions in total. Their nil/present branches are authenticated as part
+of the same code regions. The converter itself contains no floating add or
+multiply. Static destination tracking proves that it writes 989 of the 1,153
+`AnimatableData` bytes; the exact 164-byte complement is retained in the
+canonical result and is not treated as optical state without a separate
+read/liveness proof.
+
+There is a separate, parity-critical path before that recurrence. The builder
+loads a runtime collection count from its frozen stack slot and requires it
+to equal one. It then compares the runtime factor in `d9` against the exact
+`1.0` constant in `d12`. When both predicates pass, the call at
+`0x240982b28` copies all 1,025 `Parameters` bytes directly from the selected
+value into the working result. It clears the blend/resolver flag at stack
+offset `0x7c`; the final `tbz` at `0x240982cc4` consequently skips the
+`AnimatableData` resolver. Thus an exact single value at factor one never
+takes a floating-point round trip. Any implementation that always converts,
+blends, and resolves would fail bitwise parity even if its numerical result
+usually appeared equal.
+
+The authenticated main code regions are:
+
+```text
+Parameters -> AnimatableData  0x240931924..0x2409320f0  SHA-256 e80427b6...
+AnimatableData.scale(by:)     0x240930d54..0x240931044  SHA-256 090ef1a9...
+AnimatableData addition       0x24093a060..0x24093abd4  SHA-256 416a8828...
+```
+
+The native analyzer and canonical result are
+`Analysis/analyze_designlibrary_parameters_animatable_blend_pipeline_local_macos_26_6_1.py`,
+SHA-256
+`bb89ef7135b3a0f955ff46b0afd20a6df3480fda1e7b053882333362a11dec33`,
+and
+`Analysis/designlibrary_parameters_animatable_blend_pipeline_local_macos_26_6_1_result.json`,
+SHA-256
+`ab702bb92880f277cc525d19c405c15909c8ece1d778d4f27895b694e54f0f2b`.
+It authenticates the builder, converter, scaler, adder, nested arithmetic and
+zero helpers, every direct caller, critical control flow, byte-copy targets,
+copy sizes, arithmetic inventories, and converter output coverage on macOS
+26.6.1 build 25G76. It launches no Apple application and reads no runtime
+render value.
+
+This closes the blend recurrence and exact single-value bypass. It does not
+yet establish how public controls and environment choose the contributing
+values, how their runtime factors are produced, or every nested conversion
+semantic. Those selection and weight laws remain the immediate upstream
+target. Crop/allocation, Retina compositor/color behavior, independent Walle
+zero-unequal-byte frame parity, and Liquid Glass parity remain open. No
+production shader change is authorized.
