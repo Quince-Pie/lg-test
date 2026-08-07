@@ -11002,3 +11002,33 @@ and re-installs them after the inherited copy-entry callback performs its own
 proxy update. This is a callback-namespace transport change only. The provider
 arithmetic, four unseen cases, stable binary, live UUIDs, value-blind selection,
 and bitwise acceptance rules remain unchanged.
+
+Version 4 completed all 33 Retina frames for regular/light
+`circle-467-center` and retained all 32 dynamic public records, but still
+captured no target setter/copy value. The live `get_bounds` code matched its
+historical hash and produced 304 events; the live setter and copy functions
+retained their historical byte counts but failed the historical complete-code
+hashes, so the adapter rejected them before appending an event. The frozen
+provider-only formula evaluates the opened inputs to binary64 83.0
+(`0000000000c05440`) and binary32 83.0 (`0000a642`). Those predictions are now
+disclosed, while the Apple writer target remains unseen. The immutable result
+is
+`Analysis/backdrop_margin_writer_provider_composition_7e1e994_live_code_failure_result.json`.
+
+A separate value-blind inventory stopped the stable binary at executable
+`main`, never continued it, and read only complete symbol code. On the live
+QuartzCore UUID the 1,640-byte copy function is SHA-256
+`5bdf866c13bfb00d9becada24ff9876f84515fa36acb4ee274785d5176593a1e`,
+the 96-byte setter is
+`2421048e418c6cdcc7622dd65f881e514e0852687f7920e6c4bdaf75a301f6dd`,
+and the 80-byte bounds function retains its accepted hash. Critically, the
+copy path still contains the exact consecutive sequence at offsets `+0x3ac`,
+`+0x3b0`, and `+0x3b4`: call the model getter, `fcvt s0,d0`, then
+`str s0,[x21,#0x24]`. The canonical structural result is
+`Analysis/live_writer_code_inventory_c5b1f91_result.json`.
+
+Version 5 replaces only the historical setter/copy complete-code pins with
+that value-blind live inventory. The formula remains frozen, the target margin
+for circle-467 remains unseen, and the other three exact cases remain wholly
+unseen. The next capture can therefore falsify the 83.0 prediction rather than
+silently fitting it.

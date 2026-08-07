@@ -22,12 +22,12 @@ class BackdropMarginWriterProviderCompositionPreregistrationTests(unittest.TestC
     def setUpClass(cls) -> None:
         cls.value = json.loads(PREREGISTRATION.read_text(encoding="utf-8"))
 
-    def test_four_output_blind_exact_cases_are_frozen(self) -> None:
+    def test_three_unseen_cases_and_one_target_blind_case_are_frozen(self) -> None:
         self.assertEqual(
             self.value[
                 "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion"
             ],
-            3,
+            5,
         )
         cases = self.value["prospectiveCases"]
         self.assertEqual(
@@ -49,16 +49,26 @@ class BackdropMarginWriterProviderCompositionPreregistrationTests(unittest.TestC
         )
         self.assertEqual(len(cases), 4)
         for case in cases:
-            self.assertFalse(case["exactConfigurationPreviouslyCaptured"])
-            self.assertFalse(case["appleOutputAvailableAtFreeze"])
-            for key in (
-                "expectedGroupMarginF64",
-                "expectedRenderMarginF32",
-                "expectedWriterPointers",
-                "expectedCrop",
-                "expectedImageDigest",
-            ):
-                self.assertIsNone(case[key])
+            self.assertFalse(case["appleTargetWriterOutputAvailableAtFreeze"])
+            self.assertIsNone(case["expectedWriterPointers"])
+            self.assertIsNone(case["expectedCrop"])
+            self.assertIsNone(case["expectedImageDigest"])
+            opened = case["geometry"] == "circle-467-center"
+            self.assertIs(case["appleInputAvailableAtFreeze"], opened)
+            if opened:
+                self.assertEqual(case["expectedGroupMarginF64"], 83.0)
+                self.assertEqual(
+                    case["expectedGroupMarginF64RawLittleEndianHex"],
+                    "0000000000c05440",
+                )
+                self.assertEqual(case["expectedRenderMarginF32"], 83.0)
+                self.assertEqual(
+                    case["expectedRenderMarginF32RawLittleEndianHex"], "0000a642"
+                )
+            else:
+                self.assertFalse(case["exactConfigurationPreviouslyCaptured"])
+                self.assertIsNone(case["expectedGroupMarginF64"])
+                self.assertIsNone(case["expectedRenderMarginF32"])
         self.assertIsNone(self.value["runtimeOutcomeFrozenBeforeDispatch"])
 
     def test_v1_failed_before_launch_and_consumed_no_case(self) -> None:
@@ -101,6 +111,36 @@ class BackdropMarginWriterProviderCompositionPreregistrationTests(unittest.TestC
         self.assertEqual(
             capture["liveSwiftUICoreUUID"],
             "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+        )
+
+    def test_v3_callback_namespace_failure_opened_no_value(self) -> None:
+        failure = self.value["supersedesCallbackTransportVersion"]
+        self.assertFalse(failure["applicationCompleted"])
+        self.assertFalse(failure["timelineCreated"])
+        self.assertEqual(failure["dynamicPublicRecordCount"], 0)
+        self.assertEqual(failure["writerEventCount"], 0)
+        self.assertFalse(failure["candidateTested"])
+        self.assertFalse(failure["caseAcceptedAsProspectiveEvidence"])
+        self.assertFalse(failure["candidateCaseMatrixSelectionOrAcceptanceChanged"])
+        result = ROOT / failure["result"]
+        self.assertEqual(
+            hashlib.sha256(result.read_bytes()).hexdigest(), failure["resultSHA256"]
+        )
+
+    def test_v4_opened_input_but_not_target_writer_output(self) -> None:
+        failure = self.value["supersedesHistoricalWriterCodeVersion"]
+        self.assertTrue(failure["retinaTimelineComplete"])
+        self.assertEqual(failure["dynamicPublicRecordCount"], 32)
+        self.assertEqual(failure["frozenPredictionFromOpenedInputF64"], 83.0)
+        self.assertEqual(failure["writerSetterEventCount"], 0)
+        self.assertEqual(failure["writerCopyStoreEventCount"], 0)
+        self.assertFalse(failure["targetWriterMarginObserved"])
+        self.assertFalse(failure["candidateTestedAgainstTarget"])
+        self.assertFalse(failure["candidateFormulaChanged"])
+        self.assertFalse(failure["remainingThreeUnseenCasesChanged"])
+        result = ROOT / failure["result"]
+        self.assertEqual(
+            hashlib.sha256(result.read_bytes()).hexdigest(), failure["resultSHA256"]
         )
 
     def test_candidate_comes_from_the_authenticated_provider(self) -> None:

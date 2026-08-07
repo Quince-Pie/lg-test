@@ -1,0 +1,67 @@
+{
+  "backdropMarginWriterProviderCompositionLiveCodeFailureSchemaVersion": 1,
+  "classification": "immutable complete Retina input capture rejected before target-margin observation because live QuartzCore setter/copy code hashes differed from historical pins",
+  "commit": "7e1e9944113bf7b8a1f037f9a1afc091d41c7861",
+  "profile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-467-center"
+  },
+  "inputs": {
+    "preflight": {
+      "path": "../artifacts/local-backdrop-margin-provider-composition-7e1e994-regular-light-run1/capture-session-preflight.json",
+      "sha256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034"
+    },
+    "trace": {
+      "path": "../artifacts/local-backdrop-margin-provider-composition-7e1e994-regular-light-run1/backdrop-margin-writer-trace.json",
+      "sha256": "6cd94bb8b3ef6b94d478c6eba13a3e6f32cb3eef600f52833849236b455a8732"
+    },
+    "timeline": {
+      "path": "../artifacts/local-backdrop-margin-provider-composition-7e1e994-regular-light-run1/transition-timeline.json",
+      "sha256": "d18e00da0f02b9050524740f462f70cb6b875892c08bd9421158ac0d15be5fc7"
+    }
+  },
+  "retinaTimeline": {
+    "complete": true,
+    "sampleCount": 33,
+    "dynamicPublicRecordCount": 32,
+    "failedSampleCount": 0,
+    "imageCount": 33,
+    "distinctImageSHA256Count": 32
+  },
+  "frozenCandidateFromOpenedInputs": {
+    "formulaChangedAfterOpeningInputs": false,
+    "providerMaximumF64": 83.0,
+    "providerMaximumF64RawLittleEndianHex": "0000000000c05440",
+    "predictedGroupMarginF64": 83.0,
+    "predictedGroupMarginF64RawLittleEndianHex": "0000000000c05440",
+    "predictedRenderMarginF32": 83.0,
+    "predictedRenderMarginF32RawLittleEndianHex": "0000a642"
+  },
+  "writerTrace": {
+    "failureCount": 4231,
+    "boundsEventCount": 304,
+    "setterEventCount": 0,
+    "copyEntryEventCount": 0,
+    "copyStoreEventCount": 0,
+    "producerCalleeCount": 0,
+    "callerCount": 0,
+    "authenticatedBoundsCodeMatchedHistorical": true,
+    "setterAndCopyRejectedBeforeValueAppend": true
+  },
+  "outcome": {
+    "candidateInputOpened": true,
+    "targetWriterMarginObserved": false,
+    "candidateTestedAgainstTarget": false,
+    "caseAcceptedAsProspectiveEvidence": false
+  },
+  "authority": {
+    "allocationMarginCompositionEstablished": false,
+    "selectedRegionPolicyEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

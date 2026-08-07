@@ -24,7 +24,7 @@ import validate_backdrop_margin_writer_execution_retry as retry
 
 
 VALIDATION_SCHEMA_VERSION = 1
-PREREGISTRATION_SCHEMA_VERSION = 4
+PREREGISTRATION_SCHEMA_VERSION = 5
 PREREGISTRATION_NAME = (
     "backdrop_margin_writer_provider_composition_local_macos_26_6_1_"
     "preregistration.json"
@@ -41,6 +41,12 @@ CASES = {
 }
 LIVE_QUARTZCORE_UUID = "F1BA3189-E95A-3ECA-B59A-5A6872754484"
 LIVE_SWIFTUICORE_UUID = "99606D45-C40A-3C69-AE51-5F0C4E32E531"
+LIVE_COPY_CODE_SHA256 = (
+    "5bdf866c13bfb00d9becada24ff9876f84515fa36acb4ee274785d5176593a1e"
+)
+LIVE_SETTER_CODE_SHA256 = (
+    "2421048e418c6cdcc7622dd65f881e514e0852687f7920e6c4bdaf75a301f6dd"
+)
 
 
 def require(condition: bool, message: str) -> None:
@@ -125,19 +131,41 @@ def validate_preregistration(
     ]
     require(len(selected) == 1, "runtime profile is not unique")
     case = selected[0]
-    for key in (
-        "expectedGroupMarginF64",
-        "expectedRenderMarginF32",
-        "expectedWriterPointers",
-        "expectedCrop",
-        "expectedImageDigest",
-    ):
-        require(case.get(key) is None, "prospective Apple output was present at freeze")
     require(
-        case.get("exactConfigurationPreviouslyCaptured") is False
-        and case.get("appleOutputAvailableAtFreeze") is False,
-        "prospective case was not output-blind",
+        case.get("expectedWriterPointers") is None
+        and case.get("expectedCrop") is None
+        and case.get("expectedImageDigest") is None
+        and case.get("appleTargetWriterOutputAvailableAtFreeze") is False,
+        "target writer output was present at freeze",
     )
+    input_opened = identity == (
+        "regular",
+        "light",
+        "materialize",
+        "circle-467-center",
+    )
+    require(
+        case.get("appleInputAvailableAtFreeze") is input_opened,
+        "captured-input disclosure differs",
+    )
+    if input_opened:
+        require(
+            case.get("expectedGroupMarginF64") == 83.0
+            and case.get("expectedGroupMarginF64RawLittleEndianHex")
+            == "0000000000c05440"
+            and case.get("expectedRenderMarginF32") == 83.0
+            and case.get("expectedRenderMarginF32RawLittleEndianHex") == "0000a642",
+            "opened-input frozen prediction differs",
+        )
+    else:
+        require(
+            case.get("exactConfigurationPreviouslyCaptured") is False
+            and case.get("expectedGroupMarginF64") is None
+            and case.get("expectedGroupMarginF64RawLittleEndianHex") is None
+            and case.get("expectedRenderMarginF32") is None
+            and case.get("expectedRenderMarginF32RawLittleEndianHex") is None,
+            "unseen case contains a prediction derived from Apple input",
+        )
 
     acceptance = base.mapping(preregistration.get("acceptance"), "acceptance")
     required_acceptance = (
@@ -265,11 +293,15 @@ def validate(
     )
 
     original_quartzcore_uuid = base.QUARTZCORE_UUID
+    original_copy_sha256 = base.CODE_GATES["copy"]["sha256"]
+    original_setter_sha256 = base.CODE_GATES["setter"]["sha256"]
     original_swiftuicore_uuid = retry.SWIFTUICORE_UUID
     original_preregistration = base.validate_preregistration
     original_candidate = base.transition_candidate
     original_events = base.validate_events
     base.QUARTZCORE_UUID = LIVE_QUARTZCORE_UUID
+    base.CODE_GATES["copy"]["sha256"] = LIVE_COPY_CODE_SHA256
+    base.CODE_GATES["setter"]["sha256"] = LIVE_SETTER_CODE_SHA256
     retry.SWIFTUICORE_UUID = LIVE_SWIFTUICORE_UUID
     base.validate_preregistration = validate_preregistration
     base.transition_candidate = provider_transition_candidate
@@ -286,6 +318,8 @@ def validate(
         )
     finally:
         base.QUARTZCORE_UUID = original_quartzcore_uuid
+        base.CODE_GATES["copy"]["sha256"] = original_copy_sha256
+        base.CODE_GATES["setter"]["sha256"] = original_setter_sha256
         retry.SWIFTUICORE_UUID = original_swiftuicore_uuid
         base.validate_preregistration = original_preregistration
         base.transition_candidate = original_candidate

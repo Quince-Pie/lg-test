@@ -1,7 +1,7 @@
 {
-  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 4,
-  "frozenAtUtc": "2026-08-07T18:27:26Z",
-  "classification": "prospective four-case output-blind direct-Retina-M1 transfer of the authenticated public filter to DesignLibrary provider to SwiftUI Group.margin to CABackdropLayer writer composition; no Apple output for any exact case exists at freeze time",
+  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 5,
+  "frozenAtUtc": "2026-08-07T18:34:17Z",
+  "classification": "prospective direct-Retina-M1 target-margin transfer of the authenticated public filter to DesignLibrary provider to SwiftUI Group.margin to CABackdropLayer writer composition; three exact cases remain wholly unseen and circle-467 has opened public inputs but no setter/copy target output",
   "sourceStateBeforeFreeze": {
     "branch": "main",
     "commit": "1312402e9fa7544f744fcff957a48bfdf027ee76",
@@ -61,6 +61,26 @@
     "onlyTransportChange": "export the four inherited callbacks through the directly imported LLDB overlay namespace and re-install those proxies after copy-entry updates",
     "candidateCaseMatrixSelectionOrAcceptanceChanged": false
   },
+  "supersedesHistoricalWriterCodeVersion": {
+    "commit": "7e1e9944113bf7b8a1f037f9a1afc091d41c7861",
+    "result": "Analysis/backdrop_margin_writer_provider_composition_7e1e994_live_code_failure_result.json",
+    "resultSHA256": "d0b0781e4e62a89662108cc3a604795e7e58b4f262a391e97f9f4a48aead013d",
+    "retinaTimelineComplete": true,
+    "dynamicPublicRecordCount": 32,
+    "openedInputProfile": "regular-light-materialize-circle-467-center",
+    "frozenPredictionFromOpenedInputF64": 83.0,
+    "frozenPredictionFromOpenedInputF64RawLittleEndianHex": "0000000000c05440",
+    "writerSetterEventCount": 0,
+    "writerCopyStoreEventCount": 0,
+    "targetWriterMarginObserved": false,
+    "candidateTestedAgainstTarget": false,
+    "caseAcceptedAsProspectiveEvidence": false,
+    "structuralInventory": "Analysis/live_writer_code_inventory_c5b1f91_result.json",
+    "structuralInventorySHA256": "ecf450d50494cf86bf68aeba3d114c7c109261c02eee6091879508d5f3b7aeef",
+    "onlyCaptureAndValidationChange": "replace historical QuartzCore copy/setter hashes with the value-blind live complete-code inventory; retain the already matching get_bounds hash and exact copy +0x3ac BL, +0x3b0 FCVT, +0x3b4 store sequence",
+    "candidateFormulaChanged": false,
+    "remainingThreeUnseenCasesChanged": false
+  },
   "antecedentCorrection": {
     "supersededCandidate": "max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))",
     "reason": "the predecessor expression was output-fitted before the actual case-22 provider and complete public/provider constructor were authenticated",
@@ -93,9 +113,12 @@
       "direction": "materialize",
       "geometry": "circle-451-center",
       "exactConfigurationPreviouslyCaptured": false,
-      "appleOutputAvailableAtFreeze": false,
+      "appleInputAvailableAtFreeze": false,
+      "appleTargetWriterOutputAvailableAtFreeze": false,
       "expectedGroupMarginF64": null,
+      "expectedGroupMarginF64RawLittleEndianHex": null,
       "expectedRenderMarginF32": null,
+      "expectedRenderMarginF32RawLittleEndianHex": null,
       "expectedWriterPointers": null,
       "expectedCrop": null,
       "expectedImageDigest": null
@@ -106,9 +129,12 @@
       "direction": "materialize",
       "geometry": "circle-459-center",
       "exactConfigurationPreviouslyCaptured": false,
-      "appleOutputAvailableAtFreeze": false,
+      "appleInputAvailableAtFreeze": false,
+      "appleTargetWriterOutputAvailableAtFreeze": false,
       "expectedGroupMarginF64": null,
+      "expectedGroupMarginF64RawLittleEndianHex": null,
       "expectedRenderMarginF32": null,
+      "expectedRenderMarginF32RawLittleEndianHex": null,
       "expectedWriterPointers": null,
       "expectedCrop": null,
       "expectedImageDigest": null
@@ -119,9 +145,12 @@
       "direction": "materialize",
       "geometry": "circle-467-center",
       "exactConfigurationPreviouslyCaptured": false,
-      "appleOutputAvailableAtFreeze": false,
-      "expectedGroupMarginF64": null,
-      "expectedRenderMarginF32": null,
+      "appleInputAvailableAtFreeze": true,
+      "appleTargetWriterOutputAvailableAtFreeze": false,
+      "expectedGroupMarginF64": 83.0,
+      "expectedGroupMarginF64RawLittleEndianHex": "0000000000c05440",
+      "expectedRenderMarginF32": 83.0,
+      "expectedRenderMarginF32RawLittleEndianHex": "0000a642",
       "expectedWriterPointers": null,
       "expectedCrop": null,
       "expectedImageDigest": null
@@ -132,9 +161,12 @@
       "direction": "materialize",
       "geometry": "circle-475-center",
       "exactConfigurationPreviouslyCaptured": false,
-      "appleOutputAvailableAtFreeze": false,
+      "appleInputAvailableAtFreeze": false,
+      "appleTargetWriterOutputAvailableAtFreeze": false,
       "expectedGroupMarginF64": null,
+      "expectedGroupMarginF64RawLittleEndianHex": null,
       "expectedRenderMarginF32": null,
+      "expectedRenderMarginF32RawLittleEndianHex": null,
       "expectedWriterPointers": null,
       "expectedCrop": null,
       "expectedImageDigest": null
@@ -150,6 +182,18 @@
     "stablePresentationBinarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
     "liveQuartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
     "liveSwiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+    "liveQuartzCoreCopyByteCount": 1640,
+    "liveQuartzCoreCopySHA256": "5bdf866c13bfb00d9becada24ff9876f84515fa36acb4ee274785d5176593a1e",
+    "liveQuartzCoreSetterByteCount": 96,
+    "liveQuartzCoreSetterSHA256": "2421048e418c6cdcc7622dd65f881e514e0852687f7920e6c4bdaf75a301f6dd",
+    "liveQuartzCoreBoundsByteCount": 80,
+    "liveQuartzCoreBoundsSHA256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+    "liveCopyMarginGetterCallOffset": 940,
+    "liveCopyMarginGetterCallInstructionHex": "69640f94",
+    "liveCopyBinary64ToBinary32Offset": 944,
+    "liveCopyBinary64ToBinary32InstructionHex": "0040621e",
+    "liveCopyMarginStoreOffset": 948,
+    "liveCopyMarginStoreInstructionHex": "a02600bd",
     "dynamicPublicRecordCount": 32,
     "timelineSampleCount": 33,
     "allocationOnly": true,
@@ -222,7 +266,7 @@
     },
     {
       "path": "Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
-      "sha256": "f45c3ff3f6f6e3fba0ab87d4ac45ff7c03e87962c4c86d8366ba55945f2d8fd5"
+      "sha256": "8075ba1e9ecadf32dd4c33de18deb9dc89d68636b84b081388dd3ae45f222f52"
     },
     {
       "path": "Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1.sh",
@@ -246,11 +290,11 @@
     },
     {
       "path": "Analysis/capture_backdrop_margin_writer_provider_composition_lldb.py",
-      "sha256": "2a19ee72c72b524ce439692b2c4e3dc3336e76494b0a8925e3c63bb9af08c295"
+      "sha256": "e9730dac9023709fb89e3cb508e661546f52fd4b6897a4827fccc9a4402a72e1"
     },
     {
       "path": "Analysis/test_capture_backdrop_margin_writer_provider_composition_lldb_source.py",
-      "sha256": "04c0e4c60355ad91a97803efcc3fd34f26acf7d88387eb179ce22394ebdc7798"
+      "sha256": "f6bc4e7ab14845721772a11b223dab9250712564e3e94eaa7d7c58739f9ee72f"
     },
     {
       "path": "Analysis/backdrop_margin_writer_provider_composition_d949727_structural_transport_failure_result.json",
@@ -267,6 +311,30 @@
     {
       "path": "Analysis/test_backdrop_margin_writer_provider_composition_abe1585_callback_transport_failure_result.py",
       "sha256": "9d518102a0dfb35aed32f3d747989811c947ae61ce28674a204776c01ade1d76"
+    },
+    {
+      "path": "Analysis/capture_live_writer_code_inventory_lldb.py",
+      "sha256": "c8740136a57b6508a851c9761233627344e4ee430bf03efa8ef5fd131ef6a560"
+    },
+    {
+      "path": "Analysis/test_capture_live_writer_code_inventory_lldb_source.py",
+      "sha256": "9fc9c2199eb87b761755d744b294244326a0c61638bab93fced5beae684ee137"
+    },
+    {
+      "path": "Analysis/live_writer_code_inventory_c5b1f91_result.json",
+      "sha256": "ecf450d50494cf86bf68aeba3d114c7c109261c02eee6091879508d5f3b7aeef"
+    },
+    {
+      "path": "Analysis/test_live_writer_code_inventory_c5b1f91_result.py",
+      "sha256": "c409ed534ac6657a4411a8a67ffac0f213310ade21410c5df721c00b42006a67"
+    },
+    {
+      "path": "Analysis/backdrop_margin_writer_provider_composition_7e1e994_live_code_failure_result.json",
+      "sha256": "d0b0781e4e62a89662108cc3a604795e7e58b4f262a391e97f9f4a48aead013d"
+    },
+    {
+      "path": "Analysis/test_backdrop_margin_writer_provider_composition_7e1e994_live_code_failure_result.py",
+      "sha256": "3175e11950c059a16141c628c45a3bed6cf95b6604c192ea6cac4f8e4b271014"
     }
   ],
   "qualityLocks": {

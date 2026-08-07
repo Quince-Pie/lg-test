@@ -30,6 +30,14 @@ class BackdropMarginWriterProviderCompositionCaptureTests(unittest.TestCase):
 
     def test_overlay_changes_only_structural_module_identity(self) -> None:
         self.assertIn("F1BA3189-E95A-3ECA-B59A-5A6872754484", self.source)
+        self.assertIn(
+            "5bdf866c13bfb00d9becada24ff9876f84515fa36acb4ee274785d5176593a1e",
+            self.source,
+        )
+        self.assertIn(
+            "2421048e418c6cdcc7622dd65f881e514e0852687f7920e6c4bdaf75a301f6dd",
+            self.source,
+        )
         self.assertIn("writer.QUARTZCORE_UUID = LIVE_QUARTZCORE_UUID", self.source)
         self.assertIn("producer.__lldb_init_module", self.source)
         self.assertIn("producer.finalize", self.source)

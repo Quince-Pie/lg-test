@@ -15,11 +15,19 @@ import capture_backdrop_margin_writer_execution_lldb as writer
 
 
 LIVE_QUARTZCORE_UUID = "F1BA3189-E95A-3ECA-B59A-5A6872754484"
+LIVE_COPY_CODE_SHA256 = (
+    "5bdf866c13bfb00d9becada24ff9876f84515fa36acb4ee274785d5176593a1e"
+)
+LIVE_SETTER_CODE_SHA256 = (
+    "2421048e418c6cdcc7622dd65f881e514e0852687f7920e6c4bdaf75a301f6dd"
+)
 
 # The producer module snapshots writer._new_trace during import.  Set the live
 # structural identity first so both the original trace factory and all symbol
 # gates use one UUID from their first instruction.
 writer.QUARTZCORE_UUID = LIVE_QUARTZCORE_UUID
+writer.COPY_CODE_SHA256 = LIVE_COPY_CODE_SHA256
+writer.SETTER_CODE_SHA256 = LIVE_SETTER_CODE_SHA256
 
 import capture_backdrop_margin_writer_producer_lldb as producer  # noqa: E402
 
@@ -80,6 +88,8 @@ def finalize():
 
 def __lldb_init_module(debugger, internal_dict):
     writer.QUARTZCORE_UUID = LIVE_QUARTZCORE_UUID
+    writer.COPY_CODE_SHA256 = LIVE_COPY_CODE_SHA256
+    writer.SETTER_CODE_SHA256 = LIVE_SETTER_CODE_SHA256
     producer.__lldb_init_module(debugger, internal_dict)
     _install_direct_callback_proxies()
     trace = writer._state.get("trace")
@@ -91,6 +101,7 @@ def __lldb_init_module(debugger, internal_dict):
                 "quartzCoreIdentityRetargetUsesCapturedValue": False,
                 "quartzCoreIdentityRetargetUsesCropImageOrPixel": False,
                 "directLLDBCallbackProxyModule": __name__,
+                "liveWriterCodeInventoryUsesCapturedValue": False,
             }
         )
         writer._write_trace()

@@ -1,0 +1,72 @@
+{
+  "liveWriterCodeInventoryResultSchemaVersion": 1,
+  "classification": "value-blind direct-M1 complete-code inventory at stable executable main; three QuartzCore symbols opened and the SwiftUICore caller remained unresolved by name",
+  "commit": "c5b1f91ee97e3ba452b44f8e6334a1c4bc9b2563",
+  "inputs": {
+    "inventory": {
+      "path": "../artifacts/local-live-writer-code-inventory-c5b1f91-run1.json",
+      "sha256": "a413d9270578a1653b79fc7df06ea8c2920a81750369ee2e110f4bc6fd1cef0a"
+    },
+    "lldbLog": {
+      "path": "../artifacts/local-live-writer-code-inventory-c5b1f91-run1.log",
+      "sha256": "eee264c478f5972d80cea7201755ec682b02ad9eceea54ed15a90759d0b2f7de"
+    }
+  },
+  "host": {
+    "ssh": "quince@10.0.41.19",
+    "macOS": "26.6.1",
+    "build": "25G76",
+    "architecture": "arm64",
+    "stableBinarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd"
+  },
+  "quartzCore": {
+    "uuid": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "copy": {
+      "byteCount": 1640,
+      "sha256": "5bdf866c13bfb00d9becada24ff9876f84515fa36acb4ee274785d5176593a1e",
+      "historicalByteCountMatched": true,
+      "historicalSHA256Matched": false,
+      "marginGetterCallInstructionOffset": 940,
+      "marginGetterCallInstructionHex": "69640f94",
+      "binary64ToBinary32InstructionOffset": 944,
+      "binary64ToBinary32InstructionHex": "0040621e",
+      "marginStoreInstructionOffset": 948,
+      "marginStoreInstructionHex": "a02600bd",
+      "marginStoreDestination": "render object +0x24"
+    },
+    "setter": {
+      "byteCount": 96,
+      "sha256": "2421048e418c6cdcc7622dd65f881e514e0852687f7920e6c4bdaf75a301f6dd",
+      "historicalByteCountMatched": true,
+      "historicalSHA256Matched": false
+    },
+    "bounds": {
+      "byteCount": 80,
+      "sha256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+      "historicalByteCountMatched": true,
+      "historicalSHA256Matched": true
+    }
+  },
+  "swiftUICoreCaller": {
+    "captured": false,
+    "reason": "the full demangled symbol did not resolve as exactly one breakpoint location at executable main",
+    "mayBeOpenedFromAValue-BlindStructuralSetterCaller": true
+  },
+  "captureContract": {
+    "processStoppedAtExecutableMain": true,
+    "processContinuedAfterMain": false,
+    "registerOrObjectRead": false,
+    "marginCropImageOrPixelRead": false,
+    "applicationOutputUsedForSelection": false
+  },
+  "authority": {
+    "liveQuartzCoreWriterCodeAuthenticated": true,
+    "liveSwiftUICoreCallerCodeAuthenticated": false,
+    "allocationMarginCompositionEstablished": false,
+    "selectedRegionPolicyEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
