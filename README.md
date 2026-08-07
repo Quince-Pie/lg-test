@@ -11330,3 +11330,12 @@ It establishes a prospective unseen-geometry arithmetic pass, not a pass of
 the combined gate. A fresh holdout must keep exact arithmetic mandatory while
 treating pointer reuse as a branch to validate when present, rather than an
 event the allocator is required to produce.
+
+That split criterion was frozen before opening `circle-497-center`, another
+stable-binary geometry with zero retained runtime evidence, in
+`Analysis/prepare_layer_live_crop_replay_v3_split_holdout_local_macos_26_6_1_preregistration.json`.
+Every sample must still select the last pointer-matching store and every one of
+the 128 arithmetic components must match bit-for-bit. If pointer reuse occurs,
+all earlier matches must be discarded exactly; the allocator is not required
+to make that branch occur in this particular process. The earlier unseen 487
+capture already supplies a frozen 33-match/one-reuse instance of that branch.

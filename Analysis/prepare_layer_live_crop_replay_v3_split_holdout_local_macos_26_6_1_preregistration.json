@@ -1,0 +1,143 @@
+{
+  "prepareLayerLiveCropReplayV3SplitHoldoutPreregistrationSchemaVersion": 1,
+  "classification": "prospective runtime-unseen geometry transfer of exact regular-glass v3 arithmetic with deterministic last-store validation separated from nondeterministic pointer-reuse branch occurrence",
+  "frozenAtUtc": "2026-08-07T20:46:21Z",
+  "frozenFromPredecessorCommit": "23938aa62577cca984fb037059f15d6ad01c4199",
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "execution": {
+    "host": "quince@10.0.41.19",
+    "repository": "/Users/quince/lg-test",
+    "architecture": "arm64",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "nativeToolchain": "Apple Command Line Tools only",
+    "nativeEnvironmentContainsNixStorePath": false,
+    "postCaptureAnalysis": "nix develop Python 3.14",
+    "githubActionsUsed": false,
+    "physicalRetinaRequired": true
+  },
+  "holdout": {
+    "geometry": "circle-497-center",
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "materialize",
+    "backingScaleFactor": 2,
+    "runtimeEvidenceMatchCountAtFreeze": 0,
+    "geometryNamePresentOnlyAsStableBinaryInputAtFreeze": true,
+    "targetOutputsOpenedAtFreeze": false
+  },
+  "frozenCandidate": {
+    "lastStoreSelectionRule": "within each marker interval select the last store whose LayerShapes base equals the last destination-matched union; record order and pointer identity only",
+    "pointerReuseEventRequired": false,
+    "pointerReuseBranchValidatedWhenPresent": true,
+    "everyRecordMustHaveAtLeastOneMatchingStore": true,
+    "everySelectedStoreMustBeTheLastMatchingStore": true,
+    "internalBleedRule": "binary64(binary32(terminal public inputBleedAmount))",
+    "publicBleedConvertedToBinary32ExactlyOnce": true,
+    "sourceDODRule": "let e = binary64(binary32(terminal public inputBleedAmount)); source DOD is [-e, -e, geometry width + 2e, geometry height + 2e]",
+    "recursiveChildRule": "[0, 0, source DOD width, source DOD height]",
+    "sdfOperationOrder": "unapply translation; add height then negate Y; expand using promoted binary32 radius and exact binary64 FMA; union; add size to origin, negate Y, and reapply translation",
+    "filterDODRule": "expand with exact -2.8/5.6 binary64 arithmetic, union the authenticated shadow-offset rectangle, then intersect directly with the already-expanded source DOD",
+    "sourceDODShadowUnionApplied": false,
+    "endpointYOffsetRule": "regular live-foreground endpoint depth uses mirror nominal width plus binary64(binary32(terminal public inputBleedAmount))",
+    "cropOrProducerValuesUsedForSelection": false,
+    "targetOutputsUsed": false,
+    "toleranceUsed": false,
+    "requiredRectangleCount": 32,
+    "requiredExactRectangleCount": 32,
+    "requiredComponentCount": 128,
+    "requiredExactComponentCount": 128,
+    "requiredMaximumULPDistancesXYWH": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "openedEvidence": {
+    "v3OpenedOutcomeResultPath": "Analysis/prepare_layer_live_crop_replay_v3_a2ff533_holdout_outcome_result.json",
+    "v3OpenedOutcomeResultSHA256": "12e0c95afa4d87a42c76de98004417f6901b85e0ed13db02d7587bbca0f5b3b2",
+    "v3ReanalysisResultPath": "Analysis/prepare_layer_live_crop_replay_v3_reanalysis_result.json",
+    "v3ReanalysisResultSHA256": "cfbd34542d871fd93fd56bbe3006ef1a1ebc56d42e296c0c847f67dd96208131",
+    "priorRuntimeUnseenPointerReuseBranch": {
+      "geometry": "circle-487-center",
+      "traceSHA256": "537e2f7068009f6873ffb63e788c41965d4902de96b246fe4adcef0ac6288927",
+      "matchingStoreRecordCount": 33,
+      "pointerReuseRecordCount": 1,
+      "discardedEarlierMatchCount": 1,
+      "lastStoreRuleFrozenBeforeRuntimeOutput": true
+    },
+    "openedRectangleCount": 160,
+    "openedExactRectangleCount": 160,
+    "openedComponentCount": 640,
+    "openedExactComponentCount": 640,
+    "openedMaximumULPDistancesXYWH": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "frozenFiles": [
+    {
+      "path": "Analysis/validate_prepare_layer_live_crop_replay_v3_split_holdout_local_macos_26_6_1.py",
+      "sha256": "507b97d7ec76e20312fb89052b6018fd86261a064f7bef68bb28a1289760326e"
+    },
+    {
+      "path": "Analysis/validate_prepare_layer_live_crop_replay_v3_local_macos_26_6_1.py",
+      "sha256": "ee5fed1aaa98423abafc2ad415a8de2ee599340ee084eb5fb975ee0bf52b3e47"
+    },
+    {
+      "path": "Analysis/validate_prepare_layer_live_crop_replay_v2_local_macos_26_6_1.py",
+      "sha256": "0f742ac9071ff552680d7a4661cfe2abe55e663a5cfd315ba0414824d26ffb98"
+    },
+    {
+      "path": "Analysis/capture_prepare_layer_live_crop_arithmetic_local_macos_26_6_1_lldb.py",
+      "sha256": "8808e92fe27a7d1c99ad1451dfbcd29674bd1ed1081218bdc2d13b7d29f0de60"
+    },
+    {
+      "path": "Analysis/prepare_layer_live_crop_arithmetic_local_macos_26_6_1.py",
+      "sha256": "67db83b0ccb3c83a2555ab9932631fd1c771ce3acf9d70c253ec806d2516f04e"
+    },
+    {
+      "path": "Analysis/prepare_layer_live_crop_replay_v3_a2ff533_holdout_outcome_result.json",
+      "sha256": "12e0c95afa4d87a42c76de98004417f6901b85e0ed13db02d7587bbca0f5b3b2"
+    },
+    {
+      "path": "Analysis/prepare_layer_live_crop_replay_v3_reanalysis_result.json",
+      "sha256": "cfbd34542d871fd93fd56bbe3006ef1a1ebc56d42e296c0c847f67dd96208131"
+    },
+    {
+      "path": "Analysis/prepare_layer_live_crop_arithmetic_code_inventory_a3ac528_result.json",
+      "sha256": "8f175031d4e5a011bc2c567c1aa6f47c9d884868a6efd6dea68496178bc30028"
+    },
+    {
+      "path": "Analysis/capture_prepare_layer_crop_policy_holdout_live_local_macos_26_6_1_lldb.py",
+      "sha256": "7166b30cc047bc21c5db77ebc5e5c92d8dcdc5e23d3833b32c8a40b3dbba7820"
+    },
+    {
+      "path": "Analysis/prepare_layer_live_transport_local_macos_26_6_1.py",
+      "sha256": "dd30287a00e9dd7f73dd517770ecda4b912e0ef367a0040d199002eafde796f2"
+    },
+    {
+      "path": "Analysis/check_local_retina_capture_session_v2.swift",
+      "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+    }
+  ],
+  "outerWalleIntegrity": {
+    "productionShaderPath": "shaders/frag.glsl",
+    "productionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "developmentFlakePath": "flake.nix",
+    "developmentFlakeSHA256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+    "shaderQualityChangeAuthorized": false
+  },
+  "sealedConclusion": {
+    "candidateFrozenBeforeTargetOutput": true,
+    "v3UnseenGeometryTransferPassed": false,
+    "selectedRegionOriginTransferPassed": false,
+    "physicalRetinaColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
