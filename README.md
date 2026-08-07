@@ -8558,12 +8558,12 @@ batch, no one-, two-, or three-word collision in that batch, global uniqueness
 within the retained live-timeline calls, all 18 loaded-field predictions, and
 an exact positive-zero provider return. Sample 32 is retained and reported but
 its match count is explicitly exploratory. The preregistration SHA-256 is
-`4e09b2b10449a19965d69921df0c08516e0e8f27aa9bc4661fdb2deb0538c330`;
+`6e4c416d541dd170354992102229ef215b6781997fc3af2d87fc57eaffaf3a7b`;
 the capture, validator, and native runner SHA-256 values are respectively
 `145cf4d04650769f150f865e32f90671f9ab7f3d536d907e970b9f01bf690a59`,
 `3672f7a53ad50500fe97e20d60316be6caf83aa73ac278669abcefb95aa84512`,
 and
-`bd922a0bb436eba26eb92f786025d4a037930600dd4a7ec9cf74f33842d1e2fe`.
+`70ae7bd9d88a27508aeab4dbdefe5d78ac90b950f50e33956bfffb598b5d73f2`.
 The native process uses only Apple Command Line Tools and no Nix store path.
 Even a complete pass establishes only the same-profile live marker-batch join;
 fresh-profile construction, crop/allocation, physical Retina composition,

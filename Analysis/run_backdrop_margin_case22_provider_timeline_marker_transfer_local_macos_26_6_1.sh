@@ -113,7 +113,7 @@ fi
     -o "settings set -- target.run-args $output_directory" \
     -o "settings set target.output-path $output_directory/runtime-stdout.log" \
     -o "settings set target.error-path $output_directory/runtime-stderr.log" \
-    -o "breakpoint set --name main" \
+    -o "breakpoint set --shlib $binary --name main" \
     -o run \
     -o "breakpoint delete --force" \
     -o "command script import $capture" \

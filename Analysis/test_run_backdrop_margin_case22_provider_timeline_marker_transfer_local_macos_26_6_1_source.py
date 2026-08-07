@@ -51,7 +51,7 @@ class TimelineMarkerRunnerSourceTests(unittest.TestCase):
         self.assertIn("validation-exit-status.txt", SOURCE)
 
     def test_capture_imports_at_exact_main_stop_after_dyld_load(self) -> None:
-        main_breakpoint = SOURCE.index("breakpoint set --name main")
+        main_breakpoint = SOURCE.index("breakpoint set --shlib $binary --name main")
         first_run = SOURCE.index("-o run", main_breakpoint)
         capture_import = SOURCE.index("command script import $capture", first_run)
         continuation = SOURCE.index("-o continue", capture_import)
