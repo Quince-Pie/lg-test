@@ -8112,7 +8112,7 @@ fixed invocation 20 with the unchanged historical selector, then run the
 complete matrix regardless of that first return. The preregistration is
 `Analysis/backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_preregistration.json`,
 SHA-256
-`5a32eb62c4ec2bce03060f86ad4884a580340f12386cd70cdf0f6ade7ec46c94`.
+`c0aa8d6d20b44b5ee0a022f53f827b88bad238ef3a99f172820e3e9b8161083e`.
 The selected-stage expectation is the already observed exact return word
 `0000006002a22a40`; that expectation cannot suppress or alter the second
 stage. Captured objects and returns do not select either stage.
@@ -8121,7 +8121,7 @@ The prospective two-stage validator was also frozen before either unlocked
 output. It is
 `Analysis/validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.py`,
 SHA-256
-`4911054a462b804246862960f46cd5ec3f4b7f7f8018cdfee0c543cf76821b86`.
+`ee04a183f6609b9933ef8252aef1b1aab357b937ef6cacd7bcb180a459e774ef`.
 Session, code, ownership, object, return, timeline, and process-integrity
 violations fail closed. The historical-return reproduction and positive-branch
 requirements are reported as outcomes, so neither observed value can rewrite
@@ -8130,12 +8130,25 @@ the structural acceptance rules.
 The exact native runner is
 `Analysis/run_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.sh`,
 SHA-256
-`086aad33bb2a952b652a27ba0a0a5fbfebaab72fd5a8a671abfb8be90aaa1be4`.
+`6e81e7be362e8b415674068c7e28eab2a7ff341df032977b35a0b91599ca82d5`.
 It clears inherited `LG_*` variables, verifies the frozen binary and source
 hashes, refuses dirty tracked state or existing output directories, executes
 both preflights, and dispatches the complete stage independently of the first
 stage's observed return. It invokes native Command Line Tools directly and
 contains no Nix store path.
+
+A final prospective transport audit occurred before the first unlocked run and
+observed no Apple value. The audit found that the frozen runner authenticated
+the validator but did not execute it. The amended runner invokes that exact
+validator through Command Line Tools Python 3.9.6 only after both unconditional
+LLDB stages, then records `complete-validation.json`, validator stdout and
+stderr, and an explicit validation exit status in the complete-stage output.
+Capture/transport failure and structural validation failure now have distinct
+nonzero exits; a structurally valid negative value result remains a successful
+scientific observation. No captured value can suppress the complete stage or
+select the validation path. The validation result also records the validator's
+own path and SHA-256, while unresolved scientific outcomes remain `null` rather
+than being inferred from transport success.
 
 Formal parity remains 0/1. After this unlocked complete provider gate, the
 remaining product gates are still: authenticate public-input-to-provider

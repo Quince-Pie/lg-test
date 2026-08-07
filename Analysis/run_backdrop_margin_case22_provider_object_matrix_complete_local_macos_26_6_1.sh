@@ -21,8 +21,13 @@ readonly preregistration=Analysis/backdrop_margin_case22_provider_object_matrix_
 readonly validator=Analysis/validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.py
 readonly selected_directory="local-case22-unlocked-selected-${run_label}"
 readonly complete_directory="local-case22-unlocked-complete-${run_label}"
+readonly validation_output="$complete_directory/complete-validation.json"
+readonly validation_stdout="$complete_directory/validation-stdout.log"
+readonly validation_stderr="$complete_directory/validation-stderr.log"
+readonly validation_status_file="$complete_directory/validation-exit-status.txt"
 readonly swift=/Library/Developer/CommandLineTools/usr/bin/swift
 readonly lldb=/Library/Developer/CommandLineTools/usr/bin/lldb
+readonly python=/Library/Developer/CommandLineTools/usr/bin/python3
 
 cd "$repository" || exit 1
 
@@ -42,7 +47,7 @@ require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab788
 require_sha256 "$selected_capture" 964b03394b837e3d0e0f312a56f593ffdbb7be6c325d98a53d56fbc216efd25b
 require_sha256 "$complete_capture" 05e12987979401fa79615d86fc119084a5126aeac1ba3b79b44eeaf80988b9b1
 require_sha256 "$preflight" 72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981
-require_sha256 "$validator" 4911054a462b804246862960f46cd5ec3f4b7f7f8018cdfee0c543cf76821b86
+require_sha256 "$validator" ee04a183f6609b9933ef8252aef1b1aab357b937ef6cacd7bcb180a459e774ef
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
     echo "tracked repository state is dirty" >&2
@@ -165,11 +170,37 @@ write_context \
 complete_status=$?
 printf '%s\n' "$complete_status" >"$complete_directory/lldb-exit-status.txt"
 
+# Validate only after both unconditional captures have run.  A failed first
+# stage may never suppress the complete stage, and captured values never
+# select validation.  Structural failure is retained separately from a clean
+# negative result for either preregistered value hypothesis.
+validation_status=125
+if [[ "$selected_status" -eq 0 && "$complete_status" -eq 0 ]]; then
+    "$python" "$validator" \
+        --preregistration "$preregistration" \
+        --selected-artifact-directory "$selected_directory" \
+        --complete-artifact-directory "$complete_directory" \
+        --output "$validation_output" \
+        >"$validation_stdout" 2>"$validation_stderr"
+    validation_status=$?
+else
+    : >"$validation_stdout"
+    printf '%s\n' \
+        "validation skipped because an unconditional capture process failed" \
+        >"$validation_stderr"
+fi
+printf '%s\n' "$validation_status" >"$validation_status_file"
+
 printf 'SELECTED_DIRECTORY=%s\n' "$selected_directory"
 printf 'SELECTED_LLDB_STATUS=%s\n' "$selected_status"
 printf 'COMPLETE_DIRECTORY=%s\n' "$complete_directory"
 printf 'COMPLETE_LLDB_STATUS=%s\n' "$complete_status"
+printf 'VALIDATION_OUTPUT=%s\n' "$validation_output"
+printf 'VALIDATION_STATUS=%s\n' "$validation_status"
 
 if [[ "$selected_status" -ne 0 || "$complete_status" -ne 0 ]]; then
     exit 4
+fi
+if [[ "$validation_status" -ne 0 ]]; then
+    exit 5
 fi

@@ -87,9 +87,7 @@ def load_json(path: Path, label: str) -> Any:
     return allocation.load_json(path, label)
 
 
-def validate_preregistration(
-    value: Any, repository_root: Path
-) -> Mapping[str, Any]:
+def validate_preregistration(value: Any, repository_root: Path) -> Mapping[str, Any]:
     preregistration = mapping(value, "complete preregistration")
     require(
         preregistration.get(
@@ -129,26 +127,31 @@ def validate_preregistration(
     )
     runner = mapping(preregistration.get("nativeRunner"), "native runner")
     require(
-        sha256(repository_root / str(runner.get("path")))
-        == runner.get("sha256"),
+        sha256(repository_root / str(runner.get("path"))) == runner.get("sha256"),
         "native runner source bytes differ",
     )
     for key in (
         "directNativeCommandLineTools",
         "preflightImmediatelyBeforeEachStage",
+        "prospectiveValidatorRunsAfterBothStages",
         "secondStageIndependentOfFirstStageValue",
         "trackedRepositoryMustBeClean",
+        "validatorExitStatusRecorded",
+        "validatorOutputInsideCompleteStage",
     ):
         require(runner.get(key) is True, f"native runner field {key} differs")
+    require(
+        runner.get("directNativePython")
+        == "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "native runner Python differs",
+    )
     stages = sequence(
         preregistration.get("unconditionalTwoStageDispatch"),
         "unconditional dispatch",
     )
     require(len(stages) == 2, "unconditional dispatch stage count differs")
     require(
-        mapping(stages[0], "selected stage").get(
-            "expectedReturnRawLittleEndianHex"
-        )
+        mapping(stages[0], "selected stage").get("expectedReturnRawLittleEndianHex")
         == EXPECTED_SELECTED_RETURN,
         "selected reproduction expectation differs",
     )
@@ -212,9 +215,7 @@ def validate_context(
 
 def validate_process_transport(artifact_directory: Path) -> None:
     require(
-        (artifact_directory / "lldb-exit-status.txt").read_text(
-            encoding="utf-8"
-        )
+        (artifact_directory / "lldb-exit-status.txt").read_text(encoding="utf-8")
         == "0\n",
         "LLDB exit status differs",
     )
@@ -228,16 +229,12 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
     trace = mapping(value, "complete trace")
     configuration = mapping(trace.get("configuration"), "trace configuration")
     require(
-        trace.get(
-            "case22ProviderObjectMatrixCompleteLocalMacOSLldbTraceSchemaVersion"
-        )
+        trace.get("case22ProviderObjectMatrixCompleteLocalMacOSLldbTraceSchemaVersion")
         == COMPLETE_TRACE_SCHEMA_VERSION,
         "complete trace schema differs",
     )
     require(
-        trace.get(
-            "case22ProviderObjectMatrixMinimalLocalMacOSLldbTraceSchemaVersion"
-        )
+        trace.get("case22ProviderObjectMatrixMinimalLocalMacOSLldbTraceSchemaVersion")
         == 1,
         "inherited trace schema differs",
     )
@@ -247,9 +244,7 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
         "capturesFirstExactCallerInvocation": True,
         "capturesEveryCase22IterationUntilCallerReturn": True,
         "previousFirstCaseDisarmRemoved": True,
-        "perSelectedCallerStopCountFormula": (
-            "2 + 4 * case22ProviderCallCount"
-        ),
+        "perSelectedCallerStopCountFormula": ("2 + 4 * case22ProviderCallCount"),
         "perSelectedCallMaximumStopCount": 2 + 4 * MAXIMUM_CALL_COUNT,
         "activeBreakpointCountPerSelectedCall": 6,
         "unrelatedWrapperOrProviderCallbacksArmed": False,
@@ -274,9 +269,7 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
         "SwiftUICore UUID differs",
     )
     require(
-        mapping(modules.get("designLibrary"), "DesignLibrary module").get(
-            "uuid"
-        )
+        mapping(modules.get("designLibrary"), "DesignLibrary module").get("uuid")
         == allocation.DESIGN_LIBRARY_UUID,
         "DesignLibrary UUID differs",
     )
@@ -307,8 +300,7 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
     require(caller.get("symbolOffset") == 0, "caller bootstrap offset differs")
     caller_code = bytes.fromhex(str(caller.get("hex", "")))
     require(
-        caller_code[CALLER_CALL_OFFSET : CALLER_CALL_OFFSET + 4].hex()
-        == "5526e997",
+        caller_code[CALLER_CALL_OFFSET : CALLER_CALL_OFFSET + 4].hex() == "5526e997",
         "caller Group call instruction differs",
     )
     bootstrap = mapping(trace.get("bootstrap"), "bootstrap")
@@ -352,9 +344,7 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
     )
 
     calls = sequence(trace.get("calls"), "provider calls")
-    selected_calls = sequence(
-        trace.get("selectedCallerCalls"), "selected caller calls"
-    )
+    selected_calls = sequence(trace.get("selectedCallerCalls"), "selected caller calls")
     require(0 < len(calls) < MAXIMUM_CALL_COUNT, "provider call count differs")
     require(selected_calls, "selected caller set is empty")
     owned_indices: list[int] = []
@@ -484,10 +474,16 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
             f"provider call {index} Group join flag differs",
         )
         allocation.validate_frame(
-            call.get("wrapperEntryFrame"), wrapper, 0, f"provider call {index} wrapper entry"
+            call.get("wrapperEntryFrame"),
+            wrapper,
+            0,
+            f"provider call {index} wrapper entry",
         )
         allocation.validate_frame(
-            call.get("providerEntryFrame"), provider, 0, f"provider call {index} provider entry"
+            call.get("providerEntryFrame"),
+            provider,
+            0,
+            f"provider call {index} provider entry",
         )
         allocation.validate_frame(
             call.get("wrapperReturnFrame"),
@@ -507,12 +503,10 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
             GROUP_RETURN_OFFSET,
             f"provider call {index} Group return",
         )
-        gaussian_input = struct.unpack_from(
-            "<f", entry_payload, GAUSSIAN_INPUT_OFFSET
-        )[0]
-        gaussian_gate = struct.unpack_from(
-            "<d", entry_payload, GAUSSIAN_GATE_OFFSET
-        )[0]
+        gaussian_input = struct.unpack_from("<f", entry_payload, GAUSSIAN_INPUT_OFFSET)[
+            0
+        ]
+        gaussian_gate = struct.unpack_from("<d", entry_payload, GAUSSIAN_GATE_OFFSET)[0]
         if gaussian_input > 0.0 and gaussian_gate > 0.0:
             positive_gate_count += 1
         return_value = struct.unpack("<d", bytes.fromhex(raw_f64))[0]
@@ -523,8 +517,7 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
 
     require(trace.get("status") == "finalized", "trace did not finalize")
     require(
-        trace.get("statusBeforeFinalization")
-        == "between-complete-selected-callers",
+        trace.get("statusBeforeFinalization") == "between-complete-selected-callers",
         "trace did not finish between selected callers",
     )
     require(not sequence(trace.get("failures"), "trace failures"), "trace has failures")
@@ -551,8 +544,7 @@ def validate_complete_trace(value: Any) -> dict[str, Any]:
         for value in selected_calls
     ]
     require(
-        trace.get("finalMinimumProviderCallsPerSelectedCaller")
-        == min(provider_counts)
+        trace.get("finalMinimumProviderCallsPerSelectedCaller") == min(provider_counts)
         and trace.get("finalMaximumProviderCallsPerSelectedCaller")
         == max(provider_counts),
         "final provider-per-caller extrema differ",
@@ -629,9 +621,7 @@ def validate(
         preregistration_path,
         str(
             mapping(
-                sequence(
-                    preregistration["unconditionalTwoStageDispatch"], "stages"
-                )[0],
+                sequence(preregistration["unconditionalTwoStageDispatch"], "stages")[0],
                 "selected stage",
             )["captureSHA256"]
         ),
@@ -717,6 +707,10 @@ def validate(
             "preregistration": {
                 "path": str(preregistration_path),
                 "sha256": sha256(preregistration_path),
+            },
+            "validator": {
+                "path": str(Path(__file__).resolve()),
+                "sha256": sha256(Path(__file__).resolve()),
             },
             "selectedStage": {
                 "directory": str(selected_artifact_directory),

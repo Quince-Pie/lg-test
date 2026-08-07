@@ -36,6 +36,10 @@ class CompleteProviderObjectMatrixPreregistrationTests(unittest.TestCase):
             transport["lldb"],
             "/Library/Developer/CommandLineTools/usr/bin/lldb",
         )
+        self.assertEqual(
+            transport["python"],
+            "/Library/Developer/CommandLineTools/usr/bin/python3",
+        )
         self.assertFalse(transport["runInsideNixDevelop"])
         self.assertFalse(transport["hardCodedNixStorePath"])
         self.assertTrue(transport["importCaptureBeforeRun"])
@@ -95,7 +99,14 @@ class CompleteProviderObjectMatrixPreregistrationTests(unittest.TestCase):
         )
         self.assertTrue(runner["directNativeCommandLineTools"])
         self.assertTrue(runner["preflightImmediatelyBeforeEachStage"])
+        self.assertTrue(runner["prospectiveValidatorRunsAfterBothStages"])
         self.assertTrue(runner["secondStageIndependentOfFirstStageValue"])
+        self.assertTrue(runner["validatorExitStatusRecorded"])
+        self.assertTrue(runner["validatorOutputInsideCompleteStage"])
+        self.assertEqual(
+            runner["directNativePython"],
+            "/Library/Developer/CommandLineTools/usr/bin/python3",
+        )
         self.assertFalse(runner["usesNixStorePath"])
 
     def test_outcome_unknown_and_authority_remains_narrow(self) -> None:

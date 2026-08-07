@@ -35,6 +35,8 @@
     "requireNoPendingProviderOrSelectedCallerAtFinalization": true,
     "requirePreflightPassBeforeEachStage": true,
     "requireProcessExitStatus": 0,
+    "requireProspectiveValidationExitStatus": 0,
+    "requireProspectiveValidationResult": true,
     "requireProviderEntryObjectEqualsWrapperSelfPlus16": true,
     "requireProviderObjectUnchangedByCall": true,
     "requireProviderReturnEqualsGroupInputBitwise": true,
@@ -64,6 +66,7 @@
     "hardCodedNixStorePath": false,
     "importCaptureBeforeRun": true,
     "lldb": "/Library/Developer/CommandLineTools/usr/bin/lldb",
+    "python": "/Library/Developer/CommandLineTools/usr/bin/python3",
     "reason": "native Apple compilation and debugging use the selected Command Line Tools environment; nix develop remains mandatory for repository validation and analysis",
     "runInsideNixDevelop": false,
     "stopAtExecutableMain": false
@@ -72,14 +75,18 @@
     "clearsInheritedLGVariables": true,
     "createsFreshOutputDirectories": true,
     "directNativeCommandLineTools": true,
+    "directNativePython": "/Library/Developer/CommandLineTools/usr/bin/python3",
     "path": "Analysis/run_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.sh",
     "preflightImmediatelyBeforeEachStage": true,
+    "prospectiveValidatorRunsAfterBothStages": true,
     "secondStageIndependentOfFirstStageValue": true,
-    "sha256": "086aad33bb2a952b652a27ba0a0a5fbfebaab72fd5a8a671abfb8be90aaa1be4",
+    "sha256": "6e81e7be362e8b415674068c7e28eab2a7ff341df032977b35a0b91599ca82d5",
     "sourceTestPath": "Analysis/test_run_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_source.py",
-    "sourceTestSHA256": "0dffd5fec3e2c33180677b8f9c2e92e85eef44000b0dcec5fff7a8a267165d15",
+    "sourceTestSHA256": "2f385fc5ad922c960df6390f47f72885e2c0a7db2a55b34c1d853f2836069536",
     "trackedRepositoryMustBeClean": true,
-    "usesNixStorePath": false
+    "usesNixStorePath": false,
+    "validatorExitStatusRecorded": true,
+    "validatorOutputInsideCompleteStage": true
   },
   "nativeSessionPreflight": {
     "failClosedBeforeAppLaunch": true,
@@ -130,10 +137,11 @@
   "prospectiveValidator": {
     "artifactHashesUnknownUntilCapture": true,
     "capturedOutputMayChangeStructuralAcceptance": false,
+    "invokedByNativeRunner": true,
     "path": "Analysis/validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1.py",
-    "sha256": "4911054a462b804246862960f46cd5ec3f4b7f7f8018cdfee0c543cf76821b86",
+    "sha256": "ee04a183f6609b9933ef8252aef1b1aab357b937ef6cacd7bcb180a459e774ef",
     "sourceTestPath": "Analysis/test_validate_backdrop_margin_case22_provider_object_matrix_complete_local_macos_26_6_1_source.py",
-    "sourceTestSHA256": "bff530c9b19e36f4a809ab2e5a13021951ae813868dbeb3b1eb0de550e5df9a4",
+    "sourceTestSHA256": "d60d7c37f8743a4af21b983d0b69c845f7ca60a8ff61625e22ade6076da79928",
     "structuralFailuresFailClosed": true,
     "valueHypothesesReportedAsResults": true
   },

@@ -28,9 +28,7 @@ class CompleteProviderObjectMatrixValidatorSourceTests(unittest.TestCase):
             ),
         }
         self.assertEqual(
-            self.module.validate_preflight(report, "synthetic preflight")[
-                "passed"
-            ],
+            self.module.validate_preflight(report, "synthetic preflight")["passed"],
             True,
         )
         report["sessionLocked"] = True
@@ -55,7 +53,7 @@ class CompleteProviderObjectMatrixValidatorSourceTests(unittest.TestCase):
             "raw_v0[:16] == raw_f64",
             "raw_v0 == group_v0",
             'call.get("providerReturnMatchesGroupBitwise") is True',
-            'caller_code[CALLER_CALL_OFFSET : CALLER_CALL_OFFSET + 4].hex()',
+            "caller_code[CALLER_CALL_OFFSET : CALLER_CALL_OFFSET + 4].hex()",
         ):
             self.assertIn(needle, SOURCE)
 
@@ -77,6 +75,14 @@ class CompleteProviderObjectMatrixValidatorSourceTests(unittest.TestCase):
         )
         self.assertIn('== runner.get("sha256")', SOURCE)
         self.assertIn('"secondStageIndependentOfFirstStageValue"', SOURCE)
+        self.assertIn('"prospectiveValidatorRunsAfterBothStages"', SOURCE)
+        self.assertIn('"validatorExitStatusRecorded"', SOURCE)
+        self.assertIn('"validatorOutputInsideCompleteStage"', SOURCE)
+        self.assertIn('runner.get("directNativePython")', SOURCE)
+
+    def test_validation_result_identifies_its_own_frozen_source(self) -> None:
+        self.assertIn('"validator": {', SOURCE)
+        self.assertIn('"sha256": sha256(Path(__file__).resolve())', SOURCE)
 
     def test_product_authority_remains_closed(self) -> None:
         for needle in (
