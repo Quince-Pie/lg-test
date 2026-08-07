@@ -33,6 +33,14 @@ class BackdropMarginWriterProviderCompositionCaptureTests(unittest.TestCase):
         self.assertIn("writer.QUARTZCORE_UUID = LIVE_QUARTZCORE_UUID", self.source)
         self.assertIn("producer.__lldb_init_module", self.source)
         self.assertIn("producer.finalize", self.source)
+        self.assertIn("_install_direct_callback_proxies()", self.source)
+        for callback in (
+            "margin_setter",
+            "copy_entry",
+            "copy_margin_store",
+            "backdrop_bounds",
+        ):
+            self.assertIn(f"def {callback}(", self.source)
         for forbidden in (
             "marginF64",
             "marginF32",

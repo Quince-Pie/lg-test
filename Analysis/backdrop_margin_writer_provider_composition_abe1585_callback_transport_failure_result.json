@@ -1,0 +1,57 @@
+{
+  "backdropMarginWriterProviderCompositionCallbackTransportFailureSchemaVersion": 1,
+  "classification": "immutable direct-M1 LLDB callback-namespace transport failure at the first structural setter breakpoint; no writer event, timeline, or candidate input was retained",
+  "frozenCommit": "abe1585424afe6c6130d133050096b08839448e8",
+  "runLabel": "abe1585-regular-light-run1",
+  "requestedProfile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-467-center"
+  },
+  "retinaPreflight": {
+    "path": "../artifacts/local-backdrop-margin-provider-composition-abe1585-regular-light-run1/capture-session-preflight.json",
+    "sha256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "passed": true
+  },
+  "trace": {
+    "path": "../artifacts/local-backdrop-margin-provider-composition-abe1585-regular-light-run1/backdrop-margin-writer-trace.json",
+    "sha256": "332836fcf26ee56d3080493c9e4b5d37df51522cf007069ffc8c22604b3bb19e",
+    "status": "finalized",
+    "failureCount": 0,
+    "eventCount": 0,
+    "codeGateCount": 0,
+    "liveQuartzCoreUUIDInstalled": true
+  },
+  "lldb": {
+    "path": "../artifacts/local-backdrop-margin-provider-composition-abe1585-regular-light-run1/lldb.log",
+    "sha256": "3d91482b39b1260acbe5787dea859d0e23f0a4b4f471cf8bc8f9319581d244e9",
+    "stoppedFunction": "-[CABackdropLayer setMarginWidth:]",
+    "stoppedBeforeCallbackEventAppend": true,
+    "diagnosis": "the inherited producer callback module was imported as a Python dependency rather than through LLDB's direct script namespace"
+  },
+  "transportCorrection": {
+    "change": "export four callback proxies from the directly imported composition overlay and re-install them after every inherited copy-entry proxy update",
+    "marginCropImagePixelOrCandidateUsed": false,
+    "candidateCaseMatrixSelectionOrAcceptanceChanged": false
+  },
+  "outcome": {
+    "applicationReachedFirstStructuralBreakpoint": true,
+    "applicationCompleted": false,
+    "timelineCreated": false,
+    "dynamicPublicRecordCount": 0,
+    "writerEventObserved": false,
+    "appleMarginObserved": false,
+    "appleCropObserved": false,
+    "candidateTested": false,
+    "caseAcceptedAsProspectiveEvidence": false
+  },
+  "authority": {
+    "allocationMarginCompositionEstablished": false,
+    "selectedRegionPolicyEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

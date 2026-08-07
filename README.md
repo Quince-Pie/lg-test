@@ -10987,3 +10987,18 @@ overlay changes only the QuartzCore UUID before their breakpoints are installed,
 and the validator changes only the corresponding QuartzCore/SwiftUICore UUID
 pins. Exact symbol code hashes still gate execution. The arithmetic, four
 cases, selection, and zero-tolerance acceptance remain untouched.
+
+The version-3 transport at commit `abe1585` installed the live QuartzCore
+identity and reached the first exact `setMarginWidth:` breakpoint, but LLDB
+stopped there before invoking the inherited callback. The producer module was
+available only as a Python dependency of the directly imported overlay; LLDB
+callback resolution requires the callback name in that direct script namespace.
+The trace consequently contains zero code gates, zero events, no timeline, and
+no candidate input. The immutable result is
+`Analysis/backdrop_margin_writer_provider_composition_abe1585_callback_transport_failure_result.json`.
+
+Version 4 exports direct proxies for setter, copy entry, copy store, and bounds,
+and re-installs them after the inherited copy-entry callback performs its own
+proxy update. This is a callback-namespace transport change only. The provider
+arithmetic, four unseen cases, stable binary, live UUIDs, value-blind selection,
+and bitwise acceptance rules remain unchanged.

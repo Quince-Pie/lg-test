@@ -24,7 +24,7 @@ import validate_backdrop_margin_writer_execution_retry as retry
 
 
 VALIDATION_SCHEMA_VERSION = 1
-PREREGISTRATION_SCHEMA_VERSION = 3
+PREREGISTRATION_SCHEMA_VERSION = 4
 PREREGISTRATION_NAME = (
     "backdrop_margin_writer_provider_composition_local_macos_26_6_1_"
     "preregistration.json"

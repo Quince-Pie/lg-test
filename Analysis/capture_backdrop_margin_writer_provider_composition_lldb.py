@@ -24,6 +24,56 @@ writer.QUARTZCORE_UUID = LIVE_QUARTZCORE_UUID
 import capture_backdrop_margin_writer_producer_lldb as producer  # noqa: E402
 
 
+def _set_callback(breakpoint, callback, label):
+    error = breakpoint.SetScriptCallbackFunction(__name__ + "." + callback)
+    if error is not None and hasattr(error, "Success") and not error.Success():
+        raise RuntimeError(error.GetCString() or label + " callback rejected")
+
+
+def _install_direct_callback_proxies():
+    callbacks = (
+        (writer._state["breakpoints"].get("copyEntry"), "copy_entry", "copy entry"),
+        (
+            writer._state["breakpoints"].get("marginSetter"),
+            "margin_setter",
+            "margin setter",
+        ),
+        (
+            writer._state["breakpoints"].get("backdropBounds"),
+            "backdrop_bounds",
+            "backdrop bounds",
+        ),
+        (
+            writer._state.get("copyStoreBreakpoint"),
+            "copy_margin_store",
+            "copy margin store",
+        ),
+    )
+    for breakpoint, callback, label in callbacks:
+        if breakpoint is not None:
+            _set_callback(breakpoint, callback, label)
+
+
+def margin_setter(frame, breakpoint_location, internal_dict):
+    return producer.margin_setter(frame, breakpoint_location, internal_dict)
+
+
+def copy_entry(frame, breakpoint_location, internal_dict):
+    result = producer.copy_entry(frame, breakpoint_location, internal_dict)
+    # The inherited callback re-proxies to its own dependency namespace.  Keep
+    # the directly imported overlay authoritative after every copy entry.
+    _install_direct_callback_proxies()
+    return result
+
+
+def copy_margin_store(frame, breakpoint_location, internal_dict):
+    return producer.copy_margin_store(frame, breakpoint_location, internal_dict)
+
+
+def backdrop_bounds(frame, breakpoint_location, internal_dict):
+    return producer.backdrop_bounds(frame, breakpoint_location, internal_dict)
+
+
 def finalize():
     producer.finalize()
 
@@ -31,6 +81,7 @@ def finalize():
 def __lldb_init_module(debugger, internal_dict):
     writer.QUARTZCORE_UUID = LIVE_QUARTZCORE_UUID
     producer.__lldb_init_module(debugger, internal_dict)
+    _install_direct_callback_proxies()
     trace = writer._state.get("trace")
     if trace is not None:
         trace["backdropMarginWriterProviderCompositionCaptureSchemaVersion"] = 1
@@ -39,6 +90,7 @@ def __lldb_init_module(debugger, internal_dict):
                 "quartzCoreUUID": LIVE_QUARTZCORE_UUID,
                 "quartzCoreIdentityRetargetUsesCapturedValue": False,
                 "quartzCoreIdentityRetargetUsesCropImageOrPixel": False,
+                "directLLDBCallbackProxyModule": __name__,
             }
         )
         writer._write_trace()

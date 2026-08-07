@@ -1,6 +1,6 @@
 {
-  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 3,
-  "frozenAtUtc": "2026-08-07T18:25:10Z",
+  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 4,
+  "frozenAtUtc": "2026-08-07T18:27:26Z",
   "classification": "prospective four-case output-blind direct-Retina-M1 transfer of the authenticated public filter to DesignLibrary provider to SwiftUI Group.margin to CABackdropLayer writer composition; no Apple output for any exact case exists at freeze time",
   "sourceStateBeforeFreeze": {
     "branch": "main",
@@ -44,6 +44,21 @@
       "retarget only the structural QuartzCore UUID pin to the live dyld shared-cache identity F1BA3189-E95A-3ECA-B59A-5A6872754484",
       "retarget only the validator SwiftUICore UUID pin to the live dyld shared-cache identity 99606D45-C40A-3C69-AE51-5F0C4E32E531"
     ],
+    "candidateCaseMatrixSelectionOrAcceptanceChanged": false
+  },
+  "supersedesCallbackTransportVersion": {
+    "commit": "abe1585424afe6c6130d133050096b08839448e8",
+    "result": "Analysis/backdrop_margin_writer_provider_composition_abe1585_callback_transport_failure_result.json",
+    "resultSHA256": "de017f720c6e66f20bb18607cb6eaac6fdd6110e195ed4613ccd3be6d499a9db",
+    "retinaPreflightPassed": true,
+    "applicationReachedFirstStructuralBreakpoint": true,
+    "applicationCompleted": false,
+    "timelineCreated": false,
+    "dynamicPublicRecordCount": 0,
+    "writerEventCount": 0,
+    "candidateTested": false,
+    "caseAcceptedAsProspectiveEvidence": false,
+    "onlyTransportChange": "export the four inherited callbacks through the directly imported LLDB overlay namespace and re-install those proxies after copy-entry updates",
     "candidateCaseMatrixSelectionOrAcceptanceChanged": false
   },
   "antecedentCorrection": {
@@ -207,7 +222,7 @@
     },
     {
       "path": "Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
-      "sha256": "344e95d5dcac9a4313aa32b406910502f6e752f8215d512727e8996077051e9e"
+      "sha256": "f45c3ff3f6f6e3fba0ab87d4ac45ff7c03e87962c4c86d8366ba55945f2d8fd5"
     },
     {
       "path": "Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1.sh",
@@ -231,11 +246,11 @@
     },
     {
       "path": "Analysis/capture_backdrop_margin_writer_provider_composition_lldb.py",
-      "sha256": "0994b5ae08a5cd2b9d9b1fb3ae195ae7e4c1e4580a07ea53ee9b7e8fe2ccf0f8"
+      "sha256": "2a19ee72c72b524ce439692b2c4e3dc3336e76494b0a8925e3c63bb9af08c295"
     },
     {
       "path": "Analysis/test_capture_backdrop_margin_writer_provider_composition_lldb_source.py",
-      "sha256": "52cd5cb7d0fda0c255932b80a129b1c3c609c1bc65b217f91684337aa8f09b2c"
+      "sha256": "04c0e4c60355ad91a97803efcc3fd34f26acf7d88387eb179ce22394ebdc7798"
     },
     {
       "path": "Analysis/backdrop_margin_writer_provider_composition_d949727_structural_transport_failure_result.json",
@@ -244,6 +259,14 @@
     {
       "path": "Analysis/test_backdrop_margin_writer_provider_composition_d949727_structural_transport_failure_result.py",
       "sha256": "a43fcadde8dfca03f4007939e24363371f62efd0b4832c9b84413185f8d621ba"
+    },
+    {
+      "path": "Analysis/backdrop_margin_writer_provider_composition_abe1585_callback_transport_failure_result.json",
+      "sha256": "de017f720c6e66f20bb18607cb6eaac6fdd6110e195ed4613ccd3be6d499a9db"
+    },
+    {
+      "path": "Analysis/test_backdrop_margin_writer_provider_composition_abe1585_callback_transport_failure_result.py",
+      "sha256": "9d518102a0dfb35aed32f3d747989811c947ae61ce28674a204776c01ade1d76"
     }
   ],
   "qualityLocks": {
