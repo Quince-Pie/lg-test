@@ -46,7 +46,8 @@ class PrepareLayerLiveTransportCalibrationSourceTests(unittest.TestCase):
             "readonly nix=/nix/var/nix/profiles/default/bin/nix",
             SOURCE,
         )
-        self.assertIn('"$nix" develop --command python "$validator"', SOURCE)
+        self.assertIn('develop --command python "$validator"', SOURCE)
+        self.assertIn('"nix-command flakes"', SOURCE)
         self.assertNotIn("readonly nix=/nix/store/", SOURCE)
         self.assertNotIn(
             "/Library/Developer/CommandLineTools/usr/bin/python3",

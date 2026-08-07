@@ -59,7 +59,7 @@ fi
 require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd
 require_sha256 "$capture" 7166b30cc047bc21c5db77ebc5e5c92d8dcdc5e23d3833b32c8a40b3dbba7820
 require_sha256 "$transport" dd30287a00e9dd7f73dd517770ecda4b912e0ef367a0040d199002eafde796f2
-require_sha256 "$validator" 2e1b0f2f2ad71b6f393ec331dbb9f6f4b13f8bf3c2f44e3fe789afeb82c58959
+require_sha256 "$validator" 83075643f49d4504386d8b7e96f6f518ac856127530631c29e7b628aab75ea2c
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
@@ -132,7 +132,8 @@ printf '%s\n' "$lldb_status" >"$output_directory/lldb-exit-status.txt"
 
 validation_status=125
 if [[ "$lldb_status" -eq 0 ]]; then
-    "$nix" develop --command python "$validator" \
+    "$nix" --extra-experimental-features "nix-command flakes" \
+        develop --command python "$validator" \
         "$trace" \
         "$timeline" \
         --expected-geometry circle-800-center \
