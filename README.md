@@ -11308,3 +11308,25 @@ Retina session, and the outer Walle shader/flake integrity hashes. The target
 must produce 32/32 exact rectangles and 128/128 exact components; passing still
 grants no selected-region, compositor/color, product-frame, or shader-change
 authority.
+
+The `circle-496-center` dispatch at commit `a2ff533` produced a complete native
+capture, but the frozen compound validator exited 1. This outcome is retained
+as a failed gate and is not relabelled. Opening the evidence shows the failure
+was exclusively a coverage precondition: this allocation happened to contain
+32 singleton pointer matches, so the gate's required pointer-reuse event did
+not occur. No pointer-selection mismatch was observed. Independently, the
+frozen v3 arithmetic matched all 32 rectangles and all 128 binary64 components
+with zero unequal bits and maximum ULP distance `[0,0,0,0]`. In particular,
+Apple's public bleed `173.6` became binary32 `173.60000610351562`, producing
+the exact source DOD
+`[-173.60000610351562,-173.60000610351562,843.2000122070312,843.2000122070312]`.
+
+The trace and timeline hashes are
+`8ff22c95a3c8614e17a1060578bfd34d4a5e1a9ccf5ce40b6fe76a39023cc201`
+and `992035fc474a151c27d22a727ede99e76c365d1aebbf6ee82a91b48290fad95c`.
+The immutable split result is
+`Analysis/prepare_layer_live_crop_replay_v3_a2ff533_holdout_outcome_result.json`.
+It establishes a prospective unseen-geometry arithmetic pass, not a pass of
+the combined gate. A fresh holdout must keep exact arithmetic mandatory while
+treating pointer reuse as a branch to validate when present, rather than an
+event the allocator is required to produce.

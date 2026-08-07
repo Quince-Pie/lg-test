@@ -1,0 +1,109 @@
+{
+  "capture": {
+    "compoundValidationExitStatus": 1,
+    "failedTimelineSampleCount": 0,
+    "liveCodeIdentityAuthenticated": true,
+    "liveCodeIdentityRecordCount": 6,
+    "nativeLLDBExitStatus": 0,
+    "qualifiedMarkerRecordCount": 32,
+    "qualifiedStoreRecordCount": 352,
+    "qualifiedUnionRecordCount": 352,
+    "timelineSampleCount": 33,
+    "traceFailureCount": 0,
+    "traceFinalized": true
+  },
+  "captureCommit": "a2ff53316a727f8563cb534d7e1ae89f6157eb55",
+  "capturedAtUtc": "2026-08-07T20:43:13Z",
+  "classification": "immutable opened outcome of the prospective circle-496 v3 holdout; the frozen compound gate failed solely because a nondeterministic pointer-reuse coverage event did not occur, while the independently frozen arithmetic candidate matched every target component bitwise",
+  "frozenCompoundGate": {
+    "conclusion": "failure",
+    "failedArithmeticTerms": [],
+    "failedCoverageTerms": [
+      "matchingStoreRecordCount >= 33",
+      "pointerReuseRecordCount >= 1",
+      "discardedEarlierMatchCount >= 1"
+    ],
+    "originalFailure": "ValueError: unseen v3 live crop holdout differs",
+    "relabelledAsPass": false
+  },
+  "inputs": {
+    "compoundValidatorSHA256": "e56d139e826d61ed57b16f605ff63b8b6ab29215004362c4f8360e1238fbbaf3",
+    "preregistrationSHA256": "4ceab97059a3c9e77fe45269a2a39e37adc312278de5ebdae59816a252c3f0d2",
+    "timelineSHA256": "992035fc474a151c27d22a727ede99e76c365d1aebbf6ee82a91b48290fad95c",
+    "traceSHA256": "8ff22c95a3c8614e17a1060578bfd34d4a5e1a9ccf5ce40b6fe76a39023cc201",
+    "v3ArithmeticModelSHA256": "ee5fed1aaa98423abafc2ad415a8de2ee599340ee084eb5fb975ee0bf52b3e47"
+  },
+  "observedPointerCoverage": {
+    "allSingletonMatches": true,
+    "cropOrProducerValuesUsedForSelection": false,
+    "discardedEarlierMatchCount": 0,
+    "matchingStoreRecordCount": 32,
+    "pointerReuseBranchExecuted": false,
+    "pointerReuseRecordCount": 0,
+    "pointerSelectionMismatchObserved": false,
+    "recordCount": 32
+  },
+  "prepareLayerLiveCropReplayV3A2FF533HoldoutOutcomeSchemaVersion": 1,
+  "profile": {
+    "appearance": "dark",
+    "backingScaleFactor": 2,
+    "direction": "materialize",
+    "geometry": "circle-496-center",
+    "material": "regular"
+  },
+  "prospectiveArithmeticResult": {
+    "componentCount": 128,
+    "exactComponentCount": 128,
+    "exactRectangleCount": 32,
+    "maximumAbsoluteErrorsXYWH": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "maximumULPDistancesXYWH": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "mismatchedComponentCount": 0,
+    "mismatchedRectangleCount": 0,
+    "rectangleCount": 32
+  },
+  "sealedConclusion": {
+    "freshSplitCriterionHoldoutRequired": true,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "physicalRetinaColorTransferPassed": false,
+    "pointerReuseBranchMismatchObserved": false,
+    "productionShaderAuthorized": false,
+    "selectedRegionOriginTransferPassed": false,
+    "v3CompoundHoldoutPassed": false,
+    "v3UnseenGeometryArithmeticPassed": true,
+    "v3UnseenGeometryTransferPassed": false
+  },
+  "v3ArithmeticModel": {
+    "binary32ConversionCount": 1,
+    "cropOrProducerValuesUsed": false,
+    "internalInputBleedAmountF32": 173.60000610351562,
+    "internalInputBleedAmountF32RawLittleEndianHex": "9a992d43",
+    "internalInputBleedAmountPromotedF64Hex": "0000004033b36540",
+    "recursiveChildF64": [
+      0.0,
+      0.0,
+      843.2000122070312,
+      843.2000122070312
+    ],
+    "recursiveChildHex": "00000000000000000000000000000000000000a099598a40000000a099598a40",
+    "sourceBoundsF64": [
+      -173.60000610351562,
+      -173.60000610351562,
+      843.2000122070312,
+      843.2000122070312
+    ],
+    "sourceBoundsHex": "0000004033b365c00000004033b365c0000000a099598a40000000a099598a40",
+    "terminalPublicInputBleedAmountF64": 173.6,
+    "terminalPublicInputBleedAmountF64Hex": "3333333333b36540"
+  }
+}
