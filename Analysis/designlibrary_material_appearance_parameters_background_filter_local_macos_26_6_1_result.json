@@ -1,0 +1,141 @@
+{
+  "cases": [
+    {
+      "backgroundFilterSHA256": "824af01d066a23b7f8a8bcc24583c198b6c136508bdc89d266ec1048a014cc91",
+      "index": 0,
+      "margin": 9.600000000000001,
+      "marginRawLittleEndianHex": "3433333333332340",
+      "name": "regular_light",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "producedFlagsRawLittleEndianHex": "8391090000000000"
+    },
+    {
+      "backgroundFilterSHA256": "5f5d46ac6cf8abf6a67f721a58a7664e51ad039dc9c463beb2d824e695c69ac9",
+      "index": 1,
+      "margin": 9.600000000000001,
+      "marginRawLittleEndianHex": "3433333333332340",
+      "name": "regular_dark",
+      "normalizedParametersSHA256": "488ee52fdd44f1e979de78e53ef95ffe53c2880c8dfa2e65c3e9d1c07f848978",
+      "producedFlagsBits": "0x0000000000099183",
+      "producedFlagsRawLittleEndianHex": "8391090000000000"
+    },
+    {
+      "backgroundFilterSHA256": "663fc54ebeb85cdfc3b1c6eafcc76b0f4b3e4021ed648fd36d4faaa490242857",
+      "index": 2,
+      "margin": 0.0,
+      "marginRawLittleEndianHex": "0000000000000000",
+      "name": "clear_light",
+      "normalizedParametersSHA256": "dc6d9c5a0730e33a8acd31afc28283202434dccae9f4a6fa4e92da0b65ebb231",
+      "producedFlagsBits": "0x0000000000088183",
+      "producedFlagsRawLittleEndianHex": "8381080000000000"
+    },
+    {
+      "backgroundFilterSHA256": "663fc54ebeb85cdfc3b1c6eafcc76b0f4b3e4021ed648fd36d4faaa490242857",
+      "index": 3,
+      "margin": 0.0,
+      "marginRawLittleEndianHex": "0000000000000000",
+      "name": "clear_dark",
+      "normalizedParametersSHA256": "5196aee95de4710ecd2240122699428d5c5729a5eae69cd5769ec87154f7f7eb",
+      "producedFlagsBits": "0x0000000000088183",
+      "producedFlagsRawLittleEndianHex": "8381080000000000"
+    }
+  ],
+  "claims": {
+    "controlledMaterialSpecificMarginBoundaryEstablished": true,
+    "controlledRegularClearLightDarkBackgroundFilterTableEstablished": true,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveSwiftUIEnvironmentUpdaterEstablished": false,
+    "liveTransitionMarginMaximumPolicyEstablished": false,
+    "liveTransitionProgressProductionLawEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "classification": "prospectively predicted direct invocation of Apple's exact BackgroundFilter constructor and sdfBackdropMargin getter over the regular/clear by light/dark Parameters table with each real flags word; no live SwiftUI updater, GUI, render, image, crop, pixel, or Nix store path",
+  "designLibraryMaterialAppearanceParametersBackgroundFilterCaptureSchemaVersion": 1,
+  "exactCodeGate": {
+    "codeAuthenticatedBeforeInputsWritten": true,
+    "constructorByteCount": 1044,
+    "constructorModuleOffset": 765184,
+    "constructorSHA256": "71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d",
+    "providerByteCount": 984,
+    "providerModuleOffset": 749748,
+    "providerSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b"
+  },
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "measuredInvariants": {
+    "backgroundFilterByteCount": 504,
+    "capturedObjectOrMarginUsedForSelection": false,
+    "clearAppearanceObjectsBitwiseEqual": true,
+    "clearMarginRawWord": "0000000000000000",
+    "constructorAndProviderCodeAuthenticatedBeforeInput": true,
+    "environmentFlagsEmbeddedBitwiseAtObjectOffset496": true,
+    "freshProcessBitwiseStabilityEstablished": true,
+    "parametersByteCount": 1025,
+    "profileCaseCount": 4,
+    "regularAppearanceObjectsDistinct": true,
+    "regularMarginRawWord": "3433333333332340",
+    "uniqueBackgroundFilterCount": 3
+  },
+  "predecessor": {
+    "caseCount": 4,
+    "parametersByteCount": 1025,
+    "path": "Analysis/designlibrary_material_appearance_parameters_local_macos_26_6_1_result.json",
+    "sha256": "fd0b181ef72b27a8738c67601b05a1813081cf125f3b82d277829db05567eb3b"
+  },
+  "predictionBasis": {
+    "authenticatedProviderInstructionReplayUsed": true,
+    "constructorCopyLawUsed": true,
+    "exactEnvironmentFlagsUsed": true,
+    "expectedObjectAndMarginIdentitiesFixedBeforeNativeJoin": true
+  },
+  "tool": {
+    "assemblyBridge": "Analysis/invoke_designlibrary_public_parameters_background_filter_arm64.S",
+    "assemblyBridgeSHA256": "47f243595c69d779a5d40e205d255b0b5922164039a5f5da6f9f47f784d850e0",
+    "captureSource": "Analysis/capture_designlibrary_material_appearance_parameters_background_filter_local_macos_26_6_1.py",
+    "captureSourceSHA256": "8def21b0a8e3551377d286cbed469f420bbd84cf7950619354b14917e62f58ec",
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "freshProcessCount": 3,
+    "genericJoinSourceSHA256": "08708c0f4717d9496202ed14c03278a4084407816e18d1dfbd8ec58779eb7ac5",
+    "includedBaseProbeSource": "Analysis/probe_designlibrary_public_parameters_background_filter_local_macos_26_6_1.c",
+    "includedBaseProbeSourceSHA256": "674bec9de543da7827e283ef493ec5f10bd82458b1afec6bc3c65d09e403ef06",
+    "probeExecutableContainsNixStorePath": false,
+    "probeExecutableSHA256": "ed3a06ce4ea96850de1b26b0f5b46c3601ac9e28ad03444d292193af716e9bf7",
+    "probeSource": "Analysis/probe_designlibrary_environment_parameters_background_filter_local_macos_26_6_1.c",
+    "probeSourceSHA256": "9536abaf99ae6d78663981c90afcd80aab5654fde12366c996039dd71b01f52c",
+    "python": "3.9.6"
+  },
+  "uniqueBackgroundFilters": {
+    "5f5d46ac6cf8abf6a67f721a58a7664e51ad039dc9c463beb2d824e695c69ac9": {
+      "caseNames": [
+        "regular_dark"
+      ],
+      "hex": "0000000000000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000003f0000803f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000cdcccc3e000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e0000803fcdcccc3d6666e63e0000803f0000000000000000000000000000803e0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f00000000000000000000003f0000803f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf8391090000000000"
+    },
+    "663fc54ebeb85cdfc3b1c6eafcc76b0f4b3e4021ed648fd36d4faaa490242857": {
+      "caseNames": [
+        "clear_light",
+        "clear_dark"
+      ],
+      "hex": "0000000000000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f9a99993f000000000000000000000000cdcccc3d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000004000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f48e17a14ae47314000000000000048c000000000000018403433333333332340000000000000f0bf0000000000000000000000000000803f9a99993d3333933f14ae873f0000803f0000803f0000803f000000000000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000803f000000000000403f0000803f9a99993f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000101000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf8381080000000000"
+    },
+    "824af01d066a23b7f8a8bcc24583c198b6c136508bdc89d266ec1048a014cc91": {
+      "caseNames": [
+        "regular_light"
+      ],
+      "hex": "0000000000000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f000000000000000000000000cdcc4c3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e0000803f9a99593f0ad7833f0000803f0000803f0000803f0000803f0000803e0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000101000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf8391090000000000"
+    }
+  }
+}

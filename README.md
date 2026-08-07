@@ -9874,3 +9874,97 @@ direction-dependent allocation topology, general integer crop policy,
 physical Retina/color/compositor transfer, or an independent Walle
 zero-unequal-byte frame. Liquid Glass parity and production shader changes
 remain unauthorized.
+
+### Exact regular/clear by light/dark `Parameters` profiles
+
+The two production-relevant material choices are now crossed directly with
+light and dark internal Environment state. Before observing any new Parameters
+bytes, the capture freezes the already authenticated configuration flag-seed
+and EnvironmentFlags results. Those predecessors predict exact flags
+`0x0000000000099183` for regular and `0x0000000000088183` for clear in both
+appearances: the complete EnvironmentFlags producer does not read the
+`colorScheme` field directly.
+
+The native probe constructs these four fixed cases under the same default
+`Material.Context` boundary used by the earlier headless tables:
+
+```text
+regular_light  3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155
+regular_dark   488ee52fdd44f1e979de78e53ef95ffe53c2880c8dfa2e65c3e9d1c07f848978
+clear_light    dc6d9c5a0730e33a8acd31afc28283202434dccae9f4a6fa4e92da0b65ebb231
+clear_dark     5196aee95de4710ecd2240122699428d5c5729a5eae69cd5769ec87154f7f7eb
+```
+
+Three fresh LLDB processes reproduce all 873 semantic bytes and all four
+normalized 1,025-byte Parameters blobs bit for bit. Regular light and dark
+independently reproduce the preceding 36-case Environment table's baseline
+and dark records. Clear's nonsemantic raw padding varies between processes;
+normalizing only the already proved Swift padding ranges removes every such
+difference. No variable padding byte is treated as optical state.
+
+Clear light and dark differ in exactly 50 bytes, all within the Highlights
+field at Parameters offsets `520..<777`. Both differ from the earlier
+zero-flags clear `initialState` value. This distinction matters: a zero-flags
+public default is not a substitute for the normal flags-produced material
+profile.
+
+The capture, LLDB overlay, native probe, and canonical result are:
+
+```text
+Analysis/capture_designlibrary_material_appearance_parameters_local_macos_26_6_1.py
+  SHA-256 8afc33846b98904cf1af3d1ff29cd8bdb6037b6018af3532eaa9e09bf02b767b
+Analysis/capture_designlibrary_material_appearance_parameters_local_macos_26_6_1_lldb.py
+  SHA-256 1320289cf969993fdd39c59f561d5d776c2adb93a8434257f18dc460c6134a97
+Analysis/probe_designlibrary_material_appearance_parameters_local_macos_26_6_1.c
+  SHA-256 0343b7cc322922ec08fde41884efae429f4c7f56cce3b821d45235531de07470
+Analysis/designlibrary_material_appearance_parameters_local_macos_26_6_1_result.json
+  SHA-256 fd0b181ef72b27a8738c67601b05a1813081cf125f3b82d277829db05567eb3b
+```
+
+### Predicted four-profile concrete filters and material margin boundary
+
+The four profile Parameters then enter a separate prospective native join.
+Before invoking Apple, the exact constructor copy law and each flags word
+predict the complete 504-byte object, while the already authenticated
+instruction-level provider replay predicts the margin return. The direct run
+authenticates all 1,044 constructor bytes and all 984 provider bytes before
+writing an input. Three fresh processes match every predicted object and
+margin bit for bit.
+
+The four cases produce only three concrete backdrop filters:
+
+```text
+regular_light  824af01d066a23b7f8a8bcc24583c198b6c136508bdc89d266ec1048a014cc91
+regular_dark   5f5d46ac6cf8abf6a67f721a58a7664e51ad039dc9c463beb2d824e695c69ac9
+clear_light    663fc54ebeb85cdfc3b1c6eafcc76b0f4b3e4021ed648fd36d4faaa490242857
+clear_dark     663fc54ebeb85cdfc3b1c6eafcc76b0f4b3e4021ed648fd36d4faaa490242857
+```
+
+Regular appearance changes survive into the concrete backdrop filter, but
+both appearances return the same exact binary64 margin
+`3433333333332340`, or `9.6000000000000014`. Clear's 50-byte appearance
+difference lives entirely in Parameters Highlights, which this
+`BackgroundFilter` constructor does not consume. Clear light and dark therefore
+collapse to one bitwise-identical concrete filter and both return exact `+0.0`
+(`0000000000000000`). This independently corroborates the material-specific
+live allocation split without claiming the still-unproved transition-wide
+writer policy.
+
+The prospective join and canonical result are:
+
+```text
+Analysis/capture_designlibrary_material_appearance_parameters_background_filter_local_macos_26_6_1.py
+  SHA-256 8def21b0a8e3551377d286cbed469f420bbd84cf7950619354b14917e62f58ec
+Analysis/designlibrary_material_appearance_parameters_background_filter_local_macos_26_6_1_result.json
+  SHA-256 220b1a7bd8ed778016002a89274efc18ea1d5cd36c4b7990655d689a9dd0c48b
+```
+
+Both captures run through Apple Command Line Tools on the native M1 Max,
+require no unlocked display, and verify that no probe executable embeds a Nix
+store path. They close the controlled material/appearance Parameters,
+concrete-filter, and per-filter margin boundaries. They do **not** establish
+the live SwiftUI Environment updater, animation-progress and keyed-weight
+production, transition-wide allocation maximum, general integer crop policy,
+physical Retina/color/compositor transfer, or an independent Walle
+zero-unequal-byte frame. Liquid Glass parity and production shader changes
+remain unauthorized.

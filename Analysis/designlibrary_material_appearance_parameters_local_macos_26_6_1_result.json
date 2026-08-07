@@ -1,0 +1,1150 @@
+{
+  "cases": [
+    {
+      "appearance": "light",
+      "changedFieldsFromRegularLight": [],
+      "changedSemanticByteOffsetsFromRegularLight": [],
+      "index": 0,
+      "material": "regular",
+      "name": "regular_light",
+      "normalizedParametersSHA256": "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "material_appearance:regular_light",
+      "rawParametersSHA256ByFreshProcess": [
+        "ea218e7641243b609062fe4a6bca7e3a562fe5e5ace21858fb9fa5ba8841b7b6",
+        "ea218e7641243b609062fe4a6bca7e3a562fe5e5ace21858fb9fa5ba8841b7b6",
+        "ea218e7641243b609062fe4a6bca7e3a562fe5e5ace21858fb9fa5ba8841b7b6"
+      ]
+    },
+    {
+      "appearance": "dark",
+      "changedFieldsFromRegularLight": [
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.ycc.white",
+          "offset": 84,
+          "rawLittleEndianHex": "0000003f",
+          "value": 0.5
+        },
+        {
+          "baselineRawLittleEndianHex": "6666e63f",
+          "baselineValue": 1.7999999523162842,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.ycc.saturation",
+          "offset": 88,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineHex": "000000000000000000000000cdcc4c3d00",
+          "hex": "0000000000000000000000000000000001",
+          "kind": "color",
+          "name": "shadow.ycc.normalFill",
+          "offset": 92
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.opacity",
+          "offset": 152,
+          "rawLittleEndianHex": "cdcccc3e",
+          "value": 0.4000000059604645
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "cdcccc3d",
+          "value": 0.10000000149011612
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7833f",
+          "baselineValue": 1.0299999713897705,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.white",
+          "offset": 320,
+          "rawLittleEndianHex": "6666e63e",
+          "value": 0.44999998807907104
+        },
+        {
+          "baselineHex": "0000803f0000803f0000803f0000803e00",
+          "hex": "0000000000000000000000000000803e00",
+          "kind": "color",
+          "name": "faceEffects.ycc.normalFill",
+          "offset": 328
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "edgeBleed.ycc.black",
+          "offset": 428,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "edgeBleed.ycc.white",
+          "offset": 432,
+          "rawLittleEndianHex": "0000003f",
+          "value": 0.5
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99993f",
+          "baselineValue": 1.2000000476837158,
+          "format": "f",
+          "kind": "scalar",
+          "name": "edgeBleed.ycc.saturation",
+          "offset": 436,
+          "rawLittleEndianHex": "0000803f",
+          "value": 1.0
+        },
+        {
+          "baselineStorage": 1,
+          "kind": "presence",
+          "name": "edgeBleed.presence",
+          "offset": 497,
+          "storage": 0
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.black",
+          "offset": 576,
+          "rawLittleEndianHex": "8fc2753d",
+          "value": 0.05999999865889549
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.white",
+          "offset": 580,
+          "rawLittleEndianHex": "9a99193f",
+          "value": 0.6000000238418579
+        },
+        {
+          "baselineRawLittleEndianHex": "0000c03f",
+          "baselineValue": 1.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.saturation",
+          "offset": 584,
+          "rawLittleEndianHex": "9a99993f",
+          "value": 1.2000000476837158
+        },
+        {
+          "baselineHex": "0000000000000000000000000000000001",
+          "hex": "9218a33e9218a33e9218a33e0000803f00",
+          "kind": "color",
+          "name": "highlights.key.ycc.dodgeFill",
+          "offset": 608
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.black",
+          "offset": 696,
+          "rawLittleEndianHex": "8fc2753d",
+          "value": 0.05999999865889549
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.white",
+          "offset": 700,
+          "rawLittleEndianHex": "9a99193f",
+          "value": 0.6000000238418579
+        },
+        {
+          "baselineRawLittleEndianHex": "0000c03f",
+          "baselineValue": 1.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.saturation",
+          "offset": 704,
+          "rawLittleEndianHex": "9a99993f",
+          "value": 1.2000000476837158
+        },
+        {
+          "baselineHex": "0000000000000000000000000000000001",
+          "hex": "9218a33e9218a33e9218a33e0000803f00",
+          "kind": "color",
+          "name": "highlights.fill.ycc.dodgeFill",
+          "offset": 728
+        }
+      ],
+      "changedSemanticByteOffsetsFromRegularLight": [
+        86,
+        88,
+        89,
+        90,
+        104,
+        105,
+        106,
+        107,
+        108,
+        152,
+        153,
+        154,
+        155,
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        330,
+        331,
+        334,
+        335,
+        338,
+        339,
+        428,
+        429,
+        430,
+        431,
+        434,
+        436,
+        437,
+        438,
+        497,
+        576,
+        577,
+        578,
+        579,
+        580,
+        581,
+        582,
+        584,
+        585,
+        586,
+        608,
+        609,
+        610,
+        611,
+        612,
+        613,
+        614,
+        615,
+        616,
+        617,
+        618,
+        619,
+        622,
+        623,
+        624,
+        696,
+        697,
+        698,
+        699,
+        700,
+        701,
+        702,
+        704,
+        705,
+        706,
+        728,
+        729,
+        730,
+        731,
+        732,
+        733,
+        734,
+        735,
+        736,
+        737,
+        738,
+        739,
+        742,
+        743,
+        744
+      ],
+      "index": 1,
+      "material": "regular",
+      "name": "regular_dark",
+      "normalizedParametersSHA256": "488ee52fdd44f1e979de78e53ef95ffe53c2880c8dfa2e65c3e9d1c07f848978",
+      "producedFlagsBits": "0x0000000000099183",
+      "qualifiedName": "material_appearance:regular_dark",
+      "rawParametersSHA256ByFreshProcess": [
+        "4a837b8f31bbdf1ce724841f286218b9814e8e652d064961163da75511022a88",
+        "4a837b8f31bbdf1ce724841f286218b9814e8e652d064961163da75511022a88",
+        "4a837b8f31bbdf1ce724841f286218b9814e8e652d064961163da75511022a88"
+      ]
+    },
+    {
+      "appearance": "light",
+      "changedFieldsFromRegularLight": [
+        {
+          "baselineRawLittleEndianHex": "0000803e",
+          "baselineValue": 0.25,
+          "format": "f",
+          "kind": "scalar",
+          "name": "backdropScale",
+          "offset": 0,
+          "rawLittleEndianHex": "0000003f",
+          "value": 0.5
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000003840",
+          "baselineValue": 24.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "shadow.shadowRadius",
+          "offset": 72,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "6666e63f",
+          "baselineValue": 1.7999999523162842,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.ycc.saturation",
+          "offset": 88,
+          "rawLittleEndianHex": "9a99993f",
+          "value": 1.2000000476837158
+        },
+        {
+          "baselineHex": "000000000000000000000000cdcc4c3d00",
+          "hex": "000000000000000000000000cdcccc3d00",
+          "kind": "color",
+          "name": "shadow.ycc.normalFill",
+          "offset": 92
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.opacity",
+          "offset": 152,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "5555555555550540",
+          "baselineValue": 2.6666666666666665,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.radius",
+          "offset": 176,
+          "rawLittleEndianHex": "0000000000000040",
+          "value": 2.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000002840",
+          "baselineValue": 12.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.innerHeight",
+          "offset": 256,
+          "rawLittleEndianHex": "48e17a14ae473140",
+          "value": 17.28
+        },
+        {
+          "baselineRawLittleEndianHex": "34333333333343c0",
+          "baselineValue": -38.400000000000006,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.innerAmount",
+          "offset": 264,
+          "rawLittleEndianHex": "00000000000048c0",
+          "value": -48.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99993e",
+          "baselineValue": 0.30000001192092896,
+          "format": "f",
+          "kind": "scalar",
+          "name": "refraction.outerOpacity",
+          "offset": 304,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "9a99993d",
+          "value": 0.07500000298023224
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7833f",
+          "baselineValue": 1.0299999713897705,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.white",
+          "offset": 320,
+          "rawLittleEndianHex": "3333933f",
+          "value": 1.149999976158142
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.saturation",
+          "offset": 324,
+          "rawLittleEndianHex": "14ae873f",
+          "value": 1.059999942779541
+        },
+        {
+          "baselineHex": "0000803f0000803f0000803f0000803e00",
+          "hex": "0000803f0000803f0000803f0000000000",
+          "kind": "color",
+          "name": "faceEffects.ycc.normalFill",
+          "offset": 328
+        },
+        {
+          "baselineRawLittleEndianHex": "cccccccccccc3040",
+          "baselineValue": 16.799999999999997,
+          "format": "d",
+          "kind": "scalar",
+          "name": "edgeBleed.amount",
+          "offset": 392,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "cccccccccccc3040",
+          "baselineValue": 16.799999999999997,
+          "format": "d",
+          "kind": "scalar",
+          "name": "edgeBleed.height",
+          "offset": 400,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "edgeBleed.ycc.black",
+          "offset": 428,
+          "rawLittleEndianHex": "0000403f",
+          "value": 0.75
+        }
+      ],
+      "changedSemanticByteOffsetsFromRegularLight": [
+        2,
+        3,
+        78,
+        79,
+        88,
+        89,
+        90,
+        106,
+        155,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        304,
+        305,
+        306,
+        307,
+        318,
+        319,
+        320,
+        321,
+        322,
+        324,
+        325,
+        326,
+        342,
+        343,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        428,
+        429,
+        430
+      ],
+      "index": 2,
+      "material": "clear",
+      "name": "clear_light",
+      "normalizedParametersSHA256": "dc6d9c5a0730e33a8acd31afc28283202434dccae9f4a6fa4e92da0b65ebb231",
+      "producedFlagsBits": "0x0000000000088183",
+      "qualifiedName": "material_appearance:clear_light",
+      "rawParametersSHA256ByFreshProcess": [
+        "566148809d42d1a888dddb85df62ff008096249b525e430e781030a720cec1e4",
+        "dab52bc7577fa33bc04a3fad942e2b4c17778627a14a465d2839391d9a6ef7f2",
+        "b2ebb4f52697344aa431c4e3a4977286d44e8896c1ddb1a2c7d19b66d7cb1b1c"
+      ]
+    },
+    {
+      "appearance": "dark",
+      "changedFieldsFromRegularLight": [
+        {
+          "baselineRawLittleEndianHex": "0000803e",
+          "baselineValue": 0.25,
+          "format": "f",
+          "kind": "scalar",
+          "name": "backdropScale",
+          "offset": 0,
+          "rawLittleEndianHex": "0000003f",
+          "value": 0.5
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000003840",
+          "baselineValue": 24.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "shadow.shadowRadius",
+          "offset": 72,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "6666e63f",
+          "baselineValue": 1.7999999523162842,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.ycc.saturation",
+          "offset": 88,
+          "rawLittleEndianHex": "9a99993f",
+          "value": 1.2000000476837158
+        },
+        {
+          "baselineHex": "000000000000000000000000cdcc4c3d00",
+          "hex": "000000000000000000000000cdcccc3d00",
+          "kind": "color",
+          "name": "shadow.ycc.normalFill",
+          "offset": 92
+        },
+        {
+          "baselineRawLittleEndianHex": "0000003f",
+          "baselineValue": 0.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "shadow.opacity",
+          "offset": 152,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "5555555555550540",
+          "baselineValue": 2.6666666666666665,
+          "format": "d",
+          "kind": "scalar",
+          "name": "blur.radius",
+          "offset": 176,
+          "rawLittleEndianHex": "0000000000000040",
+          "value": 2.0
+        },
+        {
+          "baselineRawLittleEndianHex": "0000000000002840",
+          "baselineValue": 12.0,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.innerHeight",
+          "offset": 256,
+          "rawLittleEndianHex": "48e17a14ae473140",
+          "value": 17.28
+        },
+        {
+          "baselineRawLittleEndianHex": "34333333333343c0",
+          "baselineValue": -38.400000000000006,
+          "format": "d",
+          "kind": "scalar",
+          "name": "refraction.innerAmount",
+          "offset": 264,
+          "rawLittleEndianHex": "00000000000048c0",
+          "value": -48.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99993e",
+          "baselineValue": 0.30000001192092896,
+          "format": "f",
+          "kind": "scalar",
+          "name": "refraction.outerOpacity",
+          "offset": 304,
+          "rawLittleEndianHex": "00000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "9a99593f",
+          "baselineValue": 0.8500000238418579,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.black",
+          "offset": 316,
+          "rawLittleEndianHex": "9a99993d",
+          "value": 0.07500000298023224
+        },
+        {
+          "baselineRawLittleEndianHex": "0ad7833f",
+          "baselineValue": 1.0299999713897705,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.white",
+          "offset": 320,
+          "rawLittleEndianHex": "3333933f",
+          "value": 1.149999976158142
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "faceEffects.ycc.saturation",
+          "offset": 324,
+          "rawLittleEndianHex": "14ae873f",
+          "value": 1.059999942779541
+        },
+        {
+          "baselineHex": "0000803f0000803f0000803f0000803e00",
+          "hex": "0000803f0000803f0000803f0000000000",
+          "kind": "color",
+          "name": "faceEffects.ycc.normalFill",
+          "offset": 328
+        },
+        {
+          "baselineRawLittleEndianHex": "cccccccccccc3040",
+          "baselineValue": 16.799999999999997,
+          "format": "d",
+          "kind": "scalar",
+          "name": "edgeBleed.amount",
+          "offset": 392,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "cccccccccccc3040",
+          "baselineValue": 16.799999999999997,
+          "format": "d",
+          "kind": "scalar",
+          "name": "edgeBleed.height",
+          "offset": 400,
+          "rawLittleEndianHex": "0000000000000000",
+          "value": 0.0
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "edgeBleed.ycc.black",
+          "offset": 428,
+          "rawLittleEndianHex": "0000403f",
+          "value": 0.75
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.black",
+          "offset": 576,
+          "rawLittleEndianHex": "8fc2753d",
+          "value": 0.05999999865889549
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.white",
+          "offset": 580,
+          "rawLittleEndianHex": "9a99193f",
+          "value": 0.6000000238418579
+        },
+        {
+          "baselineRawLittleEndianHex": "0000c03f",
+          "baselineValue": 1.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.key.ycc.saturation",
+          "offset": 584,
+          "rawLittleEndianHex": "9a99993f",
+          "value": 1.2000000476837158
+        },
+        {
+          "baselineHex": "0000000000000000000000000000000001",
+          "hex": "9218a33e9218a33e9218a33e0000803f00",
+          "kind": "color",
+          "name": "highlights.key.ycc.dodgeFill",
+          "offset": 608
+        },
+        {
+          "baselineRawLittleEndianHex": "6666663f",
+          "baselineValue": 0.8999999761581421,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.black",
+          "offset": 696,
+          "rawLittleEndianHex": "8fc2753d",
+          "value": 0.05999999865889549
+        },
+        {
+          "baselineRawLittleEndianHex": "0000803f",
+          "baselineValue": 1.0,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.white",
+          "offset": 700,
+          "rawLittleEndianHex": "9a99193f",
+          "value": 0.6000000238418579
+        },
+        {
+          "baselineRawLittleEndianHex": "0000c03f",
+          "baselineValue": 1.5,
+          "format": "f",
+          "kind": "scalar",
+          "name": "highlights.fill.ycc.saturation",
+          "offset": 704,
+          "rawLittleEndianHex": "9a99993f",
+          "value": 1.2000000476837158
+        },
+        {
+          "baselineHex": "0000000000000000000000000000000001",
+          "hex": "9218a33e9218a33e9218a33e0000803f00",
+          "kind": "color",
+          "name": "highlights.fill.ycc.dodgeFill",
+          "offset": 728
+        }
+      ],
+      "changedSemanticByteOffsetsFromRegularLight": [
+        2,
+        3,
+        78,
+        79,
+        88,
+        89,
+        90,
+        106,
+        155,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        304,
+        305,
+        306,
+        307,
+        318,
+        319,
+        320,
+        321,
+        322,
+        324,
+        325,
+        326,
+        342,
+        343,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        428,
+        429,
+        430,
+        576,
+        577,
+        578,
+        579,
+        580,
+        581,
+        582,
+        584,
+        585,
+        586,
+        608,
+        609,
+        610,
+        611,
+        612,
+        613,
+        614,
+        615,
+        616,
+        617,
+        618,
+        619,
+        622,
+        623,
+        624,
+        696,
+        697,
+        698,
+        699,
+        700,
+        701,
+        702,
+        704,
+        705,
+        706,
+        728,
+        729,
+        730,
+        731,
+        732,
+        733,
+        734,
+        735,
+        736,
+        737,
+        738,
+        739,
+        742,
+        743,
+        744
+      ],
+      "index": 3,
+      "material": "clear",
+      "name": "clear_dark",
+      "normalizedParametersSHA256": "5196aee95de4710ecd2240122699428d5c5729a5eae69cd5769ec87154f7f7eb",
+      "producedFlagsBits": "0x0000000000088183",
+      "qualifiedName": "material_appearance:clear_dark",
+      "rawParametersSHA256ByFreshProcess": [
+        "e5f34b712421838cc6eb02932f867643a3dc1a2c13599975f91e0e4bb4d94d8c",
+        "fe993736fd2ca3aaa76db6fdec70bdba957a697c5b6ef0b4744f28ea17d859f3",
+        "aa6c90cf16eef74aba4e1bd151f65f7749254234786ab25e92decca9b78b6d0c"
+      ]
+    }
+  ],
+  "claims": {
+    "controlledRegularClearLightDarkParametersTableEstablished": true,
+    "environmentFlagsProducerToProfileParametersJoinEstablished": true,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveSwiftUIEnvironmentUpdaterEstablished": false,
+    "liveTransitionProgressProductionLawEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "classification": "prospectively fixed direct exact-code EnvironmentFlags production followed by Apple provider resolution and ResolvedRecipe.Parameters construction for regular/clear crossed with light/dark internal Environment state under a default Material.Context; no live SwiftUI updater, GUI, render, image, crop, pixel, or Nix store path",
+  "designLibraryMaterialAppearanceParametersCaptureSchemaVersion": 1,
+  "exactCodeGate": {
+    "environmentFlagsProducerByteCount": 1252,
+    "environmentFlagsProducerModuleOffset": 1124344,
+    "environmentFlagsProducerSHA256": "69bd75dcc4daad7956b6b41560fc39a1ec5bd4187712c945788477ec6dd97090",
+    "parametersBuilderByteCount": 4916,
+    "parametersBuilderModuleOffset": 1182540,
+    "parametersBuilderSHA256": "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4",
+    "parametersCallerByteCount": 3452,
+    "parametersCallerModuleOffset": 1175996,
+    "parametersCallerSHA256": "ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6"
+  },
+  "frameworks": {
+    "DesignLibrary": {
+      "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+      "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+    },
+    "SwiftUICore": {
+      "path": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+      "uuid": "99606D45-C40A-3C69-AE51-5F0C4E32E531"
+    }
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "measuredInvariants": {
+    "capturedParametersUsedForSelection": false,
+    "defaultMaterialContextUsed": true,
+    "freshProcessSemanticStabilityEstablished": true,
+    "parametersBuildsPerCase": 1,
+    "profileCaseCount": 4,
+    "prospectiveFlagsMatchedBitwise": true,
+    "uniqueNormalizedParametersCount": 4
+  },
+  "parametersLayout": {
+    "byteCount": 1025,
+    "normalizedPaddingRanges": [
+      [
+        4,
+        8
+      ],
+      [
+        20,
+        24
+      ],
+      [
+        109,
+        112
+      ],
+      [
+        129,
+        132
+      ],
+      [
+        149,
+        152
+      ],
+      [
+        156,
+        160
+      ],
+      [
+        169,
+        176
+      ],
+      [
+        216,
+        224
+      ],
+      [
+        249,
+        256
+      ],
+      [
+        309,
+        312
+      ],
+      [
+        345,
+        348
+      ],
+      [
+        365,
+        368
+      ],
+      [
+        386,
+        392
+      ],
+      [
+        457,
+        460
+      ],
+      [
+        477,
+        480
+      ],
+      [
+        498,
+        500
+      ],
+      [
+        517,
+        520
+      ],
+      [
+        524,
+        528
+      ],
+      [
+        548,
+        552
+      ],
+      [
+        605,
+        608
+      ],
+      [
+        625,
+        628
+      ],
+      [
+        645,
+        648
+      ],
+      [
+        668,
+        672
+      ],
+      [
+        725,
+        728
+      ],
+      [
+        745,
+        748
+      ],
+      [
+        765,
+        768
+      ],
+      [
+        777,
+        784
+      ],
+      [
+        796,
+        800
+      ],
+      [
+        817,
+        824
+      ],
+      [
+        873,
+        880
+      ],
+      [
+        905,
+        912
+      ],
+      [
+        937,
+        944
+      ],
+      [
+        961,
+        968
+      ],
+      [
+        985,
+        992
+      ]
+    ],
+    "semanticByteCount": 873
+  },
+  "predecessors": {
+    "configurationFlagSeed": {
+      "path": "Analysis/designlibrary_configuration_flag_seed_local_macos_26_6_1_result.json",
+      "sha256": "1cf97c5ccf4b51c85c882cce1f8b0b91335ab80508908c4fcc763d9b2768390a"
+    },
+    "environmentFlagsResolution": {
+      "path": "Analysis/designlibrary_environment_flags_resolution_local_macos_26_6_1_result.json",
+      "sha256": "3b65ba5764c786a7f82eb3f92084653e0a9f9e85267d70eca7108243dfc8d597"
+    },
+    "prospectiveFlagsLaw": {
+      "clearFlagsBits": "0x0000000000088183",
+      "colorSchemeDirectlyReadByFlagsProducer": false,
+      "regularFlagsBits": "0x0000000000099183"
+    }
+  },
+  "tool": {
+    "assemblyBridgeSHA256": "8abad01a65462ff5f25bb77710733a7b38d1e5809e6065631e42d232c1d73b90",
+    "baseLldbAdapterSHA256": "c82fc09d0c3bcef58f40ff6fb13ac593c85bb01ceab65bf12380f4f344cadfb9",
+    "basePublicProbeSourceSHA256": "59c54e502eceb9a2d789f3729c7f4ba2de8067e83086a4cd8d5c7343e10cee8f",
+    "captureSource": "Analysis/capture_designlibrary_material_appearance_parameters_local_macos_26_6_1.py",
+    "captureSourceSHA256": "8afc33846b98904cf1af3d1ff29cd8bdb6037b6018af3532eaa9e09bf02b767b",
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "environmentParametersCaptureSourceSHA256": "d0be2b9956ab636d2b7ba1a6226b7df632248bbde46fdced9e118a3b557f8127",
+    "freshProcessCount": 3,
+    "lldbAdapter": "Analysis/capture_designlibrary_material_appearance_parameters_local_macos_26_6_1_lldb.py",
+    "lldbAdapterSHA256": "1320289cf969993fdd39c59f561d5d776c2adb93a8434257f18dc460c6134a97",
+    "lldbLogSHA256ByFreshProcess": [
+      "0fc60110f8382736d2a31d209f44770fc4ab3b2cbf474912caec6218e02cad90",
+      "264969ad33169449ee1c96024227f312ae1e009c5fce7aeae2762ad27806896d",
+      "cd63834e44d4ca9e86994146213ec9ed169170109c0f3134de5c312d5ff7beea"
+    ],
+    "parametersBasisSourceSHA256": "829e758062d1905ed5635b09bf458337bebce3e41f506ec301d80c66112d2442",
+    "probeExecutableContainsNixStorePath": false,
+    "probeExecutableSHA256": "f0510be7be89f9d612091462c1641201e0576b0a0d533757f593481cb989a6e5",
+    "probeSource": "Analysis/probe_designlibrary_material_appearance_parameters_local_macos_26_6_1.c",
+    "probeSourceSHA256": "0343b7cc322922ec08fde41884efae429f4c7f56cce3b821d45235531de07470",
+    "publicParametersCaptureSourceSHA256": "ff54baa77b1d2d8d3b6dedf05a4ce5edf341a8b86966726701107a3dcd288610",
+    "python": "3.9.6"
+  },
+  "uniqueNormalizedParameters": {
+    "3caea43e2076d2c74840b2e1a544a5de5f3ff45d18d93f136a26b045427e9155": {
+      "caseNames": [
+        "regular_light"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000803f6666e63f000000000000000000000000cdcc4c3d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000003f0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803f9a99593f0ad7833f0000803f0000803f0000803f0000803f0000803e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "488ee52fdd44f1e979de78e53ef95ffe53c2880c8dfa2e65c3e9d1c07f848978": {
+      "caseNames": [
+        "regular_dark"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000003840000000000000003f0000803f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000cdcccc3e0000000000000000000000000000000000000000555555555555054000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f0000000000000000000000000000284034333333333343c000000000000018403433333333332340000000000000f0bf00000000000000009a99993e000000000000803fcdcccc3d6666e63e0000803f0000000000000000000000000000803e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccccccccc3040cccccccccccc30400000000000000000000000000000803f00000000000000000000003f0000803f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f8fc2753d9a99193f9a99993f00000000000000000000000000000000010000009218a33e9218a33e9218a33e0000803f0000000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f8fc2753d9a99193f9a99993f00000000000000000000000000000000010000009218a33e9218a33e9218a33e0000803f00000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "5196aee95de4710ecd2240122699428d5c5729a5eae69cd5769ec87154f7f7eb": {
+      "caseNames": [
+        "clear_dark"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f9a99993f000000000000000000000000cdcccc3d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000004000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000048e17a14ae47314000000000000048c000000000000018403433333333332340000000000000f0bf000000000000000000000000000000000000803f9a99993d3333933f14ae873f0000803f0000803f0000803f00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000000000403f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f8fc2753d9a99193f9a99993f00000000000000000000000000000000010000009218a33e9218a33e9218a33e0000803f0000000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f8fc2753d9a99193f9a99993f00000000000000000000000000000000010000009218a33e9218a33e9218a33e0000803f00000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "dc6d9c5a0730e33a8acd31afc28283202434dccae9f4a6fa4e92da0b65ebb231": {
+      "caseNames": [
+        "clear_light"
+      ],
+      "normalizedHex": "0000003f0000000000000000000000000000803f00000000000000000000000000000000000020400000000000003e403433333333333340000000000000000000000000000000000000000000000000000000000000803f9a99993f000000000000000000000000cdcccc3d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000004000000000000038c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000048e17a14ae47314000000000000048c000000000000018403433333333332340000000000000f0bf000000000000000000000000000000000000803f9a99993d3333933f14ae873f0000803f0000803f0000803f00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000803f000000000000403f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c460ad7a33dec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    }
+  }
+}
