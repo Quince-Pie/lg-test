@@ -1,0 +1,180 @@
+{
+  "backgroundFilterConstructorPublicRenderIntervalLocalMacOSPreregistrationSchemaVersion": 1,
+  "binary": {
+    "applicationSourceUnchanged": true,
+    "nativeAppleToolPathsExplicit": true,
+    "nixStorePathEmbeddedInCommand": false,
+    "pathOnHost": "/Users/quince/lg-test/glass-transition-introspect-721293f",
+    "sha256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd"
+  },
+  "captureContract": {
+    "all32RenderIntervalsRequiredInOrder": true,
+    "allBackgroundFilterConstructorCallsFromFunctionEntryThroughFinalRenderRetained": true,
+    "allCompletedPreRenderCallsAssignedToImmediatelyFollowingRenderInterval": true,
+    "allProviderCallsWithinRenderIntervalsRetained": true,
+    "complete1025ByteParametersAtEntryAndReturnRequired": true,
+    "complete504ByteConstructorOutputRequired": true,
+    "complete504ByteProviderObjectAtEntryAndReturnRequired": true,
+    "constructorCodeAndSoleDirectCallsiteRequired": true,
+    "maximumConstructorCalls": 4096,
+    "noCapturedValueMaySelectRuntimeCapture": true,
+    "noPendingCallAtAnyRenderBoundary": true,
+    "predecessorPublicRenderProviderTransferMustPassFirst": true,
+    "zeroTolerance": true
+  },
+  "classification": "prospectively frozen value-blind join from the exact public 32-sample carrier function through DesignLibrary's 1025-byte Parameters input and 504-byte BackgroundFilter constructor output to the complete provider object consumed inside each authenticated render interval",
+  "constructorBoundary": {
+    "backgroundFilterByteCount": 504,
+    "callInstructionHex": "730a0094",
+    "callOffsetInProducer": 908,
+    "constructorByteCount": 1044,
+    "constructorCodeSHA256": "71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d",
+    "constructorModuleOffset": 765184,
+    "parametersByteCount": 1025,
+    "producerByteCount": 1644,
+    "producerCodeSHA256": "0729f7b0f874c0fb9fb64fa3383a6f2ed328d1dc55fdce53b82038a188df6f97",
+    "producerModuleOffset": 753576,
+    "returnOffsetInProducer": 912
+  },
+  "frozenAtUTC": "2026-08-06",
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb.py",
+        "sha256": "0a093feabe5f06444a7350b86cb3a4111faa15338a818a48f62d61142ca971e5"
+      },
+      {
+        "path": "Analysis/validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
+        "sha256": "be5d18f66b200d1746c405a70fab19f50a9bc152fbf0f49383d2a77087944293"
+      },
+      {
+        "path": "Analysis/run_background_filter_constructor_public_render_interval_local_macos_26_6_1.sh",
+        "sha256": "e9fc72ac4096274e1b502ccbf111f2df3b6da74a124137605a2d04d9a4584e59"
+      },
+      {
+        "path": "Analysis/test_capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb_source.py",
+        "sha256": "c5de94b83edebfec4025d106adb5e2de694ae5ca5a690171ed9cce9cae84603e"
+      },
+      {
+        "path": "Analysis/test_validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
+        "sha256": "2bec76d4c7376a6d5ce96d83f57b8a4ab4f84e379ee98d1e656dd83c6a340bc5"
+      },
+      {
+        "path": "Analysis/test_run_background_filter_constructor_public_render_interval_local_macos_26_6_1_source.py",
+        "sha256": "4eca67234d29bf32a2b8f146567885f328b5a8be9910f4d082c595f0e187b438"
+      },
+      {
+        "path": "Analysis/test_background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.py",
+        "sha256": "845f7bd0c45fda4588692404b5b050cb0e433695addb41c0bf354e9de7ff400f"
+      },
+      {
+        "path": "Analysis/check_local_retina_capture_session.swift",
+        "sha256": "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_lldb.py",
+        "sha256": "9ef07e96861ba53e6189f7aafd5dd967cb3d00437ab634b72a3f81692e573639"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.py",
+        "sha256": "ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1"
+      },
+      {
+        "path": "Analysis/run_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.sh",
+        "sha256": "48d40db2ba6c9a22d58e460824380b6b4a85f92e00782098b8d983e33fab63ba"
+      },
+      {
+        "path": "Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json",
+        "sha256": "afecb715da4a73cedff1169eb6e75353121becf95973384d74953caf42016061"
+      },
+      {
+        "path": "Analysis/analyze_designlibrary_background_filter_metadata_local_macos_26_6_1.py",
+        "sha256": "a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff"
+      },
+      {
+        "path": "Analysis/designlibrary_background_filter_metadata_local_macos_26_6_1_result.json",
+        "sha256": "dc2202be02d3831126866236661173c92bf492498a4cc2d2717931ba296b0757"
+      }
+    ]
+  },
+  "host": {
+    "architecture": "arm64",
+    "developerModeEnabled": true,
+    "display": "built-in Retina 3456x2234 physical / 1728x1117 logical / 2x",
+    "hardware": "Apple M1 Max",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "sshTarget": "quince@10.0.41.19"
+  },
+  "nativeSessionPreflight": {
+    "failClosedBeforeAppLaunch": true,
+    "interpreter": "/Library/Developer/CommandLineTools/usr/bin/swift",
+    "path": "Analysis/check_local_retina_capture_session.swift",
+    "requireBackingScaleFactor": 2,
+    "requireDisplayActive": true,
+    "requireDisplayAsleep": false,
+    "requireLogicalPoints": [1728, 1117],
+    "requirePhysicalPixels": [3456, 2234],
+    "requireSessionLocked": false,
+    "requireSessionOnConsole": true,
+    "runImmediatelyBeforeLLDB": true,
+    "sha256": "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
+  },
+  "productAuthority": {
+    "completeBackgroundFilterProviderObjectJoinedBitwiseOnPass": true,
+    "freshMaterialAppearanceGeometryProfileTransferEstablishedOnPass": false,
+    "generalPublicInputConstructionLawEstablishedOnPass": false,
+    "independentWalleZeroByteFrameParityEstablishedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false,
+    "physicalRetinaColorPixelCompositorTransferEstablishedOnPass": false,
+    "productionShaderAuthorizedOnPass": false,
+    "sameProfilePublicParametersConstructionJoinEstablishedOnPass": true,
+    "upstreamCropAllocationPolicyEstablishedOnPass": false
+  },
+  "profile": {
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "material": "regular",
+    "sampleIndices": [
+      1, 2, 3, 4, 5, 6, 7, 8,
+      9, 10, 11, 12, 13, 14, 15, 16,
+      17, 18, 19, 20, 21, 22, 23, 24,
+      25, 26, 27, 28, 29, 30, 31, 32
+    ]
+  },
+  "prospectivePredictions": {
+    "allConstructorCallsOnAuthenticatedFunctionThread": true,
+    "allConstructorInputsRemainBitwiseUnchanged": true,
+    "allConstructorLayerIndicesAreZero": true,
+    "allMatchedProviderObjectsHaveSameSampleConstructorOutput": true,
+    "allSamplesHaveAtLeastOneConstructorCall": true,
+    "oneDistinctParametersValuePerMatchedSample": true
+  },
+  "requiredPredecessor": {
+    "artifactDirectory": "local-case22-provider-public-render-interval-c1bfabd-run1",
+    "captureCommit": "c1bfabda9338a7f574ababbeccf3d18ca3abc12d",
+    "captureContractMustPass": true,
+    "preregistrationSHA256": "afecb715da4a73cedff1169eb6e75353121becf95973384d74953caf42016061",
+    "validatorSHA256": "ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1"
+  },
+  "selectionPolicy": {
+    "constructorCalls": "every call from exact transitionBackgroundUniformEvidence entry through the final structural render return",
+    "preRenderAssociation": "completion event order only; all unassigned completed calls attach to the immediately following render interval",
+    "providerCalls": "every sdfBackdropMargin provider call strictly inside each exact CARenderer direct-call interval",
+    "runtimeByteOrValueSelection": false,
+    "sameSampleJoin": "post-capture exact equality of all 504 bytes; equality never changes runtime capture"
+  },
+  "structuralRenderBoundary": {
+    "backgroundByteCount": 9136,
+    "backgroundCodeSHA256": "1ca54720d237eb6970b65dd2ecc88b8372b64667f4ea2d28ef4bc8414668e2fd",
+    "backgroundModuleOffset": 557488,
+    "mainUUID": "F8B0B6E3-3270-3C94-817F-B4914852D04C",
+    "renderByteCount": 1256,
+    "renderCallInstructionHex": "dfcfff97",
+    "renderCallOffset": 4096,
+    "renderCodeSHA256": "0c661f1010199a56e6730d897079fda69fc4a267f7f48d1e2054b14ff9270e0c",
+    "renderModuleOffset": 512300,
+    "renderReturnOffset": 4100
+  }
+}

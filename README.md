@@ -8560,3 +8560,51 @@ general crop/allocation policy, Retina compositor/color output, independent
 Walle zero-unequal-byte frames, and Liquid Glass parity remain open. No
 production shader change is authorized, and the shader quality lock remains
 unchanged.
+
+### Frozen public-to-`Parameters` constructor join
+
+Static disassembly corrects one timing assumption in the preceding paragraph.
+The unchanged application copies and installs each public filter before its
+direct `localTransitionCARendererEvidence` call, so a constructor breakpoint
+enabled only inside that render callback could miss the producer entirely.
+The successor capture therefore begins at the already authenticated
+`transitionBackgroundUniformEvidence` function entry, retains every
+`BackgroundFilter` construction through the final one of its 32 render
+intervals, and assigns completed pre-render calls to the immediately following
+interval using event order alone. Calls occurring during a render remain bound
+to that interval. No captured byte, address, field, image, or return can alter
+runtime selection.
+
+The frozen boundary is the exact 1,044-byte constructor at DesignLibrary
+module offset `0xbad00`, called by the exact 1,644-byte producer at offset
+`0xb7fa8`. The call instruction at producer offset `0x38c` is
+`730a0094` and returns at offset `0x390`, before the caller destroys its input.
+The constructor disassembly contains loads from the 1,025-byte `Parameters`
+source and stores only to its separate 504-byte output, which independently
+supports the prospective prediction that the source remains unchanged.
+
+For every constructor call the adapter retains:
+
+- all 1,025 input bytes both at entry and return;
+- `x1` layer index and `x2` environment flags;
+- all 504 output bytes at the instruction immediately after return;
+- exact entry/return frames, thread identity, addresses, and total-order event
+  indices.
+
+For every provider call in the render interval it preserves the prior
+384-byte projection required by the already-frozen public/provider validator
+and additionally retains the complete 504-byte entry and return values. The
+new validator projects away the constructor-only records and reruns the old
+validator unchanged, then requires each public-signature-matched provider to
+equal a same-sample constructor output in all 504 bytes. All matching outputs
+for a sample must identify one distinct 1,025-byte `Parameters` value.
+
+The gate is preregistered in
+`Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json`.
+Its runner first revalidates the frozen `c1bfabd` predecessor artifact and
+refuses to launch otherwise. It also retains the fail-closed unlocked,
+active, exact-2x Retina preflight and direct Command Line Tools paths; no Nix
+store path enters the native process. The gate can establish the same-profile
+public-to-`Parameters` construction join. It cannot establish a fresh-profile
+law, general crop/allocation, physical compositor/color behavior, Walle frame
+parity, or Liquid Glass parity, and it does not authorize a shader change.
