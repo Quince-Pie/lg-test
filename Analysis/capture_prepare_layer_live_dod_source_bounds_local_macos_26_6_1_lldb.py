@@ -75,10 +75,19 @@ def _set_callback(breakpoint, callback, label):
 def _install_proxy_callbacks():
     entry = crop_base._state.get("prepareEntryBreakpoint")
     marker = crop_base._state.get("markerBreakpoint")
-    if entry is not None:
-        _set_callback(entry, "prepare_layer_entry", "prepare entry")
-    if marker is not None:
-        _set_callback(marker, "crop_transfer_marker", "crop marker")
+    union_call = holdout_base.union_base._state.get("unionCallBreakpoint")
+    union_return = holdout_base.union_base._state.get("unionReturnBreakpoint")
+    store = holdout_base._state.get("storeBreakpoint")
+    callbacks = (
+        (entry, "prepare_layer_entry", "prepare entry"),
+        (marker, "crop_transfer_marker", "crop marker"),
+        (union_call, "crop_union_call", "union call"),
+        (union_return, "crop_union_return", "union return"),
+        (store, "nested_crop_store", "crop store"),
+    )
+    for breakpoint, callback, label in callbacks:
+        if breakpoint is not None:
+            _set_callback(breakpoint, callback, label)
 
 
 def _install_dod_breakpoint(frame):
@@ -164,6 +173,24 @@ def crop_transfer_marker(frame, breakpoint_location, internal_dict):
     except Exception as error:
         _failure("marker-event", error)
     return result
+
+
+def crop_union_call(frame, breakpoint_location, internal_dict):
+    return live_base.crop_union_call(
+        frame, breakpoint_location, internal_dict
+    )
+
+
+def crop_union_return(frame, breakpoint_location, internal_dict):
+    return live_base.crop_union_return(
+        frame, breakpoint_location, internal_dict
+    )
+
+
+def nested_crop_store(frame, breakpoint_location, internal_dict):
+    return live_base.nested_crop_store(
+        frame, breakpoint_location, internal_dict
+    )
 
 
 def dod_source_bounds(frame, breakpoint_location, _internal_dict):

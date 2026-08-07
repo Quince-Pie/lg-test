@@ -46,6 +46,17 @@ class PrepareLayerLiveDODSourceCaptureTests(unittest.TestCase):
         self.assertNotIn("sourceOrigin", callback)
         self.assertNotIn("sourceSize", callback)
 
+    def test_every_inherited_dynamic_callback_is_exported(self) -> None:
+        for callback in (
+            "prepare_layer_entry",
+            "crop_transfer_marker",
+            "crop_union_call",
+            "crop_union_return",
+            "nested_crop_store",
+        ):
+            self.assertIn(f'def {callback}(', SOURCE)
+            self.assertIn(f'"{callback}"', SOURCE)
+
 
 if __name__ == "__main__":
     unittest.main()
