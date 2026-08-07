@@ -1,0 +1,65 @@
+{
+  "cause": {
+    "correction": "remove only the pointer-bearing redundant colorSpace description while retaining colorSpaceName, component count, components, and alpha",
+    "mechanism": "String(describing: CGColorSpace) embeds the process allocation address even though the color-space name and every color component are stable",
+    "predictionDependent": false,
+    "valueDependent": false
+  },
+  "claims": {
+    "completeLiveParametersTransferEstablished": false,
+    "controlledCandidateExporterTransferEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false
+  },
+  "classification": "second failed prospective holdout transport run retained before normalization; all records parsed, but whole-record equality included process-address-bearing CGColorSpace descriptions, so no optical or exporter acceptance claim is drawn",
+  "designLibraryWeightedParametersBackgroundFilterExportFailedRunSchemaVersion": 2,
+  "diagnosticExactReruns": [
+    {
+      "filterJSONRecordCount": 31,
+      "rawByteCount": 180473,
+      "rawStdoutSHA256": "804e568ce26797292f368180d5eb0714f9c2cfa8005ee1760551c5a26c135775",
+      "runIndex": 0
+    },
+    {
+      "filterJSONRecordCount": 31,
+      "rawByteCount": 180473,
+      "rawStdoutSHA256": "48afc11c45157f60aa0abd071f93e0078080c8d2a3e33349e2ce2ac5d41b9f0b",
+      "runIndex": 1
+    },
+    {
+      "filterJSONRecordCount": 31,
+      "rawByteCount": 180473,
+      "rawStdoutSHA256": "a7e4d26f7afaf47dc627190274f0c33f892a4271d46af38722b895ee9bd314e2",
+      "runIndex": 2
+    }
+  ],
+  "difference": {
+    "affectedCaseCount": 31,
+    "affectedInputKeys": [
+      "inputFaceColorMatrixFillColor",
+      "inputShadowColorMatrixFillColor"
+    ],
+    "affectedSerializedMember": "colorSpace",
+    "differenceCountPerPair": 62,
+    "mappedScalarOrDiscreteDifferenceCount": 0,
+    "stableMembers": [
+      "colorSpaceName",
+      "numberOfComponents",
+      "components",
+      "alpha"
+    ],
+    "varyingSubstring": "CGColorSpace process address"
+  },
+  "formalAttempt": {
+    "acceptanceGateReached": false,
+    "captureError": "native export differs between fresh processes",
+    "holdoutOutputOpened": true,
+    "nativeExecutableCompiled": true,
+    "nativeExecutableLaunched": true,
+    "rawStdoutRetained": false
+  },
+  "preregistration": {
+    "path": "Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_preregistration.json",
+    "sha256": "381ccc9b1d24514e73c935f6555da09c9caa12e087a1431d26441772cc52a85a"
+  }
+}

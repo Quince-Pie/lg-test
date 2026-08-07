@@ -1,0 +1,64 @@
+{
+  "cause": {
+    "correction": "make stdout unbuffered before the first write and emit each Swift FILTER_JSON frame with one FileHandle write",
+    "mechanism": "C stdout used block buffering while Swift FileHandle wrote directly to the same descriptor; automatic 4 KiB stdio flushes split eight JSON records",
+    "predictionDependent": false,
+    "valueDependent": false
+  },
+  "claims": {
+    "completeLiveParametersTransferEstablished": false,
+    "controlledCandidateExporterTransferEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false
+  },
+  "classification": "failed prospective holdout transport run retained before correction; the native getter executed but mixed buffered C stdio and direct Swift FileHandle writes corrupted record framing, so no optical or exporter acceptance claim is drawn",
+  "designLibraryWeightedParametersBackgroundFilterExportFailedRunSchemaVersion": 1,
+  "diagnosticExactRerun": {
+    "completeRecordCount": 31,
+    "constructorObjectRecordCount": 31,
+    "corruptedFragmentCount": 8,
+    "corruptedSamplesPattern": "2, 6, 10, 14, 18, 22, 26, 30",
+    "hostPath": "/private/tmp/lg-weighted-export-diagnostic.out",
+    "intactFilterJSONRecordCount": 23,
+    "intactFilterJSONSampleIndices": [
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      15,
+      16,
+      17,
+      19,
+      20,
+      21,
+      23,
+      24,
+      25,
+      27,
+      28,
+      29,
+      31,
+      32
+    ],
+    "lineCount": 68,
+    "rawByteCount": 180473,
+    "rawStdoutSHA256": "04f05b1f371ea5e171abc4298d39e4823c6a8260f1c7d98985ede70477ddeb71"
+  },
+  "formalAttempt": {
+    "acceptanceGateReached": false,
+    "captureError": "native case topology differs",
+    "holdoutOutputOpened": true,
+    "nativeExecutableCompiled": true,
+    "nativeExecutableLaunched": true,
+    "rawStdoutRetained": false
+  },
+  "preregistration": {
+    "path": "Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_preregistration.json",
+    "sha256": "afec401474ea83b3b410d35055d9e092a15155323674fada3f50c32ce6345962"
+  }
+}

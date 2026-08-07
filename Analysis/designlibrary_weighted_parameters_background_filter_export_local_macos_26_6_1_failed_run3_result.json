@@ -1,0 +1,45 @@
+{
+  "claims": {
+    "completeLiveParametersTransferEstablished": false,
+    "controlledCandidateExporterTransferEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false
+  },
+  "classification": "third failed prospective holdout retained as a genuine model falsification; transport and three-process normalization passed far enough to open the frozen bitwise arithmetic gate, which rejected one decoded getter mapping in all 31 holdout states",
+  "designLibraryWeightedParametersBackgroundFilterExportFailedRunSchemaVersion": 3,
+  "falsification": {
+    "holdoutMismatchCount": 31,
+    "inputOuterRefractionAmountStillTracksRefractionOuterAmount": true,
+    "mappedField": "refraction.outerAmount",
+    "observedLaw": "exact binary64 +0.0 in all 31 holdout states",
+    "oldPrediction": "copy refraction.outerAmount as binary64",
+    "otherMappedPredictionMismatchCount": 0,
+    "publicInput": "inputBlurDistance4"
+  },
+  "formalAttempt": {
+    "accepted": false,
+    "arithmeticAcceptanceGateReached": true,
+    "captureError": "prospectively frozen exporter outcome differs",
+    "holdoutOutputOpened": true,
+    "nativeExecutableCompiled": true,
+    "nativeExecutableLaunched": true
+  },
+  "frozenOutcome": {
+    "mappedComponentCount": 1519,
+    "observedExporterMatchCount": 1488,
+    "observedExporterMismatchCount": 31,
+    "observedRetainedPublicMatchCount": 1054,
+    "observedRetainedPublicMismatchCount": 465,
+    "predictedExporterMatchCount": 1519,
+    "predictedRetainedPublicMatchCount": 1085,
+    "predictedRetainedPublicMismatchCount": 434
+  },
+  "interpretation": {
+    "established": "inputBlurDistance4 is not a second export of Parameters.refraction.outerAmount on this getter path",
+    "nextRequiredGate": "derive the constant-zero store from the authenticated getter and prospectively intervene on refraction.outerAmount with unseen values while holding the rest of Parameters fixed"
+  },
+  "preregistration": {
+    "path": "Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_preregistration.json",
+    "sha256": "afb898729f110a3a88c0dc8c1ca38e548ca3587411136922cd86856180a42608"
+  }
+}

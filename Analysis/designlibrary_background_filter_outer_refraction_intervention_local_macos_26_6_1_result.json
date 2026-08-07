@@ -1,0 +1,198 @@
+{
+  "cases": [
+    {
+      "backgroundFilterSHA256": "d07fb736791ef4bcda2cd679ef38fb8ac2f2784df7089c3e30829050f7a75f8d",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 1,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "00000000000030c0",
+      "label": "negative-sixteen",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "61280493f70c18a8a954c5b3e8201b170a0c1898720dd3b40c7c8ea5b7e6592a"
+    },
+    {
+      "backgroundFilterSHA256": "b3bd5dbf83658e4d4a4bda2b3cae54328d8dbe3baa1946bb3e810c5d2c156928",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 2,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "000000000000f0bf",
+      "label": "negative-one",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "8f4eea44171ae91f98cb991a7f655f01f56adcee98aaf26f1a2b971bae66e90f"
+    },
+    {
+      "backgroundFilterSHA256": "95f33875b979576b460f1ef1373328eff42b368973e09acf6aec9c21e70fe304",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 3,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "0000000000000080",
+      "label": "negative-zero",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "d77f67e85067117314742a8236bdcf56d54f1065b94c00c998ce91bc83f96faf"
+    },
+    {
+      "backgroundFilterSHA256": "644462c917dad39d0149465740852cfa91796b5fbde1d02a4130747224f41ab9",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 4,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "0000000000000000",
+      "label": "positive-zero",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "1d8e8832f20d680046798bd1dcfdcd00d9908b108e64a22cc90050348b5bbb71"
+    },
+    {
+      "backgroundFilterSHA256": "7798d5a2c8b9ea627202af5bee9415a5290182d7c7f1fe1a0790390d50dcd116",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 5,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "0100000000000000",
+      "label": "minimum-positive-subnormal",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "8b3266e76fa8962673d726b58f8670102da06065af7f5f712a0c86deefc0a826"
+    },
+    {
+      "backgroundFilterSHA256": "d08fa70c3bdffe2d5bd8eb2c27cf83f3244ff675cc98488d27a07c50949e33f0",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 6,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "000000000000c03f",
+      "label": "one-eighth",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "bdcddf1bd9a17386ca0fd4d883f23f522b492e1ee3df782e40773ce3a8e8990f"
+    },
+    {
+      "backgroundFilterSHA256": "bc237d8404c194379e1ba937d2085cae884d14c94e4e19e7ec3bff1a522c4579",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 7,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "000000000000f03f",
+      "label": "one",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "f385830fb7109e88cb05b9b5fc0bbfb131dd451a94d081350678ebb94888f729"
+    },
+    {
+      "backgroundFilterSHA256": "6995b962a9d4f6714bd9b8910f811b9e3d6be9e2d9c6ac3731c787b0d719cd40",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 8,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "0000000000000c40",
+      "label": "three-and-one-half",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "5fbe7408eac3456beaa47a6e6db3aa9a3be57e16e6856537d5b52fee73c1f8f6"
+    },
+    {
+      "backgroundFilterSHA256": "8cb37e170c92895db453fb641f5b7ab5ac179106848191c730d29ffe7bfff798",
+      "blurDistance4PositiveZeroMatchedBitwise": true,
+      "caseIndex": 9,
+      "inputBlurDistance4RawLittleEndianHex": "0000000000000000",
+      "inputOuterRefractionAmountRawLittleEndianHex": "0000000000003040",
+      "label": "sixteen",
+      "outerAmountIdentityMatchedBitwise": true,
+      "parametersSHA256": "39780625b58fc6268539b90e4ad92dcd5b16ba6a2629803fcbb4c05258796a3e"
+    }
+  ],
+  "claims": {
+    "actualLiveCallbackCompleteParametersObserved": false,
+    "completeLiveParametersTransferEstablished": false,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "outerRefractionGetterSeparationEstablishedProspectively": true,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "classification": "prospective single-variable intervention over nine previously unseen binary64 refraction.outerAmount words; every synthetic Parameters hash, raw output prediction, source identity, process count, and acceptance rule was frozen before the Apple getter was opened",
+  "designLibraryBackgroundFilterOuterRefractionInterventionCaptureSchemaVersion": 1,
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "inputs": {
+    "boundary": {
+      "path": "Analysis/designlibrary_material_context_weighted_live_public_boundary_analysis_result.json",
+      "sha256": "308943d6d5cb16166cd7a1a3f63a824a2b4e47f93bab18e13f7fccac51b94767"
+    },
+    "bridge": {
+      "path": "Analysis/invoke_designlibrary_weighted_parameters_background_filter_export_arm64.S",
+      "sha256": "d8d4e4de79a989a9e47e98a2a63fc033ede618ddedc9c8fa223bd265f40e6f3d"
+    },
+    "captureSource": {
+      "path": "Analysis/capture_designlibrary_background_filter_outer_refraction_intervention_local_macos_26_6_1.py",
+      "sha256": "a01ff57947bc8e50ac3a60b9c45d7bb190dad9b51c656e827f15dc42c5f35635"
+    },
+    "context": {
+      "path": "Analysis/designlibrary_background_filter_outer_refraction_intervention_context.swift",
+      "sha256": "bb3640cd849ecfe0b450e0979f7e1ef2d584b25853f8d1d717686f4ea5bac1af"
+    },
+    "correctedExporter": {
+      "path": "Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_result.json",
+      "sha256": "d080175c56e380685d43c54e9712a56576ae8f54f5fddfd6650ecbf82beef19f"
+    },
+    "preregistration": {
+      "path": "Analysis/designlibrary_background_filter_outer_refraction_intervention_local_macos_26_6_1_preregistration.json",
+      "sha256": "7e73960ba18e9f265b5cf1ad07fa0ec6758c41abf049630b81f1e909975cdb4f"
+    },
+    "probe": {
+      "path": "Analysis/probe_designlibrary_background_filter_outer_refraction_intervention_local_macos_26_6_1.c",
+      "sha256": "f855d88dddc59b58bcd26cd7d86c804cae2e3446a92ec677180cde35559d900c"
+    },
+    "weightedParameters": {
+      "path": "Analysis/designlibrary_material_context_weighted_live_timeline_parameters_local_macos_26_6_1_result.json",
+      "sha256": "adbb81b77b6d414e249c2febecf3752b6cb5ca292c5e882956d4d9bd2edecab7"
+    }
+  },
+  "interpretation": {
+    "established": "the authenticated getter exports refraction.outerAmount only as inputOuterRefractionAmount and independently emits exact binary64 positive zero for inputBlurDistance4",
+    "nextUnknown": "capture the distinct actual live producer that supplies the retained public nonzero inputBlurDistance4 values",
+    "rejected": "inputBlurDistance4 is an identity copy or alias of refraction.outerAmount"
+  },
+  "measuredInvariants": {
+    "blurDistance4PositiveZeroBitwiseMatchCount": 9,
+    "capturedValuesUsedForRuntimeSelection": false,
+    "caseCount": 9,
+    "constructorOutputExactCount": 9,
+    "freshProcessCount": 3,
+    "freshProcessSemanticMatchCount": 3,
+    "outerAmountIdentityBitwiseMatchCount": 9,
+    "previouslyUnseenInterventionCount": 9
+  },
+  "nativeExecutable": {
+    "containsNixStorePath": false,
+    "sha256": "a98ea338262dd5ec680246a72d4c2d10b8bdce7e374201524a97c4da34cee0bb"
+  },
+  "nativeIdentity": {
+    "constructorCodeSHA256": "71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d",
+    "contextThunkCodeSHA256": "dd3179c1362f9b95fb87fc260e91e43d78e2d13aba07a2767707b3676e96eed7",
+    "designLibraryUUID": "1e98080269f53e6989ef50088297fcf5",
+    "getterCodeSHA256": "0abc68898237c57aa2c31d54568649f57750241ea6cd4fe9c995d0b9857f826a",
+    "swiftUICoreUUID": "99606d45c40a3c69ae515f0c4e32e531"
+  },
+  "runs": [
+    {
+      "runIndex": 0,
+      "semanticSHA256": "7b26c0584630db4f711caab2de66eed62f1eadc3a21336217c7cf84ce96b8153",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSHA256": "32e65816c21b4c11509b013c6482226f725fdcbec853c809d6c90c647875ac35"
+    },
+    {
+      "runIndex": 1,
+      "semanticSHA256": "7b26c0584630db4f711caab2de66eed62f1eadc3a21336217c7cf84ce96b8153",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSHA256": "32e65816c21b4c11509b013c6482226f725fdcbec853c809d6c90c647875ac35"
+    },
+    {
+      "runIndex": 2,
+      "semanticSHA256": "7b26c0584630db4f711caab2de66eed62f1eadc3a21336217c7cf84ce96b8153",
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSHA256": "32e65816c21b4c11509b013c6482226f725fdcbec853c809d6c90c647875ac35"
+    }
+  ],
+  "toolchain": {
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin",
+    "python": "3.14.6",
+    "swift": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)\nTarget: arm64-apple-macosx26.0"
+  }
+}

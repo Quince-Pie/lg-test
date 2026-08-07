@@ -1,0 +1,84 @@
+{
+  "designLibraryMaterialContextWeightedLiveTimelineParametersPreregistrationSchemaVersion": 1,
+  "classification": "prospective complete-Parameters test of the retained produced-flags regular-light timeline: install each previously frozen binary64 fraction as the sole ResolvedComposite dictionary weight, install the corresponding previously frozen Material.Context shapeDimensions lower bound, invoke Apple's real ResolvedRecipe Parameters builder headlessly, and compare four independently retained public signature words without allowing any captured Parameters byte to select a case, field, call, breakpoint, or formula",
+  "frozenHost": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "hardwareModel": "MacBookPro18,2"
+  },
+  "predecessors": {
+    "flagsLiveTransferPreregistrationSHA256": "e9bb1fd4e05d1744961366721f6118cd206a141cce61ce08550bf9341d60ad8b",
+    "flagsLiveTransferResultSHA256": "7df7230548463675d00a7bc78dac0003cd08a9beb19e9b53268b3a6073c15ac7",
+    "contextLiveTimelineLawResultSHA256": "e3520a6819728117646fa2e4bb53801fa50cf1546e4901061f4e7c2d05e18c6e",
+    "parametersAnimatableBlendPipelineResultSHA256": "ab702bb92880f277cc525d19c405c15909c8ece1d778d4f27895b694e54f0f2b",
+    "resolvedCompositeWeightPipelineResultSHA256": "f5e87599e3eb8e6a734e0618b51b077742bb04558355b2dad48a580b51edb558"
+  },
+  "inputBoundary": {
+    "caseTable": "the exact ordered 32-case [name, fractionBits, dimensionBits] table inherited without modification from the frozen flags-live-transfer preregistration",
+    "expectedPublicSignatureWords": "the exact ordered 32-case shadow amount, twice-public-blur-radius, inner-refraction amount, and bleed amount words inherited without modification from the frozen flags-live-transfer preregistration",
+    "configuration": "regular",
+    "appearance": "light",
+    "environmentFlagsBits": "0x0000000000099183",
+    "resolvedCompositeDictionary": "the Apple-created one-entry regular-light dictionary; replace only its selected binary64 value word 1.0 with that case's frozen fraction bits",
+    "resolvedCompositeLuminance": "replace Apple-created Float 1.0 with the C23 binary32 conversion of the same frozen binary64 fraction",
+    "materialContext": "Apple-created default Material.Context with an equal present ClosedRange whose lower and upper binary64 words both equal that case's frozen dimension bits",
+    "parametersBuilder": "the already authenticated complete ResolvedRecipe Parameters builder reached through Apple's public resolveLayers helper"
+  },
+  "prediction": {
+    "shapeDimensionLaw": "dimensionBits already prospectively established as binary64 x = 143 - 16 * k",
+    "openedPublicWordMapping": [
+      [
+        "shadow.amount",
+        40,
+        "inputShadowAmount"
+      ],
+      [
+        "blur.radius",
+        176,
+        "inputBlurRadiusTimesTwo"
+      ],
+      [
+        "refraction.innerAmount",
+        264,
+        "inputInnerRefractionAmount"
+      ],
+      [
+        "edgeBleed.amount",
+        392,
+        "inputBleedAmount"
+      ]
+    ],
+    "completePayloadQuestion": "whether all 1,025 normalized Parameters bytes are stable across fresh processes and what exact fields the real weighted builder changes relative to the already captured direct factor-one Parameters at the same Context",
+    "capturedOutputMaySelectRuntimeBehavior": false
+  },
+  "acceptance": {
+    "freshProcessCount": 3,
+    "caseCount": 32,
+    "parametersBuildsPerCase": 1,
+    "requiredOpenedPublicPredictionCount": 128,
+    "requiredOpenedPublicBitwiseMatchCount": 128,
+    "requireFreshProcessSemanticStability": true,
+    "requireEndpointFactorOneExactDirectPayload": true,
+    "requireNoNixStorePathInProbeExecutable": true,
+    "requireAppleCommandLineToolsDirectly": true,
+    "requireExactCodeAuthenticationBeforeInputs": true,
+    "allowGUIOrRender": false
+  },
+  "outcomes": {
+    "freshProcessSemanticStabilityEstablished": null,
+    "openedPublicBitwiseMatchCount": null,
+    "uniqueNormalizedParametersCount": null,
+    "completeWeightedParametersCandidateEstablished": null
+  },
+  "authorityLimits": {
+    "liveCallbackParametersObserved": false,
+    "generalContextToParametersLawClaimed": false,
+    "generalIntegerCropAllocationPolicyClaimed": false,
+    "retinaCompositorColorLawClaimed": false,
+    "independentWalleZeroByteFrameParityClaimed": false,
+    "liquidGlassParityClaimed": false,
+    "productionShaderChangeAuthorized": false
+  }
+}

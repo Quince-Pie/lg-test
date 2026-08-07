@@ -1902,6 +1902,19 @@ integration.
 
 ## Run locally on macOS 26
 
+The active evidence campaign uses the developer-enabled M1 Max at
+`quince@10.0.41.19` exclusively; new Apple executions are dispatched over SSH,
+not through GitHub Actions. The checked-in workflows remain historical evidence
+and reproducibility fixtures, but are not the current execution route. Repository
+analysis and tests run in `nix develop`. Native Apple probes still use Command
+Line Tools directly and reject an executable containing a `/nix/store/` path.
+
+Clamshell/locked operation is sufficient for headless DesignLibrary metadata,
+builder, constructor, and LLDB probes. It is not silently accepted as physical
+Retina evidence: image/compositor captures remain fail-closed unless the frozen
+preflight reports an active, awake, unlocked, on-console 3456x2234 display at
+1728x1117 logical points and backing scale 2.
+
 ```sh
 swiftc -O -parse-as-library \
   -target "$(uname -m)-apple-macos26.0" \
@@ -10161,3 +10174,200 @@ production, transition-wide allocation maximum, general integer crop policy,
 physical Retina/color/compositor transfer, or an independent Walle
 zero-unequal-byte frame. Liquid Glass parity and production shader changes
 remain unauthorized.
+
+### Controlled weighted `Parameters` candidate and exact live rejection
+
+The next headless experiment tests the retained produced-flags timeline without
+pretending that four convenient fields define the complete live object. Before
+native execution, the preregistration freezes all 32 exact `(k,x)` pairs, flags
+`0x0000000000099183`, the sole `ResolvedComposite` dictionary weight `k`, the
+independent Context lower bound `x`, all four opened public words, three fresh
+processes, and an exact factor-one endpoint. No captured payload selects a case
+or native path.
+
+Apple's authenticated weighted recipe builder is stable across all three
+processes and returns eight distinct normalized 1,025-byte values. The factor-one
+endpoint equals the direct Parameters payload bit for bit. The four formerly
+opened zero-baseline fields also remain exact in every state:
+
+```text
+shadow.amount              32 / 32
+2 * public blur radius     32 / 32
+refraction.innerAmount     32 / 32
+edgeBleed.amount           32 / 32
+total                     128 / 128
+```
+
+That is an exact partial boundary, not a complete live-transfer result. A
+separate lossless projection authenticates the retained 45 MiB public Retina
+timeline by SHA-256 and preserves all 47 numeric filter inputs, raw shadow
+offset, backdrop scale, and the edge-darken Boolean for all 32 samples.
+
+The comparison does not equate raw Parameters storage with public filter
+values. It authenticates the exact 1,044-byte `BackgroundFilter` constructor
+and 2,592-byte filter-array getter, then invokes that real Apple getter
+headlessly through the hidden `CAFilterContext` generic ABI. The custom witness
+uses slot 1, ASIA pointer authentication, address discriminator high word
+`0x6c97`, and the authenticated 20-byte SwiftUICore dispatch thunk. No fake
+filter implementation or public re-creation substitutes for the getter.
+
+The first decoded model applied exact binary64 `0.5` to blur radius, multiplied
+each binary32 blur-tap opacity by `blur.opacity`, used the low bit of the
+edge-darken optional byte, copied the other mapped scalars, and incorrectly
+copied `refraction.outerAmount` to both `inputOuterRefractionAmount` and
+`inputBlurDistance4`. `backdropScale` remains excluded because this getter does
+not export it.
+
+The 31-case native holdout was frozen after one explicitly excluded ABI
+calibration. Its history is retained rather than rewritten as a success:
+
+1. The first opened attempt exposed mixed C/Swift stdout framing. The native
+   acceptance gate was not reached; C stdout was made unbuffered and each Swift
+   frame became one write.
+2. The second attempt exposed only a process address inside a redundant CGColor
+   color-space description. Stable color-space name, component count,
+   components, and alpha remain captured; the pointer-bearing description was
+   removed.
+3. The third attempt reached the arithmetic gate and genuinely falsified the
+   model. It returned only 1,488 of 1,519 predicted component words. All 31
+   failures were `inputBlurDistance4`: Apple returned exact binary64 positive
+   zero, while `inputOuterRefractionAmount` continued to copy the intervention
+   word exactly.
+
+The corrected retrospective 32-state public comparison therefore maps
+`inputBlurDistance4` to an exporter constant, not to any Parameters field. Its
+exact counts are:
+
+```text
+bitwise matches             1,087 / 1,568
+bitwise mismatches            481 / 1,568
+fields exact in all states      33 / 49
+fields rejected                 16 / 49
+factor-one endpoint             48 / 49
+```
+
+The 16 rejected fields are exactly:
+
+```text
+edgeBleed.ycc.saturation
+edgeBleed.ycc.white
+filterArrayGetter.inputBlurDistance4.constantZero
+blur.opacities[0...4]
+faceEffects.ycc.saturation
+faceEffects.ycc.white
+sdrAdjustment.faceDimming.whitePointShift
+sdrAdjustment.headroomTransitionPoint
+shadow.ycc.saturation
+shadow.ycc.white
+shadow.offset.height
+edgeBleed.useDarkenBlending
+```
+
+The first retained state gives concrete counterexamples. The controlled
+candidate has shadow-offset height `1.0430068969726562`, while the public filter
+holds exact `8.0`. Its tap-0 opacity is `0.13037586212158203` and overall blur
+opacity is also `0.13037586212158203`, so Apple's exporter would produce exact
+binary32 `0.016997866332530975`; the retained public tap-0 value instead remains
+`0.13037586212158203`. Tap 1 similarly exports
+`0.06518793106079102 * 0.13037586212158203` as exact binary32
+`0.008498933166265488`, not the public `0.03117453306913376`. Headroom is
+`1303.6282958984375` versus `1304.671875`, and the controlled edge-darken
+Boolean is false while the public value is true. Every mapped field converges
+except the now-proved constant-zero `inputBlurDistance4` at factor one; the
+retained public endpoint contains nonzero `25.400000000000002` there.
+
+Reopening the unchanged 31 Parameters values under the corrected model gives
+1,519/1,519 exact getter predictions in each of three fresh processes, zero
+constructor/getter mismatches, and a stable 1,054/465 getter-versus-retained-
+public split. This is explicitly classified as retrospective consolidation,
+not a repaired prospective success.
+
+A separate intervention restores prospective authority for the corrected
+field. Before execution, nine Parameters payloads were frozen by SHA-256 after
+changing only the eight bytes of `refraction.outerAmount`. Their previously
+unseen binary64 words cover `-16`, `-1`, `-0`, `+0`, the minimum positive
+subnormal, `0.125`, `1`, `3.5`, and `16`. Across all nine cases and three fresh
+processes:
+
+```text
+constructor objects exact                         9 / 9
+inputOuterRefractionAmount identity, bitwise       9 / 9
+inputBlurDistance4 exact positive zero, bitwise     9 / 9
+fresh-process semantic agreement                   3 / 3
+```
+
+In particular, negative zero survives independently as
+`0000000000000080` in `inputOuterRefractionAmount`, while
+`inputBlurDistance4` is `0000000000000000`. This prospectively rejects an
+alias, copy, or rounding relationship between those keys.
+
+This proves that the controlled one-key builder is not the complete live
+`BackgroundFilter` source state under the authenticated constructor/getter
+mapping. The missing boundary is the actual live producer/interpolation or
+post-export stage that supplies the nonzero-baseline, discrete, and nonzero
+public `inputBlurDistance4` fields. It does not reopen the already exact Context
+arithmetic, and it prevents the earlier four-field match from being promoted
+into a false parity claim.
+
+The native capture, projection, analyzer, canonical result, and regression test
+are:
+
+```text
+Analysis/designlibrary_material_context_weighted_live_timeline_parameters_local_macos_26_6_1_preregistration.json
+  SHA-256 ad258aac128dc1f4b6e636b63e4f412a57ad80450bb7f0b66d904e9096a46771
+Analysis/probe_designlibrary_material_context_weighted_live_timeline_parameters_local_macos_26_6_1.c
+  SHA-256 0ab3ea6563ce65d4a1f7323e7f53e0d4128725ba65e3d0e6d3daba2609c34c30
+Analysis/capture_designlibrary_material_context_weighted_live_timeline_parameters_local_macos_26_6_1.py
+  SHA-256 901bba052ae5af3d378d5ea94d7c71caa7348df73bdb90ed468e3ddc355d2261
+Analysis/capture_designlibrary_material_context_weighted_live_timeline_parameters_local_macos_26_6_1_lldb.py
+  SHA-256 be7c9e4698b7d49193f5a66125ec06e0d0c2f65b50b83d4328bef9facca63f7d
+Analysis/designlibrary_material_context_weighted_live_timeline_parameters_local_macos_26_6_1_result.json
+  SHA-256 adbb81b77b6d414e249c2febecf3752b6cb5ca292c5e882956d4d9bd2edecab7
+Analysis/designlibrary_background_filter_metadata_local_macos_26_6_1_result.json
+  SHA-256 dc2202be02d3831126866236661173c92bf492498a4cc2d2717931ba296b0757
+Analysis/designlibrary_material_context_weighted_live_public_projection.json
+  SHA-256 d4d8471355e0cbba4578d2b3786951116a372f5fcc94798ed9384687008d4573
+Analysis/analyze_designlibrary_material_context_weighted_live_public_boundary.py
+  SHA-256 d9406c8d9390d58ed9c399426b8a1fee1436de49e6198bd9c0b7c5bcddf24e7f
+Analysis/designlibrary_material_context_weighted_live_public_boundary_analysis_result.json
+  SHA-256 308943d6d5cb16166cd7a1a3f63a824a2b4e47f93bab18e13f7fccac51b94767
+Analysis/test_analyze_designlibrary_material_context_weighted_live_public_boundary.py
+  SHA-256 1d0b732e6c8085af74e62042005e3af10ece9911cdcd24ce60ae1dc1e2dbb35c
+Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_failed_run_result.json
+  SHA-256 b28ff30cc99bd6f3b73d5ffb85f6b0e5a0bbcd0cb61b93979daf5de96a3d11b3
+Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_failed_run2_result.json
+  SHA-256 362ebfcb05ca89aec625eaf1462ccbe4b02afde7838687870757f81727a8f89b
+Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_failed_run3_result.json
+  SHA-256 b0386a27dcdbd617e49b50dc2abe4a32a4a4378d8e07bfb4d5aa3d8d65b2f895
+Analysis/probe_designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1.c
+  SHA-256 9381aced40357525d1cfc007b68aea701632eb87195cdb12f6f16480ad4c1b53
+Analysis/invoke_designlibrary_weighted_parameters_background_filter_export_arm64.S
+  SHA-256 d8d4e4de79a989a9e47e98a2a63fc033ede618ddedc9c8fa223bd265f40e6f3d
+Analysis/designlibrary_weighted_parameters_background_filter_export_context.swift
+  SHA-256 1fbb1b64fea91c1ca207eae5bdb8e80f817e58463993e6bc24dd889759058d77
+Analysis/capture_designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1.py
+  SHA-256 50f28fab608503aa4ba530485709329ec662d325c82252b223b7e892891199c6
+Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_preregistration.json
+  SHA-256 8ef67f6b6106097162cdfb998f81a765da2a8b71b8ba86dafa79f4a5c505bba5
+Analysis/designlibrary_weighted_parameters_background_filter_export_local_macos_26_6_1_result.json
+  SHA-256 d080175c56e380685d43c54e9712a56576ae8f54f5fddfd6650ecbf82beef19f
+Analysis/probe_designlibrary_background_filter_outer_refraction_intervention_local_macos_26_6_1.c
+  SHA-256 f855d88dddc59b58bcd26cd7d86c804cae2e3446a92ec677180cde35559d900c
+Analysis/designlibrary_background_filter_outer_refraction_intervention_context.swift
+  SHA-256 bb3640cd849ecfe0b450e0979f7e1ef2d584b25853f8d1d717686f4ea5bac1af
+Analysis/capture_designlibrary_background_filter_outer_refraction_intervention_local_macos_26_6_1.py
+  SHA-256 a01ff57947bc8e50ac3a60b9c45d7bb190dad9b51c656e827f15dc42c5f35635
+Analysis/designlibrary_background_filter_outer_refraction_intervention_local_macos_26_6_1_preregistration.json
+  SHA-256 7e73960ba18e9f265b5cf1ad07fa0ec6758c41abf049630b81f1e909975cdb4f
+Analysis/designlibrary_background_filter_outer_refraction_intervention_local_macos_26_6_1_result.json
+  SHA-256 8fc39c0a79ca020467beadba8f51d850833b390d23f87c7ae3abd6d77308ce1e
+Analysis/test_capture_designlibrary_background_filter_outer_refraction_intervention_local_macos_26_6_1.py
+  SHA-256 7a6b0b549d5d4b903acf14c771ccd76abbd5fc33d61f947b74f487af9279154d
+```
+
+The analyzer and tests run under the flake's Python 3.14.6. Native Apple
+execution uses Apple Command Line Tools on `quince@10.0.41.19`, never GitHub
+Actions, and embeds no Nix store path. The actual live producer, general
+crop/allocation policy, physical Retina compositor/color transfer, and an
+independent Walle frame with zero unequal bytes remain open. Liquid Glass parity
+and production shader changes remain unauthorized.

@@ -1,0 +1,297 @@
+{
+  "authorityLimits": {
+    "actualLiveCallbackCompleteParametersObserved": false,
+    "completeLiveParametersTransferEstablished": false,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "calibrationDisclosure": {
+    "didNotSelectHoldoutCases": true,
+    "excludedFromProspectiveCounts": true,
+    "purpose": "calibrate the hidden CAFilterContext generic ABI, pointer-authenticated witness slot, Swift String return, and KVC transport",
+    "sampleIndex": 1,
+    "valuesObserved": true
+  },
+  "classification": "amended record of a prospectively opened native 31-case holdout: two transport failures preserved the frozen prediction, the third run genuinely falsified the refraction.outerAmount-to-inputBlurDistance4 mapping, and the corrected rerun is therefore retrospective; a separate unseen intervention must establish fresh prospective authority for the corrected constant-zero law",
+  "designLibraryWeightedParametersBackgroundFilterExportPreregistrationSchemaVersion": 1,
+  "failedRunCorrection": {
+    "acceptanceGateWasReached": false,
+    "failedRunResultSHA256": "b28ff30cc99bd6f3b73d5ffb85f6b0e5a0bbcd0cb61b93979daf5de96a3d11b3",
+    "frozenInputsOrPredictionsChanged": false,
+    "holdoutOutputWasOpened": true,
+    "transportOnlyChanges": [
+      "disable C stdout buffering before the first write",
+      "emit each Swift FILTER_JSON frame in one FileHandle write"
+    ]
+  },
+  "failedRunCorrection2": {
+    "acceptanceGateWasReached": false,
+    "failedRunResultSHA256": "362ebfcb05ca89aec625eaf1462ccbe4b02afde7838687870757f81727a8f89b",
+    "frozenInputsOrPredictionsChanged": false,
+    "holdoutOutputWasOpened": true,
+    "retainedColorEvidence": [
+      "colorSpaceName",
+      "numberOfComponents",
+      "components",
+      "alpha"
+    ],
+    "transportOnlyChanges": [
+      "omit redundant CGColor.colorSpace description containing a process address"
+    ]
+  },
+  "failedRunCorrection3": {
+    "acceptanceGateWasReached": true,
+    "actualExporterPredictionMatchCount": 1488,
+    "actualRetainedPublicMatchCount": 1054,
+    "actualRetainedPublicMismatchCount": 465,
+    "correctedExporterPredictionMatchCount": 1519,
+    "correctedMapping": "filterArrayGetter.inputBlurDistance4.constantZero -> exact binary64 positive zero",
+    "failedRunResultSHA256": "b0386a27dcdbd617e49b50dc2abe4a32a4a4378d8e07bfb4d5aa3d8d65b2f895",
+    "falsifiedMapping": "refraction.outerAmount -> inputBlurDistance4 identity",
+    "frozenHoldoutInputsChanged": false,
+    "genuineModelFalsification": true,
+    "holdoutOutputWasOpened": true,
+    "originalExporterPredictionMatchCount": 1519,
+    "predictionChangedAfterFalsification": true,
+    "rerunClassification": "retrospective exact consolidation, not a new prospective holdout"
+  },
+  "frozenHost": {
+    "displayRequired": false,
+    "executionRoute": "local SSH host quince@10.0.41.19",
+    "githubActionsAllowed": false,
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "holdoutCases": [
+    {
+      "fractionBits": "0x3fc0b02800000000",
+      "sampleIndex": 2,
+      "weightedParametersSHA256": "320ce340bec7a7c25bb711077d8c43fda6d0dd98978d5348a5108375459d68c7"
+    },
+    {
+      "fractionBits": "0x3fc0b02800000000",
+      "sampleIndex": 3,
+      "weightedParametersSHA256": "320ce340bec7a7c25bb711077d8c43fda6d0dd98978d5348a5108375459d68c7"
+    },
+    {
+      "fractionBits": "0x3fc0b02800000000",
+      "sampleIndex": 4,
+      "weightedParametersSHA256": "320ce340bec7a7c25bb711077d8c43fda6d0dd98978d5348a5108375459d68c7"
+    },
+    {
+      "fractionBits": "0x3fc6a96800000000",
+      "sampleIndex": 5,
+      "weightedParametersSHA256": "cc49265bd5cb776eb31aa1e4e3d717aa5ffa31b05117780f22e3445e1872456a"
+    },
+    {
+      "fractionBits": "0x3fc6a96800000000",
+      "sampleIndex": 6,
+      "weightedParametersSHA256": "cc49265bd5cb776eb31aa1e4e3d717aa5ffa31b05117780f22e3445e1872456a"
+    },
+    {
+      "fractionBits": "0x3fd8263800000000",
+      "sampleIndex": 7,
+      "weightedParametersSHA256": "e91ad5cdba11f8b7d63c300bdb097a01e40d38b99a3147e9c786bb4b59778e6e"
+    },
+    {
+      "fractionBits": "0x3fd8263800000000",
+      "sampleIndex": 8,
+      "weightedParametersSHA256": "e91ad5cdba11f8b7d63c300bdb097a01e40d38b99a3147e9c786bb4b59778e6e"
+    },
+    {
+      "fractionBits": "0x3fd8263800000000",
+      "sampleIndex": 9,
+      "weightedParametersSHA256": "e91ad5cdba11f8b7d63c300bdb097a01e40d38b99a3147e9c786bb4b59778e6e"
+    },
+    {
+      "fractionBits": "0x3fd8263800000000",
+      "sampleIndex": 10,
+      "weightedParametersSHA256": "e91ad5cdba11f8b7d63c300bdb097a01e40d38b99a3147e9c786bb4b59778e6e"
+    },
+    {
+      "fractionBits": "0x3fd8263800000000",
+      "sampleIndex": 11,
+      "weightedParametersSHA256": "e91ad5cdba11f8b7d63c300bdb097a01e40d38b99a3147e9c786bb4b59778e6e"
+    },
+    {
+      "fractionBits": "0x3fd8263800000000",
+      "sampleIndex": 12,
+      "weightedParametersSHA256": "e91ad5cdba11f8b7d63c300bdb097a01e40d38b99a3147e9c786bb4b59778e6e"
+    },
+    {
+      "fractionBits": "0x3fd8263800000000",
+      "sampleIndex": 13,
+      "weightedParametersSHA256": "e91ad5cdba11f8b7d63c300bdb097a01e40d38b99a3147e9c786bb4b59778e6e"
+    },
+    {
+      "fractionBits": "0x3fdcb7e400000000",
+      "sampleIndex": 14,
+      "weightedParametersSHA256": "163bb12be034c567eb048cdab16d72cdd38ac3c6f879db5e84e249e8bdbfe769"
+    },
+    {
+      "fractionBits": "0x3fdcb7e400000000",
+      "sampleIndex": 15,
+      "weightedParametersSHA256": "163bb12be034c567eb048cdab16d72cdd38ac3c6f879db5e84e249e8bdbfe769"
+    },
+    {
+      "fractionBits": "0x3fe55f6400000000",
+      "sampleIndex": 16,
+      "weightedParametersSHA256": "e0ed066b4ef9a3c65a51db1f77ec0e8619a8100f73b81ea060214b407ea10690"
+    },
+    {
+      "fractionBits": "0x3fe55f6400000000",
+      "sampleIndex": 17,
+      "weightedParametersSHA256": "e0ed066b4ef9a3c65a51db1f77ec0e8619a8100f73b81ea060214b407ea10690"
+    },
+    {
+      "fractionBits": "0x3fe55f6400000000",
+      "sampleIndex": 18,
+      "weightedParametersSHA256": "e0ed066b4ef9a3c65a51db1f77ec0e8619a8100f73b81ea060214b407ea10690"
+    },
+    {
+      "fractionBits": "0x3fe55f6400000000",
+      "sampleIndex": 19,
+      "weightedParametersSHA256": "e0ed066b4ef9a3c65a51db1f77ec0e8619a8100f73b81ea060214b407ea10690"
+    },
+    {
+      "fractionBits": "0x3fe55f6400000000",
+      "sampleIndex": 20,
+      "weightedParametersSHA256": "e0ed066b4ef9a3c65a51db1f77ec0e8619a8100f73b81ea060214b407ea10690"
+    },
+    {
+      "fractionBits": "0x3fe55f6400000000",
+      "sampleIndex": 21,
+      "weightedParametersSHA256": "e0ed066b4ef9a3c65a51db1f77ec0e8619a8100f73b81ea060214b407ea10690"
+    },
+    {
+      "fractionBits": "0x3fe55f6400000000",
+      "sampleIndex": 22,
+      "weightedParametersSHA256": "e0ed066b4ef9a3c65a51db1f77ec0e8619a8100f73b81ea060214b407ea10690"
+    },
+    {
+      "fractionBits": "0x3febe5aa00000000",
+      "sampleIndex": 23,
+      "weightedParametersSHA256": "271b28e8de4d4f8751dc1e18412011489152a06fe05f29ad7a4588e57843c394"
+    },
+    {
+      "fractionBits": "0x3febe5aa00000000",
+      "sampleIndex": 24,
+      "weightedParametersSHA256": "271b28e8de4d4f8751dc1e18412011489152a06fe05f29ad7a4588e57843c394"
+    },
+    {
+      "fractionBits": "0x3febe5aa00000000",
+      "sampleIndex": 25,
+      "weightedParametersSHA256": "271b28e8de4d4f8751dc1e18412011489152a06fe05f29ad7a4588e57843c394"
+    },
+    {
+      "fractionBits": "0x3febe5aa00000000",
+      "sampleIndex": 26,
+      "weightedParametersSHA256": "271b28e8de4d4f8751dc1e18412011489152a06fe05f29ad7a4588e57843c394"
+    },
+    {
+      "fractionBits": "0x3febe5aa00000000",
+      "sampleIndex": 27,
+      "weightedParametersSHA256": "271b28e8de4d4f8751dc1e18412011489152a06fe05f29ad7a4588e57843c394"
+    },
+    {
+      "fractionBits": "0x3febe5aa00000000",
+      "sampleIndex": 28,
+      "weightedParametersSHA256": "271b28e8de4d4f8751dc1e18412011489152a06fe05f29ad7a4588e57843c394"
+    },
+    {
+      "fractionBits": "0x3febe5aa00000000",
+      "sampleIndex": 29,
+      "weightedParametersSHA256": "271b28e8de4d4f8751dc1e18412011489152a06fe05f29ad7a4588e57843c394"
+    },
+    {
+      "fractionBits": "0x3feee47a00000000",
+      "sampleIndex": 30,
+      "weightedParametersSHA256": "3bee8db0a31499f6b87be4f41091277a4c76c6a97596f23834baf8b3e3396e15"
+    },
+    {
+      "fractionBits": "0x3feee47a00000000",
+      "sampleIndex": 31,
+      "weightedParametersSHA256": "3bee8db0a31499f6b87be4f41091277a4c76c6a97596f23834baf8b3e3396e15"
+    },
+    {
+      "fractionBits": "0x3ff0000000000000",
+      "sampleIndex": 32,
+      "weightedParametersSHA256": "9eaba6971ff89966b973ebd5f237b016a1450a7a2e8e8171b07ecca7f4a94c38"
+    }
+  ],
+  "nativeBoundary": {
+    "caFilterContextDispatchThunk": {
+      "byteCount": 20,
+      "moduleOffset": "0x76bae4",
+      "pointerAuthenticationAddressDiscriminatorHigh16": "0x6c97",
+      "pointerAuthenticationKey": "ASIA",
+      "sha256": "dd3179c1362f9b95fb87fc260e91e43d78e2d13aba07a2767707b3676e96eed7",
+      "witnessSlot": 1
+    },
+    "constructor": {
+      "byteCount": 1044,
+      "moduleOffset": "0xbad00",
+      "sha256": "71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d"
+    },
+    "contextBehavior": {
+      "authority": "transport-only source-SDF name; inputSourceSDF is outside the frozen 49-field scalar/discrete comparison",
+      "sdfSublayerName": "lg-weighted-sdf-<layer-index>"
+    },
+    "designLibraryUUID": "1e98080269f53e6989ef50088297fcf5",
+    "environmentFlags": "0x0000000000099183",
+    "filterArrayGetter": {
+      "byteCount": 2592,
+      "moduleOffset": "0xb748c",
+      "sha256": "0abc68898237c57aa2c31d54568649f57750241ea6cd4fe9c995d0b9857f826a"
+    },
+    "freshProcessCount": 3,
+    "layerIndex": 0,
+    "nativeChildMayInheritNixStorePath": false,
+    "probeMayEmbedNixStorePath": false,
+    "swiftUICoreUUID": "99606d45c40a3c69ae515f0c4e32e531"
+  },
+  "outcomes": {
+    "accept": "all 1519 reopened mapped components returned by Apple's getter equal the corrected constructor/getter predictions bit for bit; all three fresh processes and all exact constructor outputs agree; this is retrospective consolidation after falsification",
+    "rejectExporterModel": "any held-out mapped component differs from its frozen predicted raw bytes",
+    "rejectCorrectedPublicComparison": "the actual getter/public match counts differ from the corrected 1054 matches and 465 mismatches",
+    "runtimeSelectionFromCapturedValueAllowed": false
+  },
+  "preHoldoutAttempt": {
+    "correction": "retain Nix Python 3.14 orchestration while constructing an explicit Command-Line-Tools-only child environment with /bin/bash and omitting every Nix-valued inherited variable",
+    "holdoutOutputOpened": false,
+    "nativeExecutableCompiled": false,
+    "nativeExecutableLaunched": false,
+    "reason": "legacy native environment sanitizer rejected the Nix-provided SHELL path before the first sw_vers child"
+  },
+  "predecessors": {
+    "backgroundFilterMetadataResultSHA256": "dc2202be02d3831126866236661173c92bf492498a4cc2d2717931ba296b0757",
+    "publicProjectionSHA256": "d4d8471355e0cbba4578d2b3786951116a372f5fcc94798ed9384687008d4573",
+    "weightedParametersResultSHA256": "adbb81b77b6d414e249c2febecf3752b6cb5ca292c5e882956d4d9bd2edecab7",
+    "weightedPublicBoundaryResultSHA256": "308943d6d5cb16166cd7a1a3f63a824a2b4e47f93bab18e13f7fccac51b94767"
+  },
+  "prediction": {
+    "calibrationSampleIndexExcluded": 1,
+    "exporterPredictionMatchCount": 1519,
+    "factorOneEndpointMappedFieldMatchCount": 49,
+    "firstHoldoutSampleIndex": 2,
+    "holdoutSampleCount": 31,
+    "lastHoldoutSampleIndex": 32,
+    "mappedComponentCount": 1519,
+    "mappedFieldCount": 49,
+    "predictionContractSHA256": "8fa808ec5d721702ce290ae1769e620c3477dfd4b3bf7a0448ffd82b47585f72",
+    "retainedPublicMatchCount": 1054,
+    "retainedPublicMismatchCount": 465
+  },
+  "sourceIdentity": {
+    "bridgeSourceSHA256": "d8d4e4de79a989a9e47e98a2a63fc033ede618ddedc9c8fa223bd265f40e6f3d",
+    "captureSourceNormalizedSHA256": "a5ccf9cdafa7d8776e9bcd576685246d78be00cf5ca4159ad5806f0da882faa5",
+    "contextSourceSHA256": "1fbb1b64fea91c1ca207eae5bdb8e80f817e58463993e6bc24dd889759058d77",
+    "probeSourceSHA256": "9381aced40357525d1cfc007b68aea701632eb87195cdb12f6f16480ad4c1b53"
+  }
+}
