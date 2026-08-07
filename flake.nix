@@ -26,9 +26,10 @@
         { pkgs }:
         {
           default = pkgs.mkShell {
-            # Toolchain for analyzing the captured Liquid Glass samples
-            # (the captures themselves are produced on GitHub's macos-26
-            # runners by .github/workflows/capture.yml).
+            # Toolchain for analyzing captured Liquid Glass samples. Native
+            # captures run directly on the authorized Retina M1 with Apple
+            # Command Line Tools; this shell is used only for post-capture
+            # analysis and tests.
             packages = with pkgs; [
               actionlint
               (python314.withPackages (
