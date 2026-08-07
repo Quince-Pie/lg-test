@@ -11817,3 +11817,65 @@ Dematerialize, the nested resolved-color join, independently generated
 mesh/source/backdrop/mips, physical Retina compositor/color transfer, and a
 zero-unequal-byte Walle frame remain open. The production shader remains
 unchanged and unauthorized for parity-sensitive edits.
+
+The first prospective dispatch at commit `06150f0` does not receive that
+matrix authority. All four independent cases complete with native, native
+clamp, and validator status zero. Each matches 1,504/1,504 numeric words, so
+the retained evidence contains 6,016 exact numeric comparisons and zero
+mismatches. Every case also has 33/33 distinct WindowServer frames. The frozen
+aggregator nevertheless exits nonzero because it additionally, and
+incorrectly, requires all 132 frames to differ across profiles.
+
+There are exactly 129 distinct frame hashes. The sole duplicate class is
+SHA-256
+`f93a15f6884c8eccdf4b94203f748def9512e3137538aea2b99a53ece39b48a8`,
+occurring only as `transition-materialize-00-rgba8.png` in all four cases.
+That is the already-proved common absent endpoint: it contains neither glass
+filter, so no profile-specific optical state exists to distinguish it.
+Requiring those four frames to differ contradicts the prospectively proved
+presentation topology. The ancillary aggregation failure does not falsify any
+numeric prediction, but the failed v1 matrix is not relabelled as a complete
+prospective success. Its immutable compact result is
+`Analysis/transition_uniform_profile_06150f0_v1_aggregate_failure_result.json`,
+SHA-256
+`2b4144cf91b30db7adf42eef9faed72ab2eec94d735b925073d818a9439e78a8`.
+
+A corrected v2 gate is frozen before any v2 Apple output. It retains the
+numeric model unchanged and uses four geometries with no retained runtime
+evidence:
+
+```text
+clear/light    circle-455-center
+clear/dark     circle-463-center
+regular/light  circle-471-center
+regular/dark   circle-479-center
+```
+
+V2 still requires 33 distinct frames inside each case, all 6,016 numeric words
+exact, zero mismatches, one capture commit, and the same direct active-Retina
+contract. Across the matrix it prospectively requires 132 frames, exactly 129
+distinct hashes, exactly one four-member duplicate class consisting only of
+the four sample-zero filenames, and global uniqueness for all other 128
+frames. This correction is derived from the already-proved absent-endpoint
+topology, not from any v2 value.
+
+The v2 frozen sources are:
+
+```text
+Analysis/transition_uniform_profile_holdout_v2_preregistration.json
+  SHA-256 8855771447b257ffbcde01334b3a243e09cf689427a559870ebe69b20245e875
+Analysis/analyze_transition_uniform_profile_clamp_v2_local_macos_26_6_1.swift
+  SHA-256 f6ed214aa7dbcaec0ea4eeebe8aed2924ac1c0802a38793bec68eca9c828d59d
+Analysis/validate_transition_uniform_profile_holdout_v2.py
+  SHA-256 9ae228495af7706a5be6e4c83e2c2f5df532aa4c294529c6f99109809ccfc495
+Analysis/aggregate_transition_uniform_profile_holdout_v2.py
+  SHA-256 b5c719732ad6ed40c05ecad4a78b59c014481d98a135b6af95cd5c709995cee1
+Analysis/run_transition_uniform_profile_holdout_v2_local_macos_26_6_1.sh
+  SHA-256 bc5f18a1b84aba1e4cdbe3b648aa4a2719602d5762f5e43df163c1d1c27775fe
+```
+
+No v2 runtime outcome is known at freeze. A v2 pass can establish the complete
+four-profile numeric materialize transfer; it still cannot establish
+dematerialize, nested color, independent optical-input generation, physical
+pixel behavior, Walle frame parity, or permission to change the production
+shader.

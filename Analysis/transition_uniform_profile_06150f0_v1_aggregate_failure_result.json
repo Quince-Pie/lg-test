@@ -1,0 +1,100 @@
+{
+  "transitionUniformProfileHoldoutAggregateFailureSchemaVersion": 1,
+  "classification": "prospective four-case numeric holdout whose four per-case validators passed exactly but whose frozen matrix aggregator rejected an overstrict cross-profile image-uniqueness condition; not a complete matrix pass",
+  "captureCommit": "06150f0971acadb71f975b0bbf9e67eeaba202b5",
+  "preregistrationSHA256": "29672bc86b220e21ff513712eb2cfa15f5db650a5c2db11b15caee525f999a71",
+  "aggregatorSHA256": "22e582baaeafe00027a534b565c830b68e84fcce6582688a61793f41de243dcc",
+  "cases": [
+    {
+      "caseId": "clear-light-circle454",
+      "timelineSHA256": "659b61205a38deff43c723d79459d19532ada0ceeed96cb280c66c418be32780",
+      "nativeClampResultSHA256": "1f9bade8a52adf9e1c79f49d9be4af5324cd2fd6ea76d32e9afbab296bd2f878",
+      "validationSHA256": "bd9b38cd39a5056f08d9a689a104f10397f23eaf64fe3a1985d4e827f3df29bf",
+      "nativeStatus": 0,
+      "nativeClampStatus": 0,
+      "validationStatus": 0,
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "numericMismatchCount": 0,
+      "windowServerFrameCount": 33,
+      "distinctWindowServerFrameCount": 33
+    },
+    {
+      "caseId": "clear-dark-circle462",
+      "timelineSHA256": "3ebae661b7224fa5222c0e6f0b86115489bbcdabc4fb3b69e9b88d10ef05a9d3",
+      "nativeClampResultSHA256": "d51038d47ad8db46047f27f9e95bc745e2b1d2bb08a8d5460a6f9d1df83f8509",
+      "validationSHA256": "5133ac462b4d331fdcbd924adcd1d1aa32473075eeae62a8e772eb5cfadc5803",
+      "nativeStatus": 0,
+      "nativeClampStatus": 0,
+      "validationStatus": 0,
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "numericMismatchCount": 0,
+      "windowServerFrameCount": 33,
+      "distinctWindowServerFrameCount": 33
+    },
+    {
+      "caseId": "regular-light-circle470",
+      "timelineSHA256": "e04ee0ea376cc33d476f5b8519c7e5dc1e8305e9295b74f76ef9efb1030a85dd",
+      "nativeClampResultSHA256": "51428afd81efc193a0d70f4156c47d39ec93183620611c27935b9620933d0f63",
+      "validationSHA256": "a526b986c68ad9878ec9e9b55be91436ded8358b7ec047f62963ebced59e65da",
+      "nativeStatus": 0,
+      "nativeClampStatus": 0,
+      "validationStatus": 0,
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "numericMismatchCount": 0,
+      "windowServerFrameCount": 33,
+      "distinctWindowServerFrameCount": 33
+    },
+    {
+      "caseId": "regular-dark-circle478",
+      "timelineSHA256": "feb3207008a5ed997f703fcb2675e5b1b47a5a096ce360bdea04f629ecb97ef4",
+      "nativeClampResultSHA256": "ce02918cfa059d72cf04330b9c4811af850abcdc7ba2c89edb81ee067d62825b",
+      "validationSHA256": "fbec29b8a2622997cfbfac6fc9e6abde5f2002a7f7483b5405587a2df6445208",
+      "nativeStatus": 0,
+      "nativeClampStatus": 0,
+      "validationStatus": 0,
+      "numericComparisonCount": 1504,
+      "numericExactMatchCount": 1504,
+      "numericMismatchCount": 0,
+      "windowServerFrameCount": 33,
+      "distinctWindowServerFrameCount": 33
+    }
+  ],
+  "numericEvidence": {
+    "profileCount": 4,
+    "dynamicStateCount": 128,
+    "numericFieldCount": 47,
+    "numericComparisonCount": 6016,
+    "numericExactMatchCount": 6016,
+    "numericMismatchCount": 0,
+    "allPerCaseProspectiveValidatorsPassed": true
+  },
+  "aggregateFailure": {
+    "exception": "ValueError: matrix WindowServer frames are not all distinct",
+    "frozenExpectedDistinctFrameCount": 132,
+    "observedFrameCount": 132,
+    "observedDistinctFrameCount": 129,
+    "duplicateSHA256": "f93a15f6884c8eccdf4b94203f748def9512e3137538aea2b99a53ece39b48a8",
+    "duplicateOccurrences": [
+      "clear-light-circle454/transition-materialize-00-rgba8.png",
+      "clear-dark-circle462/transition-materialize-00-rgba8.png",
+      "regular-light-circle470/transition-materialize-00-rgba8.png",
+      "regular-dark-circle478/transition-materialize-00-rgba8.png"
+    ],
+    "interpretation": "sample zero is the already-proved common absent endpoint with neither glass filter, so requiring cross-profile uniqueness for that image was structurally wrong; this ancillary failure does not alter any of the 6016 exact numeric comparisons"
+  },
+  "conclusion": {
+    "fourPerCaseNumericValidatorsPassed": true,
+    "frozenV1MatrixAggregatorPassed": false,
+    "fourProfileNumericMaterializeTransferEstablishedByV1": false,
+    "requiresFreshCorrectedProspectiveMatrix": true,
+    "dematerializeTransferEstablished": false,
+    "nestedResolvedColorTransferEstablished": false,
+    "physicalPixelParityEstablished": false,
+    "independentWalleZeroByteFrameEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false
+  }
+}
