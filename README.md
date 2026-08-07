@@ -8935,3 +8935,69 @@ public-to-blend-to-`Parameters` provenance join. It still cannot establish a
 fresh-profile layer-selection/weight law, general crop allocation, physical
 Retina compositor/color behavior, an independent Walle zero-unequal-byte
 frame, or Liquid Glass parity, and it cannot authorize a shader change.
+
+### Exact keyed `ResolvedComposite` weight arithmetic and builder join
+
+Native metadata and code analysis now identifies the builder's previously
+anonymous factor collection. `Resolved.AnimatableData` is exactly 40 bytes:
+`ResolvedComposite` at offset 0, the two-double focus-offset pair at offset 16,
+and `ResolvedTint.AnimatableData` at offset 32. `ResolvedComposite` is exactly
+12 bytes with stride 16:
+
+```text
+offset 0  Dictionary<ResolvedComposite.Key, Double> values
+offset 8  Float luminance
+```
+
+The key is not an opaque layer ordinal. Its two semantic fields are an exact
+`ResolvedConfiguration` and a `ColorScheme`. The 48-byte resolved
+configuration contains, in order, `base`, `subvariant`, `frost`, `options`,
+environment `flags`, `interaction`, `optimizationLevel`, `contentEffect`, and
+`layers`. The adjacent 104-byte `Mix` representation contains two complete
+48-byte resolved configurations at offsets 0 and 48 plus a binary64 `fraction`
+at offset 96. This makes the unknown boundary precise: public controls and the
+environment select semantic configuration keys, and SwiftUI interpolation
+produces binary64 coefficients for those keys.
+
+The complete vector-arithmetic code is now byte-gated. Addition takes the
+dictionary-key union, preserves one-sided values, and uses binary64 `fadd` for
+a shared key; subtraction preserves left-only values, negates right-only
+values, and uses binary64 `fsub` for a shared key. Scaling by a nonzero Double
+multiplies every dictionary value by that exact binary64 factor. Scaling by
+exact zero instead canonicalizes the result to an empty dictionary and zero
+luminance. Luminance is deliberately different: the Double scale is converted
+to Float and all luminance arithmetic is binary32. Magnitude squared adds the
+binary64 square of every coefficient to the binary32 luminance square after
+conversion to Double.
+
+The same analysis closes the consumer join without relying on a symbol name.
+The public `resolveLayers` helper loads the dictionary pointer from
+`Resolved + 0`, passes it unchanged as the intermediate recipe builder's stack
+argument, and that builder forwards it in `x2` to the authenticated 4,916-byte
+`ResolvedRecipe` builder. The final builder reads the dictionary count into
+its fixed `+0xb0` frame slot, iterates the native dictionary storage, and loads
+each binary64 value into `d9`. Therefore the `d9` factors already proved in the
+`Parameters.AnimatableData` recurrence are exactly the values in
+`Resolved.composite.values`; they are not a second hidden weighting system.
+
+The native analyzer and canonical result are
+`Analysis/analyze_designlibrary_resolved_composite_weight_pipeline_local_macos_26_6_1.py`,
+SHA-256
+`530922f37038ca23dbfe3cca43c3fe3a703fdf337dde7f393afda180b41ea3d0`,
+and
+`Analysis/designlibrary_resolved_composite_weight_pipeline_local_macos_26_6_1_result.json`,
+SHA-256
+`f5e87599e3eb8e6a734e0618b51b077742bb04558355b2dad48a580b51edb558`.
+It authenticates seven exact Swift descriptors, eleven complete code regions,
+their direct callsites and floating-instruction inventories, the
+`Resolved`-to-builder pointer path, count load, dictionary-value load, and
+`d9` load on macOS 26.6.1 build 25G76. It launches no Apple application and
+reads no captured render or public value.
+
+This closes the keyed weight representation, exact vector arithmetic, and
+weight-to-builder join. It does **not** yet establish which public controls or
+environment states select each `ResolvedConfiguration` key, how transition
+progress produces `Mix.fraction`, the upstream integer crop/allocation policy,
+physical Retina compositor/color behavior, an independent Walle
+zero-unequal-byte frame, or Liquid Glass parity. No production shader change
+is authorized.

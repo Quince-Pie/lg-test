@@ -1,0 +1,1003 @@
+{
+  "builderWeightJoin": {
+    "builderCountSlot": "builder stack + 0xb0",
+    "builderDictionarySlot": "builder stack + 0x88",
+    "builderFactorRegister": "d9",
+    "factorScalarType": "binary64 Double",
+    "preservesDictionaryPointerAcrossJoin": true,
+    "producer": "Resolved.composite.values at runtime offset 0",
+    "publicResolveLayersHelperCallsite": "0x240923628",
+    "resolvedRecipeBuilderRegister": "x2",
+    "resolvedRecipeCallerEntryStackArgument": "incoming stack + 0x8"
+  },
+  "claims": {
+    "allRuntimeWeightProductionLawEstablished": false,
+    "cropAllocationPolicyEstablished": false,
+    "environmentToResolvedConfigurationSelectionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "publicControlsToResolvedConfigurationSelectionLawEstablished": false,
+    "recipeBuilderConsumesDictionaryCountAndBinary64Values": true,
+    "recipeBuilderD9FactorComesFromResolvedCompositeValues": true,
+    "resolvedAnimatableDataLayoutEstablished": true,
+    "resolvedCompositeDictionaryPointerReachesRecipeBuilderUnchanged": true,
+    "resolvedCompositeKeyIsResolvedConfigurationAndColorScheme": true,
+    "resolvedCompositeLayoutEstablished": true,
+    "resolvedCompositeLuminanceUsesBinary32Arithmetic": true,
+    "resolvedCompositeValuesAreKeyedBinary64Weights": true,
+    "resolvedCompositeVectorArithmeticEstablished": true,
+    "resolvedCompositeZeroFactorCanonicalizationEstablished": true,
+    "resolvedConfigurationMixLayoutEstablished": true,
+    "resolvedConfigurationSemanticFieldsEstablished": true,
+    "retinaCompositorColorLawEstablished": false,
+    "transitionProgressToMixFractionLawEstablished": false
+  },
+  "classification": "native static Swift metadata/code/control-flow/arithmetic analysis; no Apple application, render, image, captured public value, crop, or provider return is read",
+  "codeRegions": {
+    "resolvedAnimatableAdd": {
+      "byteCount": 240,
+      "endExclusive": "0x24097c184",
+      "instructionCount": 60,
+      "sha256": "ddbfbe740991dc8eab5d32da2517a092519210530266ead45e17207c16b1a526",
+      "start": "0x24097c094"
+    },
+    "resolvedAnimatableGetter": {
+      "byteCount": 140,
+      "endExclusive": "0x24097c968",
+      "instructionCount": 35,
+      "sha256": "6e1d788806440612193cc14503dc9a43ae4fb7f433d1df4b683e9f619c268357",
+      "start": "0x24097c8dc"
+    },
+    "resolvedAnimatableMagnitudeSquared": {
+      "byteCount": 84,
+      "endExclusive": "0x24097c558",
+      "instructionCount": 21,
+      "sha256": "0f5f3e5ebd0959e27be50d93eee3b377bbddcae68f9f84883c5d70e1d31b4d84",
+      "start": "0x24097c504"
+    },
+    "resolvedAnimatableScale": {
+      "byteCount": 744,
+      "endExclusive": "0x24097c504",
+      "instructionCount": 186,
+      "sha256": "a13eb7a50e339d973203bbd75bf64d71c46039db05d597fe6dbebbf84b04f5ee",
+      "start": "0x24097c21c"
+    },
+    "resolvedAnimatableSetter": {
+      "byteCount": 156,
+      "endExclusive": "0x24097cb20",
+      "instructionCount": 39,
+      "sha256": "cc3af499c6124ef22179eba234c9b68ce9ea2b33c52115f457c72d7838e47579",
+      "start": "0x24097ca84"
+    },
+    "resolvedAnimatableSubtract": {
+      "byteCount": 152,
+      "endExclusive": "0x24097c21c",
+      "instructionCount": 38,
+      "sha256": "086aeabd198b4f5675a1cd18169fbff0406b7642fbf29b791fbc6f7a2b8998bf",
+      "start": "0x24097c184"
+    },
+    "resolvedAnimatableZero": {
+      "byteCount": 84,
+      "endExclusive": "0x24097c094",
+      "instructionCount": 21,
+      "sha256": "fde3f77e41919787f13274019cbb11ed30b06d75edca427f06f10ed0efeef747",
+      "start": "0x24097c040"
+    },
+    "resolvedCompositeAdd": {
+      "byteCount": 1816,
+      "endExclusive": "0x2409846a4",
+      "instructionCount": 454,
+      "sha256": "ed7e25b93b77011ef85f23db20f072d9f3ae35d17eb033e4cc286c8b023a4d08",
+      "start": "0x240983f8c"
+    },
+    "resolvedCompositeMagnitudeSquared": {
+      "byteCount": 156,
+      "endExclusive": "0x240981418",
+      "instructionCount": 39,
+      "sha256": "bf44b7c124baf5fca26fd649e0f7d88f5a0af0503e78441ad3840e8c9a000f21",
+      "start": "0x24098137c"
+    },
+    "resolvedCompositeScale": {
+      "byteCount": 644,
+      "endExclusive": "0x24098137c",
+      "instructionCount": 161,
+      "sha256": "dbe3108cef5d11f5252f11349031894d3184f61d58ed05b682020e2227874be6",
+      "start": "0x2409810f8"
+    },
+    "resolvedCompositeSubtract": {
+      "byteCount": 1812,
+      "endExclusive": "0x240983f8c",
+      "instructionCount": 453,
+      "sha256": "eb14906ebbd161d19d3cfdc5261ea565d0f9e53a48c32bfc7bca2d9564aa8cb3",
+      "start": "0x240983878"
+    }
+  },
+  "designLibraryResolvedCompositeWeightPipelineAnalysisSchemaVersion": 1,
+  "directBLCallsites": {
+    "resolvedAnimatableAdd": [],
+    "resolvedAnimatableGetter": [],
+    "resolvedAnimatableMagnitudeSquared": [],
+    "resolvedAnimatableScale": [],
+    "resolvedAnimatableSetter": [],
+    "resolvedAnimatableSubtract": [],
+    "resolvedAnimatableZero": [],
+    "resolvedCompositeAdd": [
+      "0x24092fa14",
+      "0x24097c0e8",
+      "0x24097c6bc"
+    ],
+    "resolvedCompositeMagnitudeSquared": [
+      "0x24097c528",
+      "0x24097c5e4"
+    ],
+    "resolvedCompositeScale": [
+      "0x24097c2e8",
+      "0x24097c578"
+    ],
+    "resolvedCompositeSubtract": [
+      "0x24097c1d0",
+      "0x24097c7d8",
+      "0x24097c874"
+    ]
+  },
+  "floatingInstructionInventories": {
+    "resolvedAnimatableAdd": {
+      "fadd": 2
+    },
+    "resolvedAnimatableGetter": {},
+    "resolvedAnimatableMagnitudeSquared": {
+      "fadd": 3,
+      "fmul": 2
+    },
+    "resolvedAnimatableScale": {
+      "fmul.2d": 1
+    },
+    "resolvedAnimatableSetter": {},
+    "resolvedAnimatableSubtract": {
+      "fsub": 2
+    },
+    "resolvedAnimatableZero": {},
+    "resolvedCompositeAdd": {
+      "fadd": 2
+    },
+    "resolvedCompositeMagnitudeSquared": {
+      "fadd": 1,
+      "fcvt": 1,
+      "fmul": 2
+    },
+    "resolvedCompositeScale": {
+      "fcmp": 1,
+      "fcvt": 1,
+      "fmul": 2
+    },
+    "resolvedCompositeSubtract": {
+      "fneg": 1,
+      "fsub": 2
+    }
+  },
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "sharedCacheSlide": "0x8a9c000",
+    "sharedCacheSlideMetadataMatchCount": 219,
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "instructionContracts": [
+    {
+      "address": "0x2409235f0",
+      "mnemonic": "ldr",
+      "operands": "x8, [x22]"
+    },
+    {
+      "address": "0x2409235f4",
+      "mnemonic": "ldr",
+      "operands": "s0, [x22, #0x8]"
+    },
+    {
+      "address": "0x24092361c",
+      "mnemonic": "stp",
+      "operands": "x9, x8, [sp, #-0x10]!"
+    },
+    {
+      "address": "0x240923620",
+      "mnemonic": "mov",
+      "operands": "x8, x28"
+    },
+    {
+      "address": "0x240923628",
+      "mnemonic": "bl",
+      "operands": "0x2409801bc"
+    },
+    {
+      "address": "0x24097c06c",
+      "mnemonic": "stp",
+      "operands": "xzr, xzr, [x19, #0x10]"
+    },
+    {
+      "address": "0x24097c078",
+      "mnemonic": "str",
+      "operands": "x21, [x19]"
+    },
+    {
+      "address": "0x24097c07c",
+      "mnemonic": "str",
+      "operands": "wzr, [x19, #0x8]"
+    },
+    {
+      "address": "0x24097c080",
+      "mnemonic": "str",
+      "operands": "x0, [x19, #0x20]"
+    },
+    {
+      "address": "0x24097c0e8",
+      "mnemonic": "bl",
+      "operands": "0x240983f8c"
+    },
+    {
+      "address": "0x24097c0f4",
+      "mnemonic": "fadd",
+      "operands": "d0, d9, d11"
+    },
+    {
+      "address": "0x24097c0f8",
+      "mnemonic": "fadd",
+      "operands": "d1, d10, d12"
+    },
+    {
+      "address": "0x24097c1d0",
+      "mnemonic": "bl",
+      "operands": "0x240983878"
+    },
+    {
+      "address": "0x24097c1dc",
+      "mnemonic": "fsub",
+      "operands": "d0, d9, d11"
+    },
+    {
+      "address": "0x24097c1e0",
+      "mnemonic": "fsub",
+      "operands": "d1, d10, d12"
+    },
+    {
+      "address": "0x24097c2e8",
+      "mnemonic": "bl",
+      "operands": "0x2409810f8"
+    },
+    {
+      "address": "0x24097c2f4",
+      "mnemonic": "fmul.2d",
+      "operands": "v0, v0, v1[0]"
+    },
+    {
+      "address": "0x24097c528",
+      "mnemonic": "bl",
+      "operands": "0x24098137c"
+    },
+    {
+      "address": "0x24097c52c",
+      "mnemonic": "fmul",
+      "operands": "d1, d8, d8"
+    },
+    {
+      "address": "0x24097c530",
+      "mnemonic": "fmul",
+      "operands": "d2, d9, d9"
+    },
+    {
+      "address": "0x24097c534",
+      "mnemonic": "fadd",
+      "operands": "d1, d1, d2"
+    },
+    {
+      "address": "0x24097c538",
+      "mnemonic": "fadd",
+      "operands": "d8, d0, d1"
+    },
+    {
+      "address": "0x24097c544",
+      "mnemonic": "fadd",
+      "operands": "d0, d8, d0"
+    },
+    {
+      "address": "0x24097c8fc",
+      "mnemonic": "ldr",
+      "operands": "x21, [x20]"
+    },
+    {
+      "address": "0x24097c900",
+      "mnemonic": "ldr",
+      "operands": "s10, [x20, #0x8]"
+    },
+    {
+      "address": "0x24097c904",
+      "mnemonic": "ldp",
+      "operands": "d8, d9, [x20, #0x10]"
+    },
+    {
+      "address": "0x24097c924",
+      "mnemonic": "ldr",
+      "operands": "x20, [x20, #0x58]"
+    },
+    {
+      "address": "0x24097c940",
+      "mnemonic": "str",
+      "operands": "x21, [x19]"
+    },
+    {
+      "address": "0x24097c944",
+      "mnemonic": "str",
+      "operands": "s10, [x19, #0x8]"
+    },
+    {
+      "address": "0x24097c948",
+      "mnemonic": "stp",
+      "operands": "d8, d9, [x19, #0x10]"
+    },
+    {
+      "address": "0x24097c94c",
+      "mnemonic": "str",
+      "operands": "x22, [x19, #0x20]"
+    },
+    {
+      "address": "0x24097caa0",
+      "mnemonic": "mov",
+      "operands": "x19, x20"
+    },
+    {
+      "address": "0x24097caa4",
+      "mnemonic": "ldr",
+      "operands": "x21, [x0]"
+    },
+    {
+      "address": "0x24097caa8",
+      "mnemonic": "ldr",
+      "operands": "s10, [x0, #0x8]"
+    },
+    {
+      "address": "0x24097caac",
+      "mnemonic": "ldp",
+      "operands": "d8, d9, [x0, #0x10]"
+    },
+    {
+      "address": "0x24097cab0",
+      "mnemonic": "ldr",
+      "operands": "x22, [x0, #0x20]"
+    },
+    {
+      "address": "0x24097cac8",
+      "mnemonic": "str",
+      "operands": "x21, [x19]"
+    },
+    {
+      "address": "0x24097cacc",
+      "mnemonic": "str",
+      "operands": "s10, [x19, #0x8]"
+    },
+    {
+      "address": "0x24097cad0",
+      "mnemonic": "add",
+      "operands": "x20, x19, #0x10"
+    },
+    {
+      "address": "0x24097cafc",
+      "mnemonic": "ldr",
+      "operands": "x0, [x19, #0x58]"
+    },
+    {
+      "address": "0x24097cb04",
+      "mnemonic": "str",
+      "operands": "x20, [x19, #0x58]"
+    },
+    {
+      "address": "0x240980214",
+      "mnemonic": "ldr",
+      "operands": "x25, [x29, #0x18]"
+    },
+    {
+      "address": "0x240980710",
+      "mnemonic": "stur",
+      "operands": "x25, [x29, #-0xd8]"
+    },
+    {
+      "address": "0x240980ee0",
+      "mnemonic": "ldp",
+      "operands": "x8, x2, [x29, #-0xe0]"
+    },
+    {
+      "address": "0x240980ef0",
+      "mnemonic": "bl",
+      "operands": "0x240981b4c"
+    },
+    {
+      "address": "0x240981194",
+      "mnemonic": "fcmp",
+      "operands": "d8, #0.0"
+    },
+    {
+      "address": "0x240981198",
+      "mnemonic": "b.ne",
+      "operands": "0x2409811c0"
+    },
+    {
+      "address": "0x2409811b4",
+      "mnemonic": "str",
+      "operands": "x19, [x20]"
+    },
+    {
+      "address": "0x2409811b8",
+      "mnemonic": "str",
+      "operands": "wzr, [x20, #0x8]"
+    },
+    {
+      "address": "0x2409812ac",
+      "mnemonic": "ldr",
+      "operands": "d0, [x8, x21, lsl #3]"
+    },
+    {
+      "address": "0x2409812b0",
+      "mnemonic": "fmul",
+      "operands": "d9, d8, d0"
+    },
+    {
+      "address": "0x2409812e8",
+      "mnemonic": "str",
+      "operands": "d9, [x8, x21, lsl #3]"
+    },
+    {
+      "address": "0x240981320",
+      "mnemonic": "fcvt",
+      "operands": "s0, d8"
+    },
+    {
+      "address": "0x240981324",
+      "mnemonic": "ldr",
+      "operands": "s1, [x19, #0x8]"
+    },
+    {
+      "address": "0x240981328",
+      "mnemonic": "fmul",
+      "operands": "s0, s1, s0"
+    },
+    {
+      "address": "0x24098132c",
+      "mnemonic": "str",
+      "operands": "s0, [x19, #0x8]"
+    },
+    {
+      "address": "0x240981380",
+      "mnemonic": "fmul",
+      "operands": "s0, s0, s0"
+    },
+    {
+      "address": "0x24098138c",
+      "mnemonic": "fcvt",
+      "operands": "d0, s0"
+    },
+    {
+      "address": "0x2409813dc",
+      "mnemonic": "ldr",
+      "operands": "d1, [x12, x13]"
+    },
+    {
+      "address": "0x2409813e0",
+      "mnemonic": "fmul",
+      "operands": "d1, d1, d1"
+    },
+    {
+      "address": "0x2409813e4",
+      "mnemonic": "fadd",
+      "operands": "d0, d0, d1"
+    },
+    {
+      "address": "0x240981ba0",
+      "mnemonic": "str",
+      "operands": "x2, [x19, #0x88]"
+    },
+    {
+      "address": "0x240981ebc",
+      "mnemonic": "ldr",
+      "operands": "x0, [x19, #0x88]"
+    },
+    {
+      "address": "0x240981ec4",
+      "mnemonic": "ldr",
+      "operands": "x8, [x9, #0x40]!"
+    },
+    {
+      "address": "0x240981ecc",
+      "mnemonic": "ldr",
+      "operands": "x9, [x0, #0x10]"
+    },
+    {
+      "address": "0x240981ed0",
+      "mnemonic": "str",
+      "operands": "x9, [x19, #0xb0]"
+    },
+    {
+      "address": "0x240982854",
+      "mnemonic": "ldp",
+      "operands": "x9, x28, [x19, #0x80]"
+    },
+    {
+      "address": "0x2409828a8",
+      "mnemonic": "ldr",
+      "operands": "x9, [x28, #0x38]"
+    },
+    {
+      "address": "0x2409828ac",
+      "mnemonic": "ldr",
+      "operands": "d0, [x9, x20, lsl #3]"
+    },
+    {
+      "address": "0x240982934",
+      "mnemonic": "ldrsw",
+      "operands": "x8, [x20, #0x30]"
+    },
+    {
+      "address": "0x240982938",
+      "mnemonic": "ldr",
+      "operands": "d9, [x28, x8]"
+    },
+    {
+      "address": "0x240983d24",
+      "mnemonic": "fneg",
+      "operands": "d10, d10"
+    },
+    {
+      "address": "0x240983e10",
+      "mnemonic": "fsub",
+      "operands": "d10, d11, d10"
+    },
+    {
+      "address": "0x240983f20",
+      "mnemonic": "fsub",
+      "operands": "s8, s9, s8"
+    },
+    {
+      "address": "0x240984520",
+      "mnemonic": "fadd",
+      "operands": "d10, d10, d11"
+    },
+    {
+      "address": "0x240984638",
+      "mnemonic": "fadd",
+      "operands": "s8, s9, s8"
+    }
+  ],
+  "resolvedCompositeModel": {
+    "addition": {
+      "keyDomain": "dictionary-key union",
+      "leftOnlyOperation": "identity",
+      "luminanceOperation": "binary32 addition",
+      "rightOnlyOperation": "identity",
+      "sharedKeyOperation": "binary64 addition"
+    },
+    "keyType": "(ResolvedConfiguration, ColorScheme)",
+    "luminanceType": "Float",
+    "magnitudeSquared": "binary32 luminance squared then converted to binary64, plus the binary64 square of every dictionary value",
+    "mixType": "(from: ResolvedConfiguration, to: ResolvedConfiguration, fraction: Double)",
+    "scale": {
+      "luminanceOperation": "factor converted to binary32, then binary32 multiplication",
+      "nonzeroValueOperation": "each binary64 value multiplied by binary64 factor",
+      "zeroFactorOperation": "canonical empty dictionary and zero luminance"
+    },
+    "subtraction": {
+      "keyDomain": "dictionary-key union",
+      "leftOnlyOperation": "identity",
+      "luminanceOperation": "binary32 subtraction",
+      "rightOnlyOperation": "binary64 negation",
+      "sharedKeyOperation": "binary64 subtraction"
+    },
+    "valuesType": "Dictionary<ResolvedComposite.Key, Double>",
+    "zero": {
+      "luminance": 0.0,
+      "values": "empty dictionary"
+    }
+  },
+  "swiftDescriptors": {
+    "resolved": {
+      "descriptorAddress": "0x2409d2dc4",
+      "descriptorFlags": "0x00110051",
+      "fieldDescriptorAddress": "0x2409d86bc",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "composite",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV17ResolvedCompositeV",
+          "typeReferenceAddress": "0x2409c7a66"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "focusOffset",
+          "offset": null,
+          "typeReference": "_____ 7SwiftUI9UnitPointV",
+          "typeReferenceAddress": "0x2409bc1ce"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "configuration",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV13ConfigurationV4BaseO",
+          "typeReferenceAddress": "0x2409c6e0c"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "resolved",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV4BaseO",
+          "typeReferenceAddress": "0x2409c7a6c"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "dimensions",
+          "offset": null,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10DimensionsV",
+          "typeReferenceAddress": "0x2409c78aa"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "tints",
+          "offset": null,
+          "typeReference": "Say_____G 13DesignLibrary21GlassMaterialProviderV12ResolvedTintV",
+          "typeReferenceAddress": "0x2409c7a72"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "tintRecipe",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10TintRecipeO",
+          "typeReferenceAddress": "0x2409c70cc"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "colorScheme",
+          "offset": null,
+          "typeReference": "_____ 7SwiftUI11ColorSchemeO",
+          "typeReferenceAddress": "0x2409bcc56"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "customFill",
+          "offset": null,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV14CustomFillBaseC",
+          "typeReferenceAddress": "0x2409c6e40"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "customGlow",
+          "offset": null,
+          "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10CustomGlowV",
+          "typeReferenceAddress": "0x2409c6e48"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "style",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV13ResolvedStyleV",
+          "typeReferenceAddress": "0x2409c7a7c"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "controlTint",
+          "offset": null,
+          "typeReference": "_____Sg 7SwiftUI5ColorV8ResolvedV",
+          "typeReferenceAddress": "0x2409c7552"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "styleFlags",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10StyleFlagsV",
+          "typeReferenceAddress": "0x2409c78e4"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "fixedBackgroundColor",
+          "offset": null,
+          "typeReference": "_____Sg 7SwiftUI5ColorV8ResolvedV",
+          "typeReferenceAddress": "0x2409c7552"
+        }
+      ],
+      "metadata": null,
+      "name": "Resolved"
+    },
+    "resolvedAnimatableData": {
+      "descriptorAddress": "0x2409d2dec",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d8774",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "composite",
+          "offset": 0,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV17ResolvedCompositeV",
+          "typeReferenceAddress": "0x2409c7a66"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "focusOffset",
+          "offset": 16,
+          "typeReference": "_____y_____ABG 7SwiftUI14AnimatablePairV 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409c7a82"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "tints",
+          "offset": 32,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV12ResolvedTintV14AnimatableDataV",
+          "typeReferenceAddress": "0x2409c70d8"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 2147483647,
+        "fieldOffsets": [
+          0,
+          16,
+          32
+        ],
+        "metadataAddress": "0x29bdf6de8",
+        "metadataDescriptorRuntimeAddress": "0x24946edec",
+        "size": 40,
+        "stride": 40,
+        "valueWitnessFlags": "0x02030007",
+        "valueWitnessTableAddress": "0x29bdf6d80",
+        "valueWitnessTableMapped": true
+      },
+      "name": "AnimatableData"
+    },
+    "resolvedComposite": {
+      "descriptorAddress": "0x2409d2e30",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d8804",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "values",
+          "offset": 0,
+          "typeReference": "SDy_____SdG 13DesignLibrary21GlassMaterialProviderV17ResolvedCompositeV3KeyV",
+          "typeReferenceAddress": "0x2409c7ab4"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "luminance",
+          "offset": 8,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 2147483647,
+        "fieldOffsets": [
+          0,
+          8
+        ],
+        "metadataAddress": "0x29bdf6e70",
+        "metadataDescriptorRuntimeAddress": "0x24946ee30",
+        "size": 12,
+        "stride": 16,
+        "valueWitnessFlags": "0x00010007",
+        "valueWitnessTableAddress": "0x29bdf6e08",
+        "valueWitnessTableMapped": true
+      },
+      "name": "ResolvedComposite"
+    },
+    "resolvedCompositeKey": {
+      "descriptorAddress": "0x2409d2e4c",
+      "descriptorFlags": "0x00110051",
+      "fieldDescriptorAddress": "0x2409d87dc",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "resolved",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "colorScheme",
+          "offset": null,
+          "typeReference": "_____ 7SwiftUI11ColorSchemeO",
+          "typeReferenceAddress": "0x2409bcc56"
+        }
+      ],
+      "metadata": null,
+      "name": "Key"
+    },
+    "resolvedConfiguration": {
+      "descriptorAddress": "0x2409d2e90",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d882c",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "base",
+          "offset": 0,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV4BaseO",
+          "typeReferenceAddress": "0x2409c7a6c"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "subvariant",
+          "offset": 13,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10SubvariantV",
+          "typeReferenceAddress": "0x2409c6dd6"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "frost",
+          "offset": 14,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV5FrostO",
+          "typeReferenceAddress": "0x2409c7af0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "options",
+          "offset": 16,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV7OptionsV",
+          "typeReferenceAddress": "0x2409c6e12"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "flags",
+          "offset": 24,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV16EnvironmentFlagsV",
+          "typeReferenceAddress": "0x2409c7028"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "interaction",
+          "offset": 32,
+          "typeReference": "_____ 13DesignLibrary16InteractionStateO",
+          "typeReferenceAddress": "0x2409bc548"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "optimizationLevel",
+          "offset": 33,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV25ResolvedOptimizationLevelO",
+          "typeReferenceAddress": "0x2409c6e00"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "contentEffect",
+          "offset": 34,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedContentEffectO",
+          "typeReferenceAddress": "0x2409c6f38"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "layers",
+          "offset": 40,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV6LayersV",
+          "typeReferenceAddress": "0x2409c707a"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 2044,
+        "fieldOffsets": [
+          0,
+          13,
+          14,
+          16,
+          24,
+          32,
+          33,
+          34,
+          40
+        ],
+        "metadataAddress": "0x29bdf6f80",
+        "metadataDescriptorRuntimeAddress": "0x24946ee90",
+        "size": 48,
+        "stride": 48,
+        "valueWitnessFlags": "0x02030007",
+        "valueWitnessTableAddress": "0x29bdf6f18",
+        "valueWitnessTableMapped": true
+      },
+      "name": "ResolvedConfiguration"
+    },
+    "resolvedConfigurationMix": {
+      "descriptorAddress": "0x2409d2eac",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d8a40",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "from",
+          "offset": 0,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "to",
+          "offset": 48,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "fraction",
+          "offset": 96,
+          "typeReference": "Sd",
+          "typeReferenceAddress": "0x2409bccca"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 2044,
+        "fieldOffsets": [
+          0,
+          48,
+          96
+        ],
+        "metadataAddress": "0x29bdf7020",
+        "metadataDescriptorRuntimeAddress": "0x24946eeac",
+        "size": 104,
+        "stride": 104,
+        "valueWitnessFlags": "0x02030007",
+        "valueWitnessTableAddress": "0x29bdf6fb8",
+        "valueWitnessTableMapped": true
+      },
+      "name": "Mix"
+    },
+    "resolvedTint": {
+      "descriptorAddress": "0x2409d23f8",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d7224",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "tags",
+          "offset": 0,
+          "typeReference": "_____ 7SwiftUI9_ShapeSetV4TagsV",
+          "typeReferenceAddress": "0x2409c70b4"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "color",
+          "offset": 8,
+          "typeReference": "_____ 7SwiftUI5ColorVAAE11ResolvedHDRV",
+          "typeReferenceAddress": "0x2409c70ba"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 0,
+        "fieldOffsets": [
+          0,
+          8
+        ],
+        "metadataAddress": "0x29bdf46e8",
+        "metadataDescriptorRuntimeAddress": "0x24946e3f8",
+        "size": 28,
+        "stride": 32,
+        "valueWitnessFlags": "0x00020007",
+        "valueWitnessTableAddress": "0x29bdf4680",
+        "valueWitnessTableMapped": true
+      },
+      "name": "ResolvedTint"
+    }
+  },
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "metadataAnalyzerSHA256": "a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff",
+    "provenanceAnalyzerSHA256": "7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145",
+    "python": "3.9.6",
+    "source": "Analysis/analyze_designlibrary_resolved_composite_weight_pipeline_local_macos_26_6_1.py",
+    "sourceSHA256": "530922f37038ca23dbfe3cca43c3fe3a703fdf337dde7f393afda180b41ea3d0"
+  }
+}
