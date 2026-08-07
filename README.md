@@ -11146,3 +11146,92 @@ whereas the two light calibration captures removed it at sample 30. Clear
 presentation lifetime is appearance-dependent; the general lifetime policy is
 not yet established. The immutable split result is
 `Analysis/backdrop_margin_writer_clear_dark_0e39ce7_result.json`.
+
+### Live Retina `prepare_layer` transport and crop-arithmetic v2
+
+All new native work in this section runs directly on the logged-in Retina M1
+at `quince@10.0.41.19`. GitHub Actions is not used. Apple Command Line Tools
+run the application and LLDB with no Nix store path in the native environment;
+post-capture validation runs under the repository's `nix develop` Python 3.14
+shell.
+
+The active macOS 26.6.1 build 25G76 QuartzCore moved three previously frozen
+`prepare_layer` sites. The live transport authenticates the complete
+39,880-byte function, SHA-256
+`6949daed1a86b3153cf90afc4d7c6a83f99cb6e5435d6331fc93066caeb337a8`,
+and translates only the marker, union, and store instruction addresses. A
+known regular/dark/materialize `circle-800-center` calibration at commit
+`d439d53` then retained 32 markers, 352 union pairs, and 352 stores. One
+LayerShapes pointer was reused; selecting the last pointer-matching store in
+record order produced 32/32 exact crop rectangles and 128/128 exact binary64
+components at physical backing scale 2. The trace and timeline hashes are
+`271871e797714fae80052bcd8a3f280baa6c50653fabd26c35a88e876fe2c8f5`
+and `5bbadf2e5da0f5038ffe665540281da84107c2a6ee1857515e546b7160db0abc`.
+This was calibration, not unseen transfer.
+
+The first unseen geometry, regular/dark/materialize `circle-485-center`, was
+frozen at commit `72f2d14`. Native capture succeeded with the same complete
+32-marker/352-union/352-store topology and the same pointer-reuse event, but
+the prospective validator exited 1 at `regular recursive child differs`.
+Apple's child was exactly `[0, 0, 824.5, 824.5]`, disproving the inherited
+fixed `[0, 0, 1360, 1360]` regular source assumption. This failure is retained
+as a falsification; it is not relabelled as a holdout pass.
+
+A value-blind live DOD overlay at commit `a3ac528` captured and paired all 178
+complete `GlassBackgroundFilter::DOD` entries and returns with 32 crop markers
+and zero failures. Every source-register rectangle was `[0, 0, 485, 485]`.
+The exact expanded source DOD
+`[-169.75, -169.75, 824.5, 824.5]` occurred 80 times among 67 unique outputs.
+The terminal public `inputBleedAmount` is exactly 169.75, so the general opened
+relation is:
+
+```text
+e = terminal inputBleedAmount
+source DOD = [-e, -e, geometry width + 2e, geometry height + 2e]
+recursive child = [0, 0, geometry width + 2e, geometry height + 2e]
+```
+
+The source DOD is already the clip rectangle consumed by Apple. Applying the
+shadow offset to it a second time was another v1 error. The DOD trace, timeline,
+and validation hashes are
+`691cffb51557a9fb63596534bb09d8e5497bd8c06163e77071d656561bfce2d7`,
+`f4a5180d646e088f5aaa5dda7b5a65d98754a4dfcffcaa6a494dfb54118deedc`,
+and `f952045c050c1d5cf4c04bf819864f8a34e5a9d119d18637b7f0d1042f01515a`.
+
+One component still differed after those two corrections. Live complete-symbol
+disassembly isolated the cause: `SDFOp::apply` does not simplify expansion to
+world-space `origin - radius`. It first calls `Rect::unapply_transform`, which
+subtracts translation and computes flipped Y as `-((y - ty) + height)`; it
+expands with the promoted binary32 SDF radius, uses a binary64 FMA for height,
+unions the local rectangles, and calls `Rect::apply_transform`, which adds
+height to origin before negating Y and restoring translation. The algebraically
+equivalent shortcut loses one rounding bit for the failed run's sample 2:
+
+```text
+simplified SDF Y = 219.7231850624084
+Apple-order SDF Y = 219.72318506240845
+```
+
+The live code inventory is frozen in
+`Analysis/prepare_layer_live_crop_arithmetic_code_inventory_a3ac528_result.json`.
+It pins complete symbols for `SDFOp::apply`, both Rect transforms,
+`FilterOp::apply_filter`, `FilterOp::map_bounds`, and Glass DOD without reading
+any crop, producer, rectangle, image, or shader value.
+
+Crop replay v2 executes that exact operation order, derives the source DOD and
+endpoint term from the terminal public bleed, and intersects against the DOD
+source directly. Retrospective reanalysis is bit-exact across the failed 485
+capture, the independent 485 DOD capture, and the known 800 calibration:
+96/96 rectangles and 384/384 components match, with maximum absolute error
+`[0,0,0,0]`, maximum ULP distance `[0,0,0,0]`, and no tolerance. The canonical
+result is
+`Analysis/prepare_layer_live_crop_replay_v2_reanalysis_result.json`, SHA-256
+`cc85c131e29d6f91434c87872778d85f347fa7ae4301ef118d29559ff06732ec`.
+
+That result closes the diagnosis only. A newly frozen, runtime-unseen geometry
+must pass the embedded live-code v2 gate before crop-arithmetic transfer is
+claimed. General selected-region/origin allocation, appearance-dependent
+presentation lifetime, physical Retina color/pixel-format/compositor transfer,
+and an independent Walle render with zero unequal bytes remain open. Formal
+Liquid Glass parity is still false, and production shader changes remain
+unauthorized.
