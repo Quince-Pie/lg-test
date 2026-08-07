@@ -8718,16 +8718,16 @@ composition.
 The gate is preregistered in
 `Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json`,
 SHA-256
-`c8fdd66de58bf4d800c6d269ac2f2a4c938b7ccf8d0afd0cc7c7876815418e35`.
+`8d506f884bf7bee17c12e2b2f8ef312d1f9cf519505fd487756ea8a427ecad25`.
 Its runner first revalidates the predecessor captured at exact commit
-`6ce148581b505516970968cd2328113dd6790553` and refuses to launch otherwise.
+`72a73594907c50710182515661f367fbf0d85542` and refuses to launch otherwise.
 It also retains the corrected fail-closed unlocked, logged-in, active,
 exact-2x Retina preflight and direct Command Line Tools paths; no Nix store
 path enters the native process. The validator and runner SHA-256 values are
 respectively
-`542e732bfced81a0f77f0d011be03fc7b5f15bee6caa50a83531ef521a35278e`
+`307cf135a627fa8e6276145c4cf976d23258e5d73ac0e5ea333d8901196c7348`
 and
-`e4f5de101c8406eea0c57fe7fbc0e12a1dd6e8c0eca31186a76b837c378015a8`.
+`b7d3f2a26a4595533918239cdce53b7371f3e2953a63046d09852b9285cec4d8`.
 The gate can establish the same-profile public-to-`Parameters` construction
 join. It cannot establish a fresh-profile law, general crop/allocation,
 physical compositor/color behavior, Walle frame parity, or Liquid Glass

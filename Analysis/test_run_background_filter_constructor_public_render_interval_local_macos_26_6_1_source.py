@@ -36,7 +36,7 @@ class BackgroundFilterConstructorRunnerSourceTests(unittest.TestCase):
         self.assertLess(predecessor, preflight)
         self.assertLess(preflight, lldb)
         self.assertIn(
-            "local-case22-provider-public-render-interval-6ce1485-run1",
+            "local-case22-provider-public-render-interval-72a7359-run1",
             SOURCE,
         )
 
@@ -44,7 +44,7 @@ class BackgroundFilterConstructorRunnerSourceTests(unittest.TestCase):
         for digest in (
             "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
             "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
-            "5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d",
+            "7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6",
         ):
             self.assertIn(digest, SOURCE)
         self.assertNotIn("PLACEHOLDER", SOURCE)

@@ -26,12 +26,12 @@ EXPECTED_BINARY_SHA256 = (
 EXPECTED_PREFLIGHT_SHA256 = (
     "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
 )
-EXPECTED_PREDECESSOR_COMMIT = "6ce148581b505516970968cd2328113dd6790553"
+EXPECTED_PREDECESSOR_COMMIT = "72a73594907c50710182515661f367fbf0d85542"
 EXPECTED_PREDECESSOR_PREREGISTRATION_SHA256 = (
-    "1ea2ae5351f1c20ab36343678b35e22011771c4e0903848afe92f1bb39fc0f0b"
+    "dc7b05fcc587549dce2520e3d3e39d22ac3a0fa9f57e859a46145b2c11b91a04"
 )
 EXPECTED_PREDECESSOR_VALIDATOR_SHA256 = (
-    "5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d"
+    "7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6"
 )
 DESIGN_LIBRARY_UUID = "1E980802-69F5-3E69-89EF-50088297FCF5"
 
@@ -343,6 +343,22 @@ def validate_preregistration(
         amendment.get("runtimeOutcomeStillNull") is True,
         "preflight correction observed a runtime outcome",
     )
+    symbol_amendment = mapping(
+        preregistration.get("symbolIdentityOperationalAmendment"),
+        "symbol-presentation operational amendment",
+    )
+    require(
+        symbol_amendment
+        == {
+            "failedCaptureFinalCallCount": 0,
+            "failedCaptureFinalIntervalCount": 0,
+            "opticalPredictionsEvaluatedBeforeCorrection": False,
+            "path": public.SYMBOL_PRESENTATION_CORRECTION_PATH,
+            "prospectiveOpticalPredictionsUnchanged": True,
+            "sha256": public.SYMBOL_PRESENTATION_CORRECTION_SHA256,
+        },
+        "symbol-presentation operational amendment differs",
+    )
     binary = mapping(preregistration.get("binary"), "binary")
     require(binary.get("sha256") == EXPECTED_BINARY_SHA256, "binary hash differs")
     profile = mapping(preregistration.get("profile"), "profile")
@@ -447,7 +463,7 @@ def validate_preregistration(
         predecessor
         == {
             "artifactDirectory": (
-                "local-case22-provider-public-render-interval-6ce1485-run1"
+                "local-case22-provider-public-render-interval-72a7359-run1"
             ),
             "captureCommit": EXPECTED_PREDECESSOR_COMMIT,
             "captureContractMustPass": True,

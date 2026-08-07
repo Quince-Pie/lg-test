@@ -68,12 +68,12 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
         predecessor = self.value["requiredPredecessor"]
         self.assertEqual(
             predecessor["captureCommit"],
-            "6ce148581b505516970968cd2328113dd6790553",
+            "72a73594907c50710182515661f367fbf0d85542",
         )
         self.assertTrue(predecessor["captureContractMustPass"])
         self.assertEqual(
             predecessor["artifactDirectory"],
-            "local-case22-provider-public-render-interval-6ce1485-run1",
+            "local-case22-provider-public-render-interval-72a7359-run1",
         )
 
     def test_preflight_correction_precedes_dispatch_and_preserves_predictions(self) -> None:
@@ -81,6 +81,13 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
         self.assertTrue(amendment["noAppleApplicationDispatchedBeforeCorrection"])
         self.assertTrue(amendment["prospectivePredictionsUnchanged"])
         self.assertTrue(amendment["runtimeOutcomeStillNull"])
+
+    def test_symbol_presentation_correction_saw_no_optical_intervals(self) -> None:
+        amendment = self.value["symbolIdentityOperationalAmendment"]
+        self.assertEqual(amendment["failedCaptureFinalIntervalCount"], 0)
+        self.assertEqual(amendment["failedCaptureFinalCallCount"], 0)
+        self.assertFalse(amendment["opticalPredictionsEvaluatedBeforeCorrection"])
+        self.assertTrue(amendment["prospectiveOpticalPredictionsUnchanged"])
 
     def test_parameters_blend_boundary_is_exact(self) -> None:
         self.assertEqual(
