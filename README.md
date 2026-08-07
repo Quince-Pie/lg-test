@@ -9001,3 +9001,62 @@ progress produces `Mix.fraction`, the upstream integer crop/allocation policy,
 physical Retina compositor/color behavior, an independent Walle
 zero-unequal-byte frame, or Liquid Glass parity. No production shader change
 is authorized.
+
+### Exact public `Configuration.Mix` fraction pass-through and direct one-hot key
+
+The public mix and the keyed `ResolvedComposite` animation above are two
+different mechanisms. Native metadata gives the public
+`Configuration.Mix` payload the semantic fields `from: Configuration`,
+`to: Configuration`, and `fraction: Double`. The exported
+`Configuration.mix(with:by:)` implementation preserves the incoming `d0`
+bits in `d8`, copies both complete configurations into the indirect payload,
+and stores `d8` through the runtime metadata offset for `fraction`. Its
+complete 180-byte function contains no floating-point arithmetic, comparison,
+clamp, or conversion.
+
+Configuration resolution recognizes that indirect mix case and recursively
+resolves both endpoints. It then allocates the exact 104-byte
+`ResolvedConfiguration.Mix` payload already established above: 48-byte
+`from` at offset 0, 48-byte `to` at offset 48, and binary64 `fraction` at
+offset 96. The resolver loads the original fraction through the same
+`Configuration.Mix` metadata offset used by the public constructor and stores
+it directly at boxed offset `0x70`, payload offset 96. Neither the public
+constructor nor this 1,168-byte resolver contains a floating-point operation.
+Thus `Configuration.mix(with:by:)`'s `by` argument reaches
+`ResolvedConfiguration.Mix.fraction` with the same 64 bits; this layer applies
+no easing or clamping.
+
+The same frozen call graph reaches `GlassMaterialProvider.resolve(State)` and
+opens its initial `ResolvedComposite`. All 48 bytes of the resolved
+configuration and the selected `ColorScheme` are copied into one
+`ResolvedComposite.Key`. Native dictionary storage is initialized with header
+words `[1, 2]`, exactly one key is copied, and its one value is written as
+`0x3ff0000000000000`, binary64 `1.0`. The resulting dictionary pointer and its
+separate binary32 luminance are stored at `Resolved` offsets 0 and 8. A public
+`Configuration.Mix` therefore begins as one weight-1 key whose resolved
+configuration recursively contains the mix. SwiftUI interpolation of whole
+`Resolved` values instead uses the separate keyed vector arithmetic proved in
+the preceding section.
+
+The fail-closed analyzer and canonical result are
+`Analysis/analyze_designlibrary_configuration_mix_selection_local_macos_26_6_1.py`,
+SHA-256
+`93c95c65c326765c675f3f4e727285706bf48adb5d42d5bdcd11ad0c3600d1de`,
+and
+`Analysis/designlibrary_configuration_mix_selection_local_macos_26_6_1_result.json`,
+SHA-256
+`b9e7fb7167e932f6b10409db09a3abd99d0ca019a56bb104572d8188f35d928d`.
+It freezes four semantic descriptors, six complete code regions, the complete
+direct call graph into the configuration resolvers and generic key copier,
+every floating-instruction inventory, the dictionary header constant, and the
+critical endpoint/fraction/key/value instructions on macOS 26.6.1 build
+25G76. It launches no Apple application and reads no captured render or public
+sample.
+
+This establishes only the exact `by`-to-resolved-fraction pass-through and the
+direct one-hot key producer. It does **not** establish how animation progress
+is chosen before it becomes the public `by` argument, which public controls or
+environment states choose every endpoint configuration, how the downstream
+recipe consumes every recursive mix, the integer crop/allocation policy,
+physical Retina compositor/color behavior, a real Walle zero-unequal-byte
+frame, or Liquid Glass parity. No production shader change is authorized.

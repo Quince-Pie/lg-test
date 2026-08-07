@@ -1,0 +1,733 @@
+{
+  "claims": {
+    "allRuntimeWeightProductionLawEstablished": false,
+    "configurationMixByCopiedToResolvedFractionBitwiseUnchanged": true,
+    "configurationMixEndpointsRecursivelyResolved": true,
+    "cropAllocationPolicyEstablished": false,
+    "directResolveKeyIsResolvedConfigurationAndColorScheme": true,
+    "directResolveProducesExactlyOneKeyAtBinary64One": true,
+    "environmentToResolvedConfigurationSelectionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "publicConfigurationMixByStoredBitwiseUnchanged": true,
+    "publicConfigurationMixDistinctFromResolvedAnimationWeights": true,
+    "publicConfigurationMixFieldsEstablished": true,
+    "publicControlsToResolvedConfigurationSelectionLawEstablished": false,
+    "resolvedConfigurationMixConsumptionArithmeticEstablished": false,
+    "resolvedConfigurationMixLayoutEstablished": true,
+    "retinaCompositorColorLawEstablished": false,
+    "transitionProgressToPublicConfigurationMixByLawEstablished": false
+  },
+  "classification": "native static Swift metadata/code/control-flow analysis; no Apple application, render, image, public timeline sample, crop, or provider return is read",
+  "codeRegions": {
+    "genericValueCopy": {
+      "byteCount": 96,
+      "endExclusive": "0x24098b174",
+      "instructionCount": 24,
+      "sha256": "47bec8778fab32e98650268cdee03385dfcb283c9a2c52d5c2b717d5301323b2",
+      "start": "0x24098b114"
+    },
+    "glassMaterialProviderResolve": {
+      "byteCount": 2844,
+      "endExclusive": "0x24098ab0c",
+      "instructionCount": 711,
+      "sha256": "7e328da4ed833e903d83cd3c77fb48ce19674c2098d5eed0c641ad4c86037d99",
+      "start": "0x240989ff0"
+    },
+    "publicConfigurationMix": {
+      "byteCount": 180,
+      "endExclusive": "0x2409102f0",
+      "instructionCount": 45,
+      "sha256": "624f423bce22102c792898145e2000797b39ee00856df73158559d2781cdcd89",
+      "start": "0x24091023c"
+    },
+    "resolvedConfigurationBuilder": {
+      "byteCount": 1040,
+      "endExclusive": "0x2409795d0",
+      "instructionCount": 260,
+      "sha256": "592c7927b0d8f776d18d76d24c49e75deccd67411900f9070fe1a138a540165f",
+      "start": "0x2409791c0"
+    },
+    "resolvedConfigurationMixBuilder": {
+      "byteCount": 1168,
+      "endExclusive": "0x240979b40",
+      "instructionCount": 292,
+      "sha256": "cc7c0f445edd5f08e0be7196bdbe865c35ba029a465c156a5e0bc14bf076447e",
+      "start": "0x2409796b0"
+    },
+    "resolvedConfigurationSelectionHelper": {
+      "byteCount": 928,
+      "endExclusive": "0x240986580",
+      "instructionCount": 232,
+      "sha256": "a65a676a38e6e56c0b15a6abed6b298e6eba4c75aca57ffc194a7d96bad4d68f",
+      "start": "0x2409861e0"
+    }
+  },
+  "configurationMixModel": {
+    "publicMethod": "Configuration.mix(with:by:)",
+    "resolution": "recursively resolve from and to, then load the original source fraction through the same Configuration.Mix metadata offset and store its unchanged binary64 bits at resolved payload offset 96",
+    "resolvedLayout": {
+      "fractionOffset": 96,
+      "fromOffset": 0,
+      "size": 104,
+      "stride": 104,
+      "toOffset": 48
+    },
+    "resolvedType": "ResolvedConfiguration.Mix",
+    "sourceFields": [
+      "from",
+      "to",
+      "fraction"
+    ],
+    "sourceFractionOperation": "the incoming d0 bit pattern is preserved in d8 and stored once without floating-point arithmetic",
+    "sourceFractionType": "Double",
+    "sourceType": "Configuration.Mix"
+  },
+  "designLibraryConfigurationMixSelectionAnalysisSchemaVersion": 1,
+  "directBLCallsites": {
+    "genericValueCopy": [
+      "0x240988788",
+      "0x2409887b0",
+      "0x24098a268",
+      "0x24098a588",
+      "0x24098a5a8",
+      "0x24098a850"
+    ],
+    "resolvedConfigurationBuilder": [
+      "0x24097915c",
+      "0x240979920",
+      "0x240979a90",
+      "0x2409864c0",
+      "0x24098a4fc"
+    ],
+    "resolvedConfigurationMixBuilder": [
+      "0x2409793bc"
+    ],
+    "resolvedConfigurationSelectionHelper": [
+      "0x240979104",
+      "0x2409798c8",
+      "0x240979a38",
+      "0x24098a4a0"
+    ]
+  },
+  "directDictionaryStorageHeader": {
+    "address": "0x2409af6f0",
+    "bytes": "01000000000000000200000000000000",
+    "littleEndianWords": [
+      1,
+      2
+    ]
+  },
+  "directResolveCompositeModel": {
+    "dictionaryEntryCount": 1,
+    "dictionaryValue": 1.0,
+    "dictionaryValueBits": "0x3ff0000000000000",
+    "dictionaryValueType": "Double",
+    "keyConstruction": "copy all 48 ResolvedConfiguration bytes, then copy ColorScheme through the Key runtime metadata offset",
+    "keyType": "(ResolvedConfiguration, ColorScheme)",
+    "luminanceType": "Float",
+    "resolvedCompositeDestination": "Resolved runtime offsets 0 and 8"
+  },
+  "floatingInstructionInventories": {
+    "genericValueCopy": {},
+    "glassMaterialProviderResolve": {
+      "fcmp": 1,
+      "fcsel": 2,
+      "fmov": 2
+    },
+    "publicConfigurationMix": {},
+    "resolvedConfigurationBuilder": {},
+    "resolvedConfigurationMixBuilder": {},
+    "resolvedConfigurationSelectionHelper": {}
+  },
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "sharedCacheSlide": "0x8a9c000",
+    "sharedCacheSlideMetadataMatchCount": 219,
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "instructionContracts": [
+    {
+      "address": "0x24091025c",
+      "mnemonic": "mov.16b",
+      "operands": "v8, v0"
+    },
+    {
+      "address": "0x240910294",
+      "mnemonic": "mov",
+      "operands": "x0, x20"
+    },
+    {
+      "address": "0x24091029c",
+      "mnemonic": "bl",
+      "operands": "0x240914b5c"
+    },
+    {
+      "address": "0x2409102a0",
+      "mnemonic": "ldrsw",
+      "operands": "x8, [x22, #0x14]"
+    },
+    {
+      "address": "0x2409102a4",
+      "mnemonic": "add",
+      "operands": "x1, x24, x8"
+    },
+    {
+      "address": "0x2409102b0",
+      "mnemonic": "bl",
+      "operands": "0x240914b5c"
+    },
+    {
+      "address": "0x2409102b4",
+      "mnemonic": "ldrsw",
+      "operands": "x8, [x22, #0x18]"
+    },
+    {
+      "address": "0x2409102b8",
+      "mnemonic": "str",
+      "operands": "d8, [x24, x8]"
+    },
+    {
+      "address": "0x2409102bc",
+      "mnemonic": "orr",
+      "operands": "x0, x23, #0x8000000000000000"
+    },
+    {
+      "address": "0x2409792cc",
+      "mnemonic": "ldr",
+      "operands": "x8, [x20]"
+    },
+    {
+      "address": "0x2409792d0",
+      "mnemonic": "lsr",
+      "operands": "x9, x8, #62"
+    },
+    {
+      "address": "0x240979388",
+      "mnemonic": "cmp",
+      "operands": "w9, #0x2"
+    },
+    {
+      "address": "0x240979390",
+      "mnemonic": "and",
+      "operands": "x0, x8, #0x3fffffffffffffff"
+    },
+    {
+      "address": "0x2409793bc",
+      "mnemonic": "bl",
+      "operands": "0x2409796b0"
+    },
+    {
+      "address": "0x2409793c0",
+      "mnemonic": "stur",
+      "operands": "x0, [x29, #-0x70]"
+    },
+    {
+      "address": "0x2409793c4",
+      "mnemonic": "mov",
+      "operands": "x26, x1"
+    },
+    {
+      "address": "0x2409797f4",
+      "mnemonic": "mov",
+      "operands": "x0, x19"
+    },
+    {
+      "address": "0x2409797fc",
+      "mnemonic": "bl",
+      "operands": "0x24097a698"
+    },
+    {
+      "address": "0x240979814",
+      "mnemonic": "mov",
+      "operands": "x0, x21"
+    },
+    {
+      "address": "0x24097981c",
+      "mnemonic": "bl",
+      "operands": "0x24097a698"
+    },
+    {
+      "address": "0x2409798c8",
+      "mnemonic": "bl",
+      "operands": "0x2409861e0"
+    },
+    {
+      "address": "0x240979920",
+      "mnemonic": "bl",
+      "operands": "0x2409791c0"
+    },
+    {
+      "address": "0x240979968",
+      "mnemonic": "mov",
+      "operands": "x0, #0x0"
+    },
+    {
+      "address": "0x240979974",
+      "mnemonic": "ldrsw",
+      "operands": "x8, [x0, #0x14]"
+    },
+    {
+      "address": "0x240979978",
+      "mnemonic": "add",
+      "operands": "x27, x20, x8"
+    },
+    {
+      "address": "0x240979990",
+      "mnemonic": "mov",
+      "operands": "x0, x27"
+    },
+    {
+      "address": "0x240979998",
+      "mnemonic": "bl",
+      "operands": "0x24097a698"
+    },
+    {
+      "address": "0x240979a38",
+      "mnemonic": "bl",
+      "operands": "0x2409861e0"
+    },
+    {
+      "address": "0x240979a90",
+      "mnemonic": "bl",
+      "operands": "0x2409791c0"
+    },
+    {
+      "address": "0x240979adc",
+      "mnemonic": "mov",
+      "operands": "w1, #0x78"
+    },
+    {
+      "address": "0x240979ae0",
+      "mnemonic": "mov",
+      "operands": "w2, #0x7"
+    },
+    {
+      "address": "0x240979ae8",
+      "mnemonic": "ldur",
+      "operands": "q0, [x29, #-0x88]"
+    },
+    {
+      "address": "0x240979aec",
+      "mnemonic": "ldur",
+      "operands": "q1, [x29, #-0x78]"
+    },
+    {
+      "address": "0x240979af0",
+      "mnemonic": "stp",
+      "operands": "q0, q1, [x0, #0x10]"
+    },
+    {
+      "address": "0x240979af4",
+      "mnemonic": "ldur",
+      "operands": "q0, [x29, #-0x68]"
+    },
+    {
+      "address": "0x240979af8",
+      "mnemonic": "ldur",
+      "operands": "q1, [x29, #-0xe8]"
+    },
+    {
+      "address": "0x240979afc",
+      "mnemonic": "ldur",
+      "operands": "q2, [x29, #-0xd8]"
+    },
+    {
+      "address": "0x240979b00",
+      "mnemonic": "stp",
+      "operands": "q0, q1, [x0, #0x30]"
+    },
+    {
+      "address": "0x240979b04",
+      "mnemonic": "ldur",
+      "operands": "q0, [x29, #-0xc8]"
+    },
+    {
+      "address": "0x240979b08",
+      "mnemonic": "stp",
+      "operands": "q2, q0, [x0, #0x50]"
+    },
+    {
+      "address": "0x240979b0c",
+      "mnemonic": "ldrsw",
+      "operands": "x8, [x19, #0x18]"
+    },
+    {
+      "address": "0x240979b10",
+      "mnemonic": "ldur",
+      "operands": "x9, [x29, #-0xf0]"
+    },
+    {
+      "address": "0x240979b14",
+      "mnemonic": "ldr",
+      "operands": "d0, [x9, x8]"
+    },
+    {
+      "address": "0x240979b18",
+      "mnemonic": "str",
+      "operands": "d0, [x0, #0x70]"
+    },
+    {
+      "address": "0x240979b1c",
+      "mnemonic": "mov",
+      "operands": "x1, #0x8000000000"
+    },
+    {
+      "address": "0x2409864c0",
+      "mnemonic": "bl",
+      "operands": "0x2409791c0"
+    },
+    {
+      "address": "0x24098a4a0",
+      "mnemonic": "bl",
+      "operands": "0x2409861e0"
+    },
+    {
+      "address": "0x24098a4fc",
+      "mnemonic": "bl",
+      "operands": "0x2409791c0"
+    },
+    {
+      "address": "0x24098a540",
+      "mnemonic": "ldur",
+      "operands": "q0, [x29, #-0x98]"
+    },
+    {
+      "address": "0x24098a544",
+      "mnemonic": "ldur",
+      "operands": "q1, [x29, #-0x88]"
+    },
+    {
+      "address": "0x24098a548",
+      "mnemonic": "stp",
+      "operands": "q0, q1, [x29, #-0xd0]"
+    },
+    {
+      "address": "0x24098a54c",
+      "mnemonic": "ldur",
+      "operands": "q0, [x29, #-0x78]"
+    },
+    {
+      "address": "0x24098a550",
+      "mnemonic": "stur",
+      "operands": "q0, [x29, #-0xb0]"
+    },
+    {
+      "address": "0x24098a608",
+      "mnemonic": "ldur",
+      "operands": "q0, [x29, #-0x88]"
+    },
+    {
+      "address": "0x24098a60c",
+      "mnemonic": "ldur",
+      "operands": "q1, [x29, #-0x98]"
+    },
+    {
+      "address": "0x24098a610",
+      "mnemonic": "stp",
+      "operands": "q0, q2, [x9, #0x10]"
+    },
+    {
+      "address": "0x24098a614",
+      "mnemonic": "str",
+      "operands": "q1, [x9]"
+    },
+    {
+      "address": "0x24098a624",
+      "mnemonic": "ldrsw",
+      "operands": "x8, [x8, #0x14]"
+    },
+    {
+      "address": "0x24098a630",
+      "mnemonic": "add",
+      "operands": "x0, x9, x8"
+    },
+    {
+      "address": "0x24098a634",
+      "mnemonic": "add",
+      "operands": "x1, x27, x20"
+    },
+    {
+      "address": "0x24098a638",
+      "mnemonic": "mov",
+      "operands": "x2, x22"
+    },
+    {
+      "address": "0x24098a64c",
+      "mnemonic": "blraa",
+      "operands": "x10, x17"
+    },
+    {
+      "address": "0x24098a81c",
+      "mnemonic": "ldr",
+      "operands": "q0, [x8, #0x6f0]"
+    },
+    {
+      "address": "0x24098a820",
+      "mnemonic": "str",
+      "operands": "q0, [x0, #0x10]"
+    },
+    {
+      "address": "0x24098a844",
+      "mnemonic": "ldur",
+      "operands": "x26, [x8, #-0x100]"
+    },
+    {
+      "address": "0x24098a848",
+      "mnemonic": "mov",
+      "operands": "x0, x26"
+    },
+    {
+      "address": "0x24098a84c",
+      "mnemonic": "mov",
+      "operands": "x1, x22"
+    },
+    {
+      "address": "0x24098a850",
+      "mnemonic": "bl",
+      "operands": "0x24098b114"
+    },
+    {
+      "address": "0x24098a854",
+      "mnemonic": "mov",
+      "operands": "x8, #0x3ff0000000000000"
+    },
+    {
+      "address": "0x24098a858",
+      "mnemonic": "str",
+      "operands": "x8, [x22, x25]"
+    },
+    {
+      "address": "0x24098a860",
+      "mnemonic": "bl",
+      "operands": "0x240979dc0"
+    },
+    {
+      "address": "0x24098a8ac",
+      "mnemonic": "str",
+      "operands": "x25, [x19]"
+    },
+    {
+      "address": "0x24098a8b0",
+      "mnemonic": "str",
+      "operands": "s8, [x19, #0x8]"
+    }
+  ],
+  "mechanismBoundary": {
+    "publicConfigurationMix": "one ResolvedComposite key at weight 1.0 whose ResolvedConfiguration base contains a recursive Mix",
+    "resolvedAnimation": "separate ResolvedComposite dictionary VectorArithmetic proven by the locked weight-pipeline analyzer",
+    "sameMechanism": false
+  },
+  "swiftDescriptors": {
+    "configurationMix": {
+      "descriptorAddress": "0x2409d2188",
+      "descriptorFlags": "0x00110051",
+      "fieldDescriptorAddress": "0x2409d6c94",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "from",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV13ConfigurationV",
+          "typeReferenceAddress": "0x2409c6e06"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "to",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV13ConfigurationV",
+          "typeReferenceAddress": "0x2409c6e06"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "fraction",
+          "offset": null,
+          "typeReference": "Sd",
+          "typeReferenceAddress": "0x2409bccca"
+        }
+      ],
+      "metadata": null,
+      "name": "Mix"
+    },
+    "resolvedCompositeKey": {
+      "descriptorAddress": "0x2409d2e4c",
+      "descriptorFlags": "0x00110051",
+      "fieldDescriptorAddress": "0x2409d87dc",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "resolved",
+          "offset": null,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "colorScheme",
+          "offset": null,
+          "typeReference": "_____ 7SwiftUI11ColorSchemeO",
+          "typeReferenceAddress": "0x2409bcc56"
+        }
+      ],
+      "metadata": null,
+      "name": "Key"
+    },
+    "resolvedConfiguration": {
+      "descriptorAddress": "0x2409d2e90",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d882c",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "base",
+          "offset": 0,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV4BaseO",
+          "typeReferenceAddress": "0x2409c7a6c"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "subvariant",
+          "offset": 13,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10SubvariantV",
+          "typeReferenceAddress": "0x2409c6dd6"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "frost",
+          "offset": 14,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV5FrostO",
+          "typeReferenceAddress": "0x2409c7af0"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "options",
+          "offset": 16,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV7OptionsV",
+          "typeReferenceAddress": "0x2409c6e12"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "flags",
+          "offset": 24,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV16EnvironmentFlagsV",
+          "typeReferenceAddress": "0x2409c7028"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "interaction",
+          "offset": 32,
+          "typeReference": "_____ 13DesignLibrary16InteractionStateO",
+          "typeReferenceAddress": "0x2409bc548"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "optimizationLevel",
+          "offset": 33,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV25ResolvedOptimizationLevelO",
+          "typeReferenceAddress": "0x2409c6e00"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "contentEffect",
+          "offset": 34,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedContentEffectO",
+          "typeReferenceAddress": "0x2409c6f38"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "layers",
+          "offset": 40,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV6LayersV",
+          "typeReferenceAddress": "0x2409c707a"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 2044,
+        "fieldOffsets": [
+          0,
+          13,
+          14,
+          16,
+          24,
+          32,
+          33,
+          34,
+          40
+        ],
+        "metadataAddress": "0x29bdf6f80",
+        "metadataDescriptorRuntimeAddress": "0x24946ee90",
+        "size": 48,
+        "stride": 48,
+        "valueWitnessFlags": "0x02030007",
+        "valueWitnessTableAddress": "0x29bdf6f18",
+        "valueWitnessTableMapped": true
+      },
+      "name": "ResolvedConfiguration"
+    },
+    "resolvedConfigurationMix": {
+      "descriptorAddress": "0x2409d2eac",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d8a40",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "from",
+          "offset": 0,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "to",
+          "offset": 48,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedConfigurationV",
+          "typeReferenceAddress": "0x2409c7aae"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "fraction",
+          "offset": 96,
+          "typeReference": "Sd",
+          "typeReferenceAddress": "0x2409bccca"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 2044,
+        "fieldOffsets": [
+          0,
+          48,
+          96
+        ],
+        "metadataAddress": "0x29bdf7020",
+        "metadataDescriptorRuntimeAddress": "0x24946eeac",
+        "size": 104,
+        "stride": 104,
+        "valueWitnessFlags": "0x02030007",
+        "valueWitnessTableAddress": "0x29bdf6fb8",
+        "valueWitnessTableMapped": true
+      },
+      "name": "Mix"
+    }
+  },
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "metadataAnalyzerSHA256": "a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff",
+    "provenanceAnalyzerSHA256": "7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145",
+    "python": "3.9.6",
+    "source": "Analysis/analyze_designlibrary_configuration_mix_selection_local_macos_26_6_1.py",
+    "sourceSHA256": "93c95c65c326765c675f3f4e727285706bf48adb5d42d5bdcd11ad0c3600d1de",
+    "weightAnalyzerSHA256": "530922f37038ca23dbfe3cca43c3fe3a703fdf337dde7f393afda180b41ea3d0"
+  }
+}
