@@ -86,11 +86,11 @@
       },
       {
         "path": "Analysis/validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
-        "sha256": "02827c0fc473b762ed6422e895ee7a1d599c0b1609680668e70a3c6a1ceb5a7e"
+        "sha256": "542e732bfced81a0f77f0d011be03fc7b5f15bee6caa50a83531ef521a35278e"
       },
       {
         "path": "Analysis/run_background_filter_constructor_public_render_interval_local_macos_26_6_1.sh",
-        "sha256": "fd05f755639154c039815607363125882200cf5d9198cbb4c5e224dc61737289"
+        "sha256": "e4f5de101c8406eea0c57fe7fbc0e12a1dd6e8c0eca31186a76b837c378015a8"
       },
       {
         "path": "Analysis/test_capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb_source.py",
@@ -102,15 +102,19 @@
       },
       {
         "path": "Analysis/test_run_background_filter_constructor_public_render_interval_local_macos_26_6_1_source.py",
-        "sha256": "4eca67234d29bf32a2b8f146567885f328b5a8be9910f4d082c595f0e187b438"
+        "sha256": "4a9468f18416399831d823c383eaf834a484a0e445f4452d3cbeb2172ac191cd"
       },
       {
         "path": "Analysis/test_background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.py",
-        "sha256": "43f6d857a8ddbdd7694b3a791730bebb081f03ad4a8450518996b6170661f8ba"
+        "sha256": "4166abef5854168bb1f8ffd62193d7696692c0b3dcba6d89ce264b2c397eae2b"
       },
       {
-        "path": "Analysis/check_local_retina_capture_session.swift",
-        "sha256": "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
+        "path": "Analysis/check_local_retina_capture_session_v2.swift",
+        "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+      },
+      {
+        "path": "Analysis/test_check_local_retina_capture_session_v2_source.py",
+        "sha256": "cb10ba593f3f38e6091aa25f0fd78d3b857d907852989931357a93e737c951ad"
       },
       {
         "path": "Analysis/capture_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_lldb.py",
@@ -118,15 +122,15 @@
       },
       {
         "path": "Analysis/validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.py",
-        "sha256": "ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1"
+        "sha256": "5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d"
       },
       {
         "path": "Analysis/run_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.sh",
-        "sha256": "48d40db2ba6c9a22d58e460824380b6b4a85f92e00782098b8d983e33fab63ba"
+        "sha256": "f6301d3cd7d8f709ce18ae78ece703c2a10648a3695e12293185da253a291965"
       },
       {
         "path": "Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json",
-        "sha256": "afecb715da4a73cedff1169eb6e75353121becf95973384d74953caf42016061"
+        "sha256": "1ea2ae5351f1c20ab36343678b35e22011771c4e0903848afe92f1bb39fc0f0b"
       },
       {
         "path": "Analysis/analyze_designlibrary_background_filter_metadata_local_macos_26_6_1.py",
@@ -174,16 +178,35 @@
   "nativeSessionPreflight": {
     "failClosedBeforeAppLaunch": true,
     "interpreter": "/Library/Developer/CommandLineTools/usr/bin/swift",
-    "path": "Analysis/check_local_retina_capture_session.swift",
+    "path": "Analysis/check_local_retina_capture_session_v2.swift",
     "requireBackingScaleFactor": 2,
     "requireDisplayActive": true,
     "requireDisplayAsleep": false,
     "requireLogicalPoints": [1728, 1117],
     "requirePhysicalPixels": [3456, 2234],
     "requireSessionLocked": false,
+    "requireSessionLoginDone": true,
     "requireSessionOnConsole": true,
     "runImmediatelyBeforeLLDB": true,
-    "sha256": "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
+    "screenLockKeyAbsentMeansUnlockedOnMacOSBuild": "25G76",
+    "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+  },
+  "operationalAmendment": {
+    "correctedAtUTC": "2026-08-07",
+    "noAppleApplicationDispatchedBeforeCorrection": true,
+    "observedUnlockedSessionEvidence": {
+      "cgSessionScreenIsLockedKeyPresent": false,
+      "consoleUser": "quince",
+      "displayActive": true,
+      "displayAsleep": false,
+      "guiSessionLoginDone": true,
+      "sessionOnConsole": true
+    },
+    "prospectivePredictionsUnchanged": true,
+    "reason": "macOS 26.6.1 omits CGSSessionScreenIsLocked from the current-session dictionary while the GUI session is unlocked; the superseded preflight incorrectly mapped absence to locked",
+    "runtimeOutcomeStillNull": true,
+    "supersededPreflightPath": "Analysis/check_local_retina_capture_session.swift",
+    "supersededPreflightSHA256": "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
   },
   "productAuthority": {
     "allInitializedBackgroundFilterProviderBytesJoinedBitwiseOnPass": true,
@@ -229,11 +252,11 @@
     "unityRegisterIsExactOneAtEveryDecision": true
   },
   "requiredPredecessor": {
-    "artifactDirectory": "local-case22-provider-public-render-interval-c1bfabd-run1",
-    "captureCommit": "c1bfabda9338a7f574ababbeccf3d18ca3abc12d",
+    "artifactDirectory": "local-case22-provider-public-render-interval-6ce1485-run1",
+    "captureCommit": "6ce148581b505516970968cd2328113dd6790553",
     "captureContractMustPass": true,
-    "preregistrationSHA256": "afecb715da4a73cedff1169eb6e75353121becf95973384d74953caf42016061",
-    "validatorSHA256": "ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1"
+    "preregistrationSHA256": "1ea2ae5351f1c20ab36343678b35e22011771c4e0903848afe92f1bb39fc0f0b",
+    "validatorSHA256": "5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d"
   },
   "selectionPolicy": {
     "blendDecisions": "every execution of the fixed builder +0xfb8 decision instruction; collection count, d9 factor, d12 unity constant, current Parameters, and accumulator bytes are retained only after the structural breakpoint fires",

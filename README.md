@@ -8697,14 +8697,22 @@ public `Parameters` production and downstream in crop/allocation and physical
 composition.
 
 The gate is preregistered in
-`Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json`.
-Its runner first revalidates the frozen predecessor artifact and refuses to
-launch otherwise. It also retains the corrected fail-closed unlocked,
-logged-in, active, exact-2x Retina preflight and direct Command Line Tools
-paths; no Nix store path enters the native process. The gate can establish the same-profile
-public-to-`Parameters` construction join. It cannot establish a fresh-profile
-law, general crop/allocation, physical compositor/color behavior, Walle frame
-parity, or Liquid Glass parity, and it does not authorize a shader change.
+`Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json`,
+SHA-256
+`c8fdd66de58bf4d800c6d269ac2f2a4c938b7ccf8d0afd0cc7c7876815418e35`.
+Its runner first revalidates the predecessor captured at exact commit
+`6ce148581b505516970968cd2328113dd6790553` and refuses to launch otherwise.
+It also retains the corrected fail-closed unlocked, logged-in, active,
+exact-2x Retina preflight and direct Command Line Tools paths; no Nix store
+path enters the native process. The validator and runner SHA-256 values are
+respectively
+`542e732bfced81a0f77f0d011be03fc7b5f15bee6caa50a83531ef521a35278e`
+and
+`e4f5de101c8406eea0c57fe7fbc0e12a1dd6e8c0eca31186a76b837c378015a8`.
+The gate can establish the same-profile public-to-`Parameters` construction
+join. It cannot establish a fresh-profile law, general crop/allocation,
+physical compositor/color behavior, Walle frame parity, or Liquid Glass
+parity, and it does not authorize a shader change.
 
 ### Exact `ResolvedRecipe` producer provenance
 

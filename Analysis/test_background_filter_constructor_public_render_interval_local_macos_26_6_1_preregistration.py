@@ -68,13 +68,19 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
         predecessor = self.value["requiredPredecessor"]
         self.assertEqual(
             predecessor["captureCommit"],
-            "c1bfabda9338a7f574ababbeccf3d18ca3abc12d",
+            "6ce148581b505516970968cd2328113dd6790553",
         )
         self.assertTrue(predecessor["captureContractMustPass"])
         self.assertEqual(
             predecessor["artifactDirectory"],
-            "local-case22-provider-public-render-interval-c1bfabd-run1",
+            "local-case22-provider-public-render-interval-6ce1485-run1",
         )
+
+    def test_preflight_correction_precedes_dispatch_and_preserves_predictions(self) -> None:
+        amendment = self.value["operationalAmendment"]
+        self.assertTrue(amendment["noAppleApplicationDispatchedBeforeCorrection"])
+        self.assertTrue(amendment["prospectivePredictionsUnchanged"])
+        self.assertTrue(amendment["runtimeOutcomeStillNull"])
 
     def test_parameters_blend_boundary_is_exact(self) -> None:
         self.assertEqual(

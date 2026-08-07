@@ -24,7 +24,14 @@ EXPECTED_BINARY_SHA256 = (
     "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd"
 )
 EXPECTED_PREFLIGHT_SHA256 = (
-    "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
+    "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+)
+EXPECTED_PREDECESSOR_COMMIT = "6ce148581b505516970968cd2328113dd6790553"
+EXPECTED_PREDECESSOR_PREREGISTRATION_SHA256 = (
+    "1ea2ae5351f1c20ab36343678b35e22011771c4e0903848afe92f1bb39fc0f0b"
+)
+EXPECTED_PREDECESSOR_VALIDATOR_SHA256 = (
+    "5c5ea02b5d47b0c57c36164303548c63ae961f32e846f8f76f7518ae78fb073d"
 )
 DESIGN_LIBRARY_UUID = "1E980802-69F5-3E69-89EF-50088297FCF5"
 
@@ -320,6 +327,22 @@ def validate_preregistration(
         preregistration.get("runtimeOutcomeFrozenBeforeDispatch") is None,
         "runtime outcome was not sealed",
     )
+    amendment = mapping(
+        preregistration.get("operationalAmendment"),
+        "preflight operational amendment",
+    )
+    require(
+        amendment.get("noAppleApplicationDispatchedBeforeCorrection") is True,
+        "preflight correction followed application dispatch",
+    )
+    require(
+        amendment.get("prospectivePredictionsUnchanged") is True,
+        "preflight correction changed a prediction",
+    )
+    require(
+        amendment.get("runtimeOutcomeStillNull") is True,
+        "preflight correction observed a runtime outcome",
+    )
     binary = mapping(preregistration.get("binary"), "binary")
     require(binary.get("sha256") == EXPECTED_BINARY_SHA256, "binary hash differs")
     profile = mapping(preregistration.get("profile"), "profile")
@@ -415,6 +438,25 @@ def validate_preregistration(
             "unityRegisterIsExactOneAtEveryDecision": True,
         },
         "prospective predictions differ",
+    )
+    predecessor = mapping(
+        preregistration.get("requiredPredecessor"),
+        "required predecessor",
+    )
+    require(
+        predecessor
+        == {
+            "artifactDirectory": (
+                "local-case22-provider-public-render-interval-6ce1485-run1"
+            ),
+            "captureCommit": EXPECTED_PREDECESSOR_COMMIT,
+            "captureContractMustPass": True,
+            "preregistrationSHA256": (
+                EXPECTED_PREDECESSOR_PREREGISTRATION_SHA256
+            ),
+            "validatorSHA256": EXPECTED_PREDECESSOR_VALIDATOR_SHA256,
+        },
+        "required predecessor differs",
     )
     frozen = sequence(
         mapping(preregistration.get("frozenImplementation"), "implementation").get(
@@ -1490,6 +1532,13 @@ def validate(
     require(
         predecessor_result.get("captureContractPassed") is True,
         "predecessor capture did not pass",
+    )
+    require(
+        mapping(predecessor_result.get("inputs"), "predecessor inputs").get(
+            "sourceCommit"
+        )
+        == EXPECTED_PREDECESSOR_COMMIT,
+        "predecessor capture commit differs",
     )
 
     trace_path = (
