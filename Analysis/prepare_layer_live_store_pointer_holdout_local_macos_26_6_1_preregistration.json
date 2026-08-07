@@ -1,0 +1,119 @@
+{
+  "prepareLayerLiveStorePointerHoldoutPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-07T19:40:21Z",
+  "classification": "prospective unseen-geometry physical-Retina test of the output-independent last matching crop-store rule opened by the d439d53 calibration; candidate, profile, geometry, exact code identity, capture design, and zero-tolerance acceptance are frozen before dispatch",
+  "baselineCommit": "d439d53cc30d69a36c4dd0f796da9831de8fe6b0",
+  "openedCalibrationEvidence": {
+    "result": "Analysis/prepare_layer_live_transport_d439d53_calibration_result.json",
+    "resultSHA256": "2939ee106bdebd362ef3c699cd660e78e7d1f98a2b1d5a44e2c2a745129f24e8",
+    "profile": "regular/dark/materialize/circle-800-center/Retina-2x",
+    "exactRectangleCount": 32,
+    "exactComponentCount": 128,
+    "maximumULPDistancesXYWH": [0, 0, 0, 0],
+    "observedMatchingStoreRecordCount": 33,
+    "observedPointerReuseRecordCount": 1,
+    "targetOutputsOpenedBeforeCandidateFreeze": true,
+    "prospectiveAuthority": false
+  },
+  "frozenCandidate": {
+    "selectionRule": "within each marker interval select the last store whose LayerShapes base equals the last destination-matched union; record order and pointer identity only",
+    "cropOrProducerValuesUsedForSelection": false,
+    "imageOrPixelValuesUsedForSelection": false,
+    "toleranceUsed": false,
+    "exceptionFitUsed": false
+  },
+  "holdout": {
+    "geometry": "circle-485-center",
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "materialize",
+    "backingScaleFactor": 2,
+    "normalSampleCount": 32,
+    "targetOutputsOpenedAtFreeze": false,
+    "trackedRuntimeEvidenceMatchCountAtFreeze": 0,
+    "stableBinaryStringOccurrenceCount": 1,
+    "rationale": "the geometry is implemented in the already authenticated stable binary but absent from every tracked runtime timeline/result at freeze; its odd width changes crop boundaries while retaining the calibrated profile"
+  },
+  "captureDesign": {
+    "host": "quince@10.0.41.19",
+    "githubActionsForbidden": true,
+    "activeBuiltInRetinaRequired": true,
+    "nativeCaptureToolchain": "Apple Command Line Tools",
+    "postCaptureAnalysis": "nix develop Python 3.14",
+    "nixStorePathEmbeddedInNativeCapture": false,
+    "captureOverlay": "Analysis/capture_prepare_layer_crop_policy_holdout_live_local_macos_26_6_1_lldb.py",
+    "captureOverlayChangedFromCalibration": false,
+    "stableBinary": "glass-transition-introspect-721293f",
+    "stableBinarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "hardwareWatchpoints": false,
+    "instructionStepping": false
+  },
+  "acceptance": {
+    "lldbExitStatus": 0,
+    "validationExitStatus": 0,
+    "qualifiedMarkerCount": 32,
+    "zeroTraceFailuresRequired": true,
+    "minimumMatchingStoreRecordCount": 33,
+    "minimumPointerReuseRecordCount": 1,
+    "lastMatchingStoreRequired": true,
+    "exactRectangleCount": 32,
+    "exactComponentCount": 128,
+    "maximumAbsoluteErrorsXYWH": [0.0, 0.0, 0.0, 0.0],
+    "maximumULPDistancesXYWH": [0, 0, 0, 0],
+    "toleranceUsed": false,
+    "lastStorePointerReuseUnseenHoldoutMayBeClaimed": true,
+    "physicalRetina2xInternalCropGeometryTransferMayBeClaimed": true,
+    "selectedRegionOriginTransferMayBeClaimed": false,
+    "physicalRetinaColorTransferMayBeClaimed": false,
+    "productionShaderMayChange": false,
+    "liquidGlassParityMayBeClaimed": false
+  },
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/prepare_layer_live_transport_local_macos_26_6_1.py",
+        "sha256": "dd30287a00e9dd7f73dd517770ecda4b912e0ef367a0040d199002eafde796f2"
+      },
+      {
+        "path": "Analysis/capture_prepare_layer_crop_policy_holdout_live_local_macos_26_6_1_lldb.py",
+        "sha256": "7166b30cc047bc21c5db77ebc5e5c92d8dcdc5e23d3833b32c8a40b3dbba7820"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_filter_map_bounds_profile_transfer_live_local_macos_26_6_1.py",
+        "sha256": "83075643f49d4504386d8b7e96f6f518ac856127530631c29e7b628aab75ea2c"
+      },
+      {
+        "path": "Analysis/validate_prepare_layer_live_store_pointer_holdout_local_macos_26_6_1.py",
+        "sha256": "ae6a7527e4708459c761dd3a488539c1f63e914bd871fe2040d83569f4d7ec75"
+      },
+      {
+        "path": "Analysis/check_local_retina_capture_session_v2.swift",
+        "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+      },
+      {
+        "path": "Analysis/prepare_layer_live_transport_d439d53_calibration_result.json",
+        "sha256": "2939ee106bdebd362ef3c699cd660e78e7d1f98a2b1d5a44e2c2a745129f24e8"
+      }
+    ],
+    "productionShader": {
+      "externalPath": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "developmentFlake": {
+      "externalPath": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "nixStorePathUsedByNativeCapture": false
+    }
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "notClaimed": [
+    "that the circle-485 holdout has run or passed",
+    "that the calibrated last-store rule has prospective authority before this holdout",
+    "that internal crop replay establishes selected-region/origin allocation",
+    "that internal Retina arithmetic establishes physical color or compositor transfer",
+    "that any Walle frame is byte-identical to Apple",
+    "that the production shader may change",
+    "that Apple Liquid Glass parity has been achieved"
+  ]
+}

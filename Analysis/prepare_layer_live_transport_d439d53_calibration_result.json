@@ -1,0 +1,102 @@
+{
+  "prepareLayerLiveTransportCalibrationResultSchemaVersion": 1,
+  "classification": "retrospective known-profile calibration of the value-blind live QuartzCore code mapping, physical Retina backing scale, and last matching crop-store rule; no unseen-holdout, selected-region, color, pixel, product, or parity authority",
+  "capture": {
+    "host": "quince@10.0.41.19",
+    "repository": "/Users/quince/lg-test",
+    "commit": "d439d53cc30d69a36c4dd0f796da9831de8fe6b0",
+    "outputDirectory": "local-prepare-layer-live-transport-calibration-d439d53-run1",
+    "lldbExitStatus": 0,
+    "validationExitStatus": 0,
+    "githubActionsUsed": false,
+    "nativeToolchain": "Apple Command Line Tools",
+    "analysisToolchain": "nix develop Python 3.14",
+    "nixStorePathEmbeddedInNativeCapture": false
+  },
+  "session": {
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "backingScaleFactor": 2,
+    "logicalPoints": [1728, 1117],
+    "physicalPixels": [3456, 2234],
+    "sessionLocked": false,
+    "sessionLoginDone": true,
+    "sessionOnConsole": true,
+    "displayActive": true,
+    "displayAsleep": false,
+    "preflightPassed": true
+  },
+  "profile": {
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "materialize",
+    "geometry": "circle-800-center",
+    "backingScaleFactor": 2,
+    "previouslyOpened": true
+  },
+  "liveQuartzCore": {
+    "uuid": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "prepareLayerSymbolByteCount": 39880,
+    "prepareLayerFullCodeSHA256": "6949daed1a86b3153cf90afc4d7c6a83f99cb6e5435d6331fc93066caeb337a8",
+    "markerOffset": 16112,
+    "storeOffset": 21728,
+    "unionCallOffset": 34016,
+    "unionReturnOffset": 34020
+  },
+  "captureAccounting": {
+    "qualifiedMarkerCount": 32,
+    "markerHitCount": 32,
+    "rejectedMarkerCount": 0,
+    "qualifiedUnionRecordCount": 352,
+    "rejectedUnionCallCount": 0,
+    "rejectedUnionReturnCount": 0,
+    "qualifiedStoreRecordCount": 352,
+    "rejectedStoreCount": 0,
+    "traceFailureCount": 0
+  },
+  "lastStoreCalibration": {
+    "selectionRule": "within each marker interval select the last store whose LayerShapes base equals the last destination-matched union; record order and pointer identity only",
+    "recordCount": 32,
+    "matchingStoreRecordCount": 33,
+    "pointerReuseRecordCount": 1,
+    "discardedEarlierMatchCount": 1,
+    "cropOrProducerValuesUsedForSelection": false,
+    "prospectiveAuthority": false
+  },
+  "exactReplay": {
+    "rectangleCount": 32,
+    "componentCount": 128,
+    "exactRectangleCount": 32,
+    "exactComponentCount": 128,
+    "mismatchedRectangleCount": 0,
+    "mismatchedComponentCount": 0,
+    "maximumAbsoluteErrorsXYWH": [0.0, 0.0, 0.0, 0.0],
+    "maximumULPDistancesXYWH": [0, 0, 0, 0],
+    "toleranceUsed": false
+  },
+  "artifacts": {
+    "trace": {
+      "byteCount": 13833905,
+      "sha256": "271871e797714fae80052bcd8a3f280baa6c50653fabd26c35a88e876fe2c8f5"
+    },
+    "timeline": {
+      "byteCount": 29161439,
+      "sha256": "5bbadf2e5da0f5038ffe665540281da84107c2a6ee1857515e546b7160db0abc"
+    },
+    "validation": {
+      "byteCount": 67123,
+      "sha256": "fa26a77477c08a102effdc9301114cd99a75c5737df165f6ac01aa42f70c1c32"
+    }
+  },
+  "authority": {
+    "activeM1CropCaptureTransportPassed": true,
+    "physicalRetina2xInternalCropReplayPassed": true,
+    "knownProfileCalibrationOnly": true,
+    "lastStorePointerReuseUnseenHoldoutPassed": false,
+    "selectedRegionOriginTransferPassed": false,
+    "physicalRetinaColorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
