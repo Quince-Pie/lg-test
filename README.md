@@ -9179,3 +9179,73 @@ upstream animation-progress law, public/environment endpoint selection,
 integer crop/allocation policy, physical Retina compositor/color behavior, an
 independent Walle zero-unequal-byte frame, or Liquid Glass parity. No
 production shader change is authorized.
+
+### Exact `Color.Resolved` mixer transfer and operation order
+
+The last unknown branch inside the `Parameters` mixer is now closed. Its
+complete private helper is the 524-byte region
+`0x240995160..0x24099536c`, SHA-256
+`20b831c1e0c761aebe66934b1a655aa87d53741cea18896f411d8aa5b174f0c0`.
+The private ABI places the `to` color in `s0...s3`, the binary64 fraction in
+`d4`, the `from` RGB values in `s5...s7`, and the `from` alpha in the first
+stack slot. All 131 instructions, direct calls, and semantic operations are
+byte-gated.
+
+Runtime pointer-authenticated import resolution proves that the helper's five
+static stubs target these exact SwiftUICore operations:
+
+```text
+0x2409a4120  Color.RGBColorSpace metadata accessor
+0x2409a4210  Color.Resolved.init(colorSpace:red:green:blue:opacity:)
+0x2409a4250  Color.Resolved.red.getter
+0x2409a4260  Color.Resolved.blue.getter
+0x2409a4280  Color.Resolved.green.getter
+```
+
+The enum value constructed through runtime metadata has tag zero, which is
+`Color.RGBColorSpace.sRGB`. The exact mixer law is therefore:
+
+1. Read each endpoint's public `red`, `green`, and `blue` properties. The
+   frozen `Color.Resolved` storage fields are linear RGB, so these getters
+   expose their sRGB-transfer representation.
+2. Compute binary64 `1.0 - t`, then convert it and `t` separately to Float.
+3. For each exposed RGB component, perform a separately rounded binary32
+   `from * Float(1.0 - t)`, a separately rounded binary32
+   `to * Float(t)`, then one binary32 add. Alpha uses the same arithmetic on
+   the stored opacity fields. There is no fused multiply-add.
+4. Construct the output with
+   `Color.Resolved.init(colorSpace: .sRGB, red:green:blue:opacity:)`, which
+   transfers the mixed RGB components back to linear storage.
+
+A direct arm64 assembly bridge invokes the private helper without a render.
+An independent Swift probe invokes the public getters and constructor. Their
+outputs are bitwise identical for all 205 frozen cases: 13 curated cases cover
+the transfer threshold, neighboring floats, subnormals, signed zero, extended
+range, extrapolation, and exact endpoints; 192 deterministic randomized cases
+use seed `0x4c475243`. The shared output stream SHA-256 is
+`096f07a965544de4f41d83fd532eaa397c887d8992e30e4ff67e6e624857a4b9`.
+
+Endpoint handling is parity-critical. The helper still performs getter,
+binary32 arithmetic, and `.sRGB` reconstruction at exactly `t = 0` and
+`t = 1`. Consequently, arbitrary stored linear RGB values can change by an
+ULP at an exact endpoint. Replacing the helper with an endpoint copy would not
+be observationally exact.
+
+The fail-closed analyzer and canonical result are
+`Analysis/analyze_designlibrary_resolved_color_mixer_local_macos_26_6_1.py`,
+SHA-256
+`40509f1210c45588791e39d989d6409fa7496b171a250919f1151ed0a4974ed5`,
+and
+`Analysis/designlibrary_resolved_color_mixer_local_macos_26_6_1_result.json`,
+SHA-256
+`4a58f3434e13625ab7ce5ff4762e50df1600f6d09e173b950f0480418b4bf683`.
+It also freezes the direct private probe, arm64 bridge, pointer-authenticated
+import probe, and public SwiftUI probe. All native compilation uses Apple's
+Command Line Tools directly and embeds no Nix store path.
+
+Together with the preceding 102-field basis capture, this establishes every
+`Parameters` field-blend semantic. It does **not** establish the upstream
+animation-progress law, public/environment endpoint selection, integer
+crop/allocation policy, physical Retina compositor/color behavior, an
+independent Walle zero-unequal-byte frame, or Liquid Glass parity. No
+production shader change is authorized.

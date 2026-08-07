@@ -1,0 +1,1212 @@
+{
+  "bitwiseValidation": {
+    "allOutputsBitwiseEqual": true,
+    "curatedSampleCount": 13,
+    "detailedSamples": [
+      {
+        "fractionBits": "0x3fd0000000000000",
+        "fromPublicWords": [
+          "0x3ef81436",
+          "0x3f1575fb",
+          "0x3f2a4991",
+          "0x3f000000"
+        ],
+        "fromRawWords": [
+          "0x3e4ccccd",
+          "0x3e99999a",
+          "0x3ecccccd",
+          "0x3f000000"
+        ],
+        "label": "reference",
+        "mixedPublicWords": [
+          "0x3f1708eb",
+          "0x3f26c56e",
+          "0x3f32c550",
+          "0x3f19999a"
+        ],
+        "outputRawWords": [
+          "0x3e9d2bff",
+          "0x3ec38d01",
+          "0x3ee42642",
+          "0x3f19999a"
+        ],
+        "toPublicWords": [
+          "0x3f68055b",
+          "0x3f5ab3c9",
+          "0x3f4c388a",
+          "0x3f666666"
+        ],
+        "toRawWords": [
+          "0x3f4ccccd",
+          "0x3f333333",
+          "0x3f19999a",
+          "0x3f666666"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe8000000000000",
+        "fromPublicWords": [
+          "0x3f68055b",
+          "0x3f5ab3c9",
+          "0x3f4c388a",
+          "0x3f666666"
+        ],
+        "fromRawWords": [
+          "0x3f4ccccd",
+          "0x3f333333",
+          "0x3f19999a",
+          "0x3f666666"
+        ],
+        "label": "reverse",
+        "mixedPublicWords": [
+          "0x3f1708eb",
+          "0x3f26c56e",
+          "0x3f32c550",
+          "0x3f19999a"
+        ],
+        "outputRawWords": [
+          "0x3e9d2bff",
+          "0x3ec38d01",
+          "0x3ee42642",
+          "0x3f19999a"
+        ],
+        "toPublicWords": [
+          "0x3ef81436",
+          "0x3f1575fb",
+          "0x3f2a4991",
+          "0x3f000000"
+        ],
+        "toRawWords": [
+          "0x3e4ccccd",
+          "0x3e99999a",
+          "0x3ecccccd",
+          "0x3f000000"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe0000000000000",
+        "fromPublicWords": [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ],
+        "fromRawWords": [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ],
+        "label": "zero-to-one",
+        "mixedPublicWords": [
+          "0x3f000000",
+          "0x3f000000",
+          "0x3f000000",
+          "0x3f000000"
+        ],
+        "outputRawWords": [
+          "0x3e5b2d9a",
+          "0x3e5b2d9a",
+          "0x3e5b2d9a",
+          "0x3f000000"
+        ],
+        "toPublicWords": [
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f800000"
+        ],
+        "toRawWords": [
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f800000"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe0000000000000",
+        "fromPublicWords": [
+          "0x80000000",
+          "0x00000000",
+          "0x80000000",
+          "0x00000000"
+        ],
+        "fromRawWords": [
+          "0x80000000",
+          "0x00000000",
+          "0x80000000",
+          "0x00000000"
+        ],
+        "label": "signed-zero",
+        "mixedPublicWords": [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ],
+        "outputRawWords": [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ],
+        "toPublicWords": [
+          "0x00000000",
+          "0x80000000",
+          "0x00000000",
+          "0x80000000"
+        ],
+        "toRawWords": [
+          "0x00000000",
+          "0x80000000",
+          "0x00000000",
+          "0x80000000"
+        ]
+      },
+      {
+        "fractionBits": "0x3fd8000000000000",
+        "fromPublicWords": [
+          "0x3ec6f305",
+          "0x3f097f4d",
+          "0x3f3c405a",
+          "0x3f400000"
+        ],
+        "fromRawWords": [
+          "0x3e000000",
+          "0x3e800000",
+          "0x3f000000",
+          "0x3f400000"
+        ],
+        "label": "same",
+        "mixedPublicWords": [
+          "0x3ec6f305",
+          "0x3f097f4d",
+          "0x3f3c405a",
+          "0x3f400000"
+        ],
+        "outputRawWords": [
+          "0x3dffffff",
+          "0x3e7fffff",
+          "0x3f000000",
+          "0x3f400000"
+        ],
+        "toPublicWords": [
+          "0x3ec6f305",
+          "0x3f097f4d",
+          "0x3f3c405a",
+          "0x3f400000"
+        ],
+        "toRawWords": [
+          "0x3e000000",
+          "0x3e800000",
+          "0x3f000000",
+          "0x3f400000"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe0000000000000",
+        "fromPublicWords": [
+          "0x3d25aed5",
+          "0x3d25aed5",
+          "0x3d25aed5",
+          "0x3e4ccccd"
+        ],
+        "fromRawWords": [
+          "0x3b4d2e1b",
+          "0x3b4d2e1b",
+          "0x3b4d2e1b",
+          "0x3e4ccccd"
+        ],
+        "label": "linear-threshold-below",
+        "mixedPublicWords": [
+          "0x3d25aed5",
+          "0x3d25aed5",
+          "0x3d25aed5",
+          "0x3f000000"
+        ],
+        "outputRawWords": [
+          "0x3b4d2e1c",
+          "0x3b4d2e1c",
+          "0x3b4d2e1c",
+          "0x3f000000"
+        ],
+        "toPublicWords": [
+          "0x3d25aed5",
+          "0x3d25aed5",
+          "0x3d25aed5",
+          "0x3f4ccccd"
+        ],
+        "toRawWords": [
+          "0x3b4d2e1c",
+          "0x3b4d2e1c",
+          "0x3b4d2e1c",
+          "0x3f4ccccd"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe0000000000000",
+        "fromPublicWords": [
+          "0x3d25aed5",
+          "0x3d25aed5",
+          "0x3d25aed5",
+          "0x3e4ccccd"
+        ],
+        "fromRawWords": [
+          "0x3b4d2e1c",
+          "0x3b4d2e1c",
+          "0x3b4d2e1c",
+          "0x3e4ccccd"
+        ],
+        "label": "linear-threshold-above",
+        "mixedPublicWords": [
+          "0x3d25aed2",
+          "0x3d25aed2",
+          "0x3d25aed2",
+          "0x3f000000"
+        ],
+        "outputRawWords": [
+          "0x3b4d2e18",
+          "0x3b4d2e18",
+          "0x3b4d2e18",
+          "0x3f000000"
+        ],
+        "toPublicWords": [
+          "0x3d25aece",
+          "0x3d25aece",
+          "0x3d25aece",
+          "0x3f4ccccd"
+        ],
+        "toRawWords": [
+          "0x3b4d2e1d",
+          "0x3b4d2e1d",
+          "0x3b4d2e1d",
+          "0x3f4ccccd"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe4000000000000",
+        "fromPublicWords": [
+          "0xbf097f4d",
+          "0x3f8d2862",
+          "0x3f98dac6",
+          "0xbdcccccd"
+        ],
+        "fromRawWords": [
+          "0xbe800000",
+          "0x3fa00000",
+          "0x3fc00000",
+          "0xbdcccccd"
+        ],
+        "label": "extended-range",
+        "mixedPublicWords": [
+          "0x3f0b81bb",
+          "0x3e2ec960",
+          "0x3f7f92ac",
+          "0x3f366666"
+        ],
+        "outputRawWords": [
+          "0x3e841c49",
+          "0x3cca4ef0",
+          "0x3f7f0793",
+          "0x3f366666"
+        ],
+        "toPublicWords": [
+          "0x3f98dac6",
+          "0xbec6f305",
+          "0x3f617dbf",
+          "0x3f99999a"
+        ],
+        "toRawWords": [
+          "0x3fc00000",
+          "0xbe000000",
+          "0x3f400000",
+          "0x3f99999a"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe0000000000000",
+        "fromPublicWords": [
+          "0x0000000d",
+          "0x8000000d",
+          "0x024eb852",
+          "0x3dcccccd"
+        ],
+        "fromRawWords": [
+          "0x00000001",
+          "0x80000001",
+          "0x00800000",
+          "0x3dcccccd"
+        ],
+        "label": "subnormal",
+        "mixedPublicWords": [
+          "0x00000013",
+          "0x80000013",
+          "0x024eb851",
+          "0x3f000000"
+        ],
+        "outputRawWords": [
+          "0x00000001",
+          "0x80000001",
+          "0x007fffff",
+          "0x3f000000"
+        ],
+        "toPublicWords": [
+          "0x0000001a",
+          "0x8000001a",
+          "0x024eb850",
+          "0x3f666666"
+        ],
+        "toRawWords": [
+          "0x00000002",
+          "0x80000002",
+          "0x007fffff",
+          "0x3f666666"
+        ]
+      },
+      {
+        "fractionBits": "0xbfd0000000000000",
+        "fromPublicWords": [
+          "0x3eb2c90e",
+          "0x3ef81436",
+          "0x3f1575fb",
+          "0x3ecccccd"
+        ],
+        "fromRawWords": [
+          "0x3dcccccd",
+          "0x3e4ccccd",
+          "0x3e99999a",
+          "0x3ecccccd"
+        ],
+        "label": "extrapolate-low",
+        "mixedPublicWords": [
+          "0x3e6442db",
+          "0x3ec21696",
+          "0x3efb73c4",
+          "0x3e800000"
+        ],
+        "outputRawWords": [
+          "0x3d26b289",
+          "0x3df30bb8",
+          "0x3e52da81",
+          "0x3e800000"
+        ],
+        "toPublicWords": [
+          "0x3f5ab3c9",
+          "0x3f68055b",
+          "0x3f74665f",
+          "0x3f800000"
+        ],
+        "toRawWords": [
+          "0x3f333333",
+          "0x3f4ccccd",
+          "0x3f666666",
+          "0x3f800000"
+        ]
+      },
+      {
+        "fractionBits": "0x3ff4000000000000",
+        "fromPublicWords": [
+          "0x3eb2c90e",
+          "0x3ef81436",
+          "0x3f1575fb",
+          "0x3ecccccd"
+        ],
+        "fromRawWords": [
+          "0x3dcccccd",
+          "0x3e4ccccd",
+          "0x3e99999a",
+          "0x3ecccccd"
+        ],
+        "label": "extrapolate-high",
+        "mixedPublicWords": [
+          "0x3f7b079a",
+          "0x3f818216",
+          "0x3f86113c",
+          "0x3f933333"
+        ],
+        "outputRawWords": [
+          "0x3f74d6a5",
+          "0x3f83752f",
+          "0x3f8e3d38",
+          "0x3f933333"
+        ],
+        "toPublicWords": [
+          "0x3f5ab3c9",
+          "0x3f68055b",
+          "0x3f74665f",
+          "0x3f800000"
+        ],
+        "toRawWords": [
+          "0x3f333333",
+          "0x3f4ccccd",
+          "0x3f666666",
+          "0x3f800000"
+        ]
+      },
+      {
+        "fractionBits": "0x0000000000000000",
+        "fromPublicWords": [
+          "0x3eb2c90e",
+          "0x3ef81436",
+          "0x3f1575fb",
+          "0x3ecccccd"
+        ],
+        "fromRawWords": [
+          "0x3dcccccd",
+          "0x3e4ccccd",
+          "0x3e99999a",
+          "0x3ecccccd"
+        ],
+        "label": "exact-from",
+        "mixedPublicWords": [
+          "0x3eb2c90e",
+          "0x3ef81436",
+          "0x3f1575fb",
+          "0x3ecccccd"
+        ],
+        "outputRawWords": [
+          "0x3dccccc9",
+          "0x3e4cccce",
+          "0x3e99999b",
+          "0x3ecccccd"
+        ],
+        "toPublicWords": [
+          "0x3f5ab3c9",
+          "0x3f68055b",
+          "0x3f74665f",
+          "0x3f800000"
+        ],
+        "toRawWords": [
+          "0x3f333333",
+          "0x3f4ccccd",
+          "0x3f666666",
+          "0x3f800000"
+        ]
+      },
+      {
+        "fractionBits": "0x3ff0000000000000",
+        "fromPublicWords": [
+          "0x3eb2c90e",
+          "0x3ef81436",
+          "0x3f1575fb",
+          "0x3ecccccd"
+        ],
+        "fromRawWords": [
+          "0x3dcccccd",
+          "0x3e4ccccd",
+          "0x3e99999a",
+          "0x3ecccccd"
+        ],
+        "label": "exact-to",
+        "mixedPublicWords": [
+          "0x3f5ab3c9",
+          "0x3f68055b",
+          "0x3f74665f",
+          "0x3f800000"
+        ],
+        "outputRawWords": [
+          "0x3f333334",
+          "0x3f4ccccd",
+          "0x3f666665",
+          "0x3f800000"
+        ],
+        "toPublicWords": [
+          "0x3f5ab3c9",
+          "0x3f68055b",
+          "0x3f74665f",
+          "0x3f800000"
+        ],
+        "toRawWords": [
+          "0x3f333333",
+          "0x3f4ccccd",
+          "0x3f666666",
+          "0x3f800000"
+        ]
+      },
+      {
+        "fractionBits": "0xbfd0000000000000",
+        "fromPublicWords": [
+          "0x3f7501ad",
+          "0x3f7e0b9d",
+          "0x3f4dc1ab",
+          "0x3f946fb2"
+        ],
+        "fromRawWords": [
+          "0x3f67b32f",
+          "0x3f7b9375",
+          "0x3f1c34be",
+          "0x3f946fb2"
+        ],
+        "label": "random-000",
+        "mixedPublicWords": [
+          "0x3f6b12a4",
+          "0x3f778346",
+          "0x3f558a6f",
+          "0x3fbbf592"
+        ],
+        "outputRawWords": [
+          "0x3f52f2c6",
+          "0x3f6d1d95",
+          "0x3f29cfb4",
+          "0x3fbbf592"
+        ],
+        "toPublicWords": [
+          "0x3f8e5ee8",
+          "0x3f8c167d",
+          "0x3f2e9e9c",
+          "0xbd9a7d16"
+        ],
+        "toRawWords": [
+          "0x3fa32937",
+          "0x3f9d3de2",
+          "0x3ed88a47",
+          "0xbd9a7d16"
+        ]
+      },
+      {
+        "fractionBits": "0x0000000000000000",
+        "fromPublicWords": [
+          "0x3f835a64",
+          "0x3f1dd27c",
+          "0x3f016b75",
+          "0x3ea7a44a"
+        ],
+        "fromRawWords": [
+          "0x3f87c2cb",
+          "0x3ead2067",
+          "0x3e6078af",
+          "0x3ea7a44a"
+        ],
+        "label": "random-001",
+        "mixedPublicWords": [
+          "0x3f835a64",
+          "0x3f1dd27c",
+          "0x3f016b75",
+          "0x3ea7a44a"
+        ],
+        "outputRawWords": [
+          "0x3f87c2ca",
+          "0x3ead2066",
+          "0x3e6078ad",
+          "0x3ea7a44a"
+        ],
+        "toPublicWords": [
+          "0x3ecbe974",
+          "0x3ec814f7",
+          "0x3f6204be",
+          "0x3eeed33b"
+        ],
+        "toRawWords": [
+          "0x3e06d0d2",
+          "0x3e018991",
+          "0x3f41040f",
+          "0x3eeed33b"
+        ]
+      },
+      {
+        "fractionBits": "0x3e70000000000000",
+        "fromPublicWords": [
+          "0x3f63702c",
+          "0x3e55eb14",
+          "0x3f869ee1",
+          "0x3c482f4e"
+        ],
+        "fromRawWords": [
+          "0x3f43c426",
+          "0x3d133d84",
+          "0x3f8f94d5",
+          "0x3c482f4e"
+        ],
+        "label": "random-002",
+        "mixedPublicWords": [
+          "0x3f63702c",
+          "0x3e55eb11",
+          "0x3f869ee0",
+          "0x3c482f47"
+        ],
+        "outputRawWords": [
+          "0x3f43c426",
+          "0x3d133d7f",
+          "0x3f8f94d4",
+          "0x3c482f47"
+        ],
+        "toPublicWords": [
+          "0x3f4ca9cf",
+          "0xbed03410",
+          "0xbed4a134",
+          "0xbdbc7305"
+        ],
+        "toRawWords": [
+          "0x3f1a5927",
+          "0xbe0ce064",
+          "0xbe134a94",
+          "0xbdbc7305"
+        ]
+      },
+      {
+        "fractionBits": "0x3fd0000000000000",
+        "fromPublicWords": [
+          "0x3f3aa30a",
+          "0x3f63da3c",
+          "0x3f736ff1",
+          "0x3f2e48d0"
+        ],
+        "fromRawWords": [
+          "0x3efb1ff0",
+          "0x3f4492bc",
+          "0x3f645894",
+          "0x3f2e48d0"
+        ],
+        "label": "random-003",
+        "mixedPublicWords": [
+          "0x3ed901c1",
+          "0x3f38daae",
+          "0x3f578617",
+          "0x3f3b1119"
+        ],
+        "outputRawWords": [
+          "0x3e19cc9f",
+          "0x3ef5ce1d",
+          "0x3f2d6232",
+          "0x3f3b1119"
+        ],
+        "toPublicWords": [
+          "0xbefbcb3c",
+          "0x3e5f7008",
+          "0x3f03c888",
+          "0x3f6169f3"
+        ],
+        "toRawWords": [
+          "0xbe5378f4",
+          "0x3d1fff24",
+          "0x3e697280",
+          "0x3f6169f3"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe0000000000000",
+        "fromPublicWords": [
+          "0x3f391fd5",
+          "0x3ecb7e14",
+          "0x3f9347f7",
+          "0x3f0f7002"
+        ],
+        "fromRawWords": [
+          "0x3ef69b61",
+          "0x3e063b4e",
+          "0x3fb053f0",
+          "0x3f0f7002"
+        ],
+        "label": "random-004",
+        "mixedPublicWords": [
+          "0x3f5237c0",
+          "0x3f42fbfa",
+          "0x3f85eea9",
+          "0x3eb48309"
+        ],
+        "outputRawWords": [
+          "0x3f23ec1e",
+          "0x3f0a7635",
+          "0x3f8de9a1",
+          "0x3eb48309"
+        ],
+        "toPublicWords": [
+          "0x3f6b4fab",
+          "0x3f901c75",
+          "0x3f712ab6",
+          "0x3e144c1b"
+        ],
+        "toRawWords": [
+          "0x3f536ede",
+          "0x3fa7c27e",
+          "0x3f5f8b46",
+          "0x3e144c1b"
+        ]
+      },
+      {
+        "fractionBits": "0x3fe8000000000000",
+        "fromPublicWords": [
+          "0x3f38fc8e",
+          "0x3f5fbca3",
+          "0x3f24c12b",
+          "0x3f84ded1"
+        ],
+        "fromRawWords": [
+          "0x3ef6329e",
+          "0x3f3ca497",
+          "0x3ebe5bb7",
+          "0x3f84ded1"
+        ],
+        "label": "random-005",
+        "mixedPublicWords": [
+          "0xbe35b9a2",
+          "0x3e29b863",
+          "0x3f37d0a2",
+          "0x3f29f406"
+        ],
+        "outputRawWords": [
+          "0xbcd9317b",
+          "0x3cbfd3bd",
+          "0x3ef2bc0d",
+          "0x3f29f406"
+        ],
+        "toPublicWords": [
+          "0xbef47976",
+          "0xbd900b55",
+          "0x3f3e2b1f",
+          "0x3f0a0627"
+        ],
+        "toRawWords": [
+          "0xbe4671e4",
+          "0xbbc53f39",
+          "0x3f02ee16",
+          "0x3f0a0627"
+        ]
+      },
+      {
+        "fractionBits": "0x3fefffffe0000000",
+        "fromPublicWords": [
+          "0x3f57669d",
+          "0x3f0eb09c",
+          "0x3f775557",
+          "0xbe3e3397"
+        ],
+        "fromRawWords": [
+          "0x3f2d292b",
+          "0x3e8ac6fe",
+          "0x3f6cb9b4",
+          "0xbe3e3397"
+        ],
+        "label": "random-006",
+        "mixedPublicWords": [
+          "0x3f214ffd",
+          "0x3f854db3",
+          "0x3f91a05e",
+          "0x3dbd369a"
+        ],
+        "outputRawWords": [
+          "0x3eb5aeda",
+          "0x3f8c65f5",
+          "0x3fabd30b",
+          "0x3dbd369a"
+        ],
+        "toPublicWords": [
+          "0x3f214ffd",
+          "0x3f854db4",
+          "0x3f91a05f",
+          "0x3dbd369c"
+        ],
+        "toRawWords": [
+          "0x3eb5aeda",
+          "0x3f8c65f6",
+          "0x3fabd30c",
+          "0x3dbd369c"
+        ]
+      },
+      {
+        "fractionBits": "0x3ff0000000000000",
+        "fromPublicWords": [
+          "0xbed4fcd5",
+          "0x3ed5d089",
+          "0x3f4ad0b6",
+          "0x3f20de8c"
+        ],
+        "fromRawWords": [
+          "0xbe13d13d",
+          "0x3e15096f",
+          "0x3f173cb5",
+          "0x3f20de8c"
+        ],
+        "label": "random-007",
+        "mixedPublicWords": [
+          "0x3f04d1e6",
+          "0x3f8b5124",
+          "0x3eecc070",
+          "0xbdc7903c"
+        ],
+        "outputRawWords": [
+          "0x3e6d72e2",
+          "0x3f9b458d",
+          "0x3e39386f",
+          "0xbdc7903c"
+        ],
+        "toPublicWords": [
+          "0x3f04d1e6",
+          "0x3f8b5124",
+          "0x3eecc070",
+          "0xbdc7903c"
+        ],
+        "toRawWords": [
+          "0x3e6d72e3",
+          "0x3f9b458d",
+          "0x3e39386f",
+          "0xbdc7903c"
+        ]
+      }
+    ],
+    "inputSHA256": "5cd46d9c16b59dcdcf6c5fe57adbb9f3c16c914d7d5d52b51e5676c8eac20143",
+    "privateOutputSHA256": "096f07a965544de4f41d83fd532eaa397c887d8992e30e4ff67e6e624857a4b9",
+    "publicCompositionOutputSHA256": "096f07a965544de4f41d83fd532eaa397c887d8992e30e4ff67e6e624857a4b9",
+    "randomSampleCount": 192,
+    "randomSeed": "0x4c475243",
+    "totalSampleCount": 205
+  },
+  "claims": {
+    "allParametersFieldBlendSemanticsEstablished": true,
+    "allPrivateImportTargetsResolved": true,
+    "binary32OperationOrderEstablished": true,
+    "completePrivateResolvedColorMixerCodeEstablished": true,
+    "cropAllocationPolicyEstablished": false,
+    "directPrivateAndPublicCompositionSamplesBitwiseEqual": true,
+    "environmentToResolvedConfigurationSelectionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "privateABIEstablished": true,
+    "productionShaderChangeAuthorized": false,
+    "publicComponentGetterAndConstructorJoinEstablished": true,
+    "publicControlsToResolvedConfigurationSelectionLawEstablished": false,
+    "resolvedColorExactTransferLawEstablished": true,
+    "retinaCompositorColorLawEstablished": false,
+    "sRGBColorSpaceSelectionEstablished": true,
+    "transitionProgressToPublicConfigurationMixByLawEstablished": false
+  },
+  "classification": "native static private-code and dynamic direct-ABI analysis joined bitwise to public SwiftUI Color.Resolved accessors and constructor; no GUI, render, image, crop, provider return, or Nix store path is used",
+  "codeRegion": {
+    "byteCount": 524,
+    "directCalls": {
+      "0x2409a4120": [
+        "0x2409951b4"
+      ],
+      "0x2409a4210": [
+        "0x240995344"
+      ],
+      "0x2409a4250": [
+        "0x240995240",
+        "0x240995260"
+      ],
+      "0x2409a4260": [
+        "0x2409952d8",
+        "0x2409952f0"
+      ],
+      "0x2409a4280": [
+        "0x2409952a0",
+        "0x2409952bc"
+      ]
+    },
+    "endExclusive": "0x24099536c",
+    "instructionContracts": [
+      {
+        "address": "0x240995188",
+        "mnemonic": "mov.16b",
+        "operands": "v11, v7"
+      },
+      {
+        "address": "0x24099518c",
+        "mnemonic": "stp",
+        "operands": "s7, s3, [x29, #-0x70]"
+      },
+      {
+        "address": "0x240995190",
+        "mnemonic": "mov.16b",
+        "operands": "v9, v6"
+      },
+      {
+        "address": "0x240995194",
+        "mnemonic": "mov.16b",
+        "operands": "v8, v5"
+      },
+      {
+        "address": "0x240995198",
+        "mnemonic": "stur",
+        "operands": "d4, [x29, #-0x68]"
+      },
+      {
+        "address": "0x24099519c",
+        "mnemonic": "mov.16b",
+        "operands": "v13, v2"
+      },
+      {
+        "address": "0x2409951a0",
+        "mnemonic": "mov.16b",
+        "operands": "v14, v1"
+      },
+      {
+        "address": "0x2409951a4",
+        "mnemonic": "mov.16b",
+        "operands": "v15, v0"
+      },
+      {
+        "address": "0x2409951a8",
+        "mnemonic": "ldr",
+        "operands": "s10, [x29, #0x10]"
+      },
+      {
+        "address": "0x2409951b0",
+        "mnemonic": "mov",
+        "operands": "x0, #0x0"
+      },
+      {
+        "address": "0x2409951b4",
+        "mnemonic": "bl",
+        "operands": "0x2409a4120"
+      },
+      {
+        "address": "0x240995240",
+        "mnemonic": "bl",
+        "operands": "0x2409a4250"
+      },
+      {
+        "address": "0x240995260",
+        "mnemonic": "bl",
+        "operands": "0x2409a4250"
+      },
+      {
+        "address": "0x240995264",
+        "mnemonic": "fmov",
+        "operands": "d1, #1.00000000"
+      },
+      {
+        "address": "0x240995268",
+        "mnemonic": "ldur",
+        "operands": "d2, [x29, #-0x68]"
+      },
+      {
+        "address": "0x24099526c",
+        "mnemonic": "fsub",
+        "operands": "d1, d1, d2"
+      },
+      {
+        "address": "0x240995270",
+        "mnemonic": "fcvt",
+        "operands": "s13, d1"
+      },
+      {
+        "address": "0x240995274",
+        "mnemonic": "fmul",
+        "operands": "s1, s11, s13"
+      },
+      {
+        "address": "0x240995278",
+        "mnemonic": "fcvt",
+        "operands": "s10, d2"
+      },
+      {
+        "address": "0x24099527c",
+        "mnemonic": "fmul",
+        "operands": "s0, s0, s10"
+      },
+      {
+        "address": "0x240995280",
+        "mnemonic": "fadd",
+        "operands": "s0, s1, s0"
+      },
+      {
+        "address": "0x2409952a0",
+        "mnemonic": "bl",
+        "operands": "0x2409a4280"
+      },
+      {
+        "address": "0x2409952bc",
+        "mnemonic": "bl",
+        "operands": "0x2409a4280"
+      },
+      {
+        "address": "0x2409952c0",
+        "mnemonic": "fmul",
+        "operands": "s1, s11, s13"
+      },
+      {
+        "address": "0x2409952c4",
+        "mnemonic": "fmul",
+        "operands": "s0, s0, s10"
+      },
+      {
+        "address": "0x2409952c8",
+        "mnemonic": "fadd",
+        "operands": "s11, s1, s0"
+      },
+      {
+        "address": "0x2409952d8",
+        "mnemonic": "bl",
+        "operands": "0x2409a4260"
+      },
+      {
+        "address": "0x2409952f0",
+        "mnemonic": "bl",
+        "operands": "0x2409a4260"
+      },
+      {
+        "address": "0x2409952f4",
+        "mnemonic": "fmul",
+        "operands": "s1, s12, s13"
+      },
+      {
+        "address": "0x2409952f8",
+        "mnemonic": "fmul",
+        "operands": "s0, s0, s10"
+      },
+      {
+        "address": "0x2409952fc",
+        "mnemonic": "fadd",
+        "operands": "s12, s1, s0"
+      },
+      {
+        "address": "0x240995300",
+        "mnemonic": "fmul",
+        "operands": "s0, s8, s13"
+      },
+      {
+        "address": "0x240995304",
+        "mnemonic": "fmul",
+        "operands": "s1, s9, s10"
+      },
+      {
+        "address": "0x240995308",
+        "mnemonic": "fadd",
+        "operands": "s8, s1, s0"
+      },
+      {
+        "address": "0x240995314",
+        "mnemonic": "ldr",
+        "operands": "w1, [x8]"
+      },
+      {
+        "address": "0x24099532c",
+        "mnemonic": "blraa",
+        "operands": "x8, x17"
+      },
+      {
+        "address": "0x240995334",
+        "mnemonic": "ldur",
+        "operands": "s0, [x29, #-0x68]"
+      },
+      {
+        "address": "0x240995338",
+        "mnemonic": "mov.16b",
+        "operands": "v1, v11"
+      },
+      {
+        "address": "0x24099533c",
+        "mnemonic": "mov.16b",
+        "operands": "v2, v12"
+      },
+      {
+        "address": "0x240995340",
+        "mnemonic": "mov.16b",
+        "operands": "v3, v8"
+      },
+      {
+        "address": "0x240995344",
+        "mnemonic": "bl",
+        "operands": "0x2409a4210"
+      }
+    ],
+    "instructionCount": 131,
+    "sha256": "20b831c1e0c761aebe66934b1a655aa87d53741cea18896f411d8aa5b174f0c0",
+    "start": "0x240995160"
+  },
+  "designLibraryResolvedColorMixerAnalysisSchemaVersion": 1,
+  "exactLaw": {
+    "alphaEndpointRead": "stored linear opacity fields directly",
+    "componentArithmetic": "two separately rounded binary32 multiplies followed by one binary32 add; no fused multiply-add",
+    "fromWeight": "Float(1.0 - t), after one binary64 subtraction",
+    "outputConstruction": "public Color.Resolved.init(colorSpace: .sRGB, red:green:blue:opacity:)",
+    "rgbEndpointRead": "public Color.Resolved red/green/blue getters",
+    "storageEffect": "RGB is sRGB transfer decode of the interpolated public sRGB components; output storage remains linear RGB",
+    "toWeight": "Float(t)"
+  },
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "resolvedImportTargets": {
+    "0x2409a4120": {
+      "image": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+      "staticTarget": "0x22dce4590",
+      "symbol": "$s7SwiftUI5ColorV13RGBColorSpaceOMa"
+    },
+    "0x2409a4210": {
+      "image": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+      "staticTarget": "0x22dbdbcc0",
+      "symbol": "$s7SwiftUI5ColorV8ResolvedV10colorSpace3red5green4blue7opacityAeC08RGBColorF0O_S4ftcfC"
+    },
+    "0x2409a4250": {
+      "image": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+      "staticTarget": "0x22dbdc774",
+      "symbol": "$s7SwiftUI5ColorV8ResolvedV3redSfvg"
+    },
+    "0x2409a4260": {
+      "image": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+      "staticTarget": "0x22dbdc8c8",
+      "symbol": "$s7SwiftUI5ColorV8ResolvedV4blueSfvg"
+    },
+    "0x2409a4280": {
+      "image": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+      "staticTarget": "0x22dbdc820",
+      "symbol": "$s7SwiftUI5ColorV8ResolvedV5greenSfvg"
+    }
+  },
+  "rgbColorSpace": {
+    "case": "sRGB",
+    "runtimeEnumTag": 0
+  },
+  "tool": {
+    "compileCommands": {
+      "imports": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-std=c23",
+        "-arch",
+        "arm64e",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "probe_designlibrary_resolved_color_import_targets_local_macos_26_6_1.c",
+        "-o",
+        "resolved-color-import-targets-probe"
+      ],
+      "private": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-std=c23",
+        "-arch",
+        "arm64",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "probe_designlibrary_resolved_color_mixer_local_macos_26_6_1.c",
+        "invoke_designlibrary_resolved_color_mixer_arm64.S",
+        "-o",
+        "resolved-color-mixer-probe"
+      ],
+      "swift": [
+        "/usr/bin/xcrun",
+        "swiftc",
+        "-O",
+        "probe_swiftui_resolved_color_components_local_macos_26_6_1.swift",
+        "-o",
+        "resolved-color-components-probe"
+      ]
+    },
+    "importProbeSHA256": "f076cb3e40f136e787b1c4ae3365c3dd7a7e5e7c1583537b381baf823144b465",
+    "metadataAnalyzerSHA256": "a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff",
+    "privateBridgeSHA256": "c0279535a1627749e03ea71d4ee82e422d23566cd7c23dcadc08ab599ed6c07b",
+    "privateProbeSHA256": "9fc32ad50623e6eaab9b706741c658c71da2618d3aa4a9aaba4d320cd79e3f21",
+    "provenanceAnalyzerSHA256": "7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145",
+    "python": "3.9.6",
+    "source": "Analysis/analyze_designlibrary_resolved_color_mixer_local_macos_26_6_1.py",
+    "sourceSHA256": "40509f1210c45588791e39d989d6409fa7496b171a250919f1151ed0a4974ed5",
+    "swiftProbeSHA256": "770867a91881fbba8d5ae34802d71e9b5f9b63e4ba0e87ca7fe02c02b958ba09"
+  }
+}
