@@ -20392,18 +20392,6 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_ALLOCATION_PATH_ISOLATION"
                 ] == "1"
-            if dynamicUniformsRequested,
-               direction != .materialize
-            {
-                throw NSError(
-                    domain: "LiquidGlassTransitionProbe",
-                    code: 6,
-                    userInfo: [
-                        NSLocalizedDescriptionKey:
-                            "dynamic uniform capture requires "
-                            + "materialize direction",
-                    ])
-            }
             if matrixUniformBasisRequested,
                !dynamicUniformsRequested
             {
@@ -20770,9 +20758,11 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                                 + "unavailable after 5 seconds",
                         ])
                 }
-                if !dynamicUniformSnapshots.contains(
-                    where: { $0.sampleIndex == sampleCount - 1 }
-                ) {
+                if direction == .materialize,
+                   !dynamicUniformSnapshots.contains(
+                       where: { $0.sampleIndex == sampleCount - 1 }
+                   )
+                {
                     dynamicUniformSnapshots.append(
                         carrierEndpointSnapshot)
                 }
