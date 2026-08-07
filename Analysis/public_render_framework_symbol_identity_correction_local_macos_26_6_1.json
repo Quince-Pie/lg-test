@@ -1,0 +1,71 @@
+{
+  "classification": "post-failure structural correction of a stale transitive SwiftUICore UUID assertion; the failed trace contained zero authenticated intervals and zero provider calls, while both live framework symbols had exact current UUIDs, offsets, byte counts, and complete-code SHA-256 identities",
+  "correctedAtUTC": "2026-08-07",
+  "correction": {
+    "exactAcceptanceIdentity": [
+      "current module UUID and path",
+      "exact module-relative symbol start",
+      "exact symbol byte count",
+      "exact complete-code SHA-256"
+    ],
+    "functionPresentationRetainedInTrace": true,
+    "functionPresentationUsedAsBinaryIdentity": false,
+    "opticalPredictionsChanged": false,
+    "runtimeCaptureSelectionChanged": false,
+    "staleTransitiveUUIDAssertionRetained": false
+  },
+  "diagnostic": {
+    "artifactSHA256": "bde5a51c204914db1f6e05a80e581597dd4d9c022afba4846c80c98a668d4812",
+    "sourcePath": "Analysis/diagnose_public_render_framework_symbol_identity_lldb.py",
+    "sourceSHA256": "25b360ee6fc90811cb3843ff5b653d674f654976df0a1f87195dae1c9c252bd3",
+    "testPath": "Analysis/test_diagnose_public_render_framework_symbol_identity_lldb_source.py",
+    "testSHA256": "b7cea88ea65efd5fd970535e8242b5ca73af0b5b488b37b32ab7c26afbf3618f"
+  },
+  "failedCapture": {
+    "artifactDirectory": "local-case22-provider-public-render-interval-72a7359-run1",
+    "captureCommit": "72a73594907c50710182515661f367fbf0d85542",
+    "captureSessionPreflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "failureMessage": "case-22 provider wrapper SwiftUICore identity differs",
+    "failureStage": "bootstrap",
+    "finalCallCount": 0,
+    "finalEventCount": 0,
+    "finalIntervalCount": 0,
+    "opticalPredictionsEvaluated": false,
+    "traceSHA256": "26c111c0ffa7040dfb8cd56487510b3d6ed8629503a26b787b23e5121ad5853a",
+    "validationStatus": 2
+  },
+  "identityEvidence": {
+    "allRuntimeFrameworkIdentityFieldsExact": true,
+    "designLibrary": {
+      "currentUUID": "1E980802-69F5-3E69-89EF-50088297FCF5",
+      "pathSuffix": "/DesignLibrary",
+      "provider": {
+        "codeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+        "functionPresentation": "___lldb_unnamed_symbol_2409180b4",
+        "moduleOffset": 749748,
+        "symbolByteCount": 984
+      }
+    },
+    "onlyTransitiveHelperUUIDDiffered": true,
+    "swiftUICore": {
+      "currentUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+      "pathSuffix": "/SwiftUICore",
+      "staleTransitiveHelperUUID": "A8FC6D2D-DFE9-3557-A734-7F2B231F8C97",
+      "wrapper": {
+        "codeSHA256": "922147f9c8b9cecdc273065e6677312965449069e4cf076e65daa1aba0a9d0ee",
+        "functionPresentation": "SwiftUI._AnyCAFilterProvider.sdfBackdropMargin.getter : CoreGraphics.CGFloat",
+        "moduleOffset": 7781460,
+        "symbolByteCount": 116
+      }
+    }
+  },
+  "productAuthority": {
+    "cropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "publicProviderOpticalTransferEstablished": false,
+    "shaderChangeAuthorized": false
+  },
+  "publicRenderFrameworkSymbolIdentityCorrectionSchemaVersion": 1
+}

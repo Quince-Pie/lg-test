@@ -36,6 +36,22 @@ class PublicRenderIntervalCaptureSourceTests(unittest.TestCase):
         self.assertIn('record.get("codeSHA256") != digest', SOURCE)
         self.assertIn('record.get("symbolByteCount") != byte_count', SOURCE)
 
+    def test_framework_identity_does_not_inherit_a_stale_transitive_uuid(self) -> None:
+        self.assertIn("def _capture_framework_symbol(", SOURCE)
+        self.assertNotIn("field._capture_wrapper(process, swift_module)", SOURCE)
+        self.assertNotIn("field._capture_provider(process, design_module)", SOURCE)
+        for field in (
+            "field.WRAPPER_MODULE_OFFSET",
+            "field.WRAPPER_BYTE_COUNT",
+            "field.WRAPPER_CODE_SHA256",
+            "field.PROVIDER_MODULE_OFFSET",
+            "field.PROVIDER_BYTE_COUNT",
+            "field.PROVIDER_CODE_SHA256",
+        ):
+            self.assertIn(field, SOURCE)
+        self.assertIn('record_module.get("loadAddress") != module["loadAddress"]', SOURCE)
+        self.assertIn('.endswith(path_suffix)', SOURCE)
+
     def test_callbacks_are_bound_to_this_directly_imported_module(self) -> None:
         self.assertIn(
             'breakpoint.SetScriptCallbackFunction(__name__ + "." + callback)',

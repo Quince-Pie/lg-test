@@ -20,36 +20,44 @@
   },
   "case22ProviderPublicRenderIntervalTransferLocalMacOSPreregistrationSchemaVersion": 1,
   "classification": "prospectively frozen same-profile blind transfer of the exact public carrier-render interval to case-22 provider objects; the unchanged application binary, direct-call boundary, 32 sample order, four-word selector, all 18 opened loaded-field predictions, endpoint multiplicity, and authority limits are fixed before dispatch",
+  "frameworkSymbolIdentityOperationalAmendment": {
+    "failedCaptureFinalCallCount": 0,
+    "failedCaptureFinalIntervalCount": 0,
+    "opticalPredictionsEvaluatedBeforeCorrection": false,
+    "path": "Analysis/public_render_framework_symbol_identity_correction_local_macos_26_6_1.json",
+    "prospectiveOpticalPredictionsUnchanged": true,
+    "sha256": "1771020d81ddde0926b23246666e50dd33e4e28819312cd3074e0081f6dfff63"
+  },
   "frozenAtUTC": "2026-08-06",
   "frozenImplementation": {
     "files": [
       {
         "path": "Analysis/capture_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_lldb.py",
-        "sha256": "b709c9130d6b0d55e3fac3ce516c6d125edfe20f08a16d610822e41d70890812"
+        "sha256": "a4aeb03e77b0a16b2f0013e07bc5d7ece75189a945aeb759a6b8835318310bdb"
       },
       {
         "path": "Analysis/validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.py",
-        "sha256": "7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6"
+        "sha256": "1f7ff6bd50b67404dcc86db4e73990b7247bdc52198c16923034764eef18781d"
       },
       {
         "path": "Analysis/run_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.sh",
-        "sha256": "e44fd57711d3ce055121505e62d5d3cada237f7d7f4852146d95842fe15b0549"
+        "sha256": "d5074f47a7c40ac8b2171fb4eef6d74cc3d618e14fe1ca15b526774ddc5ffd8e"
       },
       {
         "path": "Analysis/test_capture_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_lldb_source.py",
-        "sha256": "7600e38b3bc0d6d189ea535ae36c69efd945a1f1109c7056129753583c1be002"
+        "sha256": "9b7327d00261549cff4efc8846557855e80b4b1de0504ff1e7f93ddbd4647103"
       },
       {
         "path": "Analysis/test_validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.py",
-        "sha256": "d19722f88435efa6f3c3014fe7955f35740aa4f640b2b03999dff5658b7aa1d4"
+        "sha256": "7e557e122785dfefce8c17f6224c88bfcdc42e5e1462987b4e5d65bdcb79e28d"
       },
       {
         "path": "Analysis/test_run_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_source.py",
-        "sha256": "f0b484387848f06ccb28fff1f4c6c39f5dbfe26c938ff2a022658376690d6a0a"
+        "sha256": "3a2b954dae4d2cfbdd401c0a46ebb6dd268f1edd9082442310f2763eaee08d6e"
       },
       {
         "path": "Analysis/test_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.py",
-        "sha256": "cefd171e1733211c7f163f518109b073eb18a20577d6ef28cd565d21d29a139a"
+        "sha256": "2bdccb16aab11cd9989081bfd0f026eb27ac76e5844d3e5f4cb75850d904176f"
       },
       {
         "path": "Analysis/check_local_retina_capture_session_v2.swift",
@@ -70,6 +78,18 @@
       {
         "path": "Analysis/public_render_main_symbol_presentation_correction_local_macos_26_6_1.json",
         "sha256": "0caa2811f60cbc72b0895ed4367d14b117c695ba3075b5f956464459ac24c474"
+      },
+      {
+        "path": "Analysis/diagnose_public_render_framework_symbol_identity_lldb.py",
+        "sha256": "25b360ee6fc90811cb3843ff5b653d674f654976df0a1f87195dae1c9c252bd3"
+      },
+      {
+        "path": "Analysis/test_diagnose_public_render_framework_symbol_identity_lldb_source.py",
+        "sha256": "b7cea88ea65efd5fd970535e8242b5ca73af0b5b488b37b32ab7c26afbf3618f"
+      },
+      {
+        "path": "Analysis/public_render_framework_symbol_identity_correction_local_macos_26_6_1.json",
+        "sha256": "1771020d81ddde0926b23246666e50dd33e4e28819312cd3074e0081f6dfff63"
       },
       {
         "path": "Analysis/analyze_backdrop_margin_case22_provider_public_timeline_join.py",

@@ -32,6 +32,12 @@ SYMBOL_PRESENTATION_CORRECTION_PATH = (
 SYMBOL_PRESENTATION_CORRECTION_SHA256 = (
     "0caa2811f60cbc72b0895ed4367d14b117c695ba3075b5f956464459ac24c474"
 )
+FRAMEWORK_IDENTITY_CORRECTION_PATH = (
+    "Analysis/public_render_framework_symbol_identity_correction_local_macos_26_6_1.json"
+)
+FRAMEWORK_IDENTITY_CORRECTION_SHA256 = (
+    "1771020d81ddde0926b23246666e50dd33e4e28819312cd3074e0081f6dfff63"
+)
 MAIN_UUID = "F8B0B6E3-3270-3C94-817F-B4914852D04C"
 BACKGROUND_MANGLED = (
     "$s4main35transitionBackgroundUniformEvidence029_12232F587A4C5CD8B1EEDF696793G2FCLL"
@@ -200,6 +206,58 @@ def validate_preregistration(value: Any, repository_root: Path) -> Mapping[str, 
         and correction_contract.get("runtimeCaptureSelectionChanged") is False,
         "symbol-presentation correction changed capture semantics",
     )
+    framework_amendment = mapping(
+        preregistration.get("frameworkSymbolIdentityOperationalAmendment"),
+        "framework-identity operational amendment",
+    )
+    require(
+        framework_amendment
+        == {
+            "failedCaptureFinalCallCount": 0,
+            "failedCaptureFinalIntervalCount": 0,
+            "opticalPredictionsEvaluatedBeforeCorrection": False,
+            "path": FRAMEWORK_IDENTITY_CORRECTION_PATH,
+            "prospectiveOpticalPredictionsUnchanged": True,
+            "sha256": FRAMEWORK_IDENTITY_CORRECTION_SHA256,
+        },
+        "framework-identity operational amendment differs",
+    )
+    framework_correction_path = repository_root / FRAMEWORK_IDENTITY_CORRECTION_PATH
+    require(
+        sha256(framework_correction_path) == FRAMEWORK_IDENTITY_CORRECTION_SHA256,
+        "framework-identity correction hash differs",
+    )
+    framework_correction = mapping(
+        load_json(framework_correction_path, "framework-identity correction"),
+        "framework-identity correction",
+    )
+    require(
+        framework_correction.get(
+            "publicRenderFrameworkSymbolIdentityCorrectionSchemaVersion"
+        )
+        == 1,
+        "framework-identity correction schema differs",
+    )
+    failed_framework_capture = mapping(
+        framework_correction.get("failedCapture"),
+        "failed framework-identity capture",
+    )
+    require(
+        failed_framework_capture.get("finalIntervalCount") == 0
+        and failed_framework_capture.get("finalCallCount") == 0
+        and failed_framework_capture.get("opticalPredictionsEvaluated") is False,
+        "failed framework-identity capture crossed an optical boundary",
+    )
+    framework_contract = mapping(
+        framework_correction.get("correction"),
+        "framework-identity correction contract",
+    )
+    require(
+        framework_contract.get("staleTransitiveUUIDAssertionRetained") is False
+        and framework_contract.get("opticalPredictionsChanged") is False
+        and framework_contract.get("runtimeCaptureSelectionChanged") is False,
+        "framework-identity correction changed capture semantics",
+    )
     profile = mapping(preregistration.get("profile"), "preregistered profile")
     require(
         profile
@@ -354,6 +412,61 @@ def validate_main_symbol(
     return record
 
 
+def validate_framework_symbol(
+    value: Any,
+    module: Mapping[str, Any],
+    contract: Mapping[str, Any],
+    expected_uuid: str,
+    path_suffix: str,
+    label: str,
+) -> Mapping[str, Any]:
+    record = mapping(value, label)
+    record_module = mapping(record.get("module"), f"{label} module")
+    payload = bytes.fromhex(str(record.get("hex", "")))
+    require(module.get("valid") is True, f"{label} module is invalid")
+    require(module.get("uuid") == expected_uuid, f"{label} module UUID differs")
+    require(
+        isinstance(module.get("loadAddress"), int) and module["loadAddress"] > 0,
+        f"{label} module load address differs",
+    )
+    require(
+        str(module.get("path", "")).endswith(path_suffix),
+        f"{label} module path differs",
+    )
+    require(
+        record_module.get("uuid") == expected_uuid
+        and record_module.get("loadAddress") == module.get("loadAddress")
+        and str(record_module.get("path", "")).endswith(path_suffix),
+        f"{label} record module differs",
+    )
+    require(
+        isinstance(record.get("function"), str) and bool(record["function"]),
+        f"{label} function presentation is absent",
+    )
+    require(
+        record.get("symbolStart")
+        == module.get("loadAddress") + int(contract["moduleOffset"]),
+        f"{label} module offset differs",
+    )
+    require(
+        record.get("symbolByteCount") == contract["byteCount"],
+        f"{label} byte count differs",
+    )
+    require(
+        len(payload) == contract["byteCount"],
+        f"{label} code payload length differs",
+    )
+    require(
+        record.get("codeSHA256") == contract["codeSHA256"],
+        f"{label} recorded code hash differs",
+    )
+    require(
+        hashlib.sha256(payload).hexdigest() == contract["codeSHA256"],
+        f"{label} code hash differs",
+    )
+    return record
+
+
 def validate_event(
     events: Sequence[Any], index: Any, kind: str, record_index: int, label: str
 ) -> None:
@@ -414,6 +527,8 @@ def validate_trace(value: Any) -> tuple[dict[str, Any], list[Mapping[str, Any]]]
         "trace module set differs",
     )
     main_module = mapping(modules.get("main"), "main module")
+    swift_module = mapping(modules.get("swiftUICore"), "SwiftUICore module")
+    design_module = mapping(modules.get("designLibrary"), "DesignLibrary module")
     require(main_module.get("valid") is True, "main module is invalid")
     require(main_module.get("uuid") == MAIN_UUID, "main module UUID differs")
     require(
@@ -457,16 +572,20 @@ def validate_trace(value: Any) -> tuple[dict[str, Any], list[Mapping[str, Any]]]
         == render["symbolStart"],
         "render call target differs",
     )
-    wrapper = allocation.validate_symbol(
+    wrapper = validate_framework_symbol(
         trace.get("wrapper"),
+        swift_module,
         allocation.EXPECTED_SYMBOLS["wrapper"],
         allocation.SWIFTUICORE_UUID,
+        "/SwiftUICore",
         "wrapper",
     )
-    provider = allocation.validate_symbol(
+    provider = validate_framework_symbol(
         trace.get("provider"),
+        design_module,
         allocation.EXPECTED_SYMBOLS["provider"],
         allocation.DESIGN_LIBRARY_UUID,
+        "/DesignLibrary",
         "provider",
     )
     breakpoints = mapping(trace.get("breakpoints"), "trace breakpoints")

@@ -36,6 +36,15 @@ class PublicRenderIntervalValidatorTests(unittest.TestCase):
         self.assertIn('f"{label} function presentation is absent"', SOURCE)
         self.assertIn('record.get("codeSHA256") == digest', SOURCE)
 
+    def test_framework_symbols_use_current_exact_module_identities(self) -> None:
+        self.assertIn("def validate_framework_symbol(", SOURCE)
+        self.assertNotIn("wrapper = allocation.validate_symbol(", SOURCE)
+        self.assertNotIn("provider = allocation.validate_symbol(", SOURCE)
+        self.assertIn('"/SwiftUICore"', SOURCE)
+        self.assertIn('"/DesignLibrary"', SOURCE)
+        self.assertIn('record_module.get("loadAddress") == module.get("loadAddress")', SOURCE)
+        self.assertIn('.endswith(path_suffix)', SOURCE)
+
     def test_direct_branch_target_is_independently_decoded(self) -> None:
         call_address = 0x100000000 + validator.BACKGROUND_MODULE_OFFSET + 0x1000
         expected = 0x100000000 + validator.RENDER_MODULE_OFFSET

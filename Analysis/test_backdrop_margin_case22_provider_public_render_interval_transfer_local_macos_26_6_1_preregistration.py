@@ -76,6 +76,13 @@ class PublicRenderIntervalTransferPreregistrationTests(unittest.TestCase):
         self.assertFalse(amendment["opticalPredictionsEvaluatedBeforeCorrection"])
         self.assertTrue(amendment["prospectiveOpticalPredictionsUnchanged"])
 
+    def test_framework_identity_correction_saw_no_optical_intervals(self) -> None:
+        amendment = VALUE["frameworkSymbolIdentityOperationalAmendment"]
+        self.assertEqual(amendment["failedCaptureFinalIntervalCount"], 0)
+        self.assertEqual(amendment["failedCaptureFinalCallCount"], 0)
+        self.assertFalse(amendment["opticalPredictionsEvaluatedBeforeCorrection"])
+        self.assertTrue(amendment["prospectiveOpticalPredictionsUnchanged"])
+
     def test_product_authority_remains_narrow_even_on_pass(self) -> None:
         authority = VALUE["productAuthority"]
         self.assertTrue(authority["authenticatedPerRenderCallbackIntervalJoinMayPass"])

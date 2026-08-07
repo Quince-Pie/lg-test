@@ -8453,13 +8453,13 @@ The prospective contract freezes, before dispatch:
 The preregistration is
 `Analysis/backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1_preregistration.json`,
 SHA-256
-`dc7b05fcc587549dce2520e3d3e39d22ac3a0fa9f57e859a46145b2c11b91a04`.
+`1f9e756a20e563b11018085e74520763d67f84df43209fdeb5e2f0a55a8aa9c4`.
 The capture source SHA-256 is
-`b709c9130d6b0d55e3fac3ce516c6d125edfe20f08a16d610822e41d70890812`,
+`a4aeb03e77b0a16b2f0013e07bc5d7ece75189a945aeb759a6b8835318310bdb`,
 the validator SHA-256 is
-`7e9784e10e8f052003075b1926d971edf46235b11f2f938b14bbe65b21b6cea6`,
+`1f7ff6bd50b67404dcc86db4e73990b7247bdc52198c16923034764eef18781d`,
 and the native runner SHA-256 is
-`e44fd57711d3ce055121505e62d5d3cada237f7d7f4852146d95842fe15b0549`.
+`d5074f47a7c40ac8b2171fb4eef6d74cc3d618e14fe1ca15b526774ddc5ffd8e`.
 The runner uses Apple's Command Line Tools directly and contains no Nix store
 path. The validator independently decodes the frozen ARM64 `BL`, requires the
 exact five-breakpoint map, and proves that every captured provider entry and
@@ -8497,6 +8497,31 @@ SHA-256
 The failed trace had `finalIntervalCount: 0`, `finalCallCount: 0`, and no
 optical prediction was evaluated, so no prospective value or selection rule
 changed.
+
+The replacement run at commit
+`72a73594907c50710182515661f367fbf0d85542` authenticated both main
+functions and the direct call edge, then stopped at the framework identity
+gate before interval one. It likewise retained zero intervals, zero provider
+calls, and no optical value. An exact one-shot diagnostic proved that the live
+SwiftUICore wrapper still has UUID
+`99606D45-C40A-3C69-AE51-5F0C4E32E531`, module offset `0x76bc54`, 116
+bytes, and complete-code SHA-256
+`922147f9c8b9cecdc273065e6677312965449069e4cf076e65daa1aba0a9d0ee`;
+the live DesignLibrary provider still has UUID
+`1E980802-69F5-3E69-89EF-50088297FCF5`, module offset `0xb70b4`, 984
+bytes, and complete-code SHA-256
+`a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b`.
+The rejection came from a transitive helper's obsolete SwiftUICore UUID, not
+from either live symbol. The public capture and validator now authenticate
+both framework functions independently by current module UUID and path,
+resolved load address, exact offset, exact byte count, and full code bytes;
+their human-readable symbol presentations remain nonempty diagnostics only.
+The immutable correction is
+`Analysis/public_render_framework_symbol_identity_correction_local_macos_26_6_1.json`,
+SHA-256
+`1771020d81ddde0926b23246666e50dd33e4e28819312cd3074e0081f6dfff63`.
+Because the failed run crossed no render interval and evaluated no optical
+prediction, the frozen predictions and acceptance criteria remain unchanged.
 
 ### Native `BackgroundFilter` metadata and constructor boundary
 

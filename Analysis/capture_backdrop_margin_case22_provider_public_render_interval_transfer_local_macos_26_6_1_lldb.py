@@ -179,6 +179,43 @@ def _capture_main_symbol(process, module, offset, byte_count, digest, label):
     return record
 
 
+def _capture_framework_symbol(
+    process,
+    module,
+    expected_uuid,
+    path_suffix,
+    offset,
+    byte_count,
+    digest,
+    label,
+):
+    if (
+        module.get("uuid") != expected_uuid
+        or not str(module.get("path", "")).endswith(path_suffix)
+        or not isinstance(module.get("loadAddress"), int)
+        or module["loadAddress"] <= 0
+    ):
+        raise RuntimeError(label + " module identity differs")
+    record = case22._capture_symbol(
+        process,
+        module["loadAddress"] + offset,
+        label,
+    )
+    record_module = record.get("module", {})
+    if (
+        not isinstance(record.get("function"), str)
+        or not record["function"]
+        or record.get("symbolStart") != module["loadAddress"] + offset
+        or record.get("symbolByteCount") != byte_count
+        or record.get("codeSHA256") != digest
+        or record_module.get("uuid") != expected_uuid
+        or record_module.get("loadAddress") != module["loadAddress"]
+        or not str(record_module.get("path", "")).endswith(path_suffix)
+    ):
+        raise RuntimeError(label + " exact identity differs")
+    return record
+
+
 def _decode_direct_branch_target(instruction_raw, instruction_address):
     if len(instruction_raw) != 4:
         raise RuntimeError("render call instruction width differs")
@@ -236,8 +273,26 @@ def _install_capture(frame):
         raise RuntimeError("render direct-call instruction differs")
     if _decode_direct_branch_target(call_raw, call_address) != render["symbolStart"]:
         raise RuntimeError("render direct-call target differs")
-    wrapper = field._capture_wrapper(process, swift_module)
-    provider = field._capture_provider(process, design_module)
+    wrapper = _capture_framework_symbol(
+        process,
+        swift_module,
+        SWIFTUICORE_UUID,
+        "/SwiftUICore",
+        field.WRAPPER_MODULE_OFFSET,
+        field.WRAPPER_BYTE_COUNT,
+        field.WRAPPER_CODE_SHA256,
+        "case-22 provider wrapper",
+    )
+    provider = _capture_framework_symbol(
+        process,
+        design_module,
+        DESIGN_LIBRARY_UUID,
+        "/DesignLibrary",
+        field.PROVIDER_MODULE_OFFSET,
+        field.PROVIDER_BYTE_COUNT,
+        field.PROVIDER_CODE_SHA256,
+        "case-22 field-matrix provider",
+    )
 
     render_call = _install_exact_breakpoint(
         target,
