@@ -11130,3 +11130,19 @@ Even a dark holdout pass closes only the allocation-margin producer and clear
 presentation-removal boundary. Selected-region/origin allocation, physical
 Retina compositor/color transfer, and an independent zero-unequal-byte Walle
 frame remain mandatory before parity.
+
+The clear/dark circle-459 holdout at commit `0e39ce7` separates those two
+hypotheses. It completes all 33 samples with 32 public records and 1,172
+writer events. Every one of 149 authenticated producer returns and setter
+inputs is binary64 positive zero, all 269 copy stores are binary32 positive
+zero, and all 288 bounds consumers read binary32 positive zero. Reapplying the
+unchanged, already frozen v6 composition validator yields 32 exact object
+chains and a prospective pass. Clear allocation-margin composition is
+therefore closed for this holdout.
+
+The same capture prospectively rejects universal clear-backdrop removal: dark
+appearance retains the presentation backdrop and all 288 bounds consumers,
+whereas the two light calibration captures removed it at sample 30. Clear
+presentation lifetime is appearance-dependent; the general lifetime policy is
+not yet established. The immutable split result is
+`Analysis/backdrop_margin_writer_clear_dark_0e39ce7_result.json`.
