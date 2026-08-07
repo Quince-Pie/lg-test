@@ -1,0 +1,137 @@
+{
+  "variableBlurSelectedRegionOriginHoldoutPreregistrationSchemaVersion": 1,
+  "classification": "prospective runtime-unseen circle-500 direct-Retina transfer of the instruction-derived selected-region origin, desired extent, and final 64-pixel Metal allocation; no optical, physical-output, Walle-frame, or Liquid Glass parity authority follows by itself",
+  "frozenAtUtc": "2026-08-07T22:19:37Z",
+  "frozenFromCommit": "d618c20bd808865b9673b813a8ae530073287509",
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "execution": {
+    "host": "quince@10.0.41.19",
+    "repository": "/Users/quince/lg-test",
+    "architecture": "arm64",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "nativeToolchain": "Apple Command Line Tools Swift and LLDB",
+    "nativeEnvironmentContainsNixStorePath": false,
+    "postCaptureAnalysis": "lg-test nix develop Python 3.14.6",
+    "githubActionsUsed": false,
+    "physicalRetinaRequired": true
+  },
+  "holdout": {
+    "geometry": "circle-500-center",
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "materialize",
+    "backingScaleFactor": 2,
+    "dynamicSampleIndices": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+    "runtimeEvidenceMatchCountAtFreeze": 0,
+    "geometryNamePresentOnlyAsStableBinaryInputAtFreeze": true,
+    "targetOutputsOpenedAtFreeze": false
+  },
+  "selection": {
+    "helperFunction": "_ZN2CA3OGL32compute_variable_blur_parametersEjjRKNS_6BoundsEff",
+    "helperCodeByteCount": 1124,
+    "helperCodeSHA256": "a00a4e174475ce1e6baf29b7dfea28528332f4a1f8bc0bc0e17becdeba98ee8c",
+    "helperOutputCompleteOffset": 880,
+    "requiredLiveAncestorSubstring": "CA::OGL::capture_backdrop",
+    "resultValuesUsedForSelection": false,
+    "cropValuesUsedForSelection": false,
+    "imageOrPixelUsedForSelection": false,
+    "chronologyRule": "Require exactly 32 structurally selected helper calls and zip them in execution order to timeline sample indices 1 through 32; no value-based matching, ordinal fallback, or dropped record is allowed."
+  },
+  "frozenArithmetic": {
+    "publicRadius1": "binary32(0.5 * max(2 * inputBlurRadius, inputBleedBlurRadius) * capturedBackdropScale)",
+    "scaledRadius": "binary32(binary32(radius1) * binary32(1.6))",
+    "levelCount": "min(maximumLevelCount, max(ceil(binary32(log2f(scaledRadius))), 0) + 1), with nonzero requested level 1 promoted to 2",
+    "alignmentExponent": "min(levelCount, 7)",
+    "alignmentScale": "2 ** alignmentExponent",
+    "dodExpansion": "binary64 radius1 multiplied by exact 2.8 for the lower edge and fused with exact -5.6 for the extent increment",
+    "integerOrigin": "alignmentScale * floor(expandedLower / alignmentScale)",
+    "desiredUpper": "alignmentScale * ceil(expandedUpper / alignmentScale)",
+    "desiredExtent": "desiredUpper - integerOrigin",
+    "metalAllocationExtent": "64 * ceil(desiredExtent / 64)",
+    "copyBaseIdentity": "integerOrigin == producerCropOrigin + signed copy-base textureCoordinateBase",
+    "tolerance": "bitwise binary32 plus exact signed-integer equality; no epsilon or image metric"
+  },
+  "requiredGate": {
+    "helperRecordCount": 32,
+    "originComponentCount": 64,
+    "originMismatchedComponents": 0,
+    "desiredExtentComponentCount": 64,
+    "desiredExtentMismatchedComponents": 0,
+    "allocationExtentComponentCount": 64,
+    "allocationExtentMismatchedComponents": 0,
+    "radiusBinary32Count": 32,
+    "radiusBinary32Mismatches": 0,
+    "helperInputEqualsProducerCropAndClamp": true,
+    "helperOriginEqualsProducerCropPlusCopyBase": true,
+    "helperDesiredExtentAlignsToMetalAllocationAt64": true,
+    "helperMipCountEqualsDestinationMipCount": true
+  },
+  "openedCalibration": {
+    "geometry": "circle-499-center",
+    "traceExternalPath": "../artifacts/local-variable-blur-parameter-calibration-circle499-f6293cf/variable-blur-parameter-trace.json",
+    "traceSHA256": "05763deca2bb68d2105a6f42da74c780cb35ead1ef9a78bb2ed9702759acbfec",
+    "timelineExternalPath": "../artifacts/local-variable-blur-parameter-calibration-circle499-f6293cf/transition-timeline.json",
+    "timelineSHA256": "cc56633adc0ce56bba73a953748ceb0160a8373cfe23fd9c6aba8d20ad4b92b2",
+    "resultPath": "Analysis/variable_blur_selected_region_origin_circle499_calibration_result.json",
+    "resultSHA256": "d07d802c6b156431818138532299a46ecc7f8fcd53a254c3d19543fa84d2d0f0",
+    "sampleCount": 32,
+    "originMismatchedComponents": 0,
+    "desiredExtentMismatchedComponents": 0,
+    "allocationExtentMismatchedComponents": 0,
+    "radiusBinary32Mismatches": 0,
+    "observedAlignmentScales": [16, 32, 64, 128],
+    "desired736ToAllocated768StateCount": 2,
+    "selectedRegionOriginTransferPassed": false
+  },
+  "frozenFiles": [
+    {
+      "path": "Analysis/capture_variable_blur_parameter_trace_lldb.py",
+      "sha256": "bd207ce8bd9407a2e688dcdcd511a2772fd3a90a96f485228a1446a40c5fd94e"
+    },
+    {
+      "path": "Analysis/test_capture_variable_blur_parameter_trace_lldb_source.py",
+      "sha256": "c529d1a544420178b88f668089e291e459b2423a4fbff9b816fdaa2e6937b1bc"
+    },
+    {
+      "path": "Analysis/validate_variable_blur_selected_region_origin.py",
+      "sha256": "781eca4d9a716c77f28315c181fd53f6466df7a34d805be2fedf3549b1b28600"
+    },
+    {
+      "path": "Analysis/test_validate_variable_blur_selected_region_origin.py",
+      "sha256": "5a45d6ffaf278c3c96dd09c69d516ebd3286f4d1784c7ea7288f6d610ced2eb5"
+    },
+    {
+      "path": "Analysis/variable_blur_selected_region_origin_circle499_calibration_result.json",
+      "sha256": "d07d802c6b156431818138532299a46ecc7f8fcd53a254c3d19543fa84d2d0f0"
+    },
+    {
+      "path": "Analysis/check_local_retina_capture_session_v2.swift",
+      "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+    }
+  ],
+  "binary": {
+    "path": "glass-transition-introspect-721293f",
+    "sha256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd"
+  },
+  "outerWalleIntegrity": {
+    "productionShaderPath": "../shaders/frag.glsl",
+    "productionShaderSHA256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+    "developmentFlakePath": "../flake.nix",
+    "developmentFlakeSHA256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+    "shaderQualityChangeAuthorized": false
+  },
+  "sealedConclusion": {
+    "candidateFrozenBeforeTargetOutput": true,
+    "selectedRegionOriginTransferPassed": false,
+    "selectedRegionAllocationTransferPassed": false,
+    "appearanceDependentPresentationLifetimePassed": false,
+    "capturedInputOpticalTransferPassed": false,
+    "temporalMeshSourceMipTransferPassed": false,
+    "physicalRetinaOutputTransferPassed": false,
+    "independentWalleZeroByteParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
