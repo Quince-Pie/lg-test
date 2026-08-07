@@ -31,11 +31,11 @@
       },
       {
         "path": "Analysis/validate_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1.py",
-        "sha256": "29ae54666b9ea0c2949ead946d1ccda578a880c8b269d1a67f6d5e83aab248d8"
+        "sha256": "3672f7a53ad50500fe97e20d60316be6caf83aa73ac278669abcefb95aa84512"
       },
       {
         "path": "Analysis/run_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1.sh",
-        "sha256": "baaf745aa69917b4b320f667c00452754e4469e7f626639c17c1421e5c2c332b"
+        "sha256": "bd922a0bb436eba26eb92f786025d4a037930600dd4a7ec9cf74f33842d1e2fe"
       },
       {
         "path": "Analysis/test_capture_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1_lldb_source.py",
@@ -43,19 +43,23 @@
       },
       {
         "path": "Analysis/test_validate_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1.py",
-        "sha256": "dafb02548960f2b245769cf32b19b3b11042e7b3a84d4816d66ead24efdbcedf"
+        "sha256": "45c884f918479eea54da9f23eda8dfec4a43159cea4c2b52a115dd2ebbfb775f"
       },
       {
         "path": "Analysis/test_run_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1_source.py",
-        "sha256": "6753a3f8841a1f83f94c180af5c8ea3fff451f83e4f20be4b0e37ece78c6d9d8"
+        "sha256": "a278b23ef2e4a1eac7e29bd64ee176898b1832492e62e313cb74e9e285fdca57"
       },
       {
         "path": "Analysis/test_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1_preregistration.py",
-        "sha256": "1964fe513f82161f3bcddbc7efe2f637bc834955417a62ed4aa5c92bb829b237"
+        "sha256": "23f8d774c8953eb92267c048f908e99d4480529e32319d0f50e491de18e92935"
       },
       {
         "path": "Analysis/backdrop_margin_case22_provider_public_render_interval_d18aca7_failure_result.json",
         "sha256": "01daf6b9e31cb0eacf45a250a2df605de7b10063a0b8668e422347b0db139e06"
+      },
+      {
+        "path": "Analysis/backdrop_margin_case22_provider_timeline_marker_ad2c061_transport_failure_result.json",
+        "sha256": "eb48611b6c7b62bac21bb133414eacd0992992b7706bcfb71bbdfafca76362e2"
       },
       {
         "path": "Analysis/check_local_retina_capture_session_v2.swift",
@@ -201,5 +205,14 @@
     "providerCaptureDisabledAtMarkerIndex": 32,
     "providerCaptureEnabledAfterMarkerIndex": 0,
     "sampleIndexRule": "zero-based marker ordinal"
+  },
+  "transportOperationalAmendment": {
+    "failedCaptureFinalProviderCallCount": 0,
+    "failedCaptureFinalTimelineMarkerCount": 0,
+    "opticalPredictionsEvaluatedBeforeCorrection": false,
+    "path": "Analysis/backdrop_margin_case22_provider_timeline_marker_ad2c061_transport_failure_result.json",
+    "prospectiveOpticalPredictionsUnchanged": true,
+    "providerWindowUnchanged": true,
+    "sha256": "eb48611b6c7b62bac21bb133414eacd0992992b7706bcfb71bbdfafca76362e2"
   }
 }

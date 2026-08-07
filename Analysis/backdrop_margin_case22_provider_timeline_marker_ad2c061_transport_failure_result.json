@@ -1,0 +1,38 @@
+{
+  "artifact": {
+    "captureContextSHA256": "0dce40196f8c4a83b3054635ad55576b30aeac6c168fa52794cf423a0cab4801",
+    "captureSessionPreflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "directory": "local-case22-provider-timeline-marker-transfer-ad2c061-run1",
+    "lldbLogSHA256": "dadad6111e17d0f5090beb1141daa4a481cf979f42698c93a097f52200cdcda9",
+    "timelineSHA256": "df7dba4a2f4f2dab7c61728407bcff30a76faf4759e9a720e3e61992499f45c2",
+    "traceSHA256": "dab2ec93baedca9cb1d1e2220e9e714db86fd8d4513f97f45fd1d33f5c48aa6f",
+    "validationStderrSHA256": "79529cc5584ea516d426abc514eb2759a75626f73b0af827e45605669754fc53"
+  },
+  "capture": {
+    "captureCommit": "ad2c06184bc80fa4a3f5bfb64925d372e3e30760",
+    "finalProviderCallCount": 0,
+    "finalTimelineMarkerCount": 0,
+    "lldbExitStatus": 0,
+    "opticalPredictionsEvaluated": false,
+    "validationExitStatus": 2
+  },
+  "classification": "pre-capture transport failure: the inherited provider adapter was imported before process launch, so SwiftUICore was not yet present and no breakpoint was armed",
+  "correction": {
+    "applicationTimelineCodeExecutedBeforeCorrectedImport": false,
+    "captureSelectionChanged": false,
+    "importAtExactMainEntryAfterDyldLoad": true,
+    "lldbCommandSourceStopsOnImportError": true,
+    "opticalPredictionsChanged": false,
+    "providerWindowChanged": false
+  },
+  "failure": {
+    "message": "SwiftUICore module identity differs",
+    "stage": "LLDB module import before process launch"
+  },
+  "productAuthority": {
+    "authenticatedMarkerBatchTemporalJoinEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderAuthorized": false
+  },
+  "providerTimelineMarkerTransportFailureResultSchemaVersion": 1
+}

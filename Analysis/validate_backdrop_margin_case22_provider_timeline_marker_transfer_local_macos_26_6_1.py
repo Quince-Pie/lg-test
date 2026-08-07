@@ -34,6 +34,13 @@ FAILURE_RESULT_PATH = (
     "Analysis/backdrop_margin_case22_provider_public_render_interval_"
     "d18aca7_failure_result.json"
 )
+TRANSPORT_FAILURE_RESULT_SHA256 = (
+    "eb48611b6c7b62bac21bb133414eacd0992992b7706bcfb71bbdfafca76362e2"
+)
+TRANSPORT_FAILURE_RESULT_PATH = (
+    "Analysis/backdrop_margin_case22_provider_timeline_marker_"
+    "ad2c061_transport_failure_result.json"
+)
 MAIN_UUID = "F8B0B6E3-3270-3C94-817F-B4914852D04C"
 MAIN_PATH_SUFFIX = "/glass-transition-introspect-721293f"
 TIMELINE_MARKER_MODULE_OFFSET = 0x8BE38
@@ -111,6 +118,60 @@ def validate_preregistration(
     require(
         sha256(repository_root / FAILURE_RESULT_PATH) == EXPECTED_FAILURE_RESULT_SHA256,
         "rejected predecessor result hash differs",
+    )
+    transport_amendment = mapping(
+        preregistration.get("transportOperationalAmendment"),
+        "transport operational amendment",
+    )
+    require(
+        transport_amendment
+        == {
+            "failedCaptureFinalProviderCallCount": 0,
+            "failedCaptureFinalTimelineMarkerCount": 0,
+            "opticalPredictionsEvaluatedBeforeCorrection": False,
+            "path": TRANSPORT_FAILURE_RESULT_PATH,
+            "prospectiveOpticalPredictionsUnchanged": True,
+            "providerWindowUnchanged": True,
+            "sha256": TRANSPORT_FAILURE_RESULT_SHA256,
+        },
+        "transport operational amendment differs",
+    )
+    transport_result_path = repository_root / TRANSPORT_FAILURE_RESULT_PATH
+    require(
+        sha256(transport_result_path) == TRANSPORT_FAILURE_RESULT_SHA256,
+        "transport failure result hash differs",
+    )
+    transport_result = mapping(
+        load_json(transport_result_path, "transport failure result"),
+        "transport failure result",
+    )
+    require(
+        transport_result.get(
+            "providerTimelineMarkerTransportFailureResultSchemaVersion"
+        )
+        == 1,
+        "transport failure result schema differs",
+    )
+    failed_transport = mapping(
+        transport_result.get("capture"),
+        "failed transport capture",
+    )
+    require(
+        failed_transport.get("finalProviderCallCount") == 0
+        and failed_transport.get("finalTimelineMarkerCount") == 0
+        and failed_transport.get("opticalPredictionsEvaluated") is False,
+        "failed transport crossed an optical boundary",
+    )
+    transport_correction = mapping(
+        transport_result.get("correction"),
+        "transport correction",
+    )
+    require(
+        transport_correction.get("importAtExactMainEntryAfterDyldLoad") is True
+        and transport_correction.get("captureSelectionChanged") is False
+        and transport_correction.get("providerWindowChanged") is False
+        and transport_correction.get("opticalPredictionsChanged") is False,
+        "transport correction changed capture semantics",
     )
     marker = mapping(
         preregistration.get("timelineMarkerBoundary"),

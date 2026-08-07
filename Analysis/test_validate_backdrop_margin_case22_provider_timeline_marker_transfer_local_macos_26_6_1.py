@@ -64,6 +64,12 @@ class TimelineMarkerValidatorTests(unittest.TestCase):
         self.assertIn('"productionShaderAuthorized": False', SOURCE)
         self.assertIn('"upstreamCropAllocationPolicyEstablished": False', SOURCE)
 
+    def test_transport_correction_crossed_no_optical_boundary(self) -> None:
+        self.assertIn("transportOperationalAmendment", SOURCE)
+        self.assertIn("finalTimelineMarkerCount", SOURCE)
+        self.assertIn("opticalPredictionsEvaluated", SOURCE)
+        self.assertIn("importAtExactMainEntryAfterDyldLoad", SOURCE)
+
 
 if __name__ == "__main__":
     unittest.main()

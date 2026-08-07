@@ -41,7 +41,7 @@ class TimelineMarkerRunnerSourceTests(unittest.TestCase):
             "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
             "145cf4d04650769f150f865e32f90671f9ab7f3d536d907e970b9f01bf690a59",
             "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
-            "29ae54666b9ea0c2949ead946d1ccda578a880c8b269d1a67f6d5e83aab248d8",
+            "3672f7a53ad50500fe97e20d60316be6caf83aa73ac278669abcefb95aa84512",
         ):
             self.assertIn(digest, SOURCE)
         self.assertNotIn("PLACEHOLDER", SOURCE)
@@ -49,6 +49,15 @@ class TimelineMarkerRunnerSourceTests(unittest.TestCase):
     def test_validation_runs_only_after_capture(self) -> None:
         self.assertLess(SOURCE.index("-o run"), SOURCE.index('"$python" "$validator"'))
         self.assertIn("validation-exit-status.txt", SOURCE)
+
+    def test_capture_imports_at_exact_main_stop_after_dyld_load(self) -> None:
+        main_breakpoint = SOURCE.index("breakpoint set --name main")
+        first_run = SOURCE.index("-o run", main_breakpoint)
+        capture_import = SOURCE.index("command script import $capture", first_run)
+        continuation = SOURCE.index("-o continue", capture_import)
+        self.assertLess(main_breakpoint, first_run)
+        self.assertLess(first_run, capture_import)
+        self.assertLess(capture_import, continuation)
 
 
 if __name__ == "__main__":

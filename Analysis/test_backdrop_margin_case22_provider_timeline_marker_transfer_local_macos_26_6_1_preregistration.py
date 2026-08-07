@@ -41,6 +41,14 @@ class TimelineMarkerPreregistrationTests(unittest.TestCase):
         self.assertTrue(predecessor["all32RenderIntervalsClosed"])
         self.assertTrue(predecessor["replacementRuntimeWindowChanged"])
 
+    def test_transport_correction_saw_no_marker_or_provider_call(self) -> None:
+        amendment = self.value["transportOperationalAmendment"]
+        self.assertEqual(amendment["failedCaptureFinalTimelineMarkerCount"], 0)
+        self.assertEqual(amendment["failedCaptureFinalProviderCallCount"], 0)
+        self.assertFalse(amendment["opticalPredictionsEvaluatedBeforeCorrection"])
+        self.assertTrue(amendment["prospectiveOpticalPredictionsUnchanged"])
+        self.assertTrue(amendment["providerWindowUnchanged"])
+
     def test_marker_window_is_structural_and_exact(self) -> None:
         marker = self.value["timelineMarkerBoundary"]
         self.assertEqual(marker["markerCount"], 33)

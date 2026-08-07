@@ -45,7 +45,7 @@ require_sha256() {
 require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd
 require_sha256 "$capture" 145cf4d04650769f150f865e32f90671f9ab7f3d536d907e970b9f01bf690a59
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
-require_sha256 "$validator" 29ae54666b9ea0c2949ead946d1ccda578a880c8b269d1a67f6d5e83aab248d8
+require_sha256 "$validator" 3672f7a53ad50500fe97e20d60316be6caf83aa73ac278669abcefb95aa84512
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
     echo "tracked repository state is dirty" >&2
@@ -113,8 +113,11 @@ fi
     -o "settings set -- target.run-args $output_directory" \
     -o "settings set target.output-path $output_directory/runtime-stdout.log" \
     -o "settings set target.error-path $output_directory/runtime-stderr.log" \
-    -o "command script import $capture" \
+    -o "breakpoint set --name main" \
     -o run \
+    -o "breakpoint delete --force" \
+    -o "command script import $capture" \
+    -o continue \
     -o "script import capture_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1_lldb as transfer; transfer.finalize()" \
     -o quit \
     >"$output_directory/lldb.log" 2>&1

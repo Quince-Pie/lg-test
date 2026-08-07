@@ -8558,17 +8558,32 @@ batch, no one-, two-, or three-word collision in that batch, global uniqueness
 within the retained live-timeline calls, all 18 loaded-field predictions, and
 an exact positive-zero provider return. Sample 32 is retained and reported but
 its match count is explicitly exploratory. The preregistration SHA-256 is
-`87c37acbc901f117b91857346246f82c19df82b4a841864aa489b5e7f0ebeb02`;
+`4e09b2b10449a19965d69921df0c08516e0e8f27aa9bc4661fdb2deb0538c330`;
 the capture, validator, and native runner SHA-256 values are respectively
 `145cf4d04650769f150f865e32f90671f9ab7f3d536d907e970b9f01bf690a59`,
-`29ae54666b9ea0c2949ead946d1ccda578a880c8b269d1a67f6d5e83aab248d8`,
+`3672f7a53ad50500fe97e20d60316be6caf83aa73ac278669abcefb95aa84512`,
 and
-`baaf745aa69917b4b320f667c00452754e4469e7f626639c17c1421e5c2c332b`.
+`bd922a0bb436eba26eb92f786025d4a037930600dd4a7ec9cf74f33842d1e2fe`.
 The native process uses only Apple Command Line Tools and no Nix store path.
 Even a complete pass establishes only the same-profile live marker-batch join;
 fresh-profile construction, crop/allocation, physical Retina composition,
 independent Walle zero-byte frames, shader authority, and Liquid Glass parity
 remain open.
+
+The first live-marker transport at commit
+`ad2c06184bc80fa4a3f5bfb64925d372e3e30760` imported its inherited
+provider adapter before process launch. SwiftUICore was not yet loaded, so the
+import failed before any breakpoint was armed; the application subsequently
+ran uninstrumented. The retained trace has zero timeline markers, zero provider
+calls, and no evaluated optical prediction. The immutable transport result is
+`Analysis/backdrop_margin_case22_provider_timeline_marker_ad2c061_transport_failure_result.json`,
+SHA-256
+`eb48611b6c7b62bac21bb133414eacd0992992b7706bcfb71bbdfafca76362e2`.
+The corrected runner stops at the exact executable `main`, after dyld has
+loaded the framework images but before the application timeline executes,
+deletes that bootstrap breakpoint, imports the unchanged capture, and only
+then continues. This changes neither the provider window nor any optical
+prediction.
 
 ### Native `BackgroundFilter` metadata and constructor boundary
 
