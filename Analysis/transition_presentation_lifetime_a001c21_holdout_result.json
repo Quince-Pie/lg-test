@@ -1,0 +1,161 @@
+{
+  "authority": "prospective-holdout-matrix",
+  "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+  "caseCount": 8,
+  "cases": [
+    {
+      "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+      "caseId": "clear-dark-dematerialize-circle461",
+      "maximumAbsoluteRequestedProgressError": 0.0018883961805841176,
+      "maximumStateBracketSeconds": 0.04540883333538659,
+      "maximumWindowCaptureSeconds": 0.03737391665345058,
+      "pngTreeSHA256": "b41119b8dee407f7afa75f344afa2464263518e20fb59a215836442b1313d402",
+      "profile": {
+        "appearance": "dark",
+        "direction": "dematerialize",
+        "geometry": "circle-461-center",
+        "material": "clear"
+      },
+      "timelineSHA256": "1844732f5c5c907d697921817ba050aaa80d6e7c10dc098e6bbe60d5bd1b7e9f",
+      "validationSHA256": "6dd501cc565cf73e8e85a37c81726a571a1af9559adefc924bbff75835f66340"
+    },
+    {
+      "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+      "caseId": "clear-dark-materialize-circle460",
+      "maximumAbsoluteRequestedProgressError": 0.001974320833445141,
+      "maximumStateBracketSeconds": 0.043638874994940124,
+      "maximumWindowCaptureSeconds": 0.04163774999324232,
+      "pngTreeSHA256": "b52f8598c1216c0520944ba333b5c24626e36147c5e4b1d72b95a8e511872473",
+      "profile": {
+        "appearance": "dark",
+        "direction": "materialize",
+        "geometry": "circle-460-center",
+        "material": "clear"
+      },
+      "timelineSHA256": "8fbbbb3cd9426b634c5e4637e631a270c871ff0e1ca1e6606ad58bea3e181c4f",
+      "validationSHA256": "73af18c36f540b39c690e4f0862ff86e24967d5d37d3dded8407d9dfd85febfd"
+    },
+    {
+      "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+      "caseId": "clear-light-dematerialize-circle453",
+      "maximumAbsoluteRequestedProgressError": 0.001978311805578392,
+      "maximumStateBracketSeconds": 0.04575991666933987,
+      "maximumWindowCaptureSeconds": 0.03750329167814925,
+      "pngTreeSHA256": "9558680fef2fe51d7e8a93841d5f48427180bb726a1d25a6feb686ca8ac8cce8",
+      "profile": {
+        "appearance": "light",
+        "direction": "dematerialize",
+        "geometry": "circle-453-center",
+        "material": "clear"
+      },
+      "timelineSHA256": "4ab7516849433a39e1b981b1e79cb51efb87a503383400defaace114cacb2c90",
+      "validationSHA256": "07c9afeed1c73e559704b464b9b5e2ed80c872f3dd80f2d8d313142f7feec020"
+    },
+    {
+      "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+      "caseId": "clear-light-materialize-circle452",
+      "maximumAbsoluteRequestedProgressError": 0.002128833680762908,
+      "maximumStateBracketSeconds": 0.0462577916769078,
+      "maximumWindowCaptureSeconds": 0.04446499999903608,
+      "pngTreeSHA256": "60bb1135293aab744c8de20a5071d5c5fbaac5565f292b287d27cb349028cdb9",
+      "profile": {
+        "appearance": "light",
+        "direction": "materialize",
+        "geometry": "circle-452-center",
+        "material": "clear"
+      },
+      "timelineSHA256": "3d8375a65c55b5d28b0ef0a9b2103eb22db6f0996f3a673983f0ac6d59ad2058",
+      "validationSHA256": "9fbf4f94fd07cf2d724c96e11dc39f5b0e5d78666cd8d5626ad4c58ac0bfb841"
+    },
+    {
+      "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+      "caseId": "regular-dark-dematerialize-circle477",
+      "maximumAbsoluteRequestedProgressError": 0.0019746618056766807,
+      "maximumStateBracketSeconds": 0.047816083329962566,
+      "maximumWindowCaptureSeconds": 0.039715583334327675,
+      "pngTreeSHA256": "66f5b441854163df0d20d3411bf756147753ab6505190be784302fede01188bc",
+      "profile": {
+        "appearance": "dark",
+        "direction": "dematerialize",
+        "geometry": "circle-477-center",
+        "material": "regular"
+      },
+      "timelineSHA256": "4f4839fd873daefc6b32d462138d435345e512b0a2bb8774093827eff6da18e8",
+      "validationSHA256": "be15f0432ae7e792e62424994b235c45b88eac7a3d99f06527ce45b3efa84c5f"
+    },
+    {
+      "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+      "caseId": "regular-dark-materialize-circle476",
+      "maximumAbsoluteRequestedProgressError": 0.001993747916518851,
+      "maximumStateBracketSeconds": 0.043500708328792825,
+      "maximumWindowCaptureSeconds": 0.04168612499779556,
+      "pngTreeSHA256": "b4d20f788af026cdca13eac710de353aa6a0cd8c0cb4c272db61a17fb7c16b04",
+      "profile": {
+        "appearance": "dark",
+        "direction": "materialize",
+        "geometry": "circle-476-center",
+        "material": "regular"
+      },
+      "timelineSHA256": "d25314aebad17ad09fa91ae47a611278a6d54f5fce40481be4222ccf6ee98460",
+      "validationSHA256": "31184159ffa558d4c77afbce7021f81c105566cab45f5bee1944c719f095c36c"
+    },
+    {
+      "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+      "caseId": "regular-light-dematerialize-circle469",
+      "maximumAbsoluteRequestedProgressError": 0.0019294274306351639,
+      "maximumStateBracketSeconds": 0.045741374997305684,
+      "maximumWindowCaptureSeconds": 0.03752591667580418,
+      "pngTreeSHA256": "e02aa0b790f3ec4f59b52c9a612d0376d4a25eab56339399784ab32b455273c5",
+      "profile": {
+        "appearance": "light",
+        "direction": "dematerialize",
+        "geometry": "circle-469-center",
+        "material": "regular"
+      },
+      "timelineSHA256": "9d38d02b3e7e3379f686fa355cb15b5ebf9dc6b6511110cb32e8d6678edce2fd",
+      "validationSHA256": "ccbc454162bd44282a561014ad6aafd050e61f648eb787208a39849791f1b730"
+    },
+    {
+      "captureCommit": "a001c211e77bd64af0ee853dc13c8c5c2b3647d5",
+      "caseId": "regular-light-materialize-circle468",
+      "maximumAbsoluteRequestedProgressError": 0.0020229072916360114,
+      "maximumStateBracketSeconds": 0.04711275000590831,
+      "maximumWindowCaptureSeconds": 0.04484050000610296,
+      "pngTreeSHA256": "626f98c59c4ce39d8c19d000efd31075bdffe9505d584c132dfbe3fc8aa3a26b",
+      "profile": {
+        "appearance": "light",
+        "direction": "materialize",
+        "geometry": "circle-468-center",
+        "material": "regular"
+      },
+      "timelineSHA256": "f3fd1255765dd09bb90c0d58975519f95013f971ddc43db996282be58243011f",
+      "validationSHA256": "fbadee597eac88821a2db1f20523628c8cdb927b1a44450b535e1e8126b37da6"
+    }
+  ],
+  "evidence": {
+    "calibrationResultSHA256": "f21fcbfb16ae7c4e5b64b42f2f2c874c72c3efaeca5cd1732a32a567554608b6",
+    "preregistrationSHA256": "4fe4c55fa02582c4c1b5b76f08a05415d1dca8a8c16fd9208d4619eecc373f55"
+  },
+  "matrixTotals": {
+    "glassBackgroundPresenceCount": 512,
+    "glassForegroundPresenceCount": 496,
+    "maximumAbsoluteRequestedProgressError": 0.002128833680762908,
+    "maximumStateBracketSeconds": 0.047816083329962566,
+    "maximumWindowCaptureSeconds": 0.04484050000610296,
+    "presentationStateCount": 528,
+    "windowServerFrameCount": 264
+  },
+  "sealedConclusion": {
+    "appearanceDependentPresentationRemovalLawRejected": true,
+    "capturedInputOpticalTemporalMeshSourceMipColorTransferPassed": false,
+    "historicalCombinedSnapshotFailureWasNotProductRemovalProof": true,
+    "independentWalleZeroByteParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "observerIndependentPresentationLifetimeTransferPassed": true,
+    "physicalRetinaOutputTransferPassed": false,
+    "presentationLifetimeGateClosedForFrozenProfileMatrix": true,
+    "productionShaderChanged": false
+  },
+  "status": "passed",
+  "transitionPresentationLifetimeHoldoutAggregateSchemaVersion": 1
+}

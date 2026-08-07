@@ -11666,3 +11666,33 @@ can close the product presentation-lifetime gate. It cannot close optical
 input generation, physical Retina color/compositor transfer, independent
 Walle zero-byte parity, or Liquid Glass parity. The production shader remains
 unchanged and unauthorized for parity-sensitive edits.
+
+The frozen matrix passed prospectively from the single source commit
+`a001c211e77bd64af0ee853dc13c8c5c2b3647d5`. All eight direct-Retina cases
+completed with native and validation status zero, without a debugger or
+dynamic-uniform replay. The aggregate contains 264 distinct WindowServer
+frames, 528 complete presentation-state brackets, 512 background presences,
+and 496 transition-foreground presences. Its maximum state bracket is
+`0.047816083329962566` seconds, maximum window acquisition is
+`0.04484050000610296` seconds, and maximum requested-progress error is
+`0.002128833680762908`. The aggregate SHA-256 is
+`4c3af2532bf22c75ca59ac7992303ee39575c1c67dae0e1ec76c3d36723e1230`;
+the immutable result is
+`Analysis/transition_presentation_lifetime_a001c21_holdout_result.json`.
+
+This result explicitly supersedes the earlier inference that clear
+presentation lifetime depends on appearance. That inference came from a
+combined snapshot helper whose four nil conditions were reported as one
+misleading background error; it was not evidence that the product removed the
+backdrop. Every frozen material/appearance/direction case instead has the same
+observer-independent topology: both filters exist through dynamic samples 1
+through 31, the materialized endpoint retains only the background at exact
+face opacity one, and the absent endpoint retains neither filter.
+Presentation-lifetime transfer is therefore closed for the frozen profile
+matrix, and an appearance-dependent removal law is rejected.
+
+Three broad product gates remain before formal parity: independently generated
+optical/temporal/mesh/source/mip/color inputs rather than Apple-captured private
+inputs; physical Retina pixel-format/color/display/compositor transfer; and
+fresh Walle frames with zero unequal bytes. This pass does not authorize a
+production-shader change.
