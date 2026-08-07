@@ -21,6 +21,8 @@ DOD_SYMBOL_BYTE_COUNT = 1136
 DOD_CODE_SHA256 = "d44b226f8edbfcb8fd37bc0f15a48b583df08063dc812e28cd06b1398d2f1678"
 SOURCE_REGISTERS_OFFSET = 0x200
 SOURCE_REGISTERS_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX = "e00703ad"
+DOD_RETURN_OFFSET = 0x448
+DOD_RETURN_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX = "fd7b4fa9"
 QUARTZCORE_UUID = "F1BA3189-E95A-3ECA-B59A-5A6872754484"
 
 
@@ -103,6 +105,9 @@ def validate(
         or configuration.get("sourceRegistersOffset") != SOURCE_REGISTERS_OFFSET
         or configuration.get("sourceRegistersInstructionRawLittleEndianHex")
         != SOURCE_REGISTERS_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX
+        or configuration.get("returnOffset") != DOD_RETURN_OFFSET
+        or configuration.get("returnInstructionRawLittleEndianHex")
+        != DOD_RETURN_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX
         or configuration.get("sourceValuesUsedForSelection") is not False
         or configuration.get("cropOrProducerValuesUsedForSelection") is not False
         or configuration.get("hardwareWatchpointsUsed") is not False
@@ -114,6 +119,9 @@ def validate(
         or identity.get("sourceRegistersOffset") != SOURCE_REGISTERS_OFFSET
         or identity.get("sourceRegistersInstructionRawLittleEndianHex")
         != SOURCE_REGISTERS_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX
+        or identity.get("returnOffset") != DOD_RETURN_OFFSET
+        or identity.get("returnInstructionRawLittleEndianHex")
+        != DOD_RETURN_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX
         or identity.get("quartzCoreUUID") != QUARTZCORE_UUID
     ):
         raise ValueError("live DOD capture identity differs")
@@ -133,7 +141,10 @@ def validate(
     if (
         extension.get("finalEventSequence") != len(events)
         or extension.get("finalDODHitCount") != len(records)
+        or extension.get("finalDODReturnCount") != len(records)
         or extension.get("finalRecordCount") != len(records)
+        or extension.get("finalCompleteRecordCount") != len(records)
+        or extension.get("finalPendingRecordCount") != 0
         or extension.get("finalFailureCount") != 0
         or len(records) < 32
     ):
@@ -164,25 +175,49 @@ def validate(
             and event.get("kind") == "dod-source-registers"
             and event.get("recordIndex") == index
         ]
+        return_event_sequence = _integer(
+            record.get("returnEventSequence"), "return event sequence"
+        )
+        matching_return_events = [
+            event
+            for event in events
+            if event.get("sequence") == return_event_sequence
+            and event.get("kind") == "dod-return"
+            and event.get("recordIndex") == index
+        ]
+        output = _mapping(record.get("outputAtReturn"), "DOD return output")
+        output_payload = bytes.fromhex(str(output.get("hex")))
         if (
             record.get("recordIndex") != index
             or record.get("hitIndex") != index + 1
             or len(matching_events) != 1
+            or len(matching_return_events) != 1
+            or return_event_sequence <= event_sequence
             or record.get("pc") != identity.get("sourceRegistersAddress")
+            or record.get("complete") is not True
+            or record.get("returnThreadID") != record.get("threadID")
+            or output.get("byteCount") != 32
+            or len(output_payload) != 32
             or not _sequence(record.get("backtrace"), "backtrace")
         ):
             raise ValueError(f"live DOD record {index} differs")
         origin = _simd_pair(registers["v0"], "source origin")
         size = _simd_pair(registers["v1"], "source size")
+        output_bounds = struct.unpack("<4d", output_payload)
+        if not all(math.isfinite(value) for value in output_bounds):
+            raise ValueError("DOD return output contains a nonfinite value")
         decoded.append(
             {
                 "recordIndex": index,
                 "hitIndex": record["hitIndex"],
                 "eventSequence": event_sequence,
+                "returnEventSequence": return_event_sequence,
                 "threadID": record["threadID"],
                 "sourceOriginF64": list(origin),
                 "sourceSizeF64": list(size),
                 "sourceBoundsHex": struct.pack("<4d", *origin, *size).hex(),
+                "outputBoundsF64": list(output_bounds),
+                "outputBoundsHex": output_payload.hex(),
                 "backtraceFunctions": [
                     _mapping(frame, "backtrace frame").get("function")
                     for frame in record["backtrace"]

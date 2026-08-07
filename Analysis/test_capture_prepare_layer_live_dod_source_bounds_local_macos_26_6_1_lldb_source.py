@@ -19,6 +19,8 @@ class PrepareLayerLiveDODSourceCaptureTests(unittest.TestCase):
             "d44b226f8edbfcb8fd37bc0f15a48b583df08063dc812e28cd06b1398d2f1678",
             "SOURCE_REGISTERS_OFFSET = 0x200",
             'SOURCE_REGISTERS_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX = "e00703ad"',
+            "DOD_RETURN_OFFSET = 0x448",
+            'DOD_RETURN_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX = "fd7b4fa9"',
         ):
             self.assertIn(fragment, SOURCE)
 
@@ -53,6 +55,7 @@ class PrepareLayerLiveDODSourceCaptureTests(unittest.TestCase):
             "crop_union_call",
             "crop_union_return",
             "nested_crop_store",
+            "dod_return",
         ):
             self.assertIn(f'def {callback}(', SOURCE)
             self.assertIn(f'"{callback}"', SOURCE)

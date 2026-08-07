@@ -26,13 +26,18 @@ DOD_SYMBOL_BYTE_COUNT = 1136
 DOD_CODE_SHA256 = "d44b226f8edbfcb8fd37bc0f15a48b583df08063dc812e28cd06b1398d2f1678"
 SOURCE_REGISTERS_OFFSET = 0x200
 SOURCE_REGISTERS_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX = "e00703ad"
+DOD_RETURN_OFFSET = 0x448
+DOD_RETURN_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX = "fd7b4fa9"
 MAXIMUM_DOD_HIT_COUNT = 4096
 
 
 _state = {
     "dodBreakpoint": None,
+    "dodReturnBreakpoint": None,
     "dodHitCount": 0,
+    "dodReturnCount": 0,
     "eventSequence": 0,
+    "pendingByThread": {},
 }
 
 
@@ -129,7 +134,18 @@ def _install_dod_breakpoint(frame):
     if not breakpoint.IsValid() or breakpoint.GetNumLocations() != 1:
         raise RuntimeError("live DOD source breakpoint is unresolved")
     _set_callback(breakpoint, "dod_source_bounds", "live DOD source")
+    return_instruction = code[DOD_RETURN_OFFSET : DOD_RETURN_OFFSET + 4]
+    if return_instruction.hex() != DOD_RETURN_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX:
+        raise RuntimeError("live DOD return instruction differs")
+    return_breakpoint = target.BreakpointCreateByAddress(start + DOD_RETURN_OFFSET)
+    if (
+        not return_breakpoint.IsValid()
+        or return_breakpoint.GetNumLocations() != 1
+    ):
+        raise RuntimeError("live DOD return breakpoint is unresolved")
+    _set_callback(return_breakpoint, "dod_return", "live DOD return")
     _state["dodBreakpoint"] = breakpoint
+    _state["dodReturnBreakpoint"] = return_breakpoint
     extension = _extension()
     extension["codeIdentity"] = {
         "function": DOD_FUNCTION,
@@ -142,6 +158,10 @@ def _install_dod_breakpoint(frame):
         "sourceRegistersAddress": start + SOURCE_REGISTERS_OFFSET,
         "sourceRegistersInstructionRawLittleEndianHex": instruction.hex(),
         "breakpointID": breakpoint.GetID(),
+        "returnOffset": DOD_RETURN_OFFSET,
+        "returnAddress": start + DOD_RETURN_OFFSET,
+        "returnInstructionRawLittleEndianHex": return_instruction.hex(),
+        "returnBreakpointID": return_breakpoint.GetID(),
         "quartzCoreUUID": resolved.GetModule().GetUUIDString(),
     }
     extension["status"] = "live-dod-source-breakpoint-active"
@@ -215,11 +235,46 @@ def dod_source_bounds(frame, breakpoint_location, _internal_dict):
                 frame, ("x19", "x21", "pc", "v0", "v1")
             ),
             "backtrace": capture_base._backtrace(frame.GetThread()),
+            "complete": False,
         }
         _extension()["records"].append(record)
         event["recordIndex"] = record["recordIndex"]
+        pending = _state["pendingByThread"].setdefault(record["threadID"], [])
+        pending.append(record["recordIndex"])
     except Exception as error:
         _failure("source-registers", error)
+    return False
+
+
+def dod_return(frame, breakpoint_location, _internal_dict):
+    try:
+        _state["dodReturnCount"] += 1
+        if _state["dodReturnCount"] > MAXIMUM_DOD_HIT_COUNT:
+            raise RuntimeError("live DOD return hit bound exceeded")
+        process = frame.GetThread().GetProcess()
+        target = process.GetTarget()
+        address = breakpoint_location.GetAddress().GetLoadAddress(target)
+        expected = _extension()["codeIdentity"]["returnAddress"]
+        if frame.GetPC() != expected or address != expected:
+            raise RuntimeError("live DOD return PC differs")
+        thread_id = frame.GetThread().GetThreadID()
+        pending = _state["pendingByThread"].get(thread_id, [])
+        if not pending:
+            raise RuntimeError("live DOD return has no pending entry")
+        record_index = pending.pop()
+        output_address = capture_base._register(frame, "x19")
+        output = capture_base._memory_snapshot(
+            process, output_address, 32, "live DOD return rectangle"
+        )
+        event = _next_event("dod-return")
+        event["recordIndex"] = record_index
+        record = _extension()["records"][record_index]
+        record["returnEventSequence"] = event["sequence"]
+        record["returnThreadID"] = thread_id
+        record["outputAtReturn"] = output
+        record["complete"] = True
+    except Exception as error:
+        _failure("return", error)
     return False
 
 
@@ -230,7 +285,14 @@ def finalize():
         extension["status"] = "finalized"
         extension["finalEventSequence"] = _state["eventSequence"]
         extension["finalDODHitCount"] = _state["dodHitCount"]
+        extension["finalDODReturnCount"] = _state["dodReturnCount"]
         extension["finalRecordCount"] = len(extension["records"])
+        extension["finalCompleteRecordCount"] = sum(
+            record.get("complete") is True for record in extension["records"]
+        )
+        extension["finalPendingRecordCount"] = sum(
+            len(records) for records in _state["pendingByThread"].values()
+        )
         extension["finalFailureCount"] = len(extension["failures"])
     _write_trace()
 
@@ -256,9 +318,14 @@ def __lldb_init_module(debugger, internal_dict):
             "sourceRegistersInstructionRawLittleEndianHex": (
                 SOURCE_REGISTERS_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX
             ),
+            "returnOffset": DOD_RETURN_OFFSET,
+            "returnInstructionRawLittleEndianHex": (
+                DOD_RETURN_INSTRUCTION_RAW_LITTLE_ENDIAN_HEX
+            ),
             "selectionRule": (
-                "retain every exact code-hashed DOD+0x200 hit and every crop "
-                "marker callback in event order; inspect no q0/q1 value"
+                "retain every exact code-hashed DOD+0x200 hit, pair its exact "
+                "DOD+0x448 return by thread stack, and retain every crop marker "
+                "callback in event order; inspect no rectangle value"
             ),
             "sourceValuesUsedForSelection": False,
             "cropOrProducerValuesUsedForSelection": False,

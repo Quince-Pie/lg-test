@@ -58,10 +58,10 @@ if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
 fi
 
 require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd
-require_sha256 "$capture" b8a3ef090044f2de518194dfd542bf7d1466a0c76eed17c1395bbc9186344c8f
+require_sha256 "$capture" 9b40b09ed71e2432847c7f02573fde46ad9c30fc96111dd24fff3a9af3230479
 require_sha256 "$live_capture" 7166b30cc047bc21c5db77ebc5e5c92d8dcdc5e23d3833b32c8a40b3dbba7820
 require_sha256 "$transport" dd30287a00e9dd7f73dd517770ecda4b912e0ef367a0040d199002eafde796f2
-require_sha256 "$validator" 8fe981e2ac3337280cb479bd82e49fcbbab224967f7b38963ae92caf07162e9e
+require_sha256 "$validator" 7fda7505e9bb37aa46340417a518dac2bf8f8d79698e97ca923f95edefaa957e
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
