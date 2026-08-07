@@ -1,0 +1,212 @@
+{
+  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 1,
+  "frozenAtUtc": "2026-08-07T18:17:32Z",
+  "classification": "prospective four-case output-blind direct-Retina-M1 transfer of the authenticated public filter to DesignLibrary provider to SwiftUI Group.margin to CABackdropLayer writer composition; no Apple output for any exact case exists at freeze time",
+  "sourceStateBeforeFreeze": {
+    "branch": "main",
+    "commit": "1312402e9fa7544f744fcff957a48bfdf027ee76",
+    "workingTreeTrackedChangesBeforeThisGate": false,
+    "githubActionsUsedForThisGate": false,
+    "nativeHost": "quince@10.0.41.19",
+    "nativeHostArchitecture": "arm64",
+    "nativeHostModel": "Apple M1 Max",
+    "nativeHostMacOS": "26.6.1",
+    "nativeHostBuild": "25G76",
+    "physicalDisplay": "built-in 3456x2234 Retina at exact 2x backing scale"
+  },
+  "antecedentCorrection": {
+    "supersededCandidate": "max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))",
+    "reason": "the predecessor expression was output-fitted before the actual case-22 provider and complete public/provider constructor were authenticated",
+    "supersededResultPreservedUnchanged": true,
+    "newCandidateChosenFromCapturedWriterTargetValue": false,
+    "newCandidateChosenFromCropOrImage": false,
+    "newCandidateSource": "authenticated DesignLibrary provider instruction order plus the prospective live 18-field public/provider transfer and exact 49-field Parameters constructor boundary"
+  },
+  "frozenCandidate": {
+    "perRecordProviderReturn": "max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)) + abs(inputShadowAmount)",
+    "providerOperationOrder": [
+      "binary64 fabs inputShadowOffset.x",
+      "binary64 fabs inputShadowOffset.y",
+      "ARM64 fcmp/fcsel maximum of the two absolute axes",
+      "binary64 fabs inputShadowAmount",
+      "one binary64 fadd of axis maximum and absolute amount"
+    ],
+    "regularGroupMargin": "maximum over all 32 retained per-record provider returns",
+    "clearGroupMargin": "exact binary64 positive zero",
+    "modelStorage": "binary64",
+    "renderStorage": "round-to-nearest-even binary32",
+    "capturedTargetValueUsedToChooseCandidate": false,
+    "cropOrImageUsedToChooseCandidate": false,
+    "candidateAcceptedAsGeneralBeforeThisRun": false
+  },
+  "prospectiveCases": [
+    {
+      "material": "clear",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-451-center",
+      "exactConfigurationPreviouslyCaptured": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedGroupMarginF64": null,
+      "expectedRenderMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCrop": null,
+      "expectedImageDigest": null
+    },
+    {
+      "material": "clear",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-459-center",
+      "exactConfigurationPreviouslyCaptured": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedGroupMarginF64": null,
+      "expectedRenderMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCrop": null,
+      "expectedImageDigest": null
+    },
+    {
+      "material": "regular",
+      "appearance": "light",
+      "direction": "materialize",
+      "geometry": "circle-467-center",
+      "exactConfigurationPreviouslyCaptured": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedGroupMarginF64": null,
+      "expectedRenderMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCrop": null,
+      "expectedImageDigest": null
+    },
+    {
+      "material": "regular",
+      "appearance": "dark",
+      "direction": "materialize",
+      "geometry": "circle-475-center",
+      "exactConfigurationPreviouslyCaptured": false,
+      "appleOutputAvailableAtFreeze": false,
+      "expectedGroupMarginF64": null,
+      "expectedRenderMarginF32": null,
+      "expectedWriterPointers": null,
+      "expectedCrop": null,
+      "expectedImageDigest": null
+    }
+  ],
+  "captureContract": {
+    "directPhysicalMacOnly": true,
+    "githubActionsForbidden": true,
+    "activeRetinaSessionPreflightRequired": true,
+    "nativeAppleCommandLineToolsOnly": true,
+    "nixStorePathInNativeBuildOrDebugForbidden": true,
+    "dynamicPublicRecordCount": 32,
+    "timelineSampleCount": 33,
+    "allocationOnly": true,
+    "denseAllocation": true,
+    "capturedMarginUsedForSelection": false,
+    "capturedCropUsedForSelection": false,
+    "capturedImageUsedForSelection": false,
+    "joinRule": "for each get_bounds render pointer, use the most recent earlier copy-store event for the identical x21 render pointer and then the most recent earlier setter event for that copy event's identical x20 model pointer; x2 remains opaque",
+    "allProducerReturnsMustEqualAdjacentSetterInputsBitwise": true,
+    "fourCasesMustRunFromTheSameFrozenCommit": true
+  },
+  "acceptance": {
+    "requireAllExactCodeGates": true,
+    "requireEveryEventWithinBound": true,
+    "requireAtLeastOneCompleteSetterCopyBoundsChain": true,
+    "requireEveryStructurallyJoinedChainToMatchCandidateBitwise": true,
+    "requireEverySetterToExposeExactAdjacentProducer": true,
+    "requireEveryProducerReturnToEqualSetterInputBitwise": true,
+    "requireExactPublicProviderOperationOrder": true,
+    "requireNoCapturedValueForSelection": true,
+    "requireAllFourCasesToPassBeforeMatrixAuthority": true,
+    "zeroTolerance": true
+  },
+  "frozenEvidence": [
+    {
+      "path": "Analysis/backdrop_margin_case22_provider_finite_branch_universe_result.json",
+      "sha256": "e66914504f9ed5a1a249d5ceb88d6efeebdef27e4d7b8b6d5f3a135b492f149c"
+    },
+    {
+      "path": "Analysis/backdrop_margin_case22_provider_finite_branch_transfer_result.json",
+      "sha256": "fb3744e27b180be9bfede4fb5da13fcfcb69e26cff925dd34e81f3e90bc2ca77"
+    },
+    {
+      "path": "Analysis/backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1_result.json",
+      "sha256": "9ce1e32be073ef9ff0684fe8537d7fd44870f4b6566ac55498a25772bad7bc2e"
+    },
+    {
+      "path": "Analysis/background_filter_constructor_return_join_blur_distance4_composition_result.json",
+      "sha256": "68a78e4d61262d3373530079f745ab140b0dc9ab532df41b5a9bda623ecb541f"
+    },
+    {
+      "path": "Analysis/backdrop_margin_group_execution_result.json",
+      "sha256": "f6e85e0e38e4e21f3b72845959bd00d2134a70fe92c1c6ac714d0214195854ba"
+    },
+    {
+      "path": "Analysis/backdrop_margin_writer_execution_retry_result.json",
+      "sha256": "1b918108551e0f9db3487b609f05e2c65fa07480a9b3094ec9f85098aad5c09d"
+    }
+  ],
+  "frozenImplementation": [
+    {
+      "path": "Analysis/capture_backdrop_margin_writer_execution_lldb.py",
+      "sha256": "f91ba6afb61b491d949ea5dc9d4fc1c82c165e0016aefa84db00a0b15d435ecd"
+    },
+    {
+      "path": "Analysis/capture_backdrop_margin_writer_producer_lldb.py",
+      "sha256": "4e5620a157021578a0bb79f3b8cbf49eed2d754e960ecc076a046ae13d575d76"
+    },
+    {
+      "path": "Analysis/check_local_retina_capture_session_v2.swift",
+      "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+    },
+    {
+      "path": "Analysis/validate_backdrop_margin_writer_execution.py",
+      "sha256": "47497743231b6e9183b75909d592033241f41a7bdc045017a3959e038beb465f"
+    },
+    {
+      "path": "Analysis/validate_backdrop_margin_writer_execution_retry.py",
+      "sha256": "239cbe938de332e3108a7b7153f6c66af6238baea329d81dd137a30591325db8"
+    },
+    {
+      "path": "Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
+      "sha256": "b6d0e5a9e3c2a408e79087ca8a21ee602239e0ea28aaf738e7684000a170ec94"
+    },
+    {
+      "path": "Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1.sh",
+      "sha256": "104d665c81a11ef0e6b9ca9aa92e8b6e4a610c0eb74ae9662171cc98a14b2ac2"
+    },
+    {
+      "path": "Analysis/test_validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
+      "sha256": "a59f989645a7a8fb1dedd4c2bea64d750e40cddf8b2a27f5ab098357e205ffc2"
+    },
+    {
+      "path": "Analysis/test_run_backdrop_margin_writer_provider_composition_local_macos_26_6_1_source.py",
+      "sha256": "a3e104c1a924c706c1aa98724996abd307aee6cc9090c24ee8436809974e2f66"
+    }
+  ],
+  "qualityLocks": {
+    "productionShader": {
+      "path": "../shaders/frag.glsl",
+      "sha256": "6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d",
+      "changed": false
+    },
+    "walleFlake": {
+      "path": "../flake.nix",
+      "sha256": "b166e3c3ca8cca1e9e83544ab30d47c62b1b25fdef37783dcc2183e46669fa01",
+      "changed": false
+    },
+    "shaderQualityRegressionPermitted": false
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "productAuthority": {
+    "publicProviderGroupWriterCompositionMayPassForEachCapturedCase": true,
+    "fourCaseAllocationMarginTransferMayPassOnlyAfterAllFourCasesPass": true,
+    "generalSelectedRegionPolicyEstablishedOnPass": false,
+    "physicalRetinaColorPixelCompositorTransferEstablishedOnPass": false,
+    "independentWalleZeroByteFrameParityEstablishedOnPass": false,
+    "productionShaderAuthorizedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false
+  }
+}

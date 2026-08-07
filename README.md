@@ -10895,3 +10895,61 @@ the all-present profile. It still does not establish upstream integer
 crop/allocation, physical Retina compositor/color transfer, or an independent
 zero-unequal-byte Walle frame. Liquid Glass parity and production shader
 changes remain unauthorized.
+
+### Frozen direct-Retina provider-to-allocation-margin composition transfer
+
+The live constructor gate closes all 49 public filter fields, and the earlier
+finite-branch gate authenticates every feasible conditional outcome of the
+984-byte DesignLibrary `sdfBackdropMargin` provider. The predecessor backdrop
+writer experiment predates those proofs: its compact shadow/bleed candidate was
+discovered from opened writer values. Repeating that fitted candidate would not
+test the now-known Apple producer.
+
+The successor therefore freezes the actual selected provider operation order
+before seeing any new writer, crop, image, or pixel value:
+
+```text
+axis = max(abs(inputShadowOffset.x), abs(inputShadowOffset.y))
+shape = abs(inputShadowAmount)
+per-record provider return = axis + shape
+
+regular Group.margin = max over all 32 per-record provider returns
+clear Group.margin   = exact binary64 positive zero
+render margin        = one round-to-nearest-even binary32 conversion
+```
+
+The public values above are allowed captured inputs; the candidate formula and
+operation order are frozen. Acceptance compares the raw binary64 Group/setter
+word, raw binary32 `_copyRenderLayer` store, and raw binary32
+`BackdropLayer::get_bounds` consumption through the existing structural object
+join. The opaque `_copyRenderLayer` `x2` argument remains opaque. Every adjacent
+`Group.margin` return must also equal its setter input bit for bit. No captured
+value selects an invocation or alters capture flow.
+
+Four exact material/appearance/geometry configurations were absent from the
+retained transition-timeline corpus at freeze time:
+
+```text
+clear   light  materialize  circle-451-center
+clear   dark   materialize  circle-459-center
+regular light  materialize  circle-467-center
+regular dark   materialize  circle-475-center
+```
+
+They run directly on the active built-in Retina display of
+`quince@10.0.41.19`; GitHub Actions is forbidden for this gate. Native build
+and LLDB execution use Apple Command Line Tools and contain no Nix store path.
+The preregistration requires all four cases from one frozen commit before any
+matrix authority is granted:
+
+```text
+Analysis/backdrop_margin_writer_provider_composition_local_macos_26_6_1_preregistration.json
+Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py
+Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1.sh
+```
+
+Even a four-case pass closes only the allocation-margin producer boundary.
+Fresh selected-region/origin transfer, physical Retina color and compositor
+behavior, and an independent Walle render with zero unequal bytes remain
+mandatory. Liquid Glass parity and production shader changes remain
+unauthorized; the shader quality lock is unchanged.
