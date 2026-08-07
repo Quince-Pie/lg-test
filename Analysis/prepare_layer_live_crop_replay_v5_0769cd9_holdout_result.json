@@ -1,0 +1,120 @@
+{
+  "prepareLayerLiveCropReplayV50769CD9HoldoutResultSchemaVersion": 1,
+  "classification": "immutable outcome of the prospectively frozen direct-Retina circle-499 v5 holdout; public BackdropLayer source bounds, Gaussian-expanded shadow arithmetic, no endpoint-derived SDF translation, last-store pointer reuse, and all floating outputs pass bit for bit",
+  "conclusion": "success",
+  "run": {
+    "headSHA": "0769cd90e2cb4bc84292b9ccceece16a61002478",
+    "host": "quince@10.0.41.19",
+    "repository": "/Users/quince/lg-test",
+    "outputDirectory": "local-prepare-layer-live-crop-replay-v5-holdout-0769cd9-run1",
+    "architecture": "arm64",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "nativeToolchain": "Apple Command Line Tools only",
+    "nativeEnvironmentContainsNixStorePath": false,
+    "postCaptureAnalysis": "nix develop Python 3.14",
+    "githubActionsUsed": false,
+    "lldbExitStatus": 0,
+    "validationExitStatus": 0,
+    "independentLocalValidationByteIdentical": true
+  },
+  "inputs": {
+    "traceSHA256": "250f48901e48ad9693f3f0435faf6c4f837c3d0829b4284c2cf383a4119da87b",
+    "timelineSHA256": "49af8fb5c8985f59de002cd634ad915b68da4024f4c52825c76a3e95a1837943",
+    "validationSHA256": "d04cc6f2701e08a3ac844b092fa54e355c9e76b243eceada9f89ca2f3b054285",
+    "preflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "preregistrationSHA256": "fbcf03a1cf751802e0a515da4f0bde5ad48f52fc63f9d3ca558ec0538dd33cd6",
+    "v4FalsificationResultSHA256": "9ed4a3f68dcc59955e430580c1f6c3a1400531cb68de61b3b18a47a98ac950c5",
+    "v5ReanalysisResultSHA256": "8cdabb54f1b20add151dd6a7558b6180976479623b9b0f9507b1ebc8a0ea41a4"
+  },
+  "retinaPreflight": {
+    "passed": true,
+    "physicalPixels": [3456, 2234],
+    "logicalPoints": [1728, 1117],
+    "backingScaleFactor": 2,
+    "displayActive": true,
+    "displayAsleep": false,
+    "sessionLoginDone": true,
+    "sessionOnConsole": true,
+    "sessionLocked": false
+  },
+  "profile": {
+    "geometry": "circle-499-center",
+    "material": "regular",
+    "appearance": "dark",
+    "direction": "materialize",
+    "backingScaleFactor": 2,
+    "geometryWasRuntimeUnseenAtFreeze": true,
+    "targetOutputsOpenedAtFreeze": false,
+    "targetOutputsUsedByCandidate": false,
+    "toleranceUsed": false
+  },
+  "sourceBounds": {
+    "publicBackdropLayerClass": "CABackdropLayer",
+    "publicBackdropLayerPath": [1, 0, 1, 0],
+    "publicBackdropBoundsF64": [0.0, 0.0, 499.0, 499.0],
+    "publicBackdropBoundsHex": "000000000000000000000000000000000000000000307f400000000000307f40",
+    "internalMarginF32": 174.64999389648438,
+    "internalMarginF32RawLittleEndianHex": "66a62e43",
+    "sourceBoundsF64": [
+      -174.64999389648438,
+      -174.64999389648438,
+      848.2999877929688,
+      848.2999877929688
+    ],
+    "sourceBoundsHex": "000000c0ccd465c0000000c0ccd465c00000006066828a400000006066828a40",
+    "backdropBoundsRecordCount": 32,
+    "cropOrProducerValuesUsed": false
+  },
+  "shadowArithmetic": {
+    "gaussianHelperCodeSHA256": "7834bbb95f84915a6544d34b4148f7f267fcc94d2ae730888644535ffc57c0dd",
+    "recordCount": 32,
+    "positiveExpansionRecordCount": 32,
+    "publicTimelineInputsUsed": true,
+    "legacyEndpointBranchRecordCount": 1,
+    "endpointDerivedSDFTranslationApplied": false,
+    "cropOrProducerValuesUsed": false,
+    "toleranceUsed": false
+  },
+  "floatingReplay": {
+    "rectangleCount": 32,
+    "exactRectangleCount": 32,
+    "mismatchedRectangleCount": 0,
+    "componentCount": 128,
+    "exactComponentCount": 128,
+    "mismatchedComponentCount": 0,
+    "exactComponentCountsXYWH": [32, 32, 32, 32],
+    "maximumAbsoluteErrorsXYWH": [0.0, 0.0, 0.0, 0.0],
+    "maximumULPDistancesXYWH": [0, 0, 0, 0],
+    "toleranceUsed": false
+  },
+  "pointerSelection": {
+    "recordCount": 32,
+    "matchingStoreRecordCount": 33,
+    "pointerReuseRecordCount": 1,
+    "discardedEarlierMatchCount": 1,
+    "pointerReuseBranchExecuted": true,
+    "everySelectedStoreIsLastMatchingStore": true,
+    "cropOrProducerValuesUsedForSelection": false
+  },
+  "sealedConclusion": {
+    "v4UnseenGeometryTransferPassed": false,
+    "v4UnseenGeometryTransferFalsified": true,
+    "v5UnseenGeometryTransferPassed": true,
+    "regularDarkMaterializeCropDODGeometryTransferPassed": true,
+    "selectedRegionOriginTransferPassed": false,
+    "appearanceDependentPresentationLifetimePassed": false,
+    "opticalTransferPassed": false,
+    "independentTemporalMeshSourceMipGenerationPassed": false,
+    "physicalRetinaColorCompositorTransferPassed": false,
+    "independentWalleZeroByteFrameParityPassed": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  },
+  "remainingMajorProductBoundaries": [
+    "selected-region origin and appearance-dependent presentation lifetime",
+    "captured-input optical transfer and independent temporal uniforms, mesh/source geometry, and mip generation",
+    "physical Retina pixel-format, color, display, and compositor transfer",
+    "fresh Apple frames reproduced through Walle with zero unequal bytes"
+  ]
+}

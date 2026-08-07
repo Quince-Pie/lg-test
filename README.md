@@ -11472,6 +11472,32 @@ with no Nix store path in the native environment, post-capture validation in
 all 32 public shadow states, exact pointer selection, and 128/128 components at
 zero ULP. GitHub Actions is not used.
 
+The direct Retina dispatch from commit `0769cd9` passes on its first attempt.
+Native LLDB and strict validation both exit zero. The physical session is
+active and awake at 3456x2234 pixels, 1728x1117 points, and backing scale 2.
+The trace, timeline, and validation SHA-256 values are respectively
+`250f48901e48ad9693f3f0435faf6c4f837c3d0829b4284c2cf383a4119da87b`,
+`49af8fb5c8985f59de002cd634ad915b68da4024f4c52825c76a3e95a1837943`,
+and `d04cc6f2701e08a3ac844b092fa54e355c9e76b243eceada9f89ca2f3b054285`.
+An independent `nix develop` validation is byte-identical to the validation
+produced on the Mac.
+
+All 32 rectangles and all 128 binary64 components match at maximum ULP
+`[0,0,0,0]`. All 32 Gaussian shadow expansions are positive. The previously
+correlated endpoint branch occurs once but contributes exact positive zero to
+SDF translation. The allocation also executes the pointer-reuse branch: 33
+matching stores span 32 records, the earlier match is discarded, and every
+selected store is the final pointer match. Public bounds are exactly
+`[0,0,499,499]`; binary32 margin `174.64999389648438` produces source bounds
+`[-174.64999389648438,-174.64999389648438,848.2999877929688,848.2999877929688]`.
+The immutable outcome is
+`Analysis/prepare_layer_live_crop_replay_v5_0769cd9_holdout_result.json`.
+
+This prospectively closes regular/dark/materialize crop/DOD geometry transfer
+for the tested family. It does not establish selected-region origin,
+appearance-dependent lifetime, optical transfer, physical output, or Walle
+frame parity.
+
 Even a clean circle-499 pass closes only this regular/dark/materialize crop/DOD
 arithmetic family. Four major product boundaries remain before Liquid Glass
 parity can be claimed: selected-region origin and appearance-dependent
