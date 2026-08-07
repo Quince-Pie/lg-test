@@ -10365,6 +10365,34 @@ Analysis/test_capture_designlibrary_background_filter_outer_refraction_intervent
   SHA-256 7a6b0b549d5d4b903acf14c771ccd76abbd5fc33d61f947b74f487af9279154d
 ```
 
+### Frozen same-run live `Parameters` to public-filter gate
+
+The next physical Retina capture is not allowed to become another
+post-observation model-fitting loop. Before its console session is unlocked, a
+separate analysis contract freezes the successor artifact directory, capture
+commit `53686e3e3b80b2654b085628dbbb8c27f1b1cadd`, all 32 structural
+constructor/provider joins, every complete 1,025-byte builder output, all 32
+same-run public samples, and the independently authenticated 49-field getter
+mapping above.
+
+The analyzer accepts only the builder call indices already selected by the
+value-blind constructor/provider validator. Every referenced builder output for
+one sample must be bitwise identical. It then compares all 1,568 mapped
+scalar/discrete components with zero tolerance, preserving signed zero, raw and
+normalized Parameters, and every mismatch. No match count, mismatch count,
+exact-field set, or rejected-field set is predicted or known before capture.
+
+The frozen but unopened contract is:
+
+```text
+Analysis/analyze_background_filter_constructor_live_public_boundary_local_macos_26_6_1.py
+  SHA-256 6329a734fb875ceb140559fabb539c14fef69b0768f886525453d7867da9052e
+Analysis/background_filter_constructor_live_public_boundary_local_macos_26_6_1_preregistration.json
+  SHA-256 f634ac687b0b86f614fef18e6f4929d56cf31cd0b77d5a4b14034a03cb0a6030
+Analysis/test_analyze_background_filter_constructor_live_public_boundary_local_macos_26_6_1.py
+  SHA-256 d106d04b9e9c843c2b6864bb7d85aded2c74789118b893b3ee0ab9e95fccc0ca
+```
+
 The analyzer and tests run under the flake's Python 3.14.6. Native Apple
 execution uses Apple Command Line Tools on `quince@10.0.41.19`, never GitHub
 Actions, and embeds no Nix store path. The actual live producer, general

@@ -1,0 +1,73 @@
+{
+  "analysisContract": {
+    "all32ValidatedConstructorProviderJoinsRequiredInOrder": true,
+    "all49FrozenScalarDiscreteMappingsApplied": true,
+    "allBuilderOutputsReferencedByEachJoinMustBeBitwiseUnique": true,
+    "allSameRunPublicSamplesRequiredInOrder": true,
+    "capturedMismatchMayNotSelectAnotherBuilderCallOrPublicSample": true,
+    "complete1025ByteRawAndNormalizedParametersRetained": true,
+    "exactPositiveAndNegativeZeroDistinguished": true,
+    "mappedComponentCount": 1568,
+    "mappedFieldCount": 49,
+    "noTolerance": true,
+    "publicNumericInputCount": 47,
+    "resultCountsFrozenBeforeCapture": false
+  },
+  "artifactDirectoryName": "local-background-filter-constructor-public-render-interval-parameters-v1-run1",
+  "authorityLimits": {
+    "completeLiveParametersTransferEstablished": false,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "backgroundFilterConstructorLivePublicBoundaryPreregistrationSchemaVersion": 1,
+  "capturedValuesUsedForAnalysisSelection": false,
+  "caseCount": 32,
+  "classification": "prospectively frozen value-blind analysis of every complete live Parameters builder output structurally joined to the same-sample BackgroundFilter constructor/provider and every same-run public CAFilter scalar/discrete sample; the Apple getter mapping, artifact identity, source commit, byte selection, field domain, exact comparison rule, and authority limits are fixed before the local Retina capture opens",
+  "expectedCapture": {
+    "constructorPreregistrationSHA256": "f4bdc79e079ba516b2e92d9326739fcf4491585d5c0295a273f748804ba60461",
+    "constructorValidatorSHA256": "02827c0fc473b762ed6422e895ee7a1d599c0b1609680668e70a3c6a1ceb5a7e",
+    "display": "built-in Retina 3456x2234 physical / 1728x1117 logical / 2x",
+    "predecessorArtifactDirectoryName": "local-case22-provider-public-render-interval-c1bfabd-run1",
+    "sourceCommit": "53686e3e3b80b2654b085628dbbb8c27f1b1cadd",
+    "sshTarget": "quince@10.0.41.19",
+    "validationCaptureContractMustPass": true,
+    "validationSchemaVersion": 2
+  },
+  "frozenAtUTC": "2026-08-07",
+  "mappingContract": {
+    "authenticatedFilterArrayGetterCodeSHA256": "0abc68898237c57aa2c31d54568649f57750241ea6cd4fe9c995d0b9857f826a",
+    "authenticatedGetterBoundaryResultSHA256": "308943d6d5cb16166cd7a1a3f63a824a2b4e47f93bab18e13f7fccac51b94767",
+    "authenticatedGetterBoundarySourceSHA256": "d9406c8d9390d58ed9c399426b8a1fee1436de49e6198bd9c0b7c5bcddf24e7f",
+    "blurRadius": "binary64 multiply by exact 0.5",
+    "blurTapOpacities": "binary32 multiply by BackgroundFilter.blur.opacity",
+    "edgeBleedDarkenBlending": "low bit of optional-Boolean byte",
+    "inputBlurDistance4": "constant binary64 positive zero",
+    "remainingMappedScalars": "identity",
+    "shadowOffset": "two identity binary64 lanes"
+  },
+  "outcomes": {
+    "acceptCapture": "the independently frozen constructor/public validator passes and exposes one bitwise-unique complete live Parameters value for each of all 32 structurally joined samples",
+    "reportMappedTransfer": "report every raw match and mismatch across all 1568 frozen scalar/discrete components without changing the mapping, sample, builder call, or field set",
+    "runtimeOrAnalysisSelectionFromCapturedValueAllowed": false
+  },
+  "sourceIdentity": {
+    "analysisSourceNormalizedSHA256": "cb0a80af706bc23bde06ddf9439cacb3a0193741dfda661e364c8841a804ce6b",
+    "authenticatedGetterMappingResultSHA256": "308943d6d5cb16166cd7a1a3f63a824a2b4e47f93bab18e13f7fccac51b94767",
+    "authenticatedGetterMappingSourceSHA256": "d9406c8d9390d58ed9c399426b8a1fee1436de49e6198bd9c0b7c5bcddf24e7f",
+    "constructorPreregistrationSHA256": "f4bdc79e079ba516b2e92d9326739fcf4491585d5c0295a273f748804ba60461",
+    "constructorValidatorSHA256": "02827c0fc473b762ed6422e895ee7a1d599c0b1609680668e70a3c6a1ceb5a7e",
+    "parametersBasisSourceSHA256": "829e758062d1905ed5635b09bf458337bebce3e41f506ec301d80c66112d2442"
+  },
+  "unknownBeforeCapture": {
+    "allMappedScalarDiscreteGetterFieldsTransferBitwise": null,
+    "distinctLiveParametersCount": null,
+    "fullyExactMappedFieldCount": null,
+    "mappedComponentBitwiseMatchCount": null,
+    "mappedComponentBitwiseMismatchCount": null,
+    "rejectedMappedFieldCount": null,
+    "rejectedMappedFields": null
+  }
+}
