@@ -1,0 +1,71 @@
+{
+  "analysisContract": {
+    "all32ProspectivelySelectedChainsRequiredInSampleOrder": true,
+    "all49PreCaptureFrozenScalarDiscreteMappingsApplied": true,
+    "capturedMismatchMayNotSelectAnotherChainOrPublicSample": true,
+    "complete1025ByteRawAndNormalizedParametersRetained": true,
+    "exactPositiveAndNegativeZeroDistinguished": true,
+    "mappedComponentCount": 1568,
+    "mappedFieldCount": 49,
+    "noTolerance": true,
+    "outcomeCountsFrozenBeforeAnalysis": false,
+    "publicNumericInputCount": 47
+  },
+  "artifactDirectoryName": "local-background-filter-constructor-timeline-marker-return-join-4bda1b4-run1",
+  "artifactIdentity": {
+    "captureCommit": "4bda1b463123b9c22be05cbef36841b22aaf68f6",
+    "constructorTraceSHA256": "b13b08a1d5e9d90aa60dea3c46f06074a00eba3609a96e9bc36e92b2e0dd831d",
+    "sameRunPublicTimelineSHA256": "ebdd4a6ad942b21ab88eec7a5bd22b6b4ef399d5370279c46c904e3e272da2c2",
+    "validationCaptureContractMustPass": true,
+    "validationSHA256": "93ea10f0d2a6981d652d66ff5a2f113622b2cf393a8115490ca9b0a2bbaabe6f",
+    "validationSchemaVersion": 1
+  },
+  "authorityLimits": {
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "backgroundFilterConstructorReturnJoinLivePublicBoundaryPreregistrationSchemaVersion": 1,
+  "capturedValuesUsedForSampleOrChainSelection": false,
+  "caseCount": 32,
+  "classification": "post-capture pre-analysis freeze applying the independently pre-capture-frozen 49-field getter mapping to all 32 value-blind prospectively selected same-run live Parameters payloads from the accepted immediate-return join",
+  "frozenAtUTC": "2026-08-07",
+  "mappedComponentCount": 1568,
+  "mappedFieldCount": 49,
+  "mappingContract": {
+    "blurRadius": "binary64 multiply by exact 0.5",
+    "blurTapOpacities": "binary32 multiply by BackgroundFilter.blur.opacity",
+    "edgeBleedDarkenBlending": "low bit of optional-Boolean byte",
+    "inputBlurDistance4": "constant binary64 positive zero",
+    "mappingWasFrozenBeforeCapture": true,
+    "preCaptureMappingPreregistrationSHA256": "f634ac687b0b86f614fef18e6f4929d56cf31cd0b77d5a4b14034a03cb0a6030",
+    "remainingMappedScalars": "identity",
+    "shadowOffset": "two identity binary64 lanes"
+  },
+  "outcomes": {
+    "acceptArtifact": "the exact frozen return-join validation and artifact hashes pass and expose one structurally selected live Parameters value for each of all 32 samples",
+    "reportMappedTransfer": "report every raw match and mismatch across all 1568 fixed scalar/discrete components without changing the mapping, sample, chain, or field set",
+    "runtimeOrAnalysisSelectionFromCapturedValueAllowed": false
+  },
+  "sourceIdentity": {
+    "analysisSourceNormalizedSHA256": "e22db151e67c7f4d2ceb864b2797394dc7d1e2714db134e9383310b6d4410850",
+    "authenticatedGetterMappingResultSHA256": "308943d6d5cb16166cd7a1a3f63a824a2b4e47f93bab18e13f7fccac51b94767",
+    "authenticatedGetterMappingSourceSHA256": "d9406c8d9390d58ed9c399426b8a1fee1436de49e6198bd9c0b7c5bcddf24e7f",
+    "parametersBasisSourceSHA256": "829e758062d1905ed5635b09bf458337bebce3e41f506ec301d80c66112d2442",
+    "preCaptureMappingAnalysisSHA256": "6329a734fb875ceb140559fabb539c14fef69b0768f886525453d7867da9052e",
+    "returnJoinPreregistrationSHA256": "26d61690f6b1f177da679e4fe13324689b36322a3ced3b91bb7f987377cbb44e",
+    "returnJoinResultSHA256": "e21834578e16099d06fd8fde52589b53cd67f97cd295a555e5d5c839a28cda44",
+    "returnJoinValidatorSHA256": "4db2cd6c8bedcfb33d2e63cf05fc3c273f62c34e85dd4de4de5ad2775ae27f76"
+  },
+  "unknownBeforeAnalysis": {
+    "allMappedScalarDiscreteGetterFieldsTransferBitwise": null,
+    "distinctLiveParametersCount": null,
+    "fullyExactMappedFieldCount": null,
+    "mappedComponentBitwiseMatchCount": null,
+    "mappedComponentBitwiseMismatchCount": null,
+    "rejectedMappedFieldCount": null,
+    "rejectedMappedFields": null
+  }
+}
