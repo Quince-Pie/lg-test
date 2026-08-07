@@ -1,0 +1,123 @@
+{
+  "backdropMarginWriterProviderCompositionMatrixInterimResultSchemaVersion": 1,
+  "classification": "immutable direct-Retina-M1 v6 matrix result: the corrected regular contribution passed prospectively; two clear-light captures independently exposed exact positive-zero producer, setter, and copy words but failed closed when the clear presentation backdrop disappeared before a bounds consumer",
+  "commit": "36588cf75d0fe5802d303d591e87a112d6837cf3",
+  "frozenGate": {
+    "preregistration": "Analysis/backdrop_margin_writer_provider_composition_local_macos_26_6_1_v6_preregistration.json",
+    "preregistrationSHA256": "a9115d1bfcd50de265da0ca6edf6712f44f4d0651393ce49bc5e85dbd26404be",
+    "validator": "Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1_v6.py",
+    "validatorSHA256": "7fd85b1f7f1f470c31bf9c55f95082bda7ab30a2d2834d861d2c4a1734898b41",
+    "directMacWrapper": "Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1_v6.sh",
+    "directMacWrapperSHA256": "66adb05ba9cfe7b29b3d1c20fcc28f3588286ee513c54ac03adcc7cb3935bc13",
+    "candidateChangedBetweenRuns": false,
+    "sameFrozenCommitForEveryRun": true
+  },
+  "regularDark": {
+    "profile": "regular-dark-materialize-circle-475-center",
+    "firstCapture": {
+      "role": "failed-closed presentation transport",
+      "trace": "../artifacts/local-backdrop-margin-provider-composition-36588cf-regular-dark-run1/backdrop-margin-writer-trace.json",
+      "traceSHA256": "c59d6cb4bb5ee0810d34a2ee54fa6cb5e1db5d847d259e651d2ca4b8fb4da989",
+      "timeline": "../artifacts/local-backdrop-margin-provider-composition-36588cf-regular-dark-run1/transition-timeline.json",
+      "timelineSHA256": "ab36d3bfce5c269928bffb04ada83c16a4d93521fe3b9588e480f0d6dabb124e",
+      "timelineError": "presentation glassBackground snapshot unavailable at sample 31",
+      "traceFailureCount": 0,
+      "eventCount": 601,
+      "eventTypeCounts": {
+        "marginSetter": 147,
+        "copyEntry": 302,
+        "copyMarginStore": 152,
+        "backdropBounds": 0
+      },
+      "maximumObservedSetterF64": 166.25,
+      "maximumObservedSetterF64RawLittleEndianHex": "0000000000c86440",
+      "partialCaptureAcceptedAsProspectivePass": false
+    },
+    "secondCapture": {
+      "role": "complete prospective transfer",
+      "trace": "../artifacts/local-backdrop-margin-provider-composition-36588cf-regular-dark-run2/backdrop-margin-writer-trace.json",
+      "traceSHA256": "282c747646ba5d14d5c545855125096e9085f9712cd812b12dc577d365b6ae8d",
+      "timeline": "../artifacts/local-backdrop-margin-provider-composition-36588cf-regular-dark-run2/transition-timeline.json",
+      "timelineSHA256": "387f609c8bc1d98386ae84318590294673e47680193e5bfb20eea349d6e8daff",
+      "validation": "../artifacts/local-backdrop-margin-provider-composition-36588cf-regular-dark-run2/validation.json",
+      "validationSHA256": "4feff938f4cc8d0ef1ad9cba48d27ca2a53785aae4bc1029393e0bf456fd8acb",
+      "traceFailureCount": 0,
+      "timelineSampleCount": 33,
+      "dynamicPublicRecordCount": 32,
+      "eventCount": 1195,
+      "eventTypeCounts": {
+        "marginSetter": 150,
+        "copyEntry": 468,
+        "copyMarginStore": 272,
+        "backdropBounds": 305
+      },
+      "providerMaximumF64": 83.0,
+      "providerMaximumF64RawLittleEndianHex": "0000000000c05440",
+      "bleedMaximumF64": 166.25,
+      "bleedMaximumF64RawLittleEndianHex": "0000000000c86440",
+      "correctedRegularMaximumF64": 166.25,
+      "correctedRegularMaximumF64RawLittleEndianHex": "0000000000c86440",
+      "renderAndBoundsMarginF32": 166.25,
+      "renderAndBoundsMarginF32RawLittleEndianHex": "00402643",
+      "completeObjectJoinedChainCount": 32,
+      "producerInvocationCount": 150,
+      "allProducerReturnsEqualSetterInputsBitwise": true,
+      "allObjectJoinedChainsMatchCorrectedCandidateBitwise": true,
+      "prospectiveRegularCompositionTransferPassed": true
+    }
+  },
+  "clearLight": {
+    "profile": "clear-light-materialize-circle-451-center",
+    "captureCount": 2,
+    "commonTimelineError": "presentation glassBackground snapshot unavailable at sample 30",
+    "captures": [
+      {
+        "trace": "../artifacts/local-backdrop-margin-provider-composition-36588cf-clear-light-run1/backdrop-margin-writer-trace.json",
+        "traceSHA256": "72d3edb8da333fca6833875d29704c208b0ad8e7151d1fab5465d3903317b24e",
+        "timeline": "../artifacts/local-backdrop-margin-provider-composition-36588cf-clear-light-run1/transition-timeline.json",
+        "timelineSHA256": "6b2971dfe2bf5689c4ef1ad2364451fb306d76335b6e2692a48aba55e6ad8820",
+        "eventCount": 597,
+        "marginSetterCount": 146,
+        "copyEntryCount": 300,
+        "copyMarginStoreCount": 151,
+        "backdropBoundsCount": 0
+      },
+      {
+        "trace": "../artifacts/local-backdrop-margin-provider-composition-36588cf-clear-light-run2/backdrop-margin-writer-trace.json",
+        "traceSHA256": "bbb59955ba93bf33a697544ba1e89510e8fbe65a190bc33bb2c485ccc040cfd3",
+        "timeline": "../artifacts/local-backdrop-margin-provider-composition-36588cf-clear-light-run2/transition-timeline.json",
+        "timelineSHA256": "6b2971dfe2bf5689c4ef1ad2364451fb306d76335b6e2692a48aba55e6ad8820",
+        "eventCount": 601,
+        "marginSetterCount": 147,
+        "copyEntryCount": 302,
+        "copyMarginStoreCount": 152,
+        "backdropBoundsCount": 0
+      }
+    ],
+    "combinedMarginSetterCount": 293,
+    "combinedCopyMarginStoreCount": 303,
+    "all293ProducerReturnsF64RawLittleEndianHex": "0000000000000000",
+    "all293SetterInputsF64RawLittleEndianHex": "0000000000000000",
+    "all303CopyStoresF32RawLittleEndianHex": "00000000",
+    "allProducerReturnsEqualSetterInputsBitwise": true,
+    "traceFailureCountAcrossBothCaptures": 0,
+    "clearPresentationBackdropRemovalRepeated": true,
+    "completeSetterCopyBoundsChainCount": 0,
+    "v6CompleteClearTransferPassed": false,
+    "partialCapturePromotedToProspectivePass": false
+  },
+  "conclusion": {
+    "providerOnlyRegularCandidateRemainsRejected": true,
+    "correctedRegularCompositionProspectivelyEstablished": true,
+    "clearPositiveZeroProducerSetterCopyLawRepeatedExactly": true,
+    "clearRegularStyleBoundsContractFalsified": true,
+    "clearSpecificPresentationRemovalContractMustBeFrozenBeforeClearDarkIsOpened": true,
+    "v6FourCaseMatrixPassed": false,
+    "allocationMarginCompositionFullyClosed": false,
+    "selectedRegionPolicyEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

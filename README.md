@@ -11079,3 +11079,51 @@ The immutable falsification is
 It does not establish selected-region/origin allocation, physical Retina
 compositor/color behavior, an independent zero-unequal-byte Walle frame, or
 Liquid Glass parity.
+
+The first v6 regular/dark dispatch at commit `36588cf` failed closed when the
+presentation snapshot disappeared at sample 31. It retained no bounds gate or
+complete timeline and is not counted as a prospective pass. An unchanged
+second capture completed all 33 samples and passed exactly: the provider
+maximum is binary64 83.0 (`0000000000c05440`), the bleed and corrected regular
+maxima are binary64 166.25 (`0000000000c86440`), and all 32 joined
+setter/copy/bounds chains carry binary32 166.25 (`00402643`). The trace has
+1,195 events, 150 exact producer invocations, and no failure. This gives the
+corrected regular composition prospective transfer authority.
+
+Clear material exposes a different structural endpoint. Two unchanged
+clear/light circle-451 captures lost the presentation backdrop at sample 30.
+Across both traces, every one of 293 authenticated `Group.margin` returns and
+setter inputs is binary64 positive zero, and every one of 303 copy stores is
+binary32 positive zero. Neither trace contains a bounds gate or bounds event.
+The v6 validator correctly rejected both because it required the regular
+setter/copy/bounds chain; neither partial capture is relabelled as a pass. The
+immutable combined result is
+`Analysis/backdrop_margin_writer_provider_composition_36588cf_matrix_interim_result.json`.
+
+The successor clear-specific gate freezes the behavior those repetitions
+identify before opening clear/dark circle-459:
+
+```text
+Group.margin return = binary64 +0
+setMarginWidth input = the identical binary64 +0 word
+copy render margin   = binary32 +0
+regular get_bounds consumer = absent
+presentation glassBackground removal = sample N, 24 <= N <= 32
+pre-removal images = one contiguous sequence 00 through N-1
+```
+
+The exact copy/setter code, live SwiftUICore caller, 732-byte Group getter,
+producer-return/setter equality, opaque copy `x2`, event bounds, and
+value-blind capture contract remain mandatory. The still-unseen dark output
+does not choose any part of this acceptance. The direct-M1 files are:
+
+```text
+Analysis/backdrop_margin_writer_clear_presentation_removal_local_macos_26_6_1_preregistration.json
+Analysis/validate_backdrop_margin_writer_clear_presentation_removal_local_macos_26_6_1.py
+Analysis/run_backdrop_margin_writer_clear_presentation_removal_local_macos_26_6_1.sh
+```
+
+Even a dark holdout pass closes only the allocation-margin producer and clear
+presentation-removal boundary. Selected-region/origin allocation, physical
+Retina compositor/color transfer, and an independent zero-unequal-byte Walle
+frame remain mandatory before parity.
