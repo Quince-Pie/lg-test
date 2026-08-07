@@ -58,7 +58,7 @@ if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
 fi
 
 require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd
-require_sha256 "$capture" 6b2e207dffa7bdc42f571094f05791aaf3e5588801d787e3d34a7977f017cec1
+require_sha256 "$capture" 8808e92fe27a7d1c99ad1451dfbcd29674bd1ed1081218bdc2d13b7d29f0de60
 require_sha256 "$live_capture" 7166b30cc047bc21c5db77ebc5e5c92d8dcdc5e23d3833b32c8a40b3dbba7820
 require_sha256 "$arithmetic" 67db83b0ccb3c83a2555ab9932631fd1c771ce3acf9d70c253ec806d2516f04e
 require_sha256 "$validator" 0f742ac9071ff552680d7a4661cfe2abe55e663a5cfd315ba0414824d26ffb98

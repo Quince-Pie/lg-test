@@ -21,6 +21,7 @@ class CapturePrepareLayerLiveCropArithmeticTests(unittest.TestCase):
             "target.FindFunctions",
             "symbol.GetStartAddress",
             "symbol.GetEndAddress",
+            "module.GetFileSpec().fullpath",
             "_read_memory",
             "hashlib.sha256(code).hexdigest()",
             '"cropOrProducerValuesUsed": False',

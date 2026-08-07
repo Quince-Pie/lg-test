@@ -116,7 +116,7 @@ def _authenticate_symbols(frame):
                 "symbolStart": start,
                 "symbolEnd": end,
                 "quartzCoreUUID": module.GetUUIDString(),
-                "modulePath": module.GetFileSpec().GetPath(),
+                "modulePath": module.GetFileSpec().fullpath or "",
             }
         )
     extension["records"] = records
