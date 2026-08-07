@@ -1,0 +1,1084 @@
+{
+  "claims": {
+    "environmentToConfigurationSelectionLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "initialProviderStateLayoutEstablished": true,
+    "integerCropAllocationPolicyEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "publicRegularClearMixRuntimePayloadEstablished": true,
+    "publicRegularColorAndAdaptiveModifierResolutionEstablished": true,
+    "publicStaticConfigurationDefaultsToResolvedKeysEstablished": true,
+    "retinaCompositorColorLawEstablished": false,
+    "transitionProgressProductionLawEstablished": false
+  },
+  "classification": "direct native invocation of exported Apple Swift ABI; no DesignLibrary SDK module, GUI session, application, render, image, crop, or Nix store path is used",
+  "designLibraryPublicConfigurationResolutionCaptureSchemaVersion": 1,
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "initialState": {
+    "adaptedColorSchemeStorage": 2,
+    "awaitingInitialLuminanceStorage": 1,
+    "fixedBackgroundColorStorageHex": "0000000000000000000000000000000001",
+    "flagsBits": "0x0000000000000000"
+  },
+  "measuredInvariants": {
+    "freshProcessSemanticStabilityEstablished": true,
+    "mixEndpointsIndependentOfFraction": true,
+    "mixFractionCount": 7,
+    "modifierCount": 8,
+    "nativeDictionaryAllocationBytes": 224,
+    "nativeDictionaryCapacitySlots": 2,
+    "nativeDictionaryEntryCount": 1,
+    "nativeDictionaryValue": 1.0,
+    "nativeDictionaryValueBits": "0x3ff0000000000000",
+    "providerInitializerCopiesAllConfigurationBytes": true,
+    "publicMixFractionPreservedBitwise": true,
+    "resolvedCompositeKeySemanticBytes": 49,
+    "resolvedCompositeLuminanceBits": "0x3f800000",
+    "resolvedConfigurationBytes": 48,
+    "resolvedConfigurationMixAllocationBytes": 128,
+    "resolvedConfigurationMixPayloadBytes": 104,
+    "resolvedStyleCopiesAllConfigurationBytes": true,
+    "staticConfigurationCount": 27
+  },
+  "regularModifiers": [
+    {
+      "name": "color_scheme_light",
+      "publicConfigurationColorSchemeStorage": 0,
+      "publicConfigurationOptionsBits": "0x0000000000000000",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "color_scheme_dark",
+      "publicConfigurationColorSchemeStorage": 1,
+      "publicConfigurationOptionsBits": "0x0000000000000000",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "adaptive_false",
+      "publicConfigurationColorSchemeStorage": 2,
+      "publicConfigurationOptionsBits": "0x0000000000000000",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "adaptive_true",
+      "publicConfigurationColorSchemeStorage": 2,
+      "publicConfigurationOptionsBits": "0x0000000000004000",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "adaptive_light",
+      "publicConfigurationColorSchemeStorage": 0,
+      "publicConfigurationOptionsBits": "0x0000000000004000",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "adaptive_dark",
+      "publicConfigurationColorSchemeStorage": 1,
+      "publicConfigurationOptionsBits": "0x0000000000004000",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "adaptive_animatable_false",
+      "publicConfigurationColorSchemeStorage": 2,
+      "publicConfigurationOptionsBits": "0x0000000000404000",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000404000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "adaptive_animatable_true",
+      "publicConfigurationColorSchemeStorage": 2,
+      "publicConfigurationOptionsBits": "0x0000000000004000",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      }
+    }
+  ],
+  "regularToClearMixes": [
+    {
+      "fraction": -0.25,
+      "fractionBits": "0xbfd0000000000000",
+      "from": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000099183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "name": "negative_quarter",
+      "outerBaseRepresentation": {
+        "kind": "indirectBox",
+        "tagByte": 128
+      },
+      "outerColorSchemeStorage": 0,
+      "outerResolvedConfigurationTail": {
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "to": {
+        "baseStorageHex": "030000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000088183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "fraction": 0.0,
+      "fractionBits": "0x0000000000000000",
+      "from": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000099183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "name": "zero",
+      "outerBaseRepresentation": {
+        "kind": "indirectBox",
+        "tagByte": 128
+      },
+      "outerColorSchemeStorage": 0,
+      "outerResolvedConfigurationTail": {
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "to": {
+        "baseStorageHex": "030000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000088183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "fraction": 0.25,
+      "fractionBits": "0x3fd0000000000000",
+      "from": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000099183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "name": "quarter",
+      "outerBaseRepresentation": {
+        "kind": "indirectBox",
+        "tagByte": 128
+      },
+      "outerColorSchemeStorage": 0,
+      "outerResolvedConfigurationTail": {
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "to": {
+        "baseStorageHex": "030000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000088183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "fraction": 0.5,
+      "fractionBits": "0x3fe0000000000000",
+      "from": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000099183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "name": "half",
+      "outerBaseRepresentation": {
+        "kind": "indirectBox",
+        "tagByte": 128
+      },
+      "outerColorSchemeStorage": 0,
+      "outerResolvedConfigurationTail": {
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "to": {
+        "baseStorageHex": "030000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000088183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "fraction": 0.75,
+      "fractionBits": "0x3fe8000000000000",
+      "from": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000099183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "name": "three_quarters",
+      "outerBaseRepresentation": {
+        "kind": "indirectBox",
+        "tagByte": 128
+      },
+      "outerColorSchemeStorage": 0,
+      "outerResolvedConfigurationTail": {
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "to": {
+        "baseStorageHex": "030000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000088183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "fraction": 1.0,
+      "fractionBits": "0x3ff0000000000000",
+      "from": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000099183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "name": "one",
+      "outerBaseRepresentation": {
+        "kind": "indirectBox",
+        "tagByte": 128
+      },
+      "outerColorSchemeStorage": 0,
+      "outerResolvedConfigurationTail": {
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "to": {
+        "baseStorageHex": "030000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000088183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "fraction": 1.25,
+      "fractionBits": "0x3ff4000000000000",
+      "from": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000099183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "name": "five_quarters",
+      "outerBaseRepresentation": {
+        "kind": "indirectBox",
+        "tagByte": 128
+      },
+      "outerColorSchemeStorage": 0,
+      "outerResolvedConfigurationTail": {
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      "to": {
+        "baseStorageHex": "030000000000000000000000c0",
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000088183",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    }
+  ],
+  "runtimeLayouts": {
+    "Configuration": {
+      "extraInhabitantCount": 2147483647,
+      "fields": [
+        {
+          "name": "base",
+          "offset": 0
+        },
+        {
+          "name": "frost",
+          "offset": 8
+        },
+        {
+          "name": "subvariant",
+          "offset": 9
+        },
+        {
+          "name": "size",
+          "offset": 16
+        },
+        {
+          "name": "options",
+          "offset": 40
+        },
+        {
+          "name": "interactionState",
+          "offset": 48
+        },
+        {
+          "name": "colorScheme",
+          "offset": 49
+        },
+        {
+          "name": "optimizationLevel",
+          "offset": 50
+        },
+        {
+          "name": "contentEffect",
+          "offset": 51
+        },
+        {
+          "name": "_adaptiveHysteresisRange",
+          "offset": 52
+        },
+        {
+          "name": "tints",
+          "offset": 72
+        },
+        {
+          "name": "controlTint",
+          "offset": 80
+        },
+        {
+          "name": "fixedBackgroundColor",
+          "offset": 88
+        },
+        {
+          "name": "luminance",
+          "offset": 112
+        },
+        {
+          "name": "customFill",
+          "offset": 120
+        },
+        {
+          "name": "customGlow",
+          "offset": 128
+        }
+      ],
+      "size": 144,
+      "stride": 144,
+      "valueWitnessFlags": "0x00030007"
+    },
+    "GlassMaterialProvider": {
+      "extraInhabitantCount": 2147483647,
+      "fields": [],
+      "size": 144,
+      "stride": 144,
+      "valueWitnessFlags": "0x00030007"
+    },
+    "Resolved": {
+      "extraInhabitantCount": 2147483647,
+      "fields": [
+        {
+          "name": "composite",
+          "offset": 0
+        },
+        {
+          "name": "focusOffset",
+          "offset": 16
+        },
+        {
+          "name": "configuration",
+          "offset": 32
+        },
+        {
+          "name": "resolved",
+          "offset": 40
+        },
+        {
+          "name": "dimensions",
+          "offset": 56
+        },
+        {
+          "name": "tints",
+          "offset": 88
+        },
+        {
+          "name": "tintRecipe",
+          "offset": 96
+        },
+        {
+          "name": "colorScheme",
+          "offset": 102
+        },
+        {
+          "name": "customFill",
+          "offset": 104
+        },
+        {
+          "name": "customGlow",
+          "offset": 112
+        },
+        {
+          "name": "style",
+          "offset": 128
+        },
+        {
+          "name": "controlTint",
+          "offset": 272
+        },
+        {
+          "name": "styleFlags",
+          "offset": 296
+        },
+        {
+          "name": "fixedBackgroundColor",
+          "offset": 304
+        }
+      ],
+      "size": 321,
+      "stride": 328,
+      "valueWitnessFlags": "0x00030007"
+    },
+    "State": {
+      "extraInhabitantCount": 2147483647,
+      "fields": [
+        {
+          "name": "adaptedColorScheme",
+          "offset": 0
+        },
+        {
+          "name": "awaitingInitialLuminance",
+          "offset": 1
+        },
+        {
+          "name": "environment",
+          "offset": 8
+        },
+        {
+          "name": "flags",
+          "offset": 272
+        },
+        {
+          "name": "tints",
+          "offset": 280
+        },
+        {
+          "name": "fixedBackgroundColor",
+          "offset": 288
+        }
+      ],
+      "size": 305,
+      "stride": 312,
+      "valueWitnessFlags": "0x00030007"
+    }
+  },
+  "staticConfigurations": [
+    {
+      "name": "regular",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "clear",
+      "resolvedConfiguration": {
+        "baseStorageHex": "030000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "control",
+      "resolvedConfiguration": {
+        "baseStorageHex": "0a0000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x00000000001e031f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "text",
+      "resolvedConfiguration": {
+        "baseStorageHex": "00000000010000000000000001",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006025f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000002",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "identity",
+      "resolvedConfiguration": {
+        "baseStorageHex": "000000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000004035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "menu",
+      "resolvedConfiguration": {
+        "baseStorageHex": "130000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "dock",
+      "resolvedConfiguration": {
+        "baseStorageHex": "090000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006030f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000002",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "appIcons",
+      "resolvedConfiguration": {
+        "baseStorageHex": "040000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006010e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "widgets",
+      "resolvedConfiguration": {
+        "baseStorageHex": "040000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006070e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000002",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "avplayer",
+      "resolvedConfiguration": {
+        "baseStorageHex": "0e0000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "facetime",
+      "resolvedConfiguration": {
+        "baseStorageHex": "0e0000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "controlCenter",
+      "resolvedConfiguration": {
+        "baseStorageHex": "070000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000002",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "notificationCenter",
+      "resolvedConfiguration": {
+        "baseStorageHex": "020000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "monogram",
+      "resolvedConfiguration": {
+        "baseStorageHex": "100000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000024031e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "bubbles",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "focusBorder",
+      "resolvedConfiguration": {
+        "baseStorageHex": "060000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 2,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000005c320",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000001001",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "focusPlatter",
+      "resolvedConfiguration": {
+        "baseStorageHex": "060000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 2,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000005c320",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000001001",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "keyboard",
+      "resolvedConfiguration": {
+        "baseStorageHex": "080000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006030e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "sidebar",
+      "resolvedConfiguration": {
+        "baseStorageHex": "010000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "abuttedSidebar",
+      "resolvedConfiguration": {
+        "baseStorageHex": "00000000000000000000000040",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "inspector",
+      "resolvedConfiguration": {
+        "baseStorageHex": "01000000000000000000000040",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "loupe",
+      "resolvedConfiguration": {
+        "baseStorageHex": "0b0000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000016031d",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "slider",
+      "resolvedConfiguration": {
+        "baseStorageHex": "0c0000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x00000000001e031f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "camera",
+      "resolvedConfiguration": {
+        "baseStorageHex": "0d0000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006030e",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "cartouchePopover",
+      "resolvedConfiguration": {
+        "baseStorageHex": "0f0000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "siriSnippet",
+      "resolvedConfiguration": {
+        "baseStorageHex": "140000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      }
+    },
+    {
+      "name": "carplayUltra",
+      "resolvedConfiguration": {
+        "baseStorageHex": "150000000000000000000000c0",
+        "colorSchemeStorage": 0,
+        "contentEffectStorage": 0,
+        "environmentFlagsBits": "0x0000000000000000",
+        "frostStorage": 0,
+        "interactionStorage": 0,
+        "layersBits": "0x000000000006035f",
+        "optimizationLevelStorage": 0,
+        "optionsBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    }
+  ],
+  "tool": {
+    "assemblyBridge": "Analysis/invoke_designlibrary_public_configuration_resolution_arm64.S",
+    "assemblyBridgeSHA256": "9f58cbef6e4875f9fb377f4018913d6336b6c906c1a37a1117d137ac373fef2d",
+    "captureSource": "Analysis/capture_designlibrary_public_configuration_resolution_local_macos_26_6_1.py",
+    "captureSourceSHA256": "188feac1ce112a4e988fbbfe12e157ab3e6a9b734687d67f1c30c177395e49c6",
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "freshProcessRunsPerMode": 3,
+    "probeExecutableSHA256": "84f7c0e4f607ed7b8b166c67740fda4b999b9aa3a707ff2556729045d5e9c552",
+    "probeSource": "Analysis/probe_designlibrary_public_configuration_resolution_local_macos_26_6_1.c",
+    "probeSourceSHA256": "46db6fb3fa1f2803fe1aaa14c7221f8eca24babee05613b441d1e13143c54d58",
+    "python": "3.9.6"
+  }
+}

@@ -9249,3 +9249,107 @@ animation-progress law, public/environment endpoint selection, integer
 crop/allocation policy, physical Retina compositor/color behavior, an
 independent Walle zero-unequal-byte frame, or Liquid Glass parity. No
 production shader change is authorized.
+
+### Direct public `Configuration` defaults, modifiers, and resolved mix payloads
+
+The private `DesignLibrary` framework has no importable SDK module, but that no
+longer blocks measurement of its public configuration boundary. A native C23
+probe loads the exact framework UUID and invokes its exported Swift symbols
+through a minimal arm64 bridge. Runtime value-witness and struct-descriptor
+decoding establishes these resilient layouts and field offsets before any
+value is called:
+
+```text
+Configuration          size 144  stride 144
+GlassMaterialProvider  size 144  stride 144
+State                  size 305  stride 312
+Resolved               size 321  stride 328
+
+State.adaptedColorScheme       0
+State.awaitingInitialLuminance 1
+State.environment              8
+State.flags                  272
+State.tints                  280
+State.fixedBackgroundColor   288
+```
+
+The initial state has adapted-color-scheme storage `2`, awaiting-initial-
+luminance storage `1`, zero flags, and a nil fixed-background-color payload.
+The complete 264-byte environment value begins at offset 8; this capture does
+not pretend that resolving its layout also establishes the law that updates
+it from live SwiftUI environment values.
+
+All 27 exported no-argument configuration defaults are now invoked and
+resolved in valid Apple-created values. In every case the provider initializer
+copies all 144 configuration bytes exactly, `Resolved.style` preserves those
+same 144 bytes exactly, and `Resolved.composite` contains one native
+dictionary entry with binary64 value `1.0`. The dictionary allocation is 224
+bytes with two hash slots. Slot choice varies with Swift hashing and is
+deliberately excluded from semantic evidence; the selected 49-byte key is an
+exact 48-byte `ResolvedConfiguration` followed by its `ColorScheme`.
+
+For example, the default regular key is:
+
+```text
+base              010000000000000000000000c0
+subvariant        0
+frost             0
+options           0x0000000000004000
+environment flags 0x0000000000000000
+interaction       0
+optimization      0
+content effect    0
+layers            0x000000000006035f
+color scheme      0
+```
+
+The corresponding clear key uses base storage
+`030000000000000000000000c0`, options zero, and layers
+`0x000000000006031e`. The canonical result retains the exact field values for
+regular, clear, control, text, identity, menu, dock, app icons, widgets,
+AVPlayer, FaceTime, Control Center, Notification Center, monogram, bubbles,
+focus border, focus platter, keyboard, sidebar, abutted sidebar, inspector,
+loupe, slider, camera, cartouche popover, Siri snippet, and CarPlay Ultra.
+
+Public `regular.mix(with: clear, by:)` is also measured directly at `-0.25`,
+`0`, `0.25`, `0.5`, `0.75`, `1`, and `1.25`. Every value, including both
+exact endpoints, remains an indirect `ResolvedConfiguration.Mix`; Apple does
+not collapse `t == 0` or `t == 1` to a direct endpoint at this boundary. Its
+128-byte box contains the 104-byte semantic payload proved statically: two
+48-byte resolved configurations and the original binary64 fraction. The
+endpoint bytes are independent of fraction, and all seven fraction bit
+patterns are preserved exactly. Under `initialState`, the resolved regular
+endpoint has environment flags `0x0000000000099183`; clear has
+`0x0000000000088183`.
+
+Eight regular-material modifiers are measured through the same path. Explicit
+light and dark color schemes place storage values `0` and `1` in the public
+configuration. `adaptive(false)` resolves options to zero and
+`adaptive(true)` to `0x4000`; adaptive light and dark also use `0x4000`.
+The deliberately counterintuitive animatable policy is exact:
+`adaptive(animatable: false)` uses `0x404000`, while `true` uses `0x4000`.
+
+Each of the static, mix, and modifier modes is repeated in three fresh
+processes. Semantic records must be identical across all repetitions; pointer
+addresses, dictionary hash-slot selection, and layout padding never enter a
+claim. The capture and canonical result are:
+
+```text
+Analysis/capture_designlibrary_public_configuration_resolution_local_macos_26_6_1.py
+  SHA-256 188feac1ce112a4e988fbbfe12e157ab3e6a9b734687d67f1c30c177395e49c6
+Analysis/probe_designlibrary_public_configuration_resolution_local_macos_26_6_1.c
+  SHA-256 46db6fb3fa1f2803fe1aaa14c7221f8eca24babee05613b441d1e13143c54d58
+Analysis/invoke_designlibrary_public_configuration_resolution_arm64.S
+  SHA-256 9f58cbef6e4875f9fb377f4018913d6336b6c906c1a37a1117d137ac373fef2d
+Analysis/designlibrary_public_configuration_resolution_local_macos_26_6_1_result.json
+  SHA-256 65939d2055fb3c097c3718bb1f8cab06e7ebd3a1854d67cfc54c6ceed630ea59
+```
+
+Compilation uses Apple's Command Line Tools directly and embeds no Nix store
+path. This closes the default public-configuration-to-resolved-key table, the
+regular/clear public mix payload, and the measured color/adaptive modifier
+boundary. It does **not** establish how live environment updates select or
+mutate configurations, how animation time produces the public `by` argument,
+the remaining integer crop allocation, physical Retina compositor/color
+behavior, an independent Walle zero-unequal-byte frame, or Liquid Glass
+parity. No production shader change is authorized.
