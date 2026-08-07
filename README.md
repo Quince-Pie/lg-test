@@ -8184,3 +8184,65 @@ close physical Retina color/pixel/compositor transfer; and render real Walle
 frames with zero unequal bytes against Apple over the frozen domain. Only then
 can VRAM and latency work be accepted, with the production shader quality lock
 unchanged.
+
+### Prospective native finite-branch provider transfer
+
+The locked presentation session blocks the Retina application capture but does
+not block isolated validation of the already authenticated, pure numeric
+DesignLibrary provider. A C23 harness loads the exact private framework,
+requires UUID `1E980802-69F5-3E69-89EF-50088297FCF5`, hashes all 984 provider
+bytes at module offset `0xb70b4`, and prints both identities before accepting a
+single object. Its arm64e assembly shim preserves `x20` and the authenticated
+return state while placing the 384-byte object in the provider's real `x20`
+ABI. Native Apple compilation uses Command Line Tools directly and contains no
+Nix store path. Replaying the previously opened selected object was used only
+as a transport calibration; the native return remained the already known word
+`0000006002a22a40` and therefore opened no prospective value.
+
+Commit `5c75871` prospectively froze the actual differential experiment before
+native dispatch. The output-blind generator uses specified SplitMix64 seed
+`0xcace22`, 200,000 finite candidate objects, first-seen execution-path
+deduplication, and a stable greedy branch-outcome cover. The emulator found 348
+distinct paths, 39/41 conditional sites, 36 sites with both outcomes, and 75
+distinct outcomes. The greedy corpus contains 22 objects; their bytes plus all
+predicted binary64 return words have aggregate SHA-256
+`4ad66c334d3b9d2bddca232594ae9537b42a8e198091e7f4beee2b31c7613970`.
+The preregistration left every Apple return, match count, process status, and
+structural result `null`. Every object was written to the native process before
+any result was classified, so an early mismatch could not alter later samples.
+
+The M1 Max host on macOS 26.6.1 build 25G76 then returned **22/22 exact raw
+binary64 matches**. The independent validator regenerated all 200,000
+candidates and the same 22-object digest, authenticated the source commit,
+frozen file hashes, native host, framework UUID, provider code, process status,
+empty stderr, and all record identities, and reported zero mismatches. The raw
+capture SHA-256 is
+`a28383c9f33a5589cfabef181804481f786cd3851dc9050b02e81baf1e90cdcd`;
+the validation SHA-256 is
+`fb3744e27b180be9bfede4fb5da13fcfcb69e26cff925dd34e81f3e90bc2ca77`.
+
+The remaining seven theoretical outcomes were then closed from the exact code,
+not from failure to fuzz them. At `+0x274` and `+0x2b8`, the sole reaching `d4`
+value is a finite object load multiplied by an immediately written exact zero;
+the following comparison is equality, so the `b.ge` fallthrough is impossible.
+That forced branch makes both outcomes at downstream `+0x2c0` and `+0x2d4`
+unreachable. At `+0x3b0`, reaching `d4` is either one of those signed zeros or
+the unchanged finite load; both unchanged-load paths retain the exact earlier
+constraints `d2 >= 0` and `d2 <= d4`, hence `d4 >= 0`. The machine-checked
+partition is therefore 41 conditional branches, 82 theoretical outcomes, 75
+prospectively transferred outcomes, and exactly seven proved-infeasible
+outcomes. The proof source SHA-256 is
+`8b68d1372723a3d88bf85e89de9e7571d5a7067fd8c97a7989c31a87c266e27a`;
+its canonical result SHA-256 is
+`e66914504f9ed5a1a249d5ceb88d6efeebdef27e4d7b8b6d5f3a135b492f149c`.
+
+This closes the provider's **finite conditional-branch outcome universe** and
+prospectively validates the emulator on every feasible outcome class. It does
+not promote finite samples to a proof over the entire real-valued continuum,
+does not map public SwiftUI controls into the 384-byte object, and does not
+establish Liquid Glass parity. The next product-critical work is now upstream:
+recover public-input object construction and the integer crop/allocation policy
+around the already exact resampling and DOD arithmetic, then close physical
+Retina compositor/color transfer and require zero unequal Walle frame bytes.
+The production shader remains unchanged and unauthorized for any
+quality-reducing substitution.

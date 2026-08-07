@@ -1,0 +1,140 @@
+{
+  "authority": {
+    "allFeasibleFiniteBranchOutcomesProspectivelyTransferred": true,
+    "completeFiniteProviderLaw": false,
+    "finiteConditionalBranchOutcomeUniverseClosed": true,
+    "liquidGlassParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "publicInputFieldMappingEstablished": false
+  },
+  "backdropMarginCase22ProviderFiniteBranchUniverseProofSchemaVersion": 1,
+  "classification": "exact authenticated-code control-flow and reaching-definition proof that the seven unobserved branch outcomes are infeasible when every provider-loaded field is finite",
+  "finiteBranchUniverse": {
+    "conditionalBranchCount": 41,
+    "partitionIsExact": true,
+    "prospectivelyTransferredOutcomeCount": 75,
+    "provedInfeasibleOutcomeCount": 7,
+    "provedInfeasibleOutcomes": [
+      "0x274:not-taken",
+      "0x2b8:not-taken",
+      "0x2c0:not-taken",
+      "0x2c0:taken",
+      "0x2d4:not-taken",
+      "0x2d4:taken",
+      "0x3b0:not-taken"
+    ],
+    "totalOutcomeCount": 82
+  },
+  "inputs": {
+    "proofSource": {
+      "path": "Analysis/prove_backdrop_margin_case22_provider_finite_branch_universe.py",
+      "sha256": "8b68d1372723a3d88bf85e89de9e7571d5a7067fd8c97a7989c31a87c266e27a"
+    },
+    "prospectiveValidation": {
+      "path": "Analysis/backdrop_margin_case22_provider_finite_branch_transfer_result.json",
+      "sha256": "fb3744e27b180be9bfede4fb5da13fcfcb69e26cff925dd34e81f3e90bc2ca77"
+    },
+    "trace": {
+      "path": "../artifacts/mac-quince-macos-26.6.1-case22-provider-passed-42f9413/backdrop-margin-writer-trace.json",
+      "sha256": "19e7d74f3aba55e5c6924d7119fddcf20578a98a4e7b946cc4a435918df4059f"
+    }
+  },
+  "proofs": [
+    {
+      "outcomes": [
+        "0x274:not-taken"
+      ],
+      "reason": "the sole reaching d4 definition is finite object +0xf8; +0x254 writes exact zero to d1 and +0x258 computes finite*d1, so +0x270 compares signed zero equal to +0"
+    },
+    {
+      "outcomes": [
+        "0x2b8:not-taken"
+      ],
+      "reason": "the sole reaching d4 definition is finite object +0xf8; +0x298 writes exact zero to d1 and +0x29c computes finite*d1, so +0x2b4 compares signed zero equal to +0"
+    },
+    {
+      "outcomes": [
+        "0x2c0:not-taken",
+        "0x2c0:taken",
+        "0x2d4:not-taken",
+        "0x2d4:taken"
+      ],
+      "reason": "+0x2bc has only the forced-taken +0x2b8 fallthrough as predecessor and dominates +0x2d4, so neither branch is reachable for finite loaded fields"
+    },
+    {
+      "outcomes": [
+        "0x3b0:not-taken"
+      ],
+      "reason": "reaching d4 is either a forced signed zero from +0x258/+0x29c or the finite +0xf8 load; both retained-load paths take d2>=0 and d2<=d4 constraints, deriving d4>=0",
+      "retainedLoadPaths": [
+        {
+          "derivedRelation": "finite d4 >= finite d2 >= +0",
+          "instructionOffsets": [
+            192,
+            196,
+            200,
+            204,
+            208,
+            212,
+            216,
+            220,
+            224,
+            228,
+            232,
+            732,
+            736,
+            740,
+            796,
+            800,
+            804,
+            836,
+            840,
+            844,
+            848,
+            940
+          ],
+          "lowerBoundBranchOffset": 232,
+          "lowerBoundTaken": true,
+          "orderingBranchOffset": 740,
+          "orderingTaken": true
+        },
+        {
+          "derivedRelation": "finite d4 >= finite d2 >= +0",
+          "instructionOffsets": [
+            192,
+            196,
+            200,
+            204,
+            536,
+            540,
+            544,
+            548,
+            552,
+            556,
+            560,
+            732,
+            736,
+            740,
+            796,
+            800,
+            804,
+            836,
+            840,
+            844,
+            848,
+            940
+          ],
+          "lowerBoundBranchOffset": 560,
+          "lowerBoundTaken": true,
+          "orderingBranchOffset": 740,
+          "orderingTaken": true
+        }
+      ]
+    }
+  ],
+  "provider": {
+    "codeByteCount": 984,
+    "codeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+    "instructionCount": 246
+  }
+}
