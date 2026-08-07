@@ -11386,3 +11386,99 @@ endpoint-translation grouping, every inherited arithmetic and live-code rule,
 exact last-store selection, physical Retina scale, zero tolerance, and the
 unchanged outer Walle shader/flake hashes. Passing still grants no authority for
 selected-region/origin, compositor/color, product frames, or shader changes.
+
+The direct Retina dispatch at commit `cc25df6` is a genuine prospective v4
+falsification. Native capture completed with 32 qualified markers, the exact
+last-store pointer gate, all six embedded arithmetic code identities, 33
+timeline samples, and physical backing scale 2. The frozen arithmetic still
+matched 0/32 complete rectangles and only 79/128 binary64 components; maximum
+ULP distances in XYWH order were `[4,4,1,1]`. The immutable outcome is
+`Analysis/prepare_layer_live_crop_replay_v4_cc25df6_holdout_falsification_result.json`.
+The failed gate is not relabelled as a pass.
+
+Two output-blind stage overlays then opened every executed boundary in the
+292-byte `FilterOp::apply_filter` and 1,136-byte
+`GlassBackgroundFilter::DOD`. Commits `f578642` and `2512722` retained 148
+complete Filter calls, 180 complete DOD calls, 32 crop markers, and zero trace
+failures per capture. The latter trace and timeline SHA-256 values are
+`9983046bf7e25db8c0c29404b140b224517cbb7d115dbf0a23b5c374baa9d28b`
+and `e1e3690a922dede630d8b1862cf6133ec8cb1b753ff7c9fa5522d32bcab1bf35`.
+
+The stage evidence falsifies both remaining v4 assumptions independently.
+For the selected sample-one call, Filter entry is exactly
+
+```text
+[212.55553913116455, 213.0465269088745,
+ 598.3979339599609, 598.3979339599609]
+```
+
+and its transform is exactly
+`[503.754506111145,520.245493888855,1,1]`. Neither contains the formerly
+inferred endpoint translation `-0.11272943803595581`; the optional final
+Filter union is not executed. That endpoint term was a correlation, not an
+Apple operation.
+
+The nested source-bound call starts from the public `CABackdropLayer` bounds
+
+```text
+[2^-44, 2^-44, 498-2^-44, 498-2^-44]
+```
+
+at stable path `[1,0,1,0]`, before and after CARenderer in all 32 records. The
+render layer holds binary32 margin `174.3000030517578`. Authenticated
+`get_backdrop_bounds` computes, in executed order,
+
+```text
+n = -binary64(binary32(margin))
+origin = raw origin + n
+width  = raw width - (n+n)
+height = fma(n,-2,raw height)
+```
+
+and therefore returns exactly
+`[-174.30000305175776,-174.30000305175776,846.6000061035156,846.6000061035156]`.
+Negating the promoted margin directly loses the observed origin bits.
+
+The missing vertical extent is the already authenticated Gaussian shadow
+path. For the same live call, public `inputShadowOpacity` is
+`0.0082786083221435547`; the exact helper returns
+`0.14184328257213738`; public `inputShadowRadius` is
+`0.79474639892578125`; and their binary64 product is
+`0.1127294380360182`, raw little-endian word
+`9041a921d6dbbc3f`. Apple subtracts this expansion from the shadow origin,
+forms both shadow sizes with `fma(expansion,2,localSize)`, then applies public
+offset `[0,8]` before the main/shadow union. This sequence reproduces every
+captured DOD checkpoint and the final Filter return bit for bit. It explains
+why the older endpoint-shaped compensation often happened to produce the same
+rounded result and why the unseen v4 capture distinguished them.
+
+Crop replay v5 uses only those public layer-tree/filter inputs and the frozen
+code semantics. It applies no endpoint-derived SDF translation. Retrospective
+reanalysis now covers all ten retained direct-Mac captures at widths 485, 487,
+496, 497, 498, and 800: 320/320 rectangles and 1,280/1,280 components match,
+with maximum ULP `[0,0,0,0]`, no tolerance, 320 positive shadow expansions,
+and zero arithmetic uses of the ten formerly correlated endpoint branches.
+The canonical result is
+`Analysis/prepare_layer_live_crop_replay_v5_reanalysis_result.json`. This is
+target-opened calibration evidence, not unseen-transfer authority.
+
+Before opening any `circle-499-center` runtime output, v5 is frozen in
+`Analysis/prepare_layer_live_crop_replay_v5_holdout_local_macos_26_6_1_preregistration.json`.
+The direct-M1 executor is
+`Analysis/run_prepare_layer_live_crop_replay_v5_holdout_local_macos_26_6_1.sh`.
+It requires the logged-in physical Retina session, Apple Command Line Tools
+with no Nix store path in the native environment, post-capture validation in
+`nix develop`, all embedded code identities, exact public BackdropLayer bounds,
+all 32 public shadow states, exact pointer selection, and 128/128 components at
+zero ULP. GitHub Actions is not used.
+
+Even a clean circle-499 pass closes only this regular/dark/materialize crop/DOD
+arithmetic family. Four major product boundaries remain before Liquid Glass
+parity can be claimed: selected-region origin and appearance-dependent
+presentation lifetime; captured-input optical sampling/color transfer plus
+independent temporal uniforms, mesh/source geometry, and mip generation;
+physical Retina pixel format/color/display/compositor transfer; and fresh Apple
+frames reproduced through Walle with zero unequal bytes. The production shader
+therefore remains unchanged at SHA-256
+`6489828f12de599da9633d6183266a81b71ed846a1b03c03cb4eb9c23639352d`
+and is not yet authorized for parity-sensitive changes.

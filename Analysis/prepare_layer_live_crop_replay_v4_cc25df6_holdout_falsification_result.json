@@ -1,0 +1,107 @@
+{
+  "classification": "immutable outcome of the prospectively frozen circle-498 v4 holdout, followed by target-opened diagnosis under v5; the failed v4 gate is not relabelled as a pass",
+  "conclusion": "v4-falsified-v5-retrospectively-exact",
+  "firstDivergence": {
+    "observedProducerF64": [
+      329.60648059844976,
+      204.79016833806872,
+      488.78476715087885,
+      489.6033510634815
+    ],
+    "observedProducerHex": "01000025b4997440e04a1c0f49996940ffffff678e8c7e408fda7153a7997e40",
+    "sampleIndex": 1,
+    "v4ReplayF64": [
+      329.6064805984497,
+      204.79016833806884,
+      488.7847671508789,
+      489.60335106348145
+    ],
+    "v4ReplayHex": "00000025b4997440e44a1c0f49996940000000688e8c7e408eda7153a7997e40"
+  },
+  "inputs": {
+    "preregistrationSHA256": "4bddc2d722bdd0b96db32fd4d989cb22a457d4c3196ee17360d017e9fb16e47c",
+    "timelineSHA256": "eb2f1c5eeff2be1489da0bde7e19cc9f2afc7dbdc60a294596dd7e5e9f380561",
+    "traceSHA256": "6a39a28ca2c60aa549bfab6f0c044ad4b36744ec5f9a51b468be944c660e4382",
+    "v4OriginalValidationExitStatus": 1
+  },
+  "prepareLayerLiveCropReplayV4CC25DF6HoldoutFalsificationSchemaVersion": 1,
+  "sealedConclusion": {
+    "independentWalleZeroByteFrameParityPassed": false,
+    "liquidGlassParityEstablished": false,
+    "opticalTransferPassed": false,
+    "physicalRetinaColorCompositorTransferPassed": false,
+    "productionShaderAuthorized": false,
+    "selectedRegionOriginTransferPassed": false,
+    "v4UnseenGeometryTransferFalsified": true,
+    "v4UnseenGeometryTransferPassed": false,
+    "v5OpenedEvidenceReplayPassed": true,
+    "v5UnseenGeometryTransferPassed": false
+  },
+  "v4FrozenCandidate": {
+    "componentCount": 128,
+    "endpointOffsetGroupedIntoSDFTranslation": true,
+    "exactComponentCount": 79,
+    "exactComponentCountsXYWH": [
+      0,
+      19,
+      30,
+      30
+    ],
+    "exactRectangleCount": 0,
+    "failed": true,
+    "maximumAbsoluteErrorsXYWH": [
+      5.684341886080802e-14,
+      1.1368683772161603e-13,
+      5.684341886080802e-14,
+      5.684341886080802e-14
+    ],
+    "maximumULPDistancesXYWH": [
+      4,
+      4,
+      1,
+      1
+    ],
+    "mismatchedComponentCount": 49,
+    "mismatchedRectangleCount": 32,
+    "rectangleCount": 32,
+    "sourceOriginAssumedAsNegatedBinary32Margin": true,
+    "toleranceUsed": false
+  },
+  "v5OpenedDiagnosis": {
+    "componentCount": 128,
+    "exactComponentCount": 128,
+    "exactRectangleCount": 32,
+    "gaussianShadowExpansionApplied": true,
+    "legacyEndpointTranslationFalsified": true,
+    "maximumAbsoluteErrorsXYWH": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "maximumULPDistancesXYWH": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "positiveShadowExpansionRecordCount": 32,
+    "publicBackdropBoundsF64": [
+      5.684341886080802e-14,
+      5.684341886080802e-14,
+      497.99999999999994,
+      497.99999999999994
+    ],
+    "publicBackdropBoundsHex": "000000000000303d000000000000303dffffffffff1f7f40ffffffffff1f7f40",
+    "rectangleCount": 32,
+    "sourceBoundsF64": [
+      -174.30000305175776,
+      -174.30000305175776,
+      846.6000061035156,
+      846.6000061035156
+    ],
+    "sourceBoundsHex": "feffff9f99c965c0feffff9f99c965c0000000d0cc748a40000000d0cc748a40",
+    "targetOutputsUsedForDiagnosis": true,
+    "toleranceUsed": false
+  }
+}
