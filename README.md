@@ -11297,3 +11297,14 @@ tolerance. The canonical result is
 `Analysis/prepare_layer_live_crop_replay_v3_reanalysis_result.json`. This remains
 opened calibration evidence; it does not convert the failed v2 holdout into a
 pass and does not replace the required fresh v3 holdout.
+
+Before any `circle-496-center` runtime output was opened, that stable-binary
+geometry was frozen as the v3 transfer holdout in
+`Analysis/prepare_layer_live_crop_replay_v3_holdout_local_macos_26_6_1_preregistration.json`.
+No retained runtime evidence named that geometry at freeze time. The direct-M1
+executor pins the v3 model, the single binary32 conversion, all inherited live
+code identities, the last-store selector, the zero-ULP acceptance, the physical
+Retina session, and the outer Walle shader/flake integrity hashes. The target
+must produce 32/32 exact rectangles and 128/128 exact components; passing still
+grants no selected-region, compositor/color, product-frame, or shader-change
+authority.
