@@ -1,0 +1,206 @@
+{
+  "authorityOnPass": {
+    "all75ObservedFiniteBranchOutcomesTransferred": true,
+    "completeFiniteProviderLaw": false,
+    "independentWalleZeroByteFrameParity": false,
+    "liquidGlassParityEstablished": false,
+    "physicalRetinaColorPixelCompositorTransfer": false,
+    "productionShaderAuthorized": false,
+    "prospectiveFiniteCorpusTransferEstablished": true,
+    "publicInputFieldMappingEstablished": false,
+    "unobservedOutcomesProvedInfeasible": false,
+    "upstreamIntegerCropAllocationPolicyEstablished": false
+  },
+  "backdropMarginCase22ProviderFiniteBranchTransferPreregistrationSchemaVersion": 1,
+  "captureContract": {
+    "dispatchAllRecordsRegardlessOfEarlierReturnValues": true,
+    "invokeAuthenticatedProviderDirectlyWithX20ObjectABI": true,
+    "recordRawBinary64ReturnWords": true,
+    "requireAll22Records": true,
+    "requireCleanTrackedRepository": true,
+    "requireExact384ByteObjects": true,
+    "requireExact984ByteProviderBeforeFirstObject": true,
+    "requireExactDesignLibraryUUIDBeforeFirstObject": true,
+    "requireFiniteLoadedObjectFields": true,
+    "requireNativeAppleCommandLineTools": true,
+    "requireNoNixStorePathInNativeProcess": true,
+    "requireProviderProcessExitStatus": 0,
+    "requireProviderStderrEmpty": true,
+    "zeroTolerance": true
+  },
+  "classification": "prospective native-Apple exact differential transfer of an output-blind deterministic finite-object case-22 provider branch corpus",
+  "frozenAtUTC": "2026-08-07",
+  "frozenCorpus": {
+    "candidateCount": 200000,
+    "coverage": {
+      "bothOutcomeConditionalBranchCount": 36,
+      "observedBranchOutcomeCount": 75,
+      "observedBranchOutcomes": [
+        "0x078:not-taken",
+        "0x078:taken",
+        "0x080:not-taken",
+        "0x080:taken",
+        "0x098:not-taken",
+        "0x098:taken",
+        "0x0a0:not-taken",
+        "0x0a0:taken",
+        "0x0a8:not-taken",
+        "0x0a8:taken",
+        "0x0b0:not-taken",
+        "0x0b0:taken",
+        "0x0b8:not-taken",
+        "0x0b8:taken",
+        "0x0cc:not-taken",
+        "0x0cc:taken",
+        "0x0d4:not-taken",
+        "0x0d4:taken",
+        "0x0e8:not-taken",
+        "0x0e8:taken",
+        "0x0f0:not-taken",
+        "0x0f0:taken",
+        "0x0f8:not-taken",
+        "0x0f8:taken",
+        "0x124:not-taken",
+        "0x124:taken",
+        "0x130:not-taken",
+        "0x130:taken",
+        "0x148:not-taken",
+        "0x148:taken",
+        "0x168:not-taken",
+        "0x168:taken",
+        "0x178:not-taken",
+        "0x178:taken",
+        "0x180:not-taken",
+        "0x180:taken",
+        "0x1c4:not-taken",
+        "0x1c4:taken",
+        "0x210:not-taken",
+        "0x210:taken",
+        "0x21c:not-taken",
+        "0x21c:taken",
+        "0x230:not-taken",
+        "0x230:taken",
+        "0x238:not-taken",
+        "0x238:taken",
+        "0x26c:not-taken",
+        "0x26c:taken",
+        "0x274:taken",
+        "0x2b0:not-taken",
+        "0x2b0:taken",
+        "0x2b8:taken",
+        "0x2e4:not-taken",
+        "0x2e4:taken",
+        "0x2ec:not-taken",
+        "0x2ec:taken",
+        "0x2f8:not-taken",
+        "0x2f8:taken",
+        "0x300:not-taken",
+        "0x300:taken",
+        "0x314:not-taken",
+        "0x314:taken",
+        "0x320:not-taken",
+        "0x320:taken",
+        "0x32c:not-taken",
+        "0x32c:taken",
+        "0x350:not-taken",
+        "0x350:taken",
+        "0x368:not-taken",
+        "0x368:taken",
+        "0x388:not-taken",
+        "0x388:taken",
+        "0x3a4:not-taken",
+        "0x3a4:taken",
+        "0x3b0:taken"
+      ],
+      "observedConditionalBranchCount": 39,
+      "singleOutcomeConditionalBranchOffsets": [
+        "0x274",
+        "0x2b8",
+        "0x3b0"
+      ],
+      "staticConditionalBranchCount": 41,
+      "unobservedConditionalBranchOffsets": [
+        "0x2c0",
+        "0x2d4"
+      ]
+    },
+    "distinctExecutionPathCount": 348,
+    "generator": "SplitMix64 plus first-seen path deduplication and stable greedy branch-outcome cover",
+    "rawObjectsAndPredictionsSHA256": "4ad66c334d3b9d2bddca232594ae9537b42a8e198091e7f4beee2b31c7613970",
+    "recordCount": 22,
+    "seedHex": "0xcace22"
+  },
+  "frozenFiles": [
+    {
+      "path": "Analysis/generate_backdrop_margin_case22_provider_finite_branch_corpus.py",
+      "sha256": "2a5bc8cadc19e4f2a0ed8bc5be33f7b1eb36b551e85aada693e13c04320788ad"
+    },
+    {
+      "path": "Analysis/capture_backdrop_margin_case22_provider_finite_branch_transfer_over_ssh.py",
+      "sha256": "e91c95dc7a72398abe70925f3ec34514ceb9fb6a674a430481e199ec9fb972cf"
+    },
+    {
+      "path": "Analysis/validate_backdrop_margin_case22_provider_finite_branch_transfer.py",
+      "sha256": "645b8f1b5bce37aa01bcc3d2fd0750d7cc733bb448462542dce1aaf2a3aa678f"
+    },
+    {
+      "path": "Analysis/test_backdrop_margin_case22_provider_finite_branch_transfer.py",
+      "sha256": "0fa10159050327361eb635b894b603aea2bcb98d7263396a87fbc574083a03e0"
+    },
+    {
+      "path": "Analysis/analyze_backdrop_margin_case22_provider_complete_semantics.py",
+      "sha256": "3fffc6c9052df11c2ebdb7e010c5afc2ba24c6304de4f6c1c83cb9edd28b0d62"
+    },
+    {
+      "path": "Analysis/analyze_backdrop_margin_case22_provider_local_macos_26_6_1.py",
+      "sha256": "53efb95ab95481d4bc9b34d3b76a47b1b6c8f7e95a8e697cd85aeb60093646b3"
+    },
+    {
+      "path": "Analysis/validate_backdrop_margin_case22_provider_local_macos_26_6_1.py",
+      "sha256": "6a3dda2247eb0269cb5062ec00dc9b1e0ee778979c7b28538b5fa619b5138804"
+    },
+    {
+      "path": "Analysis/invoke_backdrop_margin_case22_provider_local_macos_26_6_1.c",
+      "sha256": "cc267e57b650671669a40bd340e7f608aa432deadec4a75cd86517113bf8d779"
+    },
+    {
+      "path": "Analysis/invoke_backdrop_margin_case22_provider_local_macos_26_6_1_arm64.s",
+      "sha256": "99adcf3f57d82093e8e4b641a1a372f21b09a2be1310642a28ef2ad222508b46"
+    }
+  ],
+  "nativeAppleHost": {
+    "architecture": "arm64",
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "processor": "Apple M1 Max"
+  },
+  "nativeFramework": {
+    "designLibraryPath": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "designLibraryUUID": "1e98080269f53e6989ef50088297fcf5",
+    "providerCodeByteCount": 984,
+    "providerCodeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+    "providerModuleOffsetHex": "0xb70b4"
+  },
+  "prospectiveSeparation": {
+    "appleOutputsConsultedForCandidateGeneration": false,
+    "calibrationUsedOnlyPreviouslyOpenedObjectAndReturn": true,
+    "candidateObjectsAndPredictedReturnsFrozenByAggregateSHA256": true,
+    "nativeOutputsUnknownUntilAfterCommitAndDispatch": true,
+    "selectionUsesOnlyEmulatorBranchOutcomes": true
+  },
+  "retrospectiveTrace": {
+    "pathFromLgTest": "../artifacts/mac-quince-macos-26.6.1-case22-provider-passed-42f9413/backdrop-margin-writer-trace.json",
+    "sha256": "19e7d74f3aba55e5c6924d7119fddcf20578a98a4e7b946cc4a435918df4059f",
+    "usedOnlyForAuthenticatedProviderCodeAndOutputBlindEmulation": true
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "unknownBeforeDispatch": {
+    "allAppleReturnsMatchPredictionsBitwise": null,
+    "appleReturnWordsByOrdinal": null,
+    "matchingReturnCount": null,
+    "nativeExecutableSHA256": null,
+    "providerProcessExitStatus": null,
+    "structuralValidationPassed": null
+  }
+}
