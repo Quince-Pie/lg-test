@@ -23,11 +23,14 @@ class DematerializeUniformCalibrationRunnerTests(unittest.TestCase):
         ):
             self.assertIn(identity, SOURCE)
 
-    def test_stable_binary_retina_and_clean_tree_are_required(self) -> None:
+    def test_dematerialize_capable_binary_retina_and_clean_tree_are_required(
+        self,
+    ) -> None:
         self.assertIn(
-            "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+            "6711ec851453405e2c19a1f731465f1f40b1db1b05f1bd5cd3835a3974cc351d",
             SOURCE,
         )
+        self.assertIn("glass-transition-introspect-9b5c502", SOURCE)
         self.assertIn("check_local_retina_capture_session_v2.swift", SOURCE)
         self.assertIn("git status --porcelain --untracked-files=no", SOURCE)
         self.assertIn("native capture environment contains a Nix store path", SOURCE)

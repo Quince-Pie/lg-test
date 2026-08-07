@@ -27,7 +27,7 @@ case "$material:$appearance:$geometry" in
 esac
 
 readonly repository=$(cd "$(dirname "$0")/.." && pwd -P)
-readonly binary=glass-transition-introspect-721293f
+readonly binary=glass-transition-introspect-9b5c502
 readonly preflight=Analysis/check_local_retina_capture_session_v2.swift
 readonly runner=Analysis/run_transition_uniform_dematerialize_calibration_local_macos_26_6_1.sh
 readonly output_directory="local-transition-uniform-dematerialize-calibration-${run_label}"
@@ -61,7 +61,7 @@ if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
     exit 1
 fi
 
-require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd
+require_sha256 "$binary" 6711ec851453405e2c19a1f731465f1f40b1db1b05f1bd5cd3835a3974cc351d
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
