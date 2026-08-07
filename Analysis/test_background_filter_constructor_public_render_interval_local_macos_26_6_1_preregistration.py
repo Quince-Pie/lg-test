@@ -48,6 +48,9 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
             self.value["constructorBoundary"],
             {
                 "backgroundFilterByteCount": 504,
+                "initializedByteCount": 491,
+                "initializedRanges": [[0, 349], [352, 458], [464, 476], [480, 504]],
+                "paddingRanges": [[349, 352], [458, 464], [476, 480]],
                 "callInstructionHex": "730a0094",
                 "callOffsetInProducer": 0x38C,
                 "constructorByteCount": 0x414,
@@ -87,7 +90,12 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
             authority["sameProfilePublicParametersConstructionJoinEstablishedOnPass"]
         )
         self.assertTrue(
-            authority["completeBackgroundFilterProviderObjectJoinedBitwiseOnPass"]
+            authority["allInitializedBackgroundFilterProviderBytesJoinedBitwiseOnPass"]
+        )
+        self.assertFalse(
+            authority[
+                "completeBackgroundFilterProviderObjectJoinedBitwiseGuaranteedOnPass"
+            ]
         )
         for key in (
             "freshMaterialAppearanceGeometryProfileTransferEstablishedOnPass",

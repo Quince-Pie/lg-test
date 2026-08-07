@@ -44,6 +44,20 @@ CONSTRUCTOR_CALL_INSTRUCTION_HEX = "730a0094"
 PARAMETERS_BYTE_COUNT = 0x401
 BACKGROUND_FILTER_BYTE_COUNT = 0x1F8
 MAXIMUM_CONSTRUCTOR_CALLS = 4096
+BACKGROUND_FILTER_INITIALIZED_RANGES = (
+    (0x000, 0x15D),
+    (0x160, 0x1CA),
+    (0x1D0, 0x1DC),
+    (0x1E0, 0x1F8),
+)
+BACKGROUND_FILTER_PADDING_RANGES = (
+    (0x15D, 0x160),
+    (0x1CA, 0x1D0),
+    (0x1DC, 0x1E0),
+)
+BACKGROUND_FILTER_INITIALIZED_BYTE_COUNT = sum(
+    end - start for start, end in BACKGROUND_FILTER_INITIALIZED_RANGES
+)
 
 EXPECTED_ENVIRONMENT = public.EXPECTED_ENVIRONMENT
 PUBLIC_CONFIGURATION_KEYS = {
@@ -121,6 +135,17 @@ def validate_snapshot(
         f"{label} SHA-256 differs",
     )
     return payload
+
+
+def initialized_background_filter_bytes(payload: bytes) -> bytes:
+    require(
+        len(payload) == BACKGROUND_FILTER_BYTE_COUNT,
+        "BackgroundFilter payload width differs",
+    )
+    return b"".join(
+        payload[start:end]
+        for start, end in BACKGROUND_FILTER_INITIALIZED_RANGES
+    )
 
 
 def validate_fixed_region(
@@ -273,6 +298,13 @@ def validate_preregistration(
         boundary
         == {
             "backgroundFilterByteCount": BACKGROUND_FILTER_BYTE_COUNT,
+            "initializedByteCount": BACKGROUND_FILTER_INITIALIZED_BYTE_COUNT,
+            "initializedRanges": [
+                list(value) for value in BACKGROUND_FILTER_INITIALIZED_RANGES
+            ],
+            "paddingRanges": [
+                list(value) for value in BACKGROUND_FILTER_PADDING_RANGES
+            ],
             "callInstructionHex": CONSTRUCTOR_CALL_INSTRUCTION_HEX,
             "callOffsetInProducer": CONSTRUCTOR_CALL_OFFSET_IN_PRODUCER,
             "constructorByteCount": CONSTRUCTOR_BYTE_COUNT,
@@ -295,8 +327,9 @@ def validate_preregistration(
             "allConstructorCallsOnAuthenticatedFunctionThread": True,
             "allConstructorInputsRemainBitwiseUnchanged": True,
             "allConstructorLayerIndicesAreZero": True,
-            "allMatchedProviderObjectsHaveSameSampleConstructorOutput": True,
+            "allMatchedProviderInitializedBytesHaveSameSampleConstructorOutput": True,
             "allSamplesHaveAtLeastOneConstructorCall": True,
+            "completePaddingByteEqualityRequired": False,
             "oneDistinctParametersValuePerMatchedSample": True,
         },
         "prospective predictions differ",
@@ -693,30 +726,50 @@ def validate_constructor_trace(
         call = provider_calls[call_index]
         interval_index = int(call["intervalIndex"])
         provider_raw = bytes.fromhex(call["providerObjectComplete"]["hex"])
+        provider_initialized = initialized_background_filter_bytes(provider_raw)
         matches = [
-            (constructor_index, parameters)
+            (constructor_index, parameters, output)
             for constructor_index, parameters, output in outputs_by_interval[
                 interval_index
             ]
-            if output == provider_raw
+            if initialized_background_filter_bytes(output) == provider_initialized
         ]
         require(
             matches,
-            f"matched provider {call_index} has no same-sample constructor output",
+            f"matched provider {call_index} has no same-sample initialized constructor output",
         )
-        distinct_parameters = {parameters for _, parameters in matches}
+        distinct_parameters = {parameters for _, parameters, _ in matches}
         require(
             len(distinct_parameters) == 1,
             f"sample {interval_index + 1} has ambiguous Parameters values",
         )
         parameters = next(iter(distinct_parameters))
+        full_matches = [
+            constructor_index
+            for constructor_index, _, output in matches
+            if output == provider_raw
+        ]
+        padding_differences = sorted(
+            {
+                offset
+                for _, _, output in matches
+                for start, end in BACKGROUND_FILTER_PADDING_RANGES
+                for offset in range(start, end)
+                if output[offset] != provider_raw[offset]
+            }
+        )
         joins.append(
             {
                 "sampleIndex": interval_index + 1,
                 "providerCallIndex": call_index,
                 "constructorCallIndices": [value[0] for value in matches],
+                "full504ByteMatchConstructorCallIndices": full_matches,
                 "backgroundFilterSHA256": hashlib.sha256(provider_raw).hexdigest(),
+                "initialized491ByteSHA256": hashlib.sha256(
+                    provider_initialized
+                ).hexdigest(),
                 "parametersSHA256": hashlib.sha256(parameters).hexdigest(),
+                "paddingDifferenceOffsets": padding_differences,
             }
         )
 
@@ -741,7 +794,17 @@ def validate_constructor_trace(
         "constructorCallCount": len(constructor_calls),
         "distinctParametersCount": len(parameter_hashes),
         "matchedProviderCallCount": len(joins),
-        "allMatchedProvidersHaveExactSameSampleConstructorOutput": True,
+        "initializedBackgroundFilterByteCount": (
+            BACKGROUND_FILTER_INITIALIZED_BYTE_COUNT
+        ),
+        "paddingByteCount": (
+            BACKGROUND_FILTER_BYTE_COUNT
+            - BACKGROUND_FILTER_INITIALIZED_BYTE_COUNT
+        ),
+        "allMatchedProvidersHaveExactSameSampleInitializedConstructorOutput": True,
+        "allMatchedProvidersHaveFull504ByteConstructorOutput": all(
+            value["full504ByteMatchConstructorCallIndices"] for value in joins
+        ),
         "oneDistinctParametersValuePerMatchedSample": True,
         "joins": joins,
     }
@@ -852,7 +915,12 @@ def validate(
         "captureContractPassed": True,
         "authority": {
             "sameProfilePublicParametersConstructionJoinEstablished": True,
-            "completeBackgroundFilterProviderObjectJoinedBitwise": True,
+            "allInitializedBackgroundFilterProviderBytesJoinedBitwise": True,
+            "completeBackgroundFilterProviderObjectJoinedBitwise": (
+                constructor_summary[
+                    "allMatchedProvidersHaveFull504ByteConstructorOutput"
+                ]
+            ),
             "freshMaterialAppearanceGeometryProfileTransferEstablished": False,
             "generalPublicInputConstructionLawEstablished": False,
             "upstreamCropAllocationPolicyEstablished": False,

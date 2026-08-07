@@ -15,6 +15,8 @@
     "complete1025ByteParametersAtEntryAndReturnRequired": true,
     "complete504ByteConstructorOutputRequired": true,
     "complete504ByteProviderObjectAtEntryAndReturnRequired": true,
+    "initialized491ByteSameSampleJoinRequired": true,
+    "thirteenCompilerPaddingBytesRetainedAndReportedButNotCausalGate": true,
     "constructorCodeAndSoleDirectCallsiteRequired": true,
     "maximumConstructorCalls": 4096,
     "noCapturedValueMaySelectRuntimeCapture": true,
@@ -22,9 +24,12 @@
     "predecessorPublicRenderProviderTransferMustPassFirst": true,
     "zeroTolerance": true
   },
-  "classification": "prospectively frozen value-blind join from the exact public 32-sample carrier function through DesignLibrary's 1025-byte Parameters input and 504-byte BackgroundFilter constructor output to the complete provider object consumed inside each authenticated render interval",
+  "classification": "prospectively frozen value-blind join from the exact public 32-sample carrier function through DesignLibrary's 1025-byte Parameters input and all 491 constructor-initialized BackgroundFilter bytes to the complete 504-byte provider object consumed inside each authenticated render interval; all 13 unwritten compiler-padding bytes are retained and reported separately",
   "constructorBoundary": {
     "backgroundFilterByteCount": 504,
+    "initializedByteCount": 491,
+    "initializedRanges": [[0, 349], [352, 458], [464, 476], [480, 504]],
+    "paddingRanges": [[349, 352], [458, 464], [476, 480]],
     "callInstructionHex": "730a0094",
     "callOffsetInProducer": 908,
     "constructorByteCount": 1044,
@@ -45,11 +50,11 @@
       },
       {
         "path": "Analysis/validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
-        "sha256": "be5d18f66b200d1746c405a70fab19f50a9bc152fbf0f49383d2a77087944293"
+        "sha256": "3925118b1cea4e22ae9ef379881952ac58717a2953e81e3d01ad1026a32b40d6"
       },
       {
         "path": "Analysis/run_background_filter_constructor_public_render_interval_local_macos_26_6_1.sh",
-        "sha256": "e9fc72ac4096274e1b502ccbf111f2df3b6da74a124137605a2d04d9a4584e59"
+        "sha256": "138be17de0b7fc2ad53e5ee7a04a313227ef64b54c1c423f60c217a5b0e2df50"
       },
       {
         "path": "Analysis/test_capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb_source.py",
@@ -57,7 +62,7 @@
       },
       {
         "path": "Analysis/test_validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
-        "sha256": "2bec76d4c7376a6d5ce96d83f57b8a4ab4f84e379ee98d1e656dd83c6a340bc5"
+        "sha256": "c8eeaf43a76d725b76d2a5fecfe7c1473bce3947563091af84143c4c01996e3b"
       },
       {
         "path": "Analysis/test_run_background_filter_constructor_public_render_interval_local_macos_26_6_1_source.py",
@@ -65,7 +70,7 @@
       },
       {
         "path": "Analysis/test_background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.py",
-        "sha256": "845f7bd0c45fda4588692404b5b050cb0e433695addb41c0bf354e9de7ff400f"
+        "sha256": "14b221e7ee823416c6602f0307c6f2f55483debf54aa9bc1732b34e40b0a46ff"
       },
       {
         "path": "Analysis/check_local_retina_capture_session.swift",
@@ -121,7 +126,8 @@
     "sha256": "72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981"
   },
   "productAuthority": {
-    "completeBackgroundFilterProviderObjectJoinedBitwiseOnPass": true,
+    "allInitializedBackgroundFilterProviderBytesJoinedBitwiseOnPass": true,
+    "completeBackgroundFilterProviderObjectJoinedBitwiseGuaranteedOnPass": false,
     "freshMaterialAppearanceGeometryProfileTransferEstablishedOnPass": false,
     "generalPublicInputConstructionLawEstablishedOnPass": false,
     "independentWalleZeroByteFrameParityEstablishedOnPass": false,
@@ -147,8 +153,9 @@
     "allConstructorCallsOnAuthenticatedFunctionThread": true,
     "allConstructorInputsRemainBitwiseUnchanged": true,
     "allConstructorLayerIndicesAreZero": true,
-    "allMatchedProviderObjectsHaveSameSampleConstructorOutput": true,
+    "allMatchedProviderInitializedBytesHaveSameSampleConstructorOutput": true,
     "allSamplesHaveAtLeastOneConstructorCall": true,
+    "completePaddingByteEqualityRequired": false,
     "oneDistinctParametersValuePerMatchedSample": true
   },
   "requiredPredecessor": {
@@ -163,7 +170,7 @@
     "preRenderAssociation": "completion event order only; all unassigned completed calls attach to the immediately following render interval",
     "providerCalls": "every sdfBackdropMargin provider call strictly inside each exact CARenderer direct-call interval",
     "runtimeByteOrValueSelection": false,
-    "sameSampleJoin": "post-capture exact equality of all 504 bytes; equality never changes runtime capture"
+    "sameSampleJoin": "post-capture exact equality of all 491 constructor-initialized bytes; all 504 bytes are retained, the 13 constructor-unwritten padding bytes are reported separately, and equality never changes runtime capture"
   },
   "structuralRenderBoundary": {
     "backgroundByteCount": 9136,

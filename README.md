@@ -8595,9 +8595,15 @@ For every provider call in the render interval it preserves the prior
 384-byte projection required by the already-frozen public/provider validator
 and additionally retains the complete 504-byte entry and return values. The
 new validator projects away the constructor-only records and reruns the old
-validator unchanged, then requires each public-signature-matched provider to
-equal a same-sample constructor output in all 504 bytes. All matching outputs
-for a sample must identify one distinct 1,025-byte `Parameters` value.
+validator unchanged. Static stores prove that 491 of the 504 bytes are
+initialized by the constructor. The remaining 13 are Swift layout padding at
+`[0x15d,0x160)`, `[0x1ca,0x1d0)`, and `[0x1dc,0x1e0)` and are never written by
+the constructor. The causal gate therefore requires every one of the 491
+initialized bytes in each public-signature-matched provider to equal a
+same-sample constructor output; it retains and reports all padding bytes but
+does not allow indeterminate padding to decide the optical result. Full
+504-byte equality is reported independently. All matching outputs for a
+sample must identify one distinct 1,025-byte `Parameters` value.
 
 The gate is preregistered in
 `Analysis/background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.json`.

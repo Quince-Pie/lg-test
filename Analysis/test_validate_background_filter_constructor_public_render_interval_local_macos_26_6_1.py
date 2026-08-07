@@ -97,9 +97,25 @@ class BackgroundFilterConstructorValidatorTests(unittest.TestCase):
         self.assertNotIn("extension", projected["configuration"])
         self.assertNotIn("constructorEntry", projected["breakpoints"])
 
+    def test_initialized_projection_excludes_only_constructor_unwritten_padding(self) -> None:
+        payload = bytes(index & 0xFF for index in range(504))
+        projected = validator.initialized_background_filter_bytes(payload)
+        self.assertEqual(len(projected), 491)
+        expected = b"".join(
+            payload[start:end]
+            for start, end in validator.BACKGROUND_FILTER_INITIALIZED_RANGES
+        )
+        self.assertEqual(projected, expected)
+        excluded = {
+            index
+            for start, end in validator.BACKGROUND_FILTER_PADDING_RANGES
+            for index in range(start, end)
+        }
+        self.assertEqual(len(excluded), 13)
+
     def test_validator_requires_exact_same_sample_output_join(self) -> None:
         for needle in (
-            "has no same-sample constructor output",
+            "has no same-sample initialized constructor output",
             "has ambiguous Parameters values",
             'call.get("layerIndex") == 0',
             "Parameters changed",
