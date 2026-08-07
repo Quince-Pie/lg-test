@@ -24,7 +24,7 @@ import validate_backdrop_margin_writer_execution_retry as retry
 
 
 VALIDATION_SCHEMA_VERSION = 1
-PREREGISTRATION_SCHEMA_VERSION = 2
+PREREGISTRATION_SCHEMA_VERSION = 3
 PREREGISTRATION_NAME = (
     "backdrop_margin_writer_provider_composition_local_macos_26_6_1_"
     "preregistration.json"
@@ -39,6 +39,8 @@ CASES = {
     ("regular", "light", "materialize", "circle-467-center"),
     ("regular", "dark", "materialize", "circle-475-center"),
 }
+LIVE_QUARTZCORE_UUID = "F1BA3189-E95A-3ECA-B59A-5A6872754484"
+LIVE_SWIFTUICORE_UUID = "99606D45-C40A-3C69-AE51-5F0C4E32E531"
 
 
 def require(condition: bool, message: str) -> None:
@@ -262,9 +264,13 @@ def validate(
         geometry,
     )
 
+    original_quartzcore_uuid = base.QUARTZCORE_UUID
+    original_swiftuicore_uuid = retry.SWIFTUICORE_UUID
     original_preregistration = base.validate_preregistration
     original_candidate = base.transition_candidate
     original_events = base.validate_events
+    base.QUARTZCORE_UUID = LIVE_QUARTZCORE_UUID
+    retry.SWIFTUICORE_UUID = LIVE_SWIFTUICORE_UUID
     base.validate_preregistration = validate_preregistration
     base.transition_candidate = provider_transition_candidate
     base.validate_events = retry.validate_events
@@ -279,6 +285,8 @@ def validate(
             geometry,
         )
     finally:
+        base.QUARTZCORE_UUID = original_quartzcore_uuid
+        retry.SWIFTUICORE_UUID = original_swiftuicore_uuid
         base.validate_preregistration = original_preregistration
         base.transition_candidate = original_candidate
         base.validate_events = original_events
@@ -289,7 +297,11 @@ def validate(
         for value in base.sequence(trace.get("events"), "events")
     ]
     callers = base.validate_callers(trace)
-    provenance = retry.validate_producer_provenance(trace, events, callers)
+    retry.SWIFTUICORE_UUID = LIVE_SWIFTUICORE_UUID
+    try:
+        provenance = retry.validate_producer_provenance(trace, events, callers)
+    finally:
+        retry.SWIFTUICORE_UUID = original_swiftuicore_uuid
     candidate = base.mapping(result.get("candidate"), "validated candidate")
 
     result["backdropMarginWriterProviderCompositionValidationSchemaVersion"] = (

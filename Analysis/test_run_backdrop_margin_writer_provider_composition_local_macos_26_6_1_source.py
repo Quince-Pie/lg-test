@@ -18,17 +18,19 @@ class BackdropMarginWriterProviderCompositionRunnerTests(unittest.TestCase):
         cls.source = SCRIPT.read_text(encoding="utf-8")
 
     def test_native_build_and_debug_use_apple_command_line_tools(self) -> None:
-        for tool in ("clang", "swift", "swiftc", "lldb", "python3"):
+        for tool in ("swift", "lldb", "python3"):
             self.assertIn(
                 f"/Library/Developer/CommandLineTools/usr/bin/{tool}", self.source
             )
         self.assertNotIn("/nix/store", self.source)
         self.assertNotIn("github", self.source.lower())
+        self.assertIn("glass-transition-introspect-721293f", self.source)
         self.assertIn(
-            "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk", self.source
+            "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+            self.source,
         )
-        self.assertIn('-isysroot "$sdk"', self.source)
-        self.assertIn('-sdk "$sdk"', self.source)
+        self.assertNotIn('readonly clang=', self.source)
+        self.assertNotIn('readonly swiftc=', self.source)
 
     def test_only_four_frozen_profiles_are_accepted(self) -> None:
         for identity in (

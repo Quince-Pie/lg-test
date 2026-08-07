@@ -10965,3 +10965,25 @@ Version 2 changes only native transport by passing the fixed Command Line Tools
 `MacOSX.sdk` to clang with `-isysroot` and swiftc with `-sdk`; the candidate,
 case matrix, capture adapter, selection rules, and zero-tolerance acceptance
 remain unchanged.
+
+The second transport at commit `d949727` compiled successfully and passed the
+same Retina preflight, but it still did not evaluate the candidate. The newly
+compiled presentation carrier exited at sample 1 with zero dynamic public
+records. Independently, the historical capture adapter rejected the live dyld
+shared-cache QuartzCore UUID before retaining any writer event: all setter,
+copy, and bounds counts are exactly zero. The immutable result is
+`Analysis/backdrop_margin_writer_provider_composition_d949727_structural_transport_failure_result.json`.
+
+A value-blind module inventory at the stable binary's `main` entry records the
+current structural identities: QuartzCore
+`F1BA3189-E95A-3ECA-B59A-5A6872754484`, SwiftUICore
+`99606D45-C40A-3C69-AE51-5F0C4E32E531`, and unchanged DesignLibrary
+`1E980802-69F5-3E69-89EF-50088297FCF5`. Version 3 freezes those identities and
+returns to the already authenticated stable presentation binary
+`glass-transition-introspect-721293f`, SHA-256
+`b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd`.
+The original writer and producer adapters remain byte-identical; a structural
+overlay changes only the QuartzCore UUID before their breakpoints are installed,
+and the validator changes only the corresponding QuartzCore/SwiftUICore UUID
+pins. Exact symbol code hashes still gate execution. The arithmetic, four
+cases, selection, and zero-tolerance acceptance remain untouched.

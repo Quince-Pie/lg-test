@@ -27,21 +27,18 @@ case "$material:$appearance:$geometry" in
 esac
 
 readonly repository=$(cd "$(dirname "$0")/.." && pwd -P)
-readonly capture=Analysis/capture_backdrop_margin_writer_producer_lldb.py
+readonly capture=Analysis/capture_backdrop_margin_writer_provider_composition_lldb.py
 readonly preflight=Analysis/check_local_retina_capture_session_v2.swift
 readonly preregistration=Analysis/backdrop_margin_writer_provider_composition_local_macos_26_6_1_preregistration.json
 readonly validator=Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py
 readonly runner=Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1.sh
 readonly output_directory="local-backdrop-margin-provider-composition-${run_label}"
 readonly trace="$repository/$output_directory/backdrop-margin-writer-trace.json"
-readonly binary="$repository/$output_directory/glass-transition-introspect"
+readonly binary="$repository/glass-transition-introspect-721293f"
 readonly validation="$repository/$output_directory/validation.json"
-readonly clang=/Library/Developer/CommandLineTools/usr/bin/clang
 readonly swift=/Library/Developer/CommandLineTools/usr/bin/swift
-readonly swiftc=/Library/Developer/CommandLineTools/usr/bin/swiftc
 readonly lldb=/Library/Developer/CommandLineTools/usr/bin/lldb
 readonly python=/Library/Developer/CommandLineTools/usr/bin/python3
-readonly sdk=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 cd "$repository" || exit 1
 
@@ -59,6 +56,11 @@ if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
 fi
 if [[ -e "$output_directory" ]]; then
     echo "capture output already exists for run label $run_label" >&2
+    exit 1
+fi
+if [[ $(/usr/bin/shasum -a 256 "$binary" | /usr/bin/awk '{print $1}') != \
+    b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd ]]; then
+    echo "the frozen stable presentation binary differs" >&2
     exit 1
 fi
 /bin/mkdir "$output_directory" || exit 1
@@ -95,45 +97,6 @@ if [[ "$preflight_status" -ne 0 ]]; then
     exit 2
 fi
 
-"$clang" \
-    -std=c23 \
-    -O2 \
-    -Wall \
-    -Wextra \
-    -Werror \
-    -isysroot "$sdk" \
-    -target arm64-apple-macos26.0 \
-    -c Sources/GlassIntrospect/MatrixBridge.c \
-    -o "$output_directory/MatrixBridge.o" \
-    >"$output_directory/clang-stdout.log" \
-    2>"$output_directory/clang-stderr.log"
-clang_status=$?
-if [[ "$clang_status" -ne 0 ]]; then
-    echo "native C bridge compilation failed" >&2
-    exit 3
-fi
-
-"$swiftc" \
-    -O \
-    -parse-as-library \
-    -sdk "$sdk" \
-    -target arm64-apple-macos26.0 \
-    -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
-    Sources/GlassIntrospect/HalfBlendProbe.swift \
-    Sources/GlassIntrospect/HalfDotProbe.swift \
-    Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
-    Sources/GlassIntrospect/SDFStageProbe.swift \
-    Sources/GlassIntrospect/main.swift \
-    "$output_directory/MatrixBridge.o" \
-    -o "$binary" \
-    >"$output_directory/swiftc-stdout.log" \
-    2>"$output_directory/swiftc-stderr.log"
-swiftc_status=$?
-if [[ "$swiftc_status" -ne 0 ]]; then
-    echo "native Swift probe compilation failed" >&2
-    exit 3
-fi
-
 {
     git rev-parse HEAD
     /usr/bin/sw_vers
@@ -158,7 +121,7 @@ fi
     -o "settings set target.error-path $output_directory/runtime-stderr.log" \
     -o "command script import $capture" \
     -o run \
-    -o "script import capture_backdrop_margin_writer_producer_lldb as capture; capture.finalize()" \
+    -o "script import capture_backdrop_margin_writer_provider_composition_lldb as capture; capture.finalize()" \
     -- "$binary" "$output_directory" \
     >"$output_directory/lldb.log" 2>&1
 lldb_status=$?

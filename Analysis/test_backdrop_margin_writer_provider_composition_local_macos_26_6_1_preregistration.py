@@ -27,7 +27,7 @@ class BackdropMarginWriterProviderCompositionPreregistrationTests(unittest.TestC
             self.value[
                 "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion"
             ],
-            2,
+            3,
         )
         cases = self.value["prospectiveCases"]
         self.assertEqual(
@@ -72,6 +72,35 @@ class BackdropMarginWriterProviderCompositionPreregistrationTests(unittest.TestC
         result = ROOT / failure["result"]
         self.assertEqual(
             hashlib.sha256(result.read_bytes()).hexdigest(), failure["resultSHA256"]
+        )
+
+    def test_v2_retained_no_candidate_input_or_writer_event(self) -> None:
+        failure = self.value["supersedesStructuralTransportVersion"]
+        self.assertFalse(failure["completeTimelineCreated"])
+        self.assertEqual(failure["dynamicPublicRecordCount"], 0)
+        self.assertEqual(failure["writerEventCount"], 0)
+        self.assertFalse(failure["appleMarginOrCropObserved"])
+        self.assertFalse(failure["candidateTested"])
+        self.assertFalse(failure["caseAcceptedAsProspectiveEvidence"])
+        self.assertFalse(failure["candidateCaseMatrixSelectionOrAcceptanceChanged"])
+        result = ROOT / failure["result"]
+        self.assertEqual(
+            hashlib.sha256(result.read_bytes()).hexdigest(), failure["resultSHA256"]
+        )
+
+    def test_v3_pins_stable_binary_and_live_module_identities(self) -> None:
+        capture = self.value["captureContract"]
+        self.assertEqual(
+            capture["stablePresentationBinarySHA256"],
+            "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+        )
+        self.assertEqual(
+            capture["liveQuartzCoreUUID"],
+            "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+        )
+        self.assertEqual(
+            capture["liveSwiftUICoreUUID"],
+            "99606D45-C40A-3C69-AE51-5F0C4E32E531",
         )
 
     def test_candidate_comes_from_the_authenticated_provider(self) -> None:

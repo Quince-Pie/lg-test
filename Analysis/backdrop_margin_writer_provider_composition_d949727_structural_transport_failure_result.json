@@ -1,0 +1,74 @@
+{
+  "backdropMarginWriterProviderCompositionStructuralTransportFailureSchemaVersion": 1,
+  "classification": "immutable direct-M1 structural/presentation transport failure before the frozen candidate could be evaluated",
+  "frozenCommit": "d949727620a03a109aa5db06c787e67fef07097a",
+  "runLabel": "d949727-regular-light-run1",
+  "requestedProfile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-467-center"
+  },
+  "retinaPreflight": {
+    "path": "../artifacts/local-backdrop-margin-provider-composition-d949727-regular-light-run1/capture-session-preflight.json",
+    "sha256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "passed": true,
+    "physicalPixels": [3456, 2234],
+    "backingScaleFactor": 2
+  },
+  "trace": {
+    "path": "../artifacts/local-backdrop-margin-provider-composition-d949727-regular-light-run1/backdrop-margin-writer-trace.json",
+    "sha256": "6628c1b006fed8d4ac0ea8feb7c3deea385c6923f832324af12528a43187e702",
+    "status": "finalized",
+    "failureCount": 17,
+    "eventCount": 0,
+    "marginSetterCount": 0,
+    "copyEntryCount": 0,
+    "copyMarginStoreCount": 0,
+    "backdropBoundsCount": 0,
+    "failureCause": "historical QuartzCore UUID pin rejected the live dyld shared-cache QuartzCore image before any event was retained"
+  },
+  "timeline": {
+    "path": "../artifacts/local-backdrop-margin-provider-composition-d949727-regular-light-run1/transition-timeline.json",
+    "sha256": "215de53593707c809e896a6c912c93c054fa36e053fe4ae5c3699e97d43c6a6f",
+    "complete": false,
+    "error": "presentation glassBackground snapshot unavailable at sample 1",
+    "dynamicPublicRecordCount": 0,
+    "candidateInputAvailable": false
+  },
+  "liveModuleIdentityDiagnostic": {
+    "path": "../artifacts/mac-image-list.txt",
+    "sha256": "79bca781baac0a243779a4ef987e263183abbe00993ed8c928c9147d16a3e471",
+    "selectionUsesMarginCropImageOrPixel": false,
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "swiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+    "designLibraryUUID": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "stablePresentationBinary": {
+    "pathOnMac": "/Users/quince/lg-test/glass-transition-introspect-721293f",
+    "sha256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "usedByFailedRun": false,
+    "selectedFromPriorTransportEvidenceNotCurrentOutput": true
+  },
+  "outcome": {
+    "applicationLaunched": true,
+    "applicationExitStatus": 1,
+    "lldbExitStatus": 0,
+    "validationExitStatus": 1,
+    "completeTimelineCreated": false,
+    "writerEventObserved": false,
+    "appleMarginObserved": false,
+    "appleCropObserved": false,
+    "dynamicCandidateInputObserved": false,
+    "candidateTested": false,
+    "caseAcceptedAsProspectiveEvidence": false
+  },
+  "authority": {
+    "allocationMarginCompositionEstablished": false,
+    "selectedRegionPolicyEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

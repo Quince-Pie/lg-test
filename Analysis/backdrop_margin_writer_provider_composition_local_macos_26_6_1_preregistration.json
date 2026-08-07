@@ -1,6 +1,6 @@
 {
-  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 2,
-  "frozenAtUtc": "2026-08-07T18:20:49Z",
+  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 3,
+  "frozenAtUtc": "2026-08-07T18:25:10Z",
   "classification": "prospective four-case output-blind direct-Retina-M1 transfer of the authenticated public filter to DesignLibrary provider to SwiftUI Group.margin to CABackdropLayer writer composition; no Apple output for any exact case exists at freeze time",
   "sourceStateBeforeFreeze": {
     "branch": "main",
@@ -26,6 +26,25 @@
     "candidateTested": false,
     "prospectiveCasesConsumed": 0,
     "onlyTransportChange": "pass /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk explicitly to clang and swiftc"
+  },
+  "supersedesStructuralTransportVersion": {
+    "commit": "d949727620a03a109aa5db06c787e67fef07097a",
+    "result": "Analysis/backdrop_margin_writer_provider_composition_d949727_structural_transport_failure_result.json",
+    "resultSHA256": "4cb64eb5ed8b0cb793a5da30acff354dcbcd1b3f340c7e65fd107c29055e2a93",
+    "retinaPreflightPassed": true,
+    "applicationLaunched": true,
+    "completeTimelineCreated": false,
+    "dynamicPublicRecordCount": 0,
+    "writerEventCount": 0,
+    "appleMarginOrCropObserved": false,
+    "candidateTested": false,
+    "caseAcceptedAsProspectiveEvidence": false,
+    "transportCorrections": [
+      "use the already authenticated stable presentation binary glass-transition-introspect-721293f at SHA-256 b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+      "retarget only the structural QuartzCore UUID pin to the live dyld shared-cache identity F1BA3189-E95A-3ECA-B59A-5A6872754484",
+      "retarget only the validator SwiftUICore UUID pin to the live dyld shared-cache identity 99606D45-C40A-3C69-AE51-5F0C4E32E531"
+    ],
+    "candidateCaseMatrixSelectionOrAcceptanceChanged": false
   },
   "antecedentCorrection": {
     "supersededCandidate": "max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))",
@@ -112,6 +131,10 @@
     "activeRetinaSessionPreflightRequired": true,
     "nativeAppleCommandLineToolsOnly": true,
     "nixStorePathInNativeBuildOrDebugForbidden": true,
+    "stablePresentationBinary": "glass-transition-introspect-721293f",
+    "stablePresentationBinarySHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "liveQuartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "liveSwiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
     "dynamicPublicRecordCount": 32,
     "timelineSampleCount": 33,
     "allocationOnly": true,
@@ -184,11 +207,11 @@
     },
     {
       "path": "Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
-      "sha256": "900e074f3950649a40f41254be716fd5c45728f63f868fdd4f03da4ffc3dbf7d"
+      "sha256": "344e95d5dcac9a4313aa32b406910502f6e752f8215d512727e8996077051e9e"
     },
     {
       "path": "Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1.sh",
-      "sha256": "874a0b8e6aa64a4bd392235052f5e7c66bdca1b9244f29e7ed8cd444511da7a4"
+      "sha256": "257b15fec4e4ec779033f328a456322e149e30c36a683321d1bb01286a990431"
     },
     {
       "path": "Analysis/test_validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
@@ -196,7 +219,7 @@
     },
     {
       "path": "Analysis/test_run_backdrop_margin_writer_provider_composition_local_macos_26_6_1_source.py",
-      "sha256": "9d08d5a25c34edd4f3a9c3783aa801b57e30bf87dc4c54cc897030797bebb10b"
+      "sha256": "b79d53ce7c30f72a11c229ea7ddbe01462fcfa1236657c637516222b31d7bd70"
     },
     {
       "path": "Analysis/backdrop_margin_writer_provider_composition_71736b6_build_transport_failure_result.json",
@@ -205,6 +228,22 @@
     {
       "path": "Analysis/test_backdrop_margin_writer_provider_composition_71736b6_build_transport_failure_result.py",
       "sha256": "f0c93139adc75f780a87049ac9e90ca6a2a9b74b87e5ca1229c75261b2c03546"
+    },
+    {
+      "path": "Analysis/capture_backdrop_margin_writer_provider_composition_lldb.py",
+      "sha256": "0994b5ae08a5cd2b9d9b1fb3ae195ae7e4c1e4580a07ea53ee9b7e8fe2ccf0f8"
+    },
+    {
+      "path": "Analysis/test_capture_backdrop_margin_writer_provider_composition_lldb_source.py",
+      "sha256": "52cd5cb7d0fda0c255932b80a129b1c3c609c1bc65b217f91684337aa8f09b2c"
+    },
+    {
+      "path": "Analysis/backdrop_margin_writer_provider_composition_d949727_structural_transport_failure_result.json",
+      "sha256": "4cb64eb5ed8b0cb793a5da30acff354dcbcd1b3f340c7e65fd107c29055e2a93"
+    },
+    {
+      "path": "Analysis/test_backdrop_margin_writer_provider_composition_d949727_structural_transport_failure_result.py",
+      "sha256": "a43fcadde8dfca03f4007939e24363371f62efd0b4832c9b84413185f8d621ba"
     }
   ],
   "qualityLocks": {
