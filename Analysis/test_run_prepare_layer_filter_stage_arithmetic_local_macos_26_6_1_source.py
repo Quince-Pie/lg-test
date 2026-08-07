@@ -31,7 +31,7 @@ class PrepareLayerFilterStageRunnerTests(unittest.TestCase):
             SOURCE,
         )
         self.assertIn(
-            "dc21160e6cebd4cd962005ab0d3b1ceb64da0dcafc1b2d4f74cda601f5278c89",
+            "1227a248c1340def9b834f51539a5e55fd35487b5837f7df8a55c7ad7c6560df",
             SOURCE,
         )
 

@@ -37,10 +37,26 @@ class PrepareLayerFilterStageCaptureTests(unittest.TestCase):
         for fragment in (
             '("beforePrimaryUnion", 408, "e50bc03d", "dod_before_primary_union")',
             '("afterPrimaryUnion", 504, "a082c43c", "dod_after_primary_union")',
+            '("rawLayerSource", 512, "e00703ad", "dod_raw_layer_source")',
+            '"beforeLayerBoundsCall",',
+            '"10093fd7",',
+            '"dod_before_layer_bounds_call",',
             '("afterLayerSource", 592, "e51bc03d", "dod_after_layer_source")',
             '("afterBleedUnion", 940, "e002c03d", "dod_after_bleed_union")',
             '("beforeSourceIntersection", 988, "6202c03d", "dod_before_source_intersection")',
             '("final", 1072, "a88359f8", "dod_final")',
+        ):
+            self.assertIn(fragment, SOURCE)
+
+    def test_nested_backdrop_bounds_code_is_frozen(self) -> None:
+        for fragment in (
+            "AUXILIARY_CODE_SPECS = (",
+            '"relativeToPrepareLayer": 364396',
+            '"symbolByteCount": 80',
+            "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+            '"relativeToPrepareLayer": 364476',
+            '"symbolByteCount": 188',
+            "3296daa4d858acc2a259be7771e48c312ff7010fa3d7cd590a9f28bd17a4ff17",
         ):
             self.assertIn(fragment, SOURCE)
 

@@ -42,10 +42,44 @@ DOD_STAGE_SPECS = (
     ("entry", 0, "7f2303d5", "dod_entry"),
     ("beforePrimaryUnion", 408, "e50bc03d", "dod_before_primary_union"),
     ("afterPrimaryUnion", 504, "a082c43c", "dod_after_primary_union"),
+    ("rawLayerSource", 512, "e00703ad", "dod_raw_layer_source"),
+    (
+        "beforeLayerBoundsCall",
+        588,
+        "10093fd7",
+        "dod_before_layer_bounds_call",
+    ),
     ("afterLayerSource", 592, "e51bc03d", "dod_after_layer_source"),
     ("afterBleedUnion", 940, "e002c03d", "dod_after_bleed_union"),
     ("beforeSourceIntersection", 988, "6202c03d", "dod_before_source_intersection"),
     ("final", 1072, "a88359f8", "dod_final"),
+)
+
+AUXILIARY_CODE_SPECS = (
+    {
+        "name": "backdropLayerGetBounds",
+        "function": (
+            "CA::Render::BackdropLayer::get_bounds(CA::Render::Layer const*, "
+            "CA::Rect&, CA::Rect*) const"
+        ),
+        "relativeToPrepareLayer": 364396,
+        "symbolByteCount": 80,
+        "codeSHA256": (
+            "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a"
+        ),
+    },
+    {
+        "name": "backdropLayerGetBackdropBounds",
+        "function": (
+            "CA::Render::BackdropLayer::get_backdrop_bounds("
+            "CA::Render::Layer const*, CA::Rect&) const"
+        ),
+        "relativeToPrepareLayer": 364476,
+        "symbolByteCount": 188,
+        "codeSHA256": (
+            "3296daa4d858acc2a259be7771e48c312ff7010fa3d7cd590a9f28bd17a4ff17"
+        ),
+    },
 )
 
 FILTER_STAGE_REGISTER_NAMES = (
@@ -61,6 +95,12 @@ FILTER_STAGE_REGISTER_NAMES = (
     "v8",
 )
 DOD_STAGE_REGISTER_NAMES = (
+    "x0",
+    "x1",
+    "x2",
+    "x3",
+    "x8",
+    "x16",
     "x19",
     "x20",
     "x21",
@@ -250,6 +290,40 @@ def _install_stage_breakpoints(frame):
         DOD_CODE_SHA256,
         DOD_STAGE_SPECS,
     )
+    process = frame.GetThread().GetProcess()
+    target = process.GetTarget()
+    prepare_start = crop_base._state["prepareLayer"]["symbolStart"]
+    extension["auxiliaryCodeIdentities"] = []
+    for specification in AUXILIARY_CODE_SPECS:
+        contexts = target.FindFunctions(specification["function"])
+        if contexts.GetSize() != 1:
+            raise RuntimeError(specification["name"] + " symbol count differs")
+        symbol = contexts.GetContextAtIndex(0).GetSymbol()
+        if not symbol.IsValid():
+            raise RuntimeError(specification["name"] + " symbol is invalid")
+        start = symbol.GetStartAddress().GetLoadAddress(target)
+        end = symbol.GetEndAddress().GetLoadAddress(target)
+        if (
+            start - prepare_start != specification["relativeToPrepareLayer"]
+            or end - start != specification["symbolByteCount"]
+        ):
+            raise RuntimeError(specification["name"] + " bounds differ")
+        code = capture_base._read_memory(
+            process, start, end - start, specification["name"] + " code"
+        )
+        digest = hashlib.sha256(code).hexdigest()
+        if digest != specification["codeSHA256"]:
+            raise RuntimeError(specification["name"] + " complete code differs")
+        extension["auxiliaryCodeIdentities"].append(
+            {
+                **specification,
+                "symbolStart": start,
+                "symbolEnd": end,
+                "quartzCoreUUID": (
+                    symbol.GetStartAddress().GetModule().GetUUIDString()
+                ),
+            }
+        )
     _state["installed"] = True
     extension["status"] = "stage-breakpoints-active"
 
@@ -330,6 +404,7 @@ def _record_dod_stage(frame, stage, final):
         thread_id = frame.GetThread().GetThreadID()
         _state["pendingDODByThread"][thread_id].pop()
         record["complete"] = True
+    return snapshot
 
 
 def prepare_layer_entry(frame, breakpoint_location, internal_dict):
@@ -493,6 +568,43 @@ def dod_after_primary_union(frame, _breakpoint_location, _internal_dict):
     return False
 
 
+def dod_raw_layer_source(frame, _breakpoint_location, _internal_dict):
+    try:
+        _record_dod_stage(frame, "rawLayerSource", False)
+    except Exception as error:
+        _failure("dod-raw-layer-source", error)
+    return False
+
+
+def dod_before_layer_bounds_call(frame, _breakpoint_location, _internal_dict):
+    try:
+        snapshot = _record_dod_stage(frame, "beforeLayerBoundsCall", False)
+        process = frame.GetThread().GetProcess()
+        backdrop_address = capture_base._register(frame, "x0")
+        layer_address = capture_base._register(frame, "x1")
+        output_address = capture_base._register(frame, "x2")
+        snapshot["callArguments"] = {
+            "backdropLayerAddress": backdrop_address,
+            "layerAddress": layer_address,
+            "outputRectangleAddress": output_address,
+            "optionalRectangleAddress": capture_base._register(frame, "x3"),
+            "signedTargetAddress": capture_base._register(frame, "x8"),
+            "authenticationModifier": capture_base._register(frame, "x16"),
+        }
+        snapshot["backdropLayerObject"] = capture_base._memory_snapshot(
+            process, backdrop_address, 160, "BackdropLayer object"
+        )
+        snapshot["layerObject"] = capture_base._memory_snapshot(
+            process, layer_address, 320, "Backdrop source Layer object"
+        )
+        snapshot["outputBeforeCall"] = capture_base._memory_snapshot(
+            process, output_address, 32, "Backdrop bounds output before call"
+        )
+    except Exception as error:
+        _failure("dod-before-layer-bounds-call", error)
+    return False
+
+
 def dod_after_layer_source(frame, _breakpoint_location, _internal_dict):
     try:
         _record_dod_stage(frame, "afterLayerSource", False)
@@ -589,6 +701,9 @@ def __lldb_init_module(debugger, internal_dict):
                 }
                 for name, offset, instruction, _callback in DOD_STAGE_SPECS
             ],
+            "auxiliaryCodeSpecifications": [
+                dict(specification) for specification in AUXILIARY_CODE_SPECS
+            ],
             "selectionRule": (
                 "retain every hit at every frozen code-hashed stage boundary; "
                 "pair nested calls only by thread-local call order"
@@ -601,6 +716,7 @@ def __lldb_init_module(debugger, internal_dict):
         },
         "filterCodeIdentity": {},
         "dodCodeIdentity": {},
+        "auxiliaryCodeIdentities": [],
         "events": [],
         "filterRecords": [],
         "dodRecords": [],
