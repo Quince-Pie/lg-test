@@ -9456,3 +9456,107 @@ that supplies every Environment value, transition-time production, the
 remaining integer crop-allocation policy, physical Retina compositor/color
 transfer, an independent Walle zero-unequal-byte frame, or Liquid Glass
 parity. No production shader change is authorized.
+
+### Exact `Configuration` flag-seed helper, including nested mixes
+
+The configuration-dependent seed used by the preceding `EnvironmentFlags`
+producer is no longer inferred from a public table. Its complete private
+helper occupies `[0x240974e60, 0x240975028)` in the frozen DesignLibrary
+image: 456 bytes / 114 arm64 instructions with SHA-256
+`ac4057c8edc1ffa817b6a1dc9693d2b9ef95650ab9b70223a98e00642b5c8076`.
+The capture authenticates every byte and 40 branch-defining instructions
+before directly invoking the helper.
+
+Runtime metadata and descriptors establish the indirect `Configuration.Mix`
+payload independently:
+
+```text
+Mix size / stride       296 / 296
+field offsets           from 0, to 144, fraction 288
+box allocation          320 bytes
+value-witness flags     0x00030007
+extra inhabitants       2147483647
+projector               swift_projectBox
+```
+
+The pointer-authenticated projector stub at
+`[0x2409a5cd0, 0x2409a5ce0)` binds to `swift_projectBox` at runtime. The
+private `Mix` descriptor at `0x2409d2188` names exactly three fields: `from`,
+`to`, and `fraction`. Each endpoint is the complete 144-byte public
+`Configuration`; the final eight bytes preserve the binary64 fraction.
+
+Let `O` be the outer configuration's option bits. For a direct base, the
+helper begins with `O` and applies only these changes:
+
+```text
+tag-zero base, subvariant 15...18  clear displayAngle 0x0002
+regular base, subvariant 12        clear adaptive     0x4000
+clear base, subvariant 1 or 20     set adaptive       0x4000
+clear base, subvariant 8           set displayAngle   0x0002
+every other direct case            preserve O
+```
+
+For an indirect mix with endpoint option words `F` and `T`, the exact result
+is:
+
+```text
+O
+| ((F | T) & (displayAngle | adaptive))
+| ((F & T) & externalLuminance)
+```
+
+`externalLuminance` is bit `0x8000`. Every endpoint bit other than these
+three is ignored, although every outer bit passes through. The fraction is
+not read by this helper.
+
+Most importantly, endpoint seed helpers are **not** evaluated recursively.
+A nested regular-to-clear configuration has outer options zero and produces
+seed `0x4000` when evaluated itself. When that same nested configuration is
+used as one endpoint of another mix with dock, only its outer option word
+zero participates; the outer helper result is `0x0002`, not `0x4002`. An
+implementation that recursively substitutes the nested helper result would
+therefore diverge from Apple.
+
+The public validation includes all 27 exported configurations and every
+ordered pair, for 729 static mixes. It also includes fraction controls,
+option controls, and nested mixes: 36 public configurations and 741 public
+mix calls in total. Public constructors independently confirm subvariant
+storage `12` for entry field, `15` for watch-face photos, and `20` for watch
+passcode, including their predicted flag changes.
+
+The instruction-path validation is exhaustive over five direct base
+representations, all 256 subvariant storage bytes, and all eight truth-table
+states of the three relevant option bits: 10,240 direct cases. The complete
+8-by-8-by-8 indirect truth table adds 512 cases. All 10,752 results equal the
+law above in three fresh processes per mode. This covers every helper storage
+branch; it is deliberately not a claim that every possible `UInt8`
+subvariant byte is a public API state. The authenticated stream hashes are:
+
+```text
+direct      98267356ea230ed1a0a469cda7f050c8746526fa6754ebfc6aae1932671735ba
+indirect    8a6f1b087d9d4722e9b37bc34a25676c8c4e0cf1cacdb852f3325a9a2b266025
+combined    454fec1c7bc2b9ae943736615c492e2340670f06e77c9307bfca7ec63c96f81c
+public      482d34307dc6fa96e9c552bad18b7d18d2984102655da23ff3c2efacd46339f8
+```
+
+The capture, direct probe, assembly bridge, and canonical result are:
+
+```text
+Analysis/capture_designlibrary_configuration_flag_seed_local_macos_26_6_1.py
+  SHA-256 ceb3a0ed930e619638368fec14ed4187ca7184586e2ccd0918a786c7f0ebde61
+Analysis/probe_designlibrary_configuration_flag_seed_local_macos_26_6_1.c
+  SHA-256 d710af104b063fdd4964c7d4ea9c86d2b4a377479c230c83bbbc0d1bd470bdae
+Analysis/invoke_designlibrary_configuration_flag_seed_arm64.S
+  SHA-256 8de57e8bfb88bb3590de5b27c3dd7f631245d2a697f90936540c8ddd732a57e2
+Analysis/designlibrary_configuration_flag_seed_local_macos_26_6_1_result.json
+  SHA-256 1cf97c5ccf4b51c85c882cce1f8b0b91335ab80508908c4fcc763d9b2768390a
+```
+
+The native capture uses Apple's Command Line Tools directly and rejects a
+probe executable containing any Nix store path. This closes the arbitrary
+valid-configuration-to-flag-seed boundary on the frozen system, including
+nested mixes. It does **not** close the live SwiftUI environment updater,
+transition-progress production, the remaining integer crop-allocation
+policy, physical Retina compositor/color transfer, an independent Walle
+zero-unequal-byte frame, or Liquid Glass parity. No production shader change
+is authorized.

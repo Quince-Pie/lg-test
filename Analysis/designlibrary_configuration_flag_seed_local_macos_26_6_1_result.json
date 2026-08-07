@@ -1,0 +1,444 @@
+{
+  "claims": {
+    "arbitraryNestedConfigurationMixFlagSeedLawEstablished": true,
+    "configurationToFlagSeedLawEstablished": true,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "integerCropAllocationPolicyEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveSwiftUIEnvironmentUpdateLawEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false,
+    "transitionProgressProductionLawEstablished": false
+  },
+  "classification": "authenticated private helper invocation and instruction-path exhaustive storage validation; native Apple Swift ABI with no GUI session, render, image, crop, or Nix store path",
+  "designLibraryConfigurationFlagSeedCaptureSchemaVersion": 1,
+  "exactLaw": {
+    "directBase": {
+      "allOtherCases": "preserve outer options",
+      "clearSubvariant8": "set displayAngle",
+      "clearSubvariants1And20": "set adaptive",
+      "regularSubvariant12": "clear adaptive",
+      "tag0Subvariants15Through18": "clear displayAngle"
+    },
+    "indirectMix": {
+      "adaptive": "outer OR from OR to",
+      "allOtherBits": "outer only",
+      "displayAngle": "outer OR from OR to",
+      "externalLuminance": "outer OR (from AND to)",
+      "fractionRead": false,
+      "recursiveEndpointSeedEvaluation": false
+    },
+    "initialValue": "outer Configuration.options"
+  },
+  "exhaustiveValidation": {
+    "classification": "all helper storage branches and relevant option truth-table states; not a claim that every UInt8 Subvariant storage is public API state",
+    "combinedStreamSHA256": "454fec1c7bc2b9ae943736615c492e2340670f06e77c9307bfca7ec63c96f81c",
+    "directBaseRepresentationCount": 5,
+    "directCaseCount": 10240,
+    "directStreamSHA256": "98267356ea230ed1a0a469cda7f050c8746526fa6754ebfc6aae1932671735ba",
+    "indirectCaseCount": 512,
+    "indirectStreamSHA256": "8a6f1b087d9d4722e9b37bc34a25676c8c4e0cf1cacdb852f3325a9a2b266025",
+    "relevantOptionCombinationCount": 8,
+    "subvariantStorageCountPerDirectRepresentation": 256,
+    "totalCaseCount": 10752
+  },
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "measuredInvariants": {
+    "allExhaustiveStorageCasesMatchExactLaw": true,
+    "allOrderedPublicStaticMixesMatchExactLaw": true,
+    "boxedMixPreservesBothConfigurationsBitwise": true,
+    "boxedMixPreservesFractionBitwise": true,
+    "freshProcessSemanticStabilityEstablished": true,
+    "helperCodeAuthenticated": true,
+    "mixFractionDoesNotAffectFlagSeed": true,
+    "mixMetadataAndFieldsAuthenticated": true,
+    "projectorRuntimeBindingAuthenticated": true
+  },
+  "optionBits": {
+    "adaptive": "0x0000000000004000",
+    "displayAngle": "0x0000000000000002",
+    "exhaustivePassThroughNoise": "0x00000000009f327d",
+    "externalLuminance": "0x0000000000008000"
+  },
+  "publicValidation": {
+    "nestedMixCases": [
+      {
+        "baseRepresentationTag": 2,
+        "name": "nested_source_regular_clear",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      {
+        "case": "nested_regular_clear_to_dock",
+        "fractionBits": "0x3fe0000000000000",
+        "from": "nested_source_regular_clear",
+        "fromOptionsBits": "0x0000000000000000",
+        "outerOptionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000002",
+        "to": "dock",
+        "toOptionsBits": "0x0000000000000002"
+      },
+      {
+        "case": "nested_dock_to_regular_clear",
+        "fractionBits": "0x3fe0000000000000",
+        "from": "dock",
+        "fromOptionsBits": "0x0000000000000002",
+        "outerOptionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000002",
+        "to": "nested_source_regular_clear",
+        "toOptionsBits": "0x0000000000000000"
+      }
+    ],
+    "normalizedStreamSHA256": "482d34307dc6fa96e9c552bad18b7d18d2984102655da23ff3c2efacd46339f8",
+    "optionMixCases": [
+      {
+        "case": "external_both_true",
+        "fractionBits": "0x3fe0000000000000",
+        "from": "regular_external_true",
+        "fromOptionsBits": "0x000000000000c000",
+        "outerOptionsBits": "0x0000000000000000",
+        "resultBits": "0x000000000000c000",
+        "to": "clear_external_true",
+        "toOptionsBits": "0x0000000000008000"
+      },
+      {
+        "case": "external_true_false",
+        "fractionBits": "0x3fe0000000000000",
+        "from": "regular_external_true",
+        "fromOptionsBits": "0x000000000000c000",
+        "outerOptionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000004000",
+        "to": "clear_external_false",
+        "toOptionsBits": "0x0000000000000000"
+      },
+      {
+        "case": "adaptive_false_display_angle",
+        "fractionBits": "0x3fe0000000000000",
+        "from": "regular_adaptive_false",
+        "fromOptionsBits": "0x0000000000000000",
+        "outerOptionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000002",
+        "to": "dock",
+        "toOptionsBits": "0x0000000000000002"
+      }
+    ],
+    "orderedStaticMixCount": 729,
+    "staticConfigurationCount": 27,
+    "staticConfigurations": [
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000000",
+        "name": "regular",
+        "optionsBits": "0x0000000000004000",
+        "resultBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000008",
+        "name": "clear",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000080",
+        "name": "control",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 0,
+        "name": "text",
+        "optionsBits": "0x0000000000000002",
+        "resultBits": "0x0000000000000002",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000058",
+        "name": "identity",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc0000000000000a8",
+        "name": "menu",
+        "optionsBits": "0x0000000000004000",
+        "resultBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000010",
+        "name": "dock",
+        "optionsBits": "0x0000000000000002",
+        "resultBits": "0x0000000000000002",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000018",
+        "name": "appIcons",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000020",
+        "name": "widgets",
+        "optionsBits": "0x0000000000000002",
+        "resultBits": "0x0000000000000002",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000028",
+        "name": "avplayer",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000030",
+        "name": "facetime",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000038",
+        "name": "controlCenter",
+        "optionsBits": "0x0000000000000002",
+        "resultBits": "0x0000000000000002",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000040",
+        "name": "notificationCenter",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000048",
+        "name": "monogram",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000050",
+        "name": "bubbles",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 1,
+        "name": "focusBorder",
+        "optionsBits": "0x0000000000001001",
+        "resultBits": "0x0000000000001001",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 1,
+        "name": "focusPlatter",
+        "optionsBits": "0x0000000000001001",
+        "resultBits": "0x0000000000001001",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000060",
+        "name": "keyboard",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000068",
+        "name": "sidebar",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000070",
+        "name": "abuttedSidebar",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000078",
+        "name": "inspector",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000088",
+        "name": "loupe",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000090",
+        "name": "slider",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000098",
+        "name": "camera",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc0000000000000a0",
+        "name": "cartouchePopover",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc0000000000000b0",
+        "name": "siriSnippet",
+        "optionsBits": "0x0000000000004000",
+        "resultBits": "0x0000000000004000",
+        "subvariantStorage": 0
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc0000000000000b8",
+        "name": "carplayUltra",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 0
+      }
+    ],
+    "subvariantSpecialCases": [
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000000",
+        "name": "regular_entryField",
+        "optionsBits": "0x0000000000004000",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 12
+      },
+      {
+        "baseRepresentationTag": 3,
+        "inlineBaseBits": "0xc000000000000008",
+        "name": "clear_watchPasscode",
+        "optionsBits": "0x0000000000000000",
+        "resultBits": "0x0000000000004000",
+        "subvariantStorage": 20
+      },
+      {
+        "baseRepresentationTag": 0,
+        "name": "text_watchFacePhotos",
+        "optionsBits": "0x0000000000000002",
+        "resultBits": "0x0000000000000000",
+        "subvariantStorage": 15
+      }
+    ],
+    "subvariants": {
+      "entryField": 12,
+      "watchFacePhotos": 15,
+      "watchPasscode": 20
+    },
+    "totalPublicConfigurationCount": 36,
+    "totalPublicMixCount": 741
+  },
+  "runtimeMixLayout": {
+    "extraInhabitantCount": 2147483647,
+    "fieldOffsets": [
+      0,
+      144,
+      288
+    ],
+    "projector": "swift_projectBox",
+    "size": 296,
+    "stride": 296,
+    "valueWitnessFlags": "0x00030007"
+  },
+  "staticEvidence": {
+    "flagSeedHelper": {
+      "byteCount": 456,
+      "criticalInstructionCount": 40,
+      "endExclusive": "0x240975028",
+      "instructionCount": 114,
+      "sha256": "ac4057c8edc1ffa817b6a1dc9693d2b9ef95650ab9b70223a98e00642b5c8076",
+      "start": "0x240974e60"
+    },
+    "mixDescriptor": {
+      "address": "0x2409d2188",
+      "fieldCount": 3,
+      "fieldNames": [
+        "from",
+        "to",
+        "fraction"
+      ],
+      "fieldOffsetVectorWords": 2,
+      "name": "Mix"
+    },
+    "mixMetadataAccessor": {
+      "endExclusive": "0x240913000",
+      "sha256": "b9fda459e045c61886dd72ab311a8edf74c62e1cb72913f8f79bef50e88ed86b",
+      "start": "0x240912fe0"
+    },
+    "projectorStub": {
+      "endExclusive": "0x2409a5ce0",
+      "runtimeBinding": "swift_projectBox",
+      "sha256": "0f34a958e6e6dd9580d38018a9dacd58477f007093fd695020c19a398c1ee166",
+      "start": "0x2409a5cd0"
+    }
+  },
+  "tool": {
+    "assemblyBridge": "Analysis/invoke_designlibrary_configuration_flag_seed_arm64.S",
+    "assemblyBridgeSHA256": "8de57e8bfb88bb3590de5b27c3dd7f631245d2a697f90936540c8ddd732a57e2",
+    "captureSource": "Analysis/capture_designlibrary_configuration_flag_seed_local_macos_26_6_1.py",
+    "captureSourceSHA256": "ceb3a0ed930e619638368fec14ed4187ca7184586e2ccd0918a786c7f0ebde61",
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "freshProcessRunsPerMode": 3,
+    "probeExecutableSHA256": "08b472cc95a37a7827150e10d18b6154c49d719d8f07400a4d632d0ed1f87ca3",
+    "probeSource": "Analysis/probe_designlibrary_configuration_flag_seed_local_macos_26_6_1.c",
+    "probeSourceSHA256": "d710af104b063fdd4964c7d4ea9c86d2b4a377479c230c83bbbc0d1bd470bdae",
+    "publicAssemblyBridge": "Analysis/invoke_designlibrary_public_configuration_resolution_arm64.S",
+    "publicAssemblyBridgeSHA256": "9f58cbef6e4875f9fb377f4018913d6336b6c906c1a37a1117d137ac373fef2d",
+    "python": "3.9.6"
+  }
+}
