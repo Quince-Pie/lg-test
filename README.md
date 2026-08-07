@@ -10818,3 +10818,33 @@ Analysis/validate_background_filter_constructor_timeline_marker_return_join_loca
 Analysis/run_background_filter_constructor_timeline_marker_return_join_local_macos_26_6_1.sh
   SHA-256 740f5c84e8d9a9a3d669c02f9d9e2dd4d8e9ecc7004acd87905f7f5a46f3f99f
 ```
+
+The frozen immediate-return gate then ran directly on the active built-in
+Retina display at commit `4bda1b4`. Both native capture and validation exited
+zero. An independent invocation of the unchanged validator under
+`nix develop` produced the identical validation file, SHA-256
+`93ea10f0d2a6981d652d66ff5a2f113622b2cf393a8115490ca9b0a2bbaabe6f`.
+
+The run retained 1,526 complete chains across all 32 noninitial marker batches.
+All 1,526 complete 1,025-byte builder outputs equalled their constructor inputs
+bit for bit. The added stop captured all 1,526 constructor returns at the exact
+producer instruction immediately following the constructor `BL`; every one of
+the 491 initialized bytes equalled the later provider object. The stronger
+reported comparison also found equality across the complete 504-byte value,
+including all 13 compiler-padding bytes, in all 1,526 chains. Constructor-return
+and provider addresses were distinct in every chain, proving a copy rather than
+object aliasing.
+
+Value-blind last-completed-chain selection succeeded for all 32 samples. All
+32 selections were distinct unique batch-and-global signature matches, and all
+576 loaded-provider-field predictions passed. The 33 canonical Retina images
+were all distinct. This prospectively closes the live 1,025-byte
+`ResolvedRecipe.Parameters` builder-to-constructor transfer and the complete
+504-byte constructor-return-to-provider transfer for this profile. The exact
+result and artifact identities are retained in
+`Analysis/background_filter_constructor_timeline_marker_return_join_4bda1b4_result.json`.
+
+This is not yet Liquid Glass pixel parity. The general 49-field public
+Parameters construction law, upstream integer crop/allocation policy, physical
+Retina compositor/color transfer, and an independent zero-unequal-byte Walle
+frame gate remain open. Production shader changes remain unauthorized.
