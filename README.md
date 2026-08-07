@@ -10714,3 +10714,63 @@ complete 1,025-byte Parameters-to-constructor join, initialized 491-byte
 constructor-to-provider join, crop/allocation policy, physical compositor and
 color transfer, and independent zero-unequal-byte Walle frame remain open.
 Liquid Glass parity and production shader changes remain unauthorized.
+
+The frozen census ran directly on the M1 at commit `69fe692` and the native
+process completed with `LLDB_STATUS=0`, 33 markers, and zero trace failures.
+The frozen validator correctly rejected the run: marker batch 14 was empty, so
+the required same-run 32-sample provider transfer did not pass. The four extra
+producer stops reduced presentation cadence from the prior 1,309 provider
+calls to 734; sample 14's sole global signature match was call 351 in the
+immediately preceding batch. The failed gate remains failed.
+
+The output-blind census itself is unambiguous when evaluated by its unchanged
+structural validator. It retained exactly 734 Parameters-builder calls, 734
+builder returns, 734 `BackgroundFilter` constructor calls, 734 constructor
+returns, and 734 provider calls. Every boundary used the same thread at a given
+index, no call crossed a marker, and all 734 indices repeated exactly:
+
+```text
+Parameters builder call
+Parameters builder return
+BackgroundFilter constructor call
+BackgroundFilter constructor return
+provider call
+```
+
+All 31 nonempty public marker batches retained one unique batch-and-global
+signature match. The exact failed result and artifact identities are preserved
+in
+`Analysis/background_filter_constructor_timeline_marker_census_69fe692_failure_result.json`
+with SHA-256
+`e1bbf34f361434497a94312b03da744e869bc0131f2de82d12d6cdb088946a8d`.
+
+That topology permits a materially lighter successor. It removes the inherited
+six-stop provider wrapper/Group instrumentation and the constructor-return
+stop. Each selected render now incurs only four stops: builder call, builder
+return, constructor call, and provider entry. At those points it retains the
+complete 1,025-byte builder output and constructor input, then the complete
+504-byte constructor output and provider object. Before dispatch, the gate
+predicts bitwise builder-to-constructor identity, bitwise equality of every one
+of the 491 constructor-initialized provider bytes, a nonempty batch for every
+sample, and all 18 already-proven provider field loads. The 13 compiler-padding
+bytes are retained but do not gate acceptance. Address equality and the
+49-field public/Parameters match count remain explicitly unpredicted.
+
+The successor is still a direct local-M1 Apple Command Line Tools invocation,
+not GitHub Actions, and contains no Nix store path. Its frozen identities are:
+
+```text
+Analysis/background_filter_constructor_timeline_marker_direct_join_local_macos_26_6_1_preregistration.json
+  SHA-256 54e0e614895d51ea1a5e6ff72f87ea6c7c5bf7c7df89daafbba01abf96b8be5a
+Analysis/capture_background_filter_constructor_timeline_marker_direct_join_local_macos_26_6_1_lldb.py
+  SHA-256 14d6ea6368f9ff6766821d5b516afebeae00dc5d9ae9646532c9b7e716e4b573
+Analysis/validate_background_filter_constructor_timeline_marker_direct_join_local_macos_26_6_1.py
+  SHA-256 2273638e6e176f5b4f5453e0db5d0f9844ecac813d3849b02ac9b1b5ca09c929
+Analysis/run_background_filter_constructor_timeline_marker_direct_join_local_macos_26_6_1.sh
+  SHA-256 5cb6fc51011063f8ba9fcc927b9a0c835753f99608aba7f8123bdeb3a90815a4
+```
+
+A pass closes the actual live Parameters-to-provider construction gap for this
+profile. It still does not by itself establish the general 49-field Parameters
+law, crop/allocation, physical compositor/color behavior, or independent Walle
+pixel parity.
