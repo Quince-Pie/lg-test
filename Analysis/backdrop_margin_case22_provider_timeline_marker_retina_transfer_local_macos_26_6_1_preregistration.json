@@ -1,0 +1,317 @@
+{
+  "captureContract": {
+    "activeRetinaSessionPreflightRequired": true,
+    "all32DynamicPublicRecordsRequired": true,
+    "allProviderCallsMustBeFullyLinkedAndObjectStable": true,
+    "architecture": "arm64",
+    "appearance": "light",
+    "capturedValuesMayNotSelectRuntimeCapture": true,
+    "direction": "materialize",
+    "geometry": "circle-127-center",
+    "mainExecutableSHA256": "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd",
+    "markerCount": 33,
+    "markerModuleOffset": 572984,
+    "material": "regular",
+    "maximumProviderCallCount": 4096,
+    "nativeAppleCommandLineToolsOnly": true,
+    "providerCodeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+    "providerObjectByteCount": 384,
+    "sampleCount": 33,
+    "zeroTolerance": true
+  },
+  "case22ProviderTimelineMarkerRetinaTransferLocalMacOSPreregistrationSchemaVersion": 1,
+  "classification": "prospectively frozen active-Retina value-blind transfer of the structurally last completed provider call before each exact public timeline marker; all 18 loaded fields and the exact public return law are gated for samples 1 through 32",
+  "frozenImplementation": {
+    "files": [
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1_lldb.py",
+        "sha256": "145cf4d04650769f150f865e32f90671f9ab7f3d536d907e970b9f01bf690a59"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1.py",
+        "sha256": "574c671f1c61a519365f724c1481d1c12c53a0b0cb13bb9351a0d0a3f5d835cd"
+      },
+      {
+        "path": "Analysis/run_backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1.sh",
+        "sha256": "27b60e29a6cc4c069d7197ec2cb9e8726b870d9d0bca287fb8564f5aa24f55d7"
+      },
+      {
+        "path": "Analysis/test_capture_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1_lldb_source.py",
+        "sha256": "e3563170480aadd34c012920d8838c5a84d4f932c6b2df9cc5cbdb2e0a81485e"
+      },
+      {
+        "path": "Analysis/test_validate_backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1.py",
+        "sha256": "3b4dfb9ebc42cc1bda0a4f366d300a01124c5a4f87537cc8262f963babad93da"
+      },
+      {
+        "path": "Analysis/test_run_backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1_source.py",
+        "sha256": "988f41a4183511b57fec42f6572c2665a48096773e92ddd5fa8cc600bcfcc94b"
+      },
+      {
+        "path": "Analysis/test_backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1_preregistration.py",
+        "sha256": "037867350db1d1c345791900a445f74f53042aa91b3f195db457ae08c7faef5e"
+      },
+      {
+        "path": "Analysis/backdrop_margin_case22_provider_timeline_marker_28817f3_failure_result.json",
+        "sha256": "f01ae11f8f1ff47ca2eb80648618eb989f39c266f86caed9b6925548298c02f4"
+      },
+      {
+        "path": "Analysis/check_local_retina_capture_session_v2.swift",
+        "sha256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+      },
+      {
+        "path": "Analysis/test_check_local_retina_capture_session_v2_source.py",
+        "sha256": "cb10ba593f3f38e6091aa25f0fd78d3b857d907852989931357a93e737c951ad"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1_lldb.py",
+        "sha256": "3796c5791462c30a971b2ab1063e7e3dc5a30ede1a82d7fa0a452a469d1306d4"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_minimal_retry_local_macos_26_6_1_lldb.py",
+        "sha256": "d7d3cf997207df915243273e7cf9540c8c8987adb667bd6e363ea329e5c8fd8e"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_provider_object_matrix_minimal_local_macos_26_6_1_lldb.py",
+        "sha256": "e9dfaf6c0f7eda2625ae9cf7418a3c860246eaed3a4a64796243d41377d7e26c"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_callee_local_macos_26_6_1_lldb.py",
+        "sha256": "6562cc403d46d84774d1eb1ee1cc07f0c61b1dfa7ea622eeb770e204e5d47780"
+      },
+      {
+        "path": "Analysis/capture_backdrop_margin_case22_provider_local_macos_26_6_1_lldb.py",
+        "sha256": "964b03394b837e3d0e0f312a56f593ffdbb7be6c325d98a53d56fbc216efd25b"
+      },
+      {
+        "path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_retry_lldb.py",
+        "sha256": "94085b4473ed0c63a7cc753ac56be67186394c8dba18d74162a09f365d202b1f"
+      },
+      {
+        "path": "Analysis/capture_case22_provider_field_matrix_local_macos_26_6_1_lldb.py",
+        "sha256": "ac29cb987391b9748499c410d76d0c189996c8756f6543e394eba68b5ff52b63"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_provider_object_matrix_minimal_retry2_local_macos_26_6_1.py",
+        "sha256": "dbe64de0566a3c4f42df7fe141783a6a5e3ef8c744981f1f2d9e980154f52ad7"
+      },
+      {
+        "path": "Analysis/analyze_backdrop_margin_case22_provider_public_timeline_join.py",
+        "sha256": "4bc9d96947819b324f29c91262ca13b4f04fe52ad9a7e61eafdc3f532cc0436b"
+      },
+      {
+        "path": "Analysis/analyze_backdrop_margin_case22_provider_complete_semantics.py",
+        "sha256": "3fffc6c9052df11c2ebdb7e010c5afc2ba24c6304de4f6c1c83cb9edd28b0d62"
+      },
+      {
+        "path": "Analysis/analyze_backdrop_margin_case22_provider_local_macos_26_6_1.py",
+        "sha256": "53efb95ab95481d4bc9b34d3b76a47b1b6c8f7e95a8e697cd85aeb60093646b3"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_provider_local_macos_26_6_1.py",
+        "sha256": "6a3dda2247eb0269cb5062ec00dc9b1e0ee778979c7b28538b5fa619b5138804"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_callee.py",
+        "sha256": "9d4976e281bd58067c5d798d9402305e2e6bc2b517f5d177674b3fc4be2c506b"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_group_execution.py",
+        "sha256": "2d609358164154933da7c4459ef2c89cf5256e22daeea900621b0a26dab5c761"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_writer_execution.py",
+        "sha256": "47497743231b6e9183b75909d592033241f41a7bdc045017a3959e038beb465f"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_writer_execution_retry.py",
+        "sha256": "239cbe938de332e3108a7b7153f6c66af6238baea329d81dd137a30591325db8"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1.py",
+        "sha256": "1f7ff6bd50b67404dcc86db4e73990b7247bdc52198c16923034764eef18781d"
+      },
+      {
+        "path": "Analysis/validate_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1.py",
+        "sha256": "3672f7a53ad50500fe97e20d60316be6caf83aa73ac278669abcefb95aa84512"
+      }
+    ]
+  },
+  "loadedFieldPredictions": [
+    {
+      "offset": 8,
+      "publicInput": "inputShadowOffset lane 0",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 16,
+      "publicInput": "inputShadowOffset lane 1",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 24,
+      "publicInput": "inputShadowAmount",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 40,
+      "publicInput": null,
+      "storage": "binary64",
+      "transform": "exact positive zero"
+    },
+    {
+      "offset": 56,
+      "publicInput": "inputShadowRadius",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 136,
+      "publicInput": "inputShadowOpacity",
+      "storage": "binary32",
+      "transform": "binary32 cast"
+    },
+    {
+      "offset": 144,
+      "publicInput": "inputShadowVibrancyContribution",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 152,
+      "publicInput": "inputBlurRadius",
+      "storage": "binary64",
+      "transform": "multiply by 2"
+    },
+    {
+      "offset": 160,
+      "publicInput": "inputBlurDistance0",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 168,
+      "publicInput": "inputBlurDistance1",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 176,
+      "publicInput": null,
+      "storage": "binary64",
+      "transform": "exact positive zero"
+    },
+    {
+      "offset": 184,
+      "publicInput": null,
+      "storage": "binary64",
+      "transform": "exact positive zero"
+    },
+    {
+      "offset": 192,
+      "publicInput": "inputBlurDistance4",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 232,
+      "publicInput": "inputInnerRefractionAmount",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 248,
+      "publicInput": "inputOuterRefractionAmount",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 272,
+      "publicInput": "inputRefractionOpacity",
+      "storage": "binary32",
+      "transform": "binary32 cast"
+    },
+    {
+      "offset": 352,
+      "publicInput": "inputBleedAmount",
+      "storage": "binary64",
+      "transform": "identity"
+    },
+    {
+      "offset": 376,
+      "publicInput": "inputBleedOpacity",
+      "storage": "binary32",
+      "transform": "binary32 cast"
+    }
+  ],
+  "productAuthority": {
+    "freshMaterialAppearanceGeometryProfileTransferEstablishedOnPass": false,
+    "independentWalleZeroByteFrameParityEstablishedOnPass": false,
+    "liquidGlassParityEstablishedOnPass": false,
+    "physicalRetinaColorPixelCompositorTransferEstablishedOnPass": false,
+    "productionShaderAuthorizedOnPass": false,
+    "sameProfilePublicProviderConstructionMayPassProspectively": true,
+    "upstreamCropAllocationPolicyEstablishedOnPass": false
+  },
+  "prospectivePredictions": {
+    "all32SelectedCallsMatchAll18LoadedFieldsBitwise": true,
+    "all32SelectedCallsMatchFourWordSignatureUniquely": true,
+    "all32SelectedReturnsMatchExactPublicLaw": true,
+    "allNoninitialCapturedCallsMatchExactObjectReturnLaw": true,
+    "initialCapturedCallReturnsExactPositiveZero": true,
+    "returnLaw": "abs(inputShadowOffset.y) + abs(inputShadowAmount)"
+  },
+  "rejectedPredecessor": {
+    "artifactDirectory": "local-case22-provider-timeline-marker-transfer-28817f3-run1",
+    "captureCommit": "28817f34f60207aa3466118835e2166b2ad249d9",
+    "failureResultPath": "Analysis/backdrop_margin_case22_provider_timeline_marker_28817f3_failure_result.json",
+    "failureResultSHA256": "f01ae11f8f1ff47ca2eb80648618eb989f39c266f86caed9b6925548298c02f4",
+    "frozenGateRemainsFailed": true,
+    "retrospectiveLastCallObservationUsedOnlyToDefineSuccessorSelection": true,
+    "validationExitStatus": 2
+  },
+  "runtimeOutcomeFrozenBeforeDispatch": null,
+  "selectionPolicy": {
+    "capturedObjectOrOutputMaySelectCall": false,
+    "markerSelection": "exact main-module function entry and zero-based ordinal only",
+    "sampleIndices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32
+    ],
+    "selectedProviderCall": "last structurally completed call in the preceding marker interval",
+    "selectionFrozenBeforeDispatch": true
+  }
+}

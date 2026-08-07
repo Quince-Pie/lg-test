@@ -10540,3 +10540,101 @@ Actions, and embeds no Nix store path. The actual live producer, general
 crop/allocation policy, physical Retina compositor/color transfer, and an
 independent Walle frame with zero unequal bytes remain open. Liquid Glass parity
 and production shader changes remain unauthorized.
+
+### Active-Retina live provider marker transfer
+
+The exact-marker capture at commit
+`28817f34f60207aa3466118835e2166b2ad249d9` ran directly on the active built-in
+Retina display of `quince@10.0.41.19`. This was a local Apple Command Line Tools
+process, not a GitHub Actions runner. The fail-closed session preflight passed
+at 3456 x 2234 physical pixels, 1728 x 1117 logical points, and backing scale
+2; the session was on-console, logged in, unlocked, active, and awake.
+
+The native transport completed exactly: 33 public timeline markers, 1,310
+provider calls, 2,653 ordered marker/call events, 1,310 bitwise-stable provider
+objects, 1,310 provider-to-Group return joins, and zero capture failures. LLDB
+and the application both exited zero. The frozen validator nevertheless exited
+2 because its inherited all-zero allocation-profile return prediction was
+false. That prospective gate remains failed; it is not relabelled after seeing
+the result.
+
+The failure opened a materially richer active-Retina profile. Offline replay of
+the authenticated 984-byte DesignLibrary provider reproduced all 1,310 native
+return words bit for bit, with 1,310 distinct returns, two exact instruction
+paths, and zero mismatches. The observed nonzero values are therefore provider
+results, not stale LLDB register contents. The first call returns exact positive
+zero. Every later captured call satisfies, bit for bit:
+
+```text
+max(abs(axisX), abs(axisY)) + abs(shapeRadius)
+```
+
+For every public sample 1 through 32, the last structurally completed provider
+call before the exact sample marker is the sole global four-word signature
+match. This call choice uses only event order and marker ordinal; no object
+byte, return, image, crop, or pixel selects it. All 18 provider-loaded fields
+then equal the live public filter inputs exactly:
+
+```text
++0x008  inputShadowOffset.x                 binary64 identity
++0x010  inputShadowOffset.y                 binary64 identity
++0x018  inputShadowAmount                   binary64 identity
++0x028  exact positive zero                 binary64
++0x038  inputShadowRadius                   binary64 identity
++0x088  inputShadowOpacity                  binary32 cast
++0x090  inputShadowVibrancyContribution     binary64 identity
++0x098  2 * inputBlurRadius                 binary64
++0x0a0  inputBlurDistance0                  binary64 identity
++0x0a8  inputBlurDistance1                  binary64 identity
++0x0b0  exact positive zero                 binary64
++0x0b8  exact positive zero                 binary64
++0x0c0  inputBlurDistance4                  binary64 identity
++0x0e8  inputInnerRefractionAmount          binary64 identity
++0x0f8  inputOuterRefractionAmount          binary64 identity
++0x110  inputRefractionOpacity              binary32 cast
++0x160  inputBleedAmount                    binary64 identity
++0x178  inputBleedOpacity                   binary32 cast
+```
+
+The retained profile also preserves exact aliases: `+0x0c0` equals
+`inputOuterRefractionAmount` and half `inputShadowHeight`; `+0x0e8` equals
+`-0.8 * inputShadowAmount`; `+0x0f8` equals `inputBlurDistance4`; and `+0x160`
+equals both `inputBleedHeight` and half `inputBleedBlurRadius`. These equalities
+do not by themselves disambiguate the semantic source field.
+
+For all 32 structurally selected calls, the exact public return law is:
+
+```text
+abs(inputShadowOffset.y) + abs(inputShadowAmount)
+```
+
+The endpoint return is exactly 83.0. The earlier retained all-zero profile was
+not protected by the current v2 active-Retina session preflight. That fact does
+not establish the cause of the profile difference; it prevents the earlier
+session from overriding the current physical-console evidence.
+
+The failed result is retained at
+`Analysis/backdrop_margin_case22_provider_timeline_marker_28817f3_failure_result.json`
+with SHA-256
+`f01ae11f8f1ff47ca2eb80648618eb989f39c266f86caed9b6925548298c02f4`.
+A fresh successor gate now freezes the stronger, value-blind last-call
+selection before dispatch and acceptance-gates all 18 fields, all 32 samples,
+the initial positive-zero return, every later object-return identity, and the
+public return law. Its exact hashes are:
+
+```text
+Analysis/backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1_preregistration.json
+  SHA-256 60d1a55bb4f6438762723011c4ef02f3315c61a8c3ffa33c97415f0929f59204
+Analysis/capture_backdrop_margin_case22_provider_timeline_marker_transfer_local_macos_26_6_1_lldb.py
+  SHA-256 145cf4d04650769f150f865e32f90671f9ab7f3d536d907e970b9f01bf690a59
+Analysis/validate_backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1.py
+  SHA-256 574c671f1c61a519365f724c1481d1c12c53a0b0cb13bb9351a0d0a3f5d835cd
+Analysis/run_backdrop_margin_case22_provider_timeline_marker_retina_transfer_local_macos_26_6_1.sh
+  SHA-256 27b60e29a6cc4c069d7197ec2cb9e8726b870d9d0bca287fb8564f5aa24f55d7
+```
+
+Even a complete successor pass establishes only the active-Retina same-profile
+public-to-provider construction and temporal join. Fresh material/profile
+interventions, the upstream integer crop/allocation policy, physical compositor
+and color transfer, and an independent zero-unequal-byte Walle frame remain
+open. Liquid Glass parity and production shader changes remain unauthorized.

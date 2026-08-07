@@ -1,0 +1,239 @@
+{
+  "authority": {
+    "authenticatedProviderCodeReplayedForEveryCapturedCall": true,
+    "liquidGlassParityEstablished": false,
+    "physicalOutputTransferEstablished": false,
+    "productionShaderAuthorized": false,
+    "prospectiveZeroFieldAndReturnTransferPassed": false,
+    "structuralLastCallMarkerJoinEstablishedRetrospectively": true,
+    "walleShaderChangeAuthorized": false
+  },
+  "capture": {
+    "artifactDirectory": "local-case22-provider-timeline-marker-transfer-28817f3-run1",
+    "captureCommit": "28817f34f60207aa3466118835e2166b2ad249d9",
+    "finalFailureCount": 0,
+    "finalGroupLinkedCallCount": 1310,
+    "finalMarkerAssignedCallCount": 1310,
+    "finalProviderCallCount": 1310,
+    "finalTimelineEventCount": 2653,
+    "finalTimelineMarkerCount": 33,
+    "lldbExitStatus": 0,
+    "traceStatus": "finalized",
+    "validationExitStatus": 2,
+    "validationFailure": "allocation-profile return is not exact zero"
+  },
+  "classification": "failed prospective zero-field/zero-return transfer with a complete native Retina trace; retrospective analysis opens a stronger value-blind last-call marker join and the nonzero live provider profile without retroactively passing the frozen gate",
+  "exactArtifacts": {
+    "captureContextSHA256": "f4b9b51c3cee93dd821d5e19dd0d5a8f48c0e722498b03760a45c412e05653e6",
+    "captureSessionPreflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "lldbLogSHA256": "7a5a2c034b5507717c143bfe5e4b6dbe1bfe2fe5699f8d6a3aac9658cfee13bf",
+    "providerTraceSHA256": "04792331e1e93f48dddbe8184de255758e6e7d647bd9a7571a3b11436e7fc062",
+    "transitionTimelineSHA256": "59a7574c5cae79e33688205c3aff8fe593078c9965edb965b5e66d63a72c14eb",
+    "validationStderrSHA256": "84af92ee4368bd26790904b20e53629e943a917b0eaa84e48245856be653331f"
+  },
+  "failedProspectivePredictions": {
+    "all18LoadedFieldPredictionsMatchForSelectedCalls": false,
+    "allMatchedProviderReturnsAreExactPositiveZero": false,
+    "failureWasObservedBeforeAnySuccessResultWasWritten": true,
+    "frozenGateRemainsFailed": true
+  },
+  "offlineAuthenticatedProviderReplay": {
+    "allReturnWordsMatchedBitwise": true,
+    "analysisSource": "Analysis/analyze_backdrop_margin_case22_provider_complete_semantics.py",
+    "analysisSourceSHA256": "3fffc6c9052df11c2ebdb7e010c5afc2ba24c6304de4f6c1c83cb9edd28b0d62",
+    "distinctCapturedReturnWordCount": 1310,
+    "distinctExecutionPathCount": 2,
+    "executionPathSampleCounts": [
+      1309,
+      1
+    ],
+    "matchingReturnCount": 1310,
+    "mismatchCount": 0,
+    "providerCodeSHA256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+    "sampleCount": 1310
+  },
+  "retinaSession": {
+    "backingScaleFactor": 2,
+    "displayActive": true,
+    "displayAsleep": false,
+    "logicalPoints": [
+      1728,
+      1117
+    ],
+    "physicalPixels": [
+      3456,
+      2234
+    ],
+    "preflightPassed": true,
+    "preflightSchemaVersion": 2,
+    "sessionLocked": false,
+    "sessionLoginDone": true,
+    "sessionOnConsole": true
+  },
+  "retrospectiveLiveProfile": {
+    "all32LastCompletedCallsMatchAll18LoadedFields": true,
+    "all32LastCompletedCallsMatchFourWordSignature": true,
+    "all32LastCompletedCallsReturnExactPublicLaw": true,
+    "fieldMappings": [
+      {
+        "providerObjectOffset": 8,
+        "publicInput": "inputShadowOffset lane 0",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 16,
+        "publicInput": "inputShadowOffset lane 1",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 24,
+        "publicInput": "inputShadowAmount",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 40,
+        "publicInput": null,
+        "storage": "binary64",
+        "transform": "exact positive zero"
+      },
+      {
+        "providerObjectOffset": 56,
+        "publicInput": "inputShadowRadius",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 136,
+        "publicInput": "inputShadowOpacity",
+        "storage": "binary32",
+        "transform": "binary32 cast"
+      },
+      {
+        "providerObjectOffset": 144,
+        "publicInput": "inputShadowVibrancyContribution",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 152,
+        "publicInput": "inputBlurRadius",
+        "storage": "binary64",
+        "transform": "multiply by 2"
+      },
+      {
+        "providerObjectOffset": 160,
+        "publicInput": "inputBlurDistance0",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 168,
+        "publicInput": "inputBlurDistance1",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 176,
+        "publicInput": null,
+        "storage": "binary64",
+        "transform": "exact positive zero"
+      },
+      {
+        "providerObjectOffset": 184,
+        "publicInput": null,
+        "storage": "binary64",
+        "transform": "exact positive zero"
+      },
+      {
+        "providerObjectOffset": 192,
+        "publicInput": "inputBlurDistance4",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 232,
+        "publicInput": "inputInnerRefractionAmount",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 248,
+        "publicInput": "inputOuterRefractionAmount",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 272,
+        "publicInput": "inputRefractionOpacity",
+        "storage": "binary32",
+        "transform": "binary32 cast"
+      },
+      {
+        "providerObjectOffset": 352,
+        "publicInput": "inputBleedAmount",
+        "storage": "binary64",
+        "transform": "identity"
+      },
+      {
+        "providerObjectOffset": 376,
+        "publicInput": "inputBleedOpacity",
+        "storage": "binary32",
+        "transform": "binary32 cast"
+      }
+    ],
+    "lastCompletedProviderCallIndicesBySample1Through32": [
+      51,
+      95,
+      142,
+      192,
+      235,
+      275,
+      328,
+      369,
+      415,
+      460,
+      498,
+      543,
+      588,
+      624,
+      669,
+      705,
+      755,
+      786,
+      827,
+      866,
+      904,
+      945,
+      981,
+      1019,
+      1061,
+      1094,
+      1132,
+      1169,
+      1202,
+      1237,
+      1275,
+      1309
+    ],
+    "returnLaw": "abs(inputShadowOffset.y) + abs(inputShadowAmount)",
+    "sample32ReturnF64": 83.0,
+    "sampleSelection": "last structurally completed provider call before each exact public timeline marker; no captured value or output participates"
+  },
+  "sessionDifferenceCaveat": {
+    "causalExplanationEstablished": false,
+    "currentCapturePassedFailClosedRetinaSessionPreflightV2": true,
+    "earlierAllZeroProfileWasNotGuardedByRetinaSessionPreflightV2": true,
+    "observedDifference": "the current active-console Retina profile opens nonzero provider fields and returns that were zero in the earlier retained profile"
+  },
+  "successorGate": {
+    "capturedValuesUsedForSelection": false,
+    "freezeAll18FieldMappings": true,
+    "freezeExactReturnLaw": true,
+    "freezeSampleSelectionBeforeDispatch": "last completed provider call in each exact marker batch",
+    "includeEndpointSample32": true,
+    "requiresFreshM1RetinaCapture": true
+  }
+}
