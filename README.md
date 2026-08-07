@@ -8884,3 +8884,54 @@ semantic. Those selection and weight laws remain the immediate upstream
 target. Crop/allocation, Retina compositor/color behavior, independent Walle
 zero-unequal-byte frame parity, and Liquid Glass parity remain open. No
 production shader change is authorized.
+
+### Frozen runtime public-to-blend-to-constructor provenance gate
+
+The still-unrun public `Parameters` gate now includes the exact runtime
+boundary isolated above, rather than stopping at the constructor input. Its
+trace schema version 2 authenticates the complete 4,916-byte
+`ResolvedRecipe` builder at DesignLibrary module offset `0x120b4c` and its
+complete 3,452-byte caller at offset `0x11f1bc`. The caller instruction at
+offset `0xd34` is the fixed direct call to the builder and offset `0xd38` is
+its return. Five value-blind breakpoints retain every structurally observed
+invocation:
+
+```text
+builder entry             builder + 0x0000
+count/factor decision     builder + 0x0fb8
+final resolver gate       builder + 0x1174
+resolved convergence      builder + 0x118c
+builder return            caller  + 0x0d38
+```
+
+At the decision, the adapter retains the complete 1,025-byte current
+`Parameters` value at frame offset `0x1068`, the complete 1,153-byte
+`AnimatableData` accumulator at `0x1900`, the unsigned collection count at
+`0xb0`, the 32-bit resolver flag at `0x7c`, and the raw little-endian bytes of
+`d9` and `d12`. At the final gate it retains the complete pre-resolver
+working seed at `0xc60`, the complete final accumulator, and the resolver
+flag. The fixed convergence breakpoint executes immediately after the
+weighted resolver returns or the direct path skips it, and retains the
+complete resolved working value. At return the adapter retains all 1,025
+output bytes. Captured counts, factors, flags, addresses, and payload bytes
+never choose a call or breakpoint.
+
+The validator reruns the predecessor public/provider gate unchanged, requires
+every builder and constructor call to be assigned by event order to exactly
+one of the 32 public render intervals, and requires each constructor's
+complete `Parameters` input to equal a same-sample builder output. It also
+requires the builder's resolved working bytes to equal its returned output. If
+the observed final flag selects the statically proved direct-copy path, the
+last fixed decision must show count one, raw `d9 == 1.0`, and exact equality
+between the selected current value, pre-resolver seed, resolved value, and all
+1,025 returned bytes. Otherwise the weighted path retains both the seed and
+the resolved result and is reported without post-hoc selection.
+
+The preregistration is schema version 2 and remains sealed before dispatch.
+The local M1 Max runner still fails closed unless the built-in Retina display
+is awake, active, unlocked, on-console, and exactly 3456x2234 physical /
+1728x1117 logical / 2x. A pass can establish the same-profile runtime
+public-to-blend-to-`Parameters` provenance join. It still cannot establish a
+fresh-profile layer-selection/weight law, general crop allocation, physical
+Retina compositor/color behavior, an independent Walle zero-unequal-byte
+frame, or Liquid Glass parity, and it cannot authorize a shader change.

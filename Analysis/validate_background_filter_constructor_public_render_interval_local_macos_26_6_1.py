@@ -16,9 +16,9 @@ import validate_backdrop_margin_case22_provider_object_matrix_minimal_retry2_loc
 import validate_backdrop_margin_case22_provider_public_render_interval_transfer_local_macos_26_6_1 as public
 
 
-RESULT_SCHEMA_VERSION = 1
-PREREGISTRATION_SCHEMA_VERSION = 1
-TRACE_SCHEMA_VERSION = 1
+RESULT_SCHEMA_VERSION = 2
+PREREGISTRATION_SCHEMA_VERSION = 2
+TRACE_SCHEMA_VERSION = 2
 
 EXPECTED_BINARY_SHA256 = (
     "b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd"
@@ -44,6 +44,32 @@ CONSTRUCTOR_CALL_INSTRUCTION_HEX = "730a0094"
 PARAMETERS_BYTE_COUNT = 0x401
 BACKGROUND_FILTER_BYTE_COUNT = 0x1F8
 MAXIMUM_CONSTRUCTOR_CALLS = 4096
+
+RESOLVED_RECIPE_BUILDER_MODULE_OFFSET = 0x120B4C
+RESOLVED_RECIPE_BUILDER_BYTE_COUNT = 0x1334
+RESOLVED_RECIPE_BUILDER_CODE_SHA256 = (
+    "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4"
+)
+RESOLVED_RECIPE_BUILDER_CALLER_MODULE_OFFSET = 0x11F1BC
+RESOLVED_RECIPE_BUILDER_CALLER_BYTE_COUNT = 0xD7C
+RESOLVED_RECIPE_BUILDER_CALLER_CODE_SHA256 = (
+    "ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6"
+)
+RESOLVED_RECIPE_BUILDER_CALL_OFFSET_IN_CALLER = 0xD34
+RESOLVED_RECIPE_BUILDER_RETURN_OFFSET_IN_CALLER = 0xD38
+RESOLVED_RECIPE_BUILDER_CALL_INSTRUCTION_HEX = "17030094"
+BLEND_DECISION_OFFSET_IN_BUILDER = 0xFB8
+BLEND_FINAL_GATE_OFFSET_IN_BUILDER = 0x1174
+BLEND_RESOLVED_OFFSET_IN_BUILDER = 0x118C
+BUILDER_FRAME_PARAMETERS_OFFSET = 0x1068
+BUILDER_FRAME_ACCUMULATOR_OFFSET = 0x1900
+BUILDER_FRAME_WORKING_PARAMETERS_OFFSET = 0xC60
+BUILDER_FRAME_COLLECTION_COUNT_OFFSET = 0xB0
+BUILDER_FRAME_RESOLVER_FLAG_OFFSET = 0x7C
+ANIMATABLE_DATA_BYTE_COUNT = 0x481
+MAXIMUM_PARAMETERS_BUILDER_CALLS = 4096
+MAXIMUM_BLEND_DECISIONS = 16384
+F64_ONE_RAW_LITTLE_ENDIAN_HEX = "000000000000f03f"
 BACKGROUND_FILTER_INITIALIZED_RANGES = (
     (0x000, 0x15D),
     (0x160, 0x1CA),
@@ -137,14 +163,28 @@ def validate_snapshot(
     return payload
 
 
+def validate_register_record(value: Any, name: str, label: str) -> bytes:
+    record = mapping(value, label)
+    require(record.get("name") == name, f"{label} name differs")
+    require(record.get("byteCount") == 8, f"{label} byte count differs")
+    raw_hex = str(record.get("hex", ""))
+    require(len(raw_hex) == 16, f"{label} payload width differs")
+    try:
+        payload = bytes.fromhex(raw_hex)
+    except ValueError as error:
+        raise ValueError(f"{label} payload is not hexadecimal") from error
+    require(len(payload) == 8, f"{label} payload width differs")
+    require(isinstance(record.get("valueString"), str), f"{label} value differs")
+    return payload
+
+
 def initialized_background_filter_bytes(payload: bytes) -> bytes:
     require(
         len(payload) == BACKGROUND_FILTER_BYTE_COUNT,
         "BackgroundFilter payload width differs",
     )
     return b"".join(
-        payload[start:end]
-        for start, end in BACKGROUND_FILTER_INITIALIZED_RANGES
+        payload[start:end] for start, end in BACKGROUND_FILTER_INITIALIZED_RANGES
     )
 
 
@@ -207,8 +247,7 @@ def validate_event(
     )
     event = mapping(events[index], f"{label} event")
     require(
-        event
-        == {"eventIndex": index, "kind": kind, "recordIndex": record_index},
+        event == {"eventIndex": index, "kind": kind, "recordIndex": record_index},
         f"{label} event differs",
     )
     return index
@@ -253,6 +292,8 @@ def public_projection(trace_value: Any) -> dict[str, Any]:
         interval["returnEventIndex"] = remap[int(interval["returnEventIndex"])]
         interval.pop("preRenderConstructorCallIndices", None)
         interval.pop("inRenderConstructorCallIndices", None)
+        interval.pop("preRenderParametersBuilderCallIndices", None)
+        interval.pop("inRenderParametersBuilderCallIndices", None)
     for call in projected["calls"]:
         call["entryEventIndex"] = remap[int(call["entryEventIndex"])]
         call["returnEventIndex"] = remap[int(call["returnEventIndex"])]
@@ -318,19 +359,60 @@ def validate_preregistration(
         },
         "constructor boundary differs",
     )
-    predictions = mapping(
-        preregistration.get("prospectivePredictions"), "predictions"
+    blend_boundary = mapping(
+        preregistration.get("parametersBlendBoundary"),
+        "Parameters blend boundary",
     )
+    require(
+        blend_boundary
+        == {
+            "accumulatorFrameOffset": BUILDER_FRAME_ACCUMULATOR_OFFSET,
+            "animatableDataByteCount": ANIMATABLE_DATA_BYTE_COUNT,
+            "blendDecisionOffsetInBuilder": BLEND_DECISION_OFFSET_IN_BUILDER,
+            "blendFinalGateOffsetInBuilder": BLEND_FINAL_GATE_OFFSET_IN_BUILDER,
+            "blendResolvedOffsetInBuilder": BLEND_RESOLVED_OFFSET_IN_BUILDER,
+            "builderByteCount": RESOLVED_RECIPE_BUILDER_BYTE_COUNT,
+            "builderCodeSHA256": RESOLVED_RECIPE_BUILDER_CODE_SHA256,
+            "builderModuleOffset": RESOLVED_RECIPE_BUILDER_MODULE_OFFSET,
+            "callInstructionHex": RESOLVED_RECIPE_BUILDER_CALL_INSTRUCTION_HEX,
+            "callOffsetInCaller": RESOLVED_RECIPE_BUILDER_CALL_OFFSET_IN_CALLER,
+            "callerByteCount": RESOLVED_RECIPE_BUILDER_CALLER_BYTE_COUNT,
+            "callerCodeSHA256": RESOLVED_RECIPE_BUILDER_CALLER_CODE_SHA256,
+            "callerModuleOffset": RESOLVED_RECIPE_BUILDER_CALLER_MODULE_OFFSET,
+            "collectionCountFrameOffset": (BUILDER_FRAME_COLLECTION_COUNT_OFFSET),
+            "currentParametersFrameOffset": BUILDER_FRAME_PARAMETERS_OFFSET,
+            "factorRegister": "d9",
+            "maximumBlendDecisions": MAXIMUM_BLEND_DECISIONS,
+            "maximumParametersBuilderCalls": MAXIMUM_PARAMETERS_BUILDER_CALLS,
+            "parametersByteCount": PARAMETERS_BYTE_COUNT,
+            "resolverFlagFrameOffset": BUILDER_FRAME_RESOLVER_FLAG_OFFSET,
+            "returnOffsetInCaller": RESOLVED_RECIPE_BUILDER_RETURN_OFFSET_IN_CALLER,
+            "unityRawLittleEndianHex": F64_ONE_RAW_LITTLE_ENDIAN_HEX,
+            "unityRegister": "d12",
+            "workingParametersFrameOffset": (BUILDER_FRAME_WORKING_PARAMETERS_OFFSET),
+        },
+        "Parameters blend boundary differs",
+    )
+    predictions = mapping(preregistration.get("prospectivePredictions"), "predictions")
     require(
         predictions
         == {
             "allConstructorCallsOnAuthenticatedFunctionThread": True,
             "allConstructorInputsRemainBitwiseUnchanged": True,
             "allConstructorLayerIndicesAreZero": True,
+            "allConstructorParametersHaveSameSampleBuilderOutput": True,
             "allMatchedProviderInitializedBytesHaveSameSampleConstructorOutput": True,
+            "allParametersBuilderCallsHaveAtLeastOneBlendDecision": True,
+            "allParametersBuilderCallsOnAuthenticatedFunctionThread": True,
+            "allParametersBuilderCallsReachFinalGate": True,
+            "allParametersBuilderCallsReachResolvedConvergence": True,
+            "allParametersBuilderOutputsEqualResolvedWorkingParameters": True,
             "allSamplesHaveAtLeastOneConstructorCall": True,
+            "allSamplesHaveAtLeastOneParametersBuilderCall": True,
             "completePaddingByteEqualityRequired": False,
             "oneDistinctParametersValuePerMatchedSample": True,
+            "resolverFlagIsOneAtEveryDecision": True,
+            "unityRegisterIsExactOneAtEveryDecision": True,
         },
         "prospective predictions differ",
     )
@@ -418,16 +500,56 @@ def validate_constructor_trace(
         "parametersByteCount": PARAMETERS_BYTE_COUNT,
         "backgroundFilterByteCount": BACKGROUND_FILTER_BYTE_COUNT,
         "maximumConstructorCalls": MAXIMUM_CONSTRUCTOR_CALLS,
+        "resolvedRecipeBuilderModuleOffset": RESOLVED_RECIPE_BUILDER_MODULE_OFFSET,
+        "resolvedRecipeBuilderByteCount": RESOLVED_RECIPE_BUILDER_BYTE_COUNT,
+        "resolvedRecipeBuilderCodeSHA256": RESOLVED_RECIPE_BUILDER_CODE_SHA256,
+        "resolvedRecipeBuilderCallerModuleOffset": (
+            RESOLVED_RECIPE_BUILDER_CALLER_MODULE_OFFSET
+        ),
+        "resolvedRecipeBuilderCallerByteCount": (
+            RESOLVED_RECIPE_BUILDER_CALLER_BYTE_COUNT
+        ),
+        "resolvedRecipeBuilderCallerCodeSHA256": (
+            RESOLVED_RECIPE_BUILDER_CALLER_CODE_SHA256
+        ),
+        "resolvedRecipeBuilderCallOffsetInCaller": (
+            RESOLVED_RECIPE_BUILDER_CALL_OFFSET_IN_CALLER
+        ),
+        "resolvedRecipeBuilderReturnOffsetInCaller": (
+            RESOLVED_RECIPE_BUILDER_RETURN_OFFSET_IN_CALLER
+        ),
+        "resolvedRecipeBuilderCallInstructionHex": (
+            RESOLVED_RECIPE_BUILDER_CALL_INSTRUCTION_HEX
+        ),
+        "blendDecisionOffsetInBuilder": BLEND_DECISION_OFFSET_IN_BUILDER,
+        "blendFinalGateOffsetInBuilder": BLEND_FINAL_GATE_OFFSET_IN_BUILDER,
+        "blendResolvedOffsetInBuilder": BLEND_RESOLVED_OFFSET_IN_BUILDER,
+        "builderFrameParametersOffset": BUILDER_FRAME_PARAMETERS_OFFSET,
+        "builderFrameAccumulatorOffset": BUILDER_FRAME_ACCUMULATOR_OFFSET,
+        "builderFrameWorkingParametersOffset": (
+            BUILDER_FRAME_WORKING_PARAMETERS_OFFSET
+        ),
+        "builderFrameCollectionCountOffset": (BUILDER_FRAME_COLLECTION_COUNT_OFFSET),
+        "builderFrameResolverFlagOffset": BUILDER_FRAME_RESOLVER_FLAG_OFFSET,
+        "animatableDataByteCount": ANIMATABLE_DATA_BYTE_COUNT,
+        "maximumParametersBuilderCalls": MAXIMUM_PARAMETERS_BUILDER_CALLS,
+        "maximumBlendDecisions": MAXIMUM_BLEND_DECISIONS,
         "constructorCaptureStartsAtBackgroundFunctionEntry": True,
         "constructorCaptureEndsAtFinalRenderReturn": True,
+        "parametersBuilderCaptureStartsAtBackgroundFunctionEntry": True,
+        "parametersBuilderCaptureEndsAtFinalRenderReturn": True,
         "preRenderAssignmentRule": (
-            "all completed unassigned constructor calls are assigned to the "
-            "immediately following structural render interval"
+            "all completed unassigned constructor and Parameters builder calls "
+            "are assigned to the immediately following structural render interval"
         ),
         "capturedParametersUsedForSelection": False,
         "capturedConstructorOutputUsedForSelection": False,
         "capturedProviderObjectUsedForSelection": False,
         "capturedAddressUsedForSelection": False,
+        "capturedBlendFactorUsedForSelection": False,
+        "capturedBlendCountUsedForSelection": False,
+        "capturedAnimatableDataUsedForSelection": False,
+        "capturedBuilderOutputUsedForSelection": False,
         "completeProviderObjectByteCount": BACKGROUND_FILTER_BYTE_COUNT,
     }
     for key, expected in expected_configuration.items():
@@ -463,9 +585,24 @@ def validate_constructor_trace(
         PRODUCER_CODE_SHA256,
         "producer",
     )
+    builder, _builder_raw = validate_fixed_region(
+        trace.get("resolvedRecipeBuilder"),
+        design_module,
+        RESOLVED_RECIPE_BUILDER_MODULE_OFFSET,
+        RESOLVED_RECIPE_BUILDER_BYTE_COUNT,
+        RESOLVED_RECIPE_BUILDER_CODE_SHA256,
+        "ResolvedRecipe Parameters builder",
+    )
+    builder_caller, builder_caller_raw = validate_fixed_region(
+        trace.get("resolvedRecipeBuilderCaller"),
+        design_module,
+        RESOLVED_RECIPE_BUILDER_CALLER_MODULE_OFFSET,
+        RESOLVED_RECIPE_BUILDER_CALLER_BYTE_COUNT,
+        RESOLVED_RECIPE_BUILDER_CALLER_CODE_SHA256,
+        "ResolvedRecipe Parameters builder caller",
+    )
     call_raw = producer_raw[
-        CONSTRUCTOR_CALL_OFFSET_IN_PRODUCER :
-        CONSTRUCTOR_CALL_OFFSET_IN_PRODUCER + 4
+        CONSTRUCTOR_CALL_OFFSET_IN_PRODUCER : CONSTRUCTOR_CALL_OFFSET_IN_PRODUCER + 4
     ]
     require(
         call_raw.hex() == CONSTRUCTOR_CALL_INSTRUCTION_HEX,
@@ -479,6 +616,23 @@ def validate_constructor_trace(
         == constructor["startAddress"],
         "constructor call target differs",
     )
+    builder_call_raw = builder_caller_raw[
+        RESOLVED_RECIPE_BUILDER_CALL_OFFSET_IN_CALLER : RESOLVED_RECIPE_BUILDER_CALL_OFFSET_IN_CALLER
+        + 4
+    ]
+    require(
+        builder_call_raw.hex() == RESOLVED_RECIPE_BUILDER_CALL_INSTRUCTION_HEX,
+        "ResolvedRecipe builder call instruction differs",
+    )
+    require(
+        public.decode_arm64_bl_target(
+            builder_call_raw,
+            builder_caller["startAddress"]
+            + RESOLVED_RECIPE_BUILDER_CALL_OFFSET_IN_CALLER,
+        )
+        == builder["startAddress"],
+        "ResolvedRecipe builder call target differs",
+    )
 
     breakpoints = mapping(trace.get("breakpoints"), "breakpoints")
     for key, expected in (
@@ -486,6 +640,24 @@ def validate_constructor_trace(
         (
             "constructorReturn",
             producer["startAddress"] + CONSTRUCTOR_RETURN_OFFSET_IN_PRODUCER,
+        ),
+        ("parametersBuilderEntry", builder["startAddress"]),
+        (
+            "parametersBlendDecision",
+            builder["startAddress"] + BLEND_DECISION_OFFSET_IN_BUILDER,
+        ),
+        (
+            "parametersBlendFinal",
+            builder["startAddress"] + BLEND_FINAL_GATE_OFFSET_IN_BUILDER,
+        ),
+        (
+            "parametersBlendResolved",
+            builder["startAddress"] + BLEND_RESOLVED_OFFSET_IN_BUILDER,
+        ),
+        (
+            "parametersBuilderReturn",
+            builder_caller["startAddress"]
+            + RESOLVED_RECIPE_BUILDER_RETURN_OFFSET_IN_CALLER,
         ),
     ):
         breakpoint = mapping(breakpoints.get(key), key)
@@ -507,10 +679,33 @@ def validate_constructor_trace(
             sequence(trace.get("constructorCalls"), "constructor calls")
         )
     ]
+    builder_calls = [
+        mapping(value, f"Parameters builder call {index}")
+        for index, value in enumerate(
+            sequence(trace.get("parametersBuilderCalls"), "Parameters builder calls")
+        )
+    ]
+    blend_decisions = [
+        mapping(value, f"Parameters blend decision {index}")
+        for index, value in enumerate(
+            sequence(
+                trace.get("parametersBlendDecisions"),
+                "Parameters blend decisions",
+            )
+        )
+    ]
     require(len(intervals) == 32, "interval count differs")
     require(
         32 <= len(constructor_calls) <= MAXIMUM_CONSTRUCTOR_CALLS,
         "constructor call count differs",
+    )
+    require(
+        32 <= len(builder_calls) <= MAXIMUM_PARAMETERS_BUILDER_CALLS,
+        "Parameters builder call count differs",
+    )
+    require(
+        0 < len(blend_decisions) <= MAXIMUM_BLEND_DECISIONS,
+        "Parameters blend decision count differs",
     )
 
     referenced_constructor_calls = []
@@ -527,7 +722,9 @@ def validate_constructor_trace(
                 f"interval {interval_index} in-render constructors",
             )
         )
-        require(pre_render or in_render, f"sample {interval_index + 1} has no constructor")
+        require(
+            pre_render or in_render, f"sample {interval_index + 1} has no constructor"
+        )
         referenced_constructor_calls.extend(pre_render)
         referenced_constructor_calls.extend(in_render)
     require(
@@ -537,6 +734,35 @@ def validate_constructor_trace(
     require(
         len(set(referenced_constructor_calls)) == len(constructor_calls),
         "constructor call is assigned more than once",
+    )
+
+    referenced_builder_calls = []
+    for interval_index, interval in enumerate(intervals):
+        pre_render = list(
+            sequence(
+                interval.get("preRenderParametersBuilderCallIndices"),
+                f"interval {interval_index} pre-render Parameters builders",
+            )
+        )
+        in_render = list(
+            sequence(
+                interval.get("inRenderParametersBuilderCallIndices"),
+                f"interval {interval_index} in-render Parameters builders",
+            )
+        )
+        require(
+            pre_render or in_render,
+            f"sample {interval_index + 1} has no Parameters builder",
+        )
+        referenced_builder_calls.extend(pre_render)
+        referenced_builder_calls.extend(in_render)
+    require(
+        sorted(referenced_builder_calls) == list(range(len(builder_calls))),
+        "Parameters builder interval partition differs",
+    )
+    require(
+        len(set(referenced_builder_calls)) == len(builder_calls),
+        "Parameters builder call is assigned more than once",
     )
 
     constructor_events = []
@@ -673,9 +899,7 @@ def validate_constructor_trace(
         else:
             raise ValueError(f"constructor {index} timing differs")
         constructor_events.extend((entry_event, return_event))
-        outputs_by_interval[interval_index].append(
-            (index, parameters_entry, output)
-        )
+        outputs_by_interval[interval_index].append((index, parameters_entry, output))
         parameter_hashes.add(hashlib.sha256(parameters_entry).hexdigest())
 
     require(
@@ -692,6 +916,391 @@ def validate_constructor_trace(
     )
     require(trace.get("allConstructorCallsReturned") is True, "return seal differs")
     require(trace.get("allConstructorCallsAssigned") is True, "assignment seal differs")
+
+    builder_events = []
+    referenced_blend_decisions = []
+    builder_outputs_by_interval: dict[int, list[tuple[int, bytes]]] = {
+        index: [] for index in range(32)
+    }
+    direct_copy_builder_indices = []
+    weighted_builder_indices = []
+    for index, call in enumerate(builder_calls):
+        require(
+            call.get("builderCallIndex") == index,
+            f"Parameters builder {index} index differs",
+        )
+        thread_id = call.get("threadID")
+        require(
+            thread_id == background_thread,
+            f"Parameters builder {index} thread differs",
+        )
+        require(
+            call.get("onBackgroundFunctionThread") is True,
+            f"Parameters builder {index} thread marker differs",
+        )
+        interval_index = call.get("assignedIntervalIndex")
+        require(
+            isinstance(interval_index, int) and 0 <= interval_index < 32,
+            f"Parameters builder {index} interval differs",
+        )
+        require(
+            call.get("assignedSampleIndex") == interval_index + 1,
+            f"Parameters builder {index} sample differs",
+        )
+        for register_name in ("inputX0RawValue", "inputX1RawValue", "inputX2RawValue"):
+            require(
+                isinstance(call.get(register_name), int)
+                and 0 <= call[register_name] < 1 << 64,
+                f"Parameters builder {index} {register_name} differs",
+            )
+        output_address = call.get("outputParametersAddress")
+        require(
+            isinstance(output_address, int) and output_address > 0,
+            f"Parameters builder {index} output address differs",
+        )
+        validate_frame(
+            call.get("entryFrame"),
+            design_module,
+            builder["startAddress"],
+            builder["endAddress"],
+            0,
+            f"Parameters builder {index} entry frame",
+        )
+        validate_frame(
+            call.get("finalFrame"),
+            design_module,
+            builder["startAddress"],
+            builder["endAddress"],
+            BLEND_FINAL_GATE_OFFSET_IN_BUILDER,
+            f"Parameters builder {index} final frame",
+        )
+        validate_frame(
+            call.get("resolvedFrame"),
+            design_module,
+            builder["startAddress"],
+            builder["endAddress"],
+            BLEND_RESOLVED_OFFSET_IN_BUILDER,
+            f"Parameters builder {index} resolved frame",
+        )
+        validate_frame(
+            call.get("returnFrame"),
+            design_module,
+            builder_caller["startAddress"],
+            builder_caller["endAddress"],
+            RESOLVED_RECIPE_BUILDER_RETURN_OFFSET_IN_CALLER,
+            f"Parameters builder {index} return frame",
+        )
+        entry_event = validate_event(
+            events,
+            call.get("entryEventIndex"),
+            "parameters-builder-entry",
+            index,
+            f"Parameters builder {index} entry",
+        )
+        final_event = validate_event(
+            events,
+            call.get("finalEventIndex"),
+            "parameters-blend-final",
+            index,
+            f"Parameters builder {index} final",
+        )
+        resolved_event = validate_event(
+            events,
+            call.get("resolvedEventIndex"),
+            "parameters-blend-resolved",
+            index,
+            f"Parameters builder {index} resolved",
+        )
+        return_event = validate_event(
+            events,
+            call.get("returnEventIndex"),
+            "parameters-builder-return",
+            index,
+            f"Parameters builder {index} return",
+        )
+        require(
+            entry_event < final_event < resolved_event < return_event,
+            f"Parameters builder {index} event order differs",
+        )
+        interval = intervals[interval_index]
+        timing = call.get("timingRelativeToRender")
+        if timing == "pre-render":
+            require(
+                index in interval["preRenderParametersBuilderCallIndices"],
+                f"Parameters builder {index} pre-render assignment differs",
+            )
+            require(
+                return_event < interval["entryEventIndex"],
+                f"Parameters builder {index} did not precede render",
+            )
+            if interval_index > 0:
+                require(
+                    intervals[interval_index - 1]["returnEventIndex"] < entry_event,
+                    f"Parameters builder {index} precedes prior render return",
+                )
+            require(
+                call.get("structuralNextSampleIndexAtEntry") == interval_index + 1,
+                f"Parameters builder {index} structural next sample differs",
+            )
+        elif timing == "in-render":
+            require(
+                index in interval["inRenderParametersBuilderCallIndices"],
+                f"Parameters builder {index} in-render assignment differs",
+            )
+            require(
+                interval["entryEventIndex"]
+                < entry_event
+                < return_event
+                < interval["returnEventIndex"],
+                f"Parameters builder {index} escaped render interval",
+            )
+            require(
+                call.get("structuralNextSampleIndexAtEntry") is None,
+                f"Parameters builder {index} next sample marker differs",
+            )
+        else:
+            raise ValueError(f"Parameters builder {index} timing differs")
+
+        frame_base = call.get("frameBaseAtFinalGate")
+        require(
+            isinstance(frame_base, int) and frame_base > 0,
+            f"Parameters builder {index} final frame base differs",
+        )
+        resolver_flag = call.get("resolverFlagAtFinalGate")
+        require(
+            resolver_flag in (0, 1),
+            f"Parameters builder {index} final resolver flag differs",
+        )
+        pre_resolver_working = validate_snapshot(
+            call.get("preResolverWorkingParameters"),
+            frame_base + BUILDER_FRAME_WORKING_PARAMETERS_OFFSET,
+            PARAMETERS_BYTE_COUNT,
+            f"Parameters builder {index} pre-resolver working Parameters",
+        )
+        validate_snapshot(
+            call.get("accumulatorAnimatableDataAtFinalGate"),
+            frame_base + BUILDER_FRAME_ACCUMULATOR_OFFSET,
+            ANIMATABLE_DATA_BYTE_COUNT,
+            f"Parameters builder {index} final-gate accumulator",
+        )
+        resolved_frame_base = call.get("frameBaseAtResolvedConvergence")
+        require(
+            resolved_frame_base == frame_base,
+            f"Parameters builder {index} resolved frame base differs",
+        )
+        resolved_working = validate_snapshot(
+            call.get("resolvedWorkingParameters"),
+            frame_base + BUILDER_FRAME_WORKING_PARAMETERS_OFFSET,
+            PARAMETERS_BYTE_COUNT,
+            f"Parameters builder {index} resolved working Parameters",
+        )
+        output_parameters = validate_snapshot(
+            call.get("outputParametersAtReturn"),
+            output_address,
+            PARAMETERS_BYTE_COUNT,
+            f"Parameters builder {index} output Parameters",
+        )
+        require(
+            resolved_working == output_parameters,
+            f"Parameters builder {index} resolved working/output bytes differ",
+        )
+
+        decision_indices = list(
+            sequence(
+                call.get("decisionIndices"),
+                f"Parameters builder {index} decision indices",
+            )
+        )
+        require(decision_indices, f"Parameters builder {index} has no decision")
+        require(
+            decision_indices == sorted(decision_indices)
+            and len(set(decision_indices)) == len(decision_indices),
+            f"Parameters builder {index} decision order differs",
+        )
+        decision_events = []
+        decision_values = []
+        for decision_index in decision_indices:
+            require(
+                isinstance(decision_index, int)
+                and 0 <= decision_index < len(blend_decisions),
+                f"Parameters builder {index} decision index differs",
+            )
+            decision = blend_decisions[decision_index]
+            require(
+                decision.get("decisionIndex") == decision_index,
+                f"Parameters blend decision {decision_index} index differs",
+            )
+            require(
+                decision.get("builderCallIndex") == index,
+                f"Parameters blend decision {decision_index} builder differs",
+            )
+            require(
+                decision.get("threadID") == thread_id,
+                f"Parameters blend decision {decision_index} thread differs",
+            )
+            decision_frame_base = decision.get("frameBase")
+            require(
+                decision_frame_base == frame_base,
+                f"Parameters blend decision {decision_index} frame base differs",
+            )
+            validate_frame(
+                decision.get("frame"),
+                design_module,
+                builder["startAddress"],
+                builder["endAddress"],
+                BLEND_DECISION_OFFSET_IN_BUILDER,
+                f"Parameters blend decision {decision_index} frame",
+            )
+            collection_count = decision.get("collectionCount")
+            require(
+                isinstance(collection_count, int) and 0 <= collection_count < 1 << 64,
+                f"Parameters blend decision {decision_index} count differs",
+            )
+            predecision_flag = decision.get("resolverFlagBeforeDecision")
+            require(
+                predecision_flag == 1,
+                f"Parameters blend decision {decision_index} flag differs",
+            )
+            factor = validate_register_record(
+                decision.get("factorD9"),
+                "d9",
+                f"Parameters blend decision {decision_index} factor",
+            )
+            unity = validate_register_record(
+                decision.get("unityD12"),
+                "d12",
+                f"Parameters blend decision {decision_index} unity",
+            )
+            require(
+                unity.hex() == F64_ONE_RAW_LITTLE_ENDIAN_HEX,
+                f"Parameters blend decision {decision_index} unity differs",
+            )
+            current = validate_snapshot(
+                decision.get("currentParameters"),
+                frame_base + BUILDER_FRAME_PARAMETERS_OFFSET,
+                PARAMETERS_BYTE_COUNT,
+                f"Parameters blend decision {decision_index} current Parameters",
+            )
+            validate_snapshot(
+                decision.get("priorAccumulatorAnimatableData"),
+                frame_base + BUILDER_FRAME_ACCUMULATOR_OFFSET,
+                ANIMATABLE_DATA_BYTE_COUNT,
+                f"Parameters blend decision {decision_index} prior accumulator",
+            )
+            decision_event = validate_event(
+                events,
+                decision.get("eventIndex"),
+                "parameters-blend-decision",
+                decision_index,
+                f"Parameters blend decision {decision_index}",
+            )
+            require(
+                entry_event < decision_event < final_event,
+                f"Parameters blend decision {decision_index} event order differs",
+            )
+            decision_events.append(decision_event)
+            decision_values.append((collection_count, factor, current))
+        require(
+            decision_events == sorted(decision_events),
+            f"Parameters builder {index} decision event order differs",
+        )
+        referenced_blend_decisions.extend(decision_indices)
+        builder_events.extend(
+            (
+                entry_event,
+                *decision_events,
+                final_event,
+                resolved_event,
+                return_event,
+            )
+        )
+
+        if resolver_flag == 0:
+            collection_count, factor, current = decision_values[-1]
+            require(
+                collection_count == 1,
+                f"Parameters builder {index} direct-copy collection count differs",
+            )
+            require(
+                factor.hex() == F64_ONE_RAW_LITTLE_ENDIAN_HEX,
+                f"Parameters builder {index} direct-copy factor differs",
+            )
+            require(
+                pre_resolver_working == current,
+                f"Parameters builder {index} direct-copy source bytes differ",
+            )
+            require(
+                resolved_working == pre_resolver_working,
+                f"Parameters builder {index} direct-copy convergence bytes differ",
+            )
+            direct_copy_builder_indices.append(index)
+        else:
+            weighted_builder_indices.append(index)
+        builder_outputs_by_interval[interval_index].append((index, output_parameters))
+
+    require(
+        sorted(referenced_blend_decisions) == list(range(len(blend_decisions))),
+        "Parameters blend decision partition differs",
+    )
+    require(
+        len(set(referenced_blend_decisions)) == len(blend_decisions),
+        "Parameters blend decision is assigned more than once",
+    )
+    require(
+        trace.get("finalParametersBuilderCallCount") == len(builder_calls),
+        "final Parameters builder count differs",
+    )
+    require(
+        trace.get("finalBlendDecisionCount") == len(blend_decisions),
+        "final Parameters blend decision count differs",
+    )
+    require(
+        trace.get("finalPendingParametersBuilderCallCount") == 0,
+        "pending Parameters builder count differs",
+    )
+    require(
+        trace.get("finalUnassignedParametersBuilderCallCount") == 0,
+        "unassigned Parameters builder count differs",
+    )
+    require(
+        trace.get("allParametersBuilderCallsReachedFinalGate") is True,
+        "Parameters builder final-gate seal differs",
+    )
+    require(
+        trace.get("allParametersBuilderCallsReachedResolvedConvergence") is True,
+        "Parameters builder resolved-convergence seal differs",
+    )
+    require(
+        trace.get("allParametersBuilderCallsReturned") is True,
+        "Parameters builder return seal differs",
+    )
+    require(
+        trace.get("allParametersBuilderCallsAssigned") is True,
+        "Parameters builder assignment seal differs",
+    )
+
+    constructor_builder_joins = []
+    for interval_index, values in outputs_by_interval.items():
+        for constructor_index, parameters, _output in values:
+            matches = [
+                builder_index
+                for builder_index, builder_output in builder_outputs_by_interval[
+                    interval_index
+                ]
+                if builder_output == parameters
+            ]
+            require(
+                matches,
+                f"constructor {constructor_index} has no same-sample Parameters builder output",
+            )
+            constructor_builder_joins.append(
+                {
+                    "sampleIndex": interval_index + 1,
+                    "constructorCallIndex": constructor_index,
+                    "parametersBuilderCallIndices": matches,
+                    "parametersSHA256": hashlib.sha256(parameters).hexdigest(),
+                }
+            )
 
     for index, call in enumerate(provider_calls):
         address = int(call["providerObjectAddress"])
@@ -744,6 +1353,17 @@ def validate_constructor_trace(
             f"sample {interval_index + 1} has ambiguous Parameters values",
         )
         parameters = next(iter(distinct_parameters))
+        builder_matches = [
+            builder_index
+            for builder_index, builder_output in builder_outputs_by_interval[
+                interval_index
+            ]
+            if builder_output == parameters
+        ]
+        require(
+            builder_matches,
+            f"matched provider {call_index} has no same-sample Parameters builder output",
+        )
         full_matches = [
             constructor_index
             for constructor_index, _, output in matches
@@ -763,6 +1383,7 @@ def validate_constructor_trace(
                 "sampleIndex": interval_index + 1,
                 "providerCallIndex": call_index,
                 "constructorCallIndices": [value[0] for value in matches],
+                "parametersBuilderCallIndices": builder_matches,
                 "full504ByteMatchConstructorCallIndices": full_matches,
                 "backgroundFilterSHA256": hashlib.sha256(provider_raw).hexdigest(),
                 "initialized491ByteSHA256": hashlib.sha256(
@@ -780,32 +1401,43 @@ def validate_constructor_trace(
         in {"render-call", "render-return", "provider-entry", "provider-return"}
     ]
     require(
-        sorted(public_event_indices + constructor_events) == list(range(len(events))),
+        sorted(public_event_indices + constructor_events + builder_events)
+        == list(range(len(events))),
         "complete event partition differs",
     )
     require(
         len(events)
         == 2 * len(intervals)
         + 2 * len(provider_calls)
-        + 2 * len(constructor_calls),
+        + 2 * len(constructor_calls)
+        + 4 * len(builder_calls)
+        + len(blend_decisions),
         "complete event cardinality differs",
     )
     return {
         "constructorCallCount": len(constructor_calls),
+        "parametersBuilderCallCount": len(builder_calls),
+        "parametersBlendDecisionCount": len(blend_decisions),
+        "directCopyBuilderCallCount": len(direct_copy_builder_indices),
+        "weightedBuilderCallCount": len(weighted_builder_indices),
+        "directCopyBuilderCallIndices": direct_copy_builder_indices,
+        "weightedBuilderCallIndices": weighted_builder_indices,
         "distinctParametersCount": len(parameter_hashes),
         "matchedProviderCallCount": len(joins),
         "initializedBackgroundFilterByteCount": (
             BACKGROUND_FILTER_INITIALIZED_BYTE_COUNT
         ),
         "paddingByteCount": (
-            BACKGROUND_FILTER_BYTE_COUNT
-            - BACKGROUND_FILTER_INITIALIZED_BYTE_COUNT
+            BACKGROUND_FILTER_BYTE_COUNT - BACKGROUND_FILTER_INITIALIZED_BYTE_COUNT
         ),
         "allMatchedProvidersHaveExactSameSampleInitializedConstructorOutput": True,
         "allMatchedProvidersHaveFull504ByteConstructorOutput": all(
             value["full504ByteMatchConstructorCallIndices"] for value in joins
         ),
         "oneDistinctParametersValuePerMatchedSample": True,
+        "allConstructorParametersHaveSameSampleBuilderOutput": True,
+        "allBuilderOutputsEqualResolvedWorkingParameters": True,
+        "constructorBuilderJoins": constructor_builder_joins,
         "joins": joins,
     }
 
@@ -823,9 +1455,7 @@ def validate(
             mapping(value, "frozen file")["sha256"]
         )
         for value in sequence(
-            mapping(preregistration["frozenImplementation"], "implementation")[
-                "files"
-            ],
+            mapping(preregistration["frozenImplementation"], "implementation")["files"],
             "frozen files",
         )
     }
@@ -835,9 +1465,7 @@ def validate(
         frozen_files,
     )
     public.validate_preflight(
-        load_json(
-            artifact_directory / "capture-session-preflight.json", "preflight"
-        )
+        load_json(artifact_directory / "capture-session-preflight.json", "preflight")
     )
     require(
         (artifact_directory / "lldb-exit-status.txt").read_text(encoding="utf-8")
@@ -893,8 +1521,9 @@ def validate(
     return {
         "backgroundFilterConstructorPublicRenderIntervalLocalMacOSValidationSchemaVersion": RESULT_SCHEMA_VERSION,
         "classification": (
-            "prospective exact public sample to Parameters to BackgroundFilter "
-            "constructor-output to provider-object join"
+            "prospective exact public sample to ResolvedRecipe blend decision "
+            "to Parameters to BackgroundFilter constructor-output to "
+            "provider-object join"
         ),
         "inputs": {
             "sourceCommit": commit,
@@ -915,6 +1544,13 @@ def validate(
         "captureContractPassed": True,
         "authority": {
             "sameProfilePublicParametersConstructionJoinEstablished": True,
+            "sameProfilePublicParametersBlendProvenanceEstablished": True,
+            "runtimeUnityDirectCopyPathObserved": bool(
+                constructor_summary["directCopyBuilderCallCount"]
+            ),
+            "runtimeWeightedBlendPathObserved": bool(
+                constructor_summary["weightedBuilderCallCount"]
+            ),
             "allInitializedBackgroundFilterProviderBytesJoinedBitwise": True,
             "completeBackgroundFilterProviderObjectJoinedBitwise": (
                 constructor_summary[
@@ -930,8 +1566,9 @@ def validate(
             "productionShaderAuthorized": False,
         },
         "nextExactGate": (
-            "decode the 1,025-byte Parameters values against the public input "
-            "timeline, then freeze an orthogonal fresh-profile transfer"
+            "freeze an orthogonal material/appearance/geometry profile and "
+            "join its public environment-layer selection and runtime factors "
+            "through the proven Parameters recurrence before crop/compositor replay"
         ),
     }
 

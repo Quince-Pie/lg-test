@@ -31,7 +31,7 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
             self.value[
                 "backgroundFilterConstructorPublicRenderIntervalLocalMacOSPreregistrationSchemaVersion"
             ],
-            1,
+            2,
         )
         self.assertEqual(self.value["profile"]["sampleIndices"], list(range(1, 33)))
         self.assertEqual(self.value["host"]["macOSBuildVersion"], "25G76")
@@ -76,18 +76,71 @@ class BackgroundFilterConstructorPreregistrationTests(unittest.TestCase):
             "local-case22-provider-public-render-interval-c1bfabd-run1",
         )
 
+    def test_parameters_blend_boundary_is_exact(self) -> None:
+        self.assertEqual(
+            self.value["parametersBlendBoundary"],
+            {
+                "accumulatorFrameOffset": 0x1900,
+                "animatableDataByteCount": 0x481,
+                "blendDecisionOffsetInBuilder": 0xFB8,
+                "blendFinalGateOffsetInBuilder": 0x1174,
+                "blendResolvedOffsetInBuilder": 0x118C,
+                "builderByteCount": 0x1334,
+                "builderCodeSHA256": "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4",
+                "builderModuleOffset": 0x120B4C,
+                "callInstructionHex": "17030094",
+                "callOffsetInCaller": 0xD34,
+                "callerByteCount": 0xD7C,
+                "callerCodeSHA256": "ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6",
+                "callerModuleOffset": 0x11F1BC,
+                "collectionCountFrameOffset": 0xB0,
+                "currentParametersFrameOffset": 0x1068,
+                "factorRegister": "d9",
+                "maximumBlendDecisions": 16384,
+                "maximumParametersBuilderCalls": 4096,
+                "parametersByteCount": 0x401,
+                "resolverFlagFrameOffset": 0x7C,
+                "returnOffsetInCaller": 0xD38,
+                "unityRawLittleEndianHex": "000000000000f03f",
+                "unityRegister": "d12",
+                "workingParametersFrameOffset": 0xC60,
+            },
+        )
+
     def test_captured_values_cannot_select_runtime_capture(self) -> None:
         self.assertFalse(self.value["selectionPolicy"]["runtimeByteOrValueSelection"])
         self.assertTrue(
-            self.value["captureContract"][
-                "noCapturedValueMaySelectRuntimeCapture"
-            ]
+            self.value["captureContract"]["noCapturedValueMaySelectRuntimeCapture"]
         )
+        self.assertIn(
+            "every execution", self.value["selectionPolicy"]["blendDecisions"]
+        )
+        self.assertIn(
+            "every call", self.value["selectionPolicy"]["parametersBuilderCalls"]
+        )
+
+    def test_blend_predictions_are_prospectively_frozen(self) -> None:
+        predictions = self.value["prospectivePredictions"]
+        for key in (
+            "allConstructorParametersHaveSameSampleBuilderOutput",
+            "allParametersBuilderCallsHaveAtLeastOneBlendDecision",
+            "allParametersBuilderCallsOnAuthenticatedFunctionThread",
+            "allParametersBuilderCallsReachFinalGate",
+            "allParametersBuilderCallsReachResolvedConvergence",
+            "allParametersBuilderOutputsEqualResolvedWorkingParameters",
+            "allSamplesHaveAtLeastOneParametersBuilderCall",
+            "resolverFlagIsOneAtEveryDecision",
+            "unityRegisterIsExactOneAtEveryDecision",
+        ):
+            self.assertTrue(predictions[key], key)
 
     def test_authority_remains_closed_beyond_same_profile_join(self) -> None:
         authority = self.value["productAuthority"]
         self.assertTrue(
             authority["sameProfilePublicParametersConstructionJoinEstablishedOnPass"]
+        )
+        self.assertTrue(
+            authority["sameProfilePublicParametersBlendProvenanceEstablishedOnPass"]
         )
         self.assertTrue(
             authority["allInitializedBackgroundFilterProviderBytesJoinedBitwiseOnPass"]

@@ -45,9 +45,9 @@ require_sha256() {
 }
 
 require_sha256 "$binary" b9cb4068e77a61ff87794fa20a5c273e007f3ee20dd74503b1ab78839104e8dd
-require_sha256 "$capture" 0a093feabe5f06444a7350b86cb3a4111faa15338a818a48f62d61142ca971e5
+require_sha256 "$capture" 38d8829faf92397dfd85e631ac2336ab3c4d702f03a1e7eb7d5cbd221d279c6c
 require_sha256 "$preflight" 72e259882f0c9cc5f40e7f12d172dbbe2582da729b0ee176647917b07f172981
-require_sha256 "$validator" 3925118b1cea4e22ae9ef379881952ac58717a2953e81e3d01ad1026a32b40d6
+require_sha256 "$validator" 02827c0fc473b762ed6422e895ee7a1d599c0b1609680668e70a3c6a1ceb5a7e
 require_sha256 "$predecessor_validator" ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then

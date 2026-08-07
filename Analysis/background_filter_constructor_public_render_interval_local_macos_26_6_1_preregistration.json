@@ -1,5 +1,5 @@
 {
-  "backgroundFilterConstructorPublicRenderIntervalLocalMacOSPreregistrationSchemaVersion": 1,
+  "backgroundFilterConstructorPublicRenderIntervalLocalMacOSPreregistrationSchemaVersion": 2,
   "binary": {
     "applicationSourceUnchanged": true,
     "nativeAppleToolPathsExplicit": true,
@@ -10,21 +10,31 @@
   "captureContract": {
     "all32RenderIntervalsRequiredInOrder": true,
     "allBackgroundFilterConstructorCallsFromFunctionEntryThroughFinalRenderRetained": true,
+    "allParametersBuilderCallsFromFunctionEntryThroughFinalRenderRetained": true,
     "allCompletedPreRenderCallsAssignedToImmediatelyFollowingRenderInterval": true,
     "allProviderCallsWithinRenderIntervalsRetained": true,
     "complete1025ByteParametersAtEntryAndReturnRequired": true,
+    "complete1025ByteBuilderCurrentPreResolverResolvedAndOutputParametersRequired": true,
+    "complete1153ByteAccumulatorAtDecisionAndFinalGateRequired": true,
     "complete504ByteConstructorOutputRequired": true,
     "complete504ByteProviderObjectAtEntryAndReturnRequired": true,
     "initialized491ByteSameSampleJoinRequired": true,
+    "constructorParametersMustMatchSameSampleBuilderOutput": true,
     "thirteenCompilerPaddingBytesRetainedAndReportedButNotCausalGate": true,
     "constructorCodeAndSoleDirectCallsiteRequired": true,
+    "parametersBuilderCodeAndFixedDirectCallsiteRequired": true,
+    "fixedBlendDecisionAndFinalGateBreakpointsRequired": true,
+    "fixedPostResolverConvergenceBreakpointRequired": true,
+    "rawD9FactorAndD12UnityBytesRequiredAtEveryDecision": true,
     "maximumConstructorCalls": 4096,
+    "maximumParametersBuilderCalls": 4096,
+    "maximumBlendDecisions": 16384,
     "noCapturedValueMaySelectRuntimeCapture": true,
     "noPendingCallAtAnyRenderBoundary": true,
     "predecessorPublicRenderProviderTransferMustPassFirst": true,
     "zeroTolerance": true
   },
-  "classification": "prospectively frozen value-blind join from the exact public 32-sample carrier function through DesignLibrary's 1025-byte Parameters input and all 491 constructor-initialized BackgroundFilter bytes to the complete 504-byte provider object consumed inside each authenticated render interval; all 13 unwritten compiler-padding bytes are retained and reported separately",
+  "classification": "prospectively frozen value-blind join from the exact public 32-sample carrier function through DesignLibrary's fixed ResolvedRecipe builder, runtime blend count/factor decision, complete 1153-byte AnimatableData accumulator, complete 1025-byte Parameters output, all 491 constructor-initialized BackgroundFilter bytes, and the complete 504-byte provider object consumed inside each authenticated render interval; all 13 unwritten compiler-padding bytes are retained and reported separately",
   "constructorBoundary": {
     "backgroundFilterByteCount": 504,
     "initializedByteCount": 491,
@@ -41,28 +51,54 @@
     "producerModuleOffset": 753576,
     "returnOffsetInProducer": 912
   },
-  "frozenAtUTC": "2026-08-06",
+  "parametersBlendBoundary": {
+    "accumulatorFrameOffset": 6400,
+    "animatableDataByteCount": 1153,
+    "blendDecisionOffsetInBuilder": 4024,
+    "blendFinalGateOffsetInBuilder": 4468,
+    "blendResolvedOffsetInBuilder": 4492,
+    "builderByteCount": 4916,
+    "builderCodeSHA256": "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4",
+    "builderModuleOffset": 1182540,
+    "callInstructionHex": "17030094",
+    "callOffsetInCaller": 3380,
+    "callerByteCount": 3452,
+    "callerCodeSHA256": "ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6",
+    "callerModuleOffset": 1175996,
+    "collectionCountFrameOffset": 176,
+    "currentParametersFrameOffset": 4200,
+    "factorRegister": "d9",
+    "maximumBlendDecisions": 16384,
+    "maximumParametersBuilderCalls": 4096,
+    "parametersByteCount": 1025,
+    "resolverFlagFrameOffset": 124,
+    "returnOffsetInCaller": 3384,
+    "unityRawLittleEndianHex": "000000000000f03f",
+    "unityRegister": "d12",
+    "workingParametersFrameOffset": 3168
+  },
+  "frozenAtUTC": "2026-08-07",
   "frozenImplementation": {
     "files": [
       {
         "path": "Analysis/capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb.py",
-        "sha256": "0a093feabe5f06444a7350b86cb3a4111faa15338a818a48f62d61142ca971e5"
+        "sha256": "38d8829faf92397dfd85e631ac2336ab3c4d702f03a1e7eb7d5cbd221d279c6c"
       },
       {
         "path": "Analysis/validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
-        "sha256": "3925118b1cea4e22ae9ef379881952ac58717a2953e81e3d01ad1026a32b40d6"
+        "sha256": "02827c0fc473b762ed6422e895ee7a1d599c0b1609680668e70a3c6a1ceb5a7e"
       },
       {
         "path": "Analysis/run_background_filter_constructor_public_render_interval_local_macos_26_6_1.sh",
-        "sha256": "138be17de0b7fc2ad53e5ee7a04a313227ef64b54c1c423f60c217a5b0e2df50"
+        "sha256": "fd05f755639154c039815607363125882200cf5d9198cbb4c5e224dc61737289"
       },
       {
         "path": "Analysis/test_capture_background_filter_constructor_public_render_interval_local_macos_26_6_1_lldb_source.py",
-        "sha256": "c5de94b83edebfec4025d106adb5e2de694ae5ca5a690171ed9cce9cae84603e"
+        "sha256": "db3fbcf87c4ae11accfe7ec2b13ffa2fdf4910e62641ec77d1d21d78a0dd6bca"
       },
       {
         "path": "Analysis/test_validate_background_filter_constructor_public_render_interval_local_macos_26_6_1.py",
-        "sha256": "c8eeaf43a76d725b76d2a5fecfe7c1473bce3947563091af84143c4c01996e3b"
+        "sha256": "0e59ecb77c7feeea8d6028cc74cc25ef8888037a2f0f3e3f100644fc54d6df08"
       },
       {
         "path": "Analysis/test_run_background_filter_constructor_public_render_interval_local_macos_26_6_1_source.py",
@@ -70,7 +106,7 @@
       },
       {
         "path": "Analysis/test_background_filter_constructor_public_render_interval_local_macos_26_6_1_preregistration.py",
-        "sha256": "14b221e7ee823416c6602f0307c6f2f55483debf54aa9bc1732b34e40b0a46ff"
+        "sha256": "43f6d857a8ddbdd7694b3a791730bebb081f03ad4a8450518996b6170661f8ba"
       },
       {
         "path": "Analysis/check_local_retina_capture_session.swift",
@@ -99,6 +135,30 @@
       {
         "path": "Analysis/designlibrary_background_filter_metadata_local_macos_26_6_1_result.json",
         "sha256": "dc2202be02d3831126866236661173c92bf492498a4cc2d2717931ba296b0757"
+      },
+      {
+        "path": "Analysis/analyze_designlibrary_resolved_recipe_provenance_local_macos_26_6_1.py",
+        "sha256": "7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145"
+      },
+      {
+        "path": "Analysis/designlibrary_resolved_recipe_provenance_local_macos_26_6_1_result.json",
+        "sha256": "f184a3326cf2b313e492bdc00f6fa8927ea926d9efbb1de2831ba4f3a2f22391"
+      },
+      {
+        "path": "Analysis/analyze_designlibrary_parameters_animatable_resolver_local_macos_26_6_1.py",
+        "sha256": "516bbfa6098c32404c289cd5ee9230f480aefac373f35c6f45c57c11583ecd5d"
+      },
+      {
+        "path": "Analysis/designlibrary_parameters_animatable_resolver_local_macos_26_6_1_result.json",
+        "sha256": "c11fa1c42a559d585ec2df64c5a2eeda4f1fc37caaf0e5da9129c93277cb9b93"
+      },
+      {
+        "path": "Analysis/analyze_designlibrary_parameters_animatable_blend_pipeline_local_macos_26_6_1.py",
+        "sha256": "bb89ef7135b3a0f955ff46b0afd20a6df3480fda1e7b053882333362a11dec33"
+      },
+      {
+        "path": "Analysis/designlibrary_parameters_animatable_blend_pipeline_local_macos_26_6_1_result.json",
+        "sha256": "ab702bb92880f277cc525d19c405c15909c8ece1d778d4f27895b694e54f0f2b"
       }
     ]
   },
@@ -135,6 +195,7 @@
     "physicalRetinaColorPixelCompositorTransferEstablishedOnPass": false,
     "productionShaderAuthorizedOnPass": false,
     "sameProfilePublicParametersConstructionJoinEstablishedOnPass": true,
+    "sameProfilePublicParametersBlendProvenanceEstablishedOnPass": true,
     "upstreamCropAllocationPolicyEstablishedOnPass": false
   },
   "profile": {
@@ -153,10 +214,19 @@
     "allConstructorCallsOnAuthenticatedFunctionThread": true,
     "allConstructorInputsRemainBitwiseUnchanged": true,
     "allConstructorLayerIndicesAreZero": true,
+    "allConstructorParametersHaveSameSampleBuilderOutput": true,
     "allMatchedProviderInitializedBytesHaveSameSampleConstructorOutput": true,
+    "allParametersBuilderCallsHaveAtLeastOneBlendDecision": true,
+    "allParametersBuilderCallsOnAuthenticatedFunctionThread": true,
+    "allParametersBuilderCallsReachFinalGate": true,
+    "allParametersBuilderCallsReachResolvedConvergence": true,
+    "allParametersBuilderOutputsEqualResolvedWorkingParameters": true,
     "allSamplesHaveAtLeastOneConstructorCall": true,
+    "allSamplesHaveAtLeastOneParametersBuilderCall": true,
     "completePaddingByteEqualityRequired": false,
-    "oneDistinctParametersValuePerMatchedSample": true
+    "oneDistinctParametersValuePerMatchedSample": true,
+    "resolverFlagIsOneAtEveryDecision": true,
+    "unityRegisterIsExactOneAtEveryDecision": true
   },
   "requiredPredecessor": {
     "artifactDirectory": "local-case22-provider-public-render-interval-c1bfabd-run1",
@@ -166,6 +236,8 @@
     "validatorSHA256": "ec499088080c2959a00276d9ef00d3da63906af7440e4713c288770a515556c1"
   },
   "selectionPolicy": {
+    "blendDecisions": "every execution of the fixed builder +0xfb8 decision instruction; collection count, d9 factor, d12 unity constant, current Parameters, and accumulator bytes are retained only after the structural breakpoint fires",
+    "parametersBuilderCalls": "every call to the fixed ResolvedRecipe Parameters builder from exact transitionBackgroundUniformEvidence entry through the final structural render return",
     "constructorCalls": "every call from exact transitionBackgroundUniformEvidence entry through the final structural render return",
     "preRenderAssociation": "completion event order only; all unassigned completed calls attach to the immediately following render interval",
     "providerCalls": "every sdfBackdropMargin provider call strictly inside each exact CARenderer direct-call interval",
