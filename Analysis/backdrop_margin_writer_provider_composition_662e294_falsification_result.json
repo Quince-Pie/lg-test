@@ -1,0 +1,108 @@
+{
+  "backdropMarginWriterProviderCompositionFalsificationSchemaVersion": 1,
+  "classification": "immutable prospective bitwise falsification of the provider-only regular Group.margin candidate on the direct physical Retina M1",
+  "commit": "662e2947478df19351ce41d35d11c88016aa2d82",
+  "profile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-467-center"
+  },
+  "inputs": {
+    "preregistration": {
+      "path": "Analysis/backdrop_margin_writer_provider_composition_local_macos_26_6_1_preregistration.json",
+      "sha256": "79868008ec95956e7aca67f13af65bc519c94096f0068d0134bc640e4ca1f355"
+    },
+    "validator": {
+      "path": "Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
+      "sha256": "8075ba1e9ecadf32dd4c33de18deb9dc89d68636b84b081388dd3ae45f222f52"
+    },
+    "preflight": {
+      "path": "../artifacts/local-backdrop-margin-provider-composition-662e294-regular-light-run1/capture-session-preflight.json",
+      "sha256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034"
+    },
+    "trace": {
+      "path": "../artifacts/local-backdrop-margin-provider-composition-662e294-regular-light-run1/backdrop-margin-writer-trace.json",
+      "sha256": "497041e9cd642061114697e37d9f2fb630053486a3440c9ebc2a5e37aad2b6b7"
+    },
+    "timeline": {
+      "path": "../artifacts/local-backdrop-margin-provider-composition-662e294-regular-light-run1/transition-timeline.json",
+      "sha256": "c83c91e2bdf32ff82fb303a25179f4d705e9c9e9aa0426475fa5fe51a9e2c8b3"
+    }
+  },
+  "capture": {
+    "retinaPreflightPassed": true,
+    "timelineSampleCount": 33,
+    "dynamicPublicRecordCount": 32,
+    "failedTimelineSampleCount": 0,
+    "imageCount": 33,
+    "distinctImageSHA256Count": 20,
+    "traceFailureCount": 0,
+    "traceEventCount": 1188,
+    "setterEventCount": 149,
+    "copyEntryEventCount": 466,
+    "copyStoreEventCount": 270,
+    "boundsEventCount": 303,
+    "callerCount": 1,
+    "producerCalleeCount": 1,
+    "all149ProducerInvocationsComplete": true,
+    "all149ProducerReturnsEqualSetterInputsBitwise": true
+  },
+  "liveCode": {
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "copySHA256": "5bdf866c13bfb00d9becada24ff9876f84515fa36acb4ee274785d5176593a1e",
+    "setterSHA256": "2421048e418c6cdcc7622dd65f881e514e0852687f7920e6c4bdaf75a301f6dd",
+    "boundsSHA256": "85a99558cc08c2a693969b55c804cd811e8ef710ac2d02460830f8bf9d6ec85a",
+    "swiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531",
+    "callerByteCount": 6844,
+    "callerSHA256": "d60a0510382f913b937ceb2c20111c4dcf1b4dd9d6d49388c2fe5c4d2683168c",
+    "callerProducerCallOffset": 5760,
+    "callerProducerCallInstructionHex": "5526e997",
+    "callerBridgeOffset": 5764,
+    "callerBridgeInstructionHex": "e0031caa",
+    "callerSetterCallOffset": 5768,
+    "callerSetterCallInstructionHex": "dfcb1894",
+    "groupMarginGetterByteCount": 732,
+    "groupMarginGetterSHA256": "5414dac1e2dce7753af9afe072ceb3b7f938ec894df81bd621866f50d03b015d"
+  },
+  "frozenPrediction": {
+    "perRecordLaw": "max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)) + abs(inputShadowAmount)",
+    "groupLaw": "maximum over all 32 per-record provider returns",
+    "modelMarginF64": 83.0,
+    "modelMarginF64RawLittleEndianHex": "0000000000c05440",
+    "renderMarginF32": 83.0,
+    "renderMarginF32RawLittleEndianHex": "0000a642"
+  },
+  "observedTarget": {
+    "completeStructuralChainCount": 32,
+    "all32ModelMarginsF64": 163.45,
+    "all32ModelMarginsF64RawLittleEndianHex": "66666666666e6440",
+    "all32RenderMarginsF32": 163.4499969482422,
+    "all32RenderMarginsF32RawLittleEndianHex": "33732343",
+    "all32BoundsMarginsF32RawLittleEndianHex": "33732343",
+    "maximumPublicInputBleedAmountF64": 163.45,
+    "maximumPublicInputBleedAmountF64RawLittleEndianHex": "66666666666e6440",
+    "maximumPublicProviderReturnF64": 83.0,
+    "maximumPublicProviderReturnF64RawLittleEndianHex": "0000000000c05440",
+    "targetEqualsMaximumInputBleedAmountBitwise": true,
+    "targetEqualsProviderOnlyPredictionBitwise": false
+  },
+  "conclusion": {
+    "providerOnlyRegularGroupMarginCandidateFalsified": true,
+    "missingWinningContribution": "inputBleedAmount",
+    "correctedCandidateForFreshTransfer": "maximum over all 32 records of max(inputBleedAmount, authenticated provider return)",
+    "correctedCandidateCalibratedFromThisTarget": true,
+    "correctedCandidateProspectiveAuthorityEstablished": false
+  },
+  "authority": {
+    "providerOnlyCandidateRejected": true,
+    "correctedCandidateMayBeFrozenForFreshCases": true,
+    "correctedCandidateProspectivelyEstablished": false,
+    "allocationMarginCompositionEstablished": false,
+    "selectedRegionPolicyEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}
