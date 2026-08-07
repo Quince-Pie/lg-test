@@ -23,6 +23,12 @@ class BackdropMarginWriterProviderCompositionPreregistrationTests(unittest.TestC
         cls.value = json.loads(PREREGISTRATION.read_text(encoding="utf-8"))
 
     def test_four_output_blind_exact_cases_are_frozen(self) -> None:
+        self.assertEqual(
+            self.value[
+                "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion"
+            ],
+            2,
+        )
         cases = self.value["prospectiveCases"]
         self.assertEqual(
             {
@@ -54,6 +60,19 @@ class BackdropMarginWriterProviderCompositionPreregistrationTests(unittest.TestC
             ):
                 self.assertIsNone(case[key])
         self.assertIsNone(self.value["runtimeOutcomeFrozenBeforeDispatch"])
+
+    def test_v1_failed_before_launch_and_consumed_no_case(self) -> None:
+        failure = self.value["supersedesBuildTransportVersion"]
+        self.assertFalse(failure["applicationBuilt"])
+        self.assertFalse(failure["applicationLaunched"])
+        self.assertFalse(failure["lldbStarted"])
+        self.assertFalse(failure["appleMarginCropImageOrPixelObserved"])
+        self.assertFalse(failure["candidateTested"])
+        self.assertEqual(failure["prospectiveCasesConsumed"], 0)
+        result = ROOT / failure["result"]
+        self.assertEqual(
+            hashlib.sha256(result.read_bytes()).hexdigest(), failure["resultSHA256"]
+        )
 
     def test_candidate_comes_from_the_authenticated_provider(self) -> None:
         correction = self.value["antecedentCorrection"]

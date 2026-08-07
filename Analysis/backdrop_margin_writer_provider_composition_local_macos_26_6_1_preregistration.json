@@ -1,6 +1,6 @@
 {
-  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 1,
-  "frozenAtUtc": "2026-08-07T18:17:32Z",
+  "backdropMarginWriterProviderCompositionPreregistrationSchemaVersion": 2,
+  "frozenAtUtc": "2026-08-07T18:20:49Z",
   "classification": "prospective four-case output-blind direct-Retina-M1 transfer of the authenticated public filter to DesignLibrary provider to SwiftUI Group.margin to CABackdropLayer writer composition; no Apple output for any exact case exists at freeze time",
   "sourceStateBeforeFreeze": {
     "branch": "main",
@@ -13,6 +13,19 @@
     "nativeHostMacOS": "26.6.1",
     "nativeHostBuild": "25G76",
     "physicalDisplay": "built-in 3456x2234 Retina at exact 2x backing scale"
+  },
+  "supersedesBuildTransportVersion": {
+    "commit": "71736b6c2a87df7bd913bc04b329a1a419b7cefd",
+    "result": "Analysis/backdrop_margin_writer_provider_composition_71736b6_build_transport_failure_result.json",
+    "resultSHA256": "1bee08f6e3c0d506b13e6be86954208a4b0d4251adefa83aa05eb55624e8a563",
+    "retinaPreflightPassed": true,
+    "applicationBuilt": false,
+    "applicationLaunched": false,
+    "lldbStarted": false,
+    "appleMarginCropImageOrPixelObserved": false,
+    "candidateTested": false,
+    "prospectiveCasesConsumed": 0,
+    "onlyTransportChange": "pass /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk explicitly to clang and swiftc"
   },
   "antecedentCorrection": {
     "supersededCandidate": "max(inputBleedAmount, inputShadowAmount + max(abs(inputShadowOffset.x), abs(inputShadowOffset.y)))",
@@ -171,11 +184,11 @@
     },
     {
       "path": "Analysis/validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
-      "sha256": "b6d0e5a9e3c2a408e79087ca8a21ee602239e0ea28aaf738e7684000a170ec94"
+      "sha256": "900e074f3950649a40f41254be716fd5c45728f63f868fdd4f03da4ffc3dbf7d"
     },
     {
       "path": "Analysis/run_backdrop_margin_writer_provider_composition_local_macos_26_6_1.sh",
-      "sha256": "104d665c81a11ef0e6b9ca9aa92e8b6e4a610c0eb74ae9662171cc98a14b2ac2"
+      "sha256": "874a0b8e6aa64a4bd392235052f5e7c66bdca1b9244f29e7ed8cd444511da7a4"
     },
     {
       "path": "Analysis/test_validate_backdrop_margin_writer_provider_composition_local_macos_26_6_1.py",
@@ -183,7 +196,15 @@
     },
     {
       "path": "Analysis/test_run_backdrop_margin_writer_provider_composition_local_macos_26_6_1_source.py",
-      "sha256": "a3e104c1a924c706c1aa98724996abd307aee6cc9090c24ee8436809974e2f66"
+      "sha256": "9d08d5a25c34edd4f3a9c3783aa801b57e30bf87dc4c54cc897030797bebb10b"
+    },
+    {
+      "path": "Analysis/backdrop_margin_writer_provider_composition_71736b6_build_transport_failure_result.json",
+      "sha256": "1bee08f6e3c0d506b13e6be86954208a4b0d4251adefa83aa05eb55624e8a563"
+    },
+    {
+      "path": "Analysis/test_backdrop_margin_writer_provider_composition_71736b6_build_transport_failure_result.py",
+      "sha256": "f0c93139adc75f780a87049ac9e90ca6a2a9b74b87e5ca1229c75261b2c03546"
     }
   ],
   "qualityLocks": {

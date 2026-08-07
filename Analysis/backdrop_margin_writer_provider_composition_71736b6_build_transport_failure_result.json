@@ -1,0 +1,63 @@
+{
+  "backdropMarginWriterProviderCompositionBuildTransportFailureSchemaVersion": 1,
+  "classification": "immutable direct-M1 build transport failure before application launch; no Apple margin, crop, image, or pixel was observed and the frozen candidate was not tested",
+  "frozenCommit": "71736b6c2a87df7bd913bc04b329a1a419b7cefd",
+  "runLabel": "71736b6-regular-light-run1",
+  "requestedProfile": {
+    "material": "regular",
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-467-center"
+  },
+  "host": {
+    "ssh": "quince@10.0.41.19",
+    "architecture": "arm64",
+    "macOS": "26.6.1",
+    "build": "25G76",
+    "physicalRetinaHost": true,
+    "githubActionsUsed": false
+  },
+  "retinaPreflight": {
+    "path": "../artifacts/local-backdrop-margin-provider-composition-71736b6-regular-light-run1/capture-session-preflight.json",
+    "sha256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "passed": true,
+    "physicalPixels": [3456, 2234],
+    "logicalPoints": [1728, 1117],
+    "backingScaleFactor": 2,
+    "displayActive": true,
+    "displayAsleep": false,
+    "sessionLoginDone": true,
+    "sessionOnConsole": true,
+    "sessionLocked": false
+  },
+  "buildFailure": {
+    "stage": "MatrixBridge.c compilation",
+    "compiler": "/Library/Developer/CommandLineTools/usr/bin/clang",
+    "exitStatus": 1,
+    "stderrPath": "../artifacts/local-backdrop-margin-provider-composition-71736b6-regular-light-run1/clang-stderr.log",
+    "stderrSHA256": "92917c393fde7e1e8576d66ec88c9c86058513d56deb0ae404abefdf64d71ba5",
+    "diagnosis": "the direct clang path was invoked without the Apple SDK sysroot, so the first system include dlfcn.h was unavailable",
+    "transportCorrection": "pass the explicit CommandLineTools MacOSX.sdk to clang with -isysroot and to swiftc with -sdk",
+    "candidateOrCapturedValueUsedForDiagnosis": false
+  },
+  "outcome": {
+    "applicationBuilt": false,
+    "applicationLaunched": false,
+    "lldbStarted": false,
+    "timelineCreated": false,
+    "writerTraceCreated": false,
+    "appleMarginObserved": false,
+    "appleCropObserved": false,
+    "appleImageObserved": false,
+    "candidateTested": false,
+    "caseConsumedAsProspectiveEvidence": false
+  },
+  "authority": {
+    "allocationMarginCompositionEstablished": false,
+    "selectedRegionPolicyEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "productionShaderAuthorized": false,
+    "liquidGlassParityEstablished": false
+  }
+}

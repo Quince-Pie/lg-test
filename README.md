@@ -10953,3 +10953,15 @@ Fresh selected-region/origin transfer, physical Retina color and compositor
 behavior, and an independent Walle render with zero unequal bytes remain
 mandatory. Liquid Glass parity and production shader changes remain
 unauthorized; the shader quality lock is unchanged.
+
+The first dispatch of this gate at commit `71736b6` passed the exact Retina
+session preflight but stopped before the application was built: invoking the
+Command Line Tools `clang` path without an explicit SDK sysroot made the first
+system include, `dlfcn.h`, unavailable. The application and LLDB never started;
+no timeline, writer value, crop, image, or pixel existed, so none of the four
+prospective cases was consumed. The immutable transport result is
+`Analysis/backdrop_margin_writer_provider_composition_71736b6_build_transport_failure_result.json`.
+Version 2 changes only native transport by passing the fixed Command Line Tools
+`MacOSX.sdk` to clang with `-isysroot` and swiftc with `-sdk`; the candidate,
+case matrix, capture adapter, selection rules, and zero-tolerance acceptance
+remain unchanged.

@@ -24,6 +24,11 @@ class BackdropMarginWriterProviderCompositionRunnerTests(unittest.TestCase):
             )
         self.assertNotIn("/nix/store", self.source)
         self.assertNotIn("github", self.source.lower())
+        self.assertIn(
+            "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk", self.source
+        )
+        self.assertIn('-isysroot "$sdk"', self.source)
+        self.assertIn('-sdk "$sdk"', self.source)
 
     def test_only_four_frozen_profiles_are_accepted(self) -> None:
         for identity in (

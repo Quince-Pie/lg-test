@@ -41,6 +41,7 @@ readonly swift=/Library/Developer/CommandLineTools/usr/bin/swift
 readonly swiftc=/Library/Developer/CommandLineTools/usr/bin/swiftc
 readonly lldb=/Library/Developer/CommandLineTools/usr/bin/lldb
 readonly python=/Library/Developer/CommandLineTools/usr/bin/python3
+readonly sdk=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 cd "$repository" || exit 1
 
@@ -100,6 +101,7 @@ fi
     -Wall \
     -Wextra \
     -Werror \
+    -isysroot "$sdk" \
     -target arm64-apple-macos26.0 \
     -c Sources/GlassIntrospect/MatrixBridge.c \
     -o "$output_directory/MatrixBridge.o" \
@@ -114,6 +116,7 @@ fi
 "$swiftc" \
     -O \
     -parse-as-library \
+    -sdk "$sdk" \
     -target arm64-apple-macos26.0 \
     -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
     Sources/GlassIntrospect/HalfBlendProbe.swift \
