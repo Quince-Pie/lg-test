@@ -9353,3 +9353,106 @@ mutate configurations, how animation time produces the public `by` argument,
 the remaining integer crop allocation, physical Retina compositor/color
 behavior, an independent Walle zero-unequal-byte frame, or Liquid Glass
 parity. No production shader change is authorized.
+
+### Authenticated `EnvironmentFlags` production and public configuration table
+
+The derived `State.flags` value is no longer an opaque side effect. The exact
+native producer occupies `[0x2409737f8, 0x240973cdc)` in the frozen
+DesignLibrary image: 1,252 bytes / 313 arm64 instructions with SHA-256
+`69bd75dcc4daad7956b6b41560fc39a1ec5bd4187712c945788477ec6dd97090`.
+The capture authenticates every byte before calling the function. Its ABI is
+an owned `Configuration` value in `x0`, an owned `Environment` value in `x1`,
+and a `UInt64` result in `x0`. The two generic-destroy calls at the function
+tail are part of the frozen instruction contract. Accordingly, the probe
+first retains the configuration through an Apple provider, lets the producer
+consume its inputs, then regenerates the Apple initial State before resolving
+with the returned flags. This matters for indirect configurations: treating
+the producer inputs as borrowed would release their Swift boxes prematurely.
+
+Runtime metadata establishes `Environment` size 263, stride 264, all 21 field
+offsets, and the complete enum domains:
+
+```text
+DesignIdiom       universal mac phone pad tv watch spatial carPlay touchBar
+ResolvedDiffusion automatic increased
+```
+
+The authenticated producer reads metadata offsets for exactly 12 environment
+fields: color-scheme contrast, idiom, application activity, window activity,
+window opacity, glass foreground, tinted-elements presence, reduce
+transparency, reduce motion, button shapes, low-power mode, and diffusion. It
+does not directly read pixel length, color scheme, control tint, container
+style, text dimensions, luminance, dimensions, frost, or pocket parameters.
+Those exclusions are code facts for this producer only; for example, color
+scheme remains independently consumed by resolution.
+
+On the frozen initial regular environment the exact result is
+`0x0000000000099183`. The individually isolated changes are:
+
+```text
+increased contrast         0x000000000109918b
+application inactive       0x0000000000099182
+window inactive            0x0000000000019181
+non-foreground glass       0x0000000000099187
+tinted elements present    0x00000000000d9183
+reduce transparency        0x0000000001088193
+reduce motion              0x00000000000991a3
+show button shapes         0x0000000000899183
+increased diffusion        0x0000000001099183
+```
+
+Both values of every Boolean, every real idiom case, and both diffusion cases
+are retained in the canonical result, including cases whose result equals the
+baseline under this exact machine state. Pixel length and light/dark color
+scheme are negative controls for the flags producer. Dark color scheme leaves
+the flags at `0x99183` while independently changing resolved composite
+luminance from binary32 `1.0` to `0.0` and resolved color-scheme storage from
+`0` to `1`.
+
+All 27 public configurations are also passed through the same producer on the
+same Apple-created environment. Their results collapse into these exact
+groups:
+
+```text
+0x0000000000099183  regular, menu, siriSnippet
+0x0000000000088183  clear, identity, avplayer, facetime,
+                    notificationCenter, monogram, bubbles, focusBorder,
+                    focusPlatter, keyboard, sidebar, abuttedSidebar,
+                    inspector, camera, carplayUltra
+0x0000000000288183  control, loupe, slider
+0x0000000000088d83  text, widgets
+0x0000000000088983  dock, controlCenter
+0x0000000000188583  appIcons
+0x00000000000a8183  cartouchePopover
+```
+
+For regular modifiers, explicit light, explicit dark, and
+`adaptive(false)` produce `0x88183` with options zero. `adaptive(true)`, both
+adaptive color schemes, and both animatable policies produce `0x99183`; their
+public options remain the independently measured `0x4000` or `0x404000`.
+Across 36 environment cases, 27 static configurations, and 8 modifiers, the
+producer's 64-bit return equals bytes `[24,32)` of the selected
+`ResolvedConfiguration` key in every case. All semantic records repeat
+exactly in three fresh processes; pointer values, hash slots, and padding are
+excluded.
+
+The capture and canonical result are:
+
+```text
+Analysis/capture_designlibrary_environment_flags_resolution_local_macos_26_6_1.py
+  SHA-256 03b099190b8f96fa45d6d5275d04e82e85fbb4079ec2a58ac2d6911cdacf4911
+Analysis/probe_designlibrary_environment_resolution_local_macos_26_6_1.c
+  SHA-256 6400ab170d12b3049791369ee0807943401b6874a4f46eb50cc7a6d8f8faed13
+Analysis/invoke_designlibrary_public_configuration_resolution_arm64.S
+  SHA-256 9f58cbef6e4875f9fb377f4018913d6336b6c906c1a37a1117d137ac373fef2d
+Analysis/designlibrary_environment_flags_resolution_local_macos_26_6_1_result.json
+  SHA-256 3b65ba5764c786a7f82eb3f92084653e0a9f9e85267d70eca7108243dfc8d597
+```
+
+Compilation and capture use Apple's Command Line Tools directly and embed no
+Nix store path. This closes the concrete public-configuration/environment-to-
+flags producer boundary. It does **not** yet prove the live SwiftUI updater
+that supplies every Environment value, transition-time production, the
+remaining integer crop-allocation policy, physical Retina compositor/color
+transfer, an independent Walle zero-unequal-byte frame, or Liquid Glass
+parity. No production shader change is authorized.
