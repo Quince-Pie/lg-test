@@ -9875,6 +9875,199 @@ physical Retina/color/compositor transfer, or an independent Walle
 zero-unequal-byte frame. Liquid Glass parity and production shader changes
 remain unauthorized.
 
+### Exact `Material.Context` layout and fixed shape-dimension matrix
+
+Swift runtime metadata now removes the remaining ambiguity in the
+`Material.Context` value passed to DesignLibrary. Its exact size is 73 bytes,
+its stride is 80 bytes, and its five stored fields are:
+
+```text
+environment       offset 0
+role              offset 16
+substrate         offset 17
+shapeDimensions   offset 24
+shapeMetrics      offset 48
+```
+
+`shapeDimensions` is an optional `ClosedRange<Double>` with the lower bound at
+24, upper bound at 32, and optional tag at 40. `shapeMetrics` is an optional
+24-byte value containing three binary64 fields at offsets 0, 8, and 16. The
+default optional tags are nil (`1`); role and substrate use their default tag
+`3`.
+
+A separate prospectively fixed native capture then installs 21 exact Context
+values under regular/clear, light/dark, and their real produced flags. The
+regular-light dimensions include nil, 127, 127.5, 128, 135, 142.5, 143, 347,
+640, 1535, and the unequal ranges 127...143 and 127...640. Three fresh native
+processes reproduce all 873 semantic Parameters bytes for every case. The 21
+cases collapse to 19 normalized 1,025-byte values.
+
+Both unequal ranges produce the exact same Parameters bytes as the singleton
+127 case. Thus, in these controlled cases, Apple's builder consumes the
+`ClosedRange` lower bound and not its upper bound. This is an observed builder
+law, not a claim about how every live SwiftUI shape constructs its range.
+
+The metadata analysis and native matrix are:
+
+```text
+Analysis/analyze_swiftuicore_material_context_metadata_local_macos_26_6_1.py
+  SHA-256 c5283cac21b80e4639fbea74710f141ca7966283887e4ee8df931ef7c63d1560
+Analysis/swiftuicore_material_context_metadata_local_macos_26_6_1_result.json
+  SHA-256 22f720d8e4349245a5986a2dfe3c2803992b87c02d999771ad6191f51a8cbf61
+Analysis/capture_designlibrary_material_context_parameters_local_macos_26_6_1.py
+  SHA-256 4600432f909881a09da598081fda2bd9b6f31707769304608fc54399b9d80437
+Analysis/capture_designlibrary_material_context_parameters_local_macos_26_6_1_lldb.py
+  SHA-256 27875732956787a049444c99d76de75f23342d2a56e2a3cd582641c18bd9beda
+Analysis/probe_designlibrary_material_context_parameters_local_macos_26_6_1.c
+  SHA-256 69f877a6641a795a45e173693398ada603e7b70e7806de7bb16393702bad07ac
+Analysis/designlibrary_material_context_parameters_local_macos_26_6_1_preregistration.json
+  SHA-256 5885230533d56b9b20ec7545b40e8ec1204cb58f24eda70db60fab9c721872f2
+Analysis/designlibrary_material_context_parameters_local_macos_26_6_1_result.json
+  SHA-256 e707178e4f5e6e14d75fa0a953daa834e538be3981e855a2ecc18325aca0167b
+```
+
+The capture uses Apple Command Line Tools directly on the local M1 Max and
+rejects a probe executable containing a Nix store path. It requires no GUI or
+unlocked display.
+
+### Exact observed live-timeline Context transfer
+
+Two independently retained live timelines expose two distinct regular-light
+environment profiles. This distinction is important: it is **not** an
+endpoint-only fast path.
+
+The older local timeline, SHA-256
+`1dd73cfa4e696c43a0612c107e9a5edcb78c72b14ba80e67a53e4e99b06d931f`,
+uses exact zero EnvironmentFlags. It supplies 31 nonendpoint fractions. The
+newer target timeline from `gh-run-31118243811`, SHA-256
+`0a7db5d9416c4c69f19b608de73e9225e7edf8629e112de2be0d07cab1adc711`,
+uses the produced regular-light flags `0x0000000000099183` and supplies 32
+samples including its endpoint. Each input table, predecessor identity,
+expected live word, case order, and acceptance rule was frozen before the new
+headless Parameters values existed.
+
+For both profiles, the exact Context lower bound is
+
+```text
+x = 143 - 16 * k
+```
+
+in the recorded binary64 operation order, where `k` is the retained live mix
+fraction. All 63 predicted `x` words match Apple's Context inputs bit for bit.
+Three fresh native processes then run every `x` through Apple's authenticated
+Parameters builder.
+
+For zero flags, four independently retained provider fields were open before
+the capture. Multiplying the corresponding headless Parameters value by the
+exact binary64 `k` reproduces all 124 live words bit for bit:
+
+```text
+shadow.amount              31 / 31
+blur.radius                31 / 31
+refraction.innerAmount     31 / 31
+edgeBleed.amount           31 / 31
+total                     124 / 124
+```
+
+For produced flags `0x99183`, the independently retained public-filter inputs
+provide the same four-field gate. The internal blur radius is compared to
+exactly twice the public half-radius. All 128 words match bit for bit:
+
+```text
+shadow.amount              32 / 32
+2 * public blur radius     32 / 32
+refraction.innerAmount     32 / 32
+edgeBleed.amount           32 / 32
+total                     128 / 128
+```
+
+The two transfer captures are:
+
+```text
+Analysis/capture_designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1.py
+  SHA-256 62667bb3c41eced5d3ef4768e409b3ed121dad1a5c758d18cf85be7bf5149d9c
+Analysis/capture_designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1_lldb.py
+  SHA-256 53980221e3cb6873f0995683e3b76f51a8f0b199c56d3cafc7653b5ca4156cb9
+Analysis/probe_designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1.c
+  SHA-256 a97f15fd7bf56f419a4352598082457b1a23ef71010f3132f6b7f6f433e26deb
+Analysis/designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1_preregistration.json
+  SHA-256 73b818343f93a133dc5fff1d5f2fa8a9aaad7642f63e95c9f3e1365257679331
+Analysis/designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1_result.json
+  SHA-256 6237b29fa78c1626df9ed95aed6d3d8ad6c026b290c66def1e3af8380b54f570
+
+Analysis/capture_designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1.py
+  SHA-256 ded67bfeaa863a550ccecdfb993bc60b9ddbaca7e5a033e01b225c2506023d39
+Analysis/capture_designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1_lldb.py
+  SHA-256 64e5d15bef6d37363f33ff521a7e36daddbc2cf89d8904d600e630f38f1f079f
+Analysis/probe_designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1.c
+  SHA-256 d89154a8833fc985d0c1b86421830d014d9889fa5e5120e10291fa628f52c12b
+Analysis/designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1_preregistration.json
+  SHA-256 e9bb1fd4e05d1744961366721f6118cd206a141cce61ce08550bf9341d60ad8b
+Analysis/designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1_result.json
+  SHA-256 7df7230548463675d00a7bc78dac0003cd08a9beb19e9b53268b3a6073c15ac7
+```
+
+### Bitwise reconstruction laws for both observed Context profiles
+
+An output-blind retrospective analyzer now reconstructs the complete
+normalized Parameters payload for every captured live Context value. It starts
+with one profile template, changes only fields whose raw semantic bytes vary,
+and rejects any unmodeled color, optional-presence, scalar, or constant-byte
+change.
+
+For the zero-flags profile, only four scalar fields vary across the observed
+domain:
+
+```text
+shadow.height       = x * 0.4
+blur.radius         = 4 + (x - 48) / 28
+edgeBleed.amount    = x * 0.35
+edgeBleed.height    = x * 0.35
+```
+
+For the produced-flags profile, let `u = (x - 48) / 112`,
+`t = (x - 64) / 96`, and `b = 8 / 3`. The exact varying fields and operation
+order are:
+
+```text
+shadow.height                     = x * 0.4
+shadow.opacity                    = f32(f32(0.5*(1-u)) + f32(0.25*u))
+shadow.vibrancyContribution       = t
+blur.radius                       = b + (8-b) * u
+blur.distances[0]                 = -x / 2
+refraction.outerHeight            = x / 8
+refraction.outerAmount            = x * 0.2
+edgeBleed.amount                  = x * 0.35
+edgeBleed.height                  = x * 0.35
+edgeBleed.blurRadius              = x * 0.7
+edgeBleed.opacity                 = f32(t * 0.5)
+sdrAdjustment.shadowOpacityShift  =
+  f32(f32(0.08) + f32(f32(0.24-0.08) * f32(u)))
+```
+
+`f32` means an explicit binary32 rounding at that point in the expression.
+All other normalized semantic bytes remain constant within their respective
+observed profile. These laws reconstruct all 63 complete 1,025-byte normalized
+Parameters payloads bit for bit and retain all 252/252 opened live-word
+matches. No captured output selects a runtime case or formula.
+
+The canonical law proof is:
+
+```text
+Analysis/analyze_designlibrary_material_context_live_timeline_laws.py
+  SHA-256 852ee9b3de2788cbb131ffaed244cab49a17d34f54856330948918e537757b96
+Analysis/designlibrary_material_context_live_timeline_law_analysis_result.json
+  SHA-256 e3520a6819728117646fa2e4bb53801fa50cf1546e4901061f4e7c2d05e18c6e
+```
+
+This closes the exact Context-to-Parameters arithmetic for the two observed
+regular-light timeline domains. It does **not** yet establish a general
+Context law outside those domains, authenticate the live callback that
+produces every complete Parameters value, solve the transition-wide integer
+crop/allocation policy, reproduce the physical Retina compositor/color path,
+or produce an independent Walle frame with zero unequal bytes. Liquid Glass
+parity and production shader changes remain unauthorized.
+
 ### Exact regular/clear by light/dark `Parameters` profiles
 
 The two production-relevant material choices are now crossed directly with

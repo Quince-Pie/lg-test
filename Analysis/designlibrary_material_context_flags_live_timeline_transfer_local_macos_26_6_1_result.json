@@ -1,0 +1,2042 @@
+{
+  "cases": [
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.13037586212158203,
+      "fractionBits": "0x3fc0b02800000000",
+      "index": 1,
+      "name": "sample_01",
+      "normalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000e06e8e2340",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000e06e8e2340",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3dcf09eb9d95ed3f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "62188661545d1c40",
+          "headlessValue": 7.091142200288319,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "3dcf09eb9d95ed3f",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000004b4a1fc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000004b4a1fc0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "6636246372b81940",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "33333353f2a84840",
+          "headlessValue": 49.31989517211914,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "6636246372b81940",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_01",
+      "rawParametersSHA256ByFreshProcess": [
+        "908def6fa278e740e7509050e04a0506b44f83460b460e24314a82bc8e0f065a",
+        "908def6fa278e740e7509050e04a0506b44f83460b460e24314a82bc8e0f065a",
+        "908def6fa278e740e7509050e04a0506b44f83460b460e24314a82bc8e0f065a"
+      ],
+      "shapeDimension": 140.9139862060547,
+      "shapeDimensionBits": "0x40619d3f60000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.13037586212158203,
+      "fractionBits": "0x3fc0b02800000000",
+      "index": 2,
+      "name": "sample_02",
+      "normalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000e06e8e2340",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000e06e8e2340",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3dcf09eb9d95ed3f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "62188661545d1c40",
+          "headlessValue": 7.091142200288319,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "3dcf09eb9d95ed3f",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000004b4a1fc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000004b4a1fc0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "6636246372b81940",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "33333353f2a84840",
+          "headlessValue": 49.31989517211914,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "6636246372b81940",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_02",
+      "rawParametersSHA256ByFreshProcess": [
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9",
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9",
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9"
+      ],
+      "shapeDimension": 140.9139862060547,
+      "shapeDimensionBits": "0x40619d3f60000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.13037586212158203,
+      "fractionBits": "0x3fc0b02800000000",
+      "index": 3,
+      "name": "sample_03",
+      "normalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000e06e8e2340",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000e06e8e2340",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3dcf09eb9d95ed3f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "62188661545d1c40",
+          "headlessValue": 7.091142200288319,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "3dcf09eb9d95ed3f",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000004b4a1fc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000004b4a1fc0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "6636246372b81940",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "33333353f2a84840",
+          "headlessValue": 49.31989517211914,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "6636246372b81940",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_03",
+      "rawParametersSHA256ByFreshProcess": [
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9",
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9",
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9"
+      ],
+      "shapeDimension": 140.9139862060547,
+      "shapeDimensionBits": "0x40619d3f60000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.13037586212158203,
+      "fractionBits": "0x3fc0b02800000000",
+      "index": 4,
+      "name": "sample_04",
+      "normalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000e06e8e2340",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000e06e8e2340",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3dcf09eb9d95ed3f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "62188661545d1c40",
+          "headlessValue": 7.091142200288319,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "3dcf09eb9d95ed3f",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000004b4a1fc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000004b4a1fc0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "6636246372b81940",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "33333353f2a84840",
+          "headlessValue": 49.31989517211914,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "6636246372b81940",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_04",
+      "rawParametersSHA256ByFreshProcess": [
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9",
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9",
+        "21f27bcde0238e754510a7e7566673ced5bf01f2e441cd3cf09cf5637e775bf9"
+      ],
+      "shapeDimension": 140.9139862060547,
+      "shapeDimensionBits": "0x40619d3f60000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.17704486846923828,
+      "fractionBits": "0x3fc6a96800000000",
+      "index": 5,
+      "name": "sample_05",
+      "normalizedParametersSHA256": "746958d8d35f8bd4f56cc755d0fb5cedccac485d6cc462899622a80678203a3d",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000e0858e2a40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000e0858e2a40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "320c3e0d8afcf33f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "3ecff33ceb381c40",
+          "headlessValue": 7.0555848621186765,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "320c3e0d8afcf33f",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d13e25c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d13e25c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0068f748025f2140",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666867e874840",
+          "headlessValue": 49.05854873657226,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0068f748025f2140",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_05",
+      "rawParametersSHA256ByFreshProcess": [
+        "60d9e14d37e7e702300674d8166452bbfbd55031e68da55eff5a1b55d8cc3688",
+        "60d9e14d37e7e702300674d8166452bbfbd55031e68da55eff5a1b55d8cc3688",
+        "60d9e14d37e7e702300674d8166452bbfbd55031e68da55eff5a1b55d8cc3688"
+      ],
+      "shapeDimension": 140.1672821044922,
+      "shapeDimensionBits": "0x4061855a60000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.17704486846923828,
+      "fractionBits": "0x3fc6a96800000000",
+      "index": 6,
+      "name": "sample_06",
+      "normalizedParametersSHA256": "746958d8d35f8bd4f56cc755d0fb5cedccac485d6cc462899622a80678203a3d",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000e0858e2a40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000e0858e2a40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "320c3e0d8afcf33f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "3ecff33ceb381c40",
+          "headlessValue": 7.0555848621186765,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "320c3e0d8afcf33f",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d13e25c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d13e25c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0068f748025f2140",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666867e874840",
+          "headlessValue": 49.05854873657226,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0068f748025f2140",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_06",
+      "rawParametersSHA256ByFreshProcess": [
+        "0908506f1083e60f08c838e0b4583dab26797af96339f83029c8572037ad08d5",
+        "0908506f1083e60f08c838e0b4583dab26797af96339f83029c8572037ad08d5",
+        "0908506f1083e60f08c838e0b4583dab26797af96339f83029c8572037ad08d5"
+      ],
+      "shapeDimension": 140.1672821044922,
+      "shapeDimensionBits": "0x4061855a60000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.3773326873779297,
+      "fractionBits": "0x3fd8263800000000",
+      "index": 7,
+      "name": "sample_07",
+      "normalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000a65978d60440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000a89c1b40",
+          "headlessValue": 6.902984619140625,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "0000a65978d60440",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3383908592163240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc8cedf74740",
+          "headlessValue": 47.93693695068359,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3383908592163240",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_07",
+      "rawParametersSHA256ByFreshProcess": [
+        "6a50d249c74daeda6619438c598df8ce680420e1cb4cba677b555acffc8edaac",
+        "6a50d249c74daeda6619438c598df8ce680420e1cb4cba677b555acffc8edaac",
+        "6a50d249c74daeda6619438c598df8ce680420e1cb4cba677b555acffc8edaac"
+      ],
+      "shapeDimension": 136.96267700195312,
+      "shapeDimensionBits": "0x40611ece40000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.3773326873779297,
+      "fractionBits": "0x3fd8263800000000",
+      "index": 8,
+      "name": "sample_08",
+      "normalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000a65978d60440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000a89c1b40",
+          "headlessValue": 6.902984619140625,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "0000a65978d60440",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3383908592163240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc8cedf74740",
+          "headlessValue": 47.93693695068359,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3383908592163240",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_08",
+      "rawParametersSHA256ByFreshProcess": [
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778"
+      ],
+      "shapeDimension": 136.96267700195312,
+      "shapeDimensionBits": "0x40611ece40000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.3773326873779297,
+      "fractionBits": "0x3fd8263800000000",
+      "index": 9,
+      "name": "sample_09",
+      "normalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000a65978d60440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000a89c1b40",
+          "headlessValue": 6.902984619140625,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "0000a65978d60440",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3383908592163240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc8cedf74740",
+          "headlessValue": 47.93693695068359,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3383908592163240",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_09",
+      "rawParametersSHA256ByFreshProcess": [
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778"
+      ],
+      "shapeDimension": 136.96267700195312,
+      "shapeDimensionBits": "0x40611ece40000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.3773326873779297,
+      "fractionBits": "0x3fd8263800000000",
+      "index": 10,
+      "name": "sample_10",
+      "normalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000a65978d60440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000a89c1b40",
+          "headlessValue": 6.902984619140625,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "0000a65978d60440",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3383908592163240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc8cedf74740",
+          "headlessValue": 47.93693695068359,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3383908592163240",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_10",
+      "rawParametersSHA256ByFreshProcess": [
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778"
+      ],
+      "shapeDimension": 136.96267700195312,
+      "shapeDimensionBits": "0x40611ece40000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.3773326873779297,
+      "fractionBits": "0x3fd8263800000000",
+      "index": 11,
+      "name": "sample_11",
+      "normalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000a65978d60440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000a89c1b40",
+          "headlessValue": 6.902984619140625,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "0000a65978d60440",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3383908592163240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc8cedf74740",
+          "headlessValue": 47.93693695068359,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3383908592163240",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_11",
+      "rawParametersSHA256ByFreshProcess": [
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778"
+      ],
+      "shapeDimension": 136.96267700195312,
+      "shapeDimensionBits": "0x40611ece40000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.3773326873779297,
+      "fractionBits": "0x3fd8263800000000",
+      "index": 12,
+      "name": "sample_12",
+      "normalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000a65978d60440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000a89c1b40",
+          "headlessValue": 6.902984619140625,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "0000a65978d60440",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3383908592163240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc8cedf74740",
+          "headlessValue": 47.93693695068359,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3383908592163240",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_12",
+      "rawParametersSHA256ByFreshProcess": [
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778"
+      ],
+      "shapeDimension": 136.96267700195312,
+      "shapeDimensionBits": "0x40611ece40000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.3773326873779297,
+      "fractionBits": "0x3fd8263800000000",
+      "index": 13,
+      "name": "sample_13",
+      "normalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "000000a0c94c3c40",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000a65978d60440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000a89c1b40",
+          "headlessValue": 6.902984619140625,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "0000a65978d60440",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "00000080d4a336c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3383908592163240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc8cedf74740",
+          "headlessValue": 47.93693695068359,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3383908592163240",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_13",
+      "rawParametersSHA256ByFreshProcess": [
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778",
+        "4a2b6e570e6e6a16e2e77c23caa348fcd7958187e04ea0c81b36daa8af67b778"
+      ],
+      "shapeDimension": 136.96267700195312,
+      "shapeDimensionBits": "0x40611ece40000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.44872379302978516,
+      "fractionBits": "0x3fdcb7e400000000",
+      "index": 14,
+      "name": "sample_14",
+      "normalizedParametersSHA256": "536a0407d42236f20d1945ec57f3b68ef5d757fc486c3abaf7231b0375b799b0",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000098bfd34040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000098bfd34040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "26c93b09c3950840",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "26499224f5641b40",
+          "headlessValue": 6.848591395786832,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "26c93b09c3950840",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c065ec3ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c065ec3ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3387489dbf543540",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "99999939c1c44740",
+          "headlessValue": 47.5371467590332,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3387489dbf543540",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_14",
+      "rawParametersSHA256ByFreshProcess": [
+        "73734f9d4f41fd2e600a452c396c4ae20ef65f1f5d969319b3b1c7d1dc0b1a1d",
+        "73734f9d4f41fd2e600a452c396c4ae20ef65f1f5d969319b3b1c7d1dc0b1a1d",
+        "73734f9d4f41fd2e600a452c396c4ae20ef65f1f5d969319b3b1c7d1dc0b1a1d"
+      ],
+      "shapeDimension": 135.82041931152344,
+      "shapeDimensionBits": "0x4060fa40e0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.44872379302978516,
+      "fractionBits": "0x3fdcb7e400000000",
+      "index": 15,
+      "name": "sample_15",
+      "normalizedParametersSHA256": "536a0407d42236f20d1945ec57f3b68ef5d757fc486c3abaf7231b0375b799b0",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000098bfd34040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000098bfd34040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "26c93b09c3950840",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "26499224f5641b40",
+          "headlessValue": 6.848591395786832,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "26c93b09c3950840",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c065ec3ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c065ec3ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "3387489dbf543540",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "99999939c1c44740",
+          "headlessValue": 47.5371467590332,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "3387489dbf543540",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_15",
+      "rawParametersSHA256ByFreshProcess": [
+        "d6f8826ee750760e1a52cb634b53614804e163fdeb6a2b2fafefb666f8454948",
+        "d6f8826ee750760e1a52cb634b53614804e163fdeb6a2b2fafefb666f8454948",
+        "d6f8826ee750760e1a52cb634b53614804e163fdeb6a2b2fafefb666f8454948"
+      ],
+      "shapeDimension": 135.82041931152344,
+      "shapeDimensionBits": "0x4060fa40e0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.6678943634033203,
+      "fractionBits": "0x3fe55f6400000000",
+      "index": 16,
+      "name": "sample_16",
+      "normalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000030c90b4940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000030c90b4940",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "7a9ee779f6b91a40",
+          "headlessValue": 6.681604294549851,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000040a7274740",
+          "headlessValue": 46.309791564941406,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_16",
+      "rawParametersSHA256ByFreshProcess": [
+        "b1dc7fbfd615cfb7a252e7d644b5e19ab72d07c288a0a480e8ff6984343348d8",
+        "b1dc7fbfd615cfb7a252e7d644b5e19ab72d07c288a0a480e8ff6984343348d8",
+        "b1dc7fbfd615cfb7a252e7d644b5e19ab72d07c288a0a480e8ff6984343348d8"
+      ],
+      "shapeDimension": 132.31369018554688,
+      "shapeDimensionBits": "0x40608a09c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.6678943634033203,
+      "fractionBits": "0x3fe55f6400000000",
+      "index": 17,
+      "name": "sample_17",
+      "normalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000030c90b4940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000030c90b4940",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "7a9ee779f6b91a40",
+          "headlessValue": 6.681604294549851,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000040a7274740",
+          "headlessValue": 46.309791564941406,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_17",
+      "rawParametersSHA256ByFreshProcess": [
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80"
+      ],
+      "shapeDimension": 132.31369018554688,
+      "shapeDimensionBits": "0x40608a09c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.6678943634033203,
+      "fractionBits": "0x3fe55f6400000000",
+      "index": 18,
+      "name": "sample_18",
+      "normalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000030c90b4940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000030c90b4940",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "7a9ee779f6b91a40",
+          "headlessValue": 6.681604294549851,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000040a7274740",
+          "headlessValue": 46.309791564941406,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_18",
+      "rawParametersSHA256ByFreshProcess": [
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80"
+      ],
+      "shapeDimension": 132.31369018554688,
+      "shapeDimensionBits": "0x40608a09c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.6678943634033203,
+      "fractionBits": "0x3fe55f6400000000",
+      "index": 19,
+      "name": "sample_19",
+      "normalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000030c90b4940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000030c90b4940",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "7a9ee779f6b91a40",
+          "headlessValue": 6.681604294549851,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000040a7274740",
+          "headlessValue": 46.309791564941406,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_19",
+      "rawParametersSHA256ByFreshProcess": [
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80"
+      ],
+      "shapeDimension": 132.31369018554688,
+      "shapeDimensionBits": "0x40608a09c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.6678943634033203,
+      "fractionBits": "0x3fe55f6400000000",
+      "index": 20,
+      "name": "sample_20",
+      "normalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000030c90b4940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000030c90b4940",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "7a9ee779f6b91a40",
+          "headlessValue": 6.681604294549851,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000040a7274740",
+          "headlessValue": 46.309791564941406,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_20",
+      "rawParametersSHA256ByFreshProcess": [
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80"
+      ],
+      "shapeDimension": 132.31369018554688,
+      "shapeDimensionBits": "0x40608a09c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.6678943634033203,
+      "fractionBits": "0x3fe55f6400000000",
+      "index": 21,
+      "name": "sample_21",
+      "normalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000030c90b4940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000030c90b4940",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "7a9ee779f6b91a40",
+          "headlessValue": 6.681604294549851,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000040a7274740",
+          "headlessValue": 46.309791564941406,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_21",
+      "rawParametersSHA256ByFreshProcess": [
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80"
+      ],
+      "shapeDimension": 132.31369018554688,
+      "shapeDimensionBits": "0x40608a09c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.6678943634033203,
+      "fractionBits": "0x3fe55f6400000000",
+      "index": 22,
+      "name": "sample_22",
+      "normalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "00000030c90b4940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "00000030c90b4940",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "7a9ee779f6b91a40",
+          "headlessValue": 6.681604294549851,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "9224dc58b5d91140",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000c06d0944c0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000040a7274740",
+          "headlessValue": 46.309791564941406,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "0050e1ac17ee3e40",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_22",
+      "rawParametersSHA256ByFreshProcess": [
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80",
+        "b42f7f7611d92ac98fe4141c9857f867c2ea57ae9be2a031a1e6b9a390695e80"
+      ],
+      "shapeDimension": 132.31369018554688,
+      "shapeDimensionBits": "0x40608a09c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.8717851638793945,
+      "fractionBits": "0x3febe5aa00000000",
+      "index": 23,
+      "name": "sample_23",
+      "normalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000009c91585040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000009c91585040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "9fe7799ee31a1a40",
+          "headlessValue": 6.526258922758557,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000604f274ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000604f274ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "0000002081954640",
+          "headlessValue": 45.16800308227539,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_23",
+      "rawParametersSHA256ByFreshProcess": [
+        "082d7e8990bd8333c3e9f4f6ef404951dafc6776f467a71ca78307d5d43512ec",
+        "082d7e8990bd8333c3e9f4f6ef404951dafc6776f467a71ca78307d5d43512ec",
+        "082d7e8990bd8333c3e9f4f6ef404951dafc6776f467a71ca78307d5d43512ec"
+      ],
+      "shapeDimension": 129.0514373779297,
+      "shapeDimensionBits": "0x406021a560000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.8717851638793945,
+      "fractionBits": "0x3febe5aa00000000",
+      "index": 24,
+      "name": "sample_24",
+      "normalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000009c91585040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000009c91585040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "9fe7799ee31a1a40",
+          "headlessValue": 6.526258922758557,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000604f274ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000604f274ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "0000002081954640",
+          "headlessValue": 45.16800308227539,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_24",
+      "rawParametersSHA256ByFreshProcess": [
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3"
+      ],
+      "shapeDimension": 129.0514373779297,
+      "shapeDimensionBits": "0x406021a560000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.8717851638793945,
+      "fractionBits": "0x3febe5aa00000000",
+      "index": 25,
+      "name": "sample_25",
+      "normalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000009c91585040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000009c91585040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "9fe7799ee31a1a40",
+          "headlessValue": 6.526258922758557,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000604f274ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000604f274ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "0000002081954640",
+          "headlessValue": 45.16800308227539,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_25",
+      "rawParametersSHA256ByFreshProcess": [
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3"
+      ],
+      "shapeDimension": 129.0514373779297,
+      "shapeDimensionBits": "0x406021a560000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.8717851638793945,
+      "fractionBits": "0x3febe5aa00000000",
+      "index": 26,
+      "name": "sample_26",
+      "normalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000009c91585040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000009c91585040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "9fe7799ee31a1a40",
+          "headlessValue": 6.526258922758557,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000604f274ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000604f274ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "0000002081954640",
+          "headlessValue": 45.16800308227539,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_26",
+      "rawParametersSHA256ByFreshProcess": [
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3"
+      ],
+      "shapeDimension": 129.0514373779297,
+      "shapeDimensionBits": "0x406021a560000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.8717851638793945,
+      "fractionBits": "0x3febe5aa00000000",
+      "index": 27,
+      "name": "sample_27",
+      "normalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000009c91585040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000009c91585040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "9fe7799ee31a1a40",
+          "headlessValue": 6.526258922758557,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000604f274ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000604f274ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "0000002081954640",
+          "headlessValue": 45.16800308227539,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_27",
+      "rawParametersSHA256ByFreshProcess": [
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3"
+      ],
+      "shapeDimension": 129.0514373779297,
+      "shapeDimensionBits": "0x406021a560000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.8717851638793945,
+      "fractionBits": "0x3febe5aa00000000",
+      "index": 28,
+      "name": "sample_28",
+      "normalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000009c91585040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000009c91585040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "9fe7799ee31a1a40",
+          "headlessValue": 6.526258922758557,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000604f274ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000604f274ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "0000002081954640",
+          "headlessValue": 45.16800308227539,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_28",
+      "rawParametersSHA256ByFreshProcess": [
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3"
+      ],
+      "shapeDimension": 129.0514373779297,
+      "shapeDimensionBits": "0x406021a560000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.8717851638793945,
+      "fractionBits": "0x3febe5aa00000000",
+      "index": 29,
+      "name": "sample_29",
+      "normalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000009c91585040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000009c91585040",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "9fe7799ee31a1a40",
+          "headlessValue": 6.526258922758557,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "b72d76290bc21640",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "000000604f274ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "000000604f274ac0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "0000002081954640",
+          "headlessValue": 45.16800308227539,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "00fa4ad13ab04340",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_29",
+      "rawParametersSHA256ByFreshProcess": [
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3",
+        "c4c7635d5fd25a13a615209073e52d7770624f46397f7a06b7347384b0da88e3"
+      ],
+      "shapeDimension": 129.0514373779297,
+      "shapeDimensionBits": "0x406021a560000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.9653902053833008,
+      "fractionBits": "0x3feee47a00000000",
+      "index": 30,
+      "name": "sample_30",
+      "normalizedParametersSHA256": "f31fda9373d80de61c17887360edd3bbbeec658c677180679af65e5048fab3d6",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000007cdf195240",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000007cdf195240",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00c096ef17ed1840",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000dcd11940",
+          "headlessValue": 6.4549407958984375,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "00c096ef17ed1840",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000006032f64cc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "0000006032f64cc0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "001aec40a28c4540",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "6666668668524640",
+          "headlessValue": 44.64381484985351,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "001aec40a28c4540",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_30",
+      "rawParametersSHA256ByFreshProcess": [
+        "c0ee234af5305b6c531694fc7dad493732661e8599b20e5e1b3b1569af15977e",
+        "c0ee234af5305b6c531694fc7dad493732661e8599b20e5e1b3b1569af15977e",
+        "c0ee234af5305b6c531694fc7dad493732661e8599b20e5e1b3b1569af15977e"
+      ],
+      "shapeDimension": 127.55375671386719,
+      "shapeDimensionBits": "0x405fe370c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 0.9653902053833008,
+      "fractionBits": "0x3feee47a00000000",
+      "index": 31,
+      "name": "sample_31",
+      "normalizedParametersSHA256": "f31fda9373d80de61c17887360edd3bbbeec658c677180679af65e5048fab3d6",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000007cdf195240",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000007cdf195240",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "00c096ef17ed1840",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000dcd11940",
+          "headlessValue": 6.4549407958984375,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "00c096ef17ed1840",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000006032f64cc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "0000006032f64cc0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "001aec40a28c4540",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "6666668668524640",
+          "headlessValue": 44.64381484985351,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "001aec40a28c4540",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_31",
+      "rawParametersSHA256ByFreshProcess": [
+        "4d55c4fa6a54122d6ecceaa8045828dba91b947c246a81daa11326fe3e878dab",
+        "4d55c4fa6a54122d6ecceaa8045828dba91b947c246a81daa11326fe3e878dab",
+        "4d55c4fa6a54122d6ecceaa8045828dba91b947c246a81daa11326fe3e878dab"
+      ],
+      "shapeDimension": 127.55375671386719,
+      "shapeDimensionBits": "0x405fe370c0000000"
+    },
+    {
+      "allPublicPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000099183",
+      "fraction": 1.0,
+      "fractionBits": "0x3ff0000000000000",
+      "index": 32,
+      "name": "sample_32",
+      "normalizedParametersSHA256": "9eaba6971ff89966b973ebd5f237b016a1450a7a2e8e8171b07ecca7f4a94c38",
+      "publicPredictions": [
+        {
+          "expectedPublicRawLittleEndianHex": "0000000000c05240",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedPublicRawLittleEndianHex": "0000000000c05240",
+          "publicInput": "inputShadowAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "6edbb66ddbb61940",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "6edbb66ddbb61940",
+          "headlessValue": 6.428571428571429,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedPublicRawLittleEndianHex": "6edbb66ddbb61940",
+          "publicInput": "inputBlurRadiusTimesTwo"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "0000000000004ec0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedPublicRawLittleEndianHex": "0000000000004ec0",
+          "publicInput": "inputInnerRefractionAmount"
+        },
+        {
+          "expectedPublicRawLittleEndianHex": "9999999999394640",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "9999999999394640",
+          "headlessValue": 44.449999999999996,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedPublicRawLittleEndianHex": "9999999999394640",
+          "publicInput": "inputBleedAmount"
+        }
+      ],
+      "qualifiedName": "material_context_flags_live:sample_32",
+      "rawParametersSHA256ByFreshProcess": [
+        "dd34df8dc0fba87869d8dee5f4cb7098c97ecefbae6849479a9c8761b7ec9252",
+        "dd34df8dc0fba87869d8dee5f4cb7098c97ecefbae6849479a9c8761b7ec9252",
+        "dd34df8dc0fba87869d8dee5f4cb7098c97ecefbae6849479a9c8761b7ec9252"
+      ],
+      "shapeDimension": 127.0,
+      "shapeDimensionBits": "0x405fc00000000000"
+    }
+  ],
+  "claims": {
+    "allThirtyTwoOpenedLivePublicFieldsReplayBitwise": true,
+    "completeLiveParametersTransferEstablished": false,
+    "exactFlagsProducedContextToOpenedLivePublicFieldsTransferEstablished": true,
+    "generalContextToParametersValueLawEstablished": false,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "classification": "prospectively frozen flags-produced Material.Context dimensions run through Apple's exact Parameters builder in fresh headless native processes, then transferred by the already-proved binary64 scale operation into independently retained public filter words",
+  "designLibraryMaterialContextFlagsLiveTimelineTransferCaptureSchemaVersion": 1,
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "measuredInvariants": {
+    "capturedParametersUsedForSelection": false,
+    "caseCount": 32,
+    "environmentFlagsMatchProducedRegularLight": true,
+    "freshProcessSemanticStabilityEstablished": true,
+    "parametersBuildsPerCase": 1,
+    "publicPredictionMatchCounts": {
+      "blur.radius": 32,
+      "edgeBleed.amount": 32,
+      "refraction.innerAmount": 32,
+      "shadow.amount": 32
+    },
+    "totalPublicPredictionCount": 128,
+    "totalPublicPredictionMatchCount": 128
+  },
+  "predecessors": {
+    "flagsProducedContextMatrix": {
+      "path": "Analysis/designlibrary_material_context_parameters_local_macos_26_6_1_result.json",
+      "sha256": "e707178e4f5e6e14d75fa0a953daa834e538be3981e855a2ecc18325aca0167b"
+    },
+    "preregistration": {
+      "path": "Analysis/designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1_preregistration.json",
+      "sha256": "e9bb1fd4e05d1744961366721f6118cd206a141cce61ce08550bf9341d60ad8b"
+    },
+    "providerPublicTimelineJoin": {
+      "path": "Analysis/backdrop_margin_case22_provider_public_timeline_join_retrospective_result.json",
+      "sha256": "00fab84d0c6163629da387ea4e0f50884ee40b9f04842646fe01a36936b50e3d"
+    },
+    "publicTimeline": {
+      "path": "artifacts/gh-run-31118243811/transition-timeline.json",
+      "sha256": "0a7db5d9416c4c69f19b608de73e9225e7edf8629e112de2be0d07cab1adc711"
+    }
+  },
+  "tool": {
+    "assemblyBridgeSHA256": "8abad01a65462ff5f25bb77710733a7b38d1e5809e6065631e42d232c1d73b90",
+    "baseContextProbeSourceSHA256": "a97f15fd7bf56f419a4352598082457b1a23ef71010f3132f6b7f6f433e26deb",
+    "baseLldbAdapterSHA256": "c82fc09d0c3bcef58f40ff6fb13ac593c85bb01ceab65bf12380f4f344cadfb9",
+    "basePublicProbeSourceSHA256": "59c54e502eceb9a2d789f3729c7f4ba2de8067e83086a4cd8d5c7343e10cee8f",
+    "captureSource": "Analysis/capture_designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1.py",
+    "captureSourceSHA256": "ded67bfeaa863a550ccecdfb993bc60b9ddbaca7e5a033e01b225c2506023d39",
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "freshProcessCount": 3,
+    "lldbAdapter": "Analysis/capture_designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1_lldb.py",
+    "lldbAdapterSHA256": "64e5d15bef6d37363f33ff521a7e36daddbc2cf89d8904d600e630f38f1f079f",
+    "lldbLogSHA256ByFreshProcess": [
+      "24df1afce735e9afd206b33b336af25a5c5be7711e9b047bd1d7880c0deb4b9d",
+      "141803c3ed27b3669f8f767969872d61ff7bf2bac492c847a6eb4e60436fccf5",
+      "48067f8af1a3ff5d0671bcd64e7e115b9a259eba8c842bb8a2123cbfb3539aab"
+    ],
+    "parametersBasisSourceSHA256": "829e758062d1905ed5635b09bf458337bebce3e41f506ec301d80c66112d2442",
+    "probeExecutableContainsNixStorePath": false,
+    "probeExecutableSHA256": "4ef0f17104f98b113ca92351a2da84d7f5362ce92200731c7c6cdbb89cecc42f",
+    "probeSource": "Analysis/probe_designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1.c",
+    "probeSourceSHA256": "d89154a8833fc985d0c1b86421830d014d9889fa5e5120e10291fa628f52c12b",
+    "python": "3.9.6"
+  },
+  "uniqueNormalizedParameters": {
+    "536a0407d42236f20d1945ec57f3b68ef5d757fc486c3abaf7231b0375b799b0": {
+      "caseNames": [
+        "sample_14",
+        "sample_15"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c0524067666666012a4b40000000000000000000000000000044400000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000041a29b3e0000000000000000adf0e73f000000000000000026499224f5641b40000000e040fa50c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec0000000e040fa304067666666012a3b40000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000099999939c1c4474099999939c1c4474099999939c1c457406885bf3e0000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c468463523eec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "746958d8d35f8bd4f56cc755d0fb5cedccac485d6cc462899622a80678203a3d": {
+      "caseNames": [
+        "sample_05",
+        "sample_06"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a99999990084c40000000000000000000000000000044400000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000007daa963e00000000abaaaaaa9b63e93f00000000000000003ecff33ceb381c40000000605a8551c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec0000000605a8531409a99999990083c40000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666867e874840666666867e874840666666867e875840dd1ccb3e0000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c4660bf583eec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33": {
+      "caseNames": [
+        "sample_23",
+        "sample_24",
+        "sample_25",
+        "sample_26",
+        "sample_27",
+        "sample_28",
+        "sample_29"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240000000006fcf4940000000000000000000000000000044400000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000aa5ea33e00000000555555550eafe53f00000000000000009fe7799ee31a1a4000000060a52150c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000060a5213040000000006fcf3940000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000002081954640000000208195464000000020819556407378ad3e0000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c46967c483eec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "9eaba6971ff89966b973ebd5f237b016a1450a7a2e8e8171b07ecca7f4a94c38": {
+      "caseNames": [
+        "sample_32"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052406766666666664940000000000000000000000000000044400000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000dcb6a53e00000000000000000000e53f00000000000000006edbb66ddbb619400000000000c04fc0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec00000000000c02f406766666666663940000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000009999999999394640999999999939464099999999993956400000a83e0000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c46587c453eec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa": {
+      "caseNames": [
+        "sample_07",
+        "sample_08",
+        "sample_09",
+        "sample_10",
+        "sample_11",
+        "sample_12",
+        "sample_13"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240343333337d644b40000000000000000000000000000044400000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000010549a3e00000000000000002652e83f000000000000000000000000a89c1b4000000040ce1e51c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000040ce1e3140343333337d643b40000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccc8cedf74740cccccc8cedf74740cccccc8cedf757403091c23e0000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c46470f543eec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "f31fda9373d80de61c17887360edd3bbbeec658c677180679af65e5048fab3d6": {
+      "caseNames": [
+        "sample_30",
+        "sample_31"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a999999c0824940000000000000000000000000000044400000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000d814a53e0000000000000000412fe53f000000000000000000000000dcd11940000000c070e34fc0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec0000000c070e32f409a999999c0823940000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666866852464066666686685246406666668668525640087aa93e0000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c46b84b463eec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563": {
+      "caseNames": [
+        "sample_01",
+        "sample_02",
+        "sample_03",
+        "sample_04"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240cdcccccccb2e4c40000000000000000000000000000044400000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000006d0953e00000000abaaaaaa53a3e93f000000000000000062188661545d1c40000000603f9d51c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec0000000603f9d3140cdcccccccb2e3c40000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000033333353f2a8484033333353f2a8484033333353f2a858409d1acd3e0000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c4603d7593eec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09": {
+      "caseNames": [
+        "sample_16",
+        "sample_17",
+        "sample_18",
+        "sample_19",
+        "sample_20",
+        "sample_21",
+        "sample_22"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052400000000076764a40000000000000000000000000000044400000000000003840000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000039a49f3e00000000555555556fc5e63f00000000000000007a9ee779f6b91a40000000c0098a50c0000000000000f0bf0000000000000000000000000000000000000000000000000000803f0000003f0000003f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec0000000c0098a30400000000076763a40000000000000f0bf00000000000000009a99993e000000000000803f0000003f0ad7833f0000803f0000803f0000803f0000803fcdcccc3e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000040a727474000000040a727474000000040a72757407b2bb63e0000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000000000803f000000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000803f00000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f00000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000003c1c4646424d3eec51783f0000000000000000000000c0000000000000f0bf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    }
+  }
+}

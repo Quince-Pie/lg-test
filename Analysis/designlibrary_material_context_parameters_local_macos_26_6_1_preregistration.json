@@ -1,0 +1,78 @@
+{
+  "designLibraryMaterialContextParametersPreregistrationSchemaVersion": 1,
+  "classification": "prospectively fixed headless Material.Context shapeDimensions calibration; the prior zero-flags regular/light 127...127 manual diagnostic is declared calibration and cannot provide prospective authority for this flags-produced matrix",
+  "frozenHost": {
+    "architecture": "arm64",
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "swiftUICoreUUID": "99606D45-C40A-3C69-AE51-5F0C4E32E531"
+  },
+  "inputBoundary": {
+    "contextByteCount": 73,
+    "contextStride": 80,
+    "lowerBoundOffset": 24,
+    "optionalTagOffset": 40,
+    "presentOptionalTag": 0,
+    "upperBoundOffset": 32
+  },
+  "cases": [
+    ["regular_light_nil", "regular", "light", false, "0x0000000000000000", "0x0000000000000000", "0x0000000000099183"],
+    ["regular_light_127", "regular", "light", true, "0x405fc00000000000", "0x405fc00000000000", "0x0000000000099183"],
+    ["regular_light_127_5", "regular", "light", true, "0x405fe00000000000", "0x405fe00000000000", "0x0000000000099183"],
+    ["regular_light_128", "regular", "light", true, "0x4060000000000000", "0x4060000000000000", "0x0000000000099183"],
+    ["regular_light_135", "regular", "light", true, "0x4060e00000000000", "0x4060e00000000000", "0x0000000000099183"],
+    ["regular_light_142_5", "regular", "light", true, "0x4061d00000000000", "0x4061d00000000000", "0x0000000000099183"],
+    ["regular_light_143", "regular", "light", true, "0x4061e00000000000", "0x4061e00000000000", "0x0000000000099183"],
+    ["regular_light_347", "regular", "light", true, "0x4075b00000000000", "0x4075b00000000000", "0x0000000000099183"],
+    ["regular_light_640", "regular", "light", true, "0x4084000000000000", "0x4084000000000000", "0x0000000000099183"],
+    ["regular_light_1535", "regular", "light", true, "0x4097fc0000000000", "0x4097fc0000000000", "0x0000000000099183"],
+    ["regular_light_range_127_143", "regular", "light", true, "0x405fc00000000000", "0x4061e00000000000", "0x0000000000099183"],
+    ["regular_light_range_127_640", "regular", "light", true, "0x405fc00000000000", "0x4084000000000000", "0x0000000000099183"],
+    ["clear_light_127", "clear", "light", true, "0x405fc00000000000", "0x405fc00000000000", "0x0000000000088183"],
+    ["clear_light_143", "clear", "light", true, "0x4061e00000000000", "0x4061e00000000000", "0x0000000000088183"],
+    ["clear_light_640", "clear", "light", true, "0x4084000000000000", "0x4084000000000000", "0x0000000000088183"],
+    ["regular_dark_127", "regular", "dark", true, "0x405fc00000000000", "0x405fc00000000000", "0x0000000000099183"],
+    ["regular_dark_143", "regular", "dark", true, "0x4061e00000000000", "0x4061e00000000000", "0x0000000000099183"],
+    ["regular_dark_640", "regular", "dark", true, "0x4084000000000000", "0x4084000000000000", "0x0000000000099183"],
+    ["clear_dark_127", "clear", "dark", true, "0x405fc00000000000", "0x405fc00000000000", "0x0000000000088183"],
+    ["clear_dark_143", "clear", "dark", true, "0x4061e00000000000", "0x4061e00000000000", "0x0000000000088183"],
+    ["clear_dark_640", "clear", "dark", true, "0x4084000000000000", "0x4084000000000000", "0x0000000000088183"]
+  ],
+  "frozenQuestions": [
+    "Which exact Parameters semantic bytes change when only shapeDimensions storage changes?",
+    "Do equal lower and upper bounds reproduce the live circle endpoint fields across material and appearance?",
+    "Do unequal ranges select the lower bound, upper bound, or both?",
+    "Are the regular/light circle fields piecewise shadow.amount=min(75,0.625*x), shadow.height=0.4*x, refraction.innerHeight=min(20,0.25*x), refraction.innerAmount=-min(60,0.8*x), and edgeBleed.amount=edgeBleed.height=0.35*x?",
+    "Which operation-ordered affine blur-radius candidate, if any, transfers bitwise?"
+  ],
+  "blurRadiusCandidates": [
+    "(x + 53) / 28",
+    "x / 28 + 53 / 28",
+    "(x + 64) / 28",
+    "x / 28 + 16 / 7"
+  ],
+  "acceptance": {
+    "allTwentyOneCasesMustExecuteInSourceOrder": true,
+    "capturedParametersMaySelectCaseOrBreakpoint": false,
+    "eachCaseMustReachExactlyOneAuthenticatedParametersBuilder": true,
+    "freshProcessCount": 3,
+    "nilRegularLightMustReproduceTheFrozenProfileBaseline": true,
+    "normalizedSemanticBytesMustRepeatExactly": true,
+    "aFormulaWinnerIsRequired": false
+  },
+  "outcomes": {
+    "changedFieldSet": null,
+    "exactFormulaCandidates": null,
+    "normalizedParametersSHA256ByCase": null,
+    "processStatus": null
+  },
+  "authorityLimits": {
+    "generalContextToParametersValueLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveContextValueProductionEstablished": false,
+    "liveTransitionProgressProductionLawEstablished": false,
+    "productionShaderChangeAuthorized": false
+  }
+}

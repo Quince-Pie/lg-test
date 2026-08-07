@@ -1,0 +1,155 @@
+{
+  "claims": {
+    "contextToParametersValueLawEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveContextValueProductionEstablished": false,
+    "materialContextLayoutEstablished": true,
+    "productionShaderChangeAuthorized": false,
+    "shapeMetricsLayoutEstablished": true
+  },
+  "classification": "native static Swift metadata decode of Material.Context and Material.ShapeMetrics; no Apple render value, Parameters payload, image, crop, pixel, or provider return selected a descriptor",
+  "controlledMutationBoundary": {
+    "roleOptionalStorageOffset": 16,
+    "shapeDimensionsLowerBoundOffset": 24,
+    "shapeDimensionsOptionalStorageRange": [
+      24,
+      41
+    ],
+    "shapeDimensionsOptionalTagOffset": 40,
+    "shapeDimensionsUpperBoundOffset": 32,
+    "shapeMetricsOptionalStorageRange": [
+      48,
+      73
+    ],
+    "shapeMetricsOptionalTagOffset": 72,
+    "substrateOptionalStorageOffset": 17
+  },
+  "decodedStructDescriptorCount": 2971,
+  "framework": {
+    "path": "/System/Library/Frameworks/SwiftUICore.framework/Versions/A/SwiftUICore",
+    "uuid": "99606D45-C40A-3C69-AE51-5F0C4E32E531"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "materialContext": {
+    "descriptorAddress": "0x22e7bf278",
+    "descriptorFlags": "0x00000051",
+    "fieldDescriptorAddress": "0x22e8353f4",
+    "fieldOffsetVectorWords": 2,
+    "fields": [
+      {
+        "flags": "0x00000002",
+        "name": "environment",
+        "offset": 0,
+        "typeReference": "_____ 7SwiftUI17EnvironmentValuesV",
+        "typeReferenceAddress": "0x22e7de9f0"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "role",
+        "offset": 16,
+        "typeReference": "_____Sg 7SwiftUI9ShapeRoleO",
+        "typeReferenceAddress": "0x22e7e26de"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "substrate",
+        "offset": 17,
+        "typeReference": "_____Sg 7SwiftUI8MaterialVAAE9SubstrateO",
+        "typeReferenceAddress": "0x22e7d1c30"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "shapeDimensions",
+        "offset": 24,
+        "typeReference": "SNy_____GSg 12CoreGraphics7CGFloatV",
+        "typeReferenceAddress": "0x22e7da94e"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "shapeMetrics",
+        "offset": 48,
+        "typeReference": "_____Sg 7SwiftUI8MaterialVAAE12ShapeMetricsV",
+        "typeReferenceAddress": "0x22e7e26e6"
+      }
+    ],
+    "metadata": {
+      "extraInhabitantCount": 2147483646,
+      "fieldOffsets": [
+        0,
+        16,
+        17,
+        24,
+        48
+      ],
+      "metadataAddress": "0x29ae92860",
+      "metadataDescriptorRuntimeAddress": "0x23725b278",
+      "size": 73,
+      "stride": 80,
+      "valueWitnessFlags": "0x02030007",
+      "valueWitnessTableAddress": "0x29ae927f8",
+      "valueWitnessTableMapped": true
+    },
+    "name": "Context"
+  },
+  "shapeMetrics": {
+    "descriptorAddress": "0x22e7bf25c",
+    "descriptorFlags": "0x00000051",
+    "fieldDescriptorAddress": "0x22e8353c0",
+    "fieldOffsetVectorWords": 2,
+    "fields": [
+      {
+        "flags": "0x00000002",
+        "name": "minimumDistance",
+        "offset": 0,
+        "typeReference": "_____ 12CoreGraphics7CGFloatV",
+        "typeReferenceAddress": "0x22e7c64be"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "minimumDistanceOfLargestArea",
+        "offset": 8,
+        "typeReference": "_____ 12CoreGraphics7CGFloatV",
+        "typeReferenceAddress": "0x22e7c64be"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "maximumDistance",
+        "offset": 16,
+        "typeReference": "_____ 12CoreGraphics7CGFloatV",
+        "typeReferenceAddress": "0x22e7c64be"
+      }
+    ],
+    "metadata": {
+      "extraInhabitantCount": 0,
+      "fieldOffsets": [
+        0,
+        8,
+        16
+      ],
+      "metadataAddress": "0x29ae927d8",
+      "metadataDescriptorRuntimeAddress": "0x23725b25c",
+      "size": 24,
+      "stride": 24,
+      "valueWitnessFlags": "0x02000007",
+      "valueWitnessTableAddress": "0x29ae92770",
+      "valueWitnessTableMapped": true
+    },
+    "name": "ShapeMetrics"
+  },
+  "sharedCacheSlide": "0x8a9c000",
+  "sharedCacheSlideMetadataMatchCount": 2150,
+  "swiftUICoreMaterialContextMetadataAnalysisSchemaVersion": 1,
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "python": "3.9.6",
+    "source": "Analysis/analyze_swiftuicore_material_context_metadata_local_macos_26_6_1.py",
+    "sourceSHA256": "c5283cac21b80e4639fbea74710f141ca7966283887e4ee8df931ef7c63d1560"
+  }
+}

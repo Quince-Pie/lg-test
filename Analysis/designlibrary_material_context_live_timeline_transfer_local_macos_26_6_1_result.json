@@ -1,0 +1,2098 @@
+{
+  "cases": [
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.036208152770996094,
+      "fractionBits": "0x3fa289e000000000",
+      "index": 1,
+      "name": "sample_01",
+      "normalizedParametersSHA256": "632a8461e58ab95523629fd88ec37a0ec4934b89c068da99be150106fe5b0e32",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "0000008092b90540",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "0000008092b90540",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "dbb616396c15d13f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "49922449197d1d40",
+          "headlessValue": 7.372166769845145,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "dbb616396c15d13f",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000000426101c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000000426101c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "327344f2c5e0fc3f",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc2c72ec4840",
+          "headlessValue": 49.847234344482416,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "327344f2c5e0fc3f",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_01",
+      "rawParametersSHA256ByFreshProcess": [
+        "623d369a227bac5968b930326897d1432ce3246676ecead1bfd3d899c7eb7af8",
+        "623d369a227bac5968b930326897d1432ce3246676ecead1bfd3d899c7eb7af8",
+        "623d369a227bac5968b930326897d1432ce3246676ecead1bfd3d899c7eb7af8"
+      ],
+      "shapeDimension": 142.42066955566406,
+      "shapeDimensionBits": "0x4061cd7620000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.06593608856201172,
+      "fractionBits": "0x3fb0e13000000000",
+      "index": 2,
+      "name": "sample_02",
+      "normalizedParametersSHA256": "86a14dc53d423a7c4f1ecda850a45dde3bd5cbb9edd60fc37f581c7b2a42adf0",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000040e4c71340",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000040e4c71340",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "fffff0fcc609df3f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "24499224b46b1d40",
+          "headlessValue": 7.355179377964564,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "fffff0fcc609df3f",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000003aa60fc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000003aa60fc0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "cd6cdaf5be340a40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "3333331323d74840",
+          "headlessValue": 49.68075790405273,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "cd6cdaf5be340a40",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_02",
+      "rawParametersSHA256ByFreshProcess": [
+        "7a9319b4c955446bf22d668697387df7bd22cb3042c2a085f16ebc40a618a97f",
+        "7a9319b4c955446bf22d668697387df7bd22cb3042c2a085f16ebc40a618a97f",
+        "7a9319b4c955446bf22d668697387df7bd22cb3042c2a085f16ebc40a618a97f"
+      ],
+      "shapeDimension": 141.9450225830078,
+      "shapeDimensionBits": "0x4061be3da0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.10343551635742188,
+      "fractionBits": "0x3fba7ac000000000",
+      "index": 3,
+      "name": "sample_03",
+      "normalizedParametersSHA256": "ae89e881abe955f5d23c0f074a7f54dc009a1967a670d32ead68ad7cb2335e8d",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000000d9071f40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000000d9071f40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "6edbbe4b3546e83f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "dcb66ddbc2551d40",
+          "headlessValue": 7.333751133510045,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "6edbbe4b3546e83f",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000000014d318c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "0000000014d318c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000fdafd7771440",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666e641bc4840",
+          "headlessValue": 49.470761108398435,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "0000fdafd7771440",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_03",
+      "rawParametersSHA256ByFreshProcess": [
+        "ea6b1f06578f6819a4593298ddf50c98188597db55a08208e480598a36c0fb42",
+        "ea6b1f06578f6819a4593298ddf50c98188597db55a08208e480598a36c0fb42",
+        "ea6b1f06578f6819a4593298ddf50c98188597db55a08208e480598a36c0fb42"
+      ],
+      "shapeDimension": 141.34503173828125,
+      "shapeDimensionBits": "0x4061ab0a80000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.12729644775390625,
+      "fractionBits": "0x3fc04b4000000000",
+      "index": 4,
+      "name": "sample_04",
+      "normalizedParametersSHA256": "d6142839622efe8ec525b0005fefee294d3211c09da80822c2888ca47f4b99a6",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000002f182340",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000002f182340",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "9224694082d1ed3f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "92244992cc471d40",
+          "headlessValue": 7.320116315569196,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "9224694082d1ed3f",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000000188d1ec0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000000188d1ec0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000b45b2c1f1940",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "6666666627ab4840",
+          "headlessValue": 49.33713989257812,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "0000b45b2c1f1940",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_04",
+      "rawParametersSHA256ByFreshProcess": [
+        "8cf7d71261cdc8f35c0f45ed6e3bebaade787e3300929f01ccf681b12223a2b7",
+        "8cf7d71261cdc8f35c0f45ed6e3bebaade787e3300929f01ccf681b12223a2b7",
+        "8cf7d71261cdc8f35c0f45ed6e3bebaade787e3300929f01ccf681b12223a2b7"
+      ],
+      "shapeDimension": 140.9632568359375,
+      "shapeDimensionBits": "0x40619ed300000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.16675853729248047,
+      "fractionBits": "0x3fc5585800000000",
+      "index": 5,
+      "name": "sample_05",
+      "normalizedParametersSHA256": "6e58c657dfdc756b52cd0f8ab7a97b0de65461124c37e712d3d67922372c5a29",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "0000002087032940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "0000002087032940",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "b7ad7b308d78f33f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "49922449b5301d40",
+          "headlessValue": 7.2975665501185825,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "b7ad7b308d78f33f",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000080d20224c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000080d20224c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "331b31288e612040",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "33333313de8e4840",
+          "headlessValue": 49.11615219116211,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "331b31288e612040",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_05",
+      "rawParametersSHA256ByFreshProcess": [
+        "f1f666ebe49b3006dd3c8813bc017e97ef498400ff77e838b5727903c5bc355b",
+        "f1f666ebe49b3006dd3c8813bc017e97ef498400ff77e838b5727903c5bc355b",
+        "f1f666ebe49b3006dd3c8813bc017e97ef498400ff77e838b5727903c5bc355b"
+      ],
+      "shapeDimension": 140.3318634033203,
+      "shapeDimensionBits": "0x40618a9ea0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.19731903076171875,
+      "fractionBits": "0x3fc941c000000000",
+      "index": 6,
+      "name": "sample_06",
+      "normalizedParametersSHA256": "027de6c9da0c4b295da42db889fac5072e187e7ff9aa89761aabe3a633864d32",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000000d992d40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000000d992d40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "25492284eafbf63f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "6edbb66dd31e1d40",
+          "headlessValue": 7.280103410993304,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "25492284eafbf63f",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000000a4ad27c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000000a4ad27c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "3333dde1c8502340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "33333333f6784840",
+          "headlessValue": 48.945013427734374,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "3333dde1c8502340",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_06",
+      "rawParametersSHA256ByFreshProcess": [
+        "8f722c20264269a2846becad425425d114356e43e4f200dd4ae8c8441139e335",
+        "8f722c20264269a2846becad425425d114356e43e4f200dd4ae8c8441139e335",
+        "8f722c20264269a2846becad425425d114356e43e4f200dd4ae8c8441139e335"
+      ],
+      "shapeDimension": 139.8428955078125,
+      "shapeDimensionBits": "0x40617af900000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.2306509017944336,
+      "fractionBits": "0x3fcd85f800000000",
+      "index": 7,
+      "name": "sample_07",
+      "normalizedParametersSHA256": "1ba108e4856412accd729296da02ca5eba73a5e870bc5bde97d4c383c81734b6",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000507f4c3140",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000507f4c3140",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "2589c4d9dacbfa3f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "6edbb66d520b1d40",
+          "headlessValue": 7.261056627546038,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "2589c4d9dacbfa3f",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000008098ad2bc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "0000008098ad2bc0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0028f77d087e2640",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666c611614840",
+          "headlessValue": 48.75835494995117,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "0028f77d087e2640",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_07",
+      "rawParametersSHA256ByFreshProcess": [
+        "3cb67e660dd0dfdd126ae7cec31b23a4185d9555fe2727a462d8d040a3ee3ec3",
+        "3cb67e660dd0dfdd126ae7cec31b23a4185d9555fe2727a462d8d040a3ee3ec3",
+        "3cb67e660dd0dfdd126ae7cec31b23a4185d9555fe2727a462d8d040a3ee3ec3"
+      ],
+      "shapeDimension": 139.30958557128906,
+      "shapeDimensionBits": "0x406169e820000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.2609138488769531,
+      "fractionBits": "0x3fd0b2d000000000",
+      "index": 8,
+      "name": "sample_08",
+      "normalizedParametersSHA256": "09f24166a9e1c25f3f1713a687fc8cb9944274dca035ee5e809ad0faad347a8e",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000c08b913340",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000c08b913340",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "ffffc3c56e3dfe3f",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "244992249df91c40",
+          "headlessValue": 7.243763514927455,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "ffffc3c56e3dfe3f",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000000464f2fc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000000464f2fc0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "008076e5e25a2940",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000080604b4840",
+          "headlessValue": 48.58888244628906,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "008076e5e25a2940",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_08",
+      "rawParametersSHA256ByFreshProcess": [
+        "3cb20ed93ecbff9e3e94f02451c7b542b03b3bd1477318d174a60940ee2d9cdc",
+        "3cb20ed93ecbff9e3e94f02451c7b542b03b3bd1477318d174a60940ee2d9cdc",
+        "3cb20ed93ecbff9e3e94f02451c7b542b03b3bd1477318d174a60940ee2d9cdc"
+      ],
+      "shapeDimension": 138.82537841796875,
+      "shapeDimensionBits": "0x40615a6980000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.2870349884033203,
+      "fractionBits": "0x3fd25ec800000000",
+      "index": 9,
+      "name": "sample_09",
+      "normalizedParametersSHA256": "02e8aaa8bf0924eb8b183911fc203f3237d748b4bacf188a8b4daf440d1a562b",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "0000006012873540",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "0000006012873540",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "db364a7974990040",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "4992244954ea1c40",
+          "headlessValue": 7.228837149483817,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "db364a7974990040",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000080db3831c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000080db3831c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00a0c2c237cf2b40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000040a7384840",
+          "headlessValue": 48.442604064941406,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "00a0c2c237cf2b40",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_09",
+      "rawParametersSHA256ByFreshProcess": [
+        "5685da85d06b1369c959e97669f3b82123899f654556e75f740a1a2b57d4b987",
+        "5685da85d06b1369c959e97669f3b82123899f654556e75f740a1a2b57d4b987",
+        "5685da85d06b1369c959e97669f3b82123899f654556e75f740a1a2b57d4b987"
+      ],
+      "shapeDimension": 138.40744018554688,
+      "shapeDimensionBits": "0x40614d09c0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.3300962448120117,
+      "fractionBits": "0x3fd5204c00000000",
+      "index": 10,
+      "name": "sample_10",
+      "normalizedParametersSHA256": "de4b2fa1445b274b3611f84115fb120ef0104201963bbfe43887cb4522168f22",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000010d9c13840",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000010d9c13840",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "dcd68bca53060340",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "dcb66ddb21d11c40",
+          "headlessValue": 7.2042307172502795,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "dcd68bca53060340",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000004047ce33c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "0000004047ce33c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "66ce097d7ed22f40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "99999979c9194840",
+          "headlessValue": 48.20146102905273,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "66ce097d7ed22f40",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_10",
+      "rawParametersSHA256ByFreshProcess": [
+        "5656f185459fa979d1005aa79ecda8847cabee62680a6bcae22d6d61d4b79b18",
+        "5656f185459fa979d1005aa79ecda8847cabee62680a6bcae22d6d61d4b79b18",
+        "5656f185459fa979d1005aa79ecda8847cabee62680a6bcae22d6d61d4b79b18"
+      ],
+      "shapeDimension": 137.7184600830078,
+      "shapeDimensionBits": "0x406136fda0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.3531312942504883,
+      "fractionBits": "0x3fd699b400000000",
+      "index": 11,
+      "name": "sample_11",
+      "normalizedParametersSHA256": "db94bead62e602c2fcb826c3e11a8c1f02a25fbaae021b6bf6c182c448815016",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000f01e7c3a40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000f01e7c3a40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "dbd6ab46ac500440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "49922449a7c31c40",
+          "headlessValue": 7.191067831856864,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "dbd6ab46ac500440",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000c0183035c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000c0183035c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00b4c509d4f93040",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "6666668646094840",
+          "headlessValue": 48.07246475219726,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "00b4c509d4f93040",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_11",
+      "rawParametersSHA256ByFreshProcess": [
+        "0beed4d3be617fd167859178c97347fdf23fcd395e240ff3190c28b4f7837c6a",
+        "0beed4d3be617fd167859178c97347fdf23fcd395e240ff3190c28b4f7837c6a",
+        "0beed4d3be617fd167859178c97347fdf23fcd395e240ff3190c28b4f7837c6a"
+      ],
+      "shapeDimension": 137.3498992919922,
+      "shapeDimensionBits": "0x40612b3260000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.3784189224243164,
+      "fractionBits": "0x3fd8380400000000",
+      "index": 12,
+      "name": "sample_12",
+      "normalizedParametersSHA256": "f210a14cef8f9145e992228cda2c7447884531b191e36f78c85d9ed695239cb9",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000b0a4613c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000b0a4613c40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "dbd6368de4b90540",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "49922449dbb41c40",
+          "headlessValue": 7.176617758614676,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "dbd6368de4b90540",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000c083b436c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000c083b436c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "33c7fc2c50233240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "9999993926f74740",
+          "headlessValue": 47.930854034423824,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "33c7fc2c50233240",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_12",
+      "rawParametersSHA256ByFreshProcess": [
+        "ce53d48ece8dc9b37fbece251645da201e19abfa03e1b3c72a7964442ec768d6",
+        "ce53d48ece8dc9b37fbece251645da201e19abfa03e1b3c72a7964442ec768d6",
+        "ce53d48ece8dc9b37fbece251645da201e19abfa03e1b3c72a7964442ec768d6"
+      ],
+      "shapeDimension": 136.94529724121094,
+      "shapeDimensionBits": "0x40611e3fe0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.4073047637939453,
+      "fractionBits": "0x3fda114800000000",
+      "index": 13,
+      "name": "sample_13",
+      "normalizedParametersSHA256": "7780e16a09a2cad324995827bccb388ddbcb5f644e6860ae789f9f16a9115d5d",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000060408c3e40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000060408c3e40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "db361a06ae540740",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "49922449f4a31c40",
+          "headlessValue": 7.160111563546317,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "db361a06ae540740",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000080337038c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000080337038c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00501361e2743340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666a671e24740",
+          "headlessValue": 47.7690933227539,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "00501361e2743340",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_13",
+      "rawParametersSHA256ByFreshProcess": [
+        "581d46d991ba9facf293d92de2859d9d6b5e08dd57f20f492da84de2c573e389",
+        "581d46d991ba9facf293d92de2859d9d6b5e08dd57f20f492da84de2c573e389",
+        "581d46d991ba9facf293d92de2859d9d6b5e08dd57f20f492da84de2c573e389"
+      ],
+      "shapeDimension": 136.48312377929688,
+      "shapeDimensionBits": "0x40610f75c0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.44480133056640625,
+      "fractionBits": "0x3fdc77a000000000",
+      "index": 14,
+      "name": "sample_14",
+      "normalizedParametersSHA256": "3c8ce03f2e5f2af582e5f1cfc6d0b59af461c3cc5db8bd8b69505a5e29f68ed5",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000c017ae4040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000c017ae4040",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "9324d1e201670940",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "6edbb66d038e1c40",
+          "headlessValue": 7.138684953962054,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "9324d1e201670940",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000000026b03ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "0000000026b03ac0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000de983273540",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "0000000091c74740",
+          "headlessValue": 47.559112548828125,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "00000de983273540",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_14",
+      "rawParametersSHA256ByFreshProcess": [
+        "b05a2d1507048af8e36560588c6f1ebbbe48de61dd4187887d1c968b2dc097f6",
+        "b05a2d1507048af8e36560588c6f1ebbbe48de61dd4187887d1c968b2dc097f6",
+        "b05a2d1507048af8e36560588c6f1ebbbe48de61dd4187887d1c968b2dc097f6"
+      ],
+      "shapeDimension": 135.8831787109375,
+      "shapeDimensionBits": "0x4060fc4300000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.4703817367553711,
+      "fractionBits": "0x3fde1abc00000000",
+      "index": 15,
+      "name": "sample_15",
+      "normalizedParametersSHA256": "e1912ac46bbf28e18d3392dd90e9e2ac777fa1a65ffe21929364721c45332a45",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000028aaa34140",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000028aaa34140",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "2469ef7ce9ce0a40",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "922449920b7f1c40",
+          "headlessValue": 7.1240675789969305,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "2469ef7ce9ce0a40",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000004010393cc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "0000004010393cc0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "3347a5d2b54d3640",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "999999f93ab54740",
+          "headlessValue": 47.41586227416992,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "3347a5d2b54d3640",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_15",
+      "rawParametersSHA256ByFreshProcess": [
+        "d77c68cb3b6d59d2df7f4e0d37bb403dec10a9844b07ac5f15195645eb14b5dc",
+        "d77c68cb3b6d59d2df7f4e0d37bb403dec10a9844b07ac5f15195645eb14b5dc",
+        "d77c68cb3b6d59d2df7f4e0d37bb403dec10a9844b07ac5f15195645eb14b5dc"
+      ],
+      "shapeDimension": 135.47389221191406,
+      "shapeDimensionBits": "0x4060ef2a20000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.5048074722290039,
+      "fractionBits": "0x3fe0276200000000",
+      "index": 16,
+      "name": "sample_16",
+      "normalizedParametersSHA256": "950f0c53f8ebc7149274be31a3d966312fd41a64e5ee9b973ee56b2a06a36583",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000d826ee4240",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000d826ee4240",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "9244fe57d9b00c40",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "b76ddbb6e66a1c40",
+          "headlessValue": 7.104395730154855,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "9244fe57d9b00c40",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000c0d7493ec0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000c0d7493ec0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "99adca0bacd63740",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "333333d38d9c4740",
+          "headlessValue": 47.22307815551758,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "99adca0bacd63740",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_16",
+      "rawParametersSHA256ByFreshProcess": [
+        "5eb230f39c6047fc5692e80847fb8fe1ddfcebfd63f18d1850a9fcd50af09e6a",
+        "5eb230f39c6047fc5692e80847fb8fe1ddfcebfd63f18d1850a9fcd50af09e6a",
+        "5eb230f39c6047fc5692e80847fb8fe1ddfcebfd63f18d1850a9fcd50af09e6a"
+      ],
+      "shapeDimension": 134.92308044433594,
+      "shapeDimensionBits": "0x4060dd89e0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.531764030456543,
+      "fractionBits": "0x3fe1043600000000",
+      "index": 17,
+      "name": "sample_17",
+      "normalizedParametersSHA256": "66460801441db4b2696417f588ac05acd7872df2d1de55b1a37e3589ad0871d4",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000048eff04340",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000048eff04340",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "9244053e49280e40",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "b76ddbb6205b1c40",
+          "headlessValue": 7.088991982596261,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "9244053e49280e40",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000040e5e73fc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000040e5e73fc0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0074c6b800083940",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666463b894740",
+          "headlessValue": 47.07212142944336,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "0074c6b800083940",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_17",
+      "rawParametersSHA256ByFreshProcess": [
+        "51898a636ec6d4db8ca31e71d9e50c030ed770207f5685f62ea94778d0382ebe",
+        "51898a636ec6d4db8ca31e71d9e50c030ed770207f5685f62ea94778d0382ebe",
+        "51898a636ec6d4db8ca31e71d9e50c030ed770207f5685f62ea94778d0382ebe"
+      ],
+      "shapeDimension": 134.4917755126953,
+      "shapeDimensionBits": "0x4060cfbca0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.5692682266235352,
+      "fractionBits": "0x3fe2377200000000",
+      "index": 18,
+      "name": "sample_18",
+      "normalizedParametersSHA256": "a054969de4132a50896ca61835b0eefe84f33eb68fed00ffa0908149549b6524",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000098f9584540",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000098f9584540",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "49229ce5e5171040",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "b76ddbb62e451c40",
+          "headlessValue": 7.06756101335798,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "49229ce5e5171040",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000e0fa1341c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000e0fa1341c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "3387bea556ad3a40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "99999939596e4740",
+          "headlessValue": 46.8620979309082,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "3387bea556ad3a40",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_18",
+      "rawParametersSHA256ByFreshProcess": [
+        "c464d1a2d15e1c2ce7c9d279d3c55589dbf1d15cd62f60a562661687b6db9c65",
+        "c464d1a2d15e1c2ce7c9d279d3c55589dbf1d15cd62f60a562661687b6db9c65",
+        "c464d1a2d15e1c2ce7c9d279d3c55589dbf1d15cd62f60a562661687b6db9c65"
+      ],
+      "shapeDimension": 133.89170837402344,
+      "shapeDimensionBits": "0x4060bc88e0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.5962066650390625,
+      "fractionBits": "0x3fe3142000000000",
+      "index": 19,
+      "name": "sample_19",
+      "normalizedParametersSHA256": "8d1980007db1ec375225ff7dfe35fc223c191e42195016befbad3bc86212618c",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000080955b4640",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000080955b4640",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "4992b46175d11040",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "6edbb66d6b351c40",
+          "headlessValue": 7.052167619977679,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "4992b46175d11040",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000000dee241c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000000dee241c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000094627cd93b40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "000000000a5b4740",
+          "headlessValue": 46.71124267578125,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "000094627cd93b40",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_19",
+      "rawParametersSHA256ByFreshProcess": [
+        "c0e4d1b081440dcfd4b4775bafc0201d2f849f6780043102a64473696f453f36",
+        "c0e4d1b081440dcfd4b4775bafc0201d2f849f6780043102a64473696f453f36",
+        "c0e4d1b081440dcfd4b4775bafc0201d2f849f6780043102a64473696f453f36"
+      ],
+      "shapeDimension": 133.460693359375,
+      "shapeDimensionBits": "0x4060aebe00000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.6253814697265625,
+      "fractionBits": "0x3fe4032000000000",
+      "index": 20,
+      "name": "sample_20",
+      "normalizedParametersSHA256": "7d6850d3d581902152cf5b052bfbc8fc6ed805c6cf4d310057d03b3dd7223053",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000080a9734740",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000080a9734740",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000904377991140",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "2449922459241c40",
+          "headlessValue": 7.035496303013392,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "0000904377991140",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000000eec242c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000000eec242c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "ffff5332341c3d40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "6666666620464740",
+          "headlessValue": 46.54786376953125,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "ffff5332341c3d40",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_20",
+      "rawParametersSHA256ByFreshProcess": [
+        "3e5ef8d7c483df005c7bcc62f0c7fb2e3334f7e662e6ada263b97a861fa113d7",
+        "3e5ef8d7c483df005c7bcc62f0c7fb2e3334f7e662e6ada263b97a861fa113d7",
+        "3e5ef8d7c483df005c7bcc62f0c7fb2e3334f7e662e6ada263b97a861fa113d7"
+      ],
+      "shapeDimension": 132.993896484375,
+      "shapeDimensionBits": "0x40609fce00000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.6603574752807617,
+      "fractionBits": "0x3fe521a600000000",
+      "index": 21,
+      "name": "sample_21",
+      "normalizedParametersSHA256": "68fd27f17e1ca940bb54900c1bb8fe6c40c9bb1f041da725f9b95fa2a72dc54b",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000886ec34840",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000886ec34840",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "6eeb4d2bee871240",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "dcb66ddbe10f1c40",
+          "headlessValue": 7.0155100141252795,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "6eeb4d2bee871240",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000a08bcf43c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000a08bcf43c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "ffb34b1de09b3e40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666460e2d4740",
+          "headlessValue": 46.35199813842773,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "ffb34b1de09b3e40",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_21",
+      "rawParametersSHA256ByFreshProcess": [
+        "9c2ea5436f99230644d93d87b0a62188ed8d4d963b8ea66d4aaaf9a5a804b216",
+        "9c2ea5436f99230644d93d87b0a62188ed8d4d963b8ea66d4aaaf9a5a804b216",
+        "9c2ea5436f99230644d93d87b0a62188ed8d4d963b8ea66d4aaaf9a5a804b216"
+      ],
+      "shapeDimension": 132.4342803955078,
+      "shapeDimensionBits": "0x40608de5a0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.6887130737304688,
+      "fractionBits": "0x3fe609f000000000",
+      "index": 22,
+      "name": "sample_22",
+      "normalizedParametersSHA256": "be15de150f31e342a7db2879c3a74d741ed3e60e087be23435560b1e5fd466c7",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000040a5d34940",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000040a5d34940",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "6edbdad934481340",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "499224494aff1b40",
+          "headlessValue": 6.999306815011161,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "6edbdad934481340",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000000051a944c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "0000000051a944c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0000257c59d03f40",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000000bb184740",
+          "headlessValue": 46.193206787109375,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "0000257c59d03f40",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_22",
+      "rawParametersSHA256ByFreshProcess": [
+        "04247e9eaee8023aa6b5e4496635bb58537a32839095996d9cc85be7483c6be3",
+        "04247e9eaee8023aa6b5e4496635bb58537a32839095996d9cc85be7483c6be3",
+        "04247e9eaee8023aa6b5e4496635bb58537a32839095996d9cc85be7483c6be3"
+      ],
+      "shapeDimension": 131.9805908203125,
+      "shapeDimensionBits": "0x40607f6100000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.7428836822509766,
+      "fractionBits": "0x3fe7c5b400000000",
+      "index": 23,
+      "name": "sample_23",
+      "normalizedParametersSHA256": "cf429ecb0f41a9e4c28676d9ee73bc52295ba0f90cbdac8615b882436dda019a",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000f0aedb4b40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000f0aedb4b40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "49d22053eab41440",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "b76ddbb697df1b40",
+          "headlessValue": 6.968352181570871,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "49d22053eab41440",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000c0584946c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000c0584946c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00683b0ca00b4140",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666a6e6f14640",
+          "headlessValue": 45.88985137939453,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "00683b0ca00b4140",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_23",
+      "rawParametersSHA256ByFreshProcess": [
+        "8302105f10cc2c9cbd037ed6740b397411717e616579f01cb856ce8df42a09cd",
+        "8302105f10cc2c9cbd037ed6740b397411717e616579f01cb856ce8df42a09cd",
+        "8302105f10cc2c9cbd037ed6740b397411717e616579f01cb856ce8df42a09cd"
+      ],
+      "shapeDimension": 131.11386108398438,
+      "shapeDimensionBits": "0x406063a4c0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.7559223175048828,
+      "fractionBits": "0x3fe8308400000000",
+      "index": 24,
+      "name": "sample_24",
+      "normalizedParametersSHA256": "99f3c2f8009d667fad383687b809263d0fa33effff06a627fcf11be1dcd9fa72",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000b0da584c40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000b0da584c40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "92646bba2f0c1540",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "92244992f6d71b40",
+          "headlessValue": 6.960901532854352,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "92646bba2f0c1540",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000c07bad46c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000c07bad46c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "99c1f6dd25514140",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "cccccc0c8ee84640",
+          "headlessValue": 45.81683502197265,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "99c1f6dd25514140",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_24",
+      "rawParametersSHA256ByFreshProcess": [
+        "869232e5404210f0fde2d89e83113f1f39d3ee00c45337d7e00e8317c12f6673",
+        "869232e5404210f0fde2d89e83113f1f39d3ee00c45337d7e00e8317c12f6673",
+        "869232e5404210f0fde2d89e83113f1f39d3ee00c45337d7e00e8317c12f6673"
+      ],
+      "shapeDimension": 130.90524291992188,
+      "shapeDimensionBits": "0x40605cf7c0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.782048225402832,
+      "fractionBits": "0x3fe9068a00000000",
+      "index": 25,
+      "name": "sample_25",
+      "normalizedParametersSHA256": "248795d33d89c003e636399fd45174624dcaebc3b1d62cd0af5a1706cc4db14a",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000b8a9534d40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000b8a9534d40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0010da9974ba1540",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "00000000adc81b40",
+          "headlessValue": 6.945972442626953,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "0010da9974ba1540",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000060217647c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000060217647c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "9953de22b8db4140",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "ccccccecd3d54640",
+          "headlessValue": 45.670529937744135,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "9953de22b8db4140",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_25",
+      "rawParametersSHA256ByFreshProcess": [
+        "d7bbf00316761a9351fa981f949da4fcde890dc72c2621c14d0d2a4629cf8dd2",
+        "d7bbf00316761a9351fa981f949da4fcde890dc72c2621c14d0d2a4629cf8dd2",
+        "d7bbf00316761a9351fa981f949da4fcde890dc72c2621c14d0d2a4629cf8dd2"
+      ],
+      "shapeDimension": 130.4872283935547,
+      "shapeDimensionBits": "0x40604f9760000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.8153657913208008,
+      "fractionBits": "0x3fea177a00000000",
+      "index": 26,
+      "name": "sample_26",
+      "normalizedParametersSHA256": "07167e676b941e6b7da33ecca61974ba875915635a23811cffa4e6a53f22a2f8",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000f882934e40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000f882934e40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "0010a15989971640",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "244992242eb51b40",
+          "headlessValue": 6.9269338335309705,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "0010a15989971640",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000060027648c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000060027648c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "001a32f4038b4240",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000020f2bd4640",
+          "headlessValue": 45.483951568603516,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "001a32f4038b4240",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_26",
+      "rawParametersSHA256ByFreshProcess": [
+        "0fd8d6b5623e297d0005bc7208543086395ca09aff5a7fe3415bb664facb9c99",
+        "0fd8d6b5623e297d0005bc7208543086395ca09aff5a7fe3415bb664facb9c99",
+        "0fd8d6b5623e297d0005bc7208543086395ca09aff5a7fe3415bb664facb9c99"
+      ],
+      "shapeDimension": 129.9541473388672,
+      "shapeDimensionBits": "0x40603e8860000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.8514919281005859,
+      "fractionBits": "0x3feb3f6c00000000",
+      "index": 27,
+      "name": "sample_27",
+      "normalizedParametersSHA256": "366f9eb8a44b08932ec112bcacd20e327dd98053675315cd11a6234cc620a964",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "0000009052ee4f40",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "0000009052ee4f40",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "9264613cc9851740",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "922449920aa01b40",
+          "headlessValue": 6.906290326799665,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "9264613cc9851740",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000040758b49c0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000040758b49c0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "cdb45d504a474340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "333333f30ca44640",
+          "headlessValue": 45.28164520263672,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "cdb45d504a474340",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_27",
+      "rawParametersSHA256ByFreshProcess": [
+        "94612fad0c611eb63da02235b3a19d5f3e7f46f3d13b5ee624f30719f8c2be16",
+        "94612fad0c611eb63da02235b3a19d5f3e7f46f3d13b5ee624f30719f8c2be16",
+        "94612fad0c611eb63da02235b3a19d5f3e7f46f3d13b5ee624f30719f8c2be16"
+      ],
+      "shapeDimension": 129.37612915039062,
+      "shapeDimensionBits": "0x40602c0940000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.8864927291870117,
+      "fractionBits": "0x3fec5e2600000000",
+      "index": 28,
+      "name": "sample_28",
+      "normalizedParametersSHA256": "e4b971029e20c7d94dc51f7926c1842546ef9edc07d1567be782ed6020264d20",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000442a9f5040",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000442a9f5040",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "9234784b286b1840",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "922449928f8b1b40",
+          "headlessValue": 6.886289869035993,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "9234784b286b1840",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000a043984ac0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000a043984ac0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00da0c76eafb4340",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "66666646f68a4640",
+          "headlessValue": 45.08564071655273,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "00da0c76eafb4340",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_28",
+      "rawParametersSHA256ByFreshProcess": [
+        "009a1132d31dbc1760ebd601928581d484fdb8c5ccc623a6b0472994c0fa07a5",
+        "009a1132d31dbc1760ebd601928581d484fdb8c5ccc623a6b0472994c0fa07a5",
+        "009a1132d31dbc1760ebd601928581d484fdb8c5ccc623a6b0472994c0fa07a5"
+      ],
+      "shapeDimension": 128.8161163330078,
+      "shapeDimensionBits": "0x40601a1da0000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.9067420959472656,
+      "fractionBits": "0x3fed040800000000",
+      "index": 29,
+      "name": "sample_29",
+      "normalizedParametersSHA256": "2eb7b72b17e6c7b640f34d04a005604f6c7d0490e022d93a8af08c35d612bf3f",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000b05c005140",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000b05c005140",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "6edbff0834ef1840",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "49922449b67f1b40",
+          "headlessValue": 6.874718802315848,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "6edbff0834ef1840",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000080c7334bc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000080c7334bc0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00a06cf19c634440",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "00000080727c4640",
+          "headlessValue": 44.97224426269531,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "00a06cf19c634440",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_29",
+      "rawParametersSHA256ByFreshProcess": [
+        "3a8fb743981ba16f1a1ef0aa6dd33b570d639b191b6403c05c4eecaa0151fc72",
+        "3a8fb743981ba16f1a1ef0aa6dd33b570d639b191b6403c05c4eecaa0151fc72",
+        "3a8fb743981ba16f1a1ef0aa6dd33b570d639b191b6403c05c4eecaa0151fc72"
+      ],
+      "shapeDimension": 128.49212646484375,
+      "shapeDimensionBits": "0x40600fbf80000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.9453620910644531,
+      "fractionBits": "0x3fee406800000000",
+      "index": 30,
+      "name": "sample_30",
+      "normalizedParametersSHA256": "a220d908b61c228ecc77213ab25fbe272ab3cfea76f030fd8f17ab918fbe5924",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "000000f0bcb95140",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "000000f0bcb95140",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "ffff30a2b6e91940",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "244992241d691b40",
+          "headlessValue": 6.852650233677455,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "ffff30a2b6e91940",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00000080615c4cc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "00000080615c4cc0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "cd6ce2b9c1274540",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "333333b3c3604640",
+          "headlessValue": 44.75597229003906,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "cd6ce2b9c1274540",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_30",
+      "rawParametersSHA256ByFreshProcess": [
+        "23139b943a1144f55a4de529e4a28a1331018dcb44ea30af25ae4f360c0d5a05",
+        "23139b943a1144f55a4de529e4a28a1331018dcb44ea30af25ae4f360c0d5a05",
+        "23139b943a1144f55a4de529e4a28a1331018dcb44ea30af25ae4f360c0d5a05"
+      ],
+      "shapeDimension": 127.87420654296875,
+      "shapeDimensionBits": "0x405ff7f300000000"
+    },
+    {
+      "allProviderPredictionsMatchBitwise": true,
+      "environmentFlagsBits": "0x0000000000000000",
+      "fraction": 0.969538688659668,
+      "fractionBits": "0x3fef067600000000",
+      "index": 31,
+      "name": "sample_31",
+      "normalizedParametersSHA256": "56a0b735cacd5f64bf88ceea71ddb6007928a3cd632a7a49f331db082947e4af",
+      "providerPredictions": [
+        {
+          "expectedLiveRawLittleEndianHex": "00000024c92d5240",
+          "field": "shadow.amount",
+          "headlessRawLittleEndianHex": "0000000000c05240",
+          "headlessValue": 75.0,
+          "matchedBitwise": true,
+          "parametersOffset": 40,
+          "predictedLiveRawLittleEndianHex": "00000024c92d5240",
+          "providerOffset": 24
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "923493c3a5851a40",
+          "field": "blur.radius",
+          "headlessRawLittleEndianHex": "92244992f75a1b40",
+          "headlessValue": 6.838835035051618,
+          "matchedBitwise": true,
+          "parametersOffset": 176,
+          "predictedLiveRawLittleEndianHex": "923493c3a5851a40",
+          "providerOffset": 152
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "000000a00e164dc0",
+          "field": "refraction.innerAmount",
+          "headlessRawLittleEndianHex": "0000000000004ec0",
+          "headlessValue": -60.0,
+          "matchedBitwise": true,
+          "parametersOffset": 264,
+          "predictedLiveRawLittleEndianHex": "000000a00e164dc0",
+          "providerOffset": 232
+        },
+        {
+          "expectedLiveRawLittleEndianHex": "00bafaf574a14540",
+          "field": "edgeBleed.amount",
+          "headlessRawLittleEndianHex": "666666466f4f4640",
+          "headlessValue": 44.62058334350586,
+          "matchedBitwise": true,
+          "parametersOffset": 392,
+          "predictedLiveRawLittleEndianHex": "00bafaf574a14540",
+          "providerOffset": 352
+        }
+      ],
+      "qualifiedName": "material_context_live:sample_31",
+      "rawParametersSHA256ByFreshProcess": [
+        "c67f7cacc34748eb6f27be15f5aa00d176616e4a924b1dc8fdb50ac75042f432",
+        "c67f7cacc34748eb6f27be15f5aa00d176616e4a924b1dc8fdb50ac75042f432",
+        "c67f7cacc34748eb6f27be15f5aa00d176616e4a924b1dc8fdb50ac75042f432"
+      ],
+      "shapeDimension": 127.48738098144531,
+      "shapeDimensionBits": "0x405fdf3140000000"
+    }
+  ],
+  "claims": {
+    "allThirtyOneNonendpointOpenedLiveProviderFieldsReplayBitwise": true,
+    "completeLiveParametersTransferEstablished": false,
+    "exactZeroFlagsContextToOpenedLiveProviderFieldsTransferEstablished": true,
+    "generalContextToParametersValueLawEstablished": false,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false,
+    "zeroFlagsAndFlagsProducedProfilesAreDistinctEstablished": true
+  },
+  "classification": "prospectively frozen zero-flags Material.Context dimensions run through Apple's exact Parameters builder in fresh headless native processes, then transferred by the already-proved binary64 scale operation into independently retained live provider words",
+  "designLibraryMaterialContextLiveTimelineTransferCaptureSchemaVersion": 1,
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "measuredInvariants": {
+    "capturedParametersUsedForSelection": false,
+    "caseCount": 31,
+    "environmentFlagsAreExactZero": true,
+    "freshProcessSemanticStabilityEstablished": true,
+    "parametersBuildsPerCase": 1,
+    "providerPredictionMatchCounts": {
+      "blur.radius": 31,
+      "edgeBleed.amount": 31,
+      "refraction.innerAmount": 31,
+      "shadow.amount": 31
+    },
+    "totalProviderPredictionCount": 124,
+    "totalProviderPredictionMatchCount": 124
+  },
+  "predecessors": {
+    "flagsProducedContextMatrix": {
+      "path": "Analysis/designlibrary_material_context_parameters_local_macos_26_6_1_result.json",
+      "sha256": "e707178e4f5e6e14d75fa0a953daa834e538be3981e855a2ecc18325aca0167b"
+    },
+    "preregistration": {
+      "path": "Analysis/designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1_preregistration.json",
+      "sha256": "73b818343f93a133dc5fff1d5f2fa8a9aaad7642f63e95c9f3e1365257679331"
+    },
+    "providerPublicTimelineJoin": {
+      "path": "Analysis/backdrop_margin_case22_provider_public_timeline_join_retrospective_result.json",
+      "sha256": "00fab84d0c6163629da387ea4e0f50884ee40b9f04842646fe01a36936b50e3d"
+    },
+    "publicTimeline": {
+      "path": "artifacts/local-case22-provider-object-matrix-minimal-retry2-b694a91-run1/transition-timeline.json",
+      "sha256": "1dd73cfa4e696c43a0612c107e9a5edcb78c72b14ba80e67a53e4e99b06d931f"
+    }
+  },
+  "tool": {
+    "assemblyBridgeSHA256": "8abad01a65462ff5f25bb77710733a7b38d1e5809e6065631e42d232c1d73b90",
+    "baseContextProbeSourceSHA256": "69f877a6641a795a45e173693398ada603e7b70e7806de7bb16393702bad07ac",
+    "baseLldbAdapterSHA256": "c82fc09d0c3bcef58f40ff6fb13ac593c85bb01ceab65bf12380f4f344cadfb9",
+    "basePublicProbeSourceSHA256": "59c54e502eceb9a2d789f3729c7f4ba2de8067e83086a4cd8d5c7343e10cee8f",
+    "captureSource": "Analysis/capture_designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1.py",
+    "captureSourceSHA256": "62667bb3c41eced5d3ef4768e409b3ed121dad1a5c758d18cf85be7bf5149d9c",
+    "clang": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "freshProcessCount": 3,
+    "lldbAdapter": "Analysis/capture_designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1_lldb.py",
+    "lldbAdapterSHA256": "53980221e3cb6873f0995683e3b76f51a8f0b199c56d3cafc7653b5ca4156cb9",
+    "lldbLogSHA256ByFreshProcess": [
+      "be6036e0b7213767f8889ca8ced5081efe2f3090fc2f64da0daeb48541d299e1",
+      "826c21f99512699a33e8f06fa2351686cb74a16723da8f04bfd863835fd2e4fc",
+      "5a8f743b06dfb94d322fad2a7a134a537cfed3405628885081da8d4b72c74bb4"
+    ],
+    "parametersBasisSourceSHA256": "829e758062d1905ed5635b09bf458337bebce3e41f506ec301d80c66112d2442",
+    "probeExecutableContainsNixStorePath": false,
+    "probeExecutableSHA256": "601abef01c77bd484659bce672309d400dc484c490d4d285d290555b41807fdd",
+    "probeSource": "Analysis/probe_designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1.c",
+    "probeSourceSHA256": "a97f15fd7bf56f419a4352598082457b1a23ef71010f3132f6b7f6f433e26deb",
+    "python": "3.9.6"
+  },
+  "uniqueNormalizedParameters": {
+    "027de6c9da0c4b295da42db889fac5072e187e7ff9aa89761aabe3a633864d32": {
+      "caseNames": [
+        "sample_06"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240cdccccccf4f74b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000006edbb66dd31e1d40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000033333333f678484033333333f67848400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "02e8aaa8bf0924eb8b183911fc203f3237d748b4bacf188a8b4daf440d1a562b": {
+      "caseNames": [
+        "sample_09"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052400000000076ae4b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000004992244954ea1c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000040a738484000000040a73848400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "07167e676b941e6b7da33ecca61974ba875915635a23811cffa4e6a53f22a2f8": {
+      "caseNames": [
+        "sample_26"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c0524000000000a7fd4940000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000244992242eb51b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000020f2bd464000000020f2bd46400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "09f24166a9e1c25f3f1713a687fc8cb9944274dca035ee5e809ad0faad347a8e": {
+      "caseNames": [
+        "sample_08"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c0524000000000dcc34b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000244992249df91c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000080604b484000000080604b48400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "1ba108e4856412accd729296da02ca5eba73a5e870bc5bde97d4c383c81734b6": {
+      "caseNames": [
+        "sample_07"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a999999a6dc4b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000006edbb66d520b1d40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666c611614840666666c6116148400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "248795d33d89c003e636399fd45174624dcaebc3b1d62cd0af5a1706cc4db14a": {
+      "caseNames": [
+        "sample_25"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c0524034333333f2184a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000adc81b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000ccccccecd3d54640ccccccecd3d546400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "2eb7b72b17e6c7b640f34d04a005604f6c7d0490e022d93a8af08c35d612bf3f": {
+      "caseNames": [
+        "sample_29"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c0524000000000ccb24940000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000049922449b67f1b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000080727c464000000080727c46400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "366f9eb8a44b08932ec112bcacd20e327dd98053675315cd11a6234cc620a964": {
+      "caseNames": [
+        "sample_27"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240cdcccccc0ee04940000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000922449920aa01b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000333333f30ca44640333333f30ca446400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "3c8ce03f2e5f2af582e5f1cfc6d0b59af461c3cc5db8bd8b69505a5e29f68ed5": {
+      "caseNames": [
+        "sample_14"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c0524000000000382d4b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000006edbb66d038e1c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000091c747400000000091c747400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "56a0b735cacd5f64bf88ceea71ddb6007928a3cd632a7a49f331db082947e4af": {
+      "caseNames": [
+        "sample_31"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a9999995a7f4940000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000092244992f75a1b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666466f4f4640666666466f4f46400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "632a8461e58ab95523629fd88ec37a0ec4934b89c068da99be150106fe5b0e32": {
+      "caseNames": [
+        "sample_01"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c0524034333333f07b4c40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000049922449197d1d40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccc2c72ec4840cccccc2c72ec48400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "66460801441db4b2696417f588ac05acd7872df2d1de55b1a37e3589ad0871d4": {
+      "caseNames": [
+        "sample_17"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a999999fae54a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000b76ddbb6205b1c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666463b894740666666463b8947400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "68fd27f17e1ca940bb54900c1bb8fe6c40c9bb1f041da725f9b95fa2a72dc54b": {
+      "caseNames": [
+        "sample_21"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a999999a27c4a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000dcb66ddbe10f1c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666460e2d4740666666460e2d47400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "6e58c657dfdc756b52cd0f8ab7a97b0de65461124c37e712d3d67922372c5a29": {
+      "caseNames": [
+        "sample_05"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240cdccccccfd104c40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000049922449b5301d40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000033333313de8e484033333313de8e48400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "7780e16a09a2cad324995827bccb388ddbcb5f644e6860ae789f9f16a9115d5d": {
+      "caseNames": [
+        "sample_13"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a999999ef4b4b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000049922449f4a31c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666a671e24740666666a671e247400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "7d6850d3d581902152cf5b052bfbc8fc6ed805c6cf4d310057d03b3dd7223053": {
+      "caseNames": [
+        "sample_20"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a99999949994a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000002449922459241c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666662046474066666666204647400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "86a14dc53d423a7c4f1ecda850a45dde3bd5cbb9edd60fc37f581c7b2a42adf0": {
+      "caseNames": [
+        "sample_02"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240cdcccccc95634c40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000024499224b46b1d40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000003333331323d748403333331323d748400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "8d1980007db1ec375225ff7dfe35fc223c191e42195016befbad3bc86212618c": {
+      "caseNames": [
+        "sample_19"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052400000000030b14a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000006edbb66d6b351c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000a5b4740000000000a5b47400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "950f0c53f8ebc7149274be31a3d966312fd41a64e5ee9b973ee56b2a06a36583": {
+      "caseNames": [
+        "sample_16"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240cdcccccc0ffc4a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000b76ddbb6e66a1c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000333333d38d9c4740333333d38d9c47400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "99f3c2f8009d667fad383687b809263d0fa33effff06a627fcf11be1dcd9fa72": {
+      "caseNames": [
+        "sample_24"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c0524034333333592e4a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000092244992f6d71b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000cccccc0c8ee84640cccccc0c8ee846400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "a054969de4132a50896ca61835b0eefe84f33eb68fed00ffa0908149549b6524": {
+      "caseNames": [
+        "sample_18"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052406766666641c74a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000b76ddbb62e451c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000099999939596e474099999939596e47400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "a220d908b61c228ecc77213ab25fbe272ab3cfea76f030fd8f17ab918fbe5924": {
+      "caseNames": [
+        "sample_30"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240cdcccccc28934940000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000244992241d691b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000333333b3c3604640333333b3c36046400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "ae89e881abe955f5d23c0f074a7f54dc009a1967a670d32ead68ad7cb2335e8d": {
+      "caseNames": [
+        "sample_03"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a999999dd444c40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000dcb66ddbc2551d40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666e641bc4840666666e641bc48400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "be15de150f31e342a7db2879c3a74d741ed3e60e087be23435560b1e5fd466c7": {
+      "caseNames": [
+        "sample_22"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052400000000068654a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000499224494aff1b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000bb18474000000000bb1847400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "cf429ecb0f41a9e4c28676d9ee73bc52295ba0f90cbdac8615b882436dda019a": {
+      "caseNames": [
+        "sample_23"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a99999907394a40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000b76ddbb697df1b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666a6e6f14640666666a6e6f146400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "d6142839622efe8ec525b0005fefee294d3211c09da80822c2888ca47f4b99a6": {
+      "caseNames": [
+        "sample_04"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a99999951314c40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000092244992cc471d40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000006666666627ab48406666666627ab48400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "db94bead62e602c2fcb826c3e11a8c1f02a25fbaae021b6bf6c182c448815016": {
+      "caseNames": [
+        "sample_11"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a99999950784b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000049922449a7c31c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000666666864609484066666686460948400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "de4b2fa1445b274b3611f84115fb120ef0104201963bbfe43887cb4522168f22": {
+      "caseNames": [
+        "sample_10"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c05240676666662f8b4b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000dcb66ddb21d11c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000099999979c919484099999979c91948400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "e1912ac46bbf28e18d3392dd90e9e2ac777fa1a65ffe21929364721c45332a45": {
+      "caseNames": [
+        "sample_15"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052406766666643184b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000922449920b7f1c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000999999f93ab54740999999f93ab547400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "e4b971029e20c7d94dc51f7926c1842546ef9edc07d1567be782ed6020264d20": {
+      "caseNames": [
+        "sample_28"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052409a99999962c34940000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000922449928f8b1b40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e00000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000066666646f68a464066666646f68a46400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    },
+    "f210a14cef8f9145e992228cda2c7447884531b191e36f78c85d9ed695239cb9": {
+      "caseNames": [
+        "sample_12"
+      ],
+      "normalizedHex": "0000803e0000000000000000000000000000803f00000000000000000000000000000000000020400000000000c052406766666699634b40000000000000000000000000000000000000000000000000000000000000803f6666e63f0000000000000000000000008fc2f53d000000000000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000049922449dbb41c40000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f0000803f0000803f0000803f0000803f0000803f000000000000000000000000000034400000000000004ec000000000000000000000000000000000000000000000f0bf000000000000000000000000000000000000803f0000003f3333733f0000803f0000803f0000803f0000803f3333b33e0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000009999993926f747409999993926f747400000000000000000000000000000803f000000006666663f0000803f9a99993f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010100000000803f000080bf0000000000002041000000009a99993f000000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f0000000000000000000000000000000001000000000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000f03f0000000000000000182d4454fb21f93f666666666666e63f000000000000e03f6666663f0000803f0000c03f000000000000000000000000000000000100000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000009a99993f000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000803f000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000f03f000000000000000000"
+    }
+  }
+}

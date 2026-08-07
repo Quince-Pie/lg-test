@@ -1,0 +1,4525 @@
+{
+  "claims": {
+    "allCapturedNormalizedParametersReconstructedBitwise": true,
+    "allOpenedLiveFieldsReplayedBitwise": true,
+    "completeLiveParametersTransferEstablished": false,
+    "exactObservedTimelineContextValueLawEstablished": true,
+    "generalContextToParametersValueLawEstablished": false,
+    "generalIntegerCropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "liveContextCallbackProductionEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "classification": "deterministic retrospective whole-Parameters reconstruction of two independently prospectively captured Material.Context live domains; no GUI, render, image, crop, pixel, or captured-value runtime selection",
+  "designLibraryMaterialContextLiveTimelineLawAnalysisSchemaVersion": 1,
+  "inputs": {
+    "analysisSource": {
+      "path": "Analysis/analyze_designlibrary_material_context_live_timeline_laws.py",
+      "sha256": "852ee9b3de2788cbb131ffaed244cab49a17d34f54856330948918e537757b96"
+    },
+    "flagsProducedTransfer": {
+      "path": "Analysis/designlibrary_material_context_flags_live_timeline_transfer_local_macos_26_6_1_result.json",
+      "sha256": "7df7230548463675d00a7bc78dac0003cd08a9beb19e9b53268b3a6073c15ac7"
+    },
+    "zeroFlagsTransfer": {
+      "path": "Analysis/designlibrary_material_context_live_timeline_transfer_local_macos_26_6_1_result.json",
+      "sha256": "6237b29fa78c1626df9ed95aed6d3d8ad6c026b290c66def1e3af8380b54f570"
+    }
+  },
+  "measuredInvariants": {
+    "capturedCaseCount": 63,
+    "capturedValuesUsedForRuntimeSelection": false,
+    "fullNormalizedParametersReconstructionMatchCount": 63,
+    "profileCount": 2,
+    "retainedLiveTransferMatchCount": 252,
+    "retainedLiveTransferPredictionCount": 252
+  },
+  "profiles": [
+    {
+      "caseCount": 31,
+      "constantNormalizedProjectionSHA256": "fd7c6f68ebd68289aef34e79c423181ecc7cc0eae879fe904a36d6dfb370ad6a",
+      "dimensionLaw": {
+        "bitwiseMatchCount": 31,
+        "expressionWithOperationOrder": "x = 143 - 16 * k"
+      },
+      "fullNormalizedParametersReconstructionMatchCount": 31,
+      "name": "zeroFlagsRegularLight",
+      "reconstructions": [
+        {
+          "caseIndex": 1,
+          "dimensionBits": "0x4061cd7620000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fa289e000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "632a8461e58ab95523629fd88ec37a0ec4934b89c068da99be150106fe5b0e32",
+          "predictedDimensionBits": "0x4061cd7620000000",
+          "reconstructedNormalizedParametersSHA256": "632a8461e58ab95523629fd88ec37a0ec4934b89c068da99be150106fe5b0e32"
+        },
+        {
+          "caseIndex": 2,
+          "dimensionBits": "0x4061be3da0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fb0e13000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "86a14dc53d423a7c4f1ecda850a45dde3bd5cbb9edd60fc37f581c7b2a42adf0",
+          "predictedDimensionBits": "0x4061be3da0000000",
+          "reconstructedNormalizedParametersSHA256": "86a14dc53d423a7c4f1ecda850a45dde3bd5cbb9edd60fc37f581c7b2a42adf0"
+        },
+        {
+          "caseIndex": 3,
+          "dimensionBits": "0x4061ab0a80000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fba7ac000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "ae89e881abe955f5d23c0f074a7f54dc009a1967a670d32ead68ad7cb2335e8d",
+          "predictedDimensionBits": "0x4061ab0a80000000",
+          "reconstructedNormalizedParametersSHA256": "ae89e881abe955f5d23c0f074a7f54dc009a1967a670d32ead68ad7cb2335e8d"
+        },
+        {
+          "caseIndex": 4,
+          "dimensionBits": "0x40619ed300000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc04b4000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "d6142839622efe8ec525b0005fefee294d3211c09da80822c2888ca47f4b99a6",
+          "predictedDimensionBits": "0x40619ed300000000",
+          "reconstructedNormalizedParametersSHA256": "d6142839622efe8ec525b0005fefee294d3211c09da80822c2888ca47f4b99a6"
+        },
+        {
+          "caseIndex": 5,
+          "dimensionBits": "0x40618a9ea0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc5585800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "6e58c657dfdc756b52cd0f8ab7a97b0de65461124c37e712d3d67922372c5a29",
+          "predictedDimensionBits": "0x40618a9ea0000000",
+          "reconstructedNormalizedParametersSHA256": "6e58c657dfdc756b52cd0f8ab7a97b0de65461124c37e712d3d67922372c5a29"
+        },
+        {
+          "caseIndex": 6,
+          "dimensionBits": "0x40617af900000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc941c000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "027de6c9da0c4b295da42db889fac5072e187e7ff9aa89761aabe3a633864d32",
+          "predictedDimensionBits": "0x40617af900000000",
+          "reconstructedNormalizedParametersSHA256": "027de6c9da0c4b295da42db889fac5072e187e7ff9aa89761aabe3a633864d32"
+        },
+        {
+          "caseIndex": 7,
+          "dimensionBits": "0x406169e820000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fcd85f800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "1ba108e4856412accd729296da02ca5eba73a5e870bc5bde97d4c383c81734b6",
+          "predictedDimensionBits": "0x406169e820000000",
+          "reconstructedNormalizedParametersSHA256": "1ba108e4856412accd729296da02ca5eba73a5e870bc5bde97d4c383c81734b6"
+        },
+        {
+          "caseIndex": 8,
+          "dimensionBits": "0x40615a6980000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd0b2d000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "09f24166a9e1c25f3f1713a687fc8cb9944274dca035ee5e809ad0faad347a8e",
+          "predictedDimensionBits": "0x40615a6980000000",
+          "reconstructedNormalizedParametersSHA256": "09f24166a9e1c25f3f1713a687fc8cb9944274dca035ee5e809ad0faad347a8e"
+        },
+        {
+          "caseIndex": 9,
+          "dimensionBits": "0x40614d09c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd25ec800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "02e8aaa8bf0924eb8b183911fc203f3237d748b4bacf188a8b4daf440d1a562b",
+          "predictedDimensionBits": "0x40614d09c0000000",
+          "reconstructedNormalizedParametersSHA256": "02e8aaa8bf0924eb8b183911fc203f3237d748b4bacf188a8b4daf440d1a562b"
+        },
+        {
+          "caseIndex": 10,
+          "dimensionBits": "0x406136fda0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd5204c00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "de4b2fa1445b274b3611f84115fb120ef0104201963bbfe43887cb4522168f22",
+          "predictedDimensionBits": "0x406136fda0000000",
+          "reconstructedNormalizedParametersSHA256": "de4b2fa1445b274b3611f84115fb120ef0104201963bbfe43887cb4522168f22"
+        },
+        {
+          "caseIndex": 11,
+          "dimensionBits": "0x40612b3260000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd699b400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "db94bead62e602c2fcb826c3e11a8c1f02a25fbaae021b6bf6c182c448815016",
+          "predictedDimensionBits": "0x40612b3260000000",
+          "reconstructedNormalizedParametersSHA256": "db94bead62e602c2fcb826c3e11a8c1f02a25fbaae021b6bf6c182c448815016"
+        },
+        {
+          "caseIndex": 12,
+          "dimensionBits": "0x40611e3fe0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd8380400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "f210a14cef8f9145e992228cda2c7447884531b191e36f78c85d9ed695239cb9",
+          "predictedDimensionBits": "0x40611e3fe0000000",
+          "reconstructedNormalizedParametersSHA256": "f210a14cef8f9145e992228cda2c7447884531b191e36f78c85d9ed695239cb9"
+        },
+        {
+          "caseIndex": 13,
+          "dimensionBits": "0x40610f75c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fda114800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "7780e16a09a2cad324995827bccb388ddbcb5f644e6860ae789f9f16a9115d5d",
+          "predictedDimensionBits": "0x40610f75c0000000",
+          "reconstructedNormalizedParametersSHA256": "7780e16a09a2cad324995827bccb388ddbcb5f644e6860ae789f9f16a9115d5d"
+        },
+        {
+          "caseIndex": 14,
+          "dimensionBits": "0x4060fc4300000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fdc77a000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "3c8ce03f2e5f2af582e5f1cfc6d0b59af461c3cc5db8bd8b69505a5e29f68ed5",
+          "predictedDimensionBits": "0x4060fc4300000000",
+          "reconstructedNormalizedParametersSHA256": "3c8ce03f2e5f2af582e5f1cfc6d0b59af461c3cc5db8bd8b69505a5e29f68ed5"
+        },
+        {
+          "caseIndex": 15,
+          "dimensionBits": "0x4060ef2a20000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fde1abc00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "e1912ac46bbf28e18d3392dd90e9e2ac777fa1a65ffe21929364721c45332a45",
+          "predictedDimensionBits": "0x4060ef2a20000000",
+          "reconstructedNormalizedParametersSHA256": "e1912ac46bbf28e18d3392dd90e9e2ac777fa1a65ffe21929364721c45332a45"
+        },
+        {
+          "caseIndex": 16,
+          "dimensionBits": "0x4060dd89e0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe0276200000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "950f0c53f8ebc7149274be31a3d966312fd41a64e5ee9b973ee56b2a06a36583",
+          "predictedDimensionBits": "0x4060dd89e0000000",
+          "reconstructedNormalizedParametersSHA256": "950f0c53f8ebc7149274be31a3d966312fd41a64e5ee9b973ee56b2a06a36583"
+        },
+        {
+          "caseIndex": 17,
+          "dimensionBits": "0x4060cfbca0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe1043600000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "66460801441db4b2696417f588ac05acd7872df2d1de55b1a37e3589ad0871d4",
+          "predictedDimensionBits": "0x4060cfbca0000000",
+          "reconstructedNormalizedParametersSHA256": "66460801441db4b2696417f588ac05acd7872df2d1de55b1a37e3589ad0871d4"
+        },
+        {
+          "caseIndex": 18,
+          "dimensionBits": "0x4060bc88e0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe2377200000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "a054969de4132a50896ca61835b0eefe84f33eb68fed00ffa0908149549b6524",
+          "predictedDimensionBits": "0x4060bc88e0000000",
+          "reconstructedNormalizedParametersSHA256": "a054969de4132a50896ca61835b0eefe84f33eb68fed00ffa0908149549b6524"
+        },
+        {
+          "caseIndex": 19,
+          "dimensionBits": "0x4060aebe00000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe3142000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "8d1980007db1ec375225ff7dfe35fc223c191e42195016befbad3bc86212618c",
+          "predictedDimensionBits": "0x4060aebe00000000",
+          "reconstructedNormalizedParametersSHA256": "8d1980007db1ec375225ff7dfe35fc223c191e42195016befbad3bc86212618c"
+        },
+        {
+          "caseIndex": 20,
+          "dimensionBits": "0x40609fce00000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe4032000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "7d6850d3d581902152cf5b052bfbc8fc6ed805c6cf4d310057d03b3dd7223053",
+          "predictedDimensionBits": "0x40609fce00000000",
+          "reconstructedNormalizedParametersSHA256": "7d6850d3d581902152cf5b052bfbc8fc6ed805c6cf4d310057d03b3dd7223053"
+        },
+        {
+          "caseIndex": 21,
+          "dimensionBits": "0x40608de5a0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe521a600000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "68fd27f17e1ca940bb54900c1bb8fe6c40c9bb1f041da725f9b95fa2a72dc54b",
+          "predictedDimensionBits": "0x40608de5a0000000",
+          "reconstructedNormalizedParametersSHA256": "68fd27f17e1ca940bb54900c1bb8fe6c40c9bb1f041da725f9b95fa2a72dc54b"
+        },
+        {
+          "caseIndex": 22,
+          "dimensionBits": "0x40607f6100000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe609f000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "be15de150f31e342a7db2879c3a74d741ed3e60e087be23435560b1e5fd466c7",
+          "predictedDimensionBits": "0x40607f6100000000",
+          "reconstructedNormalizedParametersSHA256": "be15de150f31e342a7db2879c3a74d741ed3e60e087be23435560b1e5fd466c7"
+        },
+        {
+          "caseIndex": 23,
+          "dimensionBits": "0x406063a4c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe7c5b400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "cf429ecb0f41a9e4c28676d9ee73bc52295ba0f90cbdac8615b882436dda019a",
+          "predictedDimensionBits": "0x406063a4c0000000",
+          "reconstructedNormalizedParametersSHA256": "cf429ecb0f41a9e4c28676d9ee73bc52295ba0f90cbdac8615b882436dda019a"
+        },
+        {
+          "caseIndex": 24,
+          "dimensionBits": "0x40605cf7c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe8308400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "99f3c2f8009d667fad383687b809263d0fa33effff06a627fcf11be1dcd9fa72",
+          "predictedDimensionBits": "0x40605cf7c0000000",
+          "reconstructedNormalizedParametersSHA256": "99f3c2f8009d667fad383687b809263d0fa33effff06a627fcf11be1dcd9fa72"
+        },
+        {
+          "caseIndex": 25,
+          "dimensionBits": "0x40604f9760000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe9068a00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "248795d33d89c003e636399fd45174624dcaebc3b1d62cd0af5a1706cc4db14a",
+          "predictedDimensionBits": "0x40604f9760000000",
+          "reconstructedNormalizedParametersSHA256": "248795d33d89c003e636399fd45174624dcaebc3b1d62cd0af5a1706cc4db14a"
+        },
+        {
+          "caseIndex": 26,
+          "dimensionBits": "0x40603e8860000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fea177a00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "07167e676b941e6b7da33ecca61974ba875915635a23811cffa4e6a53f22a2f8",
+          "predictedDimensionBits": "0x40603e8860000000",
+          "reconstructedNormalizedParametersSHA256": "07167e676b941e6b7da33ecca61974ba875915635a23811cffa4e6a53f22a2f8"
+        },
+        {
+          "caseIndex": 27,
+          "dimensionBits": "0x40602c0940000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3feb3f6c00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "366f9eb8a44b08932ec112bcacd20e327dd98053675315cd11a6234cc620a964",
+          "predictedDimensionBits": "0x40602c0940000000",
+          "reconstructedNormalizedParametersSHA256": "366f9eb8a44b08932ec112bcacd20e327dd98053675315cd11a6234cc620a964"
+        },
+        {
+          "caseIndex": 28,
+          "dimensionBits": "0x40601a1da0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fec5e2600000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "e4b971029e20c7d94dc51f7926c1842546ef9edc07d1567be782ed6020264d20",
+          "predictedDimensionBits": "0x40601a1da0000000",
+          "reconstructedNormalizedParametersSHA256": "e4b971029e20c7d94dc51f7926c1842546ef9edc07d1567be782ed6020264d20"
+        },
+        {
+          "caseIndex": 29,
+          "dimensionBits": "0x40600fbf80000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fed040800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "2eb7b72b17e6c7b640f34d04a005604f6c7d0490e022d93a8af08c35d612bf3f",
+          "predictedDimensionBits": "0x40600fbf80000000",
+          "reconstructedNormalizedParametersSHA256": "2eb7b72b17e6c7b640f34d04a005604f6c7d0490e022d93a8af08c35d612bf3f"
+        },
+        {
+          "caseIndex": 30,
+          "dimensionBits": "0x405ff7f300000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fee406800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "a220d908b61c228ecc77213ab25fbe272ab3cfea76f030fd8f17ab918fbe5924",
+          "predictedDimensionBits": "0x405ff7f300000000",
+          "reconstructedNormalizedParametersSHA256": "a220d908b61c228ecc77213ab25fbe272ab3cfea76f030fd8f17ab918fbe5924"
+        },
+        {
+          "caseIndex": 31,
+          "dimensionBits": "0x405fdf3140000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fef067600000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "56a0b735cacd5f64bf88ceea71ddb6007928a3cd632a7a49f331db082947e4af",
+          "predictedDimensionBits": "0x405fdf3140000000",
+          "reconstructedNormalizedParametersSHA256": "56a0b735cacd5f64bf88ceea71ddb6007928a3cd632a7a49f331db082947e4af"
+        }
+      ],
+      "retainedLiveTransferMatchCount": 124,
+      "retainedLiveTransferPredictionCount": 124,
+      "uniqueDimensionWordCount": 31,
+      "varyingScalarFields": [
+        {
+          "bitwiseMatchCount": 31,
+          "expressionWithOperationOrder": "x * 0.4",
+          "field": "shadow.height",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x4061cd7620000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "34333333f07b4c40",
+              "predictedRawLittleEndianHex": "34333333f07b4c40"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x4061be3da0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccc95634c40",
+              "predictedRawLittleEndianHex": "cdcccccc95634c40"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x4061ab0a80000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999dd444c40",
+              "predictedRawLittleEndianHex": "9a999999dd444c40"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619ed300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999951314c40",
+              "predictedRawLittleEndianHex": "9a99999951314c40"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x40618a9ea0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdccccccfd104c40",
+              "predictedRawLittleEndianHex": "cdccccccfd104c40"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x40617af900000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdccccccf4f74b40",
+              "predictedRawLittleEndianHex": "cdccccccf4f74b40"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x406169e820000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999a6dc4b40",
+              "predictedRawLittleEndianHex": "9a999999a6dc4b40"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40615a6980000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000dcc34b40",
+              "predictedRawLittleEndianHex": "00000000dcc34b40"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40614d09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076ae4b40",
+              "predictedRawLittleEndianHex": "0000000076ae4b40"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x406136fda0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "676666662f8b4b40",
+              "predictedRawLittleEndianHex": "676666662f8b4b40"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40612b3260000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999950784b40",
+              "predictedRawLittleEndianHex": "9a99999950784b40"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611e3fe0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6766666699634b40",
+              "predictedRawLittleEndianHex": "6766666699634b40"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40610f75c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999ef4b4b40",
+              "predictedRawLittleEndianHex": "9a999999ef4b4b40"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fc4300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000382d4b40",
+              "predictedRawLittleEndianHex": "00000000382d4b40"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060ef2a20000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6766666643184b40",
+              "predictedRawLittleEndianHex": "6766666643184b40"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x4060dd89e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccc0ffc4a40",
+              "predictedRawLittleEndianHex": "cdcccccc0ffc4a40"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x4060cfbca0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999fae54a40",
+              "predictedRawLittleEndianHex": "9a999999fae54a40"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x4060bc88e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6766666641c74a40",
+              "predictedRawLittleEndianHex": "6766666641c74a40"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x4060aebe00000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000030b14a40",
+              "predictedRawLittleEndianHex": "0000000030b14a40"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40609fce00000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999949994a40",
+              "predictedRawLittleEndianHex": "9a99999949994a40"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608de5a0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999a27c4a40",
+              "predictedRawLittleEndianHex": "9a999999a27c4a40"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40607f6100000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000068654a40",
+              "predictedRawLittleEndianHex": "0000000068654a40"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406063a4c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999907394a40",
+              "predictedRawLittleEndianHex": "9a99999907394a40"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x40605cf7c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "34333333592e4a40",
+              "predictedRawLittleEndianHex": "34333333592e4a40"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x40604f9760000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "34333333f2184a40",
+              "predictedRawLittleEndianHex": "34333333f2184a40"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x40603e8860000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000a7fd4940",
+              "predictedRawLittleEndianHex": "00000000a7fd4940"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x40602c0940000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccc0ee04940",
+              "predictedRawLittleEndianHex": "cdcccccc0ee04940"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x40601a1da0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999962c34940",
+              "predictedRawLittleEndianHex": "9a99999962c34940"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x40600fbf80000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000ccb24940",
+              "predictedRawLittleEndianHex": "00000000ccb24940"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405ff7f300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccc28934940",
+              "predictedRawLittleEndianHex": "cdcccccc28934940"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fdf3140000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a9999995a7f4940",
+              "predictedRawLittleEndianHex": "9a9999995a7f4940"
+            }
+          ],
+          "offset": 48,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 31,
+          "expressionWithOperationOrder": "4 + (x - 48) / 28",
+          "field": "blur.radius",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x4061cd7620000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "49922449197d1d40",
+              "predictedRawLittleEndianHex": "49922449197d1d40"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x4061be3da0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "24499224b46b1d40",
+              "predictedRawLittleEndianHex": "24499224b46b1d40"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x4061ab0a80000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "dcb66ddbc2551d40",
+              "predictedRawLittleEndianHex": "dcb66ddbc2551d40"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619ed300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "92244992cc471d40",
+              "predictedRawLittleEndianHex": "92244992cc471d40"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x40618a9ea0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "49922449b5301d40",
+              "predictedRawLittleEndianHex": "49922449b5301d40"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x40617af900000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6edbb66dd31e1d40",
+              "predictedRawLittleEndianHex": "6edbb66dd31e1d40"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x406169e820000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6edbb66d520b1d40",
+              "predictedRawLittleEndianHex": "6edbb66d520b1d40"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40615a6980000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "244992249df91c40",
+              "predictedRawLittleEndianHex": "244992249df91c40"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40614d09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "4992244954ea1c40",
+              "predictedRawLittleEndianHex": "4992244954ea1c40"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x406136fda0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "dcb66ddb21d11c40",
+              "predictedRawLittleEndianHex": "dcb66ddb21d11c40"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40612b3260000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "49922449a7c31c40",
+              "predictedRawLittleEndianHex": "49922449a7c31c40"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611e3fe0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "49922449dbb41c40",
+              "predictedRawLittleEndianHex": "49922449dbb41c40"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40610f75c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "49922449f4a31c40",
+              "predictedRawLittleEndianHex": "49922449f4a31c40"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fc4300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6edbb66d038e1c40",
+              "predictedRawLittleEndianHex": "6edbb66d038e1c40"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060ef2a20000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "922449920b7f1c40",
+              "predictedRawLittleEndianHex": "922449920b7f1c40"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x4060dd89e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "b76ddbb6e66a1c40",
+              "predictedRawLittleEndianHex": "b76ddbb6e66a1c40"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x4060cfbca0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "b76ddbb6205b1c40",
+              "predictedRawLittleEndianHex": "b76ddbb6205b1c40"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x4060bc88e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "b76ddbb62e451c40",
+              "predictedRawLittleEndianHex": "b76ddbb62e451c40"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x4060aebe00000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6edbb66d6b351c40",
+              "predictedRawLittleEndianHex": "6edbb66d6b351c40"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40609fce00000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "2449922459241c40",
+              "predictedRawLittleEndianHex": "2449922459241c40"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608de5a0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "dcb66ddbe10f1c40",
+              "predictedRawLittleEndianHex": "dcb66ddbe10f1c40"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40607f6100000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "499224494aff1b40",
+              "predictedRawLittleEndianHex": "499224494aff1b40"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406063a4c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "b76ddbb697df1b40",
+              "predictedRawLittleEndianHex": "b76ddbb697df1b40"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x40605cf7c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "92244992f6d71b40",
+              "predictedRawLittleEndianHex": "92244992f6d71b40"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x40604f9760000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000adc81b40",
+              "predictedRawLittleEndianHex": "00000000adc81b40"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x40603e8860000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "244992242eb51b40",
+              "predictedRawLittleEndianHex": "244992242eb51b40"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x40602c0940000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "922449920aa01b40",
+              "predictedRawLittleEndianHex": "922449920aa01b40"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x40601a1da0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "922449928f8b1b40",
+              "predictedRawLittleEndianHex": "922449928f8b1b40"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x40600fbf80000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "49922449b67f1b40",
+              "predictedRawLittleEndianHex": "49922449b67f1b40"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405ff7f300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "244992241d691b40",
+              "predictedRawLittleEndianHex": "244992241d691b40"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fdf3140000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "92244992f75a1b40",
+              "predictedRawLittleEndianHex": "92244992f75a1b40"
+            }
+          ],
+          "offset": 176,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 31,
+          "expressionWithOperationOrder": "x * 0.35",
+          "field": "edgeBleed.amount",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x4061cd7620000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc2c72ec4840",
+              "predictedRawLittleEndianHex": "cccccc2c72ec4840"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x4061be3da0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3333331323d74840",
+              "predictedRawLittleEndianHex": "3333331323d74840"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x4061ab0a80000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666e641bc4840",
+              "predictedRawLittleEndianHex": "666666e641bc4840"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619ed300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666666627ab4840",
+              "predictedRawLittleEndianHex": "6666666627ab4840"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x40618a9ea0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333313de8e4840",
+              "predictedRawLittleEndianHex": "33333313de8e4840"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x40617af900000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333333f6784840",
+              "predictedRawLittleEndianHex": "33333333f6784840"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x406169e820000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666c611614840",
+              "predictedRawLittleEndianHex": "666666c611614840"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40615a6980000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000080604b4840",
+              "predictedRawLittleEndianHex": "00000080604b4840"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40614d09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7384840",
+              "predictedRawLittleEndianHex": "00000040a7384840"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x406136fda0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999979c9194840",
+              "predictedRawLittleEndianHex": "99999979c9194840"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40612b3260000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666668646094840",
+              "predictedRawLittleEndianHex": "6666668646094840"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611e3fe0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9999993926f74740",
+              "predictedRawLittleEndianHex": "9999993926f74740"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40610f75c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666a671e24740",
+              "predictedRawLittleEndianHex": "666666a671e24740"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fc4300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000091c74740",
+              "predictedRawLittleEndianHex": "0000000091c74740"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060ef2a20000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "999999f93ab54740",
+              "predictedRawLittleEndianHex": "999999f93ab54740"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x4060dd89e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "333333d38d9c4740",
+              "predictedRawLittleEndianHex": "333333d38d9c4740"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x4060cfbca0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666463b894740",
+              "predictedRawLittleEndianHex": "666666463b894740"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x4060bc88e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999939596e4740",
+              "predictedRawLittleEndianHex": "99999939596e4740"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x4060aebe00000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000000a5b4740",
+              "predictedRawLittleEndianHex": "000000000a5b4740"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40609fce00000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666666620464740",
+              "predictedRawLittleEndianHex": "6666666620464740"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608de5a0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666460e2d4740",
+              "predictedRawLittleEndianHex": "666666460e2d4740"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40607f6100000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000bb184740",
+              "predictedRawLittleEndianHex": "00000000bb184740"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406063a4c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666a6e6f14640",
+              "predictedRawLittleEndianHex": "666666a6e6f14640"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x40605cf7c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc0c8ee84640",
+              "predictedRawLittleEndianHex": "cccccc0c8ee84640"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x40604f9760000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "ccccccecd3d54640",
+              "predictedRawLittleEndianHex": "ccccccecd3d54640"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x40603e8860000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000020f2bd4640",
+              "predictedRawLittleEndianHex": "00000020f2bd4640"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x40602c0940000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "333333f30ca44640",
+              "predictedRawLittleEndianHex": "333333f30ca44640"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x40601a1da0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "66666646f68a4640",
+              "predictedRawLittleEndianHex": "66666646f68a4640"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x40600fbf80000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000080727c4640",
+              "predictedRawLittleEndianHex": "00000080727c4640"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405ff7f300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "333333b3c3604640",
+              "predictedRawLittleEndianHex": "333333b3c3604640"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fdf3140000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666466f4f4640",
+              "predictedRawLittleEndianHex": "666666466f4f4640"
+            }
+          ],
+          "offset": 392,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 31,
+          "expressionWithOperationOrder": "x * 0.35",
+          "field": "edgeBleed.height",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x4061cd7620000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc2c72ec4840",
+              "predictedRawLittleEndianHex": "cccccc2c72ec4840"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x4061be3da0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3333331323d74840",
+              "predictedRawLittleEndianHex": "3333331323d74840"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x4061ab0a80000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666e641bc4840",
+              "predictedRawLittleEndianHex": "666666e641bc4840"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619ed300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666666627ab4840",
+              "predictedRawLittleEndianHex": "6666666627ab4840"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x40618a9ea0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333313de8e4840",
+              "predictedRawLittleEndianHex": "33333313de8e4840"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x40617af900000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333333f6784840",
+              "predictedRawLittleEndianHex": "33333333f6784840"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x406169e820000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666c611614840",
+              "predictedRawLittleEndianHex": "666666c611614840"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40615a6980000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000080604b4840",
+              "predictedRawLittleEndianHex": "00000080604b4840"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40614d09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7384840",
+              "predictedRawLittleEndianHex": "00000040a7384840"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x406136fda0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999979c9194840",
+              "predictedRawLittleEndianHex": "99999979c9194840"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40612b3260000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666668646094840",
+              "predictedRawLittleEndianHex": "6666668646094840"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611e3fe0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9999993926f74740",
+              "predictedRawLittleEndianHex": "9999993926f74740"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40610f75c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666a671e24740",
+              "predictedRawLittleEndianHex": "666666a671e24740"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fc4300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000091c74740",
+              "predictedRawLittleEndianHex": "0000000091c74740"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060ef2a20000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "999999f93ab54740",
+              "predictedRawLittleEndianHex": "999999f93ab54740"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x4060dd89e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "333333d38d9c4740",
+              "predictedRawLittleEndianHex": "333333d38d9c4740"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x4060cfbca0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666463b894740",
+              "predictedRawLittleEndianHex": "666666463b894740"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x4060bc88e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999939596e4740",
+              "predictedRawLittleEndianHex": "99999939596e4740"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x4060aebe00000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000000a5b4740",
+              "predictedRawLittleEndianHex": "000000000a5b4740"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40609fce00000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666666620464740",
+              "predictedRawLittleEndianHex": "6666666620464740"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608de5a0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666460e2d4740",
+              "predictedRawLittleEndianHex": "666666460e2d4740"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40607f6100000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000bb184740",
+              "predictedRawLittleEndianHex": "00000000bb184740"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406063a4c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666a6e6f14640",
+              "predictedRawLittleEndianHex": "666666a6e6f14640"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x40605cf7c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc0c8ee84640",
+              "predictedRawLittleEndianHex": "cccccc0c8ee84640"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x40604f9760000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "ccccccecd3d54640",
+              "predictedRawLittleEndianHex": "ccccccecd3d54640"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x40603e8860000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000020f2bd4640",
+              "predictedRawLittleEndianHex": "00000020f2bd4640"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x40602c0940000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "333333f30ca44640",
+              "predictedRawLittleEndianHex": "333333f30ca44640"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x40601a1da0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "66666646f68a4640",
+              "predictedRawLittleEndianHex": "66666646f68a4640"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x40600fbf80000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000080727c4640",
+              "predictedRawLittleEndianHex": "00000080727c4640"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405ff7f300000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "333333b3c3604640",
+              "predictedRawLittleEndianHex": "333333b3c3604640"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fdf3140000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666466f4f4640",
+              "predictedRawLittleEndianHex": "666666466f4f4640"
+            }
+          ],
+          "offset": 400,
+          "storage": "binary64"
+        }
+      ],
+      "varyingSemanticByteOffsets": [
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407
+      ]
+    },
+    {
+      "caseCount": 32,
+      "constantNormalizedProjectionSHA256": "a0c300a7ff6888b3005e207c5fd3697ae6d41122d9716f4f58c26d0662a30798",
+      "dimensionLaw": {
+        "bitwiseMatchCount": 32,
+        "expressionWithOperationOrder": "x = 143 - 16 * k"
+      },
+      "fullNormalizedParametersReconstructionMatchCount": 32,
+      "name": "flagsProducedRegularLight",
+      "reconstructions": [
+        {
+          "caseIndex": 1,
+          "dimensionBits": "0x40619d3f60000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc0b02800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563",
+          "predictedDimensionBits": "0x40619d3f60000000",
+          "reconstructedNormalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563"
+        },
+        {
+          "caseIndex": 2,
+          "dimensionBits": "0x40619d3f60000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc0b02800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563",
+          "predictedDimensionBits": "0x40619d3f60000000",
+          "reconstructedNormalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563"
+        },
+        {
+          "caseIndex": 3,
+          "dimensionBits": "0x40619d3f60000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc0b02800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563",
+          "predictedDimensionBits": "0x40619d3f60000000",
+          "reconstructedNormalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563"
+        },
+        {
+          "caseIndex": 4,
+          "dimensionBits": "0x40619d3f60000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc0b02800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563",
+          "predictedDimensionBits": "0x40619d3f60000000",
+          "reconstructedNormalizedParametersSHA256": "f6582f3df1244b218a63c0ed072939784daa1ce08ec3b8d951c3c384b2246563"
+        },
+        {
+          "caseIndex": 5,
+          "dimensionBits": "0x4061855a60000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc6a96800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "746958d8d35f8bd4f56cc755d0fb5cedccac485d6cc462899622a80678203a3d",
+          "predictedDimensionBits": "0x4061855a60000000",
+          "reconstructedNormalizedParametersSHA256": "746958d8d35f8bd4f56cc755d0fb5cedccac485d6cc462899622a80678203a3d"
+        },
+        {
+          "caseIndex": 6,
+          "dimensionBits": "0x4061855a60000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fc6a96800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "746958d8d35f8bd4f56cc755d0fb5cedccac485d6cc462899622a80678203a3d",
+          "predictedDimensionBits": "0x4061855a60000000",
+          "reconstructedNormalizedParametersSHA256": "746958d8d35f8bd4f56cc755d0fb5cedccac485d6cc462899622a80678203a3d"
+        },
+        {
+          "caseIndex": 7,
+          "dimensionBits": "0x40611ece40000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd8263800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+          "predictedDimensionBits": "0x40611ece40000000",
+          "reconstructedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa"
+        },
+        {
+          "caseIndex": 8,
+          "dimensionBits": "0x40611ece40000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd8263800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+          "predictedDimensionBits": "0x40611ece40000000",
+          "reconstructedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa"
+        },
+        {
+          "caseIndex": 9,
+          "dimensionBits": "0x40611ece40000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd8263800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+          "predictedDimensionBits": "0x40611ece40000000",
+          "reconstructedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa"
+        },
+        {
+          "caseIndex": 10,
+          "dimensionBits": "0x40611ece40000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd8263800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+          "predictedDimensionBits": "0x40611ece40000000",
+          "reconstructedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa"
+        },
+        {
+          "caseIndex": 11,
+          "dimensionBits": "0x40611ece40000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd8263800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+          "predictedDimensionBits": "0x40611ece40000000",
+          "reconstructedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa"
+        },
+        {
+          "caseIndex": 12,
+          "dimensionBits": "0x40611ece40000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd8263800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+          "predictedDimensionBits": "0x40611ece40000000",
+          "reconstructedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa"
+        },
+        {
+          "caseIndex": 13,
+          "dimensionBits": "0x40611ece40000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fd8263800000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa",
+          "predictedDimensionBits": "0x40611ece40000000",
+          "reconstructedNormalizedParametersSHA256": "dcf329e9790fdc749e2421227af5c1152be016a97f0df3fe9e49e59649caeafa"
+        },
+        {
+          "caseIndex": 14,
+          "dimensionBits": "0x4060fa40e0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fdcb7e400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "536a0407d42236f20d1945ec57f3b68ef5d757fc486c3abaf7231b0375b799b0",
+          "predictedDimensionBits": "0x4060fa40e0000000",
+          "reconstructedNormalizedParametersSHA256": "536a0407d42236f20d1945ec57f3b68ef5d757fc486c3abaf7231b0375b799b0"
+        },
+        {
+          "caseIndex": 15,
+          "dimensionBits": "0x4060fa40e0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fdcb7e400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "536a0407d42236f20d1945ec57f3b68ef5d757fc486c3abaf7231b0375b799b0",
+          "predictedDimensionBits": "0x4060fa40e0000000",
+          "reconstructedNormalizedParametersSHA256": "536a0407d42236f20d1945ec57f3b68ef5d757fc486c3abaf7231b0375b799b0"
+        },
+        {
+          "caseIndex": 16,
+          "dimensionBits": "0x40608a09c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe55f6400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+          "predictedDimensionBits": "0x40608a09c0000000",
+          "reconstructedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09"
+        },
+        {
+          "caseIndex": 17,
+          "dimensionBits": "0x40608a09c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe55f6400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+          "predictedDimensionBits": "0x40608a09c0000000",
+          "reconstructedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09"
+        },
+        {
+          "caseIndex": 18,
+          "dimensionBits": "0x40608a09c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe55f6400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+          "predictedDimensionBits": "0x40608a09c0000000",
+          "reconstructedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09"
+        },
+        {
+          "caseIndex": 19,
+          "dimensionBits": "0x40608a09c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe55f6400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+          "predictedDimensionBits": "0x40608a09c0000000",
+          "reconstructedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09"
+        },
+        {
+          "caseIndex": 20,
+          "dimensionBits": "0x40608a09c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe55f6400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+          "predictedDimensionBits": "0x40608a09c0000000",
+          "reconstructedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09"
+        },
+        {
+          "caseIndex": 21,
+          "dimensionBits": "0x40608a09c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe55f6400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+          "predictedDimensionBits": "0x40608a09c0000000",
+          "reconstructedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09"
+        },
+        {
+          "caseIndex": 22,
+          "dimensionBits": "0x40608a09c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3fe55f6400000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09",
+          "predictedDimensionBits": "0x40608a09c0000000",
+          "reconstructedNormalizedParametersSHA256": "fb6a8e76c0d652b336926db15909b1953a2bac5bb4d0587eddcb37ba0882fc09"
+        },
+        {
+          "caseIndex": 23,
+          "dimensionBits": "0x406021a560000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3febe5aa00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+          "predictedDimensionBits": "0x406021a560000000",
+          "reconstructedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33"
+        },
+        {
+          "caseIndex": 24,
+          "dimensionBits": "0x406021a560000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3febe5aa00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+          "predictedDimensionBits": "0x406021a560000000",
+          "reconstructedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33"
+        },
+        {
+          "caseIndex": 25,
+          "dimensionBits": "0x406021a560000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3febe5aa00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+          "predictedDimensionBits": "0x406021a560000000",
+          "reconstructedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33"
+        },
+        {
+          "caseIndex": 26,
+          "dimensionBits": "0x406021a560000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3febe5aa00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+          "predictedDimensionBits": "0x406021a560000000",
+          "reconstructedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33"
+        },
+        {
+          "caseIndex": 27,
+          "dimensionBits": "0x406021a560000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3febe5aa00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+          "predictedDimensionBits": "0x406021a560000000",
+          "reconstructedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33"
+        },
+        {
+          "caseIndex": 28,
+          "dimensionBits": "0x406021a560000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3febe5aa00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+          "predictedDimensionBits": "0x406021a560000000",
+          "reconstructedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33"
+        },
+        {
+          "caseIndex": 29,
+          "dimensionBits": "0x406021a560000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3febe5aa00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33",
+          "predictedDimensionBits": "0x406021a560000000",
+          "reconstructedNormalizedParametersSHA256": "9975463ac7929099e5278fec920b0622670914689c9ba77e2acf69669bc26a33"
+        },
+        {
+          "caseIndex": 30,
+          "dimensionBits": "0x405fe370c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3feee47a00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "f31fda9373d80de61c17887360edd3bbbeec658c677180679af65e5048fab3d6",
+          "predictedDimensionBits": "0x405fe370c0000000",
+          "reconstructedNormalizedParametersSHA256": "f31fda9373d80de61c17887360edd3bbbeec658c677180679af65e5048fab3d6"
+        },
+        {
+          "caseIndex": 31,
+          "dimensionBits": "0x405fe370c0000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3feee47a00000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "f31fda9373d80de61c17887360edd3bbbeec658c677180679af65e5048fab3d6",
+          "predictedDimensionBits": "0x405fe370c0000000",
+          "reconstructedNormalizedParametersSHA256": "f31fda9373d80de61c17887360edd3bbbeec658c677180679af65e5048fab3d6"
+        },
+        {
+          "caseIndex": 32,
+          "dimensionBits": "0x405fc00000000000",
+          "dimensionLawMatchedBitwise": true,
+          "fractionBits": "0x3ff0000000000000",
+          "fullNormalizedParametersMatchedBitwise": true,
+          "observedNormalizedParametersSHA256": "9eaba6971ff89966b973ebd5f237b016a1450a7a2e8e8171b07ecca7f4a94c38",
+          "predictedDimensionBits": "0x405fc00000000000",
+          "reconstructedNormalizedParametersSHA256": "9eaba6971ff89966b973ebd5f237b016a1450a7a2e8e8171b07ecca7f4a94c38"
+        }
+      ],
+      "retainedLiveTransferMatchCount": 128,
+      "retainedLiveTransferPredictionCount": 128,
+      "uniqueDimensionWordCount": 8,
+      "varyingScalarFields": [
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "x * 0.4",
+          "field": "shadow.height",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccccb2e4c40",
+              "predictedRawLittleEndianHex": "cdcccccccb2e4c40"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccccb2e4c40",
+              "predictedRawLittleEndianHex": "cdcccccccb2e4c40"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccccb2e4c40",
+              "predictedRawLittleEndianHex": "cdcccccccb2e4c40"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccccb2e4c40",
+              "predictedRawLittleEndianHex": "cdcccccccb2e4c40"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999990084c40",
+              "predictedRawLittleEndianHex": "9a99999990084c40"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999990084c40",
+              "predictedRawLittleEndianHex": "9a99999990084c40"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d644b40",
+              "predictedRawLittleEndianHex": "343333337d644b40"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d644b40",
+              "predictedRawLittleEndianHex": "343333337d644b40"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d644b40",
+              "predictedRawLittleEndianHex": "343333337d644b40"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d644b40",
+              "predictedRawLittleEndianHex": "343333337d644b40"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d644b40",
+              "predictedRawLittleEndianHex": "343333337d644b40"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d644b40",
+              "predictedRawLittleEndianHex": "343333337d644b40"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d644b40",
+              "predictedRawLittleEndianHex": "343333337d644b40"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "67666666012a4b40",
+              "predictedRawLittleEndianHex": "67666666012a4b40"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "67666666012a4b40",
+              "predictedRawLittleEndianHex": "67666666012a4b40"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076764a40",
+              "predictedRawLittleEndianHex": "0000000076764a40"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076764a40",
+              "predictedRawLittleEndianHex": "0000000076764a40"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076764a40",
+              "predictedRawLittleEndianHex": "0000000076764a40"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076764a40",
+              "predictedRawLittleEndianHex": "0000000076764a40"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076764a40",
+              "predictedRawLittleEndianHex": "0000000076764a40"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076764a40",
+              "predictedRawLittleEndianHex": "0000000076764a40"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076764a40",
+              "predictedRawLittleEndianHex": "0000000076764a40"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf4940",
+              "predictedRawLittleEndianHex": "000000006fcf4940"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf4940",
+              "predictedRawLittleEndianHex": "000000006fcf4940"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf4940",
+              "predictedRawLittleEndianHex": "000000006fcf4940"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf4940",
+              "predictedRawLittleEndianHex": "000000006fcf4940"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf4940",
+              "predictedRawLittleEndianHex": "000000006fcf4940"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf4940",
+              "predictedRawLittleEndianHex": "000000006fcf4940"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf4940",
+              "predictedRawLittleEndianHex": "000000006fcf4940"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999c0824940",
+              "predictedRawLittleEndianHex": "9a999999c0824940"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999c0824940",
+              "predictedRawLittleEndianHex": "9a999999c0824940"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6766666666664940",
+              "predictedRawLittleEndianHex": "6766666666664940"
+            }
+          ],
+          "offset": 48,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "f32(f32(0.5 * (1 - u)) + f32(0.25 * u)), u=(x-48)/112",
+          "field": "shadow.opacity",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "06d0953e",
+              "predictedRawLittleEndianHex": "06d0953e"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "06d0953e",
+              "predictedRawLittleEndianHex": "06d0953e"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "06d0953e",
+              "predictedRawLittleEndianHex": "06d0953e"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "06d0953e",
+              "predictedRawLittleEndianHex": "06d0953e"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7daa963e",
+              "predictedRawLittleEndianHex": "7daa963e"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7daa963e",
+              "predictedRawLittleEndianHex": "7daa963e"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "10549a3e",
+              "predictedRawLittleEndianHex": "10549a3e"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "10549a3e",
+              "predictedRawLittleEndianHex": "10549a3e"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "10549a3e",
+              "predictedRawLittleEndianHex": "10549a3e"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "10549a3e",
+              "predictedRawLittleEndianHex": "10549a3e"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "10549a3e",
+              "predictedRawLittleEndianHex": "10549a3e"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "10549a3e",
+              "predictedRawLittleEndianHex": "10549a3e"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "10549a3e",
+              "predictedRawLittleEndianHex": "10549a3e"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "41a29b3e",
+              "predictedRawLittleEndianHex": "41a29b3e"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "41a29b3e",
+              "predictedRawLittleEndianHex": "41a29b3e"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "39a49f3e",
+              "predictedRawLittleEndianHex": "39a49f3e"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "39a49f3e",
+              "predictedRawLittleEndianHex": "39a49f3e"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "39a49f3e",
+              "predictedRawLittleEndianHex": "39a49f3e"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "39a49f3e",
+              "predictedRawLittleEndianHex": "39a49f3e"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "39a49f3e",
+              "predictedRawLittleEndianHex": "39a49f3e"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "39a49f3e",
+              "predictedRawLittleEndianHex": "39a49f3e"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "39a49f3e",
+              "predictedRawLittleEndianHex": "39a49f3e"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "aa5ea33e",
+              "predictedRawLittleEndianHex": "aa5ea33e"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "aa5ea33e",
+              "predictedRawLittleEndianHex": "aa5ea33e"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "aa5ea33e",
+              "predictedRawLittleEndianHex": "aa5ea33e"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "aa5ea33e",
+              "predictedRawLittleEndianHex": "aa5ea33e"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "aa5ea33e",
+              "predictedRawLittleEndianHex": "aa5ea33e"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "aa5ea33e",
+              "predictedRawLittleEndianHex": "aa5ea33e"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "aa5ea33e",
+              "predictedRawLittleEndianHex": "aa5ea33e"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "d814a53e",
+              "predictedRawLittleEndianHex": "d814a53e"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "d814a53e",
+              "predictedRawLittleEndianHex": "d814a53e"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "dcb6a53e",
+              "predictedRawLittleEndianHex": "dcb6a53e"
+            }
+          ],
+          "offset": 152,
+          "storage": "binary32"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "(x - 64) / 96",
+          "field": "shadow.vibrancyContribution",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "abaaaaaa53a3e93f",
+              "predictedRawLittleEndianHex": "abaaaaaa53a3e93f"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "abaaaaaa53a3e93f",
+              "predictedRawLittleEndianHex": "abaaaaaa53a3e93f"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "abaaaaaa53a3e93f",
+              "predictedRawLittleEndianHex": "abaaaaaa53a3e93f"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "abaaaaaa53a3e93f",
+              "predictedRawLittleEndianHex": "abaaaaaa53a3e93f"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "abaaaaaa9b63e93f",
+              "predictedRawLittleEndianHex": "abaaaaaa9b63e93f"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "abaaaaaa9b63e93f",
+              "predictedRawLittleEndianHex": "abaaaaaa9b63e93f"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000002652e83f",
+              "predictedRawLittleEndianHex": "000000002652e83f"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000002652e83f",
+              "predictedRawLittleEndianHex": "000000002652e83f"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000002652e83f",
+              "predictedRawLittleEndianHex": "000000002652e83f"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000002652e83f",
+              "predictedRawLittleEndianHex": "000000002652e83f"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000002652e83f",
+              "predictedRawLittleEndianHex": "000000002652e83f"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000002652e83f",
+              "predictedRawLittleEndianHex": "000000002652e83f"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000002652e83f",
+              "predictedRawLittleEndianHex": "000000002652e83f"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000adf0e73f",
+              "predictedRawLittleEndianHex": "00000000adf0e73f"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000adf0e73f",
+              "predictedRawLittleEndianHex": "00000000adf0e73f"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555556fc5e63f",
+              "predictedRawLittleEndianHex": "555555556fc5e63f"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555556fc5e63f",
+              "predictedRawLittleEndianHex": "555555556fc5e63f"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555556fc5e63f",
+              "predictedRawLittleEndianHex": "555555556fc5e63f"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555556fc5e63f",
+              "predictedRawLittleEndianHex": "555555556fc5e63f"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555556fc5e63f",
+              "predictedRawLittleEndianHex": "555555556fc5e63f"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555556fc5e63f",
+              "predictedRawLittleEndianHex": "555555556fc5e63f"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555556fc5e63f",
+              "predictedRawLittleEndianHex": "555555556fc5e63f"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555550eafe53f",
+              "predictedRawLittleEndianHex": "555555550eafe53f"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555550eafe53f",
+              "predictedRawLittleEndianHex": "555555550eafe53f"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555550eafe53f",
+              "predictedRawLittleEndianHex": "555555550eafe53f"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555550eafe53f",
+              "predictedRawLittleEndianHex": "555555550eafe53f"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555550eafe53f",
+              "predictedRawLittleEndianHex": "555555550eafe53f"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555550eafe53f",
+              "predictedRawLittleEndianHex": "555555550eafe53f"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "555555550eafe53f",
+              "predictedRawLittleEndianHex": "555555550eafe53f"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000412fe53f",
+              "predictedRawLittleEndianHex": "00000000412fe53f"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000412fe53f",
+              "predictedRawLittleEndianHex": "00000000412fe53f"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000000000e53f",
+              "predictedRawLittleEndianHex": "000000000000e53f"
+            }
+          ],
+          "offset": 160,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "b + (8 - b) * u, b=8/3, u=(x-48)/112",
+          "field": "blur.radius",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "62188661545d1c40",
+              "predictedRawLittleEndianHex": "62188661545d1c40"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "62188661545d1c40",
+              "predictedRawLittleEndianHex": "62188661545d1c40"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "62188661545d1c40",
+              "predictedRawLittleEndianHex": "62188661545d1c40"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "62188661545d1c40",
+              "predictedRawLittleEndianHex": "62188661545d1c40"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3ecff33ceb381c40",
+              "predictedRawLittleEndianHex": "3ecff33ceb381c40"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3ecff33ceb381c40",
+              "predictedRawLittleEndianHex": "3ecff33ceb381c40"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000a89c1b40",
+              "predictedRawLittleEndianHex": "00000000a89c1b40"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000a89c1b40",
+              "predictedRawLittleEndianHex": "00000000a89c1b40"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000a89c1b40",
+              "predictedRawLittleEndianHex": "00000000a89c1b40"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000a89c1b40",
+              "predictedRawLittleEndianHex": "00000000a89c1b40"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000a89c1b40",
+              "predictedRawLittleEndianHex": "00000000a89c1b40"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000a89c1b40",
+              "predictedRawLittleEndianHex": "00000000a89c1b40"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000a89c1b40",
+              "predictedRawLittleEndianHex": "00000000a89c1b40"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "26499224f5641b40",
+              "predictedRawLittleEndianHex": "26499224f5641b40"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "26499224f5641b40",
+              "predictedRawLittleEndianHex": "26499224f5641b40"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7a9ee779f6b91a40",
+              "predictedRawLittleEndianHex": "7a9ee779f6b91a40"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7a9ee779f6b91a40",
+              "predictedRawLittleEndianHex": "7a9ee779f6b91a40"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7a9ee779f6b91a40",
+              "predictedRawLittleEndianHex": "7a9ee779f6b91a40"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7a9ee779f6b91a40",
+              "predictedRawLittleEndianHex": "7a9ee779f6b91a40"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7a9ee779f6b91a40",
+              "predictedRawLittleEndianHex": "7a9ee779f6b91a40"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7a9ee779f6b91a40",
+              "predictedRawLittleEndianHex": "7a9ee779f6b91a40"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7a9ee779f6b91a40",
+              "predictedRawLittleEndianHex": "7a9ee779f6b91a40"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9fe7799ee31a1a40",
+              "predictedRawLittleEndianHex": "9fe7799ee31a1a40"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9fe7799ee31a1a40",
+              "predictedRawLittleEndianHex": "9fe7799ee31a1a40"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9fe7799ee31a1a40",
+              "predictedRawLittleEndianHex": "9fe7799ee31a1a40"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9fe7799ee31a1a40",
+              "predictedRawLittleEndianHex": "9fe7799ee31a1a40"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9fe7799ee31a1a40",
+              "predictedRawLittleEndianHex": "9fe7799ee31a1a40"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9fe7799ee31a1a40",
+              "predictedRawLittleEndianHex": "9fe7799ee31a1a40"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9fe7799ee31a1a40",
+              "predictedRawLittleEndianHex": "9fe7799ee31a1a40"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000dcd11940",
+              "predictedRawLittleEndianHex": "00000000dcd11940"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000000dcd11940",
+              "predictedRawLittleEndianHex": "00000000dcd11940"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6edbb66ddbb61940",
+              "predictedRawLittleEndianHex": "6edbb66ddbb61940"
+            }
+          ],
+          "offset": 176,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "-x / 2",
+          "field": "blur.distances.0",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000603f9d51c0",
+              "predictedRawLittleEndianHex": "000000603f9d51c0"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000603f9d51c0",
+              "predictedRawLittleEndianHex": "000000603f9d51c0"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000603f9d51c0",
+              "predictedRawLittleEndianHex": "000000603f9d51c0"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000603f9d51c0",
+              "predictedRawLittleEndianHex": "000000603f9d51c0"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000605a8551c0",
+              "predictedRawLittleEndianHex": "000000605a8551c0"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000605a8551c0",
+              "predictedRawLittleEndianHex": "000000605a8551c0"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e51c0",
+              "predictedRawLittleEndianHex": "00000040ce1e51c0"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e51c0",
+              "predictedRawLittleEndianHex": "00000040ce1e51c0"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e51c0",
+              "predictedRawLittleEndianHex": "00000040ce1e51c0"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e51c0",
+              "predictedRawLittleEndianHex": "00000040ce1e51c0"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e51c0",
+              "predictedRawLittleEndianHex": "00000040ce1e51c0"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e51c0",
+              "predictedRawLittleEndianHex": "00000040ce1e51c0"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e51c0",
+              "predictedRawLittleEndianHex": "00000040ce1e51c0"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000e040fa50c0",
+              "predictedRawLittleEndianHex": "000000e040fa50c0"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000e040fa50c0",
+              "predictedRawLittleEndianHex": "000000e040fa50c0"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a50c0",
+              "predictedRawLittleEndianHex": "000000c0098a50c0"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a50c0",
+              "predictedRawLittleEndianHex": "000000c0098a50c0"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a50c0",
+              "predictedRawLittleEndianHex": "000000c0098a50c0"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a50c0",
+              "predictedRawLittleEndianHex": "000000c0098a50c0"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a50c0",
+              "predictedRawLittleEndianHex": "000000c0098a50c0"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a50c0",
+              "predictedRawLittleEndianHex": "000000c0098a50c0"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a50c0",
+              "predictedRawLittleEndianHex": "000000c0098a50c0"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a52150c0",
+              "predictedRawLittleEndianHex": "00000060a52150c0"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a52150c0",
+              "predictedRawLittleEndianHex": "00000060a52150c0"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a52150c0",
+              "predictedRawLittleEndianHex": "00000060a52150c0"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a52150c0",
+              "predictedRawLittleEndianHex": "00000060a52150c0"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a52150c0",
+              "predictedRawLittleEndianHex": "00000060a52150c0"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a52150c0",
+              "predictedRawLittleEndianHex": "00000060a52150c0"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a52150c0",
+              "predictedRawLittleEndianHex": "00000060a52150c0"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c070e34fc0",
+              "predictedRawLittleEndianHex": "000000c070e34fc0"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c070e34fc0",
+              "predictedRawLittleEndianHex": "000000c070e34fc0"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000000c04fc0",
+              "predictedRawLittleEndianHex": "0000000000c04fc0"
+            }
+          ],
+          "offset": 184,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "x / 8",
+          "field": "refraction.outerHeight",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000603f9d3140",
+              "predictedRawLittleEndianHex": "000000603f9d3140"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000603f9d3140",
+              "predictedRawLittleEndianHex": "000000603f9d3140"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000603f9d3140",
+              "predictedRawLittleEndianHex": "000000603f9d3140"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000603f9d3140",
+              "predictedRawLittleEndianHex": "000000603f9d3140"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000605a853140",
+              "predictedRawLittleEndianHex": "000000605a853140"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000605a853140",
+              "predictedRawLittleEndianHex": "000000605a853140"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e3140",
+              "predictedRawLittleEndianHex": "00000040ce1e3140"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e3140",
+              "predictedRawLittleEndianHex": "00000040ce1e3140"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e3140",
+              "predictedRawLittleEndianHex": "00000040ce1e3140"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e3140",
+              "predictedRawLittleEndianHex": "00000040ce1e3140"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e3140",
+              "predictedRawLittleEndianHex": "00000040ce1e3140"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e3140",
+              "predictedRawLittleEndianHex": "00000040ce1e3140"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040ce1e3140",
+              "predictedRawLittleEndianHex": "00000040ce1e3140"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000e040fa3040",
+              "predictedRawLittleEndianHex": "000000e040fa3040"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000e040fa3040",
+              "predictedRawLittleEndianHex": "000000e040fa3040"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a3040",
+              "predictedRawLittleEndianHex": "000000c0098a3040"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a3040",
+              "predictedRawLittleEndianHex": "000000c0098a3040"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a3040",
+              "predictedRawLittleEndianHex": "000000c0098a3040"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a3040",
+              "predictedRawLittleEndianHex": "000000c0098a3040"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a3040",
+              "predictedRawLittleEndianHex": "000000c0098a3040"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a3040",
+              "predictedRawLittleEndianHex": "000000c0098a3040"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c0098a3040",
+              "predictedRawLittleEndianHex": "000000c0098a3040"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a5213040",
+              "predictedRawLittleEndianHex": "00000060a5213040"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a5213040",
+              "predictedRawLittleEndianHex": "00000060a5213040"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a5213040",
+              "predictedRawLittleEndianHex": "00000060a5213040"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a5213040",
+              "predictedRawLittleEndianHex": "00000060a5213040"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a5213040",
+              "predictedRawLittleEndianHex": "00000060a5213040"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a5213040",
+              "predictedRawLittleEndianHex": "00000060a5213040"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000060a5213040",
+              "predictedRawLittleEndianHex": "00000060a5213040"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c070e32f40",
+              "predictedRawLittleEndianHex": "000000c070e32f40"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000c070e32f40",
+              "predictedRawLittleEndianHex": "000000c070e32f40"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000000c02f40",
+              "predictedRawLittleEndianHex": "0000000000c02f40"
+            }
+          ],
+          "offset": 272,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "x * 0.2",
+          "field": "refraction.outerAmount",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccccb2e3c40",
+              "predictedRawLittleEndianHex": "cdcccccccb2e3c40"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccccb2e3c40",
+              "predictedRawLittleEndianHex": "cdcccccccb2e3c40"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccccb2e3c40",
+              "predictedRawLittleEndianHex": "cdcccccccb2e3c40"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cdcccccccb2e3c40",
+              "predictedRawLittleEndianHex": "cdcccccccb2e3c40"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999990083c40",
+              "predictedRawLittleEndianHex": "9a99999990083c40"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a99999990083c40",
+              "predictedRawLittleEndianHex": "9a99999990083c40"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d643b40",
+              "predictedRawLittleEndianHex": "343333337d643b40"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d643b40",
+              "predictedRawLittleEndianHex": "343333337d643b40"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d643b40",
+              "predictedRawLittleEndianHex": "343333337d643b40"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d643b40",
+              "predictedRawLittleEndianHex": "343333337d643b40"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d643b40",
+              "predictedRawLittleEndianHex": "343333337d643b40"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d643b40",
+              "predictedRawLittleEndianHex": "343333337d643b40"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "343333337d643b40",
+              "predictedRawLittleEndianHex": "343333337d643b40"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "67666666012a3b40",
+              "predictedRawLittleEndianHex": "67666666012a3b40"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "67666666012a3b40",
+              "predictedRawLittleEndianHex": "67666666012a3b40"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076763a40",
+              "predictedRawLittleEndianHex": "0000000076763a40"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076763a40",
+              "predictedRawLittleEndianHex": "0000000076763a40"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076763a40",
+              "predictedRawLittleEndianHex": "0000000076763a40"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076763a40",
+              "predictedRawLittleEndianHex": "0000000076763a40"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076763a40",
+              "predictedRawLittleEndianHex": "0000000076763a40"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076763a40",
+              "predictedRawLittleEndianHex": "0000000076763a40"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000000076763a40",
+              "predictedRawLittleEndianHex": "0000000076763a40"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf3940",
+              "predictedRawLittleEndianHex": "000000006fcf3940"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf3940",
+              "predictedRawLittleEndianHex": "000000006fcf3940"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf3940",
+              "predictedRawLittleEndianHex": "000000006fcf3940"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf3940",
+              "predictedRawLittleEndianHex": "000000006fcf3940"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf3940",
+              "predictedRawLittleEndianHex": "000000006fcf3940"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf3940",
+              "predictedRawLittleEndianHex": "000000006fcf3940"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "000000006fcf3940",
+              "predictedRawLittleEndianHex": "000000006fcf3940"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999c0823940",
+              "predictedRawLittleEndianHex": "9a999999c0823940"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9a999999c0823940",
+              "predictedRawLittleEndianHex": "9a999999c0823940"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6766666666663940",
+              "predictedRawLittleEndianHex": "6766666666663940"
+            }
+          ],
+          "offset": 280,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "x * 0.35",
+          "field": "edgeBleed.amount",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a84840",
+              "predictedRawLittleEndianHex": "33333353f2a84840"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a84840",
+              "predictedRawLittleEndianHex": "33333353f2a84840"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a84840",
+              "predictedRawLittleEndianHex": "33333353f2a84840"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a84840",
+              "predictedRawLittleEndianHex": "33333353f2a84840"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666867e874840",
+              "predictedRawLittleEndianHex": "666666867e874840"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666867e874840",
+              "predictedRawLittleEndianHex": "666666867e874840"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999939c1c44740",
+              "predictedRawLittleEndianHex": "99999939c1c44740"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999939c1c44740",
+              "predictedRawLittleEndianHex": "99999939c1c44740"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666668668524640",
+              "predictedRawLittleEndianHex": "6666668668524640"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666668668524640",
+              "predictedRawLittleEndianHex": "6666668668524640"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9999999999394640",
+              "predictedRawLittleEndianHex": "9999999999394640"
+            }
+          ],
+          "offset": 392,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "x * 0.35",
+          "field": "edgeBleed.height",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a84840",
+              "predictedRawLittleEndianHex": "33333353f2a84840"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a84840",
+              "predictedRawLittleEndianHex": "33333353f2a84840"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a84840",
+              "predictedRawLittleEndianHex": "33333353f2a84840"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a84840",
+              "predictedRawLittleEndianHex": "33333353f2a84840"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666867e874840",
+              "predictedRawLittleEndianHex": "666666867e874840"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666867e874840",
+              "predictedRawLittleEndianHex": "666666867e874840"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf74740",
+              "predictedRawLittleEndianHex": "cccccc8cedf74740"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999939c1c44740",
+              "predictedRawLittleEndianHex": "99999939c1c44740"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999939c1c44740",
+              "predictedRawLittleEndianHex": "99999939c1c44740"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7274740",
+              "predictedRawLittleEndianHex": "00000040a7274740"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081954640",
+              "predictedRawLittleEndianHex": "0000002081954640"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666668668524640",
+              "predictedRawLittleEndianHex": "6666668668524640"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666668668524640",
+              "predictedRawLittleEndianHex": "6666668668524640"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9999999999394640",
+              "predictedRawLittleEndianHex": "9999999999394640"
+            }
+          ],
+          "offset": 400,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "x * 0.7",
+          "field": "edgeBleed.blurRadius",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a85840",
+              "predictedRawLittleEndianHex": "33333353f2a85840"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a85840",
+              "predictedRawLittleEndianHex": "33333353f2a85840"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a85840",
+              "predictedRawLittleEndianHex": "33333353f2a85840"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "33333353f2a85840",
+              "predictedRawLittleEndianHex": "33333353f2a85840"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666867e875840",
+              "predictedRawLittleEndianHex": "666666867e875840"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "666666867e875840",
+              "predictedRawLittleEndianHex": "666666867e875840"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf75740",
+              "predictedRawLittleEndianHex": "cccccc8cedf75740"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf75740",
+              "predictedRawLittleEndianHex": "cccccc8cedf75740"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf75740",
+              "predictedRawLittleEndianHex": "cccccc8cedf75740"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf75740",
+              "predictedRawLittleEndianHex": "cccccc8cedf75740"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf75740",
+              "predictedRawLittleEndianHex": "cccccc8cedf75740"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf75740",
+              "predictedRawLittleEndianHex": "cccccc8cedf75740"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "cccccc8cedf75740",
+              "predictedRawLittleEndianHex": "cccccc8cedf75740"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999939c1c45740",
+              "predictedRawLittleEndianHex": "99999939c1c45740"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "99999939c1c45740",
+              "predictedRawLittleEndianHex": "99999939c1c45740"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7275740",
+              "predictedRawLittleEndianHex": "00000040a7275740"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7275740",
+              "predictedRawLittleEndianHex": "00000040a7275740"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7275740",
+              "predictedRawLittleEndianHex": "00000040a7275740"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7275740",
+              "predictedRawLittleEndianHex": "00000040a7275740"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7275740",
+              "predictedRawLittleEndianHex": "00000040a7275740"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7275740",
+              "predictedRawLittleEndianHex": "00000040a7275740"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "00000040a7275740",
+              "predictedRawLittleEndianHex": "00000040a7275740"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081955640",
+              "predictedRawLittleEndianHex": "0000002081955640"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081955640",
+              "predictedRawLittleEndianHex": "0000002081955640"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081955640",
+              "predictedRawLittleEndianHex": "0000002081955640"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081955640",
+              "predictedRawLittleEndianHex": "0000002081955640"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081955640",
+              "predictedRawLittleEndianHex": "0000002081955640"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081955640",
+              "predictedRawLittleEndianHex": "0000002081955640"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000002081955640",
+              "predictedRawLittleEndianHex": "0000002081955640"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666668668525640",
+              "predictedRawLittleEndianHex": "6666668668525640"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6666668668525640",
+              "predictedRawLittleEndianHex": "6666668668525640"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9999999999395640",
+              "predictedRawLittleEndianHex": "9999999999395640"
+            }
+          ],
+          "offset": 408,
+          "storage": "binary64"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "f32(((x - 64) / 96) * 0.5)",
+          "field": "edgeBleed.opacity",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9d1acd3e",
+              "predictedRawLittleEndianHex": "9d1acd3e"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9d1acd3e",
+              "predictedRawLittleEndianHex": "9d1acd3e"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9d1acd3e",
+              "predictedRawLittleEndianHex": "9d1acd3e"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "9d1acd3e",
+              "predictedRawLittleEndianHex": "9d1acd3e"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "dd1ccb3e",
+              "predictedRawLittleEndianHex": "dd1ccb3e"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "dd1ccb3e",
+              "predictedRawLittleEndianHex": "dd1ccb3e"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3091c23e",
+              "predictedRawLittleEndianHex": "3091c23e"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3091c23e",
+              "predictedRawLittleEndianHex": "3091c23e"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3091c23e",
+              "predictedRawLittleEndianHex": "3091c23e"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3091c23e",
+              "predictedRawLittleEndianHex": "3091c23e"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3091c23e",
+              "predictedRawLittleEndianHex": "3091c23e"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3091c23e",
+              "predictedRawLittleEndianHex": "3091c23e"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "3091c23e",
+              "predictedRawLittleEndianHex": "3091c23e"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6885bf3e",
+              "predictedRawLittleEndianHex": "6885bf3e"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "6885bf3e",
+              "predictedRawLittleEndianHex": "6885bf3e"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7b2bb63e",
+              "predictedRawLittleEndianHex": "7b2bb63e"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7b2bb63e",
+              "predictedRawLittleEndianHex": "7b2bb63e"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7b2bb63e",
+              "predictedRawLittleEndianHex": "7b2bb63e"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7b2bb63e",
+              "predictedRawLittleEndianHex": "7b2bb63e"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7b2bb63e",
+              "predictedRawLittleEndianHex": "7b2bb63e"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7b2bb63e",
+              "predictedRawLittleEndianHex": "7b2bb63e"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7b2bb63e",
+              "predictedRawLittleEndianHex": "7b2bb63e"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7378ad3e",
+              "predictedRawLittleEndianHex": "7378ad3e"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7378ad3e",
+              "predictedRawLittleEndianHex": "7378ad3e"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7378ad3e",
+              "predictedRawLittleEndianHex": "7378ad3e"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7378ad3e",
+              "predictedRawLittleEndianHex": "7378ad3e"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7378ad3e",
+              "predictedRawLittleEndianHex": "7378ad3e"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7378ad3e",
+              "predictedRawLittleEndianHex": "7378ad3e"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "7378ad3e",
+              "predictedRawLittleEndianHex": "7378ad3e"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "087aa93e",
+              "predictedRawLittleEndianHex": "087aa93e"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "087aa93e",
+              "predictedRawLittleEndianHex": "087aa93e"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "0000a83e",
+              "predictedRawLittleEndianHex": "0000a83e"
+            }
+          ],
+          "offset": 416,
+          "storage": "binary32"
+        },
+        {
+          "bitwiseMatchCount": 32,
+          "expressionWithOperationOrder": "f32(f32(0.08) + f32(f32(0.24 - 0.08) * f32((x-48)/112)))",
+          "field": "sdrAdjustment.shadowOpacityShift",
+          "observations": [
+            {
+              "caseIndex": 1,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "03d7593e",
+              "predictedRawLittleEndianHex": "03d7593e"
+            },
+            {
+              "caseIndex": 2,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "03d7593e",
+              "predictedRawLittleEndianHex": "03d7593e"
+            },
+            {
+              "caseIndex": 3,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "03d7593e",
+              "predictedRawLittleEndianHex": "03d7593e"
+            },
+            {
+              "caseIndex": 4,
+              "dimensionBits": "0x40619d3f60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "03d7593e",
+              "predictedRawLittleEndianHex": "03d7593e"
+            },
+            {
+              "caseIndex": 5,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "60bf583e",
+              "predictedRawLittleEndianHex": "60bf583e"
+            },
+            {
+              "caseIndex": 6,
+              "dimensionBits": "0x4061855a60000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "60bf583e",
+              "predictedRawLittleEndianHex": "60bf583e"
+            },
+            {
+              "caseIndex": 7,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "470f543e",
+              "predictedRawLittleEndianHex": "470f543e"
+            },
+            {
+              "caseIndex": 8,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "470f543e",
+              "predictedRawLittleEndianHex": "470f543e"
+            },
+            {
+              "caseIndex": 9,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "470f543e",
+              "predictedRawLittleEndianHex": "470f543e"
+            },
+            {
+              "caseIndex": 10,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "470f543e",
+              "predictedRawLittleEndianHex": "470f543e"
+            },
+            {
+              "caseIndex": 11,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "470f543e",
+              "predictedRawLittleEndianHex": "470f543e"
+            },
+            {
+              "caseIndex": 12,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "470f543e",
+              "predictedRawLittleEndianHex": "470f543e"
+            },
+            {
+              "caseIndex": 13,
+              "dimensionBits": "0x40611ece40000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "470f543e",
+              "predictedRawLittleEndianHex": "470f543e"
+            },
+            {
+              "caseIndex": 14,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "8463523e",
+              "predictedRawLittleEndianHex": "8463523e"
+            },
+            {
+              "caseIndex": 15,
+              "dimensionBits": "0x4060fa40e0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "8463523e",
+              "predictedRawLittleEndianHex": "8463523e"
+            },
+            {
+              "caseIndex": 16,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "46424d3e",
+              "predictedRawLittleEndianHex": "46424d3e"
+            },
+            {
+              "caseIndex": 17,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "46424d3e",
+              "predictedRawLittleEndianHex": "46424d3e"
+            },
+            {
+              "caseIndex": 18,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "46424d3e",
+              "predictedRawLittleEndianHex": "46424d3e"
+            },
+            {
+              "caseIndex": 19,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "46424d3e",
+              "predictedRawLittleEndianHex": "46424d3e"
+            },
+            {
+              "caseIndex": 20,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "46424d3e",
+              "predictedRawLittleEndianHex": "46424d3e"
+            },
+            {
+              "caseIndex": 21,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "46424d3e",
+              "predictedRawLittleEndianHex": "46424d3e"
+            },
+            {
+              "caseIndex": 22,
+              "dimensionBits": "0x40608a09c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "46424d3e",
+              "predictedRawLittleEndianHex": "46424d3e"
+            },
+            {
+              "caseIndex": 23,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "967c483e",
+              "predictedRawLittleEndianHex": "967c483e"
+            },
+            {
+              "caseIndex": 24,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "967c483e",
+              "predictedRawLittleEndianHex": "967c483e"
+            },
+            {
+              "caseIndex": 25,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "967c483e",
+              "predictedRawLittleEndianHex": "967c483e"
+            },
+            {
+              "caseIndex": 26,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "967c483e",
+              "predictedRawLittleEndianHex": "967c483e"
+            },
+            {
+              "caseIndex": 27,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "967c483e",
+              "predictedRawLittleEndianHex": "967c483e"
+            },
+            {
+              "caseIndex": 28,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "967c483e",
+              "predictedRawLittleEndianHex": "967c483e"
+            },
+            {
+              "caseIndex": 29,
+              "dimensionBits": "0x406021a560000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "967c483e",
+              "predictedRawLittleEndianHex": "967c483e"
+            },
+            {
+              "caseIndex": 30,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "b84b463e",
+              "predictedRawLittleEndianHex": "b84b463e"
+            },
+            {
+              "caseIndex": 31,
+              "dimensionBits": "0x405fe370c0000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "b84b463e",
+              "predictedRawLittleEndianHex": "b84b463e"
+            },
+            {
+              "caseIndex": 32,
+              "dimensionBits": "0x405fc00000000000",
+              "matchedBitwise": true,
+              "observedRawLittleEndianHex": "587c453e",
+              "predictedRawLittleEndianHex": "587c453e"
+            }
+          ],
+          "offset": 788,
+          "storage": "binary32"
+        }
+      ],
+      "varyingSemanticByteOffsets": [
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        152,
+        153,
+        154,
+        155,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280,
+        281,
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        408,
+        409,
+        410,
+        411,
+        412,
+        413,
+        414,
+        415,
+        416,
+        417,
+        418,
+        419,
+        788,
+        789,
+        790,
+        791
+      ]
+    }
+  ]
+}
