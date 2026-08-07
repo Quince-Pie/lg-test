@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+"""Source contract for the direct-M1 runtime-unseen v4 crop executor."""
+
+from pathlib import Path
+import unittest
+
+
+SOURCE = (
+    Path(__file__)
+    .with_name("run_prepare_layer_live_crop_replay_v4_holdout_local_macos_26_6_1.sh")
+    .read_text(encoding="utf-8")
+)
+
+
+class RunPrepareLayerLiveCropReplayV4HoldoutTests(unittest.TestCase):
+    def test_unseen_profile_and_preregistration_are_fixed(self) -> None:
+        for fragment in (
+            "LG_GLASS_GEOMETRY=circle-498-center",
+            "LG_GLASS_MATERIAL=regular",
+            "LG_GLASS_APPEARANCE=dark",
+            "LG_TRANSITION_DIRECTION=materialize",
+            '--preregistration "$preregistration"',
+            "4bddc2d722bdd0b96db32fd4d989cb22a457d4c3196ee17360d017e9fb16e47c",
+        ):
+            self.assertIn(fragment, SOURCE)
+
+    def test_direct_retina_native_and_nix_analysis_are_separated(self) -> None:
+        self.assertIn("/Library/Developer/CommandLineTools/usr/bin/lldb", SOURCE)
+        self.assertIn("/nix/var/nix/profiles/default/bin/nix", SOURCE)
+        self.assertIn('--extra-experimental-features "nix-command flakes"', SOURCE)
+        self.assertIn("native capture environment contains a Nix store path", SOURCE)
+        self.assertNotIn("gh run", SOURCE)
+
+
+if __name__ == "__main__":
+    unittest.main()

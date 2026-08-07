@@ -11377,3 +11377,12 @@ and all 768 binary64 components match with maximum ULP distance `[0,0,0,0]`
 and no tolerance. The canonical result is
 `Analysis/prepare_layer_live_crop_replay_v4_reanalysis_result.json`. This is
 calibration evidence only; a fresh runtime-unseen v4 geometry remains mandatory.
+
+Before opening any `circle-498-center` runtime output, that stable-binary
+geometry was frozen as the v4 transfer holdout in
+`Analysis/prepare_layer_live_crop_replay_v4_holdout_local_macos_26_6_1_preregistration.json`.
+It had zero retained runtime evidence at freeze time. The gate pins the new
+endpoint-translation grouping, every inherited arithmetic and live-code rule,
+exact last-store selection, physical Retina scale, zero tolerance, and the
+unchanged outer Walle shader/flake hashes. Passing still grants no authority for
+selected-region/origin, compositor/color, product frames, or shader changes.
