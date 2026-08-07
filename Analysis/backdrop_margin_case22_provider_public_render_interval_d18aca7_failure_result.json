@@ -1,0 +1,45 @@
+{
+  "artifact": {
+    "captureSessionPreflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "directory": "local-case22-provider-public-render-interval-d18aca7-run1",
+    "lldbLogSHA256": "36c7e5d261405b703d87e1206dd3bfc8331ff11c0bcf0bd9b4f63723a7e59a73",
+    "timelineSHA256": "1fc9091be56940b5b84f2926ba4df999eb304fa1189afe91792d1eca48c22599",
+    "traceSHA256": "51686c1e98de879af7e5694c6925bd6673d32ef0a5a01dcfe892ac6ed59ca85d",
+    "validationStderrSHA256": "35112e555bf4b46864d43137b79ba7f2291e3ddf5d6efe67f38c3d79580e4540"
+  },
+  "backdropMarginCase22ProviderPublicRenderIntervalFailureResultSchemaVersion": 1,
+  "capture": {
+    "allIntervalsClosed": true,
+    "commit": "d18aca7fe2638d25eb347df96fe9d5d3a3428060",
+    "finalActiveInterval": null,
+    "finalCallCount": 0,
+    "finalEventCount": 64,
+    "finalFailureCount": 0,
+    "finalIntervalCount": 32,
+    "finalPendingCallCount": 0,
+    "lldbExitStatus": 0,
+    "statusBeforeFinalization": "all-render-intervals-closed",
+    "validationExitStatus": 2,
+    "validationFailure": "provider call count differs"
+  },
+  "classification": "clean prospective rejection of the hypothesis that case-22 provider calls execute synchronously inside the 32 exact static-carrier CARenderer replay intervals",
+  "interpretation": {
+    "all32StructuralRenderIntervalsAuthenticated": true,
+    "captureAdapterFailed": false,
+    "frameworkAndMainBinaryIdentityAuthenticated": true,
+    "providerCallsObservedInsideIntervals": 0,
+    "providerFieldPredictionsEvaluated": false,
+    "providerCallsMustBeMeasuredDuringEarlierLiveTimeline": true,
+    "renderIntervalTemporalHypothesisPassed": false,
+    "replacementCaptureSelectionChangesRuntimeWindow": true,
+    "replacementRequiresSeparateProspectivePreregistration": true
+  },
+  "productAuthority": {
+    "authenticatedPublicProviderTemporalJoinEstablished": false,
+    "cropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "physicalRetinaColorPixelCompositorTransferEstablished": false,
+    "productionShaderAuthorized": false
+  }
+}

@@ -8523,6 +8523,53 @@ SHA-256
 Because the failed run crossed no render interval and evaluated no optical
 prediction, the frozen predictions and acceptance criteria remain unchanged.
 
+The binary-authenticated replacement at commit
+`d18aca7fe2638d25eb347df96fe9d5d3a3428060` finally crossed bootstrap
+and cleanly rejected the interval-placement hypothesis. All 32 exact
+static-carrier render intervals opened and closed in order, the application
+and LLDB both exited zero, there were 64 boundary events and no capture
+failure, but **zero** case-22 provider calls occurred inside any interval.
+The strict validator therefore failed with `provider call count differs`.
+This is a real negative result, not an adapter failure: the interval trace
+SHA-256 is
+`51686c1e98de879af7e5694c6925bd6673d32ef0a5a01dcfe892ac6ed59ca85d`.
+The immutable failure result is
+`Analysis/backdrop_margin_case22_provider_public_render_interval_d18aca7_failure_result.json`,
+SHA-256
+`01daf6b9e31cb0eacf45a250a2df605de7b10063a0b8668e422347b0db139e06`.
+No provider object was selected and none of the 18 optical field predictions
+was evaluated. The failed hypothesis may not be relabelled as a pass.
+
+The separately preregistered successor measures the earlier **live** timeline
+where SwiftUI creates the provider. Its structural marker is the exact
+`transitionTimelineSample` function at main-module offset `0x8be38`: 1,652
+bytes with complete-code SHA-256
+`f17ee5eb93c3732cfca195760366e9b7107fb5053d4cff519c5de3092a83fc85`.
+The unchanged binary invokes that marker exactly 33 times. The new capture
+keeps the exact `updateSDFEffects -> Group.margin -> wrapper -> provider`
+chain disabled before marker 0, records every completed call and its event
+order between adjacent markers, and disables the chain at marker 32. Captured
+objects, public values, returns, images, and pixels cannot arm a breakpoint or
+choose a batch.
+
+For each non-endpoint sample 1 through 31, the frozen blind gate requires
+exactly one four-word match in the immediately preceding structural marker
+batch, no one-, two-, or three-word collision in that batch, global uniqueness
+within the retained live-timeline calls, all 18 loaded-field predictions, and
+an exact positive-zero provider return. Sample 32 is retained and reported but
+its match count is explicitly exploratory. The preregistration SHA-256 is
+`87c37acbc901f117b91857346246f82c19df82b4a841864aa489b5e7f0ebeb02`;
+the capture, validator, and native runner SHA-256 values are respectively
+`145cf4d04650769f150f865e32f90671f9ab7f3d536d907e970b9f01bf690a59`,
+`29ae54666b9ea0c2949ead946d1ccda578a880c8b269d1a67f6d5e83aab248d8`,
+and
+`baaf745aa69917b4b320f667c00452754e4469e7f626639c17c1421e5c2c332b`.
+The native process uses only Apple Command Line Tools and no Nix store path.
+Even a complete pass establishes only the same-profile live marker-batch join;
+fresh-profile construction, crop/allocation, physical Retina composition,
+independent Walle zero-byte frames, shader authority, and Liquid Glass parity
+remain open.
+
 ### Native `BackgroundFilter` metadata and constructor boundary
 
 The locked presentation session does not prevent static analysis of the exact
@@ -8758,6 +8805,13 @@ The gate can establish the same-profile public-to-`Parameters` construction
 join. It cannot establish a fresh-profile law, general crop/allocation,
 physical compositor/color behavior, Walle frame parity, or Liquid Glass
 parity, and it does not authorize a shader change.
+
+This constructor gate is currently parked: its required `d18aca7` predecessor
+is the cleanly failed static-carrier interval gate above, so the predecessor
+validator correctly prevents launch. It must be moved to the authenticated
+live timeline-marker boundary only after that new predecessor passes; its
+current frozen files are retained as a rejected sequencing attempt, not as an
+executed or successful constructor result.
 
 ### Exact `ResolvedRecipe` producer provenance
 
