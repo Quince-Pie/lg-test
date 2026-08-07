@@ -1,0 +1,752 @@
+{
+  "byteCopyStub": {
+    "address": "0x2409a5910",
+    "byteCount": 16,
+    "callTargets": {
+      "builderAlternateRecipeToWorkingParameters": "0x2409a5910",
+      "builderDefaultSeedToWorkingParameters": "0x2409a5910",
+      "builderWorkingParametersToRecipePrefix": "0x2409a5910",
+      "defaultInitializerNestedValue": "0x2409a5910",
+      "helperRecipePrefixToLocalParameters": "0x2409a5910"
+    },
+    "sha256": "6b5abc621f7b37a3403371e2107e0ceb2a9d9de358b781d172ce768c5d7772f6"
+  },
+  "claims": {
+    "constructorAndProducerAreDownstreamOfResolvedRecipeBuilder": true,
+    "cropAllocationPolicyEstablished": false,
+    "defaultSeedPaddingIsDeterministicZeroFill": true,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "opticalLawFullyDecoded": false,
+    "parametersAreResolvedRecipeFieldZero": true,
+    "parametersFieldByteCount": 1025,
+    "parametersFieldOffset": 0,
+    "productionShaderChangeAuthorized": false,
+    "publicControlsToParametersLawEstablished": false,
+    "remainingStaticLawRegion": "0x240981b4c..0x240982e80",
+    "resolveLayersHelperOnlyCopiesAlreadyProducedParameters": true,
+    "resolvedRecipeBuilderIsExactProducerBoundary": true,
+    "retinaCompositorColorLawEstablished": false
+  },
+  "classification": "native static type/code/data provenance; no Apple application, render, image, public sample value, crop, or provider return is read",
+  "codeRegions": {
+    "backgroundFilterProducer": {
+      "byteCount": 1644,
+      "endExclusive": "0x240919614",
+      "instructionCount": 411,
+      "sha256": "0729f7b0f874c0fb9fb64fa3383a6f2ed328d1dc55fdce53b82038a188df6f97",
+      "start": "0x240918fa8"
+    },
+    "defaultParametersInitializer": {
+      "byteCount": 1344,
+      "endExclusive": "0x24093c638",
+      "instructionCount": 336,
+      "sha256": "b1691f1577f440c764a86ccd1a1ddc32fbae80fff16aba6ea12e0542233faa75",
+      "start": "0x24093c0f8"
+    },
+    "resolveLayers": {
+      "byteCount": 1036,
+      "endExclusive": "0x24097c040",
+      "instructionCount": 259,
+      "sha256": "f66d0b6213c93d6fa532688faba56d529b8ba1b0ff8290a4c73d7c22c1a8ffdf",
+      "start": "0x24097bc34"
+    },
+    "resolveLayersHelper": {
+      "byteCount": 15840,
+      "endExclusive": "0x240926268",
+      "instructionCount": 3960,
+      "sha256": "e929428281b6f7d9296b9ed290dc9ea3a9f91c18c331e1735391e11167709092",
+      "start": "0x240922488"
+    },
+    "resolvedRecipeBuilder": {
+      "byteCount": 4916,
+      "endExclusive": "0x240982e80",
+      "instructionCount": 1229,
+      "sha256": "07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4",
+      "start": "0x240981b4c"
+    },
+    "resolvedRecipeIntermediateBuilder": {
+      "byteCount": 3452,
+      "endExclusive": "0x240980f38",
+      "instructionCount": 863,
+      "sha256": "ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6",
+      "start": "0x2409801bc"
+    },
+    "resolvedRecipeMetadataAccessor": {
+      "byteCount": 76,
+      "endExclusive": "0x2409860ac",
+      "instructionCount": 19,
+      "sha256": "31eda33fd9f60223ed013edefaed24c2a5009620fa7fdfefbd68b4edda782d99",
+      "start": "0x240986060"
+    }
+  },
+  "defaultParametersSeed": {
+    "byteCount": 1025,
+    "initialSHA256": "c55b90509b8cb9bac53fbdddfc93d4e572685c509f1218423c43a5d6013bbd48",
+    "initializerDirectWriteByteCount": 947,
+    "initializerDirectWriteRanges": [
+      {
+        "byteCount": 4,
+        "endExclusive": 4,
+        "start": 0
+      },
+      {
+        "byteCount": 161,
+        "endExclusive": 169,
+        "start": 8
+      },
+      {
+        "byteCount": 73,
+        "endExclusive": 249,
+        "start": 176
+      },
+      {
+        "byteCount": 53,
+        "endExclusive": 309,
+        "start": 256
+      },
+      {
+        "byteCount": 74,
+        "endExclusive": 386,
+        "start": 312
+      },
+      {
+        "byteCount": 106,
+        "endExclusive": 498,
+        "start": 392
+      },
+      {
+        "byteCount": 277,
+        "endExclusive": 777,
+        "start": 500
+      },
+      {
+        "byteCount": 33,
+        "endExclusive": 817,
+        "start": 784
+      },
+      {
+        "byteCount": 49,
+        "endExclusive": 873,
+        "start": 824
+      },
+      {
+        "byteCount": 25,
+        "endExclusive": 905,
+        "start": 880
+      },
+      {
+        "byteCount": 25,
+        "endExclusive": 937,
+        "start": 912
+      },
+      {
+        "byteCount": 17,
+        "endExclusive": 961,
+        "start": 944
+      },
+      {
+        "byteCount": 17,
+        "endExclusive": 985,
+        "start": 968
+      },
+      {
+        "byteCount": 33,
+        "endExclusive": 1025,
+        "start": 992
+      }
+    ],
+    "onceTokenAddress": "0x298f07d08",
+    "onceTokenInitialBytesHex": "0000000000000000",
+    "zeroFillOnlyPaddingByteCount": 78,
+    "zeroFillOnlyPaddingRanges": [
+      {
+        "byteCount": 4,
+        "endExclusive": 8,
+        "start": 4
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 176,
+        "start": 169
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 256,
+        "start": 249
+      },
+      {
+        "byteCount": 3,
+        "endExclusive": 312,
+        "start": 309
+      },
+      {
+        "byteCount": 6,
+        "endExclusive": 392,
+        "start": 386
+      },
+      {
+        "byteCount": 2,
+        "endExclusive": 500,
+        "start": 498
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 784,
+        "start": 777
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 824,
+        "start": 817
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 880,
+        "start": 873
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 912,
+        "start": 905
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 944,
+        "start": 937
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 968,
+        "start": 961
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 992,
+        "start": 985
+      }
+    ],
+    "zeroFilledCommonStorageAddress": "0x298f0e710"
+  },
+  "designLibraryResolvedRecipeProvenanceAnalysisSchemaVersion": 1,
+  "directBLCallsites": {
+    "backgroundFilterProducer": [
+      "0x240923830"
+    ],
+    "defaultParametersInitializer": [],
+    "resolveLayers": [
+      "0x24097730c"
+    ],
+    "resolveLayersHelper": [
+      "0x24097bfd0"
+    ],
+    "resolvedRecipeBuilder": [
+      "0x240980ef0"
+    ],
+    "resolvedRecipeIntermediateBuilder": [
+      "0x24091f9e0",
+      "0x240923628"
+    ],
+    "resolvedRecipeMetadataAccessor": [
+      "0x24091f920",
+      "0x24091ff20",
+      "0x24091ff78",
+      "0x24091ffd0",
+      "0x2409226f8",
+      "0x240982d90"
+    ]
+  },
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "instructionContracts": [
+    {
+      "address": "0x2409224bc",
+      "mnemonic": "str",
+      "operands": "x20, [x19, #0x298]"
+    },
+    {
+      "address": "0x2409226f8",
+      "mnemonic": "bl",
+      "operands": "0x240986060"
+    },
+    {
+      "address": "0x2409226fc",
+      "mnemonic": "str",
+      "operands": "x0, [x19, #0x258]"
+    },
+    {
+      "address": "0x2409235f0",
+      "mnemonic": "ldr",
+      "operands": "x8, [x22]"
+    },
+    {
+      "address": "0x240923628",
+      "mnemonic": "bl",
+      "operands": "0x2409801bc"
+    },
+    {
+      "address": "0x240923630",
+      "mnemonic": "ldr",
+      "operands": "x21, [x19, #0x258]"
+    },
+    {
+      "address": "0x24092369c",
+      "mnemonic": "mov",
+      "operands": "x0, x28"
+    },
+    {
+      "address": "0x2409236a0",
+      "mnemonic": "ldr",
+      "operands": "x22, [x19, #0x218]"
+    },
+    {
+      "address": "0x2409236ac",
+      "mnemonic": "add",
+      "operands": "x28, x19, #0x6d8"
+    },
+    {
+      "address": "0x2409236b0",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x6d8"
+    },
+    {
+      "address": "0x2409236b4",
+      "mnemonic": "mov",
+      "operands": "x1, x22"
+    },
+    {
+      "address": "0x2409236b8",
+      "mnemonic": "mov",
+      "operands": "w2, #0x401"
+    },
+    {
+      "address": "0x2409236c0",
+      "mnemonic": "mov",
+      "operands": "x11, x22"
+    },
+    {
+      "address": "0x2409236c4",
+      "mnemonic": "ldr",
+      "operands": "x22, [x22, #0x408]"
+    },
+    {
+      "address": "0x2409236c8",
+      "mnemonic": "ldr",
+      "operands": "x20, [x11, #0x410]"
+    },
+    {
+      "address": "0x24092381c",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x6d8"
+    },
+    {
+      "address": "0x240923824",
+      "mnemonic": "mov",
+      "operands": "x8, x21"
+    },
+    {
+      "address": "0x240923828",
+      "mnemonic": "ldr",
+      "operands": "x2, [x19, #0x218]"
+    },
+    {
+      "address": "0x240923830",
+      "mnemonic": "bl",
+      "operands": "0x240918fa8"
+    },
+    {
+      "address": "0x24093c4fc",
+      "mnemonic": "adrp",
+      "operands": "x19, 361938"
+    },
+    {
+      "address": "0x24093c500",
+      "mnemonic": "add",
+      "operands": "x19, x19, #0x710"
+    },
+    {
+      "address": "0x24093c538",
+      "mnemonic": "str",
+      "operands": "wzr, [x19]"
+    },
+    {
+      "address": "0x24093c5b4",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x205"
+    },
+    {
+      "address": "0x24093c5b8",
+      "mnemonic": "add",
+      "operands": "x1, sp, #0x5f0"
+    },
+    {
+      "address": "0x24093c5bc",
+      "mnemonic": "mov",
+      "operands": "w2, #0x104"
+    },
+    {
+      "address": "0x24093c618",
+      "mnemonic": "strb",
+      "operands": "w20, [x19, #0x400]"
+    },
+    {
+      "address": "0x24097bc58",
+      "mnemonic": "mov",
+      "operands": "x21, x20"
+    },
+    {
+      "address": "0x24097be38",
+      "mnemonic": "stp",
+      "operands": "x19, x21, [x29, #-0x70]"
+    },
+    {
+      "address": "0x24097bfc4",
+      "mnemonic": "mov",
+      "operands": "x8, x23"
+    },
+    {
+      "address": "0x24097bfc8",
+      "mnemonic": "ldur",
+      "operands": "x0, [x29, #-0x58]"
+    },
+    {
+      "address": "0x24097bfcc",
+      "mnemonic": "ldur",
+      "operands": "x20, [x29, #-0x68]"
+    },
+    {
+      "address": "0x24097bfd0",
+      "mnemonic": "bl",
+      "operands": "0x240922488"
+    },
+    {
+      "address": "0x24098020c",
+      "mnemonic": "mov",
+      "operands": "x20, x0"
+    },
+    {
+      "address": "0x240980210",
+      "mnemonic": "stur",
+      "operands": "x8, [x29, #-0xe0]"
+    },
+    {
+      "address": "0x240980ee0",
+      "mnemonic": "ldp",
+      "operands": "x8, x2, [x29, #-0xe0]"
+    },
+    {
+      "address": "0x240980ee4",
+      "mnemonic": "mov",
+      "operands": "x0, x22"
+    },
+    {
+      "address": "0x240980ee8",
+      "mnemonic": "ldur",
+      "operands": "x1, [x29, #-0xa8]"
+    },
+    {
+      "address": "0x240980eec",
+      "mnemonic": "mov.16b",
+      "operands": "v0, v8"
+    },
+    {
+      "address": "0x240980ef0",
+      "mnemonic": "bl",
+      "operands": "0x240981b4c"
+    },
+    {
+      "address": "0x240981ba0",
+      "mnemonic": "str",
+      "operands": "x2, [x19, #0x88]"
+    },
+    {
+      "address": "0x240981ba4",
+      "mnemonic": "mov",
+      "operands": "x25, x1"
+    },
+    {
+      "address": "0x240981ba8",
+      "mnemonic": "mov",
+      "operands": "x23, x0"
+    },
+    {
+      "address": "0x240981bac",
+      "mnemonic": "mov",
+      "operands": "x27, x8"
+    },
+    {
+      "address": "0x240981e18",
+      "mnemonic": "adrp",
+      "operands": "x8, 361862"
+    },
+    {
+      "address": "0x240981e1c",
+      "mnemonic": "ldr",
+      "operands": "x8, [x8, #0xd08]"
+    },
+    {
+      "address": "0x240981e20",
+      "mnemonic": "cmn",
+      "operands": "x8, #0x1"
+    },
+    {
+      "address": "0x240981e24",
+      "mnemonic": "b.ne",
+      "operands": "0x240982e60"
+    },
+    {
+      "address": "0x240981e38",
+      "mnemonic": "adrp",
+      "operands": "x1, 361869"
+    },
+    {
+      "address": "0x240981e3c",
+      "mnemonic": "add",
+      "operands": "x1, x1, #0x710"
+    },
+    {
+      "address": "0x240981e40",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0xc60"
+    },
+    {
+      "address": "0x240981e44",
+      "mnemonic": "mov",
+      "operands": "w2, #0x401"
+    },
+    {
+      "address": "0x240982b18",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0xc60"
+    },
+    {
+      "address": "0x240982b1c",
+      "mnemonic": "add",
+      "operands": "x1, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240982b20",
+      "mnemonic": "add",
+      "operands": "x1, x1, #0x68"
+    },
+    {
+      "address": "0x240982b24",
+      "mnemonic": "mov",
+      "operands": "w2, #0x401"
+    },
+    {
+      "address": "0x240982d00",
+      "mnemonic": "ldr",
+      "operands": "x23, [x19]"
+    },
+    {
+      "address": "0x240982d90",
+      "mnemonic": "bl",
+      "operands": "0x240986060"
+    },
+    {
+      "address": "0x240982dfc",
+      "mnemonic": "add",
+      "operands": "x1, x19, #0xc60"
+    },
+    {
+      "address": "0x240982e00",
+      "mnemonic": "mov",
+      "operands": "x0, x23"
+    },
+    {
+      "address": "0x240982e04",
+      "mnemonic": "mov",
+      "operands": "w2, #0x401"
+    },
+    {
+      "address": "0x240982e0c",
+      "mnemonic": "ldr",
+      "operands": "x8, [x19, #0x460]"
+    },
+    {
+      "address": "0x240982e10",
+      "mnemonic": "str",
+      "operands": "x8, [x23, #0x408]"
+    },
+    {
+      "address": "0x240982e14",
+      "mnemonic": "str",
+      "operands": "x21, [x23, #0x410]"
+    },
+    {
+      "address": "0x240982e18",
+      "mnemonic": "ldrsw",
+      "operands": "x8, [x20, #0x20]"
+    },
+    {
+      "address": "0x240982e1c",
+      "mnemonic": "strb",
+      "operands": "w22, [x23, x8]"
+    },
+    {
+      "address": "0x240982e20",
+      "mnemonic": "ldrsw",
+      "operands": "x8, [x20, #0x24]"
+    },
+    {
+      "address": "0x240982e24",
+      "mnemonic": "ldr",
+      "operands": "w9, [x19, #0x46c]"
+    },
+    {
+      "address": "0x240982e28",
+      "mnemonic": "strb",
+      "operands": "w9, [x23, x8]"
+    },
+    {
+      "address": "0x240982e60",
+      "mnemonic": "adrp",
+      "operands": "x0, 361861"
+    },
+    {
+      "address": "0x240982e64",
+      "mnemonic": "add",
+      "operands": "x0, x0, #0xd08"
+    },
+    {
+      "address": "0x240982e68",
+      "mnemonic": "adrp",
+      "operands": "x16, -70"
+    },
+    {
+      "address": "0x240982e6c",
+      "mnemonic": "add",
+      "operands": "x16, x16, #0xf8"
+    },
+    {
+      "address": "0x240982e70",
+      "mnemonic": "paciza",
+      "operands": "x16"
+    },
+    {
+      "address": "0x240982e74",
+      "mnemonic": "mov",
+      "operands": "x1, x16"
+    },
+    {
+      "address": "0x240982e7c",
+      "mnemonic": "b",
+      "operands": "0x240981e28"
+    },
+    {
+      "address": "0x240986084",
+      "mnemonic": "adrp",
+      "operands": "x16, 76"
+    },
+    {
+      "address": "0x240986088",
+      "mnemonic": "add",
+      "operands": "x16, x16, #0xf1c"
+    }
+  ],
+  "provenanceChain": [
+    {
+      "boundary": "Resolved.resolveLayers self to stripped helper",
+      "callsite": "0x24097bfd0",
+      "destination": "helper x20, stored at frame +0x298",
+      "source": "original Swift self in x20"
+    },
+    {
+      "boundary": "Resolved state to ResolvedRecipe",
+      "builderCallsite": "0x240980ef0",
+      "callsite": "0x240923628",
+      "destination": "ResolvedRecipe indirect result in x8",
+      "source": "resolved state/context inputs"
+    },
+    {
+      "boundary": "default Parameters to recipe working Parameters",
+      "byteCount": 1025,
+      "callsite": "0x240981e48",
+      "destination": "recipe-builder stack +0xc60",
+      "source": "zero-filled once-initialized common storage 0x298f0e710"
+    },
+    {
+      "boundary": "working Parameters to ResolvedRecipe.parameters",
+      "byteCount": 1025,
+      "callsite": "0x240982e08",
+      "destination": "ResolvedRecipe output byte 0",
+      "source": "recipe-builder stack +0xc60"
+    },
+    {
+      "boundary": "ResolvedRecipe.parameters to local constructor input",
+      "byteCount": 1025,
+      "callsite": "0x2409236bc",
+      "destination": "resolveLayers helper frame +0x6d8",
+      "source": "ResolvedRecipe byte 0"
+    },
+    {
+      "boundary": "local Parameters to BackgroundFilter producer",
+      "callsite": "0x240923830",
+      "destination": "backgroundFilterProducer x0",
+      "source": "resolveLayers helper frame +0x6d8"
+    }
+  ],
+  "resolvedRecipe": {
+    "descriptorAddress": "0x2409d2f1c",
+    "descriptorFlags": "0x00110051",
+    "fieldDescriptorAddress": "0x2409d8aa8",
+    "fieldOffsetVectorWords": 2,
+    "fields": [
+      {
+        "flags": "0x00000002",
+        "index": 0,
+        "name": "parameters",
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV"
+      },
+      {
+        "flags": "0x00000002",
+        "index": 1,
+        "name": "layers",
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV6LayersV"
+      },
+      {
+        "flags": "0x00000002",
+        "index": 2,
+        "name": "flags",
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV16EnvironmentFlagsV"
+      },
+      {
+        "flags": "0x00000002",
+        "index": 3,
+        "name": "colorScheme",
+        "typeReference": "_____ 7SwiftUI11ColorSchemeO"
+      },
+      {
+        "flags": "0x00000002",
+        "index": 4,
+        "name": "optimizationLevel",
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV25ResolvedOptimizationLevelO"
+      },
+      {
+        "flags": "0x00000002",
+        "index": 5,
+        "name": "contentEffect",
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV21ResolvedContentEffectO"
+      }
+    ],
+    "name": "ResolvedRecipe"
+  },
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "metadataAnalyzerSHA256": "a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff",
+    "metadataAnalyzerSource": "Analysis/analyze_designlibrary_background_filter_metadata_local_macos_26_6_1.py",
+    "python": "3.9.6",
+    "source": "Analysis/analyze_designlibrary_resolved_recipe_provenance_local_macos_26_6_1.py",
+    "sourceSHA256": "7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145"
+  }
+}

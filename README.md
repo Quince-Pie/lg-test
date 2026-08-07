@@ -8673,3 +8673,74 @@ store path enters the native process. The gate can establish the same-profile
 public-to-`Parameters` construction join. It cannot establish a fresh-profile
 law, general crop/allocation, physical compositor/color behavior, Walle frame
 parity, or Liquid Glass parity, and it does not authorize a shader change.
+
+### Exact `ResolvedRecipe` producer provenance
+
+Static provenance now corrects the provisional `parametersProducerCaller`
+name in the earlier metadata result. The 15,840-byte region at
+`0x240922488..0x240926268` is a stripped helper called by the exported
+`GlassMaterialProvider.Resolved.resolveLayers(in:)`; it does not create the
+1,025-byte `Parameters` value at the `BackgroundFilter` callsite. It copies an
+already-created `ResolvedRecipe` field into local storage. The frozen metadata
+result is retained unchanged for reproducibility, while new analysis uses the
+mechanically accurate name `resolveLayersHelper`.
+
+The exact type descriptor at `0x2409d2f1c` is `ResolvedRecipe`. Its six fields,
+in declaration order, are `parameters`, `layers`, `flags`, `colorScheme`,
+`optimizationLevel`, and `contentEffect`. `parameters` is field zero and is
+exactly `GlassMaterialProvider.Parameters`. Native code closes the byte path:
+
+```text
+Resolved self
+  -> resolveLayers helper                         call 0x24097bfd0
+  -> ResolvedRecipe builder                       call 0x240980ef0
+  -> ResolvedRecipe.parameters [0,1025)           copy 0x240982e08
+  -> helper-local Parameters [0,1025)              copy 0x2409236bc
+  -> BackgroundFilter producer x0                 call 0x240923830
+  -> BackgroundFilter constructor
+```
+
+The intermediate builder at `0x2409801bc..0x240980f38` is 3,452 bytes with
+SHA-256
+`ba0ad1081cece802ccd1e148660a542145f95bf57a92de4407a3fad55f4679c6`.
+It calls the exact `ResolvedRecipe` builder at
+`0x240981b4c..0x240982e80`, a 4,916-byte region with SHA-256
+`07d9b8571ca8fed42e1d8e71b312f00a9c9713ce19f406d6f2c15a9d2403fde4`.
+That builder is now the authenticated upstream producer boundary. The helper,
+recipe builder, alternate full-recipe path, and final output path all move the
+1,025-byte value through the same authenticated 16-byte copy stub at
+`0x2409a5910`, SHA-256
+`6b5abc621f7b37a3403371e2107e0ceb2a9d9de358b781d172ce768c5d7772f6`.
+
+The builder begins from once-initialized storage at `0x298f0e710`. The storage
+is in a zero-filled `__DATA_DIRTY,__common` region, so bytes not explicitly
+written by the initializer remain deterministic zero rather than
+uninitialized memory. The exact 1,344-byte initializer at
+`0x24093c0f8..0x24093c638`, SHA-256
+`b1691f1577f440c764a86ccd1a1ddc32fbae80fff16aba6ea12e0542233faa75`,
+directly writes 947 of 1,025 bytes; the remaining 78 are zero-fill-only Swift
+layout gaps. The recipe builder copies the complete seed at `0x240981e48`,
+applies its merge/resolution logic, can replace it with one complete alternate
+recipe at `0x240982b28`, and copies the final complete value to field zero at
+`0x240982e08`.
+
+The native analyzer and canonical result are
+`Analysis/analyze_designlibrary_resolved_recipe_provenance_local_macos_26_6_1.py`,
+SHA-256
+`7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145`,
+and
+`Analysis/designlibrary_resolved_recipe_provenance_local_macos_26_6_1_result.json`,
+SHA-256
+`f184a3326cf2b313e492bdc00f6fa8927ea926d9efbb1de2831ba4f3a2f22391`.
+It authenticates the complete call graph, code bytes, critical instructions,
+descriptor, copy targets, once token, zero-filled storage, and initializer
+write coverage without launching an Apple application or reading any render
+outcome.
+
+This closes the lifecycle and byte-provenance ambiguity, not the optical law.
+The unresolved static law is now isolated to the exact recipe-builder region
+`0x240981b4c..0x240982e80`; the frozen prospective public-to-`Parameters`
+capture remains necessary to decode which public controls and environment
+states select each branch and value. Crop/allocation, Retina compositor/color
+behavior, independent Walle zero-byte frame parity, and Liquid Glass parity
+remain open. No production shader change is authorized.
