@@ -1,0 +1,2068 @@
+{
+  "backgroundFilter": {
+    "descriptorAddress": "0x2409d2334",
+    "descriptorFlags": "0x00100051",
+    "fieldDescriptorAddress": "0x2409d7154",
+    "fieldOffsetVectorWords": 2,
+    "fields": [
+      {
+        "flags": "0x00000002",
+        "name": "layerIndex",
+        "offset": 0,
+        "typeReference": "Si",
+        "typeReferenceAddress": "0x2409bcb02"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "shadow",
+        "offset": 8,
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV6ShadowV",
+        "typeReferenceAddress": "0x2409c7004"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "blur",
+        "offset": 152,
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV4BlurV",
+        "typeReferenceAddress": "0x2409c700a"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "refraction",
+        "offset": 224,
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV10RefractionV",
+        "typeReferenceAddress": "0x2409c7010"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "face",
+        "offset": 276,
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV11FaceEffectsV",
+        "typeReferenceAddress": "0x2409c7016"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "bleed",
+        "offset": 352,
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV9EdgeBleedV",
+        "typeReferenceAddress": "0x2409c701c"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "sdrAdjustment",
+        "offset": 464,
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV13SDRAdjustmentV",
+        "typeReferenceAddress": "0x2409c7022"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "flags",
+        "offset": 496,
+        "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV16EnvironmentFlagsV",
+        "typeReferenceAddress": "0x2409c7028"
+      }
+    ],
+    "metadata": {
+      "extraInhabitantCount": 254,
+      "fieldOffsets": [
+        0,
+        8,
+        152,
+        224,
+        276,
+        352,
+        464,
+        496
+      ],
+      "metadataAddress": "0x29bdf4358",
+      "metadataDescriptorRuntimeAddress": "0x24946e334",
+      "size": 504,
+      "stride": 504,
+      "valueWitnessFlags": "0x02020007",
+      "valueWitnessTableAddress": "0x29bdf42f0",
+      "valueWitnessTableMapped": true
+    },
+    "name": "BackgroundFilter"
+  },
+  "claims": {
+    "captured384BytesWerePrefixOnly": true,
+    "completePayloadByteCount": 504,
+    "concreteProviderPayloadType": "DesignLibrary.GlassMaterialProvider.BackgroundFilter",
+    "constructorInputBoundaryRecovered": true,
+    "cropAllocationPolicyRecovered": false,
+    "liquidGlassParityEstablished": false,
+    "parametersLayoutRecovered": true,
+    "productionShaderChangeAuthorized": false,
+    "publicInputConstructionRecovered": false
+  },
+  "classification": "native static Swift metadata decode; no Apple render value, image, crop, margin, or provider return selected any descriptor",
+  "codeRegions": {
+    "backgroundFilterConstructor": {
+      "byteCount": 1044,
+      "directBLCallsites": [
+        "0x240919334"
+      ],
+      "end": "0x24091c114",
+      "sha256": "71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d",
+      "start": "0x24091bd00"
+    },
+    "backgroundFilterMetadataAccessor": {
+      "byteCount": 16,
+      "directBLCallsites": [],
+      "end": "0x24091c298",
+      "sha256": "e28eaa1552a8a8e79e1831e7067b6ebba20a4b6a26b4cb041d7f1e84f83faddd",
+      "start": "0x24091c288"
+    },
+    "backgroundFilterProducer": {
+      "byteCount": 1644,
+      "directBLCallsites": [
+        "0x240923830"
+      ],
+      "end": "0x240919614",
+      "sha256": "0729f7b0f874c0fb9fb64fa3383a6f2ed328d1dc55fdce53b82038a188df6f97",
+      "start": "0x240918fa8"
+    },
+    "filterArrayGetter": {
+      "byteCount": 2592,
+      "directBLCallsites": [],
+      "end": "0x240918eac",
+      "sha256": "0abc68898237c57aa2c31d54568649f57750241ea6cd4fe9c995d0b9857f826a",
+      "start": "0x24091848c"
+    },
+    "parametersMetadataAccessor": {
+      "byteCount": 16,
+      "directBLCallsites": [],
+      "end": "0x240945cd0",
+      "sha256": "82453ec8244c4579ee21f5aa651cc90079d0d0283736249bff934b2e29d58561",
+      "start": "0x240945cc0"
+    },
+    "parametersProducerCaller": {
+      "byteCount": 15840,
+      "directBLCallsites": [
+        "0x24097bfd0"
+      ],
+      "end": "0x240926268",
+      "sha256": "e929428281b6f7d9296b9ed290dc9ea3a9f91c18c331e1735391e11167709092",
+      "start": "0x240922488"
+    },
+    "sdfBackdropMarginGetter": {
+      "byteCount": 984,
+      "directBLCallsites": [],
+      "end": "0x24091848c",
+      "sha256": "a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b",
+      "start": "0x2409180b4"
+    }
+  },
+  "constructorABI": {
+    "environmentFlags": "x2 -> BackgroundFilter.flags.rawValue",
+    "layerIndex": "x1 -> BackgroundFilter.layerIndex",
+    "output": "x8 -> BackgroundFilter (504 bytes)",
+    "source": "x0 -> GlassMaterialProvider.Parameters",
+    "terminalWriteEndExclusive": "0x24091c0ec",
+    "terminalWriteStart": "0x24091bfb8"
+  },
+  "decodedStructDescriptorCount": 308,
+  "designLibraryBackgroundFilterMetadataAnalysisSchemaVersion": 1,
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "nestedTypeCandidates": {
+    "Blur": [
+      {
+        "descriptorAddress": "0x2409d26f0",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d77b8",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "radius",
+            "offset": 0,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "distances",
+            "offset": 8,
+            "typeReference": "______A4At 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c755a"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "opacities",
+            "offset": 48,
+            "typeReference": "Sf_S4ft",
+            "typeReferenceAddress": "0x2409c7566"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "opacity",
+            "offset": 68,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            8,
+            48,
+            68
+          ],
+          "metadataAddress": "0x29bdf5338",
+          "metadataDescriptorRuntimeAddress": "0x24946e6f0",
+          "size": 72,
+          "stride": 72,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf52d0",
+          "valueWitnessTableMapped": true
+        },
+        "name": "Blur"
+      },
+      {
+        "descriptorAddress": "0x2409d2970",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7ce0",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "opacity",
+            "offset": 0,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "opacities",
+            "offset": 4,
+            "typeReference": "Sf_S4ft",
+            "typeReferenceAddress": "0x2409c7566"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "distances",
+            "offset": 24,
+            "typeReference": "______A4At 13DesignLibrary21GlassMaterialProviderV6SpecV1V4BlurV8DistanceO",
+            "typeReferenceAddress": "0x2409c76c0"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "blurRadius",
+            "offset": 104,
+            "typeReference": "_____y_____ABG 13DesignLibrary16ClampedLinearMapV 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c76cc"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 254,
+          "fieldOffsets": [
+            0,
+            4,
+            24,
+            104
+          ],
+          "metadataAddress": "0x29bdf5df0",
+          "metadataDescriptorRuntimeAddress": "0x24946e970",
+          "size": 169,
+          "stride": 176,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf5d88",
+          "valueWitnessTableMapped": true
+        },
+        "name": "Blur"
+      },
+      {
+        "descriptorAddress": "0x2409d2acc",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7fac",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "radius",
+            "offset": 0,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "opacities",
+            "offset": 8,
+            "typeReference": "Sf_S4ft",
+            "typeReferenceAddress": "0x2409c7566"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "distances",
+            "offset": 32,
+            "typeReference": "______A4At 13DesignLibrary21GlassMaterialProviderV6SpecV1V4BlurV8DistanceO",
+            "typeReferenceAddress": "0x2409c76c0"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 253,
+          "fieldOffsets": [
+            0,
+            8,
+            32
+          ],
+          "metadataAddress": "0x29bdf63a8",
+          "metadataDescriptorRuntimeAddress": "0x24946eacc",
+          "size": 105,
+          "stride": 112,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf6340",
+          "valueWitnessTableMapped": true
+        },
+        "name": "Blur"
+      }
+    ],
+    "EdgeBleed": [
+      {
+        "descriptorAddress": "0x2409d2744",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7878",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "amount",
+            "offset": 0,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "height",
+            "offset": 8,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "blurRadius",
+            "offset": 16,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "opacity",
+            "offset": 24,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "distances",
+            "offset": 28,
+            "typeReference": "Sf_Sft",
+            "typeReferenceAddress": "0x2409c7578"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "ycc",
+            "offset": 36,
+            "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV",
+            "typeReferenceAddress": "0x2409c742c"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "useDarkenBlending",
+            "offset": 105,
+            "typeReference": "Sb",
+            "typeReferenceAddress": "0x2409bc3ea"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 254,
+          "fieldOffsets": [
+            0,
+            8,
+            16,
+            24,
+            28,
+            36,
+            105
+          ],
+          "metadataAddress": "0x29bdf54d0",
+          "metadataDescriptorRuntimeAddress": "0x24946e744",
+          "size": 106,
+          "stride": 112,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf5468",
+          "valueWitnessTableMapped": true
+        },
+        "name": "EdgeBleed"
+      },
+      {
+        "descriptorAddress": "0x2409d29c4",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7e58",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "opacity",
+            "offset": 0,
+            "typeReference": "_____y_____SfG 13DesignLibrary16ClampedLinearMapV 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c774c"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "normalizedHeight",
+            "offset": 56,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "normalizedAmount",
+            "offset": 64,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "normalizedBlurRadius",
+            "offset": 72,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "maxBlurRadius",
+            "offset": 80,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "ycc",
+            "offset": 88,
+            "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV",
+            "typeReferenceAddress": "0x2409c742c"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "useDarkenBlending",
+            "offset": 157,
+            "typeReference": "Sb",
+            "typeReferenceAddress": "0x2409bc3ea"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 254,
+          "fieldOffsets": [
+            0,
+            56,
+            64,
+            72,
+            80,
+            88,
+            157
+          ],
+          "metadataAddress": "0x29bdf5fb0",
+          "metadataDescriptorRuntimeAddress": "0x24946e9c4",
+          "size": 158,
+          "stride": 160,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf5f48",
+          "valueWitnessTableMapped": true
+        },
+        "name": "EdgeBleed"
+      }
+    ],
+    "EnvironmentFlags": [
+      {
+        "descriptorAddress": "0x2409d2c6c",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d8494",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000000",
+            "name": "rawValue",
+            "offset": 0,
+            "typeReference": "Su",
+            "typeReferenceAddress": "0x2409c6fba"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": null,
+          "fieldOffsets": [
+            0
+          ],
+          "metadataAddress": "0x29bdf6a38",
+          "metadataDescriptorRuntimeAddress": "0x24946ec6c",
+          "size": null,
+          "stride": null,
+          "valueWitnessFlags": null,
+          "valueWitnessTableAddress": "0x1efd47798",
+          "valueWitnessTableMapped": false
+        },
+        "name": "EnvironmentFlags"
+      }
+    ],
+    "FaceEffectDimming": [
+      {
+        "descriptorAddress": "0x2409d2840",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7b00",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "whitePointShift",
+            "offset": 0,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "distances",
+            "offset": 8,
+            "typeReference": "______AAt 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c756e"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            8
+          ],
+          "metadataAddress": "0x29bdf59c8",
+          "metadataDescriptorRuntimeAddress": "0x24946e840",
+          "size": 24,
+          "stride": 24,
+          "valueWitnessFlags": "0x00000007",
+          "valueWitnessTableAddress": "0x29bdf5960",
+          "valueWitnessTableMapped": true
+        },
+        "name": "FaceEffectDimming"
+      }
+    ],
+    "FaceEffects": [
+      {
+        "descriptorAddress": "0x2409d2728",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7850",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "opacity",
+            "offset": 0,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "ycc",
+            "offset": 4,
+            "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV",
+            "typeReferenceAddress": "0x2409c742c"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            4
+          ],
+          "metadataAddress": "0x29bdf5450",
+          "metadataDescriptorRuntimeAddress": "0x24946e728",
+          "size": 73,
+          "stride": 76,
+          "valueWitnessFlags": "0x00020003",
+          "valueWitnessTableAddress": "0x29bdf53e8",
+          "valueWitnessTableMapped": true
+        },
+        "name": "FaceEffects"
+      },
+      {
+        "descriptorAddress": "0x2409d2a78",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d8030",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "opacity",
+            "offset": 0,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "ycc",
+            "offset": 4,
+            "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV8YCCRangeV",
+            "typeReferenceAddress": "0x2409c77f0"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            4
+          ],
+          "metadataAddress": "0x29bdf6228",
+          "metadataDescriptorRuntimeAddress": "0x24946ea78",
+          "size": 145,
+          "stride": 148,
+          "valueWitnessFlags": "0x00020003",
+          "valueWitnessTableAddress": "0x29bdf61c0",
+          "valueWitnessTableMapped": true
+        },
+        "name": "FaceEffects"
+      }
+    ],
+    "Refraction": [
+      {
+        "descriptorAddress": "0x2409d270c",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d77f8",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "innerHeight",
+            "offset": 0,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "innerAmount",
+            "offset": 8,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "outerHeight",
+            "offset": 16,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "outerAmount",
+            "offset": 24,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "outerDistances",
+            "offset": 32,
+            "typeReference": "______AAt 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c756e"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "outerOpacity",
+            "offset": 48,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            8,
+            16,
+            24,
+            32,
+            48
+          ],
+          "metadataAddress": "0x29bdf53c0",
+          "metadataDescriptorRuntimeAddress": "0x24946e70c",
+          "size": 52,
+          "stride": 56,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf5358",
+          "valueWitnessTableMapped": true
+        },
+        "name": "Refraction"
+      },
+      {
+        "descriptorAddress": "0x2409d29e0",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7df4",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "normalizedInnerHeight",
+            "offset": 0,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "innerHeightRange",
+            "offset": 8,
+            "typeReference": "SNy_____G 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c775c"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "normalizedInnerAmount",
+            "offset": 24,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "innerAmountRange",
+            "offset": 32,
+            "typeReference": "SNy_____G 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c775c"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "normalizedOuterHeight",
+            "offset": 48,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "normalizedOuterAmount",
+            "offset": 56,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "outerOpacity",
+            "offset": 64,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            8,
+            24,
+            32,
+            48,
+            56,
+            64
+          ],
+          "metadataAddress": "0x29bdf6048",
+          "metadataDescriptorRuntimeAddress": "0x24946e9e0",
+          "size": 68,
+          "stride": 72,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf5fe0",
+          "valueWitnessTableMapped": true
+        },
+        "name": "Refraction"
+      },
+      {
+        "descriptorAddress": "0x2409d2ab0",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7fe0",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "innerDisplacementAmount",
+            "offset": 0,
+            "typeReference": "_____ 13DesignLibrary17TextDimensionsMapV",
+            "typeReferenceAddress": "0x2409c77d8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "innerDisplacementHeight",
+            "offset": 32,
+            "typeReference": "_____ 13DesignLibrary17TextDimensionsMapV",
+            "typeReferenceAddress": "0x2409c77d8"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            32
+          ],
+          "metadataAddress": "0x29bdf6328",
+          "metadataDescriptorRuntimeAddress": "0x24946eab0",
+          "size": 64,
+          "stride": 64,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf62c0",
+          "valueWitnessTableMapped": true
+        },
+        "name": "Refraction"
+      }
+    ],
+    "SDRAdjustment": [
+      {
+        "descriptorAddress": "0x2409d285c",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7c04",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "headroomTransitionPoint",
+            "offset": 0,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "shadowOpacityShift",
+            "offset": 4,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "faceDimming",
+            "offset": 8,
+            "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV13SDRAdjustmentV17FaceEffectDimmingV",
+            "typeReferenceAddress": "0x2409c7258"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            4,
+            8
+          ],
+          "metadataAddress": "0x29bdf5a48",
+          "metadataDescriptorRuntimeAddress": "0x24946e85c",
+          "size": 32,
+          "stride": 32,
+          "valueWitnessFlags": "0x00020007",
+          "valueWitnessTableAddress": "0x29bdf59e0",
+          "valueWitnessTableMapped": true
+        },
+        "name": "SDRAdjustment"
+      }
+    ],
+    "Shadow": [
+      {
+        "descriptorAddress": "0x2409d26d4",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d773c",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "offset",
+            "offset": 0,
+            "typeReference": "_____ So6CGSizeV",
+            "typeReferenceAddress": "0x2409bc1bc"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "amount",
+            "offset": 16,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "height",
+            "offset": 24,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "inset",
+            "offset": 32,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "blurRadius",
+            "offset": 40,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "shadowRadius",
+            "offset": 48,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "ycc",
+            "offset": 56,
+            "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV",
+            "typeReferenceAddress": "0x2409c742c"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "opacity",
+            "offset": 128,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "vibrancyContribution",
+            "offset": 136,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            16,
+            24,
+            32,
+            40,
+            48,
+            56,
+            128,
+            136
+          ],
+          "metadataAddress": "0x29bdf5298",
+          "metadataDescriptorRuntimeAddress": "0x24946e6d4",
+          "size": 144,
+          "stride": 144,
+          "valueWitnessFlags": "0x02020007",
+          "valueWitnessTableAddress": "0x29bdf5230",
+          "valueWitnessTableMapped": true
+        },
+        "name": "Shadow"
+      },
+      {
+        "descriptorAddress": "0x2409d29fc",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d7d84",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "normalizedHeight",
+            "offset": 0,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "normalizedAmount",
+            "offset": 8,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "blurRadius",
+            "offset": 16,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "opacity",
+            "offset": 24,
+            "typeReference": "_____y_____SfG 13DesignLibrary16ClampedLinearMapV 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c774c"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "shadowRadius",
+            "offset": 80,
+            "typeReference": "_____ 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409bc0e8"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "offset",
+            "offset": 88,
+            "typeReference": "_____ So6CGSizeV",
+            "typeReferenceAddress": "0x2409bc1bc"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "ycc",
+            "offset": 104,
+            "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV",
+            "typeReferenceAddress": "0x2409c742c"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "vibrancyContibution",
+            "offset": 176,
+            "typeReference": "_____y_____ABG 13DesignLibrary16ClampedLinearMapV 12CoreGraphics7CGFloatV",
+            "typeReferenceAddress": "0x2409c76cc"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 254,
+          "fieldOffsets": [
+            0,
+            8,
+            16,
+            24,
+            80,
+            88,
+            104,
+            176
+          ],
+          "metadataAddress": "0x29bdf60e0",
+          "metadataDescriptorRuntimeAddress": "0x24946e9fc",
+          "size": 241,
+          "stride": 248,
+          "valueWitnessFlags": "0x02020007",
+          "valueWitnessTableAddress": "0x29bdf6078",
+          "valueWitnessTableMapped": true
+        },
+        "name": "Shadow"
+      }
+    ],
+    "YCC": [
+      {
+        "descriptorAddress": "0x2409d26b8",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d76e4",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "black",
+            "offset": 0,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "white",
+            "offset": 4,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "saturation",
+            "offset": 8,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "normalFill",
+            "offset": 12,
+            "typeReference": "_____Sg 7SwiftUI5ColorV8ResolvedV",
+            "typeReferenceAddress": "0x2409c7552"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "dodgeFill",
+            "offset": 32,
+            "typeReference": "_____Sg 7SwiftUI5ColorV8ResolvedV",
+            "typeReferenceAddress": "0x2409c7552"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "burnFill",
+            "offset": 52,
+            "typeReference": "_____Sg 7SwiftUI5ColorV8ResolvedV",
+            "typeReferenceAddress": "0x2409c7552"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            4,
+            8,
+            12,
+            32,
+            52
+          ],
+          "metadataAddress": "0x29bdf5208",
+          "metadataDescriptorRuntimeAddress": "0x24946e6b8",
+          "size": 69,
+          "stride": 72,
+          "valueWitnessFlags": "0x00020003",
+          "valueWitnessTableAddress": "0x29bdf51a0",
+          "valueWitnessTableMapped": true
+        },
+        "name": "YCC"
+      },
+      {
+        "descriptorAddress": "0x2409d33ec",
+        "descriptorFlags": "0x00100051",
+        "fieldDescriptorAddress": "0x2409d8e58",
+        "fieldOffsetVectorWords": 2,
+        "fields": [
+          {
+            "flags": "0x00000002",
+            "name": "black",
+            "offset": 0,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "white",
+            "offset": 4,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "saturation",
+            "offset": 8,
+            "typeReference": "Sf",
+            "typeReferenceAddress": "0x2409c6e64"
+          },
+          {
+            "flags": "0x00000002",
+            "name": "hue",
+            "offset": 16,
+            "typeReference": "_____ 7SwiftUI5AngleV",
+            "typeReferenceAddress": "0x2409bc8ee"
+          }
+        ],
+        "metadata": {
+          "extraInhabitantCount": 0,
+          "fieldOffsets": [
+            0,
+            4,
+            8,
+            16
+          ],
+          "metadataAddress": "0x29bdf7b20",
+          "metadataDescriptorRuntimeAddress": "0x24946f3ec",
+          "size": 24,
+          "stride": 24,
+          "valueWitnessFlags": "0x02000007",
+          "valueWitnessTableAddress": "0x29bdf7ab8",
+          "valueWitnessTableMapped": true
+        },
+        "name": "YCC"
+      }
+    ]
+  },
+  "parameters": {
+    "descriptorAddress": "0x2409d2878",
+    "descriptorFlags": "0x00100051",
+    "fieldDescriptorAddress": "0x2409d7b28",
+    "fieldOffsetVectorWords": 2,
+    "fields": [
+      {
+        "flags": "0x00000002",
+        "name": "backdropScale",
+        "offset": 0,
+        "typeReference": "Sf",
+        "typeReferenceAddress": "0x2409c6e64"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "updateRate",
+        "offset": 8,
+        "typeReference": "Sd",
+        "typeReferenceAddress": "0x2409bccca"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "contentOpacity",
+        "offset": 16,
+        "typeReference": "Sf",
+        "typeReferenceAddress": "0x2409c6e64"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_shadow",
+        "offset": 24,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV6ShadowV",
+        "typeReferenceAddress": "0x2409c7588"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_blur",
+        "offset": 176,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV4BlurV",
+        "typeReferenceAddress": "0x2409c7590"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_refraction",
+        "offset": 256,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV10RefractionV",
+        "typeReferenceAddress": "0x2409c7598"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_faceEffects",
+        "offset": 312,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV11FaceEffectsV",
+        "typeReferenceAddress": "0x2409c75a0"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_edgeBleed",
+        "offset": 392,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9EdgeBleedV",
+        "typeReferenceAddress": "0x2409c75a8"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_tinting",
+        "offset": 500,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV7TintingV",
+        "typeReferenceAddress": "0x2409c75b0"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_highlights",
+        "offset": 520,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV10HighlightsV",
+        "typeReferenceAddress": "0x2409c75b8"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_sdrAdjustment",
+        "offset": 784,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV13SDRAdjustmentV",
+        "typeReferenceAddress": "0x2409c75c0"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_lensing",
+        "offset": 824,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV7LensingV",
+        "typeReferenceAddress": "0x2409c75c8"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_controlContentLensing",
+        "offset": 880,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12DisplacementV",
+        "typeReferenceAddress": "0x2409c75d0"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_controlDisplacement",
+        "offset": 912,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12DisplacementV",
+        "typeReferenceAddress": "0x2409c75d0"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_contrastEdge",
+        "offset": 944,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12ContrastEdgeV",
+        "typeReferenceAddress": "0x2409c75d8"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_innerGlow",
+        "offset": 968,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9InnerGlowV",
+        "typeReferenceAddress": "0x2409c75e0"
+      },
+      {
+        "flags": "0x00000002",
+        "name": "_radiosity",
+        "offset": 992,
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9RadiosityV",
+        "typeReferenceAddress": "0x2409c75e8"
+      }
+    ],
+    "metadata": {
+      "extraInhabitantCount": 253,
+      "fieldOffsets": [
+        0,
+        8,
+        16,
+        24,
+        176,
+        256,
+        312,
+        392,
+        500,
+        520,
+        784,
+        824,
+        880,
+        912,
+        944,
+        968,
+        992
+      ],
+      "metadataAddress": "0x29bdf5ad0",
+      "metadataDescriptorRuntimeAddress": "0x24946e878",
+      "size": 1025,
+      "stride": 1032,
+      "valueWitnessFlags": "0x02020007",
+      "valueWitnessTableAddress": "0x29bdf5a68",
+      "valueWitnessTableMapped": true
+    },
+    "name": "Parameters"
+  },
+  "selectedAuxiliaryTypes": {
+    "FaceEffectDimming": {
+      "descriptorAddress": "0x2409d2840",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d7b00",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "whitePointShift",
+          "offset": 0,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "distances",
+          "offset": 8,
+          "typeReference": "______AAt 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409c756e"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 0,
+        "fieldOffsets": [
+          0,
+          8
+        ],
+        "metadataAddress": "0x29bdf59c8",
+        "metadataDescriptorRuntimeAddress": "0x24946e840",
+        "size": 24,
+        "stride": 24,
+        "valueWitnessFlags": "0x00000007",
+        "valueWitnessTableAddress": "0x29bdf5960",
+        "valueWitnessTableMapped": true
+      },
+      "name": "FaceEffectDimming"
+    },
+    "YCC": {
+      "descriptorAddress": "0x2409d26b8",
+      "descriptorFlags": "0x00100051",
+      "fieldDescriptorAddress": "0x2409d76e4",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "black",
+          "offset": 0,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "white",
+          "offset": 4,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "saturation",
+          "offset": 8,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "normalFill",
+          "offset": 12,
+          "typeReference": "_____Sg 7SwiftUI5ColorV8ResolvedV",
+          "typeReferenceAddress": "0x2409c7552"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "dodgeFill",
+          "offset": 32,
+          "typeReference": "_____Sg 7SwiftUI5ColorV8ResolvedV",
+          "typeReferenceAddress": "0x2409c7552"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "burnFill",
+          "offset": 52,
+          "typeReference": "_____Sg 7SwiftUI5ColorV8ResolvedV",
+          "typeReferenceAddress": "0x2409c7552"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 0,
+        "fieldOffsets": [
+          0,
+          4,
+          8,
+          12,
+          32,
+          52
+        ],
+        "metadataAddress": "0x29bdf5208",
+        "metadataDescriptorRuntimeAddress": "0x24946e6b8",
+        "size": 69,
+        "stride": 72,
+        "valueWitnessFlags": "0x00020003",
+        "valueWitnessTableAddress": "0x29bdf51a0",
+        "valueWitnessTableMapped": true
+      },
+      "name": "YCC"
+    }
+  },
+  "selectedNestedTypes": {
+    "bleed": {
+      "descriptorAddress": "0x2409d2744",
+      "descriptorFlags": "0x00100051",
+      "enclosingField": "bleed",
+      "enclosingOffset": 352,
+      "enclosingStorageByteCount": 112,
+      "fieldDescriptorAddress": "0x2409d7878",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "amount",
+          "offset": 0,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "height",
+          "offset": 8,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "blurRadius",
+          "offset": 16,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "opacity",
+          "offset": 24,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "distances",
+          "offset": 28,
+          "typeReference": "Sf_Sft",
+          "typeReferenceAddress": "0x2409c7578"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "ycc",
+          "offset": 36,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV",
+          "typeReferenceAddress": "0x2409c742c"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "useDarkenBlending",
+          "offset": 105,
+          "typeReference": "Sb",
+          "typeReferenceAddress": "0x2409bc3ea"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 254,
+        "fieldOffsets": [
+          0,
+          8,
+          16,
+          24,
+          28,
+          36,
+          105
+        ],
+        "metadataAddress": "0x29bdf54d0",
+        "metadataDescriptorRuntimeAddress": "0x24946e744",
+        "size": 106,
+        "stride": 112,
+        "valueWitnessFlags": "0x00020007",
+        "valueWitnessTableAddress": "0x29bdf5468",
+        "valueWitnessTableMapped": true
+      },
+      "name": "EdgeBleed"
+    },
+    "blur": {
+      "descriptorAddress": "0x2409d26f0",
+      "descriptorFlags": "0x00100051",
+      "enclosingField": "blur",
+      "enclosingOffset": 152,
+      "enclosingStorageByteCount": 72,
+      "fieldDescriptorAddress": "0x2409d77b8",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "radius",
+          "offset": 0,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "distances",
+          "offset": 8,
+          "typeReference": "______A4At 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409c755a"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "opacities",
+          "offset": 48,
+          "typeReference": "Sf_S4ft",
+          "typeReferenceAddress": "0x2409c7566"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "opacity",
+          "offset": 68,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 0,
+        "fieldOffsets": [
+          0,
+          8,
+          48,
+          68
+        ],
+        "metadataAddress": "0x29bdf5338",
+        "metadataDescriptorRuntimeAddress": "0x24946e6f0",
+        "size": 72,
+        "stride": 72,
+        "valueWitnessFlags": "0x00020007",
+        "valueWitnessTableAddress": "0x29bdf52d0",
+        "valueWitnessTableMapped": true
+      },
+      "name": "Blur"
+    },
+    "face": {
+      "descriptorAddress": "0x2409d2728",
+      "descriptorFlags": "0x00100051",
+      "enclosingField": "face",
+      "enclosingOffset": 276,
+      "enclosingStorageByteCount": 76,
+      "fieldDescriptorAddress": "0x2409d7850",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "opacity",
+          "offset": 0,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "ycc",
+          "offset": 4,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV",
+          "typeReferenceAddress": "0x2409c742c"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 0,
+        "fieldOffsets": [
+          0,
+          4
+        ],
+        "metadataAddress": "0x29bdf5450",
+        "metadataDescriptorRuntimeAddress": "0x24946e728",
+        "size": 73,
+        "stride": 76,
+        "valueWitnessFlags": "0x00020003",
+        "valueWitnessTableAddress": "0x29bdf53e8",
+        "valueWitnessTableMapped": true
+      },
+      "name": "FaceEffects"
+    },
+    "flags": {
+      "descriptorAddress": "0x2409d2c6c",
+      "descriptorFlags": "0x00100051",
+      "enclosingField": "flags",
+      "enclosingOffset": 496,
+      "enclosingStorageByteCount": 8,
+      "fieldDescriptorAddress": "0x2409d8494",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000000",
+          "name": "rawValue",
+          "offset": 0,
+          "typeReference": "Su",
+          "typeReferenceAddress": "0x2409c6fba"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": null,
+        "fieldOffsets": [
+          0
+        ],
+        "metadataAddress": "0x29bdf6a38",
+        "metadataDescriptorRuntimeAddress": "0x24946ec6c",
+        "size": null,
+        "stride": null,
+        "valueWitnessFlags": null,
+        "valueWitnessTableAddress": "0x1efd47798",
+        "valueWitnessTableMapped": false
+      },
+      "name": "EnvironmentFlags"
+    },
+    "refraction": {
+      "descriptorAddress": "0x2409d270c",
+      "descriptorFlags": "0x00100051",
+      "enclosingField": "refraction",
+      "enclosingOffset": 224,
+      "enclosingStorageByteCount": 52,
+      "fieldDescriptorAddress": "0x2409d77f8",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "innerHeight",
+          "offset": 0,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "innerAmount",
+          "offset": 8,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "outerHeight",
+          "offset": 16,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "outerAmount",
+          "offset": 24,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "outerDistances",
+          "offset": 32,
+          "typeReference": "______AAt 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409c756e"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "outerOpacity",
+          "offset": 48,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 0,
+        "fieldOffsets": [
+          0,
+          8,
+          16,
+          24,
+          32,
+          48
+        ],
+        "metadataAddress": "0x29bdf53c0",
+        "metadataDescriptorRuntimeAddress": "0x24946e70c",
+        "size": 52,
+        "stride": 56,
+        "valueWitnessFlags": "0x00020007",
+        "valueWitnessTableAddress": "0x29bdf5358",
+        "valueWitnessTableMapped": true
+      },
+      "name": "Refraction"
+    },
+    "sdrAdjustment": {
+      "descriptorAddress": "0x2409d285c",
+      "descriptorFlags": "0x00100051",
+      "enclosingField": "sdrAdjustment",
+      "enclosingOffset": 464,
+      "enclosingStorageByteCount": 32,
+      "fieldDescriptorAddress": "0x2409d7c04",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "headroomTransitionPoint",
+          "offset": 0,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "shadowOpacityShift",
+          "offset": 4,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "faceDimming",
+          "offset": 8,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV13SDRAdjustmentV17FaceEffectDimmingV",
+          "typeReferenceAddress": "0x2409c7258"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 0,
+        "fieldOffsets": [
+          0,
+          4,
+          8
+        ],
+        "metadataAddress": "0x29bdf5a48",
+        "metadataDescriptorRuntimeAddress": "0x24946e85c",
+        "size": 32,
+        "stride": 32,
+        "valueWitnessFlags": "0x00020007",
+        "valueWitnessTableAddress": "0x29bdf59e0",
+        "valueWitnessTableMapped": true
+      },
+      "name": "SDRAdjustment"
+    },
+    "shadow": {
+      "descriptorAddress": "0x2409d26d4",
+      "descriptorFlags": "0x00100051",
+      "enclosingField": "shadow",
+      "enclosingOffset": 8,
+      "enclosingStorageByteCount": 144,
+      "fieldDescriptorAddress": "0x2409d773c",
+      "fieldOffsetVectorWords": 2,
+      "fields": [
+        {
+          "flags": "0x00000002",
+          "name": "offset",
+          "offset": 0,
+          "typeReference": "_____ So6CGSizeV",
+          "typeReferenceAddress": "0x2409bc1bc"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "amount",
+          "offset": 16,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "height",
+          "offset": 24,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "inset",
+          "offset": 32,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "blurRadius",
+          "offset": 40,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "shadowRadius",
+          "offset": 48,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "ycc",
+          "offset": 56,
+          "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV",
+          "typeReferenceAddress": "0x2409c742c"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "opacity",
+          "offset": 128,
+          "typeReference": "Sf",
+          "typeReferenceAddress": "0x2409c6e64"
+        },
+        {
+          "flags": "0x00000002",
+          "name": "vibrancyContribution",
+          "offset": 136,
+          "typeReference": "_____ 12CoreGraphics7CGFloatV",
+          "typeReferenceAddress": "0x2409bc0e8"
+        }
+      ],
+      "metadata": {
+        "extraInhabitantCount": 0,
+        "fieldOffsets": [
+          0,
+          16,
+          24,
+          32,
+          40,
+          48,
+          56,
+          128,
+          136
+        ],
+        "metadataAddress": "0x29bdf5298",
+        "metadataDescriptorRuntimeAddress": "0x24946e6d4",
+        "size": 144,
+        "stride": 144,
+        "valueWitnessFlags": "0x02020007",
+        "valueWitnessTableAddress": "0x29bdf5230",
+        "valueWitnessTableMapped": true
+      },
+      "name": "Shadow"
+    }
+  },
+  "semanticLayout": [
+    {
+      "absoluteOffset": 0,
+      "path": "layerIndex",
+      "typeReference": "Si"
+    },
+    {
+      "absoluteOffset": 8,
+      "path": "shadow.offset",
+      "relativeOffset": 0,
+      "typeReference": "_____ So6CGSizeV"
+    },
+    {
+      "absoluteOffset": 24,
+      "path": "shadow.amount",
+      "relativeOffset": 16,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 32,
+      "path": "shadow.height",
+      "relativeOffset": 24,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 40,
+      "path": "shadow.inset",
+      "relativeOffset": 32,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 48,
+      "path": "shadow.blurRadius",
+      "relativeOffset": 40,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 56,
+      "path": "shadow.shadowRadius",
+      "relativeOffset": 48,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 64,
+      "path": "shadow.ycc",
+      "relativeOffset": 56,
+      "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV"
+    },
+    {
+      "absoluteOffset": 136,
+      "path": "shadow.opacity",
+      "relativeOffset": 128,
+      "typeReference": "Sf"
+    },
+    {
+      "absoluteOffset": 144,
+      "path": "shadow.vibrancyContribution",
+      "relativeOffset": 136,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 152,
+      "path": "blur.radius",
+      "relativeOffset": 0,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 160,
+      "path": "blur.distances",
+      "relativeOffset": 8,
+      "typeReference": "______A4At 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 200,
+      "path": "blur.opacities",
+      "relativeOffset": 48,
+      "typeReference": "Sf_S4ft"
+    },
+    {
+      "absoluteOffset": 220,
+      "path": "blur.opacity",
+      "relativeOffset": 68,
+      "typeReference": "Sf"
+    },
+    {
+      "absoluteOffset": 224,
+      "path": "refraction.innerHeight",
+      "relativeOffset": 0,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 232,
+      "path": "refraction.innerAmount",
+      "relativeOffset": 8,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 240,
+      "path": "refraction.outerHeight",
+      "relativeOffset": 16,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 248,
+      "path": "refraction.outerAmount",
+      "relativeOffset": 24,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 256,
+      "path": "refraction.outerDistances",
+      "relativeOffset": 32,
+      "typeReference": "______AAt 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 272,
+      "path": "refraction.outerOpacity",
+      "relativeOffset": 48,
+      "typeReference": "Sf"
+    },
+    {
+      "absoluteOffset": 276,
+      "path": "face.opacity",
+      "relativeOffset": 0,
+      "typeReference": "Sf"
+    },
+    {
+      "absoluteOffset": 280,
+      "path": "face.ycc",
+      "relativeOffset": 4,
+      "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV"
+    },
+    {
+      "absoluteOffset": 352,
+      "path": "bleed.amount",
+      "relativeOffset": 0,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 360,
+      "path": "bleed.height",
+      "relativeOffset": 8,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 368,
+      "path": "bleed.blurRadius",
+      "relativeOffset": 16,
+      "typeReference": "_____ 12CoreGraphics7CGFloatV"
+    },
+    {
+      "absoluteOffset": 376,
+      "path": "bleed.opacity",
+      "relativeOffset": 24,
+      "typeReference": "Sf"
+    },
+    {
+      "absoluteOffset": 380,
+      "path": "bleed.distances",
+      "relativeOffset": 28,
+      "typeReference": "Sf_Sft"
+    },
+    {
+      "absoluteOffset": 388,
+      "path": "bleed.ycc",
+      "relativeOffset": 36,
+      "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV3YCCV"
+    },
+    {
+      "absoluteOffset": 457,
+      "path": "bleed.useDarkenBlending",
+      "relativeOffset": 105,
+      "typeReference": "Sb"
+    },
+    {
+      "absoluteOffset": 464,
+      "path": "sdrAdjustment.headroomTransitionPoint",
+      "relativeOffset": 0,
+      "typeReference": "Sf"
+    },
+    {
+      "absoluteOffset": 468,
+      "path": "sdrAdjustment.shadowOpacityShift",
+      "relativeOffset": 4,
+      "typeReference": "Sf"
+    },
+    {
+      "absoluteOffset": 472,
+      "path": "sdrAdjustment.faceDimming",
+      "relativeOffset": 8,
+      "typeReference": "_____ 13DesignLibrary21GlassMaterialProviderV10ParametersV13SDRAdjustmentV17FaceEffectDimmingV"
+    },
+    {
+      "absoluteOffset": 496,
+      "path": "flags.rawValue",
+      "relativeOffset": 0,
+      "typeReference": "Su"
+    }
+  ],
+  "sharedCacheSlide": "0x8a9c000",
+  "sharedCacheSlideMetadataMatchCount": 219,
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "python": "3.9.6",
+    "source": "Analysis/analyze_designlibrary_background_filter_metadata_local_macos_26_6_1.py",
+    "sourceSHA256": "a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff"
+  }
+}

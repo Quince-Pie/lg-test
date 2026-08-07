@@ -1,0 +1,462 @@
+{
+  "claims": {
+    "capturedProviderPrefixWasCompleteValue": false,
+    "completeRetainedPayloadRecovered": true,
+    "cropAllocationPolicyRecovered": false,
+    "liquidGlassParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "publicInputConstructionRecovered": false
+  },
+  "classification": "retrospective recovery of the complete provider value from the retained value-blind 4096-byte wrapper snapshot; no new Apple process was launched",
+  "decodedScalars": [
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "layerIndex",
+      "offset": "0x000",
+      "value": 0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "shadow.offset.width",
+      "offset": "0x008",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000002040",
+      "name": "shadow.offset.height",
+      "offset": "0x010",
+      "value": 8.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000034801e40",
+      "name": "shadow.amount",
+      "offset": "0x018",
+      "value": 7.6251983642578125
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000806150ff1640",
+      "name": "shadow.height",
+      "offset": "0x020",
+      "value": 5.749330066144466
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "shadow.inset",
+      "offset": "0x028",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "shadow.blurRadius",
+      "offset": "0x030",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "shadow.shadowRadius",
+      "offset": "0x038",
+      "value": 0.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "00000000",
+      "name": "shadow.ycc.black",
+      "offset": "0x040",
+      "value": 0.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "0000803f",
+      "name": "shadow.ycc.white",
+      "offset": "0x044",
+      "value": 1.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "33698a3f",
+      "name": "shadow.ycc.saturation",
+      "offset": "0x048",
+      "value": 1.081335425376892
+    },
+    {
+      "byteCount": 4,
+      "hex": "00000000",
+      "name": "shadow.opacity",
+      "offset": "0x088",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "shadow.vibrancyContribution",
+      "offset": "0x090",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "4992a445f0dce73f",
+      "name": "blur.radius",
+      "offset": "0x098",
+      "value": 0.7457200393878988
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "blur.distances[0]",
+      "offset": "0x0a0",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "blur.distances[1]",
+      "offset": "0x0a8",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "blur.distances[2]",
+      "offset": "0x0b0",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "blur.distances[3]",
+      "offset": "0x0b8",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "blur.distances[4]",
+      "offset": "0x0c0",
+      "value": 0.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "0000803f",
+      "name": "blur.opacities[0]",
+      "offset": "0x0c8",
+      "value": 1.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "340b903e",
+      "name": "blur.opacities[1]",
+      "offset": "0x0cc",
+      "value": 0.2813354730606079
+    },
+    {
+      "byteCount": 4,
+      "hex": "340b903e",
+      "name": "blur.opacities[2]",
+      "offset": "0x0d0",
+      "value": 0.2813354730606079
+    },
+    {
+      "byteCount": 4,
+      "hex": "6708ec3e",
+      "name": "blur.opacities[3]",
+      "offset": "0x0d4",
+      "value": 0.46100160479545593
+    },
+    {
+      "byteCount": 4,
+      "hex": "6708ec3e",
+      "name": "blur.opacities[4]",
+      "offset": "0x0d8",
+      "value": 0.46100160479545593
+    },
+    {
+      "byteCount": 4,
+      "hex": "0038d03d",
+      "name": "blur.opacity",
+      "offset": "0x0dc",
+      "value": 0.1016693115234375
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000060440040",
+      "name": "refraction.innerHeight",
+      "offset": "0x0e0",
+      "value": 2.03338623046875
+    },
+    {
+      "byteCount": 8,
+      "hex": "00000000906618c0",
+      "name": "refraction.innerAmount",
+      "offset": "0x0e8",
+      "value": -6.10015869140625
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "refraction.outerHeight",
+      "offset": "0x0f0",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "refraction.outerAmount",
+      "offset": "0x0f8",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "000000000007babf",
+      "name": "refraction.outerDistances[0]",
+      "offset": "0x100",
+      "value": -0.1016693115234375
+    },
+    {
+      "byteCount": 8,
+      "hex": "000000000007aabf",
+      "name": "refraction.outerDistances[1]",
+      "offset": "0x108",
+      "value": -0.05083465576171875
+    },
+    {
+      "byteCount": 4,
+      "hex": "00000000",
+      "name": "refraction.outerOpacity",
+      "offset": "0x110",
+      "value": 0.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "0038d03d",
+      "name": "face.opacity",
+      "offset": "0x114",
+      "value": 0.1016693115234375
+    },
+    {
+      "byteCount": 4,
+      "hex": "0038503d",
+      "name": "face.ycc.black",
+      "offset": "0x118",
+      "value": 0.05083465576171875
+    },
+    {
+      "byteCount": 4,
+      "hex": "dab27e3f",
+      "name": "face.ycc.white",
+      "offset": "0x11c",
+      "value": 0.994916558265686
+    },
+    {
+      "byteCount": 4,
+      "hex": "0000803f",
+      "name": "face.ycc.saturation",
+      "offset": "0x120",
+      "value": 1.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "00005055661f1440",
+      "name": "bleed.amount",
+      "offset": "0x160",
+      "value": 5.030663807876408
+    },
+    {
+      "byteCount": 8,
+      "hex": "00005055661f1440",
+      "name": "bleed.height",
+      "offset": "0x168",
+      "value": 5.030663807876408
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "bleed.blurRadius",
+      "offset": "0x170",
+      "value": 0.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "00000000",
+      "name": "bleed.opacity",
+      "offset": "0x178",
+      "value": 0.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "0038d03d",
+      "name": "bleed.distances[0]",
+      "offset": "0x17c",
+      "value": 0.1016693115234375
+    },
+    {
+      "byteCount": 4,
+      "hex": "00000000",
+      "name": "bleed.distances[1]",
+      "offset": "0x180",
+      "value": 0.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "9965bb3d",
+      "name": "bleed.ycc.black",
+      "offset": "0x184",
+      "value": 0.09150237590074539
+    },
+    {
+      "byteCount": 4,
+      "hex": "0000803f",
+      "name": "bleed.ycc.white",
+      "offset": "0x188",
+      "value": 1.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "4d9a823f",
+      "name": "bleed.ycc.saturation",
+      "offset": "0x18c",
+      "value": 1.0203338861465454
+    },
+    {
+      "byteCount": 1,
+      "hex": "01",
+      "name": "bleed.useDarkenBlending",
+      "offset": "0x1c9",
+      "value": true
+    },
+    {
+      "byteCount": 4,
+      "hex": "d86a7e44",
+      "name": "sdrAdjustment.headroomTransitionPoint",
+      "offset": "0x1d0",
+      "value": 1017.66943359375
+    },
+    {
+      "byteCount": 4,
+      "hex": "00000000",
+      "name": "sdrAdjustment.shadowOpacityShift",
+      "offset": "0x1d4",
+      "value": 0.0
+    },
+    {
+      "byteCount": 4,
+      "hex": "0000803f",
+      "name": "sdrAdjustment.faceDimming.whitePointShift",
+      "offset": "0x1d8",
+      "value": 1.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "sdrAdjustment.faceDimming.distances[0]",
+      "offset": "0x1e0",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "0000000000000000",
+      "name": "sdrAdjustment.faceDimming.distances[1]",
+      "offset": "0x1e8",
+      "value": 0.0
+    },
+    {
+      "byteCount": 8,
+      "hex": "8081010000000000",
+      "name": "flags.rawValue",
+      "offset": "0x1f0",
+      "value": 98688
+    }
+  ],
+  "designLibraryBackgroundFilterRetainedPayloadAnalysisSchemaVersion": 1,
+  "inputs": {
+    "metadataResult": "Analysis/designlibrary_background_filter_metadata_local_macos_26_6_1_result.json",
+    "metadataResultSHA256": "dc2202be02d3831126866236661173c92bf492498a4cc2d2717931ba296b0757",
+    "trace": "/tmp/walle/artifacts/local-case22-native-awake-selected-3a3a64b-run1/backdrop-margin-writer-trace.json",
+    "traceSHA256": "e6c1075ae00dc9fb98a0768c72ed7155b9461bf6c643ba34bb26285c4439f040"
+  },
+  "payload": {
+    "address": 32762928016,
+    "byteCount": 504,
+    "hex": "0000000000000000000000000000000000000000000020400000000034801e400000806150ff1640000000000000000000000000000000000000000000000000000000000000803f33698a3f000000000000000000000000d7e3473c0000000000000000000000000000000000000000010000000000000000000000000000000000000001000000000000000000000000000000000000004992a445f0dce73f000000000000000000000000000000000000000000000000000000000000000000000000000000000000803f340b903e340b903e6708ec3e6708ec3e0038d03d000000006044004000000000906618c000000000000000000000000000000000000000000007babf000000000007aabf000000000038d03d0038503ddab27e3f0000803f0000803f0000803fffff7f3fcdc0113d00000000000000000000000000000000000000000100803f000000000000000000000000000000000100000000005055661f144000005055661f14400000000000000000000000000038d03d000000009965bb3d0000803f4d9a823f000000000000000000000000000000000100803f0000000000000000000000000000000001000000000000000000000000000000000000000101000000000000d86a7e44000000000000803f07000000000000000000000000000000000000008081010000000000",
+    "providerPrefixByteCount": 384,
+    "providerPrefixSHA256": "c70501b12b2c3e5003ae9ed96416816832b26b10741845ca23f6e10e990e23d1",
+    "recoveredTailByteCount": 120,
+    "recoveredTailHex": "000000009965bb3d0000803f4d9a823f000000000000000000000000000000000100803f0000000000000000000000000000000001000000000000000000000000000000000000000101000000000000d86a7e44000000000000803f07000000000000000000000000000000000000008081010000000000",
+    "recoveredTailSHA256": "70d3765c2bbfda2f6e1c9af2de8fda14210ddb9ed485f3b7dd7a15d3301e8a6f",
+    "sha256": "fb9c92be37bfba81ba4f7a6d9063fe6a0170b66086885bef5116dded0155c14e"
+  },
+  "rawOptionalResolvedColors": [
+    {
+      "byteCount": 20,
+      "hex": "000000000000000000000000d7e3473c00000000",
+      "name": "shadow.ycc.normalFill",
+      "offset": "0x04c"
+    },
+    {
+      "byteCount": 20,
+      "hex": "0000000000000000000000000000000001000000",
+      "name": "shadow.ycc.dodgeFill",
+      "offset": "0x060"
+    },
+    {
+      "byteCount": 20,
+      "hex": "0000000000000000000000000000000001000000",
+      "name": "shadow.ycc.burnFill",
+      "offset": "0x074"
+    },
+    {
+      "byteCount": 20,
+      "hex": "0000803f0000803fffff7f3fcdc0113d00000000",
+      "name": "face.ycc.normalFill",
+      "offset": "0x124"
+    },
+    {
+      "byteCount": 20,
+      "hex": "000000000000000000000000000000000100803f",
+      "name": "face.ycc.dodgeFill",
+      "offset": "0x138"
+    },
+    {
+      "byteCount": 20,
+      "hex": "0000000000000000000000000000000001000000",
+      "name": "face.ycc.burnFill",
+      "offset": "0x14c"
+    },
+    {
+      "byteCount": 20,
+      "hex": "000000000000000000000000000000000100803f",
+      "name": "bleed.ycc.normalFill",
+      "offset": "0x190"
+    },
+    {
+      "byteCount": 20,
+      "hex": "0000000000000000000000000000000001000000",
+      "name": "bleed.ycc.dodgeFill",
+      "offset": "0x1a4"
+    },
+    {
+      "byteCount": 20,
+      "hex": "0000000000000000000000000000000001010000",
+      "name": "bleed.ycc.burnFill",
+      "offset": "0x1b8"
+    }
+  ],
+  "source": {
+    "path": "Analysis/analyze_designlibrary_background_filter_retained_payload.py",
+    "python": "3.14.6",
+    "sha256": "44e91161ea7c6865c9ad4f3d4ccba79de76bcfe793007849320b1e6480b9a3c9"
+  },
+  "wrapper": {
+    "address": 32762928000,
+    "headerByteCount": 16,
+    "headerHex": "a02646a1070000000300000002000000",
+    "snapshotByteCount": 4096
+  }
+}

@@ -8446,3 +8446,117 @@ join for this profile. Even a complete pass will not disambiguate constant or
 co-varying semantic sources, transfer a fresh material/appearance/geometry
 profile, close crop/allocation or Retina compositor output, authorize a shader
 change, or establish Liquid Glass parity.
+
+### Native `BackgroundFilter` metadata and constructor boundary
+
+The locked presentation session does not prevent static analysis of the exact
+DesignLibrary dyld-cache image. A native, value-blind Swift metadata decoder
+now authenticates macOS 26.6.1 build 25G76, MacBookPro18,2, DesignLibrary UUID
+`1E980802-69F5-3E69-89EF-50088297FCF5`, and the relevant metadata and code
+bytes directly through Command Line Tools `dyld_info`. It launches no Apple
+application and observes no render value, image, crop, margin, or return.
+
+The concrete existential payload is no longer anonymous. SwiftUICore's
+`_AnyCAFilterProvider.sdfBackdropMargin` authenticates the wrapper metadata,
+loads payload offset 16, concrete metadata, and its protocol witness table,
+then dispatches the already authenticated DesignLibrary getter. The concrete
+type descriptor is exactly
+`DesignLibrary.GlassMaterialProvider.BackgroundFilter`. Its static metadata
+proves size and stride `0x1f8` (504), so the prior 384-byte provider object was
+only the prefix required by that getter, not the complete Swift value.
+
+The complete top-level layout is:
+
+```text
+offset  field                         concrete storage
+0x000   layerIndex                    Int
+0x008   shadow                        Parameters.Shadow
+0x098   blur                          Parameters.Blur
+0x0e0   refraction                    Parameters.Refraction
+0x114   face                          Parameters.FaceEffects
+0x160   bleed                         Parameters.EdgeBleed
+0x1d0   sdrAdjustment                 Parameters.SDRAdjustment
+0x1f0   flags                         EnvironmentFlags
+0x1f8   end
+```
+
+Nested metadata closes the earlier semantic ambiguity without using a public
+value to select a type. Provider `+0x0e8` is structurally
+`refraction.innerAmount`, while `+0x160` is structurally `bleed.amount`.
+Likewise, `+0x028` is `shadow.inset`, `+0x038` is
+`shadow.shadowRadius`, `+0x088` is `shadow.opacity`, `+0x090` is
+`shadow.vibrancyContribution`, `+0x0a0` through `+0x0c0` are the five
+`blur.distances`, `+0x0f8` is `refraction.outerAmount`, `+0x110` is
+`refraction.outerOpacity`, and `+0x178` is `bleed.opacity`. The 69-byte `YCC`
+and 24-byte `SDRAdjustment.FaceEffectDimming` layouts are also decoded exactly.
+
+The immediate source boundary is exact as well.
+`GlassMaterialProvider.Parameters` has size `0x401`, stride `0x408`, and 17
+fields at offsets:
+
+```text
+0, 8, 16, 24, 176, 256, 312, 392, 500, 520, 784, 824,
+880, 912, 944, 968, 992
+```
+
+Those fields are `backdropScale`, `updateRate`, `contentOpacity`, optional
+`shadow`, `blur`, `refraction`, `faceEffects`, `edgeBleed`, `tinting`,
+`highlights`, `sdrAdjustment`, `lensing`, `controlContentLensing`,
+`controlDisplacement`, `contrastEdge`, `innerGlow`, and `radiosity`. The exact
+1,044-byte constructor at module offset `0xbad00`, SHA-256
+`71a592bc8a187fe8bcca0fa50c3f4d36ea3c2916dbd5d16f3fa1df05b86f131d`,
+has one direct caller at `0x240919334`. Its ABI is:
+
+```text
+x0  -> 1,025-byte GlassMaterialProvider.Parameters source
+x1  -> BackgroundFilter.layerIndex
+x2  -> BackgroundFilter.flags.rawValue
+x8  -> 504-byte BackgroundFilter output
+```
+
+The enclosing 1,644-byte producer has SHA-256
+`0729f7b0f874c0fb9fb64fa3383a6f2ed328d1dc55fdce53b82038a188df6f97`
+and one direct caller at `0x240923830`. The 2,592-byte filter-array getter has
+SHA-256
+`0abc68898237c57aa2c31d54568649f57750241ea6cd4fe9c995d0b9857f826a`.
+The already transferred 984-byte margin getter remains byte-identical at
+SHA-256
+`a76c6f0b03cc6b64c6b040220f495c5f22d7e1e5322efb3cb139554dd397c10b`.
+
+The earlier positive wrapper snapshot retained 4,096 bytes, so its inline
+payload recovers the complete value retrospectively. Bytes 0--383 equal the
+original provider snapshot exactly. The complete 504-byte value has SHA-256
+`fb9c92be37bfba81ba4f7a6d9063fe6a0170b66086885bef5116dded0155c14e`;
+the newly recovered 120-byte tail has SHA-256
+`70d3765c2bbfda2f6e1c9af2de8fda14210ddb9ed485f3b7dd7a15d3301e8a6f`.
+That tail includes exact `bleed` YCC/color storage, enabled darken blending,
+SDR headroom transition `1017.66943359375`, face-dimming white-point shift
+`1.0`, and environment flags raw value `98688`.
+
+The native metadata analyzer was profiled before freezing. Its first correct
+implementation took 40.90 seconds because immutable section bounds were
+recomputed inside every metadata scan. Caching those bounds reduced the same
+decode to 0.71 seconds, a measured 57.6x speedup; a later expanded run took
+0.80 seconds. The source and canonical result are
+`Analysis/analyze_designlibrary_background_filter_metadata_local_macos_26_6_1.py`,
+SHA-256
+`a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff`,
+and
+`Analysis/designlibrary_background_filter_metadata_local_macos_26_6_1_result.json`,
+SHA-256
+`dc2202be02d3831126866236661173c92bf492498a4cc2d2717931ba296b0757`.
+The retained-payload analyzer and result SHA-256 values are respectively
+`44e91161ea7c6865c9ad4f3d4ccba79de76bcfe793007849320b1e6480b9a3c9`
+and
+`0f07c11071f897520a840cff6919f3121b48b82141763e3a3087f858ce9245ba`.
+
+This closes the concrete provider type, complete storage layout, immediate
+constructor, and its `Parameters` input boundary. It does **not** yet prove
+which public controls construct every `Parameters` field. The next
+prospective gate must capture the 1,025-byte input and 504-byte constructor
+output inside each authenticated public-render interval, join that output to
+the complete provider value, then transfer an orthogonal fresh profile. The
+general crop/allocation policy, Retina compositor/color output, independent
+Walle zero-unequal-byte frames, and Liquid Glass parity remain open. No
+production shader change is authorized, and the shader quality lock remains
+unchanged.
