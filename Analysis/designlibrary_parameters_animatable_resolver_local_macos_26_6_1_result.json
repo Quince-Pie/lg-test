@@ -1,0 +1,1109 @@
+{
+  "claims": {
+    "allHelperOutputWriteRangesProved": true,
+    "allOpticalArithmeticDecoded": false,
+    "allSixteenAnimatableFieldsMappedToParameters": true,
+    "cropAllocationPolicyEstablished": false,
+    "independentWalleZeroByteFrameParityEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "optionalZeroCanonicalizationPresent": true,
+    "productionShaderChangeAuthorized": false,
+    "publicControlsToAnimatableDataLawEstablished": false,
+    "resolverSeedPreservedByteCount": 93,
+    "resolverSourceIsParametersAnimatableData": true,
+    "resolverWrittenByteCount": 932,
+    "retinaCompositorColorLawEstablished": false,
+    "updateRateIsOnlyParametersFieldWithoutResolverWrite": true,
+    "updateRatePreservedFromDeterministicDefaultSeed": true
+  },
+  "classification": "native static metadata/code/write-coverage analysis; no Apple application, render, image, public value, crop, or provider return is read",
+  "codeRegions": {
+    "blurResolver": {
+      "byteCount": 176,
+      "endExclusive": "0x240932b20",
+      "instructionCount": 44,
+      "sha256": "d2002d25e2a2987a38c820a64795da6949eb96aea87b4cdce951e59865f72349",
+      "start": "0x240932a70"
+    },
+    "edgeBleedResolver": {
+      "byteCount": 372,
+      "endExclusive": "0x240932e3c",
+      "instructionCount": 93,
+      "sha256": "9460cf85a263ea3cc080bad02ad46299a994755118963146ff424a0bb8ca40ad",
+      "start": "0x240932cc8"
+    },
+    "faceEffectsResolver": {
+      "byteCount": 272,
+      "endExclusive": "0x240932cc8",
+      "instructionCount": 68,
+      "sha256": "687495cda220ce0aa829e7add2a6a591dd5c187a986b12973c10d8a6d1dcc508",
+      "start": "0x240932bb8"
+    },
+    "highlightsResolver": {
+      "byteCount": 760,
+      "endExclusive": "0x240933134",
+      "instructionCount": 190,
+      "sha256": "47e4235ea19b5b52304be74f933d17cf25978c40c7611e8c27b156b629ef226f",
+      "start": "0x240932e3c"
+    },
+    "lensingResolver": {
+      "byteCount": 188,
+      "endExclusive": "0x2409331f0",
+      "instructionCount": 47,
+      "sha256": "2a40b9b3a25e9af97fb78e39923221a868600a90454cee49c20600031ea71c40",
+      "start": "0x240933134"
+    },
+    "parametersResolver": {
+      "byteCount": 1172,
+      "endExclusive": "0x240932888",
+      "instructionCount": 293,
+      "sha256": "99b1fedd3f82ad68d73f6c3a94608544fa82625aa56237fac9b8316d1c7e92a0",
+      "start": "0x2409323f4"
+    },
+    "refractionResolver": {
+      "byteCount": 152,
+      "endExclusive": "0x240932bb8",
+      "instructionCount": 38,
+      "sha256": "ca6e38a9865c83e7ad19c8a6c5c1fdfdd5264f7d2ad6ca13d2fbb93a9f88d3d2",
+      "start": "0x240932b20"
+    },
+    "shadowResolver": {
+      "byteCount": 488,
+      "endExclusive": "0x240932a70",
+      "instructionCount": 122,
+      "sha256": "3a591e8062a9e9fee12ebe8a7ebbe69dabb9d4fe0afc95bf5a9cbc1db9f7d51a",
+      "start": "0x240932888"
+    }
+  },
+  "designLibraryParametersAnimatableResolverAnalysisSchemaVersion": 1,
+  "directBLCallsites": {
+    "blurResolver": [
+      "0x240932478"
+    ],
+    "edgeBleedResolver": [
+      "0x2409324fc"
+    ],
+    "faceEffectsResolver": [
+      "0x2409324c8"
+    ],
+    "highlightsResolver": [
+      "0x240932588"
+    ],
+    "lensingResolver": [
+      "0x240932648"
+    ],
+    "parametersResolver": [
+      "0x2409332e4",
+      "0x240982cd4"
+    ],
+    "refractionResolver": [
+      "0x24093249c"
+    ],
+    "shadowResolver": [
+      "0x240932454"
+    ]
+  },
+  "fieldMap": [
+    {
+      "animatableStorageRange": {
+        "byteCount": 4,
+        "endExclusive": 4,
+        "start": 0
+      },
+      "field": "backdropScale",
+      "firstWriteOrHelperCallsite": "0x24093241c",
+      "mechanism": "direct",
+      "parametersStorageRange": {
+        "byteCount": 8,
+        "endExclusive": 8,
+        "start": 0
+      },
+      "resolverWriteRange": {
+        "byteCount": 4,
+        "endExclusive": 4,
+        "start": 0
+      }
+    },
+    {
+      "animatableStorageRange": null,
+      "field": "updateRate",
+      "firstWriteOrHelperCallsite": null,
+      "mechanism": "seed-preserved",
+      "parametersStorageRange": {
+        "byteCount": 8,
+        "endExclusive": 16,
+        "start": 8
+      },
+      "resolverWriteRange": null
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 12,
+        "endExclusive": 16,
+        "start": 4
+      },
+      "field": "contentOpacity",
+      "firstWriteOrHelperCallsite": "0x240932420",
+      "mechanism": "direct",
+      "parametersStorageRange": {
+        "byteCount": 8,
+        "endExclusive": 24,
+        "start": 16
+      },
+      "resolverWriteRange": {
+        "byteCount": 4,
+        "endExclusive": 20,
+        "start": 16
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 144,
+        "endExclusive": 160,
+        "start": 16
+      },
+      "field": "shadow",
+      "firstWriteOrHelperCallsite": "0x240932454",
+      "mechanism": "helper",
+      "parametersStorageRange": {
+        "byteCount": 152,
+        "endExclusive": 176,
+        "start": 24
+      },
+      "resolverWriteRange": {
+        "byteCount": 145,
+        "endExclusive": 169,
+        "start": 24
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 80,
+        "endExclusive": 240,
+        "start": 160
+      },
+      "field": "blur",
+      "firstWriteOrHelperCallsite": "0x240932478",
+      "mechanism": "helper",
+      "parametersStorageRange": {
+        "byteCount": 80,
+        "endExclusive": 256,
+        "start": 176
+      },
+      "resolverWriteRange": {
+        "byteCount": 73,
+        "endExclusive": 249,
+        "start": 176
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 64,
+        "endExclusive": 304,
+        "start": 240
+      },
+      "field": "refraction",
+      "firstWriteOrHelperCallsite": "0x24093249c",
+      "mechanism": "helper",
+      "parametersStorageRange": {
+        "byteCount": 56,
+        "endExclusive": 312,
+        "start": 256
+      },
+      "resolverWriteRange": {
+        "byteCount": 53,
+        "endExclusive": 309,
+        "start": 256
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 96,
+        "endExclusive": 400,
+        "start": 304
+      },
+      "field": "faceEffects",
+      "firstWriteOrHelperCallsite": "0x2409324c8",
+      "mechanism": "helper",
+      "parametersStorageRange": {
+        "byteCount": 80,
+        "endExclusive": 392,
+        "start": 312
+      },
+      "resolverWriteRange": {
+        "byteCount": 74,
+        "endExclusive": 386,
+        "start": 312
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 128,
+        "endExclusive": 528,
+        "start": 400
+      },
+      "field": "edgeBleed",
+      "firstWriteOrHelperCallsite": "0x2409324fc",
+      "mechanism": "helper",
+      "parametersStorageRange": {
+        "byteCount": 108,
+        "endExclusive": 500,
+        "start": 392
+      },
+      "resolverWriteRange": {
+        "byteCount": 106,
+        "endExclusive": 498,
+        "start": 392
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 32,
+        "endExclusive": 560,
+        "start": 528
+      },
+      "field": "tinting",
+      "firstWriteOrHelperCallsite": "0x240932568",
+      "mechanism": "inline",
+      "parametersStorageRange": {
+        "byteCount": 20,
+        "endExclusive": 520,
+        "start": 500
+      },
+      "resolverWriteRange": {
+        "byteCount": 17,
+        "endExclusive": 517,
+        "start": 500
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 272,
+        "endExclusive": 832,
+        "start": 560
+      },
+      "field": "highlights",
+      "firstWriteOrHelperCallsite": "0x240932588",
+      "mechanism": "helper",
+      "parametersStorageRange": {
+        "byteCount": 264,
+        "endExclusive": 784,
+        "start": 520
+      },
+      "resolverWriteRange": {
+        "byteCount": 257,
+        "endExclusive": 777,
+        "start": 520
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 48,
+        "endExclusive": 880,
+        "start": 832
+      },
+      "field": "sdrAdjustment",
+      "firstWriteOrHelperCallsite": "0x240932618",
+      "mechanism": "inline",
+      "parametersStorageRange": {
+        "byteCount": 40,
+        "endExclusive": 824,
+        "start": 784
+      },
+      "resolverWriteRange": {
+        "byteCount": 33,
+        "endExclusive": 817,
+        "start": 784
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 80,
+        "endExclusive": 960,
+        "start": 880
+      },
+      "field": "lensing",
+      "firstWriteOrHelperCallsite": "0x240932648",
+      "mechanism": "helper",
+      "parametersStorageRange": {
+        "byteCount": 56,
+        "endExclusive": 880,
+        "start": 824
+      },
+      "resolverWriteRange": {
+        "byteCount": 49,
+        "endExclusive": 873,
+        "start": 824
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 48,
+        "endExclusive": 1008,
+        "start": 960
+      },
+      "field": "controlContentLensing",
+      "firstWriteOrHelperCallsite": "0x2409326b0",
+      "mechanism": "inline",
+      "parametersStorageRange": {
+        "byteCount": 32,
+        "endExclusive": 912,
+        "start": 880
+      },
+      "resolverWriteRange": {
+        "byteCount": 25,
+        "endExclusive": 905,
+        "start": 880
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 48,
+        "endExclusive": 1056,
+        "start": 1008
+      },
+      "field": "controlDisplacement",
+      "firstWriteOrHelperCallsite": "0x240932720",
+      "mechanism": "inline",
+      "parametersStorageRange": {
+        "byteCount": 32,
+        "endExclusive": 944,
+        "start": 912
+      },
+      "resolverWriteRange": {
+        "byteCount": 25,
+        "endExclusive": 937,
+        "start": 912
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 32,
+        "endExclusive": 1088,
+        "start": 1056
+      },
+      "field": "contrastEdge",
+      "firstWriteOrHelperCallsite": "0x240932794",
+      "mechanism": "inline",
+      "parametersStorageRange": {
+        "byteCount": 24,
+        "endExclusive": 968,
+        "start": 944
+      },
+      "resolverWriteRange": {
+        "byteCount": 17,
+        "endExclusive": 961,
+        "start": 944
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 32,
+        "endExclusive": 1120,
+        "start": 1088
+      },
+      "field": "innerGlow",
+      "firstWriteOrHelperCallsite": "0x240932800",
+      "mechanism": "inline",
+      "parametersStorageRange": {
+        "byteCount": 24,
+        "endExclusive": 992,
+        "start": 968
+      },
+      "resolverWriteRange": {
+        "byteCount": 17,
+        "endExclusive": 985,
+        "start": 968
+      }
+    },
+    {
+      "animatableStorageRange": {
+        "byteCount": 33,
+        "endExclusive": 1153,
+        "start": 1120
+      },
+      "field": "radiosity",
+      "firstWriteOrHelperCallsite": "0x24093286c",
+      "mechanism": "inline",
+      "parametersStorageRange": {
+        "byteCount": 33,
+        "endExclusive": 1025,
+        "start": 992
+      },
+      "resolverWriteRange": {
+        "byteCount": 33,
+        "endExclusive": 1025,
+        "start": 992
+      }
+    }
+  ],
+  "framework": {
+    "path": "/System/Library/PrivateFrameworks/DesignLibrary.framework/Versions/A/DesignLibrary",
+    "uuid": "1E980802-69F5-3E69-89EF-50088297FCF5"
+  },
+  "helperOutputWriteCoverage": {
+    "blurResolver": [
+      {
+        "byteCount": 73,
+        "endExclusive": 73,
+        "start": 0
+      }
+    ],
+    "edgeBleedResolver": [
+      {
+        "byteCount": 106,
+        "endExclusive": 106,
+        "start": 0
+      }
+    ],
+    "faceEffectsResolver": [
+      {
+        "byteCount": 74,
+        "endExclusive": 74,
+        "start": 0
+      }
+    ],
+    "highlightsResolver": [
+      {
+        "byteCount": 257,
+        "endExclusive": 257,
+        "start": 0
+      }
+    ],
+    "lensingResolver": [
+      {
+        "byteCount": 49,
+        "endExclusive": 49,
+        "start": 0
+      }
+    ],
+    "refractionResolver": [
+      {
+        "byteCount": 53,
+        "endExclusive": 53,
+        "start": 0
+      }
+    ],
+    "shadowResolver": [
+      {
+        "byteCount": 145,
+        "endExclusive": 145,
+        "start": 0
+      }
+    ]
+  },
+  "host": {
+    "hardwareModel": "MacBookPro18,2",
+    "macOSBuildVersion": "25G76",
+    "macOSProductVersion": "26.6.1",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "instructionContracts": [
+    {
+      "address": "0x24093240c",
+      "mnemonic": "mov",
+      "operands": "x19, x0"
+    },
+    {
+      "address": "0x240932414",
+      "mnemonic": "ldp",
+      "operands": "s0, s1, [x0]"
+    },
+    {
+      "address": "0x240932418",
+      "mnemonic": "add",
+      "operands": "x21, x20, #0x1f4"
+    },
+    {
+      "address": "0x24093241c",
+      "mnemonic": "str",
+      "operands": "s0, [x20]"
+    },
+    {
+      "address": "0x240932420",
+      "mnemonic": "str",
+      "operands": "s1, [x20, #0x10]"
+    },
+    {
+      "address": "0x24093244c",
+      "mnemonic": "add",
+      "operands": "x8, x20, #0x18"
+    },
+    {
+      "address": "0x240932454",
+      "mnemonic": "bl",
+      "operands": "0x240932888"
+    },
+    {
+      "address": "0x240932470",
+      "mnemonic": "add",
+      "operands": "x8, x20, #0xb0"
+    },
+    {
+      "address": "0x240932478",
+      "mnemonic": "bl",
+      "operands": "0x240932a70"
+    },
+    {
+      "address": "0x240932494",
+      "mnemonic": "add",
+      "operands": "x8, x20, #0x100"
+    },
+    {
+      "address": "0x24093249c",
+      "mnemonic": "bl",
+      "operands": "0x240932b20"
+    },
+    {
+      "address": "0x2409324c0",
+      "mnemonic": "add",
+      "operands": "x8, x20, #0x138"
+    },
+    {
+      "address": "0x2409324c8",
+      "mnemonic": "bl",
+      "operands": "0x240932bb8"
+    },
+    {
+      "address": "0x2409324f4",
+      "mnemonic": "add",
+      "operands": "x8, x20, #0x188"
+    },
+    {
+      "address": "0x2409324fc",
+      "mnemonic": "bl",
+      "operands": "0x240932cc8"
+    },
+    {
+      "address": "0x240932568",
+      "mnemonic": "stp",
+      "operands": "x8, x10, [x21]"
+    },
+    {
+      "address": "0x24093256c",
+      "mnemonic": "strb",
+      "operands": "w9, [x20, #0x204]"
+    },
+    {
+      "address": "0x240932580",
+      "mnemonic": "add",
+      "operands": "x8, x20, #0x208"
+    },
+    {
+      "address": "0x240932588",
+      "mnemonic": "bl",
+      "operands": "0x240932e3c"
+    },
+    {
+      "address": "0x240932618",
+      "mnemonic": "str",
+      "operands": "x9, [x20, #0x310]"
+    },
+    {
+      "address": "0x240932624",
+      "mnemonic": "strb",
+      "operands": "w8, [x20, #0x330]"
+    },
+    {
+      "address": "0x240932640",
+      "mnemonic": "add",
+      "operands": "x8, x20, #0x338"
+    },
+    {
+      "address": "0x240932648",
+      "mnemonic": "bl",
+      "operands": "0x240933134"
+    },
+    {
+      "address": "0x2409326b0",
+      "mnemonic": "str",
+      "operands": "q1, [x20, #0x370]"
+    },
+    {
+      "address": "0x2409326b8",
+      "mnemonic": "strb",
+      "operands": "w8, [x20, #0x388]"
+    },
+    {
+      "address": "0x240932720",
+      "mnemonic": "str",
+      "operands": "q0, [x20, #0x390]"
+    },
+    {
+      "address": "0x240932728",
+      "mnemonic": "strb",
+      "operands": "w8, [x20, #0x3a8]"
+    },
+    {
+      "address": "0x240932794",
+      "mnemonic": "str",
+      "operands": "x9, [x20, #0x3b0]"
+    },
+    {
+      "address": "0x24093279c",
+      "mnemonic": "strb",
+      "operands": "w8, [x20, #0x3c0]"
+    },
+    {
+      "address": "0x240932800",
+      "mnemonic": "str",
+      "operands": "x9, [x20, #0x3c8]"
+    },
+    {
+      "address": "0x240932808",
+      "mnemonic": "strb",
+      "operands": "w8, [x20, #0x3d8]"
+    },
+    {
+      "address": "0x24093286c",
+      "mnemonic": "stp",
+      "operands": "q0, q1, [x20, #0x3e0]"
+    },
+    {
+      "address": "0x240932870",
+      "mnemonic": "strb",
+      "operands": "w8, [x20, #0x400]"
+    },
+    {
+      "address": "0x240933110",
+      "mnemonic": "mov",
+      "operands": "x0, x19"
+    },
+    {
+      "address": "0x240933114",
+      "mnemonic": "mov",
+      "operands": "w2, #0x101"
+    },
+    {
+      "address": "0x2409332c4",
+      "mnemonic": "ldr",
+      "operands": "x20, [x19, #0xd18]"
+    },
+    {
+      "address": "0x2409332e0",
+      "mnemonic": "mov",
+      "operands": "x0, x21"
+    },
+    {
+      "address": "0x2409332e4",
+      "mnemonic": "bl",
+      "operands": "0x2409323f4"
+    },
+    {
+      "address": "0x240982cc8",
+      "mnemonic": "add",
+      "operands": "x0, x19, #0x1, lsl #12"
+    },
+    {
+      "address": "0x240982ccc",
+      "mnemonic": "add",
+      "operands": "x0, x0, #0x900"
+    },
+    {
+      "address": "0x240982cd0",
+      "mnemonic": "add",
+      "operands": "x20, x19, #0xc60"
+    },
+    {
+      "address": "0x240982cd4",
+      "mnemonic": "bl",
+      "operands": "0x2409323f4"
+    }
+  ],
+  "parameters": {
+    "descriptorAddress": "0x2409d2878",
+    "fieldOffsets": [
+      0,
+      8,
+      16,
+      24,
+      176,
+      256,
+      312,
+      392,
+      500,
+      520,
+      784,
+      824,
+      880,
+      912,
+      944,
+      968,
+      992
+    ],
+    "fields": [
+      {
+        "index": 0,
+        "name": "backdropScale",
+        "typeReference": "Sf"
+      },
+      {
+        "index": 1,
+        "name": "updateRate",
+        "typeReference": "Sd"
+      },
+      {
+        "index": 2,
+        "name": "contentOpacity",
+        "typeReference": "Sf"
+      },
+      {
+        "index": 3,
+        "name": "_shadow",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV6ShadowV"
+      },
+      {
+        "index": 4,
+        "name": "_blur",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV4BlurV"
+      },
+      {
+        "index": 5,
+        "name": "_refraction",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV10RefractionV"
+      },
+      {
+        "index": 6,
+        "name": "_faceEffects",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV11FaceEffectsV"
+      },
+      {
+        "index": 7,
+        "name": "_edgeBleed",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9EdgeBleedV"
+      },
+      {
+        "index": 8,
+        "name": "_tinting",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV7TintingV"
+      },
+      {
+        "index": 9,
+        "name": "_highlights",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV10HighlightsV"
+      },
+      {
+        "index": 10,
+        "name": "_sdrAdjustment",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV13SDRAdjustmentV"
+      },
+      {
+        "index": 11,
+        "name": "_lensing",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV7LensingV"
+      },
+      {
+        "index": 12,
+        "name": "_controlContentLensing",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12DisplacementV"
+      },
+      {
+        "index": 13,
+        "name": "_controlDisplacement",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12DisplacementV"
+      },
+      {
+        "index": 14,
+        "name": "_contrastEdge",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12ContrastEdgeV"
+      },
+      {
+        "index": 15,
+        "name": "_innerGlow",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9InnerGlowV"
+      },
+      {
+        "index": 16,
+        "name": "_radiosity",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9RadiosityV"
+      }
+    ],
+    "name": "Parameters",
+    "size": 1025,
+    "stride": 1032
+  },
+  "parametersAnimatableData": {
+    "descriptorAddress": "0x2409d249c",
+    "fieldOffsets": [
+      0,
+      4,
+      16,
+      160,
+      240,
+      304,
+      400,
+      528,
+      560,
+      832,
+      880,
+      960,
+      1008,
+      1056,
+      1088,
+      1120
+    ],
+    "fields": [
+      {
+        "index": 0,
+        "name": "backdropScale",
+        "typeReference": "Sf"
+      },
+      {
+        "index": 1,
+        "name": "contentOpacity",
+        "typeReference": "Sf"
+      },
+      {
+        "index": 2,
+        "name": "shadow",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV6ShadowV14AnimatableDataV"
+      },
+      {
+        "index": 3,
+        "name": "blur",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV4BlurV14AnimatableDataV"
+      },
+      {
+        "index": 4,
+        "name": "refraction",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV10RefractionV14AnimatableDataV"
+      },
+      {
+        "index": 5,
+        "name": "faceEffects",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV11FaceEffectsV14AnimatableDataV"
+      },
+      {
+        "index": 6,
+        "name": "edgeBleed",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9EdgeBleedV14AnimatableDataV"
+      },
+      {
+        "index": 7,
+        "name": "tinting",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV7TintingV14AnimatableDataV"
+      },
+      {
+        "index": 8,
+        "name": "highlights",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV10HighlightsV14AnimatableDataV"
+      },
+      {
+        "index": 9,
+        "name": "sdrAdjustment",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV13SDRAdjustmentV14AnimatableDataV"
+      },
+      {
+        "index": 10,
+        "name": "lensing",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV7LensingV14AnimatableDataV"
+      },
+      {
+        "index": 11,
+        "name": "controlContentLensing",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12DisplacementV14AnimatableDataV"
+      },
+      {
+        "index": 12,
+        "name": "controlDisplacement",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12DisplacementV14AnimatableDataV"
+      },
+      {
+        "index": 13,
+        "name": "contrastEdge",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV12ContrastEdgeV14AnimatableDataV"
+      },
+      {
+        "index": 14,
+        "name": "innerGlow",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9InnerGlowV14AnimatableDataV"
+      },
+      {
+        "index": 15,
+        "name": "radiosity",
+        "typeReference": "_____Sg 13DesignLibrary21GlassMaterialProviderV10ParametersV9RadiosityV14AnimatableDataV"
+      }
+    ],
+    "name": "AnimatableData",
+    "size": 1153,
+    "stride": 1168
+  },
+  "parametersWriteCoverage": {
+    "seedPreservedByteCount": 93,
+    "seedPreservedRanges": [
+      {
+        "byteCount": 12,
+        "endExclusive": 16,
+        "start": 4
+      },
+      {
+        "byteCount": 4,
+        "endExclusive": 24,
+        "start": 20
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 176,
+        "start": 169
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 256,
+        "start": 249
+      },
+      {
+        "byteCount": 3,
+        "endExclusive": 312,
+        "start": 309
+      },
+      {
+        "byteCount": 6,
+        "endExclusive": 392,
+        "start": 386
+      },
+      {
+        "byteCount": 2,
+        "endExclusive": 500,
+        "start": 498
+      },
+      {
+        "byteCount": 3,
+        "endExclusive": 520,
+        "start": 517
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 784,
+        "start": 777
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 824,
+        "start": 817
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 880,
+        "start": 873
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 912,
+        "start": 905
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 944,
+        "start": 937
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 968,
+        "start": 961
+      },
+      {
+        "byteCount": 7,
+        "endExclusive": 992,
+        "start": 985
+      }
+    ],
+    "writtenByteCount": 932,
+    "writtenRanges": [
+      {
+        "byteCount": 4,
+        "endExclusive": 4,
+        "start": 0
+      },
+      {
+        "byteCount": 4,
+        "endExclusive": 20,
+        "start": 16
+      },
+      {
+        "byteCount": 145,
+        "endExclusive": 169,
+        "start": 24
+      },
+      {
+        "byteCount": 73,
+        "endExclusive": 249,
+        "start": 176
+      },
+      {
+        "byteCount": 53,
+        "endExclusive": 309,
+        "start": 256
+      },
+      {
+        "byteCount": 74,
+        "endExclusive": 386,
+        "start": 312
+      },
+      {
+        "byteCount": 106,
+        "endExclusive": 498,
+        "start": 392
+      },
+      {
+        "byteCount": 17,
+        "endExclusive": 517,
+        "start": 500
+      },
+      {
+        "byteCount": 257,
+        "endExclusive": 777,
+        "start": 520
+      },
+      {
+        "byteCount": 33,
+        "endExclusive": 817,
+        "start": 784
+      },
+      {
+        "byteCount": 49,
+        "endExclusive": 873,
+        "start": 824
+      },
+      {
+        "byteCount": 25,
+        "endExclusive": 905,
+        "start": 880
+      },
+      {
+        "byteCount": 25,
+        "endExclusive": 937,
+        "start": 912
+      },
+      {
+        "byteCount": 17,
+        "endExclusive": 961,
+        "start": 944
+      },
+      {
+        "byteCount": 17,
+        "endExclusive": 985,
+        "start": 968
+      },
+      {
+        "byteCount": 33,
+        "endExclusive": 1025,
+        "start": 992
+      }
+    ]
+  },
+  "resolverABI": {
+    "output": "x20 -> pre-seeded Parameters (1,025 bytes)",
+    "primaryRecipeBuilderCallsite": "0x240982cd4",
+    "secondDirectCallsite": "0x2409332e4",
+    "source": "x0 -> Parameters.AnimatableData (1,153 bytes)"
+  },
+  "tool": {
+    "dyldInfo": "/Library/Developer/CommandLineTools/usr/bin/dyld_info",
+    "metadataAnalyzerSHA256": "a50569535c5452a4a4e3db0940be09968b4de38bc86aeda12c95ab3c0a653aff",
+    "provenanceAnalyzerSHA256": "7492526b9ce67f21eee811a5a7d0f5effc1348be97f3aa4c2429d13e7c497145",
+    "python": "3.9.6",
+    "source": "Analysis/analyze_designlibrary_parameters_animatable_resolver_local_macos_26_6_1.py",
+    "sourceSHA256": "516bbfa6098c32404c289cd5ee9230f480aefac373f35c6f45c57c11583ecd5d"
+  }
+}

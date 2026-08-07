@@ -8744,3 +8744,69 @@ capture remains necessary to decode which public controls and environment
 states select each branch and value. Crop/allocation, Retina compositor/color
 behavior, independent Walle zero-byte frame parity, and Liquid Glass parity
 remain open. No production shader change is authorized.
+
+### Exact `Parameters.AnimatableData` resolver field map
+
+Native metadata and code analysis now isolates the recipe builder's actual
+`Parameters` population boundary. The builder call at `0x240982cd4` passes
+`x0 = stack + 0x1900` and `x20 = stack + 0xc60` to the exact resolver at
+`0x2409323f4..0x240932888`. Its source is the 1,153-byte
+`GlassMaterialProvider.Parameters.AnimatableData`; its destination is the
+already seeded 1,025-byte `Parameters` value. A second direct caller at
+`0x2409332e4` uses the same ABI.
+
+The `Parameters.AnimatableData` descriptor is exactly `0x2409d249c`, with
+static size 1,153 and stride 1,168. Its 16 fields and byte offsets are:
+
+```text
+backdropScale             0    contentOpacity             4
+shadow                   16    blur                     160
+refraction              240    faceEffects              304
+edgeBleed               400    tinting                  528
+highlights              560    sdrAdjustment            832
+lensing                 880    controlContentLensing    960
+controlDisplacement    1008    contrastEdge            1056
+innerGlow              1088    radiosity               1120
+```
+
+The 1,172-byte resolver maps those fields one-for-one into every animatable
+`Parameters` field. Seven nested values are handled by exact helper regions
+for Shadow, Blur, Refraction, FaceEffects, EdgeBleed, Highlights, and Lensing;
+the other nine are resolved inline. Static output-pointer tracking proves the
+following complete destination coverage:
+
+```text
+[0,4)       [16,20)     [24,169)    [176,249)
+[256,309)   [312,386)   [392,498)   [500,517)
+[520,777)   [784,817)   [824,873)   [880,905)
+[912,937)   [944,961)   [968,985)   [992,1025)
+```
+
+Those ranges contain exactly 932 bytes. Their 93-byte complement consists of
+the `updateRate` field at `[8,16)` plus deterministic seed and Swift layout
+bytes. `updateRate` is not part of `AnimatableData`, and the resolver never
+writes it; this is deliberate seed preservation rather than an unknown source.
+Every other semantic field receives a resolver write. Optional nested values
+are also canonicalized by their resolver helpers, including their nil/all-zero
+paths.
+
+The native analyzer and canonical result are
+`Analysis/analyze_designlibrary_parameters_animatable_resolver_local_macos_26_6_1.py`,
+SHA-256
+`516bbfa6098c32404c289cd5ee9230f480aefac373f35c6f45c57c11583ecd5d`,
+and
+`Analysis/designlibrary_parameters_animatable_resolver_local_macos_26_6_1_result.json`,
+SHA-256
+`c11fa1c42a559d585ec2df64c5a2eeda4f1fc37caaf0e5da9129c93277cb9b93`.
+It authenticates the exact descriptors, all resolver/helper code bytes, direct
+call graph, critical instructions, and every output byte range on macOS 26.6.1
+build 25G76 using the native M1 Max. It launches no Apple application and
+reads no render outcome.
+
+This closes the field-routing and seed-preservation questions, but not the
+field-value law. Remaining upstream work is to decode how public controls,
+environment, recipe branches, and interpolation construct each
+`AnimatableData` field and the arithmetic inside the optional resolvers.
+Crop/allocation, Retina compositor/color behavior, independent Walle
+zero-unequal-byte frame parity, and Liquid Glass parity remain open. No
+production shader change is authorized.
