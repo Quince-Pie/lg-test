@@ -1,0 +1,91 @@
+{
+  "smallClearFinalColorInterventionResultSchemaVersion": 1,
+  "status": "pass",
+  "authority": "prospective current-build observational pixel-irrelevance of the declared-active half4 color field for the exact small-clear Tkfh pipeline",
+  "formalLiquidGlassParity": false,
+  "capture": {
+    "commit": "187a1e9162798c769b92f49042d7c480a3243847",
+    "directory": "local-small-clear-final-color-187a1e9-v1",
+    "captureExitStatus": 0,
+    "validationExitStatus": 0,
+    "timelineSHA256": "19b0181b03b19edee59de57c41b24024945524e0a6bb87c26061778d2d1b855a",
+    "validationSHA256": "902bd67ff318d6c35a3d63dcc92c0389b352201d8647cf923c475a4430c22ca7",
+    "preflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "nativeCaptureContainedNixStorePath": false,
+    "githubActionsUsed": false,
+    "debuggerUsed": false
+  },
+  "host": {
+    "architecture": "arm64",
+    "metalDevice": "Apple M1 Max",
+    "operatingSystem": "macOS 26.6.1",
+    "operatingSystemBuild": "25G76",
+    "physicalPixels": [3456, 2234],
+    "backingScaleFactor": 2
+  },
+  "selection": {
+    "sampleIndex": 3,
+    "pipeline": "com.apple.coreanimation.PBGRAXm_TkfhA2Xhfc_Iscd",
+    "vertexFunction": "VfxU10Xh",
+    "fragmentFunction": "TkfhA2Xhfc_Iscd",
+    "indexCount": 6,
+    "vertexCount": 4,
+    "vertexStride": 48,
+    "attributeIndex": 3,
+    "attributeOffset": 32,
+    "attributeFormat": "half4",
+    "attributeDeclaredActive": true,
+    "selectionPolicy": "first exact-pipeline candidate in ascending sample order"
+  },
+  "attributeStreams": {
+    "capturedSHA256": "66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925",
+    "finiteConstant": {
+      "littleEndianHex": "003c003800bc0040003c003800bc0040003c003800bc0040003c003800bc0040",
+      "sha256": "94409e9a3aa5f079da9af5fa21cc219af743ee0c1922ea86cb70e3e9338f3e66",
+      "differsFromCaptured": true
+    },
+    "finiteVarying": {
+      "littleEndianHex": "003c003800bc004000b80040003400bc004200c0003a003000bc003400400038",
+      "sha256": "5661236b1b60e1a3b6622641859e333ec60362495950181cb57326833a6de0be",
+      "differsFromCaptured": true
+    }
+  },
+  "completePassComparison": {
+    "width": 128,
+    "height": 128,
+    "pixelFormat": 80,
+    "bytesPerOutput": 65536,
+    "interventionCount": 2,
+    "comparedBytes": 131072,
+    "referenceSHA256": "232bab739e1fd86dd4d28aef1962f869a2fc71887d7a29ced1e7c1f1ffdcc501",
+    "finiteConstantSHA256": "232bab739e1fd86dd4d28aef1962f869a2fc71887d7a29ced1e7c1f1ffdcc501",
+    "finiteVaryingSHA256": "232bab739e1fd86dd4d28aef1962f869a2fc71887d7a29ced1e7c1f1ffdcc501",
+    "unequalBytes": 0,
+    "unequalPixels": 0,
+    "maximumChannelDelta": 0,
+    "firstUnequalByte": -1,
+    "exact": true
+  },
+  "preregistrationChainSHA256": {
+    "base": "8609133e2306ca7ff575fc136d6ae125c00d7de922385de106ecb27d6075d604",
+    "exhaustiveTransport": "a86b3adb3e6f50eca0ab71ce7f0bdb5871f381cc4b9e3547230644321768e769",
+    "quadFallback": "2baa14d43ed0954d6c19388814eb9df4a192fb1c0fec015b947350a1098130cb",
+    "passSelection": "e0f05c35d77794458576c7f9f3726f41fc64ff4a24e3cdac02435cb979337a2a",
+    "clearLoad": "49b32c1626073df9a0a5fbf60a00fc633d146b9cee93930f55f2176541eddd27",
+    "compileCorrection": "3caa6f319feca4e84aa6418263c15bac732cae1e7740b20a96b9093ae6c41f61"
+  },
+  "archive": {
+    "path": "artifacts/local-small-clear-final-color-187a1e9-v1.tar.gz",
+    "bytes": 119721805,
+    "sha256": "359b85316d8483fecb8e27c00bd76a143c35468013850ee5bb55a90d0217dc18"
+  },
+  "conclusion": {
+    "activeHalf4ColorPixelRelevant": false,
+    "borderColorBytesNeedIndependentConstructor": false,
+    "appliesToExactPipelineOnCapturedBuild": true,
+    "establishesTghnBackgroundSemantics": false,
+    "establishesTmuaProducerOrA2XghfcCompositionSemantics": false,
+    "establishesPhysicalRetinaCompositorParity": false,
+    "establishesProductionWalleParity": false
+  }
+}

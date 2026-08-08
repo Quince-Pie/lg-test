@@ -1,0 +1,110 @@
+{
+  "activeColor": {
+    "comparedBytes": 131072,
+    "declaredActive": true,
+    "observationallyPixelRelevant": false,
+    "result": "Analysis/small_clear_final_color_intervention_result.json",
+    "resultSHA256": "76f6da98693275e6c617aacdfa599fb8a9fa8ab3bf847eb0e5a1accd2a0e4f24",
+    "unequalBytes": 0
+  },
+  "appleUnknownsBlockingGatedWalleIntegration": 0,
+  "classification": "hash-pinned retrospective fragment constructor plus prospective active-color pixel-irrelevance proof",
+  "constructor": {
+    "float4At0x00": [
+      "radiusX",
+      "radiusY",
+      4,
+      0
+    ],
+    "float4At0x10": [
+      1,
+      0,
+      0,
+      1
+    ],
+    "float4At0x20": [
+      1,
+      1,
+      "halfExtentX",
+      0
+    ],
+    "halfExtent": "binary32(extent/2)",
+    "radius": "binary32(binary32((extent+18)/2)-9)"
+  },
+  "fragmentPrefix": {
+    "bytesPerState": 248,
+    "comparedBytes": 30504,
+    "exact": true,
+    "fixedHalfRegionOffset": 208,
+    "fixedHalfWords": [
+      "0x3c00",
+      "0x8001",
+      "0x0000",
+      "0xb9a8",
+      "0xb9a8",
+      "0x3c00",
+      "0x8001",
+      "0x0000",
+      "0x39a8",
+      "0x39a8",
+      "0x399a",
+      "0x0000",
+      "0x3c00",
+      "0x3c00",
+      "0x3c00",
+      "0x3c00",
+      "0x3c00",
+      "0x3c00",
+      "0x3c00",
+      "0x3c00"
+    ],
+    "mismatchedBytes": 0,
+    "observedSHA256": "b5104c5c048679cd6a39d108d4239234af24bad229478b08852608b4083f012e",
+    "predictedSHA256": "b5104c5c048679cd6a39d108d4239234af24bad229478b08852608b4083f012e",
+    "zeroRegionBytes": 160,
+    "zeroRegionOffset": 48
+  },
+  "geometryResultSHA256": "8600d81d693c316408064a868f100a3ead403e51c68aa994e10a8e154027ae00",
+  "pipeline": "com.apple.coreanimation.PBGRAXm_TkfhA2Xhfc_Iscd",
+  "productionParityAuthorized": false,
+  "remainingAppleAlgorithmFamilies": [
+    "small-clear Tghn/Tmua/A2Xghfc background, producer, composition, and pixel semantics"
+  ],
+  "remainingProductProofs": [
+    "Walle-shaped physical Retina color/compositor transfer",
+    "fresh production-Walle frame with zero unequal bytes"
+  ],
+  "remainingSmallClearSubBoundaries": [
+    "Tghn background construction and pixels",
+    "Tmua/A2Xghfc producer/composition construction and pixels"
+  ],
+  "smallClearFamilyClosed": false,
+  "smallClearFinalPayloadResultSchemaVersion": 1,
+  "sources": [
+    {
+      "name": "clear-dark-dematerialize-06",
+      "smallClearStateCount": 30,
+      "timelineSHA256": "0fb1572ce1822fa3a00da0cf37357ba7d923d60d21da85b6a14207bf20c3fe31"
+    },
+    {
+      "name": "clear-light-materialize-01",
+      "smallClearStateCount": 31,
+      "timelineSHA256": "85dc1f54a54f86852ee46b1c611f8968b470c0551a4647c0f7b8a59030ccb016"
+    },
+    {
+      "name": "local-small-clear-trace-v1",
+      "smallClearStateCount": 31,
+      "timelineSHA256": "1a8f841c09505c2917333cbfbb59d575951ddcb7307809a5361c262babf2154c"
+    },
+    {
+      "name": "local-small-clear-sdf-transform-v1",
+      "smallClearStateCount": 31,
+      "timelineSHA256": "616f1f8c55efd12edfa600a6b018f773438895984cd9bd03339e2638627e356c"
+    }
+  ],
+  "stateCount": 123,
+  "status": "exact-small-clear-final-payload-closure",
+  "tkfhInputConstructionClosed": true,
+  "universalCircleDomainParity": false,
+  "walleIntegrationMayBeginBehindGates": true
+}

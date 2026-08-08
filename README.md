@@ -13008,3 +13008,109 @@ The current boundary count is now:
 This closure modified `lg-test` analysis, tests, results, and this README. It
 did not modify Walle's production shader or `flake.nix`, does not authorize a
 quality-changing shortcut, and does not claim universal parity.
+
+### Exact small-clear final payload and active-color closure
+
+The `Tkfh` input boundary is now closed. This supersedes only the first of the
+three small-clear sub-boundaries listed immediately above; the `Tghn`
+background and `Tmua/A2Xghfc` producer/composition boundaries remain open.
+
+The fragment-buffer constructor is exact over the same 123 executing
+`PBGRAXm_TkfhA2Xhfc_Iscd` states used by the geometry closure. Each retained
+prefix is 248 bytes. Let `dX,dY` be the binary64 element extents, with
+
+```text
+hX = binary32(dX / 2)
+hY = binary32(dY / 2)
+rX = binary32(binary32((dX + 18) / 2) - 9)
+rY = binary32(binary32((dY + 18) / 2) - 9)
+```
+
+Apple writes the following exact record:
+
+```text
+0x00  float4(rX, rY, 4, 0)
+0x10  float4(1, 0, 0, 1)
+0x20  float4(1, 1, hX, 0)
+0x30  160 zero bytes
+0xd0  half[20] =
+      3c00 8001 0000 b9a8 b9a8 3c00 8001 0000
+      39a8 39a8 399a 0000 3c00 3c00 3c00 3c00
+      3c00 3c00 3c00 3c00
+```
+
+The constructor matches 30,504/30,504 retained bytes. Observed and predicted
+streams have the same SHA-256:
+
+```text
+b5104c5c048679cd6a39d108d4239234af24bad229478b08852608b4083f012e
+```
+
+The declared-active half4 color field at vertex offset 32 is now closed by a
+prospective controlled intervention on the physical Retina M1 Max. The first
+exact-pipeline candidate was clear/light materialize sample 3, a four-vertex,
+six-index draw into Apple's 128-by-128 clear-load BGRA8 pass. The captured
+attribute stream was independently recovered with SHA-256
+`66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925`.
+Two cloned-buffer replays replaced every half4 with, respectively, a constant
+finite asymmetric value and four varying finite values across both triangles.
+Their stream hashes were
+`94409e9a3aa5f079da9af5fa21cc219af743ee0c1922ea86cb70e3e9338f3e66`
+and
+`5661236b1b60e1a3b6622641859e333ec60362495950181cb57326833a6de0be`;
+both differ from the captured stream.
+
+The independently read reference and both complete candidate outputs are all
+65,536 bytes and all have SHA-256
+`232bab739e1fd86dd4d28aef1962f869a2fc71887d7a29ced1e7c1f1ffdcc501`.
+Across the two comparisons there are 131,072 compared bytes, zero unequal
+bytes, zero unequal pixels, maximum channel delta zero, and no first unequal
+byte. The live Apple frame and captured pipelines were not modified. Therefore
+the active half4 field is observationally pixel-irrelevant for this exact
+current-build pipeline, and Walle need not reproduce the otherwise unexplained
+border color words.
+
+The transport history is retained rather than rewritten as a clean first
+attempt. The original nine-state run found no border candidate; the exhaustive
+run proved that controlled replay emitted no border; the quad fallback first
+selected the later background pass; and the corrected pass selection then
+stopped because the exact small-clear pass is a clear-load pass with no
+pre-pass copy. All four runs executed zero interventions and produced zero
+answer-bearing candidate pixels. A subsequent source correction stopped at
+native compilation before launch. Each value-blind amendment was frozen before
+the next output. The first answer-bearing run is source commit `187a1e9`, and
+it passed its independent validator.
+
+The compact prospective result is
+`Analysis/small_clear_final_color_intervention_result.json`, SHA-256
+`76f6da98693275e6c617aacdfa599fb8a9fa8ab3bf847eb0e5a1accd2a0e4f24`.
+The full local evidence archive is
+`artifacts/local-small-clear-final-color-187a1e9-v1.tar.gz`, 119,721,805
+bytes, SHA-256
+`359b85316d8483fecb8e27c00bd76a143c35468013850ee5bb55a90d0217dc18`.
+
+The combined reproducible analyzer is
+`Analysis/analyze_small_clear_final_payload.py`, SHA-256
+`f8351aa4e43b17eaff676ce23152615d3ace701447a9392a9358798f9826496d`.
+Its five tests are `Analysis/test_analyze_small_clear_final_payload.py`,
+SHA-256
+`0a19858a5085487be23d9fa6e032cfc9656cc33c66f434ad506a84dc71dc336c`.
+The compact payload result is
+`Analysis/small_clear_final_payload_result.json`, SHA-256
+`b671fa22afa7f52ebc659dd667461c3d045fefa13606f1f5a001c20b35df845d`.
+
+The exact current boundary count is now:
+
+1. **Apple unknowns blocking gated Walle integration: zero.** We can begin
+   current-family Walle integration behind immutable gates now.
+2. **Apple algorithm families before universal circle-domain parity: one.**
+   It is still the small-clear family, but only two bounded sub-boundaries
+   remain: `Tghn` background construction/pixels and `Tmua/A2Xghfc`
+   producer/composition construction/pixels.
+3. **Product proofs after construction: two.** A Walle-shaped physical Retina
+   color/compositor transfer and a fresh production-Walle frame with zero
+   unequal bytes remain mandatory.
+
+This closure modified `lg-test` capture transport, analysis, tests, results,
+and this README. It did not modify Walle's protected production shader or
+`flake.nix`, did not weaken a tolerance, and does not claim universal parity.
