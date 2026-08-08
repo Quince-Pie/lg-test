@@ -12137,3 +12137,29 @@ construction are now transfer authorities for gated Walle integration. The
 remaining boundaries are live producer geometry beyond this static family,
 physical Retina color/display/compositor transfer, and a real Walle frame with
 zero unequal bytes. The production shader is still unchanged.
+
+### Walle AMD circle-specialization admission
+
+The first Walle-side circle specialization was not exact. Its profile shortcut
+reassociated Apple's normalized-coordinate numerator from
+`(point - halfSize) + circleScale` to
+`point + (circleScale - halfSize)`. A complete-frame gate found 90 unequal
+bytes across 79 pixels, with maximum channel delta 2, on both sampled clear and
+regular fixtures. The shortcut was removed rather than tolerated.
+
+The corrected specialization retains Apple's general supercircle operation
+order and independently substitutes the now-authorized static wallpaper-to-mip
+pyramid. It matches all four 1024x1024 clear/regular and light/dark frames with
+zero unequal bytes on each local AMD device: 16,777,216/16,777,216 bytes on the
+Ryzen 9 9950X3D integrated radeonsi device and the same count on the Radeon RX
+9070 XT. The reproducible gate and scoped results live in the sibling Walle
+tree as `analysis/run_amd_exact_circle_reference_gate.py`,
+`analysis/amd_exact_circle_reference_gate_result.json`, and
+`analysis/amd_exact_circle_reference_gate_rx9070_result.json`.
+
+This admits the generated shader arithmetic on those observed devices only.
+It still retains captured profile payloads, pass geometry, destination
+prepass, and final-highlight inputs; it does not render inside the production
+Walle process or its Wayland display context and does not cover physical Retina
+output. Formal parity therefore remains false, and the protected production
+shader remains unchanged.
