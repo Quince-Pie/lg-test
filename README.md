@@ -12107,3 +12107,33 @@ transition producer geometry, the final physical display/compositor transfer,
 or an independently rendered Walle frame with zero unequal bytes. Those are
 the remaining formal parity boundaries; none prevents beginning gated Walle
 integration now.
+
+The prospective holdout passes. The first two executions failed in native
+Swift compilation before the probe launched, so neither exposed an Apple
+value. The corrected transport launched the first actual holdout capture from
+commit `62f8cfc209bdcb363143f70600a1614e0dc4ddbe`; the frozen probe, model,
+validator, expected policy, and preregistration remained byte-identical to
+commit `dabe32db9f7c5ae24d800fe892b96e08b773c4a2`.
+
+Native capture and frozen validation both exit zero. Every predicted metadata
+field is exact, including crop origin `(0,1)`, active extent `155x160`, the new
+`192x192` producer allocation, `320x320` destination, and copy offset
+`(-64,-65)`. The independently generated crop matches all 99,200/99,200 active
+producer bytes with zero mismatches and SHA-256
+`e1bc1140a3489c67c5e8d096587182f2596ed04ad8d8e14231e419fde6b55a13`.
+An independent post-holdout composition from the wallpaper through the now
+authorized crop and the previously exact copy/mip kernels also matches all six
+levels, 546,000/546,000 bytes, with common stream SHA-256
+`59fdd7866c923fac6c88bc921fb87065fca789bb1b9a1503f7c89d48fbe00956`.
+
+The runtime and validation SHA-256 values are respectively
+`7b847a04ac51c4474485d97ae0144fe1d984d08a2781faa88343c1fcb815622c`
+and
+`3280f6ae19b7dd8fef9a2c85a1fa15daada3172ad6403ac9a87f55825723e507`.
+The canonical result is
+`Analysis/static_regular_producer_geometry_holdout_result.json`. Static
+regular producer crop, allocation, selected-region composition, copy, and mip
+construction are now transfer authorities for gated Walle integration. The
+remaining boundaries are live producer geometry beyond this static family,
+physical Retina color/display/compositor transfer, and a real Walle frame with
+zero unequal bytes. The production shader is still unchanged.

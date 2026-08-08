@@ -1,0 +1,155 @@
+{
+  "staticRegularProducerGeometryHoldoutCanonicalResultSchemaVersion": 1,
+  "passed": true,
+  "authority": "prospective direct-Retina transfer holdout",
+  "frozenSourceCommit": "dabe32db9f7c5ae24d800fe892b96e08b773c4a2",
+  "captureCommit": "62f8cfc209bdcb363143f70600a1614e0dc4ddbe",
+  "transportOnlyCommitsAfterFreeze": [
+    "c524d59d722f9918232d132a5820fbf3cb257066",
+    "62f8cfc209bdcb363143f70600a1614e0dc4ddbe"
+  ],
+  "failedPreObservationAttempts": [
+    {
+      "label": "dabe32d-run1",
+      "classification": "Swift target spelling rejected before probe launch"
+    },
+    {
+      "label": "dabe32d-run2",
+      "classification": "Swift SDK path absent before probe launch"
+    }
+  ],
+  "passingCapture": {
+    "label": "dabe32d-run3",
+    "captureStatus": 0,
+    "validationStatus": 0,
+    "captureBinarySHA256": "b22d45688a752eb1672fb3b8ee8e086eb3fc3c863d0568b0155fa1282d53e2a1",
+    "runtimeSHA256": "7b847a04ac51c4474485d97ae0144fe1d984d08a2781faa88343c1fcb815622c",
+    "validationSHA256": "3280f6ae19b7dd8fef9a2c85a1fa15daada3172ad6403ac9a87f55825723e507",
+    "preflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "captureContextSHA256": "90c1177369c5df0d4b607c61ee0ebe5de1b3ca05ae4856a2323916bb404868b4"
+  },
+  "frozenSources": {
+    "preregistrationSHA256": "f0d4c328962af5b4b9ebab48dbab5772c55e449723becb83ca72faeef9598a36",
+    "probeSHA256": "114ae3c2c5f61b99fd377a20f6461cb2dc6513db819fe9978599b5da8075263b",
+    "modelSHA256": "a58f5b6acc8c5c863189079bfeb66f2c60c329d9ca385b4e67dee8c8a4898b36",
+    "validatorSHA256": "e71effe0dd1d697680ee2078e5e558965ba6fb3540800c5deac359ed2071943b",
+    "testSHA256": "17fbd0a901fe91efa76a4630565f3b6d4836639d9e38ee44083bb5d8a017020d",
+    "retinaPreflightSHA256": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
+  },
+  "retinaSession": {
+    "operatingSystem": "macOS 26.6.1",
+    "operatingSystemBuild": "25G76",
+    "metalDevice": "Apple M1 Max",
+    "physicalPixels": [
+      3456,
+      2234
+    ],
+    "logicalPoints": [
+      1728,
+      1117
+    ],
+    "backingScaleFactor": 2,
+    "displayActive": true,
+    "displayAsleep": false,
+    "sessionOnConsole": true
+  },
+  "geometry": {
+    "name": "circle-377-fractional-holdout",
+    "diameter": 377,
+    "center": [
+      301.25,
+      699.75
+    ]
+  },
+  "exactPolicy": {
+    "producerCropOrigin": [
+      0,
+      1
+    ],
+    "producerActiveExtent": [
+      155,
+      160
+    ],
+    "producerAllocation": [
+      192,
+      192
+    ],
+    "copyClamp": [
+      0,
+      0,
+      154,
+      159
+    ],
+    "selectedRegion": [
+      -64,
+      -64,
+      320,
+      320
+    ],
+    "destinationAllocation": [
+      320,
+      320
+    ],
+    "copyOffset": [
+      -64,
+      -65
+    ],
+    "effectiveOrigin": [
+      -64,
+      -64
+    ],
+    "metadataMismatches": 0
+  },
+  "producerPixels": {
+    "exactBytes": 99200,
+    "comparedBytes": 99200,
+    "mismatchedBytes": 0,
+    "maximumCodeDelta": 0,
+    "activePixelSHA256": "e1bc1140a3489c67c5e8d096587182f2596ed04ad8d8e14231e419fde6b55a13",
+    "wallpaperRawSHA256": "5e4b62d5a4982428e362849f62198279a2641cef8a24cfda0589f249324d0f94",
+    "producerRawSHA256": "d70963197eeb051a8d2ea3a04bf90c5287f9f2ad77b42bb98a8843a03fc460f8"
+  },
+  "independentPyramidComposition": {
+    "classification": "post-holdout composition of the prospectively exact crop with previously exact copy-base and mip kernels",
+    "levelDimensions": [
+      [
+        320,
+        320
+      ],
+      [
+        160,
+        160
+      ],
+      [
+        80,
+        80
+      ],
+      [
+        40,
+        40
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        10,
+        10
+      ]
+    ],
+    "exactBytes": 546000,
+    "comparedBytes": 546000,
+    "mismatchedBytes": 0,
+    "maximumCodeDelta": 0,
+    "predictedStreamSHA256": "59fdd7866c923fac6c88bc921fb87065fca789bb1b9a1503f7c89d48fbe00956",
+    "observedStreamSHA256": "59fdd7866c923fac6c88bc921fb87065fca789bb1b9a1503f7c89d48fbe00956",
+    "backdropPyramidImplementationSHA256": "f67be9eb8eadc7633c5092a6e9ea3664e41089403ce420420db9dd3ff05bd558",
+    "independentMipImplementationSHA256": "90f44e327c6d0f3f7e61d9e6687fd5c802537e31609f4f3eb547b34801baa8a0"
+  },
+  "promotion": "static regular producer crop, storage allocation, selected-region composition, copy, and mip construction are authorized for gated Walle integration",
+  "notEstablished": [
+    "live transition producer geometry outside the static regular family",
+    "physical Retina pixel-format, color-management, display, and compositor transfer",
+    "a production Walle frame with zero unequal bytes"
+  ]
+}

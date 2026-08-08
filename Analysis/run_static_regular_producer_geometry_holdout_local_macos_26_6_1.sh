@@ -144,7 +144,7 @@ readonly -a capture_environment=(
 {
     git rev-parse HEAD
     /usr/bin/sw_vers
-    /usr/bin/system_profiler SPDisplaysDataType
+    /usr/sbin/system_profiler SPDisplaysDataType
     /usr/bin/shasum -a 256 \
         "$probe" "$model" "$validator" "$model_test" \
         "$preflight" "$preregistration" "$build_directory/glassintrospect"
