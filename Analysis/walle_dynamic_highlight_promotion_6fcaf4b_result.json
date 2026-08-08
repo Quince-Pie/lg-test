@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "classification": "prospective natural current-system final-highlight promotion on AMD",
+  "capture": {
+    "commit": "6fcaf4b5c451a344cd1c4be0e15dbf9841591b41",
+    "timelineSha256": "76310b754cf1eb1a15881e3d64a1aab75048e0fa57ce378cb891a7ec1efe9107",
+    "material": "regular",
+    "appearance": "dark",
+    "geometry": "circle-480-center",
+    "direction": "dematerialize",
+    "failedPresentationSamples": 0,
+    "requestedDynamicSamples": [
+      1,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28
+    ],
+    "executedDynamicSampleCount": 8,
+    "currentSystemSpecializationSliceSha256": "5566617c9a00a05fb768d3e659308288e17e6b21c3dc8df903e99a7c914ef119",
+    "allExactPassReplaysMatched": true,
+    "allCurrentSystemReconstructionsMatched": true
+  },
+  "candidate": {
+    "gpuVendor": "AMD",
+    "glRenderer": "AMD Ryzen 9 9950X3D 16-Core Processor (radeonsi, raphael_mendocino, ACO, DRM 3.64, 6.18.38)",
+    "glVersion": "4.6 (Core Profile) Mesa 26.1.5",
+    "fragmentShaderSha256": "db6d8b23575b1b98ac688ff304f29fd86900fa4d2d7e31e5075536b54be91dba",
+    "squareSelectorArchiveSha256": "4a701a9868484ec6580026b6328ac99ec38d14d1d4747cd2066964e46498989e",
+    "nearSquareSelectorArchiveSha256": "7d0f0743a894c47518139456d5e7d9d805526126f760650239babde35388bba6",
+    "floatDivisionMode": 1,
+    "ordinaryFrontWindingAfterMvp": "clockwise",
+    "culledWindingAfterMvp": "counter-clockwise",
+    "comparisonResultSha256": "d86b4972193221ace46030a493f1c1958083a4df51baadd3d91798d2ca91901f"
+  },
+  "cases": [
+    {
+      "sampleIndex": 1,
+      "remainingFloat32Bits": "0x3f77c1d0",
+      "topology": "exact-circle-quad",
+      "backFacing": false,
+      "appleActivePixels": 2479,
+      "candidateActivePixels": 2479,
+      "mismatchedSdfWords": 0,
+      "mismatchedHalfAlphaWords": 0
+    },
+    {
+      "sampleIndex": 4,
+      "remainingFloat32Bits": "0x3f5ff800",
+      "topology": "exact-circle-quad",
+      "backFacing": false,
+      "appleActivePixels": 2406,
+      "candidateActivePixels": 2406,
+      "mismatchedSdfWords": 0,
+      "mismatchedHalfAlphaWords": 0
+    },
+    {
+      "sampleIndex": 8,
+      "remainingFloat32Bits": "0x3f3fb850",
+      "topology": "exact-circle-quad",
+      "backFacing": false,
+      "appleActivePixels": 2482,
+      "candidateActivePixels": 2482,
+      "mismatchedSdfWords": 0,
+      "mismatchedHalfAlphaWords": 0
+    },
+    {
+      "sampleIndex": 12,
+      "remainingFloat32Bits": "0x3f1fedb0",
+      "topology": "exact-circle-quad",
+      "backFacing": false,
+      "appleActivePixels": 2482,
+      "candidateActivePixels": 2482,
+      "mismatchedSdfWords": 0,
+      "mismatchedHalfAlphaWords": 0
+    },
+    {
+      "sampleIndex": 16,
+      "remainingFloat32Bits": "0x3eff4be0",
+      "topology": "exact-circle-quad",
+      "backFacing": false,
+      "appleActivePixels": 2498,
+      "candidateActivePixels": 2498,
+      "mismatchedSdfWords": 0,
+      "mismatchedHalfAlphaWords": 0
+    },
+    {
+      "sampleIndex": 20,
+      "remainingFloat32Bits": "0x3ebf7020",
+      "topology": "exact-circle-quad",
+      "backFacing": false,
+      "appleActivePixels": 2508,
+      "candidateActivePixels": 2508,
+      "mismatchedSdfWords": 0,
+      "mismatchedHalfAlphaWords": 0
+    },
+    {
+      "sampleIndex": 24,
+      "remainingFloat32Bits": "0x3e7f9600",
+      "topology": "exact-circle-quad",
+      "backFacing": false,
+      "appleActivePixels": 2493,
+      "candidateActivePixels": 2493,
+      "mismatchedSdfWords": 0,
+      "mismatchedHalfAlphaWords": 0
+    },
+    {
+      "sampleIndex": 28,
+      "remainingFloat32Bits": "0x3dfee500",
+      "topology": "round-trip-radius-border-grid",
+      "backFacing": true,
+      "appleActivePixels": 0,
+      "candidateActivePixels": 0,
+      "mismatchedSdfWords": 0,
+      "mismatchedHalfAlphaWords": 0
+    }
+  ],
+  "totals": {
+    "checkedSdfWords": 16777216,
+    "mismatchedSdfWords": 0,
+    "checkedHalfAlphaWords": 8388608,
+    "mismatchedHalfAlphaWords": 0,
+    "maximumPositiveHalfBitDistance": 0
+  },
+  "gate": {
+    "prospectiveNaturalFinalHighlightPromoted": true,
+    "comparisonTolerance": 0,
+    "productionParityAuthorized": false,
+    "remainingFullFrameUnknowns": [
+      "independent dynamic background scissor/crop constructor",
+      "sparse 72-byte dynamic background alpha-edge arithmetic residual"
+    ]
+  }
+}

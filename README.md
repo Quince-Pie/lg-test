@@ -14508,9 +14508,36 @@ mode 1 gives zero unequal SDF words out of 16,777,216 and zero unequal
 binary16-alpha words out of 8,388,608.  The comparison result has SHA-256
 `6efde069e1c2060660e303dbe357d3cdc6c47856d29f1acbc767fd2966719818`.
 Because the near-square table was created after this capture was opened, this
-is exact calibration evidence but not yet a prospective promotion.  One new
-natural capture from a commit already containing the table is the sole formal
-promotion gate for this measured final-highlight path.
+is exact calibration evidence rather than a prospective promotion.  The
+required post-calibration promotion is reported below.
+
+Commit `6fcaf4b5c451a344cd1c4be0e15dbf9841591b41` froze both selector tables and
+the current-system oracle before a new physical-Retina capture.  The new
+timeline, SHA-256
+`76310b754cf1eb1a15881e3d64a1aab75048e0fa57ce378cb891a7ec1efe9107`,
+has zero failed presentation samples, all eight requested dynamic states, all
+eight exact-pass replays exact, and all eight current-system reconstructions
+exact.  The unseen sample values differ from the calibration capture.
+
+Sample 28 also crosses a real topology boundary.  The exact constructor emits
+the 16-vertex, 24-index `round-trip-radius-border-grid`, whose triangles have
+the opposite post-transform winding from the ordinary highlight quad.  Apple
+culls the complete draw: both its 1024-by-1024 interpolant attachment and its
+binary16-alpha attachment contain zero active pixels.  The AMD candidate
+reproduced the same state through front-face/back-face raster state and the
+full retained geometry; the sample was not omitted or replaced by an observed
+zero surface.
+
+Across the prospective eight-state capture, the independently generated AMD
+candidate has zero unequal SDF words out of 16,777,216, zero unequal binary16
+alpha words out of 8,388,608, maximum half-bit distance zero, and matching
+active-pixel counts in every case.  The full comparison result has SHA-256
+`d86b4972193221ace46030a493f1c1958083a4df51baadd3d91798d2ca91901f`.
+The compact accepted result is
+`Analysis/walle_dynamic_highlight_promotion_6fcaf4b_result.json`, SHA-256
+`e968e4e3f839432f0252cf57b6df49482d184670c493d9d22ecaa335a6d1a1bc`.
+The measured natural current-system final-highlight path is therefore
+prospectively promoted at zero tolerance.
 
 Thirty current-system uniform interventions independently discriminate the
 remaining division choice.  Modes 0 and 2 each differ in 25,970 of 31,457,280
@@ -14534,10 +14561,10 @@ scissor is construction evidence, not an optional optimization.
 
 The current implementation boundary is now:
 
-1. **Measured natural final highlight: no observed arithmetic unknown.** It is
-   ready for Walle integration behind the frozen geometry, OS/GPU-family, and
-   selector-domain gates.  One unseen recapture still separates exact replay
-   from formal prospective promotion.
+1. **Measured natural final highlight: prospectively promoted.** It is ready
+   for Walle integration behind the frozen geometry, OS/GPU-family, selector-
+   domain, and winding gates.  No final-highlight unknown remains inside that
+   admitted scope.
 2. **Full rendered Walle parity: two concrete subunknowns in one background
    category.** Recover the independent scissor/crop constructor, then close the
    sparse 72-byte alpha-edge arithmetic residual at zero tolerance.
