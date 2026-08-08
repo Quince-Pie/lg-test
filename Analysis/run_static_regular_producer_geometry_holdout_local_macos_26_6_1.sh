@@ -96,7 +96,7 @@ fi
     -Wall \
     -Wextra \
     -Werror \
-    -target "$(/usr/bin/uname -m)-apple-macos26.0" \
+    -target "$(/usr/bin/uname -m)-apple-macosx26.0" \
     -c Sources/GlassIntrospect/MatrixBridge.c \
     -o "$build_directory/MatrixBridge.o" \
     >"$output_directory/clang-stdout.log" \
@@ -108,7 +108,7 @@ if [[ "$clang_status" -ne 0 ]]; then
 fi
 
 "$swiftc" -O -parse-as-library \
-    -target "$(/usr/bin/uname -m)-apple-macos26.0" \
+    -target "$(/usr/bin/uname -m)-apple-macosx26.0" \
     -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
     Sources/GlassIntrospect/HalfBlendProbe.swift \
     Sources/GlassIntrospect/HalfDotProbe.swift \
