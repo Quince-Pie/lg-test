@@ -9,10 +9,8 @@ from typing import Any, Never
 
 
 REPOSITORY = Path(__file__).resolve().parents[1]
-TARGET_SAMPLES = (28,)
-EXPECTED_PIPELINE = (
-    "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd"
-)
+CANDIDATE_SAMPLES = tuple(range(24, 32))
+EXPECTED_PIPELINE = "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd"
 EXPECTED_PATTERNS = {
     "zero-half4": "0000000000000000",
     "finite-asymmetric-half4": "003c003800bc0040",
@@ -89,7 +87,7 @@ def validate_intervention(
     record: dict[str, Any],
 ) -> dict[str, Any]:
     sample = record.get("sampleIndex")
-    require(sample in TARGET_SAMPLES, "unexpected target sample")
+    require(sample in CANDIDATE_SAMPLES, "unexpected candidate sample")
     render = record.get("render")
     require(isinstance(render, dict), f"sample {sample}: render is absent")
     exact = render.get("exactPassReplay")
@@ -115,9 +113,10 @@ def validate_intervention(
     )
     expected_scalars = {
         "schemaVersion": 1,
-        "classification": (
-            "captured Apple Irsd pixel-influence intervention"
-        ),
+        "eligible": True,
+        "selected": True,
+        "selectionPolicy": ("first topology-eligible candidate in sample order"),
+        "classification": ("captured Apple Irsd pixel-influence intervention"),
         "liveAppleFrameMutated": False,
         "capturedApplePipelinesUnmodified": True,
         "pipelineLabel": EXPECTED_PIPELINE,
@@ -165,8 +164,7 @@ def validate_intervention(
         expected_stream = bytes.fromhex(pattern_hex) * 16
         expected_stream_sha = sha256_bytes(expected_stream)
         require(
-            intervention.get("mutatedAttributeStreamSHA256")
-            == expected_stream_sha,
+            intervention.get("mutatedAttributeStreamSHA256") == expected_stream_sha,
             f"sample {sample} {name}: mutated stream differs",
         )
         require(
@@ -226,6 +224,79 @@ def validate_intervention(
     }
 
 
+def candidate_trace(record: dict[str, Any]) -> dict[str, Any]:
+    sample = record.get("sampleIndex")
+    require(sample in CANDIDATE_SAMPLES, "unexpected candidate sample")
+    render = record.get("render")
+    require(isinstance(render, dict), f"sample {sample}: render is absent")
+    exact = render.get("exactPassReplay")
+    require(
+        isinstance(exact, dict) and exact.get("executed") is True,
+        f"sample {sample}: exact replay did not execute",
+    )
+    trace = exact.get("finalHighlightVertexTailIntervention")
+    require(
+        isinstance(trace, dict) and trace.get("schemaVersion") == 1,
+        f"sample {sample}: tail candidate trace is absent",
+    )
+    return trace
+
+
+def validate_selection(records: dict[int, dict[str, Any]]) -> int:
+    traces = {sample: candidate_trace(records[sample]) for sample in CANDIDATE_SAMPLES}
+    eligible_samples = [
+        sample for sample, trace in traces.items() if trace.get("eligible") is True
+    ]
+    require(eligible_samples, "no topology-eligible Irsd candidate exists")
+    selected_sample = eligible_samples[0]
+    selected_capture = f"transition-background-uniform-{selected_sample:02d}"
+    selected_samples = [
+        sample for sample, trace in traces.items() if trace.get("selected") is True
+    ]
+    executed_samples = [
+        sample for sample, trace in traces.items() if trace.get("executed") is True
+    ]
+    require(
+        selected_samples == [selected_sample],
+        "selected sample is not the first eligible candidate",
+    )
+    require(
+        executed_samples == [selected_sample],
+        "executed sample is not the first eligible candidate",
+    )
+
+    for sample, trace in traces.items():
+        if sample == selected_sample:
+            continue
+        require(
+            trace.get("selected") is False and trace.get("executed") is False,
+            f"sample {sample}: unselected candidate state differs",
+        )
+        if trace.get("eligible") is False:
+            require(
+                trace.get("reason") == "current Irsd border draw is unavailable",
+                f"sample {sample}: ineligible reason differs",
+            )
+            continue
+        require(
+            sample > selected_sample,
+            f"sample {sample}: an earlier eligible candidate was skipped",
+        )
+        expected = {
+            "selectionPolicy": ("first topology-eligible candidate in sample order"),
+            "selectedCapture": selected_capture,
+            "pipelineLabel": EXPECTED_PIPELINE,
+            "indexCount": 24,
+            "reason": ("earlier topology-eligible Irsd candidate selected"),
+        }
+        for field, value in expected.items():
+            require(
+                trace.get(field) == value,
+                f"sample {sample}: {field} differs",
+            )
+    return selected_sample
+
+
 def validate(
     capture_directory: Path,
     preregistration_path: Path,
@@ -236,7 +307,7 @@ def validate(
         preregistration.get(
             "finalHighlightVertexTailInterventionPreregistrationSchemaVersion"
         )
-        == 1,
+        == 2,
         "preregistration schema differs",
     )
     validate_sources(preregistration)
@@ -275,9 +346,9 @@ def validate(
         "requested": True,
         "executed": True,
         "evidenceMode": "controlled-replay-v1",
-        "sampleIndices": list(TARGET_SAMPLES),
-        "sampleCount": len(TARGET_SAMPLES),
-        "executedSampleCount": len(TARGET_SAMPLES),
+        "sampleIndices": list(CANDIDATE_SAMPLES),
+        "sampleCount": len(CANDIDATE_SAMPLES),
+        "executedSampleCount": len(CANDIDATE_SAMPLES),
         "presentationLayerReplayed": True,
         "presentationLayerAssignedToCARenderer": False,
         "freshStaticCarrier": True,
@@ -291,21 +362,22 @@ def validate(
     records = uniforms.get("records")
     require(
         isinstance(records, list)
-        and len(records) == len(TARGET_SAMPLES)
+        and len(records) == len(CANDIDATE_SAMPLES)
         and all(isinstance(record, dict) for record in records),
         "dynamic record list differs",
     )
     target_records = {record.get("sampleIndex"): record for record in records}
     require(
-        set(target_records) == set(TARGET_SAMPLES),
-        "target sample set differs",
+        set(target_records) == set(CANDIDATE_SAMPLES),
+        "candidate sample set differs",
     )
-    results = [
-        validate_intervention(capture_directory, target_records[sample])
-        for sample in TARGET_SAMPLES
-    ]
+    selected_sample = validate_selection(target_records)
+    result = validate_intervention(
+        capture_directory,
+        target_records[selected_sample],
+    )
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "passed": True,
         "authority": (
             "current-build observational irrelevance of generated vertex "
@@ -315,13 +387,14 @@ def validate(
         "captureDirectory": capture_directory.name,
         "runtimeSHA256": sha256_file(runtime_path),
         "preregistrationSHA256": sha256_file(preregistration_path),
-        "sampleCount": len(results),
-        "interventionCount": len(results) * len(EXPECTED_PATTERNS),
-        "comparedBytes": (
-            len(results) * len(EXPECTED_PATTERNS) * EXPECTED_RENDER_BYTES
-        ),
+        "candidateSampleIndices": list(CANDIDATE_SAMPLES),
+        "candidateSampleCount": len(CANDIDATE_SAMPLES),
+        "selectedSampleIndex": selected_sample,
+        "sampleCount": 1,
+        "interventionCount": len(EXPECTED_PATTERNS),
+        "comparedBytes": len(EXPECTED_PATTERNS) * EXPECTED_RENDER_BYTES,
         "unequalBytes": 0,
-        "samples": results,
+        "samples": [result],
     }
 
 

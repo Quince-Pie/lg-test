@@ -1,7 +1,7 @@
 {
-  "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 1,
+  "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 2,
   "authority": "prospective current-build pixel-influence intervention",
-  "captureStatusAtFreeze": "the two vertex-attribute interventions have never executed; SDK-linkage and Metal-capture-mode transport diagnostics completed without enabling either intervention",
+  "captureStatusAtFreeze": "the two vertex-attribute interventions have never executed; two fixed-sample transport attempts failed before mutation because tiny presentation-timing variation changed the Apple final-highlight topology, so this revision prospectively freezes an output-blind topology selection rule",
   "question": "Do the eight bytes at offset 32 interpreted as vertex attribute 3 affect the Irsd border draw's BGRA8 output?",
   "captureHost": {
     "architecture": "arm64",
@@ -33,9 +33,20 @@
     "allocationOnlyCapture": false,
     "metalCaptureEnvironmentEnabled": false,
     "metalCaptureEnvironmentReason": "MTL_CAPTURE_ENABLED selects the legacy A2Xghfc quad and removes the current Irsd draw; the probe uses direct Metal API interposition and does not require Metal frame capture",
-    "targetSamples": [
-      28
+    "candidateSamples": [
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
     ],
+    "candidateOrder": "ascending sample index",
+    "selectionRule": "select exactly the first candidate whose captured final pass contains pipeline com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd with uint16 index count 24 and the frozen stride-48 half4 attribute-3 layout; reserve that candidate before either intervention replay is encoded",
+    "selectionUsesCandidatePixels": false,
+    "noEligibleCandidatePolicy": "fail without promotion",
     "comparisonToleranceBytes": 0
   },
   "linkTimeSDKContract": {
@@ -77,8 +88,9 @@
     "allUniformIndexTextureSamplerViewportAndScissorInputsChanged": false
   },
   "acceptanceRule": {
-    "requiredTargetSamples": 1,
-    "requiredInterventionsPerSample": 2,
+    "requiredCandidateSamples": 8,
+    "requiredSelectedSamples": 1,
+    "requiredInterventionsOnSelectedSample": 2,
     "requiredComparedBytesPerIntervention": 4194304,
     "requiredComparedBytesTotal": 8388608,
     "maximumUnequalBytes": 0,
@@ -88,16 +100,16 @@
     "validatorMustIndependentlyReadAndCompareEveryRawReplay": true
   },
   "sourceSHA256": {
-    "Sources/GlassIntrospect/main.swift": "6d312a2c2439f623cabd339af901cabffe9f4523a41327107d484a2a30bc068f",
+    "Sources/GlassIntrospect/main.swift": "2497b628a59e65b357ce2f53fc5720da481d52630e8c277813891c1103f8a9b3",
     "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
     "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
     "Sources/GlassIntrospect/HalfBlendProbe.swift": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263",
     "Sources/GlassIntrospect/HalfDotProbe.swift": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0",
     "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
     "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208",
-    "Analysis/validate_final_highlight_vertex_tail_intervention.py": "c73f7ee5e12e3cffaad9847fdccbe9d735470b839ac8e9b799cdfffb11badfb5",
-    "Analysis/test_validate_final_highlight_vertex_tail_intervention.py": "f68ef7e5de00eb7db47d830188d7fc10065cb88a61966e03c95e6270925c89d0",
+    "Analysis/validate_final_highlight_vertex_tail_intervention.py": "7d9d6b0af95ceaec17e626ed8a8c0138d65b271951a02eaa6b82787cb43e0a50",
+    "Analysis/test_validate_final_highlight_vertex_tail_intervention.py": "c0c4a69368581e7ce057bcc889a0e6300893b67522381d44451e7870f88b63e6",
     "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
   },
-  "promotionRule": "Both independent replay comparisons must be byte-identical across all 8,388,608 checked bytes before bytes 32 through 39 can be classified as observationally irrelevant for this current-build Irsd branch. This result cannot establish unseen-geometry transfer, physical-compositor parity, or complete Walle parity."
+  "promotionRule": "The first topology-eligible candidate must be selected before intervention pixels exist, and both independent replay comparisons for that candidate must be byte-identical across all 8,388,608 checked bytes before bytes 32 through 39 can be classified as observationally irrelevant for this current-build Irsd branch. This result cannot establish unseen-geometry transfer, physical-compositor parity, or complete Walle parity."
 }

@@ -13,9 +13,9 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.directory = Path(self.temporary.name)
-        self.payload = bytes((index * 73 + 19) & 0xFF for index in range(
-            validator.EXPECTED_RENDER_BYTES
-        ))
+        self.payload = bytes(
+            (index * 73 + 19) & 0xFF for index in range(validator.EXPECTED_RENDER_BYTES)
+        )
 
     def snapshot(self, name: str) -> dict[str, object]:
         path = self.directory / name
@@ -36,23 +36,25 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         ).hexdigest()
         for name, pattern in validator.EXPECTED_PATTERNS.items():
             snapshot = self.snapshot(f"{sample}-{name}.raw")
-            interventions.append({
-                "name": name,
-                "half4LittleEndianHex": pattern,
-                "mutatedAttributeStreamSHA256": hashlib.sha256(
-                    bytes.fromhex(pattern) * 16
-                ).hexdigest(),
-                "replay": {"executed": True, "output": snapshot},
-                "comparison": {
-                    "compared": True,
-                    "exactByteMatch": True,
-                    "byteCount": len(self.payload),
-                    "mismatchedByteCount": 0,
-                    "mismatchedPixelCount": 0,
-                    "maximumChannelDelta": 0,
-                    "firstMismatchedByte": -1,
-                },
-            })
+            interventions.append(
+                {
+                    "name": name,
+                    "half4LittleEndianHex": pattern,
+                    "mutatedAttributeStreamSHA256": hashlib.sha256(
+                        bytes.fromhex(pattern) * 16
+                    ).hexdigest(),
+                    "replay": {"executed": True, "output": snapshot},
+                    "comparison": {
+                        "compared": True,
+                        "exactByteMatch": True,
+                        "byteCount": len(self.payload),
+                        "mismatchedByteCount": 0,
+                        "mismatchedPixelCount": 0,
+                        "maximumChannelDelta": 0,
+                        "firstMismatchedByte": -1,
+                    },
+                }
+            )
         return {
             "sampleIndex": sample,
             "render": {
@@ -62,6 +64,11 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
                     "finalHighlightVertexTailIntervention": {
                         "schemaVersion": 1,
                         "executed": True,
+                        "eligible": True,
+                        "selected": True,
+                        "selectionPolicy": (
+                            "first topology-eligible candidate in sample order"
+                        ),
                         "classification": (
                             "captured Apple Irsd pixel-influence intervention"
                         ),
@@ -83,8 +90,58 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
             },
         }
 
+    @staticmethod
+    def unavailable(sample: int) -> dict[str, object]:
+        return {
+            "sampleIndex": sample,
+            "render": {
+                "exactPassReplay": {
+                    "executed": True,
+                    "finalHighlightVertexTailIntervention": {
+                        "schemaVersion": 1,
+                        "executed": False,
+                        "eligible": False,
+                        "selected": False,
+                        "reason": ("current Irsd border draw is unavailable"),
+                    },
+                },
+            },
+        }
+
+    @staticmethod
+    def skipped(sample: int, selected: int) -> dict[str, object]:
+        return {
+            "sampleIndex": sample,
+            "render": {
+                "exactPassReplay": {
+                    "executed": True,
+                    "finalHighlightVertexTailIntervention": {
+                        "schemaVersion": 1,
+                        "executed": False,
+                        "eligible": True,
+                        "selected": False,
+                        "selectionPolicy": (
+                            "first topology-eligible candidate in sample order"
+                        ),
+                        "selectedCapture": (
+                            f"transition-background-uniform-{selected:02d}"
+                        ),
+                        "pipelineLabel": validator.EXPECTED_PIPELINE,
+                        "indexCount": 24,
+                        "reason": ("earlier topology-eligible Irsd candidate selected"),
+                    },
+                },
+            },
+        }
+
+    def records(self, selected: int = 28) -> list[dict[str, object]]:
+        return [
+            self.trace(sample) if sample == selected else self.unavailable(sample)
+            for sample in validator.CANDIDATE_SAMPLES
+        ]
+
     def test_accepts_two_exact_nontrivial_mutations(self) -> None:
-        for sample in validator.TARGET_SAMPLES:
+        for sample in validator.CANDIDATE_SAMPLES:
             result = validator.validate_intervention(
                 self.directory,
                 self.trace(sample),
@@ -113,13 +170,24 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         trace = record["render"]["exactPassReplay"][
             "finalHighlightVertexTailIntervention"
         ]
-        trace["originalAttributeStreamSHA256"] = trace[
-            "interventions"
-        ][0]["mutatedAttributeStreamSHA256"]
+        trace["originalAttributeStreamSHA256"] = trace["interventions"][0][
+            "mutatedAttributeStreamSHA256"
+        ]
         with self.assertRaisesRegex(ValueError, "did not change input"):
             validator.validate_intervention(self.directory, record)
 
-    def test_validate_requires_every_frozen_sample(self) -> None:
+    def test_selection_requires_the_first_eligible_candidate(self) -> None:
+        records = {record["sampleIndex"]: record for record in self.records()}
+        records[27] = self.skipped(27, 28)
+        with self.assertRaisesRegex(
+            ValueError,
+            "selected sample is not the first eligible candidate",
+        ):
+            validator.validate_selection(records)
+
+    def test_validate_requires_every_frozen_candidate(self) -> None:
+        records = self.records()
+        records[-1] = self.unavailable(30)
         runtime = {
             "material": "regular",
             "appearance": "dark",
@@ -138,16 +206,14 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
                 "requested": True,
                 "executed": True,
                 "evidenceMode": "controlled-replay-v1",
-                "sampleIndices": list(validator.TARGET_SAMPLES),
-                "sampleCount": len(validator.TARGET_SAMPLES),
-                "executedSampleCount": len(validator.TARGET_SAMPLES),
+                "sampleIndices": list(validator.CANDIDATE_SAMPLES),
+                "sampleCount": len(validator.CANDIDATE_SAMPLES),
+                "executedSampleCount": len(validator.CANDIDATE_SAMPLES),
                 "presentationLayerReplayed": True,
                 "presentationLayerAssignedToCARenderer": False,
                 "freshStaticCarrier": True,
                 "detachedLayerTreeCopies": False,
-                "records": [
-                    self.trace(29),
-                ],
+                "records": records,
             },
         }
         (self.directory / "transition-timeline.json").write_text(
@@ -156,18 +222,22 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         )
         preregistration = self.directory / "preregistration.json"
         preregistration.write_text(
-            json.dumps({
-                "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 1,
-                "sourceSHA256": {},
-            }),
+            json.dumps(
+                {
+                    "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 2,
+                    "sourceSHA256": {},
+                }
+            ),
             encoding="utf-8",
         )
         preflight = self.directory / "preflight.json"
         preflight.write_text(
-            json.dumps({
-                "passed": True,
-                "backingScaleFactor": 2,
-            }),
+            json.dumps(
+                {
+                    "passed": True,
+                    "backingScaleFactor": 2,
+                }
+            ),
             encoding="utf-8",
         )
         with mock.patch.object(validator, "validate_sources"):

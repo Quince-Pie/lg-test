@@ -5454,6 +5454,8 @@ private func glassUniformCallSiteEvidence(
     ]
 }
 
+private let finalHighlightVertexTailCandidateSampleIndices = Array(24...31)
+
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
         let capture: String
@@ -5649,6 +5651,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private var pipelineRecords: [ObjectIdentifier: [String: Any]] = [:]
     private var pipelineDescriptors:
         [ObjectIdentifier: MTLRenderPipelineDescriptor] = [:]
+    private var finalHighlightVertexTailInterventionCapture: String?
     private var computePipelineCreationRecords:
         [ObjectIdentifier: [String: Any]] = [:]
     private var glassUniformCallSiteCaptured = false
@@ -10716,13 +10719,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 in: pass.commands)
         else {
             return [
+                "schemaVersion": 1,
                 "executed": false,
+                "eligible": false,
+                "selected": false,
                 "reason": "current Irsd border draw is unavailable",
             ]
         }
         guard selection.vertexBuffer.storageMode != .private else {
             return [
+                "schemaVersion": 1,
                 "executed": false,
+                "eligible": false,
+                "selected": false,
                 "reason": "Irsd vertex buffer is private",
             ]
         }
@@ -10740,7 +10749,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
               vertexDescriptor.attributes[3].format == .half4
         else {
             return [
+                "schemaVersion": 1,
                 "executed": false,
+                "eligible": false,
+                "selected": false,
                 "reason": "Irsd vertex layout differs",
             ]
         }
@@ -10757,8 +10769,34 @@ private final class MetalUniformProbe: @unchecked Sendable {
               finalByte <= selection.vertexBuffer.length
         else {
             return [
+                "schemaVersion": 1,
                 "executed": false,
+                "eligible": false,
+                "selected": false,
                 "reason": "Irsd vertex attribute range exceeds buffer",
+            ]
+        }
+
+        lock.lock()
+        let previouslySelectedCapture =
+            finalHighlightVertexTailInterventionCapture
+        if previouslySelectedCapture == nil {
+            finalHighlightVertexTailInterventionCapture = capture
+        }
+        lock.unlock()
+        if let previouslySelectedCapture {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": true,
+                "selected": false,
+                "selectionPolicy":
+                    "first topology-eligible candidate in sample order",
+                "selectedCapture": previouslySelectedCapture,
+                "pipelineLabel": selection.pipeline.label ?? "",
+                "indexCount": selection.indexCount,
+                "reason":
+                    "earlier topology-eligible Irsd candidate selected",
             ]
         }
 
@@ -10791,7 +10829,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     options: .storageModeShared)
             else {
                 return [
+                    "schemaVersion": 1,
                     "executed": false,
+                    "eligible": true,
+                    "selected": true,
                     "reason": "Irsd vertex clone failed",
                     "intervention": intervention.name,
                 ]
@@ -10854,6 +10895,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
         return [
             "schemaVersion": 1,
             "executed": true,
+            "eligible": true,
+            "selected": true,
+            "selectionPolicy":
+                "first topology-eligible candidate in sample order",
             "classification":
                 "captured Apple Irsd pixel-influence intervention",
             "liveAppleFrameMutated": false,
@@ -13932,9 +13977,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "LG_TRANSITION_HIGHLIGHT_VERTEX_TAIL_TRACE"
             ] == "1"
             && capture.hasPrefix("transition-background-uniform-")
-            && (capture.hasSuffix("-28")
-                || capture.hasSuffix("-29")
-                || capture.hasSuffix("-30"))
+            && finalHighlightVertexTailCandidateSampleIndices.contains {
+                capture.hasSuffix(String(format: "-%02d", $0))
+            }
         let glassPrefixReference = replayGlassPrefix(
             pass: pass,
             preColor0: preColor0,
@@ -20860,7 +20905,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             let endpointTopologyDeadlineSeconds = 1.0
             let dynamicUniformSampleIndices = Set(
                 highlightVertexTailTraceRequested
-                    ? [28]
+                    ? finalHighlightVertexTailCandidateSampleIndices
                     : denseAllocationRequested
                     ? Array(1..<sampleCount)
                     : allocationOnlyRequested
