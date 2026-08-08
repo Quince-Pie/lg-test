@@ -10965,7 +10965,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ]
         var records: [[String: Any]] = []
         for intervention in interventions {
-            guard let clone = preColor0.device.makeBuffer(
+            guard let clone = selection.vertexBuffer.device.makeBuffer(
                     length: selection.vertexBuffer.length,
                     options: .storageModeShared)
             else {

@@ -1,0 +1,49 @@
+{
+  "smallClearFinalColorCompileCorrectionSchemaVersion": 1,
+  "authority": "compile-only source correction made before native launch or any answer-bearing output",
+  "clearLoadAmendment": "Analysis/small_clear_final_color_intervention_clear_load_amendment.json",
+  "clearLoadAmendmentSHA256": "49b32c1626073df9a0a5fbf60a00fc633d146b9cee93930f55f2176541eddd27",
+  "failedBuild": {
+    "captureCommit": "4a12a8faf2eb73df6876aa58528ed62ca551fb4c",
+    "requestedCaptureDirectory": "local-small-clear-final-color-4a12a8f-v1",
+    "runnerExitStatus": 3,
+    "nativeApplicationLaunched": false,
+    "timelineProduced": false,
+    "interventionExecuted": false,
+    "answerBearingCandidatePixelsProduced": false,
+    "compilerFailure": "value of optional type '(any MTLTexture)?' must be unwrapped to refer to member 'device'",
+    "compilerLocation": "Sources/GlassIntrospect/main.swift:10968:31"
+  },
+  "correction": {
+    "oldAllocationDeviceExpression": "preColor0.device",
+    "newAllocationDeviceExpression": "selection.vertexBuffer.device",
+    "reason": "the clear-load amendment intentionally permits preColor0 to be nil, while the selected captured vertex buffer is mandatory and exposes the same Metal device required for its cloned replacement buffer",
+    "experimentValuesChanged": false,
+    "selectionChanged": false,
+    "interventionStreamsChanged": false,
+    "acceptanceChanged": false
+  },
+  "nativeCompileCheck": {
+    "host": "Retina Apple M1 Max",
+    "operatingSystem": "macOS 26.6.1 build 25G76",
+    "target": "arm64-apple-macosx26.0",
+    "sdk": "MacOSX26.5.sdk",
+    "result": "success",
+    "nativeApplicationLaunched": false,
+    "answerBearingOutputProduced": false
+  },
+  "sourceSHA256": {
+    "Sources/GlassIntrospect/main.swift": "08b6538563a67e7a1df086288f05b9b146decd2936656fae799ee5e96180f706",
+    "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
+    "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
+    "Sources/GlassIntrospect/HalfBlendProbe.swift": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263",
+    "Sources/GlassIntrospect/HalfDotProbe.swift": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0",
+    "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
+    "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208",
+    "Analysis/validate_small_clear_final_color_intervention.py": "c889476ddf3b072714b94b99e89d4d5d10da0110c9d8d44d244c4e3706fbd81f",
+    "Analysis/test_validate_small_clear_final_color_intervention.py": "99749901742f90d40c473b87b237d6e2e2ec48c7e300a782b60210374ea59701",
+    "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
+    "Analysis/small_clear_final_geometry_result.json": "8600d81d693c316408064a868f100a3ead403e51c68aa994e10a8e154027ae00"
+  },
+  "promotionRule": "The clear-load amendment and every earlier preregistration constraint remain controlling. This compile-only correction has no evidentiary authority over Apple pixels; only the unchanged validator acceptance rule can promote the active half4 result."
+}

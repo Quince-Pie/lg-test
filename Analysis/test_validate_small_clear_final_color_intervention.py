@@ -22,6 +22,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         self.quad_fallback_amendment = self.root / "quad-fallback-amendment.json"
         self.pass_selection_amendment = self.root / "pass-selection-amendment.json"
         self.clear_load_amendment = self.root / "clear-load-amendment.json"
+        self.compile_correction = self.root / "compile-correction.json"
         self.preflight = self.root / "preflight.json"
         self.timeline = self.capture / "transition-timeline.json"
         self.render_payload = bytes([0x5A]) * validator.EXPECTED_RENDER_BYTES
@@ -90,6 +91,18 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                     ),
                     "passSelectionAmendmentSHA256": validator.sha256_file(
                         self.pass_selection_amendment
+                    ),
+                    "sourceSHA256": {},
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.compile_correction.write_text(
+            json.dumps(
+                {
+                    "smallClearFinalColorCompileCorrectionSchemaVersion": 1,
+                    "clearLoadAmendmentSHA256": validator.sha256_file(
+                        self.clear_load_amendment
                     ),
                     "sourceSHA256": {},
                 }
@@ -362,6 +375,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             self.quad_fallback_amendment,
             self.pass_selection_amendment,
             self.clear_load_amendment,
+            self.compile_correction,
             self.preflight,
         )
         self.assertTrue(result["passed"])
@@ -386,6 +400,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.quad_fallback_amendment,
                 self.pass_selection_amendment,
                 self.clear_load_amendment,
+                self.compile_correction,
                 self.preflight,
             )
 
@@ -407,6 +422,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.quad_fallback_amendment,
                 self.pass_selection_amendment,
                 self.clear_load_amendment,
+                self.compile_correction,
                 self.preflight,
             )
 
@@ -422,6 +438,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.quad_fallback_amendment,
                 self.pass_selection_amendment,
                 self.clear_load_amendment,
+                self.compile_correction,
                 self.preflight,
             )
 

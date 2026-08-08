@@ -21,6 +21,9 @@ PASS_SELECTION_AMENDMENT = (
 CLEAR_LOAD_AMENDMENT = (
     ANALYSIS / "small_clear_final_color_intervention_clear_load_amendment.json"
 )
+COMPILE_CORRECTION = (
+    ANALYSIS / "small_clear_final_color_intervention_compile_correction.json"
+)
 
 
 class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
@@ -36,6 +39,9 @@ class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
         )
         self.clear_load_amendment = json.loads(
             CLEAR_LOAD_AMENDMENT.read_text(encoding="utf-8")
+        )
+        self.compile_correction = json.loads(
+            COMPILE_CORRECTION.read_text(encoding="utf-8")
         )
 
     def test_runner_uses_the_frozen_native_case(self) -> None:
@@ -53,7 +59,7 @@ class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
         self.assertIn("GITHUB_ACTIONS_USED=0", self.source)
 
     def test_runner_pins_every_compiled_input_and_the_preregistration(self) -> None:
-        for relative, digest in self.clear_load_amendment["sourceSHA256"].items():
+        for relative, digest in self.compile_correction["sourceSHA256"].items():
             self.assertEqual(
                 hashlib.sha256((REPOSITORY / relative).read_bytes()).hexdigest(),
                 digest,
@@ -77,6 +83,10 @@ class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
             CLEAR_LOAD_AMENDMENT.read_bytes()
         ).hexdigest()
         self.assertIn(clear_load_digest, self.source)
+        compile_correction_digest = hashlib.sha256(
+            COMPILE_CORRECTION.read_bytes()
+        ).hexdigest()
+        self.assertIn(compile_correction_digest, self.source)
         self.assertIn('--transport-amendment "$transport_amendment"', self.source)
         self.assertIn(
             '--quad-fallback-amendment "$quad_fallback_amendment"',
@@ -88,6 +98,10 @@ class SmallClearFinalColorRunnerSourceTests(unittest.TestCase):
         )
         self.assertIn(
             '--clear-load-amendment "$clear_load_amendment"',
+            self.source,
+        )
+        self.assertIn(
+            '--compile-correction "$compile_correction"',
             self.source,
         )
 

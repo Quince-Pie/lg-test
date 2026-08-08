@@ -416,6 +416,7 @@ def validate(
     quad_fallback_amendment_path: Path,
     pass_selection_amendment_path: Path,
     clear_load_amendment_path: Path,
+    compile_correction_path: Path,
     preflight_path: Path,
 ) -> JsonObject:
     preregistration = load_json(preregistration_path)
@@ -491,7 +492,18 @@ def validate(
         == sha256_file(pass_selection_amendment_path),
         "pass selection amendment SHA-256 differs",
     )
-    validate_sources(clear_load)
+    compile_correction = load_json(compile_correction_path)
+    require(
+        compile_correction.get("smallClearFinalColorCompileCorrectionSchemaVersion")
+        == 1,
+        "compile correction schema differs",
+    )
+    require(
+        compile_correction.get("clearLoadAmendmentSHA256")
+        == sha256_file(clear_load_amendment_path),
+        "clear-load amendment SHA-256 differs",
+    )
+    validate_sources(compile_correction)
     preflight = load_json(preflight_path)
     require(preflight.get("passed") is True, "Retina preflight did not pass")
     require(preflight.get("backingScaleFactor") == 2, "Retina scale differs")
@@ -571,6 +583,7 @@ def validate(
         "quadFallbackAmendmentSHA256": sha256_file(quad_fallback_amendment_path),
         "passSelectionAmendmentSHA256": sha256_file(pass_selection_amendment_path),
         "clearLoadAmendmentSHA256": sha256_file(clear_load_amendment_path),
+        "compileCorrectionSHA256": sha256_file(compile_correction_path),
         "candidateSampleIndices": list(CANDIDATE_SAMPLES),
         "selectedSampleIndex": selected,
         "intervention": intervention,
@@ -585,6 +598,7 @@ def main() -> int:
     parser.add_argument("--quad-fallback-amendment", required=True, type=Path)
     parser.add_argument("--pass-selection-amendment", required=True, type=Path)
     parser.add_argument("--clear-load-amendment", required=True, type=Path)
+    parser.add_argument("--compile-correction", required=True, type=Path)
     parser.add_argument("--preflight", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     arguments = parser.parse_args()
@@ -595,6 +609,7 @@ def main() -> int:
         arguments.quad_fallback_amendment,
         arguments.pass_selection_amendment,
         arguments.clear_load_amendment,
+        arguments.compile_correction,
         arguments.preflight,
     )
     arguments.output.write_text(

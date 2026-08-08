@@ -16,6 +16,7 @@ readonly transport_amendment=Analysis/small_clear_final_color_intervention_trans
 readonly quad_fallback_amendment=Analysis/small_clear_final_color_intervention_quad_fallback_amendment.json
 readonly pass_selection_amendment=Analysis/small_clear_final_color_intervention_pass_selection_amendment.json
 readonly clear_load_amendment=Analysis/small_clear_final_color_intervention_clear_load_amendment.json
+readonly compile_correction=Analysis/small_clear_final_color_intervention_compile_correction.json
 readonly validator=Analysis/validate_small_clear_final_color_intervention.py
 readonly validator_test=Analysis/test_validate_small_clear_final_color_intervention.py
 readonly preflight=Analysis/check_local_retina_capture_session_v2.swift
@@ -67,15 +68,16 @@ if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
     exit 1
 fi
 
-require_sha256 "$probe" c949c521fccdbe71d0f958dc3823c15532621743cd35e96b8a238c1cb2af77be
-require_sha256 "$validator" 1877bb82dd9eaf2d3493c536ccbdf4c42d05a227cbf91e63deca32511754a297
-require_sha256 "$validator_test" b2498e7c254dd27a7d862006faa1ee630ed0fc00f42b783399b1413e42c2fc37
+require_sha256 "$probe" 08b6538563a67e7a1df086288f05b9b146decd2936656fae799ee5e96180f706
+require_sha256 "$validator" c889476ddf3b072714b94b99e89d4d5d10da0110c9d8d44d244c4e3706fbd81f
+require_sha256 "$validator_test" 99749901742f90d40c473b87b237d6e2e2ec48c7e300a782b60210374ea59701
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
 require_sha256 "$preregistration" 8609133e2306ca7ff575fc136d6ae125c00d7de922385de106ecb27d6075d604
 require_sha256 "$transport_amendment" a86b3adb3e6f50eca0ab71ce7f0bdb5871f381cc4b9e3547230644321768e769
 require_sha256 "$quad_fallback_amendment" 2baa14d43ed0954d6c19388814eb9df4a192fb1c0fec015b947350a1098130cb
 require_sha256 "$pass_selection_amendment" e0f05c35d77794458576c7f9f3726f41fc64ff4a24e3cdac02435cb979337a2a
 require_sha256 "$clear_load_amendment" 49b32c1626073df9a0a5fbf60a00fc633d146b9cee93930f55f2176541eddd27
+require_sha256 "$compile_correction" 3caa6f319feca4e84aa6418263c15bac732cae1e7740b20a96b9093ae6c41f61
 require_sha256 Analysis/small_clear_final_geometry_result.json 8600d81d693c316408064a868f100a3ead403e51c68aa994e10a8e154027ae00
 require_sha256 Sources/GlassIntrospect/MatrixBridge.c 841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057
 require_sha256 Sources/GlassIntrospect/MatrixBridge.h a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c
@@ -217,6 +219,7 @@ readonly -a capture_environment=(
         "$quad_fallback_amendment" \
         "$pass_selection_amendment" \
         "$clear_load_amendment" \
+        "$compile_correction" \
         Analysis/small_clear_final_geometry_result.json \
         Sources/GlassIntrospect/MatrixBridge.c \
         Sources/GlassIntrospect/MatrixBridge.h \
@@ -250,6 +253,7 @@ if [[ "$capture_status" -eq 0 ]]; then
         --quad-fallback-amendment "$quad_fallback_amendment" \
         --pass-selection-amendment "$pass_selection_amendment" \
         --clear-load-amendment "$clear_load_amendment" \
+        --compile-correction "$compile_correction" \
         --preflight "$output_directory/capture-session-preflight.json" \
         --output "$validation_output" \
         >"$output_directory/validation-stdout.log" \
