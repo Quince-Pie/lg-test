@@ -1,0 +1,41 @@
+{
+  "smallClearBackgroundTransportCorrectionSchemaVersion": 1,
+  "classification": "post-capture fail-closed validator transport correction",
+  "creationStatus": "capture retina1 exists and its answer-bearing sample has been inspected; this correction cannot claim to be value-blind, but its only semantic change is already forced by the frozen preregistration's pipeline-presence eligibility rule",
+  "basePreregistrationSHA256": "e649ad01476283caec2a1ec4884de2b5c41a9e3ca9060bf75f52a016f1da7581",
+  "baseValidatorSHA256": "fead760663f2f853c0994a8f1cf0ebef3f37f19f780ba915484e8973e01a0c66",
+  "captureCommit": "3da5acecb71351ddecc82bb4a9fd1a429c3e4d1d",
+  "captureDirectory": "local-small-clear-background-retina1",
+  "captureTimelineSHA256": "61c8ccb8835e145fd6207145edd12c4e9966857a87dcdae35c1341971f272e3b",
+  "captureContextSHA256": "e99d599b14eab51dba006ac2aaa35afd238a7b447e8d6e091bdf7c88d3e748bf",
+  "capturePreflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+  "captureStatus": 0,
+  "baseValidationStatus": 1,
+  "baseValidationFailure": {
+    "sampleIndex": 2,
+    "message": "sample 2 replay failed",
+    "location": "validate_small_clear_background_intervention.py exact_replay(records[sample]) before branch_inputs(record)",
+    "candidateOrReferenceRawBytesReadBeforeFailure": false
+  },
+  "frozenRuleAlreadyInForce": "a candidate is eligible only if its captured pass contains the exact Tghn label and topology and then satisfies the exact-halfway discriminator",
+  "transportDefect": "validator v1 required every numbered candidate to have an executing Tghn replay before checking whether that numbered candidate contained a Tghn branch; the capture source correctly returned a fail-closed no-pass record for sample 2",
+  "correction": {
+    "ineligibleNoTghnSamples": [2],
+    "requiredNoBranchReplayExecuted": false,
+    "requiredNoBranchReason": "captured small-clear Tghn render pass unavailable",
+    "requiredNoBranchInterventionTrace": false,
+    "branchBearingCandidatesUseUnchangedBaseValidator": true,
+    "selectionRuleChanged": false,
+    "interventionBytesChanged": false,
+    "comparisonToleranceChanged": false,
+    "capturedOutputChanged": false,
+    "rerunRequired": false
+  },
+  "ineligibleNoTghnSamples": [2],
+  "selectedReferenceSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+  "sourceSHA256": {
+    "Analysis/validate_small_clear_background_intervention_transport_correction.py": "1c46e0863791229c7b8c1094116b3dd1b025d679b28da8c03dde59535534576e",
+    "Analysis/test_validate_small_clear_background_intervention_transport_correction.py": "21a448a53b3ade925b39fbabaef5bb73848d9b51e7784a334736392933925650"
+  },
+  "acceptanceRule": "The correction may only skip a candidate whose independently recovered Metal record set has no Tghn branch, whose exact-pass result is the exact no-pass failure above, and which contains no intervention trace. Every branch-bearing sample, the first-eligible selection, independently reconstructed inputs and mutations, full-pass replay, three raw candidate comparisons, and literal zero-difference thresholds remain those of the pinned base validator."
+}
