@@ -17,12 +17,18 @@ REPOSITORY = Path(__file__).resolve().parents[1]
 CANDIDATE_SAMPLES = tuple(range(2, 32))
 EXPECTED_RECORD_SAMPLES = tuple(range(2, 33))
 EXPECTED_PIPELINE = "com.apple.coreanimation.PBGRAXm_TkfhA2Xhfc_Iscd"
-EXPECTED_PATTERNS = {
-    "zero-half4": "0000000000000000",
-    "finite-asymmetric-half4": "003c003800bc0040",
-}
+FINITE_CYCLE = (
+    "003c003800bc0040",
+    "00b80040003400bc",
+    "004200c0003a0030",
+    "00bc003400400038",
+)
+EXPECTED_INTERVENTIONS = (
+    "finite-constant-half4",
+    "finite-varying-half4",
+)
 EXPECTED_RENDER_BYTES = 1024 * 1024 * 4
-VERTEX_COUNT = 16
+VERTEX_COUNTS = {6: 4, 24: 16}
 VERTEX_STRIDE = 48
 ATTRIBUTE_OFFSET = 32
 ATTRIBUTE_BYTES = 8
@@ -53,6 +59,18 @@ def sha256_file(path: Path) -> str:
         while block := stream.read(1 << 20):
             digest.update(block)
     return digest.hexdigest()
+
+
+def expected_attribute_stream(name: str, vertex_count: int) -> bytes:
+    require(name in EXPECTED_INTERVENTIONS, f"unknown intervention: {name}")
+    patterns = (
+        (FINITE_CYCLE[0],) * vertex_count
+        if name == "finite-constant-half4"
+        else tuple(
+            FINITE_CYCLE[index % len(FINITE_CYCLE)] for index in range(vertex_count)
+        )
+    )
+    return b"".join(bytes.fromhex(pattern) for pattern in patterns)
 
 
 def validate_sources(preregistration: JsonObject) -> None:
@@ -117,7 +135,7 @@ def validate_selection(records: Mapping[int, JsonObject]) -> int:
     eligible = [
         sample for sample, trace in traces.items() if trace.get("eligible") is True
     ]
-    require(eligible, "no topology-eligible small-clear border candidate exists")
+    require(eligible, "no exact-pipeline small-clear candidate exists")
     selected = eligible[0]
     selected_capture = f"transition-background-uniform-{selected:02d}"
     require(
@@ -139,23 +157,23 @@ def validate_selection(records: Mapping[int, JsonObject]) -> int:
         )
         if trace.get("eligible") is False:
             require(
-                trace.get("reason")
-                == "small-clear Tkfh border draw is unavailable",
+                trace.get("reason") == "small-clear Tkfh draw is unavailable",
                 f"sample {sample}: ineligible reason differs",
             )
             continue
         require(sample > selected, f"sample {sample}: earlier candidate was skipped")
         expected = {
-            "selectionPolicy": "first topology-eligible candidate in sample order",
+            "selectionPolicy": "first exact-pipeline candidate in sample order",
             "selectedCapture": selected_capture,
             "pipelineLabel": EXPECTED_PIPELINE,
-            "indexCount": 24,
-            "reason": (
-                "earlier topology-eligible small-clear Tkfh border candidate selected"
-            ),
+            "reason": "earlier exact-pipeline small-clear Tkfh candidate selected",
         }
         for field, value in expected.items():
             require(trace.get(field) == value, f"sample {sample}: {field} differs")
+        require(
+            trace.get("indexCount") in VERTEX_COUNTS,
+            f"sample {sample}: indexCount differs",
+        )
     return selected
 
 
@@ -181,7 +199,7 @@ def payload(record: JsonObject, label: str) -> bytes:
     return result
 
 
-def validate_selected_pipeline(record: JsonObject) -> str:
+def validate_selected_pipeline(record: JsonObject) -> tuple[str, int, int]:
     sample = record.get("sampleIndex")
     render = record.get("render")
     require(isinstance(render, dict), f"sample {sample}: render is absent")
@@ -194,12 +212,14 @@ def validate_selected_pipeline(record: JsonObject) -> str:
     require(isinstance(metal_records, list), "Metal record list differs")
     require(isinstance(snapshot_records, list), "Metal snapshot list differs")
     typed_records = [value for value in metal_records if isinstance(value, dict)]
-    branch = [value for value in typed_records if pipeline_label(value) == EXPECTED_PIPELINE]
+    branch = [
+        value for value in typed_records if pipeline_label(value) == EXPECTED_PIPELINE
+    ]
     draws = [
         value
         for value in branch
         if value.get("kind") == "drawIndexedPrimitives"
-        and value.get("indexCount") == 24
+        and value.get("indexCount") in VERTEX_COUNTS
         and value.get("indexType") == 0
     ]
     bindings = [
@@ -225,8 +245,7 @@ def validate_selected_pipeline(record: JsonObject) -> str:
     layouts = descriptor.get("vertexLayouts")
     require(isinstance(attributes, list) and len(attributes) == 4, "attributes differ")
     require(
-        attributes[3]
-        == {"bufferIndex": 1, "format": 27, "index": 3, "offset": 32},
+        attributes[3] == {"bufferIndex": 1, "format": 27, "index": 3, "offset": 32},
         "half4 attribute descriptor differs",
     )
     require(isinstance(stage_inputs, list) and len(stage_inputs) == 4, "inputs differ")
@@ -238,8 +257,7 @@ def validate_selected_pipeline(record: JsonObject) -> str:
         "half4 attribute is not declared active",
     )
     require(
-        layouts
-        == [{"index": 1, "stepFunction": 1, "stepRate": 1, "stride": 48}],
+        layouts == [{"index": 1, "stepFunction": 1, "stepRate": 1, "stride": 48}],
         "selected vertex layout differs",
     )
     sequence = bindings[0].get("sequence")
@@ -254,13 +272,21 @@ def validate_selected_pipeline(record: JsonObject) -> str:
     ]
     require(len(matches) == 1, "selected vertex snapshot differs")
     raw = payload(matches[0], "selected vertex")
-    require(len(raw) >= VERTEX_COUNT * VERTEX_STRIDE, "vertex snapshot is truncated")
-    stream = b"".join(
-        raw[index * VERTEX_STRIDE + ATTRIBUTE_OFFSET :
-            index * VERTEX_STRIDE + ATTRIBUTE_OFFSET + ATTRIBUTE_BYTES]
-        for index in range(VERTEX_COUNT)
+    index_count = draws[0]["indexCount"]
+    vertex_count = VERTEX_COUNTS[index_count]
+    require(
+        len(raw) >= vertex_count * VERTEX_STRIDE,
+        "vertex snapshot is truncated",
     )
-    return sha256_bytes(stream)
+    stream = b"".join(
+        raw[
+            index * VERTEX_STRIDE + ATTRIBUTE_OFFSET : index * VERTEX_STRIDE
+            + ATTRIBUTE_OFFSET
+            + ATTRIBUTE_BYTES
+        ]
+        for index in range(vertex_count)
+    )
+    return sha256_bytes(stream), index_count, vertex_count
 
 
 def validate_intervention(
@@ -277,20 +303,21 @@ def validate_intervention(
         f"sample {sample} reference",
     )
     trace = candidate_trace(record)
+    original_sha, index_count, vertex_count = validate_selected_pipeline(record)
     expected_scalars = {
         "schemaVersion": 1,
         "executed": True,
         "eligible": True,
         "selected": True,
-        "selectionPolicy": "first topology-eligible candidate in sample order",
+        "selectionPolicy": "first exact-pipeline candidate in sample order",
         "classification": (
-            "captured Apple small-clear Tkfh border pixel-influence intervention"
+            "captured Apple small-clear Tkfh active-color pixel-influence intervention"
         ),
         "liveAppleFrameMutated": False,
         "capturedApplePipelinesUnmodified": True,
         "pipelineLabel": EXPECTED_PIPELINE,
-        "indexCount": 24,
-        "vertexCount": VERTEX_COUNT,
+        "indexCount": index_count,
+        "vertexCount": vertex_count,
         "stride": VERTEX_STRIDE,
         "attributeIndex": 3,
         "attributeOffset": ATTRIBUTE_OFFSET,
@@ -300,29 +327,36 @@ def validate_intervention(
     }
     for field, expected in expected_scalars.items():
         require(trace.get(field) == expected, f"sample {sample}: {field} differs")
-    original_sha = trace.get("originalAttributeStreamSHA256")
     require(
-        isinstance(original_sha, str) and len(original_sha) == 64,
+        isinstance(trace.get("originalAttributeStreamSHA256"), str)
+        and len(trace["originalAttributeStreamSHA256"]) == 64,
         "original attribute digest is malformed",
     )
     require(
-        original_sha == validate_selected_pipeline(record),
+        trace["originalAttributeStreamSHA256"] == original_sha,
         "trace and independently retained attribute stream differ",
     )
     interventions = trace.get("interventions")
-    require(isinstance(interventions, list) and len(interventions) == 2, "count differs")
+    require(
+        isinstance(interventions, list) and len(interventions) == 2, "count differs"
+    )
     by_name = {
         value.get("name"): value for value in interventions if isinstance(value, dict)
     }
-    require(set(by_name) == set(EXPECTED_PATTERNS), "intervention names differ")
+    require(set(by_name) == set(EXPECTED_INTERVENTIONS), "intervention names differ")
     output_sha256: str | None = None
-    for name, pattern_hex in EXPECTED_PATTERNS.items():
+    for name in EXPECTED_INTERVENTIONS:
         intervention = by_name[name]
         require(
-            intervention.get("half4LittleEndianHex") == pattern_hex,
+            intervention.get("half4LittleEndianHex") == FINITE_CYCLE[0],
             f"{name}: half4 pattern differs",
         )
-        expected_stream_sha = sha256_bytes(bytes.fromhex(pattern_hex) * VERTEX_COUNT)
+        expected_stream = expected_attribute_stream(name, vertex_count)
+        require(
+            intervention.get("attributeStreamLittleEndianHex") == expected_stream.hex(),
+            f"{name}: explicit mutated stream differs",
+        )
+        expected_stream_sha = sha256_bytes(expected_stream)
         require(
             intervention.get("mutatedAttributeStreamSHA256") == expected_stream_sha,
             f"{name}: mutated stream differs",
@@ -371,6 +405,7 @@ def validate(
     capture_directory: Path,
     preregistration_path: Path,
     amendment_path: Path,
+    quad_fallback_amendment_path: Path,
     preflight_path: Path,
 ) -> JsonObject:
     preregistration = load_json(preregistration_path)
@@ -384,11 +419,25 @@ def validate(
         "transport amendment schema differs",
     )
     require(
-        amendment.get("basePreregistrationSHA256")
-        == sha256_file(preregistration_path),
+        amendment.get("basePreregistrationSHA256") == sha256_file(preregistration_path),
         "base preregistration SHA-256 differs",
     )
-    validate_sources(amendment)
+    quad_fallback = load_json(quad_fallback_amendment_path)
+    require(
+        quad_fallback.get("smallClearFinalColorQuadFallbackAmendmentSchemaVersion")
+        == 1,
+        "quad fallback amendment schema differs",
+    )
+    require(
+        quad_fallback.get("basePreregistrationSHA256")
+        == sha256_file(preregistration_path),
+        "quad fallback base preregistration SHA-256 differs",
+    )
+    require(
+        quad_fallback.get("transportAmendmentSHA256") == sha256_file(amendment_path),
+        "transport amendment SHA-256 differs",
+    )
+    validate_sources(quad_fallback)
     preflight = load_json(preflight_path)
     require(preflight.get("passed") is True, "Retina preflight did not pass")
     require(preflight.get("backingScaleFactor") == 2, "Retina scale differs")
@@ -458,13 +507,14 @@ def validate(
         "passed": True,
         "authority": (
             "current-build observational irrelevance of active half4 bytes 32 "
-            "through 39 for the small-clear Tkfh border draw"
+            "through 39 for the exact small-clear Tkfh pipeline"
         ),
         "formalLiquidGlassParity": False,
         "captureDirectory": capture_directory.name,
         "timelineSHA256": sha256_file(timeline_path),
         "preregistrationSHA256": sha256_file(preregistration_path),
         "transportAmendmentSHA256": sha256_file(amendment_path),
+        "quadFallbackAmendmentSHA256": sha256_file(quad_fallback_amendment_path),
         "candidateSampleIndices": list(CANDIDATE_SAMPLES),
         "selectedSampleIndex": selected,
         "intervention": intervention,
@@ -476,6 +526,7 @@ def main() -> int:
     parser.add_argument("capture_directory", type=Path)
     parser.add_argument("--preregistration", required=True, type=Path)
     parser.add_argument("--transport-amendment", required=True, type=Path)
+    parser.add_argument("--quad-fallback-amendment", required=True, type=Path)
     parser.add_argument("--preflight", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     arguments = parser.parse_args()
@@ -483,6 +534,7 @@ def main() -> int:
         arguments.capture_directory,
         arguments.preregistration,
         arguments.transport_amendment,
+        arguments.quad_fallback_amendment,
         arguments.preflight,
     )
     arguments.output.write_text(

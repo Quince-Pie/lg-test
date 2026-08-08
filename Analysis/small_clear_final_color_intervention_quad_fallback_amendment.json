@@ -1,0 +1,84 @@
+{
+  "smallClearFinalColorQuadFallbackAmendmentSchemaVersion": 1,
+  "authority": "value-blind exact-pipeline topology fallback after exhaustive border absence",
+  "basePreregistration": "Analysis/small_clear_final_color_intervention_preregistration.json",
+  "basePreregistrationSHA256": "8609133e2306ca7ff575fc136d6ae125c00d7de922385de106ecb27d6075d604",
+  "transportAmendment": "Analysis/small_clear_final_color_intervention_transport_amendment.json",
+  "transportAmendmentSHA256": "a86b3adb3e6f50eca0ab71ce7f0bdb5871f381cc4b9e3547230644321768e769",
+  "secondFailedRun": {
+    "captureCommit": "b7e17b5be9b1c3835e9edb54b3d9db46d69fb783",
+    "captureDirectory": "local-small-clear-final-color-b7e17b5-v1",
+    "captureExitStatus": 0,
+    "validationExitStatus": 1,
+    "timelineSHA256": "d6c134281915e574c974785a76180c4f207eb20b42be620f410037a198f2c2f6",
+    "firstValidatorFailure": "no topology-eligible small-clear border candidate exists",
+    "recordSamples": [
+      2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+      17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+    ],
+    "candidateSamples": [
+      2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+      17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+    ],
+    "topologyEligibleBorderCandidateCount": 0,
+    "selectedCandidateCount": 0,
+    "executedInterventionCount": 0,
+    "answerBearingCandidatePixelsProduced": false,
+    "transportFinding": "controlled replay emitted the exact small-clear Tkfh pipeline only as six-index quads throughout every genuine remaining transition state; no twenty-four-index border existed on which either frozen mutation could execute"
+  },
+  "amendment": {
+    "candidateSamples": "unchanged exhaustive samples 2 through 31 inclusive",
+    "recordSamples": "unchanged samples 2 through 32 inclusive, with endpoint 32 excluded from selection",
+    "selectionRule": "reserve exactly the first candidate in ascending sample order whose captured final pass contains com.apple.coreanimation.PBGRAXm_TkfhA2Xhfc_Iscd, uint16 index count 6 or 24, and the frozen stride-48 active half4 attribute-3 layout",
+    "selectionUsesCandidatePixels": false,
+    "selectionUsesCandidateUniformValues": false,
+    "topologyFallback": {
+      "indexCount6": {
+        "vertexCount": 4,
+        "role": "quad"
+      },
+      "indexCount24": {
+        "vertexCount": 16,
+        "role": "border"
+      },
+      "justification": "both topologies execute the identical captured vertex function VfxU10Xh and fragment function TkfhA2Xhfc_Iscd with the identical active color field; selecting by exact pipeline identity tests whether that field can influence this shader, while the varying intervention exercises interpolation over both quad triangles"
+    },
+    "interventions": [
+      {
+        "name": "finite-constant-half4",
+        "perVertexHalf4LittleEndianHex": "003c003800bc0040"
+      },
+      {
+        "name": "finite-varying-half4",
+        "perVertexCycleLittleEndianHex": [
+          "003c003800bc0040",
+          "00b80040003400bc",
+          "004200c0003a0030",
+          "00bc003400400038"
+        ]
+      }
+    ],
+    "controlPolicy": "unchanged cloned-buffer complete-pass replay; only attribute-3 bytes 32 through 39 may differ from the exact reference pass",
+    "acceptance": "both complete 4,194,304-byte candidate outputs must equal the independently read reference output with zero unequal bytes, unequal pixels, or channel delta, and both explicit mutated streams must differ from the independently recovered captured stream"
+  },
+  "unseenAtAmendmentFreeze": {
+    "anyQuadFallbackInterventionExecuted": false,
+    "anyQuadFallbackCandidatePixelExists": false,
+    "anyQuadFallbackComparisonResultExists": false,
+    "thirdCaptureStarted": false
+  },
+  "sourceSHA256": {
+    "Sources/GlassIntrospect/main.swift": "32c67e2e5ca822824b4efce48db7e6240d769d40c7370211889b9e8f7e1b010a",
+    "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
+    "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
+    "Sources/GlassIntrospect/HalfBlendProbe.swift": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263",
+    "Sources/GlassIntrospect/HalfDotProbe.swift": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0",
+    "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
+    "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208",
+    "Analysis/validate_small_clear_final_color_intervention.py": "91bfb34b04cad223f97c2e4a413e66077705a7c61025756fba261310e4bff19a",
+    "Analysis/test_validate_small_clear_final_color_intervention.py": "bc5374deefd6f9409488366266bb3daaad074c67421c8fee531c2de66f37bae5",
+    "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
+    "Analysis/small_clear_final_geometry_result.json": "8600d81d693c316408064a868f100a3ead403e51c68aa994e10a8e154027ae00"
+  },
+  "promotionRule": "The base preregistration and transport amendment remain controlling except for exact-pipeline topology selection and the two finite streams above. A validator pass establishes current-build observational pixel-irrelevance only for the declared-active half4 field of the exact TkfhA2Xhfc_Iscd pipeline. It cannot establish Tghn background semantics, Tmua producer/composition semantics, physical compositor parity, or complete Walle parity."
+}

@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import copy
 import json
 from pathlib import Path
 import tempfile
@@ -20,10 +19,11 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         self.capture.mkdir()
         self.preregistration = self.root / "preregistration.json"
         self.amendment = self.root / "amendment.json"
+        self.quad_fallback_amendment = self.root / "quad-fallback-amendment.json"
         self.preflight = self.root / "preflight.json"
         self.timeline = self.capture / "transition-timeline.json"
         self.render_payload = bytes([0x5A]) * validator.EXPECTED_RENDER_BYTES
-        for name in ("reference.raw", "zero.raw", "finite.raw"):
+        for name in ("reference.raw", "constant.raw", "varying.raw"):
             (self.capture / name).write_bytes(self.render_payload)
         self.preregistration.write_text(
             json.dumps(
@@ -41,6 +41,19 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                     "basePreregistrationSHA256": validator.sha256_file(
                         self.preregistration
                     ),
+                    "sourceSHA256": {},
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.quad_fallback_amendment.write_text(
+            json.dumps(
+                {
+                    "smallClearFinalColorQuadFallbackAmendmentSchemaVersion": 1,
+                    "basePreregistrationSHA256": validator.sha256_file(
+                        self.preregistration
+                    ),
+                    "transportAmendmentSHA256": validator.sha256_file(self.amendment),
                     "sourceSHA256": {},
                 }
             ),
@@ -79,27 +92,27 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             "executed": False,
             "eligible": False,
             "selected": False,
-            "reason": "small-clear Tkfh border draw is unavailable",
+            "reason": "small-clear Tkfh draw is unavailable",
         }
 
     def _selected_record(self, sample: int) -> dict[str, object]:
-        vertex = bytearray(validator.VERTEX_COUNT * validator.VERTEX_STRIDE)
-        for index in range(validator.VERTEX_COUNT):
-            start = (
-                index * validator.VERTEX_STRIDE + validator.ATTRIBUTE_OFFSET
-            )
+        index_count = 6
+        vertex_count = validator.VERTEX_COUNTS[index_count]
+        vertex = bytearray(vertex_count * validator.VERTEX_STRIDE)
+        for index in range(vertex_count):
+            start = index * validator.VERTEX_STRIDE + validator.ATTRIBUTE_OFFSET
             vertex[start : start + validator.ATTRIBUTE_BYTES] = bytes(
                 (index + component + 1) & 0xFF
                 for component in range(validator.ATTRIBUTE_BYTES)
             )
         original_stream = b"".join(
             vertex[
-                index * validator.VERTEX_STRIDE + validator.ATTRIBUTE_OFFSET :
-                index * validator.VERTEX_STRIDE
+                index * validator.VERTEX_STRIDE + validator.ATTRIBUTE_OFFSET : index
+                * validator.VERTEX_STRIDE
                 + validator.ATTRIBUTE_OFFSET
                 + validator.ATTRIBUTE_BYTES
             ]
-            for index in range(validator.VERTEX_COUNT)
+            for index in range(vertex_count)
         )
         original_sha = validator.sha256_bytes(original_stream)
         pipeline = {
@@ -150,15 +163,18 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             },
         }
         interventions = []
-        for name, pattern in validator.EXPECTED_PATTERNS.items():
-            raw_name = "zero.raw" if name == "zero-half4" else "finite.raw"
+        for name, raw_name in zip(
+            validator.EXPECTED_INTERVENTIONS,
+            ("constant.raw", "varying.raw"),
+            strict=True,
+        ):
+            stream = validator.expected_attribute_stream(name, vertex_count)
             interventions.append(
                 {
                     "name": name,
-                    "half4LittleEndianHex": pattern,
-                    "mutatedAttributeStreamSHA256": validator.sha256_bytes(
-                        bytes.fromhex(pattern) * validator.VERTEX_COUNT
-                    ),
+                    "half4LittleEndianHex": validator.FINITE_CYCLE[0],
+                    "attributeStreamLittleEndianHex": stream.hex(),
+                    "mutatedAttributeStreamSHA256": validator.sha256_bytes(stream),
                     "replay": {
                         "executed": True,
                         "output": self._snapshot(raw_name),
@@ -179,15 +195,16 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             "executed": True,
             "eligible": True,
             "selected": True,
-            "selectionPolicy": "first topology-eligible candidate in sample order",
+            "selectionPolicy": "first exact-pipeline candidate in sample order",
             "classification": (
-                "captured Apple small-clear Tkfh border pixel-influence intervention"
+                "captured Apple small-clear Tkfh active-color "
+                "pixel-influence intervention"
             ),
             "liveAppleFrameMutated": False,
             "capturedApplePipelinesUnmodified": True,
             "pipelineLabel": validator.EXPECTED_PIPELINE,
-            "indexCount": 24,
-            "vertexCount": validator.VERTEX_COUNT,
+            "indexCount": index_count,
+            "vertexCount": vertex_count,
             "stride": validator.VERTEX_STRIDE,
             "attributeIndex": 3,
             "attributeOffset": validator.ATTRIBUTE_OFFSET,
@@ -217,7 +234,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                         {
                             "sequence": 11,
                             "kind": "drawIndexedPrimitives",
-                            "indexCount": 24,
+                            "indexCount": index_count,
                             "indexType": 0,
                             "pipeline": pipeline,
                         },
@@ -305,6 +322,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             self.capture,
             self.preregistration,
             self.amendment,
+            self.quad_fallback_amendment,
             self.preflight,
         )
         self.assertTrue(result["passed"])
@@ -314,9 +332,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
 
     def test_skipping_an_earlier_eligible_candidate_fails(self) -> None:
         first = self.document["dynamicBackgroundUniforms"]["records"][0]
-        first["render"]["exactPassReplay"][
-            "finalHighlightVertexTailIntervention"
-        ] = {
+        first["render"]["exactPassReplay"]["finalHighlightVertexTailIntervention"] = {
             "schemaVersion": 1,
             "executed": False,
             "eligible": True,
@@ -325,7 +341,11 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         self._write_timeline()
         with self.assertRaisesRegex(ValueError, "first eligible"):
             validator.validate(
-                self.capture, self.preregistration, self.amendment, self.preflight
+                self.capture,
+                self.preregistration,
+                self.amendment,
+                self.quad_fallback_amendment,
+                self.preflight,
             )
 
     def test_declared_inactive_half4_fails(self) -> None:
@@ -340,16 +360,24 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         self._write_timeline()
         with self.assertRaisesRegex(ValueError, "not declared active"):
             validator.validate(
-                self.capture, self.preregistration, self.amendment, self.preflight
+                self.capture,
+                self.preregistration,
+                self.amendment,
+                self.quad_fallback_amendment,
+                self.preflight,
             )
 
     def test_one_changed_output_byte_fails(self) -> None:
         changed = bytearray(self.render_payload)
         changed[-1] ^= 1
-        (self.capture / "finite.raw").write_bytes(changed)
+        (self.capture / "varying.raw").write_bytes(changed)
         with self.assertRaisesRegex(ValueError, "replay bytes differ"):
             validator.validate(
-                self.capture, self.preregistration, self.amendment, self.preflight
+                self.capture,
+                self.preregistration,
+                self.amendment,
+                self.quad_fallback_amendment,
+                self.preflight,
             )
 
 

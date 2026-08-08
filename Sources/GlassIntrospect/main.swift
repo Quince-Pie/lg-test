@@ -10769,13 +10769,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 _
             ):
                 guard indexType == .uint16,
-                      indexCount == 24,
                       let currentPipeline,
                       (smallClearRequested
-                        ? currentPipeline.label
-                            == smallClearFinalHighlightPipelineLabel26_6_1
-                        : isFinalHighlightRemainderPipeline(
-                            currentPipeline)),
+                        ? (indexCount == 6 || indexCount == 24)
+                            && currentPipeline.label
+                                == smallClearFinalHighlightPipelineLabel26_6_1
+                        : indexCount == 24
+                            && isFinalHighlightRemainderPipeline(
+                                currentPipeline)),
                       let activeVertexBuffer
                 else {
                     continue
@@ -10805,7 +10806,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "LG_TRANSITION_SMALL_CLEAR_FINAL_COLOR_TRACE"
             ] == "1"
         let branchName = smallClearRequested
-            ? "small-clear Tkfh border"
+            ? "small-clear Tkfh"
             : "current Irsd border"
         guard let selection = finalHighlightVertexTailSelection(
                 in: pass.commands)
@@ -10849,7 +10850,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ]
         }
 
-        let vertexCount = 16
+        let vertexCount = smallClearRequested && selection.indexCount == 6
+            ? 4
+            : 16
         let stride = 48
         let attributeOffset = 32
         let attributeByteCount = 8
@@ -10886,14 +10889,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "eligible": true,
                 "selected": false,
                 "selectionPolicy":
-                    "first topology-eligible candidate in sample order",
+                    smallClearRequested
+                    ? "first exact-pipeline candidate in sample order"
+                    : "first topology-eligible candidate in sample order",
                 "selectedCapture": previouslySelectedCapture,
                 "pipelineLabel": selection.pipeline.label ?? "",
                 "indexCount": selection.indexCount,
                 "reason":
                     smallClearRequested
-                    ? "earlier topology-eligible small-clear Tkfh "
-                        + "border candidate selected"
+                    ? "earlier exact-pipeline small-clear Tkfh "
+                        + "candidate selected"
                     : "earlier topology-eligible Irsd candidate selected",
             ]
         }
@@ -10911,15 +10916,39 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return stream
         }
 
+        let finiteA: [UInt16] = [
+            0x3c00, 0x3800, 0xbc00, 0x4000,
+        ]
+        let finiteCycle: [[UInt16]] = [
+            finiteA,
+            [0xb800, 0x4000, 0x3400, 0xbc00],
+            [0x4200, 0xc000, 0x3a00, 0x3000],
+            [0xbc00, 0x3400, 0x4000, 0x3800],
+        ]
         let interventions: [(
             name: String,
-            half4: [UInt16]
-        )] = [
-            ("zero-half4", [0x0000, 0x0000, 0x0000, 0x0000]),
-            ("finite-asymmetric-half4", [
-                0x3c00, 0x3800, 0xbc00, 0x4000,
-            ]),
-        ]
+            vertexHalf4: [[UInt16]]
+        )] = smallClearRequested
+            ? [
+                (
+                    "finite-constant-half4",
+                    Array(repeating: finiteA, count: vertexCount)),
+                (
+                    "finite-varying-half4",
+                    (0..<vertexCount).map {
+                        finiteCycle[$0 % finiteCycle.count]
+                    }),
+            ]
+            : [
+                (
+                    "zero-half4",
+                    Array(
+                        repeating: [0x0000, 0x0000, 0x0000, 0x0000],
+                        count: vertexCount)),
+                (
+                    "finite-asymmetric-half4",
+                    Array(repeating: finiteA, count: vertexCount)),
+            ]
         var records: [[String: Any]] = []
         for intervention in interventions {
             guard let clone = preColor0.device.makeBuffer(
@@ -10939,11 +10968,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 clone.contents(),
                 selection.vertexBuffer.contents(),
                 selection.vertexBuffer.length)
-            let littleEndianWords = intervention.half4.map {
-                $0.littleEndian
-            }
-            littleEndianWords.withUnsafeBytes { bytes in
-                for vertex in 0..<vertexCount {
+            for vertex in 0..<vertexCount {
+                let littleEndianWords =
+                    intervention.vertexHalf4[vertex].map {
+                        $0.littleEndian
+                    }
+                littleEndianWords.withUnsafeBytes { bytes in
                     memcpy(
                         clone.contents().advanced(
                             by: selection.vertexOffset
@@ -10967,13 +10997,22 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "final-highlight-vertex-tail-"
                     + intervention.name,
                 outputDirectory: outputDirectory)
+            let firstLittleEndianWords =
+                intervention.vertexHalf4[0].map {
+                    $0.littleEndian
+                }
+            let mutatedStream = attributeStream(clone)
             records.append([
                 "name": intervention.name,
-                "half4LittleEndianHex": littleEndianWords.withUnsafeBytes {
+                "half4LittleEndianHex": firstLittleEndianWords.withUnsafeBytes {
                     Data($0).map { String(format: "%02x", $0) }.joined()
                 },
+                "attributeStreamLittleEndianHex":
+                    mutatedStream.map {
+                        String(format: "%02x", $0)
+                    }.joined(),
                 "mutatedAttributeStreamSHA256":
-                    transitionSHA256(attributeStream(clone)),
+                    transitionSHA256(mutatedStream),
                 "replay": replay,
                 "comparison": compareReplaySnapshots(
                     reference: exactReplay,
@@ -10996,10 +11035,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "eligible": true,
             "selected": true,
             "selectionPolicy":
-                "first topology-eligible candidate in sample order",
+                smallClearRequested
+                ? "first exact-pipeline candidate in sample order"
+                : "first topology-eligible candidate in sample order",
             "classification":
                 smallClearRequested
-                ? "captured Apple small-clear Tkfh border "
+                ? "captured Apple small-clear Tkfh active-color "
                     + "pixel-influence intervention"
                 : "captured Apple Irsd pixel-influence intervention",
             "liveAppleFrameMutated": false,
