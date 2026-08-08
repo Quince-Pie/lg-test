@@ -9,12 +9,12 @@ import json
 import math
 from pathlib import Path
 import struct
-from typing import Any
+from typing import Any, TypedDict
 
 import validate_variable_blur_selected_region_origin as selected
 
 
-RESULT_SCHEMA_VERSION = 2
+RESULT_SCHEMA_VERSION = 3
 TIMELINE_SCHEMA_VERSION = 5
 DYNAMIC_UNIFORM_SCHEMA_VERSION = 9
 EXPECTED_CAPTURE_METHOD = (
@@ -42,9 +42,7 @@ BACKGROUND_PIPELINES = frozenset(
         "com.apple.coreanimation.PBGRABsovXm_TghsA2Xhf_Isrc",
     }
 )
-FINAL_HIGHLIGHT_PIPELINE = (
-    "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd"
-)
+FINAL_HIGHLIGHT_PIPELINE = "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd"
 VERTEX_STRIDE = 48
 MAIN_VERTEX_COUNT = 6
 SHADOW_VERTEX_COUNT = 16
@@ -103,6 +101,13 @@ FINAL_BORDER_INDICES = SHADOW_INDICES[:24]
 
 type JsonObject = dict[str, Any]
 type Vertex = tuple[float, float, float, float, float, float, float, float]
+
+
+class ProducerCrop(TypedDict):
+    allocationMargin: float
+    cropOrigin: tuple[int, int]
+    activeExtent: tuple[int, int]
+    storageExtent: tuple[int, int]
 
 
 EXPECTED_INPUTS: dict[str, dict[str, Any]] = {
@@ -256,6 +261,77 @@ def expected_backdrop_scale(material: str, remaining: float) -> float:
     return float32(1.0 - coefficient * remaining32)
 
 
+def expected_producer_crop(
+    geometry: Mapping[str, Any],
+    *,
+    material: str,
+    carrier_position: Sequence[float],
+    backdrop_scale: float,
+) -> ProducerCrop:
+    """Construct Apple's retained full-shape backdrop producer crop."""
+    if len(carrier_position) != 2:
+        raise ValueError("producer carrier position component count differs")
+    width = finite(geometry.get("width"), "geometry width")
+    height = finite(geometry.get("height"), "geometry height")
+    window_width = finite(geometry.get("windowWidth"), "window width")
+    window_height = finite(geometry.get("windowHeight"), "window height")
+    position_x = finite(carrier_position[0], "carrier position x")
+    position_y = finite(carrier_position[1], "carrier position y")
+    scale = finite(backdrop_scale, "backdrop scale")
+    if (
+        geometry.get("shape") != "circle"
+        or width <= 0.0
+        or width != height
+        or window_width <= 0.0
+        or window_height <= 0.0
+        or scale <= 0.0
+    ):
+        raise ValueError("producer crop geometry differs")
+    if material == "clear":
+        margin = 0.0
+    elif material == "regular":
+        margin = float32(0.35 * width)
+    else:
+        raise ValueError(f"unsupported material: {material!r}")
+
+    intervals = (
+        (
+            max(0.0, position_x - margin),
+            min(window_width, position_x + width + margin),
+        ),
+        (
+            max(0.0, window_height - (position_y + height) - margin),
+            min(window_height, window_height - position_y + margin),
+        ),
+    )
+    crop_origin: list[int] = []
+    active_extent: list[int] = []
+    storage_extent: list[int] = []
+    for axis, (lower, upper) in enumerate(intervals):
+        if not 0.0 <= lower < upper:
+            raise ValueError("producer crop does not intersect the window")
+        scaled_lower = scale * lower
+        scaled_upper = scale * upper
+        if lower == 0.0:
+            origin = 0
+        elif axis == 0:
+            origin = math.floor(scaled_lower) + 1
+        else:
+            origin = math.ceil(scaled_lower)
+        extent = math.floor(scaled_upper) - origin
+        if extent <= 0:
+            raise ValueError("producer crop is empty")
+        crop_origin.append(origin)
+        active_extent.append(extent)
+        storage_extent.append(selected.align_up(extent))
+    return {
+        "allocationMargin": margin,
+        "cropOrigin": (crop_origin[0], crop_origin[1]),
+        "activeExtent": (active_extent[0], active_extent[1]),
+        "storageExtent": (storage_extent[0], storage_extent[1]),
+    }
+
+
 def source_coordinate(
     position: float,
     *,
@@ -275,12 +351,16 @@ def source_coordinate(
 def layer_states(record: Mapping[str, Any]) -> dict[tuple[int, ...], Mapping[str, Any]]:
     states = [
         mapping(value, "captured layer state")
-        for value in sequence(record.get("capturedLayerStates"), "captured layer states")
+        for value in sequence(
+            record.get("capturedLayerStates"), "captured layer states"
+        )
     ]
     result: dict[tuple[int, ...], Mapping[str, Any]] = {}
     for state in states:
         path_values = sequence(state.get("path"), "captured layer path")
-        path = tuple(integer(value, "captured layer path component") for value in path_values)
+        path = tuple(
+            integer(value, "captured layer path component") for value in path_values
+        )
         if path in result:
             raise ValueError(f"duplicate captured layer path: {path}")
         result[path] = state
@@ -334,14 +414,10 @@ def expected_dynamic_layer_state(
         raise ValueError("dynamic carrier half-tie rule is not measured")
     snapped_carrier_extent = math.floor(carrier_extent + 0.5)
     root_translation_x = (
-        center_x
-        - half
-        + (snapped_carrier_extent - carrier_extent) / 2.0
+        center_x - half + (snapped_carrier_extent - carrier_extent) / 2.0
     )
     root_translation_y = (
-        center_y
-        - half
-        + (snapped_carrier_extent - carrier_extent) / 2.0
+        center_y - half + (snapped_carrier_extent - carrier_extent) / 2.0
     )
     root_lower = lower + root_translation_x
     root_upper = upper + root_translation_x
@@ -397,9 +473,7 @@ def expected_main_vertices(record: Mapping[str, Any]) -> list[Vertex]:
     extent = element_bounds[2]
     left = float32(carrier_position[0] + element_position[0])
     right = float32((carrier_position[0] + element_position[0]) + extent)
-    top = float32(
-        (root_bounds[3] - carrier_position[1]) - element_position[1]
-    )
+    top = float32((root_bounds[3] - carrier_position[1]) - element_position[1])
     bottom = float32(
         ((root_bounds[3] - carrier_position[1]) - element_position[1]) - extent
     )
@@ -448,9 +522,7 @@ def expected_shadow_vertices(
 
     extent = element_bounds[2]
     horizontal_origin = carrier_position[0] + element_position[0]
-    vertical_origin = (
-        root_bounds[3] - carrier_position[1]
-    ) - element_position[1]
+    vertical_origin = (root_bounds[3] - carrier_position[1]) - element_position[1]
     top_margin = max(margin - 8.0, 0.0)
     extended_width = float32(extent + margin)
     extended_height = float32((extent + margin) + 8.0)
@@ -496,12 +568,8 @@ def expected_shadow_vertices(
             0.0,
             0.0,
         )
-        for position_y, coordinate_y in zip(
-            positions_y, coordinates_y, strict=True
-        )
-        for position_x, coordinate_x in zip(
-            positions_x, coordinates_x, strict=True
-        )
+        for position_y, coordinate_y in zip(positions_y, coordinates_y, strict=True)
+        for position_x, coordinate_x in zip(positions_x, coordinates_x, strict=True)
     ]
 
 
@@ -511,8 +579,7 @@ def decode_vertices(snapshot: Mapping[str, Any], count: int) -> list[Vertex]:
     if len(raw) < required:
         raise ValueError("vertex payload is truncated")
     return [
-        struct.unpack_from("<8f", raw, index * VERTEX_STRIDE)
-        for index in range(count)
+        struct.unpack_from("<8f", raw, index * VERTEX_STRIDE) for index in range(count)
     ]
 
 
@@ -859,6 +926,8 @@ def analyze(artifact_root: Path) -> JsonObject:
     predicted_shadow_digest = hashlib.sha256()
     actual_uv_digest = hashlib.sha256()
     predicted_uv_digest = hashlib.sha256()
+    actual_producer_crop_digest = hashlib.sha256()
+    predicted_producer_crop_digest = hashlib.sha256()
     final_fragment_digest = hashlib.sha256()
     final_vertex_digest = hashlib.sha256()
     final_index_digest = hashlib.sha256()
@@ -899,9 +968,7 @@ def analyze(artifact_root: Path) -> JsonObject:
                 or element.get("class") != "CASDFElementLayer"
             ):
                 raise ValueError("dynamic geometry layer classes differ")
-            predicted_layer_state = expected_dynamic_layer_state(
-                geometry, remaining
-            )
+            predicted_layer_state = expected_dynamic_layer_state(geometry, remaining)
             add_float64_metric(
                 metrics,
                 "dynamicCarrierBounds",
@@ -964,9 +1031,7 @@ def analyze(artifact_root: Path) -> JsonObject:
             ]
             producer_extent = [
                 integer(value, "producer extent")
-                for value in sequence(
-                    observed.get("producerExtent"), "producer extent"
-                )
+                for value in sequence(observed.get("producerExtent"), "producer extent")
             ]
             destination_extent = [
                 integer(value, "destination extent")
@@ -977,6 +1042,39 @@ def analyze(artifact_root: Path) -> JsonObject:
             if len(crop_origin) != 2 or len(clamp) != 4 or len(copy_offset) != 2:
                 raise ValueError("copy-base geometry vector length differs")
             active_extent = [clamp[2] + 1, clamp[3] + 1]
+            predicted_producer = expected_producer_crop(
+                geometry,
+                material=str(expected["material"]),
+                carrier_position=predicted_layer_state["carrierPosition"],
+                backdrop_scale=predicted_scale,
+            )
+            predicted_crop_origin = list(predicted_producer["cropOrigin"])
+            predicted_active_extent = list(predicted_producer["activeExtent"])
+            predicted_storage_extent = list(predicted_producer["storageExtent"])
+            add_integer_metric(
+                metrics,
+                "producerCropOrigin",
+                crop_origin,
+                predicted_crop_origin,
+            )
+            add_integer_metric(
+                metrics,
+                "producerActiveExtent",
+                active_extent,
+                predicted_active_extent,
+            )
+            add_integer_metric(
+                metrics,
+                "producerStorageExtent",
+                producer_extent,
+                predicted_storage_extent,
+            )
+            actual_producer_crop_digest.update(
+                struct.pack("<4i", *crop_origin, *active_extent)
+            )
+            predicted_producer_crop_digest.update(
+                struct.pack("<4i", *predicted_crop_origin, *predicted_active_extent)
+            )
             add_integer_metric(
                 metrics,
                 "producerAllocationFromActiveCrop",
@@ -1060,12 +1158,8 @@ def analyze(artifact_root: Path) -> JsonObject:
                     [observed_vertex[2], observed_vertex[3]],
                     [0.0, 1.0],
                 )
-                actual_main_digest.update(
-                    struct.pack("<6f", *observed_vertex[:6])
-                )
-                predicted_main_digest.update(
-                    struct.pack("<6f", *predicted_vertex[:6])
-                )
+                actual_main_digest.update(struct.pack("<6f", *observed_vertex[:6]))
+                predicted_main_digest.update(struct.pack("<6f", *predicted_vertex[:6]))
 
             predicted_shadow = expected_shadow_vertices(
                 record,
@@ -1096,9 +1190,7 @@ def analyze(artifact_root: Path) -> JsonObject:
                     [observed_vertex[2], observed_vertex[3]],
                     [0.0, 1.0],
                 )
-                actual_shadow_digest.update(
-                    struct.pack("<6f", *observed_vertex[:6])
-                )
+                actual_shadow_digest.update(struct.pack("<6f", *observed_vertex[:6]))
                 predicted_shadow_digest.update(
                     struct.pack("<6f", *predicted_vertex[:6])
                 )
@@ -1172,6 +1264,8 @@ def analyze(artifact_root: Path) -> JsonObject:
         raise ValueError("shadow geometry streams differ")
     if actual_uv_digest.digest() != predicted_uv_digest.digest():
         raise ValueError("background source-coordinate streams differ")
+    if actual_producer_crop_digest.digest() != predicted_producer_crop_digest.digest():
+        raise ValueError("producer crop streams differ")
     if foreground_filter_states != 248 or foreground_endpoint_states != 4:
         raise ValueError("foreground-filter branch counts differ")
 
@@ -1197,6 +1291,13 @@ def analyze(artifact_root: Path) -> JsonObject:
                 "authenticated variable-blur helper radius/mip/integer-bounds "
                 "replay composed with producer crop, copy-base offset, 64-pixel "
                 "allocation, and destination mip count"
+            ),
+            "producerCrop": (
+                "full requested circle at the independently constructed carrier "
+                "position, expanded by zero for clear or binary32(0.35*diameter) "
+                "for regular, clipped in window space, scaled by the predicted "
+                "material backdrop scale, then X-lower floor-plus-one and "
+                "Metal-Y-lower ceil with floor upper-exclusive edges"
             ),
             "mainGeometry": (
                 "independently constructed dynamic carrier and CASDFElementLayer "
@@ -1229,6 +1330,8 @@ def analyze(artifact_root: Path) -> JsonObject:
             "shadowPredicted": predicted_shadow_digest.hexdigest(),
             "sourceCoordinatesObserved": actual_uv_digest.hexdigest(),
             "sourceCoordinatesPredicted": predicted_uv_digest.hexdigest(),
+            "producerCropObserved": actual_producer_crop_digest.hexdigest(),
+            "producerCropPredicted": predicted_producer_crop_digest.hexdigest(),
         },
         "producerBranchInventory": {
             "fragmentFunctions": dict(sorted(producer_fragments.items())),
@@ -1250,7 +1353,6 @@ def analyze(artifact_root: Path) -> JsonObject:
             "constructionLawExact": False,
         },
         "remainingAlgorithmBoundaries": [
-            "independent regular dynamic producer crop production",
             "transition foreground and final-highlight production",
         ],
         "prospectiveUnseenGeometryTransferPassed": False,

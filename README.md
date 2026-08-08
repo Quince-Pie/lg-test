@@ -12383,6 +12383,31 @@ real states and is rejected. This closes current centered-circle dynamic
 layer-state construction and layer-state-to-main-mesh transfer; unseen geometry
 transfer remains explicitly false.
 
+The retained producer crop is now independently constructed from that same
+predicted carrier state; no captured crop, clamp, copy offset, mesh coordinate,
+or texture extent enters the prediction. Let `P=(Px,Py)` be the predicted
+carrier position, `D` the requested circle diameter, `W,H` the window extent,
+and `m=0` for clear or `m=binary32(0.35*D)` for regular. Apple forms the full
+requested-shape intervals, not the animated carrier extent:
+
+```text
+X = intersect([Px-m, Px+D+m], [0,W])
+Y = intersect([H-(Py+D)-m, H-Py+m], [0,H])
+```
+
+With the independently predicted material backdrop scale `s`, a lower edge at
+zero stays zero; otherwise the X lower edge is `floor(s*lower)+1` and the
+Metal-Y lower edge is `ceil(s*lower)`. Both upper-exclusive edges are
+`floor(s*upper)`. Their differences are the active producer extents, and each
+storage extent is independently rounded up to 64 pixels. This law matches
+504/504 crop-origin components, 504/504 active-extent components, and 504/504
+storage-extent components across all 252 retained clear/regular,
+light/dark, materialize/dematerialize states. The observed and predicted crop
+streams share SHA-256
+`14f306f5e8466534cf0b735333f0ed9e39f21d67d7b87dde534276b7bee00310`.
+It closes the retained centered-circle crop algorithm; prospective unseen
+geometry transfer remains a separate false gate.
+
 The glass source-coordinate operation order is now exact for every retained
 main and shadow vertex. For each axis, with binary32 vertex position `p`,
 binary32 backdrop scale `s`, integer producer crop origin `C`, signed integer
@@ -12421,18 +12446,20 @@ sixteen-vertex/twenty-four-index border mesh. This is retained evidence, not yet
 an independent final-highlight construction law.
 
 The reproducible gate is
-`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its thirteen
-unit discriminators cover material scale, dynamic-state construction and
-operation order, source-coordinate staging, main/shadow mesh association,
-complete matrix cardinality, and fail-closed envelope mutation.
+`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its seventeen
+unit discriminators cover material scale, full-shape producer crop construction,
+dynamic-state construction and operation order, source-coordinate staging,
+main/shadow mesh association, complete matrix cardinality, and fail-closed
+envelope mutation.
 The compact canonical result is
 `Analysis/transition_geometry_corpus_local_macos_26_6_1_result.json`, SHA-256
-`c84ebe2fc748e84ffc76a572b1f5dfab8c3f2a94fc9e597a9f7ffdcd21d9e7cd`.
+`32bd55346220a0b1f1d638dda1cde209a8ea32aeb8cbef2342ced8ab54c9f20e`.
 
 This is a hash-pinned retrospective corpus gate, not an unseen prospective
-geometry holdout and not formal Liquid Glass parity. Two concrete construction
-boundaries remain: independent regular dynamic producer crop production and
-transition foreground/final-highlight production.
+geometry holdout and not formal Liquid Glass parity. One concrete construction
+boundary remains: transition foreground/final-highlight production.
+The crop and dynamic-layer laws still require a preregistered unseen-geometry
+transfer before their domain can be widened.
 Physical Retina color/compositor transfer and a fresh production-Walle frame
 with zero unequal bytes remain final product proofs. No production shader or
 Walle `flake.nix` change is authorized by this result alone.

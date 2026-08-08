@@ -5,6 +5,7 @@
     "backgroundSourceCoordinates": "binary32(binary32(binary64(position)*binary64(scale) - cropOrigin - copyOffset) * binary32(1/allocationExtent))",
     "dynamicLayerState": "binary32 remaining/progress, centered interpolated scale, centered reciprocal sqrt((D+16)/D) pair, CoreGraphics fused multiply plus separate translation add, observed non-half nearest-integer carrier snap, and staged root-lower-minus-carrier-position subtraction",
     "mainGeometry": "independently constructed dynamic carrier and CASDFElementLayer state transformed to six vertices in Apple's binary64 grouping, then binary32",
+    "producerCrop": "full requested circle at the independently constructed carrier position, expanded by zero for clear or binary32(0.35*diameter) for regular, clipped in window space, scaled by the predicted material backdrop scale, then X-lower floor-plus-one and Metal-Y-lower ceil with floor upper-exclusive edges",
     "selectedRegion": "authenticated variable-blur helper radius/mip/integer-bounds replay composed with producer crop, copy-base offset, 64-pixel allocation, and destination mip count",
     "shadowGeometry": "captured public layer state plus material shadow margin transformed to a four-by-four grid; outer bounds round to binary32 before binary64 deltas from the unrounded inner bounds adjust binary32 SDF coordinates"
   },
@@ -187,7 +188,22 @@
       "exact": true,
       "mismatchedComponents": 0
     },
+    "producerActiveExtent": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
     "producerAllocationFromActiveCrop": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "producerCropOrigin": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "producerStorageExtent": {
       "componentCount": 504,
       "exact": true,
       "mismatchedComponents": 0
@@ -235,7 +251,6 @@
   "productionShaderChanged": false,
   "prospectiveUnseenGeometryTransferPassed": false,
   "remainingAlgorithmBoundaries": [
-    "independent regular dynamic producer crop production",
     "transition foreground and final-highlight production"
   ],
   "retainedTransitionForeground": {
@@ -256,10 +271,12 @@
   "streamSHA256": {
     "mainObserved": "94dca2d87b4c7e0615e31dfc9bcabdbdccd4dba25ded8c868469bbe8d76b9427",
     "mainPredicted": "94dca2d87b4c7e0615e31dfc9bcabdbdccd4dba25ded8c868469bbe8d76b9427",
+    "producerCropObserved": "14f306f5e8466534cf0b735333f0ed9e39f21d67d7b87dde534276b7bee00310",
+    "producerCropPredicted": "14f306f5e8466534cf0b735333f0ed9e39f21d67d7b87dde534276b7bee00310",
     "shadowObserved": "5f7d8c45a49f0fc2ba0c27a859477e092514b81061d7ae3a145075c63f2b620b",
     "shadowPredicted": "5f7d8c45a49f0fc2ba0c27a859477e092514b81061d7ae3a145075c63f2b620b",
     "sourceCoordinatesObserved": "dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0",
     "sourceCoordinatesPredicted": "dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0"
   },
-  "transitionGeometryCorpusLocalMacOS2661ResultSchemaVersion": 2
+  "transitionGeometryCorpusLocalMacOS2661ResultSchemaVersion": 3
 }

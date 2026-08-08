@@ -34,6 +34,73 @@ class BackdropScaleTests(unittest.TestCase):
             corpus.expected_backdrop_scale("approximate", 0.5)
 
 
+class ProducerCropTests(unittest.TestCase):
+    @staticmethod
+    def geometry(diameter: int) -> dict[str, object]:
+        return {
+            "shape": "circle",
+            "width": diameter,
+            "height": diameter,
+            "centerX": 512,
+            "centerY": 512,
+            "windowWidth": 1024,
+            "windowHeight": 1024,
+        }
+
+    def test_regular_materialize_crop_is_exact(self) -> None:
+        geometry = self.geometry(471)
+        remaining = float32(0.34375)
+        layer = corpus.expected_dynamic_layer_state(geometry, remaining)
+        crop = corpus.expected_producer_crop(
+            geometry,
+            material="regular",
+            carrier_position=layer["carrierPosition"],
+            backdrop_scale=corpus.expected_backdrop_scale("regular", remaining),
+        )
+        self.assertEqual(crop["allocationMargin"], 164.85000610351562)
+        self.assertEqual(crop["cropOrigin"], (198, 0))
+        self.assertEqual(crop["activeExtent"], (562, 562))
+        self.assertEqual(crop["storageExtent"], (576, 576))
+
+    def test_regular_dematerialize_uses_full_shape_margin(self) -> None:
+        geometry = self.geometry(480)
+        remaining = 0.9686403274536133
+        layer = corpus.expected_dynamic_layer_state(geometry, remaining)
+        crop = corpus.expected_producer_crop(
+            geometry,
+            material="regular",
+            carrier_position=layer["carrierPosition"],
+            backdrop_scale=corpus.expected_backdrop_scale("regular", remaining),
+        )
+        self.assertEqual(crop["allocationMargin"], 168.0)
+        self.assertEqual(crop["cropOrigin"], (31, 27))
+        self.assertEqual(crop["activeExtent"], (222, 222))
+        self.assertEqual(crop["storageExtent"], (256, 256))
+
+    def test_clear_does_not_inherit_regular_margin(self) -> None:
+        geometry = self.geometry(471)
+        remaining = float32(0.34375)
+        layer = corpus.expected_dynamic_layer_state(geometry, remaining)
+        crop = corpus.expected_producer_crop(
+            geometry,
+            material="clear",
+            carrier_position=layer["carrierPosition"],
+            backdrop_scale=corpus.expected_backdrop_scale("clear", remaining),
+        )
+        self.assertEqual(crop["allocationMargin"], 0.0)
+        self.assertNotEqual(crop["cropOrigin"], (198, 0))
+        self.assertNotEqual(crop["activeExtent"], (562, 562))
+
+    def test_unknown_material_fails_closed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "unsupported material"):
+            corpus.expected_producer_crop(
+                self.geometry(471),
+                material="approximate",
+                carrier_position=(431.0, 431.0),
+                backdrop_scale=0.75,
+            )
+
+
 class SourceCoordinateTests(unittest.TestCase):
     def test_current_clear_sample_is_bit_exact(self) -> None:
         result = corpus.source_coordinate(
@@ -49,8 +116,7 @@ class SourceCoordinateTests(unittest.TestCase):
         position = 276.70166015625
         scale = 0.983375072479248
         incorrect = float32(
-            float32(float32(position * scale) - 497 - -1)
-            * float32(1.0 / 448)
+            float32(float32(position * scale) - 497 - -1) * float32(1.0 / 448)
         )
         self.assertEqual(float32_bits(incorrect), 0xBEFFE24E)
         self.assertNotEqual(
@@ -95,9 +161,7 @@ class MainGeometryTests(unittest.TestCase):
         self.assertEqual(vertices[2][1], 279.65142822265625)
         self.assertEqual(vertices[0][4], -232.51162719726562)
         reassociated = float32(
-            294.83696746826172
-            + -15.511619567871094
-            + float32(465.0232391357422)
+            294.83696746826172 + -15.511619567871094 + float32(465.0232391357422)
         )
         self.assertEqual(reassociated, 744.3486328125)
         self.assertNotEqual(vertices[1][0], reassociated)
@@ -114,9 +178,7 @@ class DynamicLayerStateTests(unittest.TestCase):
     REMAINING = 0.9680185317993164
 
     def test_current_state_is_bit_exact(self) -> None:
-        state = corpus.expected_dynamic_layer_state(
-            self.GEOMETRY, self.REMAINING
-        )
+        state = corpus.expected_dynamic_layer_state(self.GEOMETRY, self.REMAINING)
         self.assertEqual(
             state["carrierBounds"],
             (0.0, 0.0, 441.4164505004883, 441.4164505004883),
@@ -135,9 +197,7 @@ class DynamicLayerStateTests(unittest.TestCase):
         )
 
     def test_reciprocal_sqrt_pair_cannot_be_algebraically_removed(self) -> None:
-        state = corpus.expected_dynamic_layer_state(
-            self.GEOMETRY, self.REMAINING
-        )
+        state = corpus.expected_dynamic_layer_state(self.GEOMETRY, self.REMAINING)
         width = float(self.GEOMETRY["width"])
         half = width / 2.0
         progress = float32(1.0 - float32(self.REMAINING))
@@ -147,11 +207,7 @@ class DynamicLayerStateTests(unittest.TestCase):
         lower = math.fma(scale, 0.0, 0.0) + translation
         upper = math.fma(scale, width, 0.0) + translation
         carrier_extent = width * self.REMAINING
-        root_translation = (
-            512.0
-            - half
-            + (round(carrier_extent) - carrier_extent) / 2.0
-        )
+        root_translation = 512.0 - half + (round(carrier_extent) - carrier_extent) / 2.0
         collapsed = (upper + root_translation) - (lower + root_translation)
         self.assertEqual(corpus.float64_bits(collapsed), 0x407C882FF0000000)
         self.assertNotEqual(
@@ -160,16 +216,10 @@ class DynamicLayerStateTests(unittest.TestCase):
         )
 
     def test_element_position_cannot_be_reassociated(self) -> None:
-        state = corpus.expected_dynamic_layer_state(
-            self.GEOMETRY, self.REMAINING
-        )
+        state = corpus.expected_dynamic_layer_state(self.GEOMETRY, self.REMAINING)
         carrier_extent = float(self.GEOMETRY["width"]) * self.REMAINING
-        reassociated = (
-            round(carrier_extent) - state["elementBounds"][2]
-        ) / 2.0
-        self.assertEqual(
-            corpus.float64_bits(reassociated), 0xC01F05FE00000020
-        )
+        reassociated = (round(carrier_extent) - state["elementBounds"][2]) / 2.0
+        self.assertEqual(corpus.float64_bits(reassociated), 0xC01F05FE00000020)
         self.assertNotEqual(
             corpus.float64_bits(reassociated),
             corpus.float64_bits(state["elementPosition"][0]),
