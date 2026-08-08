@@ -22,6 +22,7 @@ readonly validation_output="$output_directory/validation.json"
 readonly swift=/Library/Developer/CommandLineTools/usr/bin/swift
 readonly swiftc=/Library/Developer/CommandLineTools/usr/bin/swiftc
 readonly clang=/usr/bin/xcrun
+readonly macos_sdk=$(/usr/bin/xcrun --show-sdk-path)
 readonly nix=/nix/var/nix/profiles/default/bin/nix
 
 cd "$repository" || exit 1
@@ -108,6 +109,7 @@ if [[ "$clang_status" -ne 0 ]]; then
 fi
 
 "$swiftc" -O -parse-as-library \
+    -sdk "$macos_sdk" \
     -target "$(/usr/bin/uname -m)-apple-macosx26.0" \
     -import-objc-header Sources/GlassIntrospect/MatrixBridge.h \
     Sources/GlassIntrospect/HalfBlendProbe.swift \
