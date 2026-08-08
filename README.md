@@ -13319,3 +13319,92 @@ Until that prospective validator passes, the exact ledger does not change:
 This preregistration modified `lg-test` capture transport, analysis, tests,
 and this README. It did not modify Walle's protected production shader or
 `flake.nix`, and it does not claim parity before output exists.
+
+### Prospective small-clear `Tghn` pixel-influence closure
+
+The frozen local Retina run now answers both intervention questions. Native
+capture from commit `3da5acecb71351ddecc82bb4a9fd1a429c3e4d1d` exits zero on
+the physical M1 Max, active unlocked 3456-by-2234 Retina display at 2x,
+macOS 26.6.1 build 25G76. The source-built binary declares SDK 26.5, contains
+no Nix-store path, and uses no debugger or GitHub Actions. All complete
+captured-pass replays for branch-bearing samples match their original Apple
+targets byte for byte.
+
+The first validator correctly failed closed, but for a transport assumption
+rather than an image difference. Sample 2 contained no `Tghn` pass; the
+capture source returned `captured small-clear Tghn render pass unavailable`.
+Validator v1 demanded a successful replay before applying the already frozen
+rule that only a sample containing the exact pipeline could be eligible. It
+stopped at sample 2 before reading any candidate or reference raw bytes. The
+post-capture correction is recorded honestly: answer-bearing output was known
+when it was written. It changes only that ordering, accepts a no-branch sample
+as ineligible only with the exact fail-closed reason and no intervention
+trace, and applies the pinned v1 reconstruction and zero-difference rules to
+every branch-bearing sample. No capture was rerun and no selection,
+intervention, or tolerance changed.
+
+The independently recovered eligible samples are 14, 16, and 19, so sample 14
+is selected. Its Y high coordinate is the discriminating exact midpoint:
+
+```text
+raw binary64                 75.89907455444336
+raw bits                     4052f98a70000000
+Apple captured binary32      4297cc53  (75.8990707397461)
+ordinary ties-to-even        4297cc54  (75.89907836914062)
+reconstructed origin         (472,452)
+reconstructed extent         44 x 48
+```
+
+Replacing both duplicated Y words with `4297cc54` changes the active vertex
+stream from SHA-256
+`c666046cece9c203ad974a017ce33b8442041f1bb67b8e69e6e4101490b1daa1`
+to
+`2489b5a95a30e5d23119d403672701d755f07c1b8f6cff702fcfe3557d6de97c`.
+The zero-tail and finite-tail streams have SHA-256 values
+`630a5c1b1bd12f0fc68c9481446dddd29bbeefa3086d70d4b2f8fdeea11a6c57`
+and
+`b7b80f8f83d5f9db658cac7a7852e437389d7a050976cb79235b54456bd79a2b`.
+All three are different from the captured stream.
+
+Each candidate and the unmodified prefix reference are 1024-by-1024 BGRA8,
+4,194,304 bytes, with common SHA-256
+`bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8`.
+Across 12,582,912 independently read candidate bytes there are zero unequal
+bytes, zero unequal pixels, and maximum channel delta zero. The live Apple
+frame and captured pipelines were never modified. Therefore the unexplained
+exact-halfway choice and vertex bytes 40 through 47 are observationally
+pixel-irrelevant for this exact current-build `Tghn` pipeline. Walle does not
+need an invented table or an unproved midpoint policy for output parity.
+
+The timeline SHA-256 is
+`61c8ccb8835e145fd6207145edd12c4e9966857a87dcdae35c1341971f272e3b`.
+The compact result is
+`Analysis/small_clear_background_intervention_result.json`, SHA-256
+`50a9c78541d9953eda3e2d1ab51e7d84be9636df0b7fd5bc4910edab64d3ae18`.
+The transport correction and corrected validator have SHA-256 values
+`db5aa387e35a27d0bc6faba615e8b116c90817abed92b761c46e3d408e711219`
+and
+`1c46e0863791229c7b8c1094116b3dd1b025d679b28da8c03dde59535534576e`;
+its five tests have SHA-256
+`21a448a53b3ade925b39fbabaef5bb73848d9b51e7784a334736392933925650`.
+The complete local archive is
+`artifacts/local-small-clear-background-retina1.tar.gz`, 120,210,738 bytes,
+SHA-256
+`794101a946cb27b0ab97e4ada03963a2e6a4850590bff64ae25e9aaf02701974`.
+
+The exact ledger is now narrower:
+
+1. **Unknowns blocking gated Walle work: zero.** Integration may proceed now
+   behind immutable comparison gates.
+2. **`Tghn` construction items: one.** The midpoint, tail bytes, and physical
+   exact-pass replay are closed; only the independent 210-byte fragment
+   payload constructor remains before admitting this background branch.
+3. **Other Apple small-clear sub-boundaries: one.** `Tmua/A2Xghfc` still needs
+   producer/composition construction and pixels.
+4. **Product proofs: two.** Physical Retina transfer and a fresh
+   production-Walle zero-unequal-byte frame remain mandatory.
+
+This closure modified `lg-test` capture transport, validators, tests, result,
+and this README. It did not modify Walle's protected production shader or
+`flake.nix`, does not weaken a tolerance, and does not yet claim formal Liquid
+Glass parity.

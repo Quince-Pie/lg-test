@@ -1,0 +1,63 @@
+{
+  "authority": "current-build Tghn observational pixel irrelevance of the ordinary-ties-to-even midpoint alternative and bytes 40 through 47",
+  "candidateSampleIndices": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "captureDirectory": "local-small-clear-background-retina1",
+  "eligibleSampleIndices": [
+    14,
+    16,
+    19
+  ],
+  "formalLiquidGlassParity": false,
+  "ineligibleNoTghnSampleIndices": [
+    2
+  ],
+  "intervention": {
+    "comparedBytes": 12582912,
+    "differingHalfwayAxes": [
+      "y"
+    ],
+    "maximumChannelDelta": 0,
+    "referenceBytes": 4194304,
+    "referenceSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+    "sampleIndex": 14,
+    "unequalBytes": 0,
+    "unequalPixels": 0
+  },
+  "passed": true,
+  "preregistrationSHA256": "e649ad01476283caec2a1ec4884de2b5c41a9e3ca9060bf75f52a016f1da7581",
+  "selectedSampleIndex": 14,
+  "smallClearBackgroundValidationSchemaVersion": 2,
+  "timelineSHA256": "61c8ccb8835e145fd6207145edd12c4e9966857a87dcdae35c1341971f272e3b",
+  "transportCorrectionSHA256": "db5aa387e35a27d0bc6faba615e8b116c90817abed92b761c46e3d408e711219"
+}
