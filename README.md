@@ -12204,6 +12204,21 @@ Wayland-buffer bytes on the RX 9070 XT, with zero unequal pixels and maximum
 channel delta zero. This closes the standalone C, driver, EGL, and
 Wayland-window pixel boundary.
 
-It still does not establish the production `walle` process/layer-shell
-boundary, live-transition state production, or physical Retina transfer. No
-additional Apple capture was required for either Walle-side rendering step.
+The next boundary now passes inside the release Walle executable itself. An
+explicit diagnostic mode selects the admitted desktop-core context, creates
+Walle's normal `zwlr_layer_shell_v1` surface, and executes the same independent
+four-fixture matrix. Both its offscreen framebuffer and layer-shell back buffer
+match all 16,777,216/16,777,216 Apple bytes, with zero unequal pixels and
+maximum channel delta zero. Release/LTO and ASan/UBSan pass under GCC 15, and a
+Clang 21 build produces the same exact four frames.
+
+The protected ordinary wallpaper shader remains byte-identical. A proposed
+wholesale migration of that approximate shader from GLES3 to core OpenGL was
+rejected: 24 of 100 repeated core runs changed one regular-material channel by
+one code value, while 30 of 30 GLES runs were stable. Core is therefore selected
+only for the independently gated exact renderer.
+
+This closes canonical static Walle-process/layer-shell integration in the
+diagnostic mode. It does not establish ordinary live-transition state
+production or physical Retina transfer, so formal parity remains false. No
+additional Apple capture was required for these Walle-side rendering steps.
