@@ -8,6 +8,7 @@
     "producerCrop": "full requested circle at the independently constructed carrier position, expanded by zero for clear or binary32(0.35*diameter) for regular, clipped in window space, scaled by the predicted material backdrop scale, then X-lower floor-plus-one and Metal-Y-lower ceil with floor upper-exclusive edges",
     "selectedRegion": "authenticated variable-blur helper radius/mip/integer-bounds replay composed with producer crop, copy-base offset, 64-pixel allocation, and destination mip count",
     "shadowGeometry": "captured public layer state plus material shadow margin transformed to a four-by-four grid; outer bounds round to binary32 before binary64 deltas from the unrounded inner bounds adjust binary32 SDF coordinates",
+    "transitionFinalHighlight": "248-byte fragment prefix from the exact dynamic profile, BT.709 binary32/FMA color-matrix construction, fixed vibrant/key-fill words, and float32 radius round trip; expanded layer geometry selects a quad when the radius round trip equals half extent and a 4x4 border grid otherwise; source coordinates reuse the independently predicted shadow-grid coordinate stream except for the exact k=1 endpoint sentinel",
     "transitionForegroundInputs": "for binary32 remaining k and progress p=1-k: aberration amount -5*p, aberration angle (pi/2)*p, edge opacity end p, refraction height 16*p, refraction offset binary32(binary32(-3.3)*p), all other scalar inputs zero, null refraction angle, and source @0"
   },
   "independentFreshWalleZeroByteFramePassed": false,
@@ -179,6 +180,21 @@
       "exact": true,
       "mismatchedComponents": 0
     },
+    "finalHighlightActiveVertexComponents": {
+      "componentCount": 8352,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "finalHighlightFragmentPrefixBytes": {
+      "componentCount": 62496,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "finalHighlightIndices": {
+      "componentCount": 1566,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
     "mainHomogeneousComponents": {
       "componentCount": 3024,
       "exact": true,
@@ -240,6 +256,7 @@
       "mismatchedComponents": 0
     }
   },
+  "nextRequiredEvidence": "preregistered prospective unseen-geometry transfer of the combined dynamic layer, producer/crop/copy/mip, background mesh/coordinates, foreground inputs, and final-highlight construction",
   "physicalRetinaColorCompositorTransferPassed": false,
   "producerBranchInventory": {
     "destinationMipCounts": {
@@ -261,26 +278,44 @@
   },
   "productionShaderChanged": false,
   "prospectiveUnseenGeometryTransferPassed": false,
-  "remainingAlgorithmBoundaries": [
-    "transition final-highlight fragment payload and mesh production"
-  ],
+  "remainingAlgorithmBoundaries": [],
   "retainedTransitionForeground": {
+    "IrsdVertexTailIntervention": {
+      "attribute3Bytes32Through39AffectPixels": false,
+      "comparedOutputBytes": 8388608,
+      "result": "Analysis/final_highlight_vertex_tail_intervention_local_macos_26_6_1_result.json",
+      "resultSHA256": "e8cbf09127eef056a98b45c7d083f2b77eefa197cb572e29b323d9da27bd75cb",
+      "unequalOutputBytes": 0
+    },
+    "activeVertexComparedBytes": 33408,
+    "activeVertexObservedSHA256": "bf00b07c1b184639ecda7ae525807e4bd4200f2648b9a47ea79d7a9ffd65284f",
+    "activeVertexPredictedSHA256": "bf00b07c1b184639ecda7ae525807e4bd4200f2648b9a47ea79d7a9ffd65284f",
+    "captured48ByteStrideVertexStreamSHA256": "27d614daa906439cb366b60138664c8f284c3b2240d018f11ec5ef439b74e1ed",
     "endpointWithoutFilterStateCount": 4,
-    "finalHighlightConstructionLawExact": false,
+    "finalHighlightConstructionLawExact": true,
     "finalHighlightStateCount": 252,
     "finalHighlightTopologies": {
       "24-indices/16-vertices": 3,
       "6-indices/4-vertices": 249
     },
-    "fragment248BytePrefixStreamSHA256": "e4197dc49a6d1c3055d3f05888d6442f0eb377ed63aba57b68f840883b524ccd",
-    "indexStreamSHA256": "cf2a446a6394d8574a821e1ecfa79b66c82dcad7349bba966e4e13fb5f14aa74",
+    "fragment248BytePrefixComparedBytes": 62496,
+    "fragment248BytePrefixObservedSHA256": "e4197dc49a6d1c3055d3f05888d6442f0eb377ed63aba57b68f840883b524ccd",
+    "fragment248BytePrefixPredictedSHA256": "e4197dc49a6d1c3055d3f05888d6442f0eb377ed63aba57b68f840883b524ccd",
+    "indexComparedComponents": 1566,
+    "indexObservedSHA256": "cf2a446a6394d8574a821e1ecfa79b66c82dcad7349bba966e4e13fb5f14aa74",
+    "indexPredictedSHA256": "cf2a446a6394d8574a821e1ecfa79b66c82dcad7349bba966e4e13fb5f14aa74",
     "inputFilterStateCount": 248,
-    "publicFilterInputConstructionExact": true,
-    "vertexStreamSHA256": "27d614daa906439cb366b60138664c8f284c3b2240d018f11ec5ef439b74e1ed"
+    "publicFilterInputConstructionExact": true
   },
   "stateCount": 252,
   "status": "passed",
   "streamSHA256": {
+    "finalHighlightActiveVerticesObserved": "bf00b07c1b184639ecda7ae525807e4bd4200f2648b9a47ea79d7a9ffd65284f",
+    "finalHighlightActiveVerticesPredicted": "bf00b07c1b184639ecda7ae525807e4bd4200f2648b9a47ea79d7a9ffd65284f",
+    "finalHighlightFragmentPrefixObserved": "e4197dc49a6d1c3055d3f05888d6442f0eb377ed63aba57b68f840883b524ccd",
+    "finalHighlightFragmentPrefixPredicted": "e4197dc49a6d1c3055d3f05888d6442f0eb377ed63aba57b68f840883b524ccd",
+    "finalHighlightIndicesObserved": "cf2a446a6394d8574a821e1ecfa79b66c82dcad7349bba966e4e13fb5f14aa74",
+    "finalHighlightIndicesPredicted": "cf2a446a6394d8574a821e1ecfa79b66c82dcad7349bba966e4e13fb5f14aa74",
     "foregroundInputsObserved": "a3c33b03f3d57b46221ff5270b13a7c23883e0b1a3ff5c6fe70e6c54026bd31e",
     "foregroundInputsPredicted": "a3c33b03f3d57b46221ff5270b13a7c23883e0b1a3ff5c6fe70e6c54026bd31e",
     "mainObserved": "94dca2d87b4c7e0615e31dfc9bcabdbdccd4dba25ded8c868469bbe8d76b9427",
@@ -292,5 +327,5 @@
     "sourceCoordinatesObserved": "dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0",
     "sourceCoordinatesPredicted": "dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0"
   },
-  "transitionGeometryCorpusLocalMacOS2661ResultSchemaVersion": 4
+  "transitionGeometryCorpusLocalMacOS2661ResultSchemaVersion": 5
 }

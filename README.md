@@ -12459,34 +12459,103 @@ null/string components exactly. Its observed and predicted streams share
 SHA-256
 `a3c33b03f3d57b46221ff5270b13a7c23883e0b1a3ff5c6fe70e6c54026bd31e`.
 The four `k=1` materialize endpoints independently take the exact absent-filter
-branch. This closes public foreground-filter inputs, not the downstream
-final-highlight fragment payload or mesh constructor.
+branch. This closes public foreground-filter inputs.
 
 All 252 final-highlight draws retain a complete fragment payload prefix, vertex
 stream, and index stream. The inventory exposes a parity-critical branch that
 the earlier summary missed: 249 states use the ordinary four-vertex/six-index
 quad, while dematerialize regular/dark samples 28 through 30 use a
-sixteen-vertex/twenty-four-index border mesh. This is retained evidence, not yet
-an independent final-highlight construction law.
+sixteen-vertex/twenty-four-index border mesh.
+
+The final-highlight constructor is now independently closed over this corpus.
+Let `h` be binary32 half element extent. The fragment record stores `h` at
+offset `0x28` and constructs the radius at offset zero as:
+
+```text
+r = binary32(binary32(h + 9) - 9)
+```
+
+`r == h` selects the ordinary circle quad. `r != h` selects the four-by-four
+border grid and, on the current build, the additional `Irsd` border draw. This
+single binary32 round-trip test predicts exactly 249 quad states and the three
+border states; no sample or direction allowlist enters the prediction. Outer
+positions are formed by inserting the nine-point expansion into the original
+binary64 layer expressions before their binary32 stores. Reassociating the
+expansion after the already rounded main-mesh edge is one ULP wrong in real
+states and is rejected.
+
+The changing 64-byte fragment block is not an interpolated opaque constant. It
+is the third row of the independently constructed face matrix, all three rows
+of the bleed matrix, all three rows of the shadow matrix, the material shadow
+contribution, and the exactly rounded combined shadow-face opacity. The same
+BT.709 binary32/FMA matrix construction used by the independent static profile
+reproduces it from the already exact dynamic inputs. The appearance-specific
+vibrant matrix and key/fill record are fixed binary16 words. The final mesh's
+source coordinates reuse the independently predicted background shadow-grid
+coordinate stream; the four `k=1` endpoints take their exact sentinel branch.
+
+Across all 252 states, observed and independently predicted streams now match:
+
+```text
+fragment prefixes  62,496 / 62,496 bytes
+active vertices     33,408 / 33,408 bytes
+indices               1,566 / 1,566 uint16 components
+
+fragment SHA-256  e4197dc49a6d1c3055d3f05888d6442f0eb377ed63aba57b68f840883b524ccd
+vertex SHA-256    bf00b07c1b184639ecda7ae525807e4bd4200f2648b9a47ea79d7a9ffd65284f
+index SHA-256     cf2a446a6394d8574a821e1ecfa79b66c82dcad7349bba966e4e13fb5f14aa74
+```
+
+The current-build `Irsd` tail question is closed separately by a prospective
+pixel-influence intervention on the physical M1 Max. Candidate samples 24
+through 31 were frozen before replay; sample 24 was the first topology-eligible
+state. The live vertex buffer was cloned twice, replacing attribute 3 bytes
+32 through 39 with zero `half4` and with asymmetric finite
+`half4(1, 0.5, -1, 2)`. Both replacements changed the input stream. Both
+produced the same complete 1024-by-1024 BGRA8 output as the unmodified
+reference: 8,388,608 compared bytes, zero unequal bytes, zero unequal pixels,
+and maximum channel delta zero. Bytes 40 through 47 are outside every declared
+attribute and remain stride padding. Walle therefore does not need to reproduce
+the generated `Irsd` attribute-3 contents.
+
+The authoritative intervention used source commit `c799f00`, selected sample
+24, and Apple M1 Max on macOS 26.6.1 build 25G76 with the built-in Retina
+display at 2x. Its compact result is
+`Analysis/final_highlight_vertex_tail_intervention_local_macos_26_6_1_result.json`,
+SHA-256
+`e8cbf09127eef056a98b45c7d083f2b77eefa197cb572e29b323d9da27bd75cb`.
+The complete 160 MiB archive is retained locally as
+`artifacts/local-final-highlight-vertex-tail-c799f00-v1.tar.gz`, SHA-256
+`d3c1c51a76c06f3fe722c95b25ba9c511e7f86c763972c4d180ecace98ff68f0`.
+Two opened diagnostic attempts are recorded but excluded: schema 3 lacked the
+foreground portal paths required by its validator, and schema 4 incorrectly
+required carrier bounds that Core Animation normalizes to 480 by 480.
+
+The source-built probe initially linked as SDK 26.0. The admitted transport
+rewrote only that declared load-command value to SDK 26.5 with `vtool`, then
+restored the ad-hoc signature before execution. This is capture-transport
+evidence, not renderer arithmetic evidence. Runs with `MTL_CAPTURE_ENABLED`
+selected the legacy `A2Xghfc` family instead of the current `Iscd`/`Irsd`
+branch and are excluded from authority.
 
 The reproducible gate is
-`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its twenty
+`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its 24
 unit discriminators cover material scale, full-shape producer crop construction,
 dynamic-state construction and operation order, source-coordinate staging,
 main/shadow mesh association, public foreground construction and its binary32
-rounding boundary, complete matrix cardinality, and fail-closed envelope
-mutation.
+rounding boundary, final-highlight payload/matrix/radius/topology/endpoint
+branches, complete matrix cardinality, and fail-closed envelope mutation.
 The compact canonical result is
 `Analysis/transition_geometry_corpus_local_macos_26_6_1_result.json`, SHA-256
-`468eea5cd66abf8e08b8ac3e4059da66ab474f38a2864926c89a18cc0b48b6b8`.
+`f3f71c802ea3973c12740b58de43aa693596e355b5765717bb407b8d4ee7386e`.
 
 This is a hash-pinned retrospective corpus gate, not an unseen prospective
-geometry holdout and not formal Liquid Glass parity. One concrete construction
-boundary remains: transition final-highlight fragment-payload and mesh
-production. Public transition-foreground inputs are no longer an algorithm
-unknown.
-The crop and dynamic-layer laws still require a preregistered unseen-geometry
-transfer before their domain can be widened.
+geometry holdout and not formal Liquid Glass parity. Within the retained
+centered-circle, clear/regular, light/dark, materialize/dematerialize domain,
+the remaining Apple-renderer algorithm-boundary list is now empty. One
+pre-Walle evidence gate remains: a preregistered prospective unseen-geometry
+transfer of the combined dynamic layer, producer/crop/copy/mip, background
+mesh/coordinates, foreground inputs, and final-highlight construction.
 Physical Retina color/compositor transfer and a fresh production-Walle frame
 with zero unequal bytes remain final product proofs. No production shader or
 Walle `flake.nix` change is authorized by this result alone.

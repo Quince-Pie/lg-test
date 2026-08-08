@@ -2,6 +2,7 @@
 """Tests for the retained current-build transition geometry corpus gate."""
 
 import copy
+import hashlib
 import math
 import struct
 import unittest
@@ -302,6 +303,99 @@ class ShadowGeometryTests(unittest.TestCase):
         self.assertEqual(naive_bottom, 293.42822265625)
         self.assertNotEqual(vertices[3][4], naive_right)
         self.assertNotEqual(vertices[12][5], naive_bottom)
+
+
+class FinalHighlightConstructionTests(unittest.TestCase):
+    @staticmethod
+    def geometry(diameter: int) -> dict[str, object]:
+        return {
+            "shape": "circle",
+            "width": diameter,
+            "height": diameter,
+            "centerX": 512,
+            "centerY": 512,
+            "windowWidth": 1024,
+            "windowHeight": 1024,
+        }
+
+    @staticmethod
+    def vertex_stream(construction: corpus.FinalHighlightConstruction) -> bytes:
+        return b"".join(
+            struct.pack("<8f", *vertex) for vertex in construction["vertices"]
+        )
+
+    @staticmethod
+    def index_stream(construction: corpus.FinalHighlightConstruction) -> bytes:
+        indices = construction["indices"]
+        return struct.pack(f"<{len(indices)}H", *indices)
+
+    def test_quad_payload_geometry_and_topology_are_exact(self) -> None:
+        construction = corpus.expected_final_highlight(
+            self.geometry(471),
+            material="regular",
+            appearance="light",
+            remaining=0.031958580017089844,
+        )
+        self.assertEqual(construction["topology"], "exact-circle-quad")
+        self.assertEqual(len(construction["vertices"]), 4)
+        self.assertEqual(
+            hashlib.sha256(construction["fragmentPrefix"]).hexdigest(),
+            "07c48a0da22a9248ce30f22d66b748254302a86e56275942311ae56e8e7a1567",
+        )
+        self.assertEqual(
+            hashlib.sha256(self.vertex_stream(construction)).hexdigest(),
+            "efd1cdb9aa6ae0e27c0e7ec11dcf410c7da1597bf8438f82467e2603918edb0b",
+        )
+        self.assertEqual(
+            hashlib.sha256(self.index_stream(construction)).hexdigest(),
+            "cdd30f0b81cab4dfa7b9612bc1866099b922c77e381302d6efd3f70ca0a9d0de",
+        )
+
+    def test_radius_round_trip_selects_exact_border_grid(self) -> None:
+        construction = corpus.expected_final_highlight(
+            self.geometry(480),
+            material="regular",
+            appearance="dark",
+            remaining=0.12433815002441406,
+        )
+        radius, _, _, _ = struct.unpack_from("<4f", construction["fragmentPrefix"], 0)
+        half_extent = struct.unpack_from("<f", construction["fragmentPrefix"], 0x28)[0]
+        self.assertNotEqual(float32_bits(radius), float32_bits(half_extent))
+        self.assertEqual(construction["topology"], "round-trip-radius-border-grid")
+        self.assertEqual(len(construction["vertices"]), 16)
+        self.assertEqual(
+            hashlib.sha256(construction["fragmentPrefix"]).hexdigest(),
+            "9a29a89f0f7b8b085d57986e2ffcf8344b3334d0214704675cfa171c235a2eef",
+        )
+        self.assertEqual(
+            hashlib.sha256(self.vertex_stream(construction)).hexdigest(),
+            "c38a124350088575ae654cd60c3904bf77d63c3af9e5ae62caab6e5aa5307c56",
+        )
+        self.assertEqual(
+            hashlib.sha256(self.index_stream(construction)).hexdigest(),
+            "3fdf4e60209c103fbcf42515c4f2bda4613dae912e198abe0c58097a0106e572",
+        )
+
+    def test_static_endpoint_uses_exact_source_coordinate_sentinel(self) -> None:
+        construction = corpus.expected_final_highlight(
+            self.geometry(455),
+            material="clear",
+            appearance="light",
+            remaining=1.0,
+        )
+        self.assertEqual(
+            [vertex[6:] for vertex in construction["vertices"]],
+            [(-1.5, -1.5), (0.0, -1.5), (0.0, -1.5), (1.5, -1.5)],
+        )
+
+    def test_unknown_profile_fails_closed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "unsupported material"):
+            corpus.expected_final_highlight(
+                self.geometry(455),
+                material="approximate",
+                appearance="light",
+                remaining=0.375,
+            )
 
 
 class EnvelopeTests(unittest.TestCase):

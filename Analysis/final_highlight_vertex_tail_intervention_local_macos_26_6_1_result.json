@@ -1,0 +1,103 @@
+{
+  "finalHighlightVertexTailInterventionResultSchemaVersion": 1,
+  "classification": "prospective current-build observational irrelevance of Irsd vertex attribute-3 bytes 32 through 39",
+  "formalLiquidGlassParity": false,
+  "capture": {
+    "commit": "c799f0001919838cb33aa4946160656904ec199c",
+    "directory": "local-final-highlight-vertex-tail-c799f00-v1",
+    "captureExitStatus": 0,
+    "validationExitStatus": 0,
+    "sourceBuiltProbe": true,
+    "debuggerUsed": false,
+    "githubActionsUsed": false,
+    "nativeCaptureContainsNixStorePath": false,
+    "declaredLinkTimeSDK": "26.5",
+    "binarySHA256": "fca0d0d40e1c48a69981968b132c61ce20abb7189e2acaa42eed79b8bd4253c8"
+  },
+  "host": {
+    "architecture": "arm64",
+    "metalDevice": "Apple M1 Max",
+    "operatingSystem": "macOS 26.6.1",
+    "operatingSystemBuild": "25G76",
+    "display": "built-in Retina 3456x2234 physical, 1728x1117 points, 2x"
+  },
+  "integrity": {
+    "preregistrationSHA256": "dee48580c727179152fd518c79db3275e509c3d2dd522f8ca4024cba313ef92f",
+    "timelineSHA256": "23d7f27736e37491e67c3ef7a6b69b18e4711e48d217f7283ca1c9aa8fd50501",
+    "validationSHA256": "82572485e73bc1cccc19dd677f02a5469480f68228c81a2d95e6cd75ffdf45c3",
+    "preflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+    "captureContextSHA256": "a90ea234b863cd96aff31f16b68884a265154a1400576b821d87bf096ea65c5c",
+    "archive": "artifacts/local-final-highlight-vertex-tail-c799f00-v1.tar.gz",
+    "archiveSHA256": "d3c1c51a76c06f3fe722c95b25ba9c511e7f86c763972c4d180ecace98ff68f0"
+  },
+  "selection": {
+    "candidateSampleIndices": [24, 25, 26, 27, 28, 29, 30, 31],
+    "candidateSampleCount": 8,
+    "rule": "first topology-eligible candidate in ascending sample order before either intervention replay is encoded",
+    "selectedSampleIndex": 24,
+    "pipeline": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd",
+    "indexCount": 24,
+    "vertexCount": 16,
+    "stride": 48,
+    "attributeIndex": 3,
+    "attributeOffset": 32,
+    "attributeFormat": "half4"
+  },
+  "geometryTransport": {
+    "validated": true,
+    "sourceTimelineSHA256": "17a69db193892e7e30c6069e88a63a4a3badfd23e93916d91b10b126a67c8e7c",
+    "sourceSampleIndex": 28,
+    "elementPath": [1, 0, 1, 0, 0, 0, 0],
+    "elementPositionFloat32Bits": ["c359020b", "c359020b"],
+    "extentFloat32Bits": "43f7020b",
+    "radiusFloat32Bits": "4377020b",
+    "carrierOuterBoundsFloat32Bits": ["00000000", "00000000", "43f00000", "43f00000"],
+    "stableInLivePreAndPostRenderReadback": true
+  },
+  "intervention": {
+    "liveAppleFrameMutated": false,
+    "capturedApplePipelinesModified": false,
+    "originalAttributeStreamSHA256": "258f5e89474d592e2685d46de0a8dbe057374d6e1abf93d9888bd170531d2194",
+    "patterns": {
+      "zero-half4": {
+        "half4LittleEndianHex": "0000000000000000",
+        "attributeStreamSHA256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca"
+      },
+      "finite-asymmetric-half4": {
+        "half4LittleEndianHex": "003c003800bc0040",
+        "attributeStreamSHA256": "a7c902d263cc28f81deb8d34e4640954f3a607ba4b3f155c4583a173138c09e4"
+      }
+    },
+    "eachPatternChangedTheCapturedInput": true
+  },
+  "comparison": {
+    "referenceOutputSHA256": "f71d47dcabe47c9e4acc619d6c38ba6b0280bbdebc4523177a5be2708ca46ff3",
+    "zeroHalf4OutputSHA256": "f71d47dcabe47c9e4acc619d6c38ba6b0280bbdebc4523177a5be2708ca46ff3",
+    "finiteAsymmetricHalf4OutputSHA256": "f71d47dcabe47c9e4acc619d6c38ba6b0280bbdebc4523177a5be2708ca46ff3",
+    "interventionCount": 2,
+    "comparedBytesPerIntervention": 4194304,
+    "comparedBytesTotal": 8388608,
+    "unequalBytes": 0,
+    "unequalPixels": 0,
+    "maximumChannelDelta": 0,
+    "exact": true
+  },
+  "openedDiagnosticsExcludedFromAuthority": [
+    {
+      "commit": "1c916b6",
+      "reason": "schema-3 validator required absent foreground portal paths"
+    },
+    {
+      "commit": "faab923",
+      "reason": "schema-4 validator incorrectly required transported outer bounds that Core Animation normalizes to the static carrier"
+    }
+  ],
+  "conclusion": {
+    "generatedIrsdAttribute3Bytes32Through39AffectPixels": false,
+    "currentBuildIrsdTailConstructionRequiredForWalle": false,
+    "unseenGeometryTransferEstablished": false,
+    "physicalRetinaCompositorParityEstablished": false,
+    "productionWalleZeroByteFrameEstablished": false,
+    "liquidGlassParityEstablished": false
+  }
+}

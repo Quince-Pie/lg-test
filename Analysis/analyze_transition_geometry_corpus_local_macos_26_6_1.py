@@ -4,6 +4,8 @@
 import argparse
 from collections import Counter
 from collections.abc import Mapping, Sequence
+import ctypes
+from dataclasses import dataclass
 import hashlib
 import json
 import math
@@ -11,10 +13,11 @@ from pathlib import Path
 import struct
 from typing import Any, TypedDict
 
+import analyze_transition_uniform_profile_calibration as transition_profile
 import validate_variable_blur_selected_region_origin as selected
 
 
-RESULT_SCHEMA_VERSION = 4
+RESULT_SCHEMA_VERSION = 5
 TIMELINE_SCHEMA_VERSION = 5
 DYNAMIC_UNIFORM_SCHEMA_VERSION = 9
 EXPECTED_CAPTURE_METHOD = (
@@ -98,6 +101,83 @@ SHADOW_INDICES = (
 )
 FINAL_QUAD_INDICES = (0, 1, 2, 2, 3, 0)
 FINAL_BORDER_INDICES = SHADOW_INDICES[:24]
+FINAL_HIGHLIGHT_EXPANSION = 9.0
+FINAL_HIGHLIGHT_VIBRANT_WORDS = {
+    "light": (
+        0x3CCF,
+        0xB4C3,
+        0xB4C3,
+        0x0000,
+        0xBC01,
+        0x37FB,
+        0xBC01,
+        0x0000,
+        0xAE77,
+        0xAE78,
+        0x3D98,
+        0x0000,
+        0x0000,
+        0x0000,
+        0x0000,
+        0x3C00,
+        0x3B33,
+        0x3B33,
+        0x3B33,
+        0x0000,
+        0x3C00,
+        0x0000,
+        0x0000,
+        0x0000,
+    ),
+    "dark": (
+        0x414C,
+        0xB59C,
+        0xB59D,
+        0x0000,
+        0xBCB9,
+        0x3F48,
+        0xBCB8,
+        0x0000,
+        0xAF9C,
+        0xAFA1,
+        0x41C3,
+        0x0000,
+        0x0000,
+        0x0000,
+        0x0000,
+        0x3C00,
+        0x30CD,
+        0x30CD,
+        0x30CD,
+        0x0000,
+        0x3C00,
+        0x0000,
+        0x0000,
+        0x0000,
+    ),
+}
+FINAL_HIGHLIGHT_KEY_FILL_WORDS = (
+    0x3C00,
+    0xBB84,
+    0x0000,
+    0xB9A8,
+    0xB9A8,
+    0x3C00,
+    0xBB84,
+    0x0000,
+    0x39A8,
+    0x39A8,
+    0x399A,
+    0x0000,
+    0x3C00,
+    0x3C00,
+    0x3C00,
+    0x3C00,
+    0x3C00,
+    0x3C00,
+    0x3C00,
+    0x3C00,
+)
 FOREGROUND_NUMERIC_INPUT_NAMES = (
     "inputAberrationAmount",
     "inputAberrationAngle",
@@ -129,6 +209,21 @@ class ProducerCrop(TypedDict):
     cropOrigin: tuple[int, int]
     activeExtent: tuple[int, int]
     storageExtent: tuple[int, int]
+
+
+class FinalHighlightConstruction(TypedDict):
+    fragmentPrefix: bytes
+    vertices: list[Vertex]
+    indices: tuple[int, ...]
+    topology: str
+
+
+@dataclass(frozen=True, slots=True)
+class MatrixAttributes:
+    white: float
+    black: float
+    saturation: float
+    fill: tuple[float, float, float, float]
 
 
 EXPECTED_INPUTS: dict[str, dict[str, Any]] = {
@@ -242,6 +337,137 @@ def float32_bits(value: float) -> int:
 
 def float64_bits(value: float) -> int:
     return struct.unpack("<Q", struct.pack("<d", value))[0]
+
+
+_FMAF = ctypes.CDLL(None).fmaf
+_FMAF.argtypes = (ctypes.c_float, ctypes.c_float, ctypes.c_float)
+_FMAF.restype = ctypes.c_float
+
+
+def fma32(left: float, right: float, addend: float) -> float:
+    return float(_FMAF(left, right, addend))
+
+
+def multiply32(left: float, right: float) -> float:
+    return float32(float32(left) * float32(right))
+
+
+def add32(left: float, right: float) -> float:
+    return float32(float32(left) + float32(right))
+
+
+def subtract32(left: float, right: float) -> float:
+    return float32(float32(left) - float32(right))
+
+
+RGB_TO_YCBCR = tuple(
+    map(
+        float32,
+        (
+            0.2126,
+            0.7152,
+            0.0722,
+            0.0,
+            0.0,
+            -0.1146,
+            -0.3854,
+            0.5,
+            0.0,
+            0.5,
+            0.5,
+            -0.4542,
+            -0.0458,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+        ),
+    )
+)
+YCBCR_TO_RGB = tuple(
+    map(
+        float32,
+        (
+            1.0,
+            0.0,
+            1.5748,
+            0.0,
+            -0.7874,
+            1.0,
+            -0.187324,
+            -0.468124,
+            0.0,
+            0.327724,
+            1.0,
+            1.8556,
+            0.0,
+            0.0,
+            -0.9278,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+        ),
+    )
+)
+
+
+def multiply_color_matrices(
+    left: Sequence[float], right: Sequence[float]
+) -> list[float]:
+    if len(left) != 20 or len(right) != 20:
+        raise ValueError("color matrix component count differs")
+    result = [0.0] * 20
+    for row in range(4):
+        row_offset = row * 5
+        for column in range(4):
+            accumulator = multiply32(left[row_offset + 3], right[15 + column])
+            for index in range(2, -1, -1):
+                accumulator = fma32(
+                    left[row_offset + index],
+                    right[index * 5 + column],
+                    accumulator,
+                )
+            result[row_offset + column] = accumulator
+
+        accumulator = multiply32(left[row_offset + 3], right[19])
+        for index in range(2, -1, -1):
+            accumulator = fma32(
+                left[row_offset + index],
+                right[index * 5 + 4],
+                accumulator,
+            )
+        result[row_offset + 4] = add32(accumulator, left[row_offset + 4])
+    return result
+
+
+def color_matrix(attributes: MatrixAttributes) -> tuple[float, ...]:
+    luminance = [0.0] * 20
+    luminance[0] = subtract32(attributes.white, attributes.black)
+    luminance[4] = float32(attributes.black)
+    luminance[6] = luminance[12] = luminance[18] = 1.0
+
+    saturation = [0.0] * 20
+    saturation[0] = saturation[18] = 1.0
+    saturation[6] = saturation[12] = float32(attributes.saturation)
+    offset = float32(0.5 - saturation[6] * 0.5)
+    saturation[9] = saturation[14] = offset
+
+    matrix = multiply_color_matrices(luminance, RGB_TO_YCBCR)
+    matrix = multiply_color_matrices(saturation, matrix)
+    matrix = multiply_color_matrices(YCBCR_TO_RGB, matrix)
+
+    scale = subtract32(1.0, attributes.fill[3])
+    matrix = [multiply32(value, scale) for value in matrix]
+    for row, component in enumerate(attributes.fill):
+        matrix[row * 5 + 4] = add32(matrix[row * 5 + 4], component)
+    return tuple(
+        matrix[row * 5 + column] for row in range(3) for column in (0, 1, 2, 4)
+    )
 
 
 def sha256_file(path: Path) -> str:
@@ -552,30 +778,27 @@ def expected_main_vertices(record: Mapping[str, Any]) -> list[Vertex]:
     ]
 
 
-def expected_shadow_vertices(
-    record: Mapping[str, Any],
+def shadow_vertices_from_layer_geometry(
     *,
+    root_bounds: Sequence[float],
+    carrier_position: Sequence[float],
+    element_position: Sequence[float],
+    element_bounds: Sequence[float],
     material: str,
+    remaining: float,
 ) -> list[Vertex]:
-    states = layer_states(record)
-    root = mapping(states.get(()), "root layer state")
-    carrier = mapping(states.get((1,)), "carrier layer state")
-    element = mapping(
-        states.get((1, 0, 1, 0, 0, 0, 0)),
-        "background SDF element layer state",
-    )
-    root_bounds = vector(root.get("bounds"), "root bounds", 4)
-    carrier_position = vector(carrier.get("position"), "carrier position", 2)
-    element_position = vector(element.get("position"), "element position", 2)
-    element_bounds = vector(element.get("bounds"), "element bounds", 4)
     if (
-        root_bounds[0:2] != (0.0, 0.0)
+        len(root_bounds) != 4
+        or len(carrier_position) != 2
+        or len(element_position) != 2
+        or len(element_bounds) != 4
+        or root_bounds[0:2] != (0.0, 0.0)
         or element_bounds[0:2] != (0.0, 0.0)
         or element_bounds[2] <= 0.0
         or element_bounds[2] != element_bounds[3]
     ):
         raise ValueError("shadow geometry bounds differ")
-    remaining = finite(record.get("remaining"), "remaining")
+    remaining = finite(remaining, "remaining")
     if material == "clear":
         margin = 0.0
     elif material == "regular":
@@ -634,6 +857,299 @@ def expected_shadow_vertices(
         for position_y, coordinate_y in zip(positions_y, coordinates_y, strict=True)
         for position_x, coordinate_x in zip(positions_x, coordinates_x, strict=True)
     ]
+
+
+def expected_shadow_vertices(
+    record: Mapping[str, Any],
+    *,
+    material: str,
+) -> list[Vertex]:
+    states = layer_states(record)
+    root = mapping(states.get(()), "root layer state")
+    carrier = mapping(states.get((1,)), "carrier layer state")
+    element = mapping(
+        states.get((1, 0, 1, 0, 0, 0, 0)),
+        "background SDF element layer state",
+    )
+    return shadow_vertices_from_layer_geometry(
+        root_bounds=vector(root.get("bounds"), "root bounds", 4),
+        carrier_position=vector(carrier.get("position"), "carrier position", 2),
+        element_position=vector(element.get("position"), "element position", 2),
+        element_bounds=vector(element.get("bounds"), "element bounds", 4),
+        material=material,
+        remaining=finite(record.get("remaining"), "remaining"),
+    )
+
+
+def final_highlight_fragment_prefix(
+    *,
+    material: str,
+    appearance: str,
+    diameter: int,
+    remaining: float,
+    element_extent: float,
+    profile_fields: Mapping[str, float],
+) -> bytes:
+    try:
+        vibrant_words = FINAL_HIGHLIGHT_VIBRANT_WORDS[appearance]
+    except KeyError as error:
+        raise ValueError(f"unsupported appearance: {appearance!r}") from error
+    if material not in {"clear", "regular"}:
+        raise ValueError(f"unsupported material: {material!r}")
+    if diameter <= 0 or element_extent <= 0.0:
+        raise ValueError("final-highlight geometry must be positive")
+
+    half_extent = float32(element_extent / 2.0)
+    radius = float32(float32(half_extent + FINAL_HIGHLIGHT_EXPANSION) - 9.0)
+    face_alpha = (
+        transition_profile.float32_mix(0.0, 0.4, remaining)
+        if material == "regular"
+        else 0.0
+    )
+    if material == "regular" and appearance == "light":
+        face_fill = (face_alpha,) * 4
+    else:
+        face_fill = (0.0, 0.0, 0.0, face_alpha)
+    if material == "regular" and appearance == "dark":
+        shadow_fill_alpha = 0.0
+    else:
+        shadow_fill_alpha = transition_profile.float32_mix(
+            0.0,
+            0.12 if material == "regular" else 0.1,
+            remaining,
+        )
+    shadow_face_opacity = transition_profile.float32_add(
+        shadow_fill_alpha,
+        profile_fields["inputSDRShadowOpacity"],
+    )
+
+    face_matrix = color_matrix(
+        MatrixAttributes(
+            white=profile_fields["inputFaceColorMatrixWhite"],
+            black=profile_fields["inputFaceColorMatrixBlack"],
+            saturation=profile_fields["inputFaceColorMatrixSaturation"],
+            fill=face_fill,
+        )
+    )
+    bleed_matrix = color_matrix(
+        MatrixAttributes(
+            white=profile_fields["inputBleedColorMatrixWhite"],
+            black=profile_fields["inputBleedColorMatrixBlack"],
+            saturation=profile_fields["inputBleedColorMatrixSaturation"],
+            fill=(0.0, 0.0, 0.0, 0.0),
+        )
+    )
+    shadow_matrix = color_matrix(
+        MatrixAttributes(
+            white=profile_fields["inputShadowColorMatrixWhite"],
+            black=profile_fields["inputShadowColorMatrixBlack"],
+            saturation=profile_fields["inputShadowColorMatrixSaturation"],
+            fill=(0.0, 0.0, 0.0, shadow_face_opacity),
+        )
+    )
+
+    result = bytearray(248)
+    struct.pack_into(
+        "<4f",
+        result,
+        0x00,
+        radius,
+        radius,
+        4.0,
+        0.5 if material == "regular" else 0.0,
+    )
+    struct.pack_into("<4f", result, 0x10, 1.0, 0.0, 0.0, 1.0)
+    struct.pack_into("<4f", result, 0x20, 1.0, 1.0, half_extent, 0.0)
+    struct.pack_into("<24H", result, 0x60, *vibrant_words)
+    struct.pack_into(
+        "<4e12e12e2f",
+        result,
+        0x90,
+        *face_matrix[8:12],
+        *bleed_matrix,
+        *shadow_matrix,
+        profile_fields["inputShadowVibrancyContribution"],
+        shadow_face_opacity,
+    )
+    struct.pack_into("<20H", result, 0xD0, *FINAL_HIGHLIGHT_KEY_FILL_WORDS)
+    return bytes(result)
+
+
+def expected_final_highlight(
+    geometry: Mapping[str, Any],
+    *,
+    material: str,
+    appearance: str,
+    remaining: float,
+) -> FinalHighlightConstruction:
+    if material not in {"clear", "regular"}:
+        raise ValueError(f"unsupported material: {material!r}")
+    if appearance not in FINAL_HIGHLIGHT_VIBRANT_WORDS:
+        raise ValueError(f"unsupported appearance: {appearance!r}")
+    diameter = integer(geometry.get("width"), "geometry diameter")
+    window_width = finite(geometry.get("windowWidth"), "window width")
+    window_height = finite(geometry.get("windowHeight"), "window height")
+    if window_width <= 0.0 or window_height <= 0.0:
+        raise ValueError("final-highlight window geometry differs")
+    layer_state = expected_dynamic_layer_state(geometry, remaining)
+    carrier_position = layer_state["carrierPosition"]
+    element_position = layer_state["elementPosition"]
+    element_bounds = layer_state["elementBounds"]
+    element_extent = element_bounds[2]
+    profile_fields = transition_profile.predict_numeric_fields(
+        material=material,
+        appearance=appearance,
+        diameter=diameter,
+        fraction=remaining,
+    )
+
+    backdrop_scale = expected_backdrop_scale(material, remaining)
+    producer = expected_producer_crop(
+        geometry,
+        material=material,
+        carrier_position=carrier_position,
+        backdrop_scale=backdrop_scale,
+    )
+    radius1 = selected.predict_radius1(
+        blur_radius=profile_fields["inputBlurRadius"],
+        bleed_blur_radius=profile_fields["inputBleedBlurRadius"],
+        backdrop_scale=backdrop_scale,
+    )
+    mip = selected.predict_mip_policy(
+        radius1=radius1,
+        source_extent=producer["activeExtent"],
+    )
+    helper_bounds = selected.predict_integer_bounds(
+        bounds=[*producer["cropOrigin"], *producer["activeExtent"]],
+        radius1=radius1,
+        alignment_scale=integer(
+            mip.get("alignmentScale"), "final-highlight alignment scale"
+        ),
+    )
+    destination_extent = tuple(selected.align_up(value) for value in helper_bounds[2:])
+    copy_offset = tuple(
+        helper_bounds[axis] - producer["cropOrigin"][axis] for axis in range(2)
+    )
+    shadow_vertices = shadow_vertices_from_layer_geometry(
+        root_bounds=(0.0, 0.0, window_width, window_height),
+        carrier_position=carrier_position,
+        element_position=element_position,
+        element_bounds=element_bounds,
+        material=material,
+        remaining=remaining,
+    )
+    source_coordinates = [
+        (
+            source_coordinate(
+                vertex[0],
+                backdrop_scale=backdrop_scale,
+                crop_origin=producer["cropOrigin"][0],
+                copy_offset=copy_offset[0],
+                allocation_extent=destination_extent[0],
+            ),
+            source_coordinate(
+                vertex[1],
+                backdrop_scale=backdrop_scale,
+                crop_origin=producer["cropOrigin"][1],
+                copy_offset=copy_offset[1],
+                allocation_extent=destination_extent[1],
+            ),
+        )
+        for vertex in shadow_vertices
+    ]
+    if remaining == 1.0:
+        source_coordinates[:4] = [
+            (-1.5, -1.5),
+            (0.0, -1.5),
+            (0.0, -1.5),
+            (1.5, -1.5),
+        ]
+
+    half_extent = float32(element_extent / 2.0)
+    radius = float32(float32(half_extent + FINAL_HIGHLIGHT_EXPANSION) - 9.0)
+    outer_radius = float32(radius + FINAL_HIGHLIGHT_EXPANSION)
+    horizontal_origin = carrier_position[0] + element_position[0]
+    vertical_origin = (window_height - carrier_position[1]) - element_position[1]
+    left = float32(horizontal_origin - FINAL_HIGHLIGHT_EXPANSION)
+    right = float32((horizontal_origin + element_extent) + FINAL_HIGHLIGHT_EXPANSION)
+    top = float32(vertical_origin + FINAL_HIGHLIGHT_EXPANSION)
+    bottom = float32((vertical_origin - element_extent) - FINAL_HIGHLIGHT_EXPANSION)
+    if radius != half_extent:
+        positions_x = (
+            left,
+            float32(left + outer_radius),
+            float32(right - outer_radius),
+            right,
+        )
+        positions_y = (
+            top,
+            float32(top - outer_radius),
+            float32(bottom + outer_radius),
+            bottom,
+        )
+        sdf_coordinates = (-outer_radius, 0.0, 0.0, outer_radius)
+        vertices = [
+            (
+                position_x,
+                position_y,
+                0.0,
+                1.0,
+                sdf_x,
+                sdf_y,
+                *source_coordinates[index],
+            )
+            for index, (position_y, sdf_y, position_x, sdf_x) in enumerate(
+                (
+                    (position_y, sdf_y, position_x, sdf_x)
+                    for position_y, sdf_y in zip(
+                        positions_y, sdf_coordinates, strict=True
+                    )
+                    for position_x, sdf_x in zip(
+                        positions_x, sdf_coordinates, strict=True
+                    )
+                )
+            )
+        ]
+        indices = FINAL_BORDER_INDICES
+        topology = "round-trip-radius-border-grid"
+    else:
+        vertices = [
+            (
+                left,
+                bottom,
+                0.0,
+                1.0,
+                -outer_radius,
+                outer_radius,
+                *source_coordinates[0],
+            ),
+            (
+                right,
+                bottom,
+                0.0,
+                1.0,
+                outer_radius,
+                outer_radius,
+                *source_coordinates[1],
+            ),
+            (right, top, 0.0, 1.0, outer_radius, -outer_radius, *source_coordinates[2]),
+            (left, top, 0.0, 1.0, -outer_radius, -outer_radius, *source_coordinates[3]),
+        ]
+        indices = FINAL_QUAD_INDICES
+        topology = "exact-circle-quad"
+    return {
+        "fragmentPrefix": final_highlight_fragment_prefix(
+            material=material,
+            appearance=appearance,
+            diameter=diameter,
+            remaining=remaining,
+            element_extent=element_extent,
+            profile_fields=profile_fields,
+        ),
+        "vertices": vertices,
+        "indices": indices,
+        "topology": topology,
+    }
 
 
 def decode_vertices(snapshot: Mapping[str, Any], count: int) -> list[Vertex]:
@@ -1011,6 +1527,10 @@ def analyze(artifact_root: Path) -> JsonObject:
     final_fragment_digest = hashlib.sha256()
     final_vertex_digest = hashlib.sha256()
     final_index_digest = hashlib.sha256()
+    predicted_final_fragment_digest = hashlib.sha256()
+    final_active_vertex_digest = hashlib.sha256()
+    predicted_final_active_vertex_digest = hashlib.sha256()
+    predicted_final_index_digest = hashlib.sha256()
     state_count = 0
 
     for filename, expected in EXPECTED_INPUTS.items():
@@ -1340,12 +1860,56 @@ def analyze(artifact_root: Path) -> JsonObject:
                 raise ValueError("foreground-filter retained state differs")
 
             final = final_highlight_inventory(record)
+            predicted_final = expected_final_highlight(
+                geometry,
+                material=str(expected["material"]),
+                appearance=str(expected["appearance"]),
+                remaining=remaining,
+            )
             topology = f"{final['indexCount']}-indices/{final['vertexCount']}-vertices"
             final_topologies[topology] += 1
             matrix_final_topologies[topology] += 1
             final_fragment_digest.update(final["fragmentPrefix"])
             final_vertex_digest.update(final["vertices"])
             final_index_digest.update(final["indices"])
+            add_exact_metric(
+                metrics,
+                "finalHighlightFragmentPrefixBytes",
+                final["fragmentPrefix"],
+                predicted_final["fragmentPrefix"],
+            )
+            predicted_final_fragment_digest.update(predicted_final["fragmentPrefix"])
+            observed_indices = struct.unpack(
+                f"<{final['indexCount']}H", final["indices"]
+            )
+            add_integer_metric(
+                metrics,
+                "finalHighlightIndices",
+                observed_indices,
+                predicted_final["indices"],
+            )
+            predicted_final_index_digest.update(
+                struct.pack(
+                    f"<{len(predicted_final['indices'])}H",
+                    *predicted_final["indices"],
+                )
+            )
+            if len(predicted_final["vertices"]) != final["vertexCount"]:
+                raise ValueError("final-highlight predicted vertex count differs")
+            for index, predicted_vertex in enumerate(predicted_final["vertices"]):
+                observed_vertex = struct.unpack_from(
+                    "<8f", final["vertices"], index * VERTEX_STRIDE
+                )
+                add_float_metric(
+                    metrics,
+                    "finalHighlightActiveVertexComponents",
+                    observed_vertex,
+                    predicted_vertex,
+                )
+                observed_active = struct.pack("<8f", *observed_vertex)
+                predicted_active = struct.pack("<8f", *predicted_vertex)
+                final_active_vertex_digest.update(observed_active)
+                predicted_final_active_vertex_digest.update(predicted_active)
             matrix_state_count += 1
             state_count += 1
 
@@ -1391,6 +1955,15 @@ def analyze(artifact_root: Path) -> JsonObject:
         raise ValueError("foreground input streams differ")
     if foreground_filter_states != 248 or foreground_endpoint_states != 4:
         raise ValueError("foreground-filter branch counts differ")
+    if final_fragment_digest.digest() != predicted_final_fragment_digest.digest():
+        raise ValueError("final-highlight fragment-prefix streams differ")
+    if (
+        final_active_vertex_digest.digest()
+        != predicted_final_active_vertex_digest.digest()
+    ):
+        raise ValueError("final-highlight active vertex streams differ")
+    if final_index_digest.digest() != predicted_final_index_digest.digest():
+        raise ValueError("final-highlight index streams differ")
 
     return {
         "transitionGeometryCorpusLocalMacOS2661ResultSchemaVersion": (
@@ -1450,6 +2023,15 @@ def analyze(artifact_root: Path) -> JsonObject:
                 "height 16*p, refraction offset binary32(binary32(-3.3)*p), "
                 "all other scalar inputs zero, null refraction angle, and source @0"
             ),
+            "transitionFinalHighlight": (
+                "248-byte fragment prefix from the exact dynamic profile, BT.709 "
+                "binary32/FMA color-matrix construction, fixed vibrant/key-fill "
+                "words, and float32 radius round trip; expanded layer geometry "
+                "selects a quad when the radius round trip equals half extent and "
+                "a 4x4 border grid otherwise; source coordinates reuse the "
+                "independently predicted shadow-grid coordinate stream except for "
+                "the exact k=1 endpoint sentinel"
+            ),
         },
         "metrics": metric_results,
         "streamSHA256": {
@@ -1463,6 +2045,20 @@ def analyze(artifact_root: Path) -> JsonObject:
             "producerCropPredicted": predicted_producer_crop_digest.hexdigest(),
             "foregroundInputsObserved": actual_foreground_input_digest.hexdigest(),
             "foregroundInputsPredicted": predicted_foreground_input_digest.hexdigest(),
+            "finalHighlightFragmentPrefixObserved": (final_fragment_digest.hexdigest()),
+            "finalHighlightFragmentPrefixPredicted": (
+                predicted_final_fragment_digest.hexdigest()
+            ),
+            "finalHighlightActiveVerticesObserved": (
+                final_active_vertex_digest.hexdigest()
+            ),
+            "finalHighlightActiveVerticesPredicted": (
+                predicted_final_active_vertex_digest.hexdigest()
+            ),
+            "finalHighlightIndicesObserved": final_index_digest.hexdigest(),
+            "finalHighlightIndicesPredicted": (
+                predicted_final_index_digest.hexdigest()
+            ),
         },
         "producerBranchInventory": {
             "fragmentFunctions": dict(sorted(producer_fragments.items())),
@@ -1478,15 +2074,41 @@ def analyze(artifact_root: Path) -> JsonObject:
             "endpointWithoutFilterStateCount": foreground_endpoint_states,
             "finalHighlightStateCount": state_count,
             "finalHighlightTopologies": dict(sorted(final_topologies.items())),
-            "fragment248BytePrefixStreamSHA256": final_fragment_digest.hexdigest(),
-            "vertexStreamSHA256": final_vertex_digest.hexdigest(),
-            "indexStreamSHA256": final_index_digest.hexdigest(),
+            "fragment248BytePrefixComparedBytes": 62_496,
+            "fragment248BytePrefixObservedSHA256": (final_fragment_digest.hexdigest()),
+            "fragment248BytePrefixPredictedSHA256": (
+                predicted_final_fragment_digest.hexdigest()
+            ),
+            "activeVertexComparedBytes": 33_408,
+            "activeVertexObservedSHA256": final_active_vertex_digest.hexdigest(),
+            "activeVertexPredictedSHA256": (
+                predicted_final_active_vertex_digest.hexdigest()
+            ),
+            "captured48ByteStrideVertexStreamSHA256": (final_vertex_digest.hexdigest()),
+            "indexComparedComponents": 1_566,
+            "indexObservedSHA256": final_index_digest.hexdigest(),
+            "indexPredictedSHA256": predicted_final_index_digest.hexdigest(),
             "publicFilterInputConstructionExact": True,
-            "finalHighlightConstructionLawExact": False,
+            "finalHighlightConstructionLawExact": True,
+            "IrsdVertexTailIntervention": {
+                "result": (
+                    "Analysis/final_highlight_vertex_tail_intervention_"
+                    "local_macos_26_6_1_result.json"
+                ),
+                "resultSHA256": (
+                    "e8cbf09127eef056a98b45c7d083f2b77eefa197cb572e29b323d9da27bd75cb"
+                ),
+                "comparedOutputBytes": 8_388_608,
+                "unequalOutputBytes": 0,
+                "attribute3Bytes32Through39AffectPixels": False,
+            },
         },
-        "remainingAlgorithmBoundaries": [
-            "transition final-highlight fragment payload and mesh production",
-        ],
+        "remainingAlgorithmBoundaries": [],
+        "nextRequiredEvidence": (
+            "preregistered prospective unseen-geometry transfer of the combined "
+            "dynamic layer, producer/crop/copy/mip, background mesh/coordinates, "
+            "foreground inputs, and final-highlight construction"
+        ),
         "prospectiveUnseenGeometryTransferPassed": False,
         "physicalRetinaColorCompositorTransferPassed": False,
         "independentFreshWalleZeroByteFramePassed": False,
