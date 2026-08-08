@@ -1,0 +1,22 @@
+{
+  "smallClearTmuaNonvacuousV3SemanticCorrectionSchemaVersion": 1,
+  "status": "interpretation-only-correction-after-label-audit",
+  "originalCompactResultSHA256": "2860b78dd2ff1dfb21887a6307041db58958253e5c28ea599e9b3f736490711f",
+  "correctedCompactResultSHA256": "4d8d746e303e0f3948d7db0fa324a74fcf9fc7338bab5ea61a09217e4421f866",
+  "capturedFinalPipelineLabel": "com.apple.coreanimation.PBGRAXm_A2Xghfc",
+  "incorrectInterpretation": "the active adjacent final draw was current Irsd",
+  "correctInterpretation": "the active adjacent final draw was the legacy A2Xghfc function; it explicitly bound the distinct one-pixel BGRA8 source and did not bind Tmua",
+  "unchangedEvidence": [
+    "all 29 finite Tmua source controls were active",
+    "all 29 captured Tmua versus zero comparisons were byte-identical",
+    "the selected Tghn residual was active and all three candidates were byte-identical",
+    "the adjacent final draw was active and bound a distinct one-pixel source"
+  ],
+  "withdrawnClaim": "that the adjacent-final activity measurement itself transferred to current Irsd",
+  "remainingAppleConstructionQuestion": "bit-exact transfer of recovered compositor arithmetic to the separately retained current Iscd/Irsd pair",
+  "unknownCountChanged": false,
+  "reasonUnknownCountIsUnchanged": "the current Iscd/Irsd transfer was already explicitly open and is now tested by a separate nonvacuous prospective gate",
+  "productionParity": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

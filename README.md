@@ -13484,8 +13484,9 @@ law remains unknown.
 
 The retained pass topology identifies one distinct unresolved resource. A
 private RGBA16Float `Tmua` texture, 128-by-128 in 58 states and 64-by-128 in
-two, is bound at fragment index 4 for `Tghn` and inherited by the immediately
-adjacent current `Irsd` draw. The earlier Retina replay also shows that the
+two, is bound at fragment index 4 for `Tghn` and was initially assumed to be
+inherited by the immediately adjacent final draw. The later command-label
+audit below corrects that assumption. The earlier Retina replay also shows that the
 final draw changes no complete-target byte in samples 3 through 31 and only
 579 bytes, covering 155 pixels, at sample 32. That observation limits the
 question but does not prove the texture irrelevant: `Tghn` can still consume
@@ -13662,11 +13663,12 @@ SHA-256
 The failure identifies a false topology assumption rather than an image
 answer. In every requested state containing `Tghn`, its fragment texture 4 is
 the 128-by-128 RGBA16Float `Tmua` surface. Before the adjacent six-index
-current `Irsd` draw, Apple explicitly rebinds texture 4 to a distinct
-1-by-1 BGRA8Unorm object. `Irsd` therefore does not inherit `Tmua`; the old
-intervention's `zero-for-Irsd` label was semantically wrong. The exact current
-question is only whether `Tghn` uses `Tmua`. `Irsd` still requires its own
-compositor-arithmetic transfer, with the observed one-pixel source retained.
+legacy `A2Xghfc` draw, Apple explicitly rebinds texture 4 to a distinct
+1-by-1 BGRA8Unorm object. The adjacent final draw therefore does not inherit
+`Tmua`; the old intervention's `zero-for-Irsd` label was semantically wrong.
+The exact question here is only whether `Tghn` uses `Tmua`. The separately
+retained current `Iscd/Irsd` pair still requires its own compositor-arithmetic
+transfer, with the one-pixel-source topology tested independently.
 
 Because no schema-1 controlled output exists, the corrected experiment is
 prospective with respect to every acceptance byte. It no longer freezes
@@ -13735,7 +13737,7 @@ exactly in all 29 states. The preregistered rule required every captured
 source reference to change at least one byte, so no irrelevance result is
 promoted. The selected Tghn residual at sample 4 likewise produced three
 exact candidates against an inactive reference and remains unclosed. In
-contrast, the adjacent current `Irsd` draw was active in all 29 states: it
+contrast, the adjacent legacy `A2Xghfc` draw was active in all 29 states: it
 changed between 585,966 and 657,928 bytes per state, 18,018,094 bytes in
 total, while retaining its explicit distinct one-pixel source.
 
@@ -13827,11 +13829,14 @@ observationally equivalent to zero across the complete retained
 branch-bearing grid, so Walle does not need the `Tmua` producer or its
 intermediate allocation for this branch.
 
-The adjacent current `Irsd` draw remains separately active. In all 29 states
-it explicitly binds a distinct 1-by-1 BGRA8Unorm source rather than `Tmua`
-and changes between 585,966 and 657,928 bytes, 18,016,891 bytes in total.
-This closes the topology question without pretending that the final
-compositor itself is closed.
+The adjacent legacy `A2Xghfc` draw remains separately active. In all 29
+states it explicitly binds a distinct 1-by-1 BGRA8Unorm source rather than
+`Tmua` and changes between 585,966 and 657,928 bytes, 18,016,891 bytes in
+total. A later label audit corrected the original attribution of this draw
+to current `Irsd`: the activity measurement and distinct-source topology are
+valid, but they do not themselves transfer to the separately retained current
+`Iscd/Irsd` pair. This closes the `Tmua` topology question without pretending
+that the current compositor is closed.
 
 The repaired `Tghn` residual is nonvacuous as well. At independently selected
 sample 6, the finite source makes the unmodified Apple draw change 4,657
@@ -13845,7 +13850,11 @@ current `Tghn` pipeline.
 
 The compact result is
 `Analysis/small_clear_tmua_nonvacuous_v3_result.json`, SHA-256
-`2860b78dd2ff1dfb21887a6307041db58958253e5c28ea599e9b3f736490711f`.
+`4d8d746e303e0f3948d7db0fa324a74fcf9fc7338bab5ea61a09217e4421f866`.
+The interpretation-only correction is
+`Analysis/small_clear_tmua_nonvacuous_v3_semantic_correction.json`, SHA-256
+`91400e1b94b021761ced6a5545d5a72278cef9d35079087027a83dfdd24abae6`;
+it changes no captured byte, comparison, tolerance, or unknown count.
 The exact ledger is now:
 
 1. **Unknowns blocking gated Walle integration: zero.** Exact constructors
@@ -13860,3 +13869,65 @@ The exact ledger is now:
 This closure modifies only `lg-test`. Walle's protected production shader
 and `flake.nix` remain byte-identical, no tolerance or quality concession was
 introduced, and production parity is not yet authorized.
+
+### Prospective current `Iscd/Irsd` compositor-transfer gate
+
+The final Apple construction question now has a frozen, nonvacuous binary
+gate. It uses the retained current-build carrier at regular/dark
+dematerialize sample 24, where the same captured pass contains exactly one
+`PBGRAXm_TkfhBvcmA2Xhfc_Iscd` draw followed by exactly one
+`PBGRAXm_TkfhBvcmA2Xhfc_Irsd` draw. The run is local on the physical M1 Max
+Retina display; GitHub Actions, a debugger, and Nix-store paths in native
+compilation or capture are forbidden.
+
+Each current Apple function is isolated with its captured vertex geometry,
+textures, state, and unmodified function. A frozen uniform intervention makes
+the highlight coverage nonzero, while a deterministic premultiplied BGRA8
+destination varies both color and alpha at every pixel. The destination is
+independently reconstructible and has SHA-256
+`33fdf3748e85aa9ee5f1840480f620611ef757bddbb714b77de08c559c15d737`.
+An Apple RGBA16Float replay with the already validated alpha-oracle matrix
+then exposes the exact binary16 highlight alpha. The gate rejects zero alpha,
+unequal RGB alpha channels, or any output alpha other than one.
+
+The comparison path does not rebuild either private Apple function. A new
+full-target Metal fragment consumes only that alpha trace, the frozen
+destination, and the selected 48-byte matrix. It independently implements
+the previously recovered law: exact destination unpremultiplication, nested
+binary16 FMA matrix mode 9, source-construction mode 1, clamp/source-division
+mode 0, and binary16 source-over. Fast math is disabled. Its source SHA-256 is
+`5f824e69b37ec3093658c5bc54cb8860fcccc5f65ef8d4877463bc5d017bebf6`.
+
+Both current functions must pass seven matrix cases: zero RGB, unit RGB,
+identity RGB, permuted RGB, destination-alpha, asymmetric constants, and the
+natural matrix with unit output alpha. Every one of the 14 Apple replays must
+change at least one independently read destination byte and pixel. Only after
+that positive control passes is its independent candidate compared. Promotion
+requires zero unequal bytes, zero unequal pixels, and maximum channel delta
+zero across all 58,720,256 candidate bytes. No case, arithmetic mode, or
+tolerance may be changed after capture.
+
+The preregistration is
+`Analysis/current_final_compositor_transfer_preregistration.json`, SHA-256
+`4c0540c25890e443d764e6eac773bfc7b7b6fdf8288f0061e77a675bb3c304bd`.
+The validator and its five tests have SHA-256 values
+`87c4eb97baea1b69f8533b80b125112c9b96aa0d8b83cbc6ba93512736902b4b`
+and
+`98c837705d4932494b2708ccbbba3e10714a8420d1557f973bf398285e351fd2`.
+The local native runner has SHA-256
+`1055053771b1700f08848386e0be98746af13dabefb3c9cb0b793cb9f84c127c`.
+The Swift probe type-checks natively against Apple's 26.5 SDK.
+
+The exact ledger before the answer-bearing run is:
+
+1. **Unknowns blocking gated Walle integration: zero.** Closed construction
+   can be integrated behind immutable comparison gates now.
+2. **Remaining Apple construction questions: one.** This experiment decides
+   current `Iscd/Irsd` compositor-arithmetic transfer.
+3. **Remaining product proofs: two.** A Walle-shaped physical-Retina
+   color/compositor transfer and a fresh production-Walle frame with zero
+   unequal bytes remain mandatory before production parity.
+
+This work modifies only `lg-test`. The protected Walle shader and `flake.nix`
+remain byte-identical, and no quality concession or production-parity claim is
+authorized before the new evidence passes.

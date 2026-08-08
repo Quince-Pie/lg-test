@@ -5491,6 +5491,7 @@ private func glassUniformCallSiteEvidence(
 }
 
 private let finalHighlightVertexTailCandidateSampleIndices = Array(24...31)
+private let currentFinalCompositorTransferSampleIndices = [24]
 private let finalHighlightSourceCandidateSampleIndices = Array(1...31)
 private let smallClearFinalColorCandidateSampleIndices = Array(2...31)
 private let smallClearBackgroundCandidateSampleIndices = Array(2...31)
@@ -10726,13 +10727,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let uniformOffset: Int
     }
 
-    private func finalHighlightSelection(
+    private func finalHighlightSelections(
         in commands: [ReplayCommand]
-    ) -> FinalHighlightSelection? {
+    ) -> [FinalHighlightSelection] {
         var currentPipeline: MTLRenderPipelineState?
         var activeUniformBuffer: MTLBuffer?
         var activeUniformOffset = 0
-        var selection: FinalHighlightSelection?
+        var selections: [FinalHighlightSelection] = []
 
         for (index, command) in commands.enumerated() {
             switch command {
@@ -10762,13 +10763,19 @@ private final class MetalUniformProbe: @unchecked Sendable {
             else {
                 continue
             }
-            selection = FinalHighlightSelection(
+            selections.append(FinalHighlightSelection(
                 drawIndex: index,
                 pipeline: currentPipeline,
                 uniformBuffer: activeUniformBuffer,
-                uniformOffset: activeUniformOffset)
+                uniformOffset: activeUniformOffset))
         }
-        return selection
+        return selections
+    }
+
+    private func finalHighlightSelection(
+        in commands: [ReplayCommand]
+    ) -> FinalHighlightSelection? {
+        finalHighlightSelections(in: commands).last
     }
 
     private struct FinalHighlightVertexTailSelection {
@@ -12979,10 +12986,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
         includeInterpolant: Bool = false,
         interpolantOnly: Bool = false,
         compositorInput: [String: Any]? = nil,
-        compositorReference: [String: Any]? = nil
+        compositorReference: [String: Any]? = nil,
+        selectionOverride: FinalHighlightSelection? = nil,
+        currentCompositorTransfer: Bool = false
     ) -> [String: Any] {
-        guard let selection = finalHighlightSelection(
-                in: pass.commands)
+        guard let selection = selectionOverride
+                ?? finalHighlightSelection(in: pass.commands)
         else {
             return [
                 "executed": false,
@@ -14066,6 +14075,606 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return result
         }
 
+        if currentCompositorTransfer {
+            guard !includeDiagnostics,
+                  !includeInterpolant,
+                  !interpolantOnly,
+                  compositorInput == nil,
+                  compositorReference == nil
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor transfer options differ",
+                ]
+            }
+            guard let forcedCoverage =
+                    tomographyInterventions.first(where: {
+                        $0.name == "positive-normal-x"
+                    }),
+                  let alphaUniform = makeUniform(
+                    forcedCoverage,
+                    base: uniformClone)
+            else {
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor active-alpha uniform failed",
+                ]
+            }
+
+            let role: String
+            switch selection.pipeline.label {
+            case finalHighlightShapePipelineLabel26_6_1:
+                role = "Iscd"
+            case finalHighlightRemainderPipelineLabel26_6_1:
+                role = "Irsd"
+            default:
+                return [
+                    "executed": false,
+                    "reason":
+                        "current compositor pipeline label differs",
+                    "pipelineLabel": selection.pipeline.label ?? "",
+                ]
+            }
+
+            let alphaTrace = render(
+                name: "current-\(role)-forced-alpha-rgba16float",
+                pipeline: floatPipeline,
+                pixelFormat: .rgba16Float,
+                uniformBuffer: alphaUniform,
+                captureAuxiliary: false)
+            guard alphaTrace["executed"] as? Bool == true,
+                  let alphaOutput = alphaTrace["output"]
+                    as? [String: Any],
+                  let alphaFile = alphaOutput["rawFile"] as? String
+            else {
+                return [
+                    "executed": false,
+                    "reason": "current compositor alpha trace failed",
+                    "alphaTrace": alphaTrace,
+                ]
+            }
+
+            let alphaData: Data
+            do {
+                alphaData = try Data(
+                    contentsOf: outputDirectory
+                        .appendingPathComponent(alphaFile))
+            } catch {
+                return [
+                    "executed": false,
+                    "reason": error.localizedDescription,
+                    "stage": "current compositor alpha readback",
+                ]
+            }
+            let pixelCount = originalTarget.width * originalTarget.height
+            guard alphaData.count == pixelCount * 8 else {
+                return [
+                    "executed": false,
+                    "reason": "current compositor alpha byte count differs",
+                    "alphaBytes": alphaData.count,
+                    "expectedAlphaBytes": pixelCount * 8,
+                ]
+            }
+            var nonzeroAlphaPixels = 0
+            var alphaChannelMismatchPixels = 0
+            var nonUnitOutputAlphaPixels = 0
+            alphaData.withUnsafeBytes { bytes in
+                let words = bytes.bindMemory(to: UInt16.self)
+                for pixel in 0..<pixelCount {
+                    let offset = pixel * 4
+                    let red = UInt16(littleEndian: words[offset])
+                    let green = UInt16(
+                        littleEndian: words[offset + 1])
+                    let blue = UInt16(
+                        littleEndian: words[offset + 2])
+                    let alpha = UInt16(
+                        littleEndian: words[offset + 3])
+                    if red & 0x7fff != 0 {
+                        nonzeroAlphaPixels += 1
+                    }
+                    if red != green || red != blue {
+                        alphaChannelMismatchPixels += 1
+                    }
+                    if alpha != 0x3c00 {
+                        nonUnitOutputAlphaPixels += 1
+                    }
+                }
+            }
+
+            var seedBytes = [UInt8](
+                repeating: 0,
+                count: pixelCount * 4)
+            for y in 0..<originalTarget.height {
+                for x in 0..<originalTarget.width {
+                    let pixel = y * originalTarget.width + x
+                    let offset = pixel * 4
+                    let alpha = 64 + (
+                        x * 13 + y * 7 + 29
+                    ) % 192
+                    seedBytes[offset] = UInt8(
+                        (x * 17 + y * 31 + 47) % (alpha + 1))
+                    seedBytes[offset + 1] = UInt8(
+                        (x * 43 + y * 11 + 83) % (alpha + 1))
+                    seedBytes[offset + 2] = UInt8(
+                        (x * 5 + y * 53 + 131) % (alpha + 1))
+                    seedBytes[offset + 3] = UInt8(alpha)
+                }
+            }
+            let seed = Data(seedBytes)
+            let seedDescriptor = MTLTextureDescriptor
+                .texture2DDescriptor(
+                    pixelFormat: .bgra8Unorm,
+                    width: originalTarget.width,
+                    height: originalTarget.height,
+                    mipmapped: false)
+            seedDescriptor.storageMode = .shared
+            seedDescriptor.usage = [.shaderRead]
+            guard let seedTexture = device.makeTexture(
+                    descriptor: seedDescriptor)
+            else {
+                return [
+                    "executed": false,
+                    "reason": "current compositor seed allocation failed",
+                ]
+            }
+            seed.withUnsafeBytes { bytes in
+                seedTexture.replace(
+                    region: MTLRegionMake2D(
+                        0,
+                        0,
+                        originalTarget.width,
+                        originalTarget.height),
+                    mipmapLevel: 0,
+                    withBytes: bytes.baseAddress!,
+                    bytesPerRow: originalTarget.width * 4)
+            }
+            let seedSnapshot = carendererOutputSnapshot(
+                seedTexture,
+                commandQueue: queue,
+                capture: "\(capture)-current-\(role)-seed",
+                outputDirectory: outputDirectory)
+
+            let candidateSource = """
+                #include <metal_stdlib>
+                using namespace metal;
+
+                struct CandidateMatrix {
+                    half4 matrix0;
+                    half4 matrix1;
+                    half4 matrix2;
+                    half4 matrix3;
+                    half4 matrix4;
+                    half4 controls;
+                };
+
+                vertex float4 current_compositor_vertex(
+                    uint vertexID [[vertex_id]])
+                {
+                    const float2 positions[3] = {
+                        float2(-1.0f, -1.0f),
+                        float2(3.0f, -1.0f),
+                        float2(-1.0f, 3.0f),
+                    };
+                    return float4(positions[vertexID], 0.0f, 1.0f);
+                }
+
+                fragment half4 current_compositor_fragment(
+                    float4 position [[position]],
+                    texture2d<half, access::read> destination [[texture(0)]],
+                    texture2d<half, access::read> alphaTrace [[texture(1)]],
+                    constant CandidateMatrix &parameters [[buffer(0)]])
+                {
+                    const uint2 pixel = uint2(position.xy);
+                    const half4 destinationColor = destination.read(pixel);
+                    const half highlightAlpha = alphaTrace.read(pixel).r;
+                    const half minimumAlpha =
+                        as_type<half>(ushort(0x068e));
+                    const half destinationAlpha = max(
+                        destinationColor.a,
+                        minimumAlpha);
+                    const half3 straight = half3(
+                        float3(destinationColor.rgb)
+                        / float(destinationAlpha));
+
+                    half4 mapped;
+                    mapped.r = fma(
+                        straight.b,
+                        parameters.matrix2.r,
+                        fma(
+                            straight.g,
+                            parameters.matrix1.r,
+                            fma(
+                                straight.r,
+                                parameters.matrix0.r,
+                                parameters.matrix4.r)));
+                    mapped.g = fma(
+                        straight.b,
+                        parameters.matrix2.g,
+                        fma(
+                            straight.g,
+                            parameters.matrix1.g,
+                            fma(
+                                straight.r,
+                                parameters.matrix0.g,
+                                parameters.matrix4.g)));
+                    mapped.b = fma(
+                        straight.b,
+                        parameters.matrix2.b,
+                        fma(
+                            straight.g,
+                            parameters.matrix1.b,
+                            fma(
+                                straight.r,
+                                parameters.matrix0.b,
+                                parameters.matrix4.b)));
+                    mapped.a = fma(
+                        destinationColor.a,
+                        parameters.matrix3.a,
+                        parameters.matrix4.a);
+                    mapped.a = clamp(
+                        mapped.a,
+                        half(0.0f),
+                        half(1.0f));
+
+                    const half sourceAlpha =
+                        mapped.a * highlightAlpha;
+                    half4 source = half4(
+                        mapped.rgb * sourceAlpha,
+                        sourceAlpha);
+                    if (parameters.controls.x > half(0.0f)) {
+                        const half safeSourceAlpha = max(
+                            source.a,
+                            minimumAlpha);
+                        half3 sourceStraight = half3(
+                            float3(source.rgb)
+                            / float(safeSourceAlpha));
+                        if (parameters.controls.y > half(0.0f)) {
+                            const half maximum = max(
+                                sourceStraight.r,
+                                max(sourceStraight.g, sourceStraight.b));
+                            if (maximum > parameters.controls.x) {
+                                const half scale = half(
+                                    float(parameters.controls.x)
+                                    / float(maximum));
+                                sourceStraight = sourceStraight * scale;
+                            }
+                        } else {
+                            sourceStraight = clamp(
+                                sourceStraight,
+                                half3(-0.75f),
+                                half3(parameters.controls.x));
+                        }
+                        source.rgb = sourceStraight * source.a;
+                    }
+
+                    const half destinationFactor =
+                        half(1.0f) - source.a;
+                    return half4(
+                        fma(
+                            destinationColor.r,
+                            destinationFactor,
+                            source.r),
+                        fma(
+                            destinationColor.g,
+                            destinationFactor,
+                            source.g),
+                        fma(
+                            destinationColor.b,
+                            destinationFactor,
+                            source.b),
+                        fma(
+                            destinationColor.a,
+                            destinationFactor,
+                            source.a));
+                }
+                """
+            let candidateOptions = MTLCompileOptions()
+            candidateOptions.fastMathEnabled = false
+            let candidatePipeline: MTLRenderPipelineState
+            let candidateDescriptor = MTLRenderPipelineDescriptor()
+            do {
+                let candidateLibrary = try device.makeLibrary(
+                    source: candidateSource,
+                    options: candidateOptions)
+                guard let vertex = candidateLibrary.makeFunction(
+                        name: "current_compositor_vertex"),
+                      let fragment = candidateLibrary.makeFunction(
+                        name: "current_compositor_fragment")
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current compositor candidate functions failed",
+                    ]
+                }
+                candidateDescriptor.label =
+                    "lg.current-compositor-independent-mode9"
+                candidateDescriptor.vertexFunction = vertex
+                candidateDescriptor.fragmentFunction = fragment
+                candidateDescriptor.colorAttachments[0]?.pixelFormat =
+                    .bgra8Unorm
+                candidateDescriptor.colorAttachments[0]?
+                    .isBlendingEnabled = false
+                candidateDescriptor.colorAttachments[0]?.writeMask = .all
+                candidatePipeline = try device.makeRenderPipelineState(
+                    descriptor: candidateDescriptor)
+            } catch {
+                return [
+                    "executed": false,
+                    "reason": error.localizedDescription,
+                    "stage": "current compositor candidate build",
+                ]
+            }
+
+            func candidateRender(
+                name: String,
+                matrix: Data
+            ) -> [String: Any] {
+                guard matrix.count == 48 else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current compositor matrix byte count differs",
+                        "matrixBytes": matrix.count,
+                    ]
+                }
+                let alphaDescriptor = MTLTextureDescriptor
+                    .texture2DDescriptor(
+                        pixelFormat: .rgba16Float,
+                        width: originalTarget.width,
+                        height: originalTarget.height,
+                        mipmapped: false)
+                alphaDescriptor.storageMode = .shared
+                alphaDescriptor.usage = [.shaderRead]
+                let targetDescriptor = MTLTextureDescriptor
+                    .texture2DDescriptor(
+                        pixelFormat: .bgra8Unorm,
+                        width: originalTarget.width,
+                        height: originalTarget.height,
+                        mipmapped: false)
+                targetDescriptor.storageMode = .shared
+                targetDescriptor.usage = [.renderTarget, .shaderRead]
+                guard let alphaTexture = device.makeTexture(
+                        descriptor: alphaDescriptor),
+                      let target = device.makeTexture(
+                        descriptor: targetDescriptor),
+                      let matrixBuffer = device.makeBuffer(
+                        length: matrix.count,
+                        options: .storageModeShared),
+                      let commandBuffer = queue.makeCommandBuffer()
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current compositor candidate allocation failed",
+                    ]
+                }
+                alphaData.withUnsafeBytes { bytes in
+                    alphaTexture.replace(
+                        region: MTLRegionMake2D(
+                            0,
+                            0,
+                            originalTarget.width,
+                            originalTarget.height),
+                        mipmapLevel: 0,
+                        withBytes: bytes.baseAddress!,
+                        bytesPerRow: originalTarget.width * 8)
+                }
+                matrix.withUnsafeBytes { bytes in
+                    memcpy(
+                        matrixBuffer.contents(),
+                        bytes.baseAddress!,
+                        bytes.count)
+                }
+                let descriptor = MTLRenderPassDescriptor()
+                descriptor.colorAttachments[0]?.texture = target
+                descriptor.colorAttachments[0]?.loadAction = .dontCare
+                descriptor.colorAttachments[0]?.storeAction = .store
+                guard let encoder = commandBuffer
+                        .makeRenderCommandEncoder(descriptor: descriptor)
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current compositor candidate encoder failed",
+                    ]
+                }
+                encoder.setRenderPipelineState(candidatePipeline)
+                encoder.setFragmentTexture(seedTexture, index: 0)
+                encoder.setFragmentTexture(alphaTexture, index: 1)
+                encoder.setFragmentBuffer(matrixBuffer, offset: 0, index: 0)
+                encoder.setViewport(MTLViewport(
+                    originX: 0,
+                    originY: 0,
+                    width: Double(originalTarget.width),
+                    height: Double(originalTarget.height),
+                    znear: 0,
+                    zfar: 1))
+                encoder.drawPrimitives(
+                    type: .triangle,
+                    vertexStart: 0,
+                    vertexCount: 3)
+                encoder.endEncoding()
+                commandBuffer.commit()
+                commandBuffer.waitUntilCompleted()
+                guard commandBuffer.status == .completed else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            commandBuffer.error?.localizedDescription
+                            ?? "current compositor candidate failed",
+                        "commandBufferStatus":
+                            commandBuffer.status.rawValue,
+                    ]
+                }
+                return [
+                    "executed": true,
+                    "output": carendererOutputSnapshot(
+                        target,
+                        commandQueue: queue,
+                        capture: "\(capture)-\(name)",
+                        outputDirectory: outputDirectory),
+                ]
+            }
+
+            var cases: [[String: Any]] = []
+            for matrixIntervention in compositorInterventions {
+                let combinedIntervention = GlassUniformIntervention(
+                    name: matrixIntervention.name,
+                    edits:
+                        forcedCoverage.edits
+                        + matrixIntervention.edits)
+                guard let caseUniform = makeUniform(
+                        combinedIntervention,
+                        base: selection.uniformBuffer)
+                else {
+                    return [
+                        "executed": false,
+                        "reason":
+                            "current compositor case uniform failed",
+                        "case": matrixIntervention.name,
+                    ]
+                }
+                let matrix = Data(
+                    bytes: caseUniform.contents().advanced(
+                        by: matrixOffset),
+                    count: 48)
+                let apple = render(
+                    name:
+                        "current-\(role)-apple-"
+                        + matrixIntervention.name,
+                    pipeline: selection.pipeline,
+                    pixelFormat: .bgra8Unorm,
+                    uniformBuffer: caseUniform,
+                    captureAuxiliary: false,
+                    initialBGRA8: seed)
+                let candidate = candidateRender(
+                    name:
+                        "current-\(role)-candidate-"
+                        + matrixIntervention.name,
+                    matrix: matrix)
+                let activity = compareReplaySnapshots(
+                    reference: ["output": seedSnapshot],
+                    candidate: apple,
+                    outputDirectory: outputDirectory)
+                let comparison = compareReplaySnapshots(
+                    reference: apple,
+                    candidate: candidate,
+                    outputDirectory: outputDirectory)
+                cases.append([
+                    "name": matrixIntervention.name,
+                    "uniformIntervention":
+                        interventionRecord(combinedIntervention),
+                    "matrixHalfWordsLittleEndian":
+                        matrix.withUnsafeBytes { bytes in
+                            let words = bytes.bindMemory(to: UInt16.self)
+                            return words.map {
+                                String(
+                                    format: "0x%04x",
+                                    UInt16(littleEndian: $0))
+                            }
+                        },
+                    "apple": apple,
+                    "candidate": candidate,
+                    "activityComparison": activity,
+                    "candidateComparison": comparison,
+                ])
+            }
+            let casesExecuted =
+                cases.count == compositorInterventions.count
+                && cases.allSatisfy { record in
+                    guard let apple = record["apple"]
+                            as? [String: Any],
+                          let candidate = record["candidate"]
+                            as? [String: Any]
+                    else {
+                        return false
+                    }
+                    return apple["executed"] as? Bool == true
+                        && candidate["executed"] as? Bool == true
+                }
+            let positiveControlsPassed = cases.allSatisfy { record in
+                guard let comparison = record["activityComparison"]
+                        as? [String: Any]
+                else {
+                    return false
+                }
+                return comparison["compared"] as? Bool == true
+                    && comparison["exactByteMatch"] as? Bool == false
+                    && (comparison["mismatchedByteCount"] as? Int ?? 0) > 0
+                    && (comparison["mismatchedPixelCount"] as? Int ?? 0) > 0
+            }
+            let candidatesExact = cases.allSatisfy { record in
+                guard let comparison = record["candidateComparison"]
+                        as? [String: Any]
+                else {
+                    return false
+                }
+                return comparison["compared"] as? Bool == true
+                    && comparison["exactByteMatch"] as? Bool == true
+                    && comparison["mismatchedByteCount"] as? Int == 0
+                    && comparison["mismatchedPixelCount"] as? Int == 0
+                    && comparison["maximumChannelDelta"] as? Int == 0
+            }
+            return [
+                "schemaVersion": 1,
+                "executed":
+                    casesExecuted
+                    && nonzeroAlphaPixels > 0
+                    && alphaChannelMismatchPixels == 0
+                    && nonUnitOutputAlphaPixels == 0,
+                "role": role,
+                "pipelineLabel": selection.pipeline.label ?? "",
+                "drawIndex": selection.drawIndex,
+                "capturedAppleFunctionUnmodified": true,
+                "liveAppleFrameMutated": false,
+                "forcedCoverageIntervention":
+                    interventionRecord(forcedCoverage),
+                "alphaOracleHalfWords": alphaOracleWords.map {
+                    String(
+                        format: "0x%04x",
+                        UInt16(littleEndian: $0))
+                },
+                "alphaTrace": alphaTrace,
+                "alphaTraceNonzeroPixelCount": nonzeroAlphaPixels,
+                "alphaTraceChannelMismatchPixelCount":
+                    alphaChannelMismatchPixels,
+                "alphaTraceNonUnitOutputAlphaPixelCount":
+                    nonUnitOutputAlphaPixels,
+                "seed": [
+                    "schemaVersion": 1,
+                    "encoding": "premultiplied-bgra8",
+                    "formula":
+                        "a=64+(13x+7y+29)%192; "
+                        + "b=(17x+31y+47)%(a+1); "
+                        + "g=(43x+11y+83)%(a+1); "
+                        + "r=(5x+53y+131)%(a+1)",
+                    "output": seedSnapshot,
+                ],
+                "candidate": [
+                    "classification":
+                        "independent recovered mode-9 binary16 compositor",
+                    "capturedAppleFunctionUnmodified": false,
+                    "fastMathEnabled": false,
+                    "sourceSHA256": transitionSHA256(
+                        Data(candidateSource.utf8)),
+                    "pipelineDescriptor":
+                        pipelineDescriptorRecord(candidateDescriptor),
+                    "destinationDivisionMode": 0,
+                    "vibrantArithmeticMode": 9,
+                    "sourceConstructionMode": 1,
+                    "sourceDivisionMode": 0,
+                ],
+                "matrixCaseCount": cases.count,
+                "casesExecuted": casesExecuted,
+                "positiveControlsPassed": positiveControlsPassed,
+                "candidatesExact": candidatesExact,
+                "cases": cases,
+            ]
+        }
+
         let exactInterpolant: [String: Any]? =
             includeInterpolant
             ? interpolantPipeline.map {
@@ -14422,6 +15031,78 @@ private final class MetalUniformProbe: @unchecked Sendable {
             ]
         }
         return result
+    }
+
+    private func replayCurrentFinalCompositorTransfer(
+        pass: ReplayPass,
+        queue: MTLCommandQueue,
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        let labels = [
+            finalHighlightShapePipelineLabel26_6_1,
+            finalHighlightRemainderPipelineLabel26_6_1,
+        ]
+        let allSelections = finalHighlightSelections(in: pass.commands)
+        let selections = allSelections.filter { selection in
+            guard let label = selection.pipeline.label else {
+                return false
+            }
+            return labels.contains(label)
+        }
+        let counts = Dictionary(grouping: selections) {
+            $0.pipeline.label ?? ""
+        }.mapValues(\.count)
+        guard selections.count == labels.count,
+              labels.allSatisfy({ counts[$0] == 1 })
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "reason":
+                    "exact current Iscd/Irsd draw selection differs",
+                "eligibleFinalDrawCount": allSelections.count,
+                "currentDrawCount": selections.count,
+                "pipelineLabelCounts": counts,
+            ]
+        }
+        let ordered = selections.sorted { left, right in
+            labels.firstIndex(of: left.pipeline.label ?? "")!
+                < labels.firstIndex(of: right.pipeline.label ?? "")!
+        }
+        let records = ordered.map { selection in
+            replayFinalHighlightAlphaTrace(
+                pass: pass,
+                queue: queue,
+                capture:
+                    capture + "-current-"
+                    + (selection.pipeline.label
+                        == finalHighlightShapePipelineLabel26_6_1
+                        ? "Iscd"
+                        : "Irsd"),
+                outputDirectory: outputDirectory,
+                includeDiagnostics: false,
+                selectionOverride: selection,
+                currentCompositorTransfer: true)
+        }
+        let executed = records.count == labels.count
+            && records.allSatisfy {
+                $0["executed"] as? Bool == true
+                    && $0["positiveControlsPassed"] as? Bool == true
+                    && $0["candidatesExact"] as? Bool == true
+            }
+        return [
+            "schemaVersion": 1,
+            "executed": executed,
+            "selectionPolicy":
+                "exactly one current Iscd and one immediately later "
+                + "current Irsd draw in the frozen sample",
+            "capturedAppleFunctionsUnmodified": true,
+            "liveAppleFrameMutated": false,
+            "pipelineLabels": labels,
+            "recordCount": records.count,
+            "records": records,
+        ]
     }
 
     private func glassUniformBinding(
@@ -15854,8 +16535,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
             && smallClearTmuaNonvacuousCandidateSampleIndices.contains {
                 capture.hasSuffix(String(format: "-%02d", $0))
             }
+        let currentFinalCompositorTransferRequested =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_CURRENT_COMPOSITOR_TRANSFER_TRACE"
+            ] == "1"
+            && capture.hasPrefix("transition-background-uniform-")
+            && currentFinalCompositorTransferSampleIndices.contains {
+                capture.hasSuffix(String(format: "-%02d", $0))
+            }
         let selectedPass: ReplayPass?
-        if smallClearTmuaNonvacuousInterventionRequested {
+        if currentFinalCompositorTransferRequested {
+            selectedPass = passes.last(where: { candidate in
+                let labels = Set(
+                    finalHighlightSelections(in: candidate.commands)
+                        .compactMap { $0.pipeline.label })
+                return labels.contains(
+                    finalHighlightShapePipelineLabel26_6_1)
+                    && labels.contains(
+                        finalHighlightRemainderPipelineLabel26_6_1)
+            })
+        } else if smallClearTmuaNonvacuousInterventionRequested {
             selectedPass = passes.last(where: {
                 smallClearTmuaCompositionSelection(in: $0.commands) != nil
             })
@@ -15881,7 +16580,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
         guard let pass = selectedPass else {
             return [
                 "executed": false,
-                "reason": sourceInterventionRequested
+                "reason": currentFinalCompositorTransferRequested
+                    ? "captured current Iscd/Irsd render pass unavailable"
+                    : sourceInterventionRequested
                     ? "captured no-background Iscd render pass unavailable"
                     : smallClearTmuaNonvacuousInterventionRequested
                     ? "captured nonvacuous small-clear Tghn/Irsd pass unavailable"
@@ -16184,6 +16885,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     capture: capture,
                     outputDirectory: outputDirectory,
                     nonvacuous: true)
+        }
+        if currentFinalCompositorTransferRequested {
+            result["currentFinalCompositorTransfer"] =
+                replayCurrentFinalCompositorTransfer(
+                    pass: pass,
+                    queue: queue,
+                    capture: capture,
+                    outputDirectory: outputDirectory)
         }
         if dynamicInterpolantTraceRequested {
             do {
@@ -22990,6 +23699,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_HIGHLIGHT_VERTEX_TAIL_TRACE"
                 ] == "1"
+            let currentFinalCompositorTransferRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_CURRENT_COMPOSITOR_TRANSFER_TRACE"
+                ] == "1"
             let highlightSourceTraceRequested =
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_FINAL_SOURCE_TRACE"
@@ -23420,12 +24133,64 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "clear/light holdout case",
                     ])
             }
+            if currentFinalCompositorTransferRequested,
+               !dynamicUniformsRequested
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 36,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "current compositor transfer requires "
+                            + "dynamic uniforms",
+                    ])
+            }
+            if currentFinalCompositorTransferRequested,
+               allocationOnlyRequested
+                    || denseAllocationRequested
+                    || matrixUniformBasisRequested
+                    || fixedStateAllocationRequested
+                    || pathIsolationAllocationRequested
+                    || highlightVertexTailTraceRequested
+                    || highlightSourceTraceRequested
+                    || smallClearFinalColorTraceRequested
+                    || smallClearBackgroundTraceRequested
+                    || smallClearTmuaCompositionTraceRequested
+                    || smallClearTmuaNonvacuousTraceRequested
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 37,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "current compositor transfer requires "
+                            + "exclusive targeted replay",
+                    ])
+            }
+            if currentFinalCompositorTransferRequested,
+               direction != .dematerialize
+                    || material != .regular
+                    || appearance != .dark
+                    || geometry.rawValue != "circle-480-center"
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 38,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "current compositor transfer requires the "
+                            + "frozen regular/dark dematerialize "
+                            + "circle-480-center case",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
             let endpointTopologyDeadlineSeconds = 1.0
             let dynamicUniformSampleIndices = Set(
-                highlightSourceTraceRequested
+                currentFinalCompositorTransferRequested
+                    ? currentFinalCompositorTransferSampleIndices
+                    : highlightSourceTraceRequested
                     ? finalHighlightSourceCandidateSampleIndices
                     : smallClearTmuaNonvacuousTraceRequested
                     ? smallClearTmuaNonvacuousCandidateSampleIndices
@@ -23702,7 +24467,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                         pathIsolationRequested:
                             pathIsolationAllocationRequested,
                         highlightVertexTailTraceRequested:
-                            highlightVertexTailTraceRequested,
+                            highlightVertexTailTraceRequested
+                            || currentFinalCompositorTransferRequested,
                         outputDirectory: outputDirectory)
                 carrierWindow.orderOut(nil)
                 writeTransitionProbeProgress(
