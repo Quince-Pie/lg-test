@@ -11967,3 +11967,54 @@ mesh/source/backdrop/mips and resolved inputs, physical Retina pixel/color/
 compositor transfer, and a fresh zero-unequal-byte Walle frame remain open.
 The production shader remains unchanged and unauthorized for parity-sensitive
 edits.
+
+### Frozen four-profile dematerialize numeric transfer gate
+
+That prospective gate is now frozen before dispatch. None of the four target
+timelines, uniform words, clamp words, or images exists at registration:
+
+```text
+clear/light    circle-456-center
+clear/dark     circle-464-center
+regular/light  circle-472-center
+regular/dark   circle-480-center
+```
+
+Each case must use the unchanged `glass-transition-introspect-9b5c502`
+binary, SHA-256
+`6711ec851453405e2c19a1f731465f1f40b1db1b05f1bd5cd3835a3974cc351d`,
+directly on the active physical Retina Mac. Native capture and the independent
+Darwin clamp analyzer use Apple tools with no Nix store path. Python 3.14 under
+`nix develop` participates only after capture. GitHub Actions and debuggers are
+forbidden.
+
+The gate retains exactly 31 genuine dynamic filter records per case. It does
+not synthesize the absent sample-32 endpoint into the private filter timeline.
+Every case must match 47 numeric fields in all 31 records as exact binary32
+words: 1,457/1,457 per case and 5,828/5,828 across the matrix, with the same
+structured optionality, Booleans, source name, color alpha, and shadow offset.
+Each case must also retain 33 internally distinct WindowServer frames. Across
+all four cases, the only permitted duplicate is the previously proved common
+absent endpoint `transition-dematerialize-32-rgba8.png`, SHA-256
+`f93a15f6884c8eccdf4b94203f748def9512e3137538aea2b99a53ece39b48a8`;
+the complete relation is 132 frames and exactly 129 distinct hashes.
+
+The frozen implementation is:
+
+```text
+Analysis/transition_uniform_dematerialize_holdout_preregistration.json
+  SHA-256 272cc4f19ff9662389ddbb6547b5022385f9ffd81e0dab2397fbd1b541b558f7
+Analysis/analyze_transition_uniform_dematerialize_clamp_holdout_local_macos_26_6_1.swift
+  SHA-256 532d211c90724991a1279fef809f169f89147487cc1e20800185d1ed8163c5b6
+Analysis/validate_transition_uniform_dematerialize_holdout.py
+  SHA-256 c57a290fdc23b1e89db18aeb69ec636523d0fd29b3a0a2f9e7c74374fa5fa292
+Analysis/aggregate_transition_uniform_dematerialize_holdout.py
+  SHA-256 62e1de54358007ba1680cabf4db37a2ddf5a6fbf3af8abde2e9b0f5f7f83c3b9
+Analysis/run_transition_uniform_dematerialize_holdout_local_macos_26_6_1.sh
+  SHA-256 0627988a08bae5a617a37d839fe65039c8790ce9b88df5dbe6df1478d6eb2a80
+```
+
+A complete pass grants only four-profile numeric dematerialize transfer. It
+does not by itself establish independent optical input generation, physical
+Retina pixel/color/compositor transfer, a zero-unequal-byte Walle frame, or
+formal Liquid Glass parity. It does not authorize a production-shader change.
