@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "role": "walle-small-square-fixed-grid-reciprocal-selector-calibration",
+  "objective": "Measure the exact AGX reciprocal-selector endpoint for every 1/256-pixel square extent from 448 through 576 pixels, covering the observed circle-480 final-highlight range with 32 pixels of margin on each side.",
+  "classification": "finite-domain calibration; captured selector branches are not prospective model validation",
+  "capture": {
+    "rigVersion": "metal-raster-small-square-selector-sweep-1.0.0",
+    "widthFixedLower": 114688,
+    "widthFixedUpper": 147456,
+    "fixedUnitsPerPixel": 256,
+    "caseCount": 32769,
+    "geometry": "axis-aligned square at (64,64), perspective interpolation, w=1",
+    "endpoint": "symmetric scalar ramp [-width/2,+width/2]",
+    "samplePixel": [
+      288,
+      289
+    ],
+    "pullOffsets": [
+      [
+        0.0,
+        0.5
+      ],
+      [
+        0.9375,
+        0.5
+      ]
+    ],
+    "recordComponents": [
+      "pull@0,0.5 binary32 bits",
+      "pull@15/16,0.5 binary32 bits"
+    ],
+    "rawBytes": 262152,
+    "ordering": "ascending-width-fixed"
+  },
+  "candidateModel": {
+    "reciprocalCandidates": "exact floor and ceiling 25-bit reciprocal endpoints of the unsimplified fixed-grid square determinant",
+    "coefficientArithmetic": "prospectively validated schema-15 partial-product and carry-column setup",
+    "constantArithmetic": "measured primitive anchor, factorized tile term, 28-bit composite quantization",
+    "comparison": "both captured pull words must equal exactly one candidate; no tolerance"
+  },
+  "preflight": {
+    "candidateStreamBytes": 524296,
+    "candidateStreamSha256": "fab1fa755e7a9a83b1a7a702f667696fc6f9edfba6334d99623e25a6923916a2",
+    "candidateDistinctCaseCount": 32769,
+    "candidateMultiplicityPerCase": "one for an exact reciprocal, otherwise two",
+    "allCasesDistinguishable": true
+  },
+  "acceptance": {
+    "coverageMustEqualCaseCount": true,
+    "missingRecordCount": 0,
+    "postOpeningRecoveryOffsetsFromExactFloor": [
+      -1,
+      0,
+      1,
+      2
+    ],
+    "postOpeningMismatchedCaseCount": 0,
+    "postOpeningAmbiguousCaseCount": 0,
+    "postOpeningMatchedCaseCount": 32769
+  },
+  "afterOpening": {
+    "allowed": [
+      "materialize the complete finite selector table",
+      "search for an input-only closed form",
+      "compare the already opened natural circle-480 states against the table"
+    ],
+    "notAllowed": [
+      "describe calibration as prospective transfer validation",
+      "authorize a production parity claim without a separately frozen holdout",
+      "replace a failed exact comparison with a tolerance"
+    ],
+    "nextGate": "freeze the recovered table and require a fresh natural circle-480 transition to match every final-highlight interpolant and half-alpha word exactly"
+  }
+}

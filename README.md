@@ -14387,3 +14387,82 @@ on the Retina Mac and compare that physical capture directly with the live
 Apple reference. No offscreen Apple glass rerasterization participates. The
 protected shader and `flake.nix` remain unchanged, and the comparison
 tolerance remains zero.
+
+### Current-system natural circle-480 final-highlight oracle and small-square calibration
+
+The earlier empty construction ledger was correct for the accepted v7
+compositor matrix and the then-measured circle-800 raster domain. It did not
+cover the natural current-system circle-480 dynamic draw. The local Retina
+probe now retains the original Apple draw unchanged while replaying its exact
+current QuartzCore specialization into two diagnostic attachments: a
+1024-by-1024 RGBA32Uint stage-input surface and a 1024-by-1024 RGBA16Float
+isolated final-highlight alpha surface. The reconstructed BGRA8 result is also
+required to match the captured Apple draw before either diagnostic attachment
+is admitted. All eight regular/dark/dematerialize samples at indices 1, 4, 8,
+12, 16, 20, 24, and 28 passed that system-specialization check with zero
+unequal BGRA8 bytes. The timeline SHA-256 is
+`71eec0992cecac4755ee706be8160c40daac3a00ccf015517ddac42972945e7c`.
+
+Those attachments separate raster setup from highlight arithmetic. A distinct
+coefficient table generated from the actual expanded final-highlight quad,
+rather than the background/main quad, made five of eight samples exact. The
+remaining samples 4, 16, and 24 differed on 1,321,014 of 16,777,216 SDF words
+and 716 of 8,388,608 isolated half-alpha words in aggregate. All sixteen
+primitive/axis anchor policies and every neighboring first-stage bias,
+tile-stage bias, reciprocal bias, truncation width, and discarded-carry mode
+were tested without producing an exact result. The three failures were not a
+shader-quality tradeoff: their fixed widths, 128001, 129543, and 130566, lie
+outside the previously captured 768-through-896-pixel finite square-selector
+range. The fallback normalized-selector law happened to select the measured
+endpoint at the other five widths.
+
+`GlassRasterSquareSelectorSweep` therefore has a separate
+`LG_RASTER_SQUARE_SELECTOR_PROFILE=walle-small` native profile. It leaves the
+original production profile unchanged and measures every one of the 32,769
+1/256-pixel square widths from 448 through 576 pixels. Its preregistration,
+native Swift source, shared validator, and profile wrapper have SHA-256 values
+`df126ea087c3b07f85978565e2b027318f988fafd2a4a44e59af02dd1ad0d846`,
+`ce27c3855994e38c2357148cbca3ec5d07128390bdbd553292bbd0aeae4aa98a`,
+`9ad38a094449459cea2bb470bbadaf7598c9844750040547dd3974c447b77eee`,
+and
+`00accc6c82d006a98097b45042ca2ced1001ede8d0a68c56ea62e15da2281717`.
+The probe was built with the native macOS toolchain and run directly on the
+Apple M1 Max; no Nix-store path participated in capture.
+
+The raw 262,152-byte stream has SHA-256
+`340c720286015094604618c1df2c708a0ab1a543701c097eb72251047456a944`.
+The narrow frozen floor-or-ceiling hypothesis matched 31,232 cases and failed
+1,537, so it remains rejected. The predeclared recovery window from exact
+reciprocal floor minus one through floor plus two selected exactly one endpoint
+for all 32,769 cases: zero missing, zero ambiguous, and zero mismatched. Its
+offset counts are `-1: 726`, `0: 15,740`, `+1: 15,922`, and `+2: 381`. The
+103,194-byte compressed selector archive is
+`Analysis/raster_small_square_selectors_u32le.zlib`, SHA-256
+`4a701a9868484ec6580026b6328ac99ec38d14d1d4747cd2066964e46498989e`;
+its 131,076-byte raw payload has SHA-256
+`9cb148ec4996e77243c397c97f01163ea0a08502239adc8aeecd3e8e64fe6d10`.
+This table is finite-domain calibration, not a portable reciprocal closed form.
+
+Applying only that measured selector entry to each final-highlight quad makes
+the opened natural corpus exact: zero unequal words across all 16,777,216 SDF
+components and zero unequal words across all 8,388,608 isolated binary16 alpha
+values. Active-pixel counts also agree at every sample. The comparison result
+has SHA-256
+`3f54cd258f34675f01fe98087ff9823c06d04cbf0917cd1527d5e2e33bf024c8`.
+Because the table was recovered after opening this natural corpus, that exact
+replay is calibration evidence. A fresh natural capture from a commit that
+already contains the table is still mandatory before this final-highlight
+domain is promoted.
+
+The corrected ledger is:
+
+1. **Final-highlight arithmetic unknowns: zero in the measured 448-through-576
+   square domain.** One fresh natural transfer gate remains; tolerance is zero.
+2. **Dynamic background construction unknowns: one.** The independent
+   crop/scissor extent and its sparse alpha edge residual remain to be derived.
+3. **Production proof gates remain after construction.** Walle must use the
+   separately constructed main and final interpolants, then pass a physical
+   Retina comparison and fresh AMD production-frame gates.
+4. **Quality regression remains forbidden.** This work does not alter Walle's
+   protected production shader or `flake.nix`, and no mismatch is hidden by a
+   tolerance, bias, or lower-quality approximation.

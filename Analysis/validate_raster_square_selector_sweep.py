@@ -25,6 +25,9 @@ ROLE = "production-square-fixed-grid-reciprocal-selector-calibration"
 PREREGISTRATION = Path(__file__).with_name(
     "raster_square_selector_sweep_preregistration.json"
 )
+PREREGISTRATION_REPOSITORY_PATH = (
+    "Analysis/raster_square_selector_sweep_preregistration.json"
+)
 WIDTH_FIXED_LOWER = 196_608
 WIDTH_FIXED_UPPER = 229_376
 FIXED_UNITS_PER_PIXEL = 256
@@ -307,7 +310,7 @@ def validate_manifest(root: Path) -> tuple[JsonObject, Path]:
         or not isinstance(record, dict)
         or record.get("role") != ROLE
         or record.get("preregistrationFile")
-        != "Analysis/raster_square_selector_sweep_preregistration.json"
+        != PREREGISTRATION_REPOSITORY_PATH
         or record.get("preregistrationSha256")
         != sha256_bytes(preregistration_bytes)
         or preregistration.get("role") != ROLE

@@ -13366,7 +13366,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         compositorInput: [String: Any]? = nil,
         compositorReference: [String: Any]? = nil,
         selectionOverride: FinalHighlightSelection? = nil,
-        currentCompositorTransfer: Bool = false
+        currentCompositorTransfer: Bool = false,
+        currentSystemTrace: Bool = false
     ) -> [String: Any] {
         guard let selection = selectionOverride
                 ?? finalHighlightSelection(in: pass.commands)
@@ -13777,7 +13778,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
 
         let currentCompositorRole: String?
-        if currentCompositorTransfer {
+        if currentCompositorTransfer || currentSystemTrace {
             switch selection.pipeline.label {
             case finalHighlightShapePipelineLabel26_6_1:
                 currentCompositorRole = "Iscd"
@@ -15923,6 +15924,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "capturedVsRebuiltBGRA8": comparison,
             "exactHalfAlpha": exactHalf,
         ]
+        if let currentSystemSpecialization {
+            result["currentSystemSpecialization"] =
+                currentSystemSpecialization
+            result["systemSpecializationExact"] =
+                comparison["compared"] as? Bool == true
+                && comparison["exactByteMatch"] as? Bool == true
+                && comparison["mismatchedByteCount"] as? Int == 0
+                && comparison["mismatchedPixelCount"] as? Int == 0
+                && comparison["maximumChannelDelta"] as? Int == 0
+        }
         if let compositorTrace {
             result["exactCompositorTrace"] = compositorTrace
         }
@@ -17848,6 +17859,17 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     queue: queue,
                     capture: capture,
                     outputDirectory: outputDirectory)
+        }
+        if dynamicInterpolantTraceRequested {
+            result["currentFinalHighlightAlphaTrace"] =
+                replayFinalHighlightAlphaTrace(
+                    pass: pass,
+                    queue: queue,
+                    capture: capture + "-current-system-alpha",
+                    outputDirectory: outputDirectory,
+                    includeDiagnostics: false,
+                    includeInterpolant: true,
+                    currentSystemTrace: true)
         }
         if dynamicInterpolantTraceRequested {
             do {

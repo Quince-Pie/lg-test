@@ -8,21 +8,32 @@ private enum CaptureError: Error {
     case command(String)
 }
 
-private let rigVersion = "metal-raster-square-selector-sweep-1.0.0"
-private let role =
-    "production-square-fixed-grid-reciprocal-selector-calibration"
-private let widthFixedLower = 196_608
-private let widthFixedUpper = 229_376
+private let profile =
+    ProcessInfo.processInfo.environment["LG_RASTER_SQUARE_SELECTOR_PROFILE"]
+        ?? "production"
+private let isWalleSmallProfile = profile == "walle-small"
+private let rigVersion = isWalleSmallProfile
+    ? "metal-raster-small-square-selector-sweep-1.0.0"
+    : "metal-raster-square-selector-sweep-1.0.0"
+private let role = isWalleSmallProfile
+    ? "walle-small-square-fixed-grid-reciprocal-selector-calibration"
+    : "production-square-fixed-grid-reciprocal-selector-calibration"
+private let widthFixedLower = isWalleSmallProfile ? 114_688 : 196_608
+private let widthFixedUpper = isWalleSmallProfile ? 147_456 : 229_376
 private let caseCount = widthFixedUpper - widthFixedLower + 1
 private let fixedUnitsPerPixel = 256
 private let origin = 64
-private let sampleX = 448
-private let sampleY = 449
+private let sampleX = isWalleSmallProfile ? 288 : 448
+private let sampleY = isWalleSmallProfile ? 289 : 449
 private let targetSize = 1_024
 private let recordBytes = 2 * MemoryLayout<UInt32>.stride
 private let rawBytes = caseCount * recordBytes
-private let preregistrationSha256 =
-    "3302fd00990b4ba94570cb4ce1785daee5c744f1d706fe2b9257f415deada37f"
+private let preregistrationFilename = isWalleSmallProfile
+    ? "Analysis/raster_small_square_selector_sweep_preregistration.json"
+    : "Analysis/raster_square_selector_sweep_preregistration.json"
+private let preregistrationSha256 = isWalleSmallProfile
+    ? "df126ea087c3b07f85978565e2b027318f988fafd2a4a44e59af02dd1ad0d846"
+    : "3302fd00990b4ba94570cb4ce1785daee5c744f1d706fe2b9257f415deada37f"
 
 private let metalSource = """
 #include <metal_stdlib>
@@ -82,6 +93,11 @@ private func sha256(_ data: Data) -> String {
 }
 
 private func run(outputDirectory: URL) throws {
+    guard profile == "production" || profile == "walle-small" else {
+        throw CaptureError.resource(
+            "unknown LG_RASTER_SQUARE_SELECTOR_PROFILE: \(profile)"
+        )
+    }
     precondition(caseCount == 32_769)
     precondition(rawBytes == 262_152)
     precondition(origin + widthFixedUpper / fixedUnitsPerPixel < targetSize)
@@ -238,6 +254,7 @@ private func run(outputDirectory: URL) throws {
     let manifest: [String: Any] = [
         "schemaVersion": 1,
         "rigVersion": rigVersion,
+        "profile": profile,
         "ciCommit": ProcessInfo.processInfo.environment["GITHUB_SHA"] ?? "",
         "device": [
             "name": device.name,
@@ -253,8 +270,7 @@ private func run(outputDirectory: URL) throws {
         ],
         "rasterSquareSelectorSweep": [
             "role": role,
-            "preregistrationFile":
-                "Analysis/raster_square_selector_sweep_preregistration.json",
+            "preregistrationFile": preregistrationFilename,
             "preregistrationSha256": preregistrationSha256,
             "widthFixedLower": widthFixedLower,
             "widthFixedUpper": widthFixedUpper,
