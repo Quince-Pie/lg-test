@@ -13469,3 +13469,79 @@ tests, gate, and parity README, plus this `lg-test` result and README. It did
 not modify the protected production shader or `flake.nix`, does not weaken any
 tolerance, and does not claim formal parity before the remaining construction
 and product gates pass.
+
+### Preregistered small-clear `Tmua` source-influence replay
+
+Retrospective decoding narrows the last Apple construction boundary before a
+new pixel is opened. In all 60 retained small-clear states, the final current
+`Irsd` fragment allocation is the now-closed 256-byte `Tghn` allocation with
+exactly one substitution: bytes 96 through 143 are the fixed 48-byte vibrant
+matrix for the active appearance. Every other byte is identical. The final
+draw's four source-coordinate pairs are also byte-identical to `Tghn`'s
+already closed secondary-coordinate pairs: 480/480 binary32 components match.
+Thus neither an independent final-profile law nor a second crop-coordinate
+law remains unknown.
+
+The retained pass topology identifies one distinct unresolved resource. A
+private RGBA16Float `Tmua` texture, 128-by-128 in 58 states and 64-by-128 in
+two, is bound at fragment index 4 for `Tghn` and inherited by the immediately
+adjacent current `Irsd` draw. The earlier Retina replay also shows that the
+final draw changes no complete-target byte in samples 3 through 31 and only
+579 bytes, covering 155 pixels, at sample 32. That observation limits the
+question but does not prove the texture irrelevant: `Tghn` can still consume
+it, and the observation is not used to select or score this experiment.
+
+The prospective intervention is frozen before any answer-bearing run. It
+uses the physical 3456-by-2234 Retina display at 2x on the local M1 Max,
+macOS 26.6.1 build 25G76, and both retained clear cases: light materialize
+`circle-combined-holdout-01` and dark dematerialize
+`circle-combined-holdout-06`. GitHub Actions, a debugger, and Nix-store paths
+in native compilation or capture remain forbidden. Nix is used only for the
+validator tests and post-capture validator.
+
+For every sample 2 through 31 whose captured main pass contains a six-index
+`Tghn` draw immediately followed by the six-index final draw, the probe reads
+back the captured texture and a separately allocated RGBA16Float texture
+cleared to transparent zero. The validator must independently read every byte
+of both and reject one nonzero replacement byte. The complete captured pass
+is then replayed three ways:
+
+1. zero texture 4 for `Tghn`, then restore the captured texture for `Irsd`;
+2. retain the captured texture for `Tghn`, then zero texture 4 for `Irsd`;
+3. zero texture 4 for both consumers.
+
+Overrides are keyed by the exact pipeline-command positions, not pipeline
+object or label alone. This matters because QuartzCore reuses the misleading
+`PBGRAXm_A2Xghfc` pipeline object earlier in the pass; a label-wide override
+would contaminate unrelated draws. No buffer, source texture, captured Apple
+pipeline, or live frame is mutated. Each candidate is compared against the
+unchanged complete-pass replay over all 4,194,304 BGRA8 bytes. Promotion
+requires both cases, every eligible state, all three candidates, zero unequal
+bytes, zero unequal pixels, and maximum channel delta zero.
+
+The frozen preregistration is
+`Analysis/small_clear_tmua_composition_intervention_preregistration.json`,
+SHA-256
+`c1a14074ea3714d8882addd560b6f730966ad7dd6abaf899c27f866ee1600719`.
+The validator and its six tests have SHA-256 values
+`c79aa9708813c224058316999a7835780aaf39f765a075a713003507a33d02c8`
+and
+`839d215d0a3c6add8d6bc056df59b67230f40d6b4002c604c02e4ad33b822a7d`.
+The frozen Swift source SHA-256 is
+`d3f649b0d8985a5c4e5976319b2da55224429eaeab4002dd762a10957717d026`.
+
+The exact ledger before running it is:
+
+1. **Unknowns blocking gated Walle work: zero.** The closed `Tghn` constructor
+   can be integrated now behind exact gates.
+2. **Remaining Apple boundary: one, with two binary questions.** This replay
+   decides whether `Tmua` contributes through either consumer. The other
+   question is bit-exact transfer of the already recovered compositor
+   arithmetic to the current small-clear `Iscd/Irsd` pair.
+3. **Remaining product proofs: two.** Walle-shaped physical Retina transfer
+   and a fresh production-Walle frame with zero unequal bytes remain required.
+
+This preregistration modified `lg-test` replay transport, analysis, tests, and
+this README. It did not modify Walle's protected production shader or
+`flake.nix`, weaken a tolerance, or authorize a parity claim before the new
+evidence exists.
