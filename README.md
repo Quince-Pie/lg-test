@@ -12162,9 +12162,25 @@ Walle tree as `analysis/run_amd_exact_circle_reference_gate.py`,
 `analysis/amd_exact_circle_reference_gate_result.json`, and
 `analysis/amd_exact_circle_reference_gate_rx9070_result.json`.
 
-This admits the generated shader arithmetic and static profile on those
-observed devices only. It still retains pass geometry, destination prepass,
-and final-highlight inputs; it does not render inside the production Walle
-process or its Wayland display context and does not cover physical Retina
-output. Formal parity therefore remains false, and the protected production
-shader remains unchanged.
+The Walle-side static-input closure now removes the remaining captured render
+inputs. Independent main/shadow construction matches 896/896 captured
+components and indices. The rig's coordinate hash is regenerated directly
+from its wrapping `UInt32` formula; its RGBA wallpaper and vertically flipped
+BGRA destination prepass match 50,331,648/50,331,648 compared bytes across the
+four captures. Independent final-highlight construction matches all four
+meshes, six-index streams, and 248-byte constructor prefixes: 1,552/1,552
+compared bytes across the component arrays and payloads, including the
+reciprocal-multiply source-coordinate rounding that differs from direct
+division by one ULP.
+
+With wallpaper, pyramid, profile, main/shadow geometry, destination prepass,
+and final-highlight inputs all generated locally, both complete-frame AMD
+gates remain exact: 16,777,216/16,777,216 bytes on each device. The renderer is
+given an empty capture-runtime object and no per-capture half-intrinsic table;
+the only captured image it reads is the final Apple output used as the oracle.
+
+This admits the complete canonical static input/shader path on those observed
+devices only. It does not render inside the production Walle process or its
+Wayland display context, does not cover the live transition producer, and does
+not cover physical Retina output. Formal parity therefore remains false, and
+the protected production shader remains unchanged.
