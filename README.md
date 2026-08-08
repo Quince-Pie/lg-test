@@ -13642,3 +13642,77 @@ This correction and replacement modified only `lg-test` capture transport,
 analysis, tests, runner, result ledger, and this README. Walle's protected
 production shader and `flake.nix` remain byte-identical; no quality tolerance
 was introduced and production parity is not yet authorized.
+
+### Corrected all-state nonvacuous `Tmua`/`Tghn` gate
+
+The first populated-target launch from commit
+`dc173859d397997812d6b74d9d6cc0a95eb37de8` failed before producing an
+answer pixel. Native capture and Retina preflight exited zero, but all seven
+requested exact-pass selectors returned
+`captured nonvacuous small-clear Tghn/Irsd pass unavailable`. Consequently
+the run created zero controlled textures, zero before/reference/candidate
+replays, and zero answer-bearing target bytes. The frozen validator exited
+one at sample 3 as required. Its timeline SHA-256 is
+`48947dc3a4a78cc3957a31f819e5b52dff090a4eff1adaf13a1503f129a93477`;
+the compact failure result is
+`Analysis/small_clear_tmua_nonvacuous_dc17385_transport_failure_result.json`,
+SHA-256
+`f2833a3bb6e00a9a005ec3216c807c84cb628184451d23f4e989c721817b92fe`.
+
+The failure identifies a false topology assumption rather than an image
+answer. In every requested state containing `Tghn`, its fragment texture 4 is
+the 128-by-128 RGBA16Float `Tmua` surface. Before the adjacent six-index
+current `Irsd` draw, Apple explicitly rebinds texture 4 to a distinct
+1-by-1 BGRA8Unorm object. `Irsd` therefore does not inherit `Tmua`; the old
+intervention's `zero-for-Irsd` label was semantically wrong. The exact current
+question is only whether `Tghn` uses `Tmua`. `Irsd` still requires its own
+compositor-arithmetic transfer, with the observed one-pixel source retained.
+
+Because no schema-1 controlled output exists, the corrected experiment is
+prospective with respect to every acceptance byte. It no longer freezes
+unstable sample numbers from one earlier run. It captures all samples 2
+through 31, independently accounts for every absent branch, and executes on
+every state containing the exact `Tghn`/final topology. For each executing
+state it reads the captured source, requires its hash to be either the known
+nonzero `Tmua` value or the exact all-zero hash for its dimensions, and runs
+the populated-destination `Tghn` positive control before comparing captured
+versus zero source. Every executing state must change at least one target
+byte under unmodified `Tghn`, while every source replacement must change
+zero bytes. Both a nonzero-source state and a zero-source state are required.
+
+The same run now repairs the withdrawn `Tghn` coordinate/tail proof. The
+validator independently finds the first exact-halfway state in ascending
+sample order, reconstructs the three distinct vertex mutations from captured
+buffers, and replays them over another deterministic opaque destination and
+controlled nonzero backdrop. The unmodified Apple draw must first change the
+target; all three mutations must then match that active reference byte for
+byte. Thus one physical run can close two residual questions without sharing
+their acceptance comparisons.
+
+The corrected preregistration is
+`Analysis/small_clear_tmua_nonvacuous_v2_preregistration.json`, SHA-256
+`b005f2b2c5a0d40001af250860e9ed256452448c32db2295787c28887aa0bd76`.
+The schema-2 validator and its nine tests have SHA-256 values
+`d900f3638fda6bff7f019d1d226d573e8ffa7fd7ec8b073d2b969a80d2620a96`
+and
+`c0ae8080c72692f215895bd1bb477898fca2ffeb4a5307a2382ca4bb1d25a781`.
+The native runner has SHA-256
+`e5968c4a577ea17632e44f793a0d4653d785f5d6edb7740a622b79d90a8a3f3a`;
+the Swift probe SHA-256 is
+`d84d1b288297b5f13bda71c29ab8dab1c957f2c4e90493f5c9b2abc0b47e7825`.
+The probe type-checks natively against Apple's 26.5 SDK. Nix remains limited
+to tests and post-capture validation.
+
+The exact ledger before this corrected run is:
+
+1. **Unknowns blocking gated Walle work: zero.** Closed constructors can be
+   integrated now behind immutable byte and pixel gates.
+2. **Apple-side exact questions: three.** This one run addresses `Tmua`
+   influence and the `Tghn` halfway/tail residual. If both pass, only the
+   current small-clear `Iscd/Irsd` compositor transfer remains.
+3. **Product proofs: two.** Walle-shaped physical Retina transfer and a fresh
+   production-Walle frame with zero unequal bytes remain mandatory.
+
+This correction modified only `lg-test`. It did not modify Walle's protected
+production shader or `flake.nix`, weaken a comparison, or authorize a parity
+claim before the corrected evidence exists.

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Execute the frozen nonvacuous Tmua influence gate on the Retina M1.
+# Execute the corrected nonvacuous Tmua/Tghn gate on the Retina M1.
 
 set -uo pipefail
 
@@ -11,12 +11,12 @@ fi
 
 readonly run_label=$1
 readonly repository=$(cd "$(dirname "$0")/.." && pwd -P)
-readonly preregistration=Analysis/small_clear_tmua_nonvacuous_intervention_preregistration.json
-readonly validator=Analysis/validate_small_clear_tmua_nonvacuous_intervention.py
-readonly validator_test=Analysis/test_validate_small_clear_tmua_nonvacuous_intervention.py
+readonly preregistration=Analysis/small_clear_tmua_nonvacuous_v2_preregistration.json
+readonly validator=Analysis/validate_small_clear_tmua_nonvacuous_v2.py
+readonly validator_test=Analysis/test_validate_small_clear_tmua_nonvacuous_v2.py
 readonly preflight=Analysis/check_local_retina_capture_session_v2.swift
 readonly probe=Sources/GlassIntrospect/main.swift
-readonly output_directory="local-small-clear-tmua-nonvacuous-${run_label}"
+readonly output_directory="local-small-clear-tmua-nonvacuous-v2-${run_label}"
 readonly case_directory="$output_directory/clear-light-materialize-01"
 readonly validation_output="$output_directory/validation.json"
 readonly swift=/Library/Developer/CommandLineTools/usr/bin/swift
@@ -64,11 +64,11 @@ if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
     exit 1
 fi
 
-require_sha256 "$probe" 9487c05b59a438c346ec4acc2a8e76b477b32df30789df0472f8d132c18b0cd2
-require_sha256 "$validator" aed1fd8c158d1e83f6d7ea31d58dc97874a320714ce08f35086e821ace42490c
-require_sha256 "$validator_test" 37da3cf2c66354469e30a2ded94a5e90aa1d69b84b06a09d6362aa2c66299906
+require_sha256 "$probe" d84d1b288297b5f13bda71c29ab8dab1c957f2c4e90493f5c9b2abc0b47e7825
+require_sha256 "$validator" d900f3638fda6bff7f019d1d226d573e8ffa7fd7ec8b073d2b969a80d2620a96
+require_sha256 "$validator_test" c0ae8080c72692f215895bd1bb477898fca2ffeb4a5307a2382ca4bb1d25a781
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
-require_sha256 "$preregistration" f55fa3ad5811d627f59c6ec5e4d30d0db2f1fc7c1323de82bf0ce2a8f191c722
+require_sha256 "$preregistration" b005f2b2c5a0d40001af250860e9ed256452448c32db2295787c28887aa0bd76
 require_sha256 Sources/GlassIntrospect/MatrixBridge.c 841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057
 require_sha256 Sources/GlassIntrospect/MatrixBridge.h a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c
 require_sha256 Sources/GlassIntrospect/HalfBlendProbe.swift 6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263

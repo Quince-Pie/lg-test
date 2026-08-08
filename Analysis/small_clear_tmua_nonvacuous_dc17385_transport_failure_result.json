@@ -1,0 +1,64 @@
+{
+  "smallClearTmuaNonvacuousTransportFailureResultSchemaVersion": 1,
+  "status": "pre-answer structural-selection failure",
+  "classification": "native capture succeeded, but the replay selector rejected every requested state before constructing any controlled texture or answer-bearing replay",
+  "captureCommit": "dc173859d397997812d6b74d9d6cc0a95eb37de8",
+  "captureDirectory": "local-small-clear-tmua-nonvacuous-retina1",
+  "timelineSHA256": "48947dc3a4a78cc3957a31f819e5b52dff090a4eff1adaf13a1503f129a93477",
+  "preflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+  "nativeCapture": {
+    "captureExitStatus": 0,
+    "validatorExitStatus": 1,
+    "validatorFailure": "sample 3 replay failed",
+    "architecture": "arm64",
+    "metalDevice": "Apple M1 Max",
+    "operatingSystem": "macOS 26.6.1",
+    "operatingSystemBuild": "25G76",
+    "physicalPixels": [3456, 2234],
+    "backingScaleFactor": 2,
+    "githubActionsUsed": false,
+    "debuggerUsed": false,
+    "nativeBinaryContainsNixStorePath": false
+  },
+  "requestedStates": {
+    "samples": [3, 4, 5, 6, 7, 8, 9],
+    "sample3TghnBranchPresent": false,
+    "samples4Through9TghnBranchPresent": true,
+    "exactPassReplayExecutedCount": 0,
+    "exactPassReplayFailureReasonEveryState": "captured nonvacuous small-clear Tghn/Irsd pass unavailable",
+    "nonvacuousTraceCount": 0,
+    "controlledTextureReadbackCount": 0,
+    "beforeReplayCount": 0,
+    "referenceReplayCount": 0,
+    "candidateReplayCount": 0,
+    "answerBearingTargetByteCount": 0
+  },
+  "structuralFinding": {
+    "failedAssumption": "the final current Irsd draw inherits the exact RGBA16Float Tmua source at fragment texture index 4",
+    "observedTghnTexture4": {
+      "pixelFormat": "RGBA16Float",
+      "dimensions": [128, 128]
+    },
+    "observedAdjacentFinalTexture4": {
+      "pixelFormat": "BGRA8Unorm",
+      "dimensions": [1, 1]
+    },
+    "objectIdentityEqual": false,
+    "observedInEveryTghnBearingRequestedState": true,
+    "conclusion": "the adjacent current Irsd draw explicitly rebinds a distinct one-pixel BGRA8 source; Tmua influence needs a pixel intervention only at Tghn, while Irsd needs an activity control and later compositor-arithmetic transfer"
+  },
+  "correctionAuthority": {
+    "answerPixelsKnown": false,
+    "candidateSelectionMayBeChangedProspectively": true,
+    "requiredChanges": [
+      "select every sample 2 through 31 containing the exact Tghn/final topology instead of pinning unstable sample numbers from the prior capture",
+      "accept and record the explicit distinct one-pixel final source rather than require Tmua object identity",
+      "compare captured versus zero Tmua only at Tghn",
+      "retain positive activity controls for both Tghn and Irsd",
+      "reuse the populated Tghn target to rerun the withdrawn halfway-coordinate and vertex-tail mutations"
+    ]
+  },
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}
