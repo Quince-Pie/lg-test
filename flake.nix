@@ -34,6 +34,8 @@
               actionlint
               (python314.withPackages (
                 ps: with ps; [
+                  glcontext
+                  moderngl
                   numpy
                   scipy
                   opencv4
