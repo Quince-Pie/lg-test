@@ -12604,3 +12604,73 @@ opens one concrete boundary at the first failed metric; it cannot be rounded or
 relabelled. Physical Retina compositor transfer and a fresh production-Walle
 zero-unequal-byte frame remain later product proofs, not Apple-algorithm
 unknowns.
+
+### Combined transition-geometry holdout falsification
+
+The first actual eight-case execution from commit `7432ffa` completed all
+native captures on the physical M1 Max. Every case passed the unlocked,
+on-console, active 3456-by-2234 Retina preflight at 2x; all eight native
+processes exited zero; one common source-built binary with SHA-256
+`9f48afc4c7ee44417db3ed1f6f733b742d9df2e69d8500c082ccc2026294ed0c`
+was used without a debugger, GitHub Actions, `MTL_CAPTURE_ENABLED`, or a Nix
+store path. The 252 Apple states are valid evidence.
+
+The frozen prospective validator did not pass. It stopped on its first state
+with the exact error `expected one current background profile binding; found
+0`. This red result is permanent: no opened-output correction is described as
+a prospective pass. The immutable compact result is
+`Analysis/combined_transition_geometry_holdout_7432ffa_falsification_result.json`,
+SHA-256
+`a70ce8c2880def7df27f7dc298487676a3e083d45feb1cadad33f86d21a6555d`.
+Its independent analyzer and tests have SHA-256
+`50dca07626b3e907d709dfc150079bd1d870bfb774a4c090d703c728804b230f`
+and
+`3a8b5d378d1adda58c2d5145dd21e590d66a0ec13f8ad90f2a666c83d20df0bd`.
+
+Opening the failed artifact nevertheless separates transferred arithmetic from
+new branches. The requested center is snapped to the nearest Retina half point.
+For live `k < 1` states, the carrier remains in the local window coordinate
+space at `(512-D*k/2, 512-D*k/2)` and the snapped requested-center offset moves
+into the element. At the materialize `k = 1` endpoint, the carrier moves to
+`(snap(centerX)-D/2, snap(centerY)-D/2)`. This reproduces every carrier bound
+and position bit: 1,512/1,512 binary64 components. The simplest opened element
+candidate still differs in 78/1,008 bound components and 76/504 position
+components, so exact off-center element staging remains open rather than being
+hidden behind a tolerance.
+
+The corrected local carrier coordinate completely transfers the producer and
+variable-blur path. Across all 252 states, backdrop scale, crop origin, active
+extent, 64-pixel producer allocation, selected-region origin and allocation,
+copy-base composition, and destination mip count have zero mismatches:
+
+```text
+crop origin / active extent / producer storage     504/504 each
+selected origin / destination / copy composition   504/504 each
+destination mip count                              252/252
+```
+
+The producer fragment census is 196 `TimgA2Xhfc_Isrc`, 42
+`Tds4A2Xhf_Isrc`, nine `TmuaA2Xhfc_Isrc_Isqr`, and five
+`TkfhA2Xhfc_Irsd` states. The latter identities change how the producer is
+scheduled, but not its crop, allocation, copy, or mip arithmetic.
+
+The exact executing branch census explains the frozen parser failure. Of 252
+states, 37 use the current clear `Tghz` background, 126 use regular `Tghs`, 60
+use the small-clear `Tghn` family, and 29 clear states have no ordinary `Tgh`
+primary draw. The final pass splits into 191 current `TkfhBvcm` states and 61
+small-clear `Tkfh` states without `Bvcm`. The current final family contains 186
+ordinary four-vertex/six-index draws and five sixteen-vertex/twenty-four-index
+draws; the 61 small-clear draws require their own parser and constructor.
+
+Three Apple-renderer boundaries therefore remain before production parity:
+
+1. exact binary64 off-center element extent and position staging;
+2. window clipping and the alternate 24-vertex/96-index construction; and
+3. small-clear `Tghn`/`Tmua`/`Tkfh`/`A2Xghfc` construction and pixels.
+
+Gated Walle integration may begin using the already exact branches, but this
+result does not authorize a production parity claim or mutation of the
+protected production shader. Walle's zero-to-full-screen wipe crosses the
+small-clear range, so that branch cannot be omitted even though it occupies
+only the beginning of the transition. A new Walle-shaped Retina transfer and a
+fresh zero-unequal-byte Walle frame remain mandatory.

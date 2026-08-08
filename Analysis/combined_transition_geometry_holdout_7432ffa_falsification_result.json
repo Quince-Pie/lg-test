@@ -1,0 +1,189 @@
+{
+  "captureBinarySHA256": "9f48afc4c7ee44417db3ed1f6f733b742d9df2e69d8500c082ccc2026294ed0c",
+  "captureCommit": "7432ffa54d530acf98ffc827c4588df94a1a5419",
+  "cases": [
+    {
+      "branchInventory": {
+        "clear-without-primary-Tgh-draw": 1,
+        "current-final-highlight": 1,
+        "small-clear-background": 30,
+        "small-clear-final-highlight": 30
+      },
+      "caseId": "clear-dark-dematerialize-06",
+      "stateCount": 31,
+      "timelineSHA256": "0fb1572ce1822fa3a00da0cf37357ba7d923d60d21da85b6a14207bf20c3fe31"
+    },
+    {
+      "branchInventory": {
+        "clear-without-primary-Tgh-draw": 27,
+        "current-clear-background": 5,
+        "current-final-highlight": 32
+      },
+      "caseId": "clear-dark-materialize-02",
+      "stateCount": 32,
+      "timelineSHA256": "af9ba643aa1572bdd39fb55b7f7484ae5317a70509321086638bf3176ceefe9d"
+    },
+    {
+      "branchInventory": {
+        "current-clear-background": 31,
+        "current-final-highlight": 31
+      },
+      "caseId": "clear-light-dematerialize-05",
+      "stateCount": 31,
+      "timelineSHA256": "bb6ab00d00712abe3e3e3016387f268c77581ef52beb5ebc480dfb4258c90c46"
+    },
+    {
+      "branchInventory": {
+        "clear-without-primary-Tgh-draw": 1,
+        "current-clear-background": 1,
+        "current-final-highlight": 1,
+        "small-clear-background": 30,
+        "small-clear-final-highlight": 31
+      },
+      "caseId": "clear-light-materialize-01",
+      "stateCount": 32,
+      "timelineSHA256": "85dc1f54a54f86852ee46b1c611f8968b470c0551a4647c0f7b8a59030ccb016"
+    },
+    {
+      "branchInventory": {
+        "current-final-highlight": 31,
+        "current-regular-background": 31
+      },
+      "caseId": "regular-dark-dematerialize-08",
+      "stateCount": 31,
+      "timelineSHA256": "9c2c56d949dd7fff27e7583a2cf4b91e0d574033682275b553bcc8c60df0e58f"
+    },
+    {
+      "branchInventory": {
+        "current-final-highlight": 32,
+        "current-regular-background": 32
+      },
+      "caseId": "regular-dark-materialize-04",
+      "stateCount": 32,
+      "timelineSHA256": "9e712a68193876937fa6001137a649d48802700d91b1afd955fc38625c759ded"
+    },
+    {
+      "branchInventory": {
+        "current-final-highlight": 31,
+        "current-regular-background": 31
+      },
+      "caseId": "regular-light-dematerialize-07",
+      "stateCount": 31,
+      "timelineSHA256": "1a4129540e0e2c495a506de25e488d6b76479d9e4804beb8595158b2c75fe45b"
+    },
+    {
+      "branchInventory": {
+        "current-final-highlight": 32,
+        "current-regular-background": 32
+      },
+      "caseId": "regular-light-materialize-03",
+      "stateCount": 32,
+      "timelineSHA256": "f5f8065c97375f2c545838d3bd28eab1f256c96330c5d1646f172cfa99b37068"
+    }
+  ],
+  "classification": "immutable prospective falsification followed by explicitly retrospective exact branch census",
+  "combinedTransitionGeometryHoldoutFalsificationSchemaVersion": 1,
+  "finalTopologyInventory": {
+    "24-indices/16-vertices": 5,
+    "6-indices/4-vertices": 186,
+    "unparsed-small-clear": 61
+  },
+  "firstFrozenFailure": "expected one current background profile binding; found 0",
+  "frozenValidatorExitStatus": 1,
+  "metrics": {
+    "backdropScale": {
+      "componentCount": 252,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "copyBaseOriginComposition": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "destinationMipCount": {
+      "componentCount": 252,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "dynamicCarrierBounds": {
+      "componentCount": 1008,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "dynamicCarrierPosition": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "dynamicElementBoundsCandidate": {
+      "componentCount": 1008,
+      "exact": false,
+      "mismatchedComponents": 78
+    },
+    "dynamicElementPositionCandidate": {
+      "componentCount": 504,
+      "exact": false,
+      "mismatchedComponents": 76
+    },
+    "producerActiveExtent": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "producerCropOrigin": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "producerStorageExtent": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "selectedRegionAllocation": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "selectedRegionOrigin": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    }
+  },
+  "openedFindings": {
+    "alternateFamilies": "small clear geometry selects Tghn/Tkfh without Bvcm, while 29 clear states have no ordinary Tgh primary draw",
+    "coordinateSpaceSplit": "for live k<1 the carrier remains centered in the 1024-point window while the requested center, snapped to the nearest Retina half point, moves into the element; the k=1 endpoint moves the carrier to that snapped requested center",
+    "producerPolicy": "the corrected local carrier coordinate makes crop, active and storage extent, selected region, copy composition, and mip count exact in all 252 opened states"
+  },
+  "pipelineBranchInventory": {
+    "clear-without-primary-Tgh-draw": 29,
+    "current-clear-background": 37,
+    "current-final-highlight": 191,
+    "current-regular-background": 126,
+    "small-clear-background": 60,
+    "small-clear-final-highlight": 61
+  },
+  "preregistrationSHA256": "b942bb532449998d8bca2c9be6a61397d73edcd221f244c73ca96d108745c2aa",
+  "producerFragmentInventory": {
+    "Tds4A2Xhf_Isrc": 42,
+    "TimgA2Xhfc_Isrc": 196,
+    "TkfhA2Xhfc_Irsd": 5,
+    "TmuaA2Xhfc_Isrc_Isqr": 9
+  },
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "prospectiveGatePassed": false,
+  "remainingAlgorithmBoundaries": [
+    "exact binary64 off-center element extent and position staging",
+    "window clipping and alternate 24-vertex/96-index topology construction",
+    "small-clear Tghn/Tmua/Tkfh/A2Xghfc construction and pixels"
+  ],
+  "retrospectiveCalibrationHasProspectiveAuthority": false,
+  "stateCount": 252,
+  "status": "prospectively-falsified",
+  "timelineCount": 8,
+  "walleIntegrationMayBeginBehindGates": true
+}
+
