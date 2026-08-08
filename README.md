@@ -12149,17 +12149,22 @@ regular fixtures. The shortcut was removed rather than tolerated.
 
 The corrected specialization retains Apple's general supercircle operation
 order and independently substitutes the now-authorized static wallpaper-to-mip
-pyramid. It matches all four 1024x1024 clear/regular and light/dark frames with
-zero unequal bytes on each local AMD device: 16,777,216/16,777,216 bytes on the
-Ryzen 9 9950X3D integrated radeonsi device and the same count on the Radeon RX
-9070 XT. The reproducible gate and scoped results live in the sibling Walle
-tree as `analysis/run_amd_exact_circle_reference_gate.py`,
+pyramid. The private static profile is also reconstructed rather than replayed:
+the executing QuartzCore constructor establishes the BT.709 basis and FMA
+order, and shadow face alpha is the rounded sum of fill alpha and SDR shadow
+alpha. The resulting clear/light, clear/dark, regular/light, and regular/dark
+258-byte payloads match all 1,032 captured bytes under both GCC 15 and Clang
+21. With captured-profile loading disabled, all four 1024x1024 frames still
+have zero unequal bytes on each local AMD device: 16,777,216/16,777,216 bytes
+on the Ryzen 9 9950X3D integrated radeonsi device and the same count on the
+Radeon RX 9070 XT. The reproducible gate and scoped results live in the sibling
+Walle tree as `analysis/run_amd_exact_circle_reference_gate.py`,
 `analysis/amd_exact_circle_reference_gate_result.json`, and
 `analysis/amd_exact_circle_reference_gate_rx9070_result.json`.
 
-This admits the generated shader arithmetic on those observed devices only.
-It still retains captured profile payloads, pass geometry, destination
-prepass, and final-highlight inputs; it does not render inside the production
-Walle process or its Wayland display context and does not cover physical Retina
+This admits the generated shader arithmetic and static profile on those
+observed devices only. It still retains pass geometry, destination prepass,
+and final-highlight inputs; it does not render inside the production Walle
+process or its Wayland display context and does not cover physical Retina
 output. Formal parity therefore remains false, and the protected production
 shader remains unchanged.
