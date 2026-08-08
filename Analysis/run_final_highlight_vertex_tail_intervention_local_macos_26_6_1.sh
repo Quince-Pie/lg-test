@@ -63,11 +63,11 @@ if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
     exit 1
 fi
 
-require_sha256 "$probe" e745a805d53079f5f0356f3444e5d7970168483330a4a074bfabd2e784170386
-require_sha256 "$validator" 6a66e112c658769b26f98da62de220bff08b92023852aff300060a8b8d10c01f
-require_sha256 "$validator_test" f0579dc4510fbf0b2a87edc8ea9c273150fb43358635a84cf219dc9cedce7c81
+require_sha256 "$probe" 6d312a2c2439f623cabd339af901cabffe9f4523a41327107d484a2a30bc068f
+require_sha256 "$validator" c73f7ee5e12e3cffaad9847fdccbe9d735470b839ac8e9b799cdfffb11badfb5
+require_sha256 "$validator_test" f68ef7e5de00eb7db47d830188d7fc10065cb88a61966e03c95e6270925c89d0
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
-require_sha256 "$preregistration" 8a665e7636c153216994005d04a974d00b2b87a42633e30de5a12f4156a7449f
+require_sha256 "$preregistration" e3d28d58d585e6d5771d69dea3249cf06dd5ef9620d626920e8b8f116cc6bcc0
 require_sha256 Sources/GlassIntrospect/MatrixBridge.c 841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057
 require_sha256 Sources/GlassIntrospect/MatrixBridge.h a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c
 require_sha256 Sources/GlassIntrospect/HalfBlendProbe.swift 6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263
@@ -173,7 +173,6 @@ while IFS='=' read -r variable _; do
 done < <(/usr/bin/env)
 
 readonly -a capture_environment=(
-    MTL_CAPTURE_ENABLED=1
     LG_GEOMETRY_POLICY=0
     LG_GLASS_APPEARANCE=dark
     LG_GLASS_GEOMETRY=circle-480-center

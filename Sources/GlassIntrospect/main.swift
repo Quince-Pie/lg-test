@@ -20860,7 +20860,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             let endpointTopologyDeadlineSeconds = 1.0
             let dynamicUniformSampleIndices = Set(
                 highlightVertexTailTraceRequested
-                    ? [28, 29, 30]
+                    ? [28]
                     : denseAllocationRequested
                     ? Array(1..<sampleCount)
                     : allocationOnlyRequested

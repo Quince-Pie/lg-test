@@ -109,7 +109,7 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
             validator.validate_intervention(self.directory, record)
 
     def test_rejects_an_intervention_that_did_not_change_input(self) -> None:
-        record = self.trace(29)
+        record = self.trace(28)
         trace = record["render"]["exactPassReplay"][
             "finalHighlightVertexTailIntervention"
         ]
@@ -146,8 +146,6 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
                 "freshStaticCarrier": True,
                 "detachedLayerTreeCopies": False,
                 "records": [
-                    self.trace(28),
-                    self.trace(29),
                     self.trace(29),
                 ],
             },

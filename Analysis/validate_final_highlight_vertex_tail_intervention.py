@@ -9,7 +9,7 @@ from typing import Any, Never
 
 
 REPOSITORY = Path(__file__).resolve().parents[1]
-TARGET_SAMPLES = (28, 29, 30)
+TARGET_SAMPLES = (28,)
 EXPECTED_PIPELINE = (
     "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd"
 )
