@@ -19,6 +19,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         self.capture = self.root / "capture"
         self.capture.mkdir()
         self.preregistration = self.root / "preregistration.json"
+        self.amendment = self.root / "amendment.json"
         self.preflight = self.root / "preflight.json"
         self.timeline = self.capture / "transition-timeline.json"
         self.render_payload = bytes([0x5A]) * validator.EXPECTED_RENDER_BYTES
@@ -28,6 +29,18 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             json.dumps(
                 {
                     "smallClearFinalColorPreregistrationSchemaVersion": 1,
+                    "sourceSHA256": {},
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.amendment.write_text(
+            json.dumps(
+                {
+                    "smallClearFinalColorTransportAmendmentSchemaVersion": 1,
+                    "basePreregistrationSHA256": validator.sha256_file(
+                        self.preregistration
+                    ),
                     "sourceSHA256": {},
                 }
             ),
@@ -230,7 +243,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
     def _timeline_document(self) -> dict[str, object]:
         records: list[dict[str, object]] = []
         for sample in validator.CANDIDATE_SAMPLES:
-            if sample == 3:
+            if sample == 11:
                 records.append(self._selected_record(sample))
             else:
                 records.append(
@@ -246,6 +259,12 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                         },
                     }
                 )
+        records.append(
+            {
+                "sampleIndex": 32,
+                "render": {"exactPassReplay": {"executed": True}},
+            }
+        )
         return {
             "material": "clear",
             "appearance": "light",
@@ -267,9 +286,9 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 "requested": True,
                 "executed": True,
                 "evidenceMode": "controlled-replay-v1",
-                "sampleIndices": list(validator.CANDIDATE_SAMPLES),
-                "sampleCount": len(validator.CANDIDATE_SAMPLES),
-                "executedSampleCount": len(validator.CANDIDATE_SAMPLES),
+                "sampleIndices": list(validator.EXPECTED_RECORD_SAMPLES),
+                "sampleCount": len(validator.EXPECTED_RECORD_SAMPLES),
+                "executedSampleCount": len(validator.EXPECTED_RECORD_SAMPLES),
                 "presentationLayerReplayed": True,
                 "presentationLayerAssignedToCARenderer": False,
                 "freshStaticCarrier": True,
@@ -285,10 +304,11 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         result = validator.validate(
             self.capture,
             self.preregistration,
+            self.amendment,
             self.preflight,
         )
         self.assertTrue(result["passed"])
-        self.assertEqual(result["selectedSampleIndex"], 3)
+        self.assertEqual(result["selectedSampleIndex"], 11)
         self.assertEqual(result["intervention"]["comparedBytes"], 8_388_608)
         self.assertEqual(result["intervention"]["unequalBytes"], 0)
 
@@ -304,23 +324,33 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         }
         self._write_timeline()
         with self.assertRaisesRegex(ValueError, "first eligible"):
-            validator.validate(self.capture, self.preregistration, self.preflight)
+            validator.validate(
+                self.capture, self.preregistration, self.amendment, self.preflight
+            )
 
     def test_declared_inactive_half4_fails(self) -> None:
-        selected = self.document["dynamicBackgroundUniforms"]["records"][1]
+        selected = next(
+            record
+            for record in self.document["dynamicBackgroundUniforms"]["records"]
+            if record["sampleIndex"] == 11
+        )
         selected["render"]["metalUniformProbe"]["records"][1]["pipeline"][
             "creationDescriptor"
         ]["vertexFunctionStageInputAttributes"][3]["active"] = False
         self._write_timeline()
         with self.assertRaisesRegex(ValueError, "not declared active"):
-            validator.validate(self.capture, self.preregistration, self.preflight)
+            validator.validate(
+                self.capture, self.preregistration, self.amendment, self.preflight
+            )
 
     def test_one_changed_output_byte_fails(self) -> None:
         changed = bytearray(self.render_payload)
         changed[-1] ^= 1
         (self.capture / "finite.raw").write_bytes(changed)
         with self.assertRaisesRegex(ValueError, "replay bytes differ"):
-            validator.validate(self.capture, self.preregistration, self.preflight)
+            validator.validate(
+                self.capture, self.preregistration, self.amendment, self.preflight
+            )
 
 
 if __name__ == "__main__":

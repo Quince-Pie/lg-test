@@ -14,7 +14,8 @@ from typing import Any, Never
 type JsonObject = dict[str, Any]
 
 REPOSITORY = Path(__file__).resolve().parents[1]
-CANDIDATE_SAMPLES = tuple(range(2, 11))
+CANDIDATE_SAMPLES = tuple(range(2, 32))
+EXPECTED_RECORD_SAMPLES = tuple(range(2, 33))
 EXPECTED_PIPELINE = "com.apple.coreanimation.PBGRAXm_TkfhA2Xhfc_Iscd"
 EXPECTED_PATTERNS = {
     "zero-half4": "0000000000000000",
@@ -369,6 +370,7 @@ def validate_intervention(
 def validate(
     capture_directory: Path,
     preregistration_path: Path,
+    amendment_path: Path,
     preflight_path: Path,
 ) -> JsonObject:
     preregistration = load_json(preregistration_path)
@@ -376,7 +378,17 @@ def validate(
         preregistration.get("smallClearFinalColorPreregistrationSchemaVersion") == 1,
         "preregistration schema differs",
     )
-    validate_sources(preregistration)
+    amendment = load_json(amendment_path)
+    require(
+        amendment.get("smallClearFinalColorTransportAmendmentSchemaVersion") == 1,
+        "transport amendment schema differs",
+    )
+    require(
+        amendment.get("basePreregistrationSHA256")
+        == sha256_file(preregistration_path),
+        "base preregistration SHA-256 differs",
+    )
+    validate_sources(amendment)
     preflight = load_json(preflight_path)
     require(preflight.get("passed") is True, "Retina preflight did not pass")
     require(preflight.get("backingScaleFactor") == 2, "Retina scale differs")
@@ -416,9 +428,9 @@ def validate(
         "requested": True,
         "executed": True,
         "evidenceMode": "controlled-replay-v1",
-        "sampleIndices": list(CANDIDATE_SAMPLES),
-        "sampleCount": len(CANDIDATE_SAMPLES),
-        "executedSampleCount": len(CANDIDATE_SAMPLES),
+        "sampleIndices": list(EXPECTED_RECORD_SAMPLES),
+        "sampleCount": len(EXPECTED_RECORD_SAMPLES),
+        "executedSampleCount": len(EXPECTED_RECORD_SAMPLES),
         "presentationLayerReplayed": True,
         "presentationLayerAssignedToCARenderer": False,
         "freshStaticCarrier": True,
@@ -429,12 +441,16 @@ def validate(
     raw_records = uniforms.get("records")
     require(
         isinstance(raw_records, list)
-        and len(raw_records) == len(CANDIDATE_SAMPLES)
+        and len(raw_records) == len(EXPECTED_RECORD_SAMPLES)
         and all(isinstance(value, dict) for value in raw_records),
         "dynamic record list differs",
     )
     records = {value.get("sampleIndex"): value for value in raw_records}
-    require(set(records) == set(CANDIDATE_SAMPLES), "candidate sample set differs")
+    require(set(records) == set(EXPECTED_RECORD_SAMPLES), "record sample set differs")
+    endpoint_trace = exact_replay(records[32]).get(
+        "finalHighlightVertexTailIntervention"
+    )
+    require(endpoint_trace is None, "endpoint unexpectedly executed intervention")
     selected = validate_selection(records)
     intervention = validate_intervention(capture_directory, records[selected])
     return {
@@ -448,6 +464,7 @@ def validate(
         "captureDirectory": capture_directory.name,
         "timelineSHA256": sha256_file(timeline_path),
         "preregistrationSHA256": sha256_file(preregistration_path),
+        "transportAmendmentSHA256": sha256_file(amendment_path),
         "candidateSampleIndices": list(CANDIDATE_SAMPLES),
         "selectedSampleIndex": selected,
         "intervention": intervention,
@@ -458,12 +475,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("capture_directory", type=Path)
     parser.add_argument("--preregistration", required=True, type=Path)
+    parser.add_argument("--transport-amendment", required=True, type=Path)
     parser.add_argument("--preflight", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     arguments = parser.parse_args()
     result = validate(
         arguments.capture_directory,
         arguments.preregistration,
+        arguments.transport_amendment,
         arguments.preflight,
     )
     arguments.output.write_text(

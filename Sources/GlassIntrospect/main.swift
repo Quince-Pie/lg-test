@@ -5490,7 +5490,7 @@ private func glassUniformCallSiteEvidence(
 
 private let finalHighlightVertexTailCandidateSampleIndices = Array(24...31)
 private let finalHighlightSourceCandidateSampleIndices = Array(1...31)
-private let smallClearFinalColorCandidateSampleIndices = Array(2...10)
+private let smallClearFinalColorCandidateSampleIndices = Array(2...31)
 
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
