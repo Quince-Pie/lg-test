@@ -12184,3 +12184,19 @@ devices only. It does not render inside the production Walle process or its
 Wayland display context, does not cover the live transition producer, and does
 not cover physical Retina output. Formal parity therefore remains false, and
 the protected production shader remains unchanged.
+
+The next Walle-side boundary now passes as well. A standalone C23 renderer,
+owned by the Walle tree and using EGL plus core OpenGL, independently uploads
+the complete generated static input set and executes the main, shadow, and
+final-highlight draws. Clear/light, clear/dark, regular/light, and regular/dark
+are byte-exact on both the Ryzen integrated radeonsi device and Radeon RX 9070
+XT: 33,554,432/33,554,432 combined output bytes, zero unequal pixels, and
+maximum channel delta zero. Captured bytes are used only as final comparison
+images. The first GLES retarget was rejected because replacing desktop fine
+derivatives with the GLES base derivatives changed 278 bytes in clear/light;
+the accepted core OpenGL path preserves the gated desktop semantics.
+
+This establishes Walle-owned C renderer and local AMD execution authority for
+the canonical static case. It still does not establish the production Walle
+process/Wayland-surface boundary, live-transition state production, or physical
+Retina transfer. No additional Apple capture was required for this step.
