@@ -1,0 +1,55 @@
+{
+  "currentFinalCompositorTransferResultSchemaVersion": 7,
+  "status": "accepted-exact-current-compositor-transfer",
+  "captureCommit": "5d0e8de277c7cf09a5ef7c9da69eb64831c3597b",
+  "captureDirectory": "local-current-final-compositor-transfer-5d0e8de-v7",
+  "timelineSHA256": "06a6126f2edfb9feeecfb104a8998313718ac9ea0dbb2d13871ff85c675cc81d",
+  "validationSHA256": "ac8e1546da4d494e1e9d2331b60ec488a273aab375c541fe92c127fc9746b319",
+  "nativeCaptureExitStatus": 0,
+  "frozenValidatorExitStatus": 0,
+  "physicalRetinaPreflightPassed": true,
+  "physicalPixels": [3456, 2234],
+  "backingScaleFactor": 2,
+  "observations": {
+    "capturedVertexStreamsEqual": true,
+    "capturedVertexStreamSHA256": "13bb05062a0463db2af904398678bb4a96cf705d0a4ea126f64f888bea4fdce9",
+    "capturedCenterSeam": {
+      "columnXFloat32Bits": ["43f13516", "43f13516"],
+      "rowYFloat32Bits": ["44076575", "44076575"],
+      "bothAxesSharePixelSampleCell": true
+    },
+    "activeApplePixels": {
+      "Iscd": 131072,
+      "Irsd": 14336
+    },
+    "positiveAppleMatrixCases": 14,
+    "sourcePathInvarianceControls": 2,
+    "capturedVsSystemSpecialization": {
+      "comparisonCount": 14,
+      "comparedBytes": 58720256,
+      "unequalBytes": 0,
+      "unequalPixels": 0,
+      "maximumChannelDelta": 0
+    },
+    "capturedVsIndependentCandidate": {
+      "comparisonCount": 14,
+      "comparedBytes": 58720256,
+      "unequalBytes": 0,
+      "unequalPixels": 0,
+      "maximumChannelDelta": 0,
+      "vibrantFMAAccumulationOrder": "g-r-b",
+      "candidateMetalSourceSHA256": "dc3d5f24d77518c7d5c7cbac6f3e2bf9a6d355d3bab16c0cbe61b239612d8e00"
+    }
+  },
+  "promotedEvidence": true,
+  "remainingAppleConstructionQuestions": 0,
+  "remainingProductProofs": [
+    "Walle-shaped physical Retina color/compositor transfer",
+    "fresh production-Walle frame with zero unequal bytes"
+  ],
+  "outputTolerance": 0,
+  "productionParity": false,
+  "shaderChangeAuthorized": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

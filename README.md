@@ -14263,3 +14263,37 @@ The exact ledger before v7 is:
 4. **Quality and comparison tolerance: zero.** This result changes neither
    Walle's protected production shader nor `flake.nix` and authorizes no
    approximation or quality reduction.
+
+### Accepted v7 current-compositor transfer
+
+The frozen v7 run at commit
+`5d0e8de277c7cf09a5ef7c9da69eb64831c3597b` passes on the physical M1 Max
+Retina host: native capture and validation both exit zero. The captured
+`Iscd` and `Irsd` streams are byte-identical, with SHA-256
+`13bb05062a0463db2af904398678bb4a96cf705d0a4ea126f64f888bea4fdce9`.
+Both center seams are exactly duplicated in this run (`43f13516` for x and
+`44076575` for y), satisfying the preregistered raster-cell invariant without
+invoking an output tolerance.
+
+Both Apple roles remain nonvacuous: `Iscd` has 131,072 nonzero-alpha pixels
+and widened `Irsd` has 14,336. All 14 Apple cases change the independent seed.
+The 14 captured-versus-system-specialization comparisons and the 14
+captured-versus-independent-`g-r-b` comparisons each cover 58,720,256 bytes.
+Every comparison has zero unequal bytes, zero unequal pixels, and maximum
+channel delta zero. An independent post-run aggregation reproduces those
+counts directly from the timeline.
+
+The timeline and frozen validation have SHA-256 values
+`06a6126f2edfb9feeecfb104a8998313718ac9ea0dbb2d13871ff85c675cc81d`
+and
+`ac8e1546da4d494e1e9d2331b60ec488a273aab375c541fe92c127fc9746b319`.
+The compact accepted result is
+`Analysis/current_final_compositor_transfer_5d0e8de_v7_result.json`, SHA-256
+`72043d18ff0e9d11d81abe8963b898deb27b7c48d2667ce97ff64bacdf483057`.
+
+The Apple construction ledger is now empty. Gated Walle integration may begin
+with the exact constructors and recovered current-compositor law. Two product
+proofs remain before production parity: a Walle-shaped physical-Retina
+color/compositor transfer, then a fresh production-Walle frame with zero
+unequal bytes. This acceptance does not itself modify or authorize an
+approximate production shader or `flake.nix`; output tolerance remains zero.
