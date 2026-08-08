@@ -11908,3 +11908,62 @@ not establish dematerialize, the nested resolved-color join, independently
 generated mesh/source/backdrop/mips, physical Retina pixel/color/compositor
 behavior, or a zero-unequal-byte Walle frame. The production shader remains
 unchanged and unauthorized for parity-sensitive edits.
+
+### Current-build four-profile dematerialize numeric calibration
+
+The reverse direction is now measured from four direct-Retina captures at
+commit `4796a56e3f11eb7aff646695d1193610937832fb`. The first attempt at
+`42aaf6a` failed before capture because the stable binary still rejected
+dematerialize dynamic uniforms; it remains a failed transport attempt and is
+not evidence. The corrected binary has SHA-256
+`6711ec851453405e2c19a1f731465f1f40b1db1b05f1bd5cd3835a3974cc351d`.
+It captures only the 31 genuine presentation records at samples 1 through 31.
+The absent sample-32 endpoint is not synthesized into a private filter.
+
+The opened calibration matrix is:
+
+```text
+clear/light    circle-453-center  395def791d64757b1a8954f54cfad08b8398ea780a4ed90ce670ae94a21d65e9
+clear/dark     circle-461-center  17826c6d978362f048208ca663164c51e0a8a2a8a1fcf4b3cd07f90383d38be1
+regular/light  circle-469-center  297305a3dd4dc5f65679e7a11144a6ddb91a25eea64670419b6739a82e6ff9f8
+regular/dark   circle-477-center  888568d228ee967a7525a1febf833bb1411757599d58362efd7635fabbb864df
+```
+
+Evaluating the materialize model at each exact captured binary32 remaining
+fraction predicts all 46 non-clamp fields: 5,704/5,704 words are exact. The
+same structured optionality, Boolean, source-name, color-alpha, and exact
+`[0,8]` shadow-offset laws pass in all 124 records. A native Darwin analyzer
+then reproduces all 124 `inputClamp` words, giving 5,828/5,828 total numeric
+comparisons with zero mismatches. Direction therefore does not introduce a
+second numeric formula in this opened matrix; it changes the time-ordered
+sequence of exact remaining fractions supplied to the common law.
+
+Host `powf` substitution is observably invalid. Glibc is one ULP low for two
+clear/dark records even though every preceding binary32 operation agrees:
+
+```text
+sample 1   base 3f919b07  Apple 3fae650b  glibc 3fae650a
+sample 15  base 3f89ab32  Apple 3f9871b5  glibc 3f9871b4
+```
+
+The immutable analyzers and results are:
+
+```text
+Analysis/analyze_transition_uniform_dematerialize_clamp_local_macos_26_6_1.swift
+  SHA-256 c6ade2038ce727da44a978869d3f6407a156c8f9d0db8f2fb0aa22d7b984cba2
+Analysis/transition_uniform_dematerialize_clamp_local_macos_26_6_1_calibration_result.json
+  SHA-256 cc0dfe2c7ab932bfc84de8a830ec329dbbdd30d15dcfa92a3a3bc47ae02f77b7
+Analysis/analyze_transition_uniform_dematerialize_calibration.py
+  SHA-256 a58beac26be3dd75e3b55dc3ce1735cbb18099c05f7736416029ac9f3a653a03
+Analysis/transition_uniform_dematerialize_calibration_result.json
+  SHA-256 b943d19f8d4d3850e2d7b26d3fed0f04e5b4e1bebdac22450211595c098779f7
+```
+
+This is opened calibration, not transfer authority. A four-profile gate must
+freeze new dematerialize geometries, the common 47-field model, native Darwin
+clamp arithmetic, real 31-record topology, exact structured fields, and zero
+tolerance before any new Apple output is captured. Independently generated
+mesh/source/backdrop/mips and resolved inputs, physical Retina pixel/color/
+compositor transfer, and a fresh zero-unequal-byte Walle frame remain open.
+The production shader remains unchanged and unauthorized for parity-sensitive
+edits.

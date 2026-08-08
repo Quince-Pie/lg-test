@@ -1,0 +1,1049 @@
+{
+  "aggregate": {
+    "dynamicSampleCount": 124,
+    "nativeClampComparisonCount": 124,
+    "nonClampComparisonCount": 5704,
+    "numericComparisonCount": 5828,
+    "numericExactMatchCount": 5828,
+    "numericMismatchCount": 0,
+    "profileCount": 4,
+    "structuredRecordCount": 124
+  },
+  "cases": [
+    {
+      "appearance": "light",
+      "diameter": 453,
+      "direction": "dematerialize",
+      "dynamicSampleCount": 31,
+      "fieldExactMatchCounts": {
+        "inputBleedAmount": 31,
+        "inputBleedBlurRadius": 31,
+        "inputBleedColorMatrixBlack": 31,
+        "inputBleedColorMatrixSaturation": 31,
+        "inputBleedColorMatrixWhite": 31,
+        "inputBleedDistance0": 31,
+        "inputBleedDistance1": 31,
+        "inputBleedHeight": 31,
+        "inputBleedOpacity": 31,
+        "inputBlurDistance0": 31,
+        "inputBlurDistance1": 31,
+        "inputBlurDistance2": 31,
+        "inputBlurDistance3": 31,
+        "inputBlurDistance4": 31,
+        "inputBlurOpacity0": 31,
+        "inputBlurOpacity1": 31,
+        "inputBlurOpacity2": 31,
+        "inputBlurOpacity3": 31,
+        "inputBlurOpacity4": 31,
+        "inputBlurRadius": 31,
+        "inputClamp": 31,
+        "inputFaceColorMatrixBlack": 31,
+        "inputFaceColorMatrixSaturation": 31,
+        "inputFaceColorMatrixWhite": 31,
+        "inputFaceOpacity": 31,
+        "inputInnerRefractionAmount": 31,
+        "inputInnerRefractionHeight": 31,
+        "inputMaxHeadroom": 31,
+        "inputOuterRefractionAmount": 31,
+        "inputOuterRefractionHeight": 31,
+        "inputRefractionDistance0": 31,
+        "inputRefractionDistance1": 31,
+        "inputRefractionOpacity": 31,
+        "inputSDRGradientDistance0": 31,
+        "inputSDRGradientDistance1": 31,
+        "inputSDRHoldingToneWhite": 31,
+        "inputSDRShadowOpacity": 31,
+        "inputShadowAmount": 31,
+        "inputShadowBlurRadius": 31,
+        "inputShadowColorMatrixBlack": 31,
+        "inputShadowColorMatrixSaturation": 31,
+        "inputShadowColorMatrixWhite": 31,
+        "inputShadowDistanceOffset": 31,
+        "inputShadowHeight": 31,
+        "inputShadowOpacity": 31,
+        "inputShadowRadius": 31,
+        "inputShadowVibrancyContribution": 31
+      },
+      "geometry": "circle-453-center",
+      "material": "clear",
+      "name": "clear-light-circle453",
+      "numericComparisonCount": 1457,
+      "numericExactMatchCount": 1457,
+      "numericFieldCount": 47,
+      "records": [
+        {
+          "fractionBits": "3f777c30",
+          "inputClampBaseBits": "3f9197ff",
+          "inputClampBits": "3fae5c54",
+          "sampleIndex": 1
+        },
+        {
+          "fractionBits": "3f6fec60",
+          "inputClampBaseBits": "3f910e61",
+          "inputClampBits": "3facd1cf",
+          "sampleIndex": 2
+        },
+        {
+          "fractionBits": "3f67f630",
+          "inputClampBaseBits": "3f907d7c",
+          "inputClampBits": "3fab34a3",
+          "sampleIndex": 3
+        },
+        {
+          "fractionBits": "3f5fec90",
+          "inputClampBaseBits": "3f8feb35",
+          "inputClampBits": "3fa995d0",
+          "sampleIndex": 4
+        },
+        {
+          "fractionBits": "3f57f630",
+          "inputClampBaseBits": "3f8f5a4c",
+          "inputClampBits": "3fa7fd22",
+          "sampleIndex": 5
+        },
+        {
+          "fractionBits": "3f4fc030",
+          "inputClampBaseBits": "3f8ec4de",
+          "inputClampBits": "3fa65a10",
+          "sampleIndex": 6
+        },
+        {
+          "fractionBits": "3f47dad0",
+          "inputClampBaseBits": "3f8e352b",
+          "inputClampBits": "3fa4c953",
+          "sampleIndex": 7
+        },
+        {
+          "fractionBits": "3f3fe3c0",
+          "inputClampBaseBits": "3f8da436",
+          "inputClampBits": "3fa33750",
+          "sampleIndex": 8
+        },
+        {
+          "fractionBits": "3f37b690",
+          "inputClampBaseBits": "3f8d0f67",
+          "inputClampBits": "3fa19cf5",
+          "sampleIndex": 9
+        },
+        {
+          "fractionBits": "3f2fdb40",
+          "inputClampBaseBits": "3f8c806d",
+          "inputClampBits": "3fa014e7",
+          "sampleIndex": 10
+        },
+        {
+          "fractionBits": "3f27f600",
+          "inputClampBaseBits": "3f8bf0bc",
+          "inputClampBits": "3f9e8d15",
+          "sampleIndex": 11
+        },
+        {
+          "fractionBits": "3f1fed50",
+          "inputClampBaseBits": "3f8b5e85",
+          "inputClampBits": "3f9d00a2",
+          "sampleIndex": 12
+        },
+        {
+          "fractionBits": "3f17e3e0",
+          "inputClampBaseBits": "3f8acc42",
+          "inputClampBits": "3f9b7654",
+          "sampleIndex": 13
+        },
+        {
+          "fractionBits": "3f0fe530",
+          "inputClampBaseBits": "3f8a3ac2",
+          "inputClampBits": "3f99f053",
+          "sampleIndex": 14
+        },
+        {
+          "fractionBits": "3f079b90",
+          "inputClampBaseBits": "3f89a3ee",
+          "inputClampBits": "3f985e66",
+          "sampleIndex": 15
+        },
+        {
+          "fractionBits": "3eff5b20",
+          "inputClampBaseBits": "3f89139e",
+          "inputClampBits": "3f96e016",
+          "sampleIndex": 16
+        },
+        {
+          "fractionBits": "3eefc760",
+          "inputClampBaseBits": "3f8885e0",
+          "inputClampBits": "3f956ab8",
+          "sampleIndex": 17
+        },
+        {
+          "fractionBits": "3edf7fa0",
+          "inputClampBaseBits": "3f87f1bc",
+          "inputClampBits": "3f93e6c2",
+          "sampleIndex": 18
+        },
+        {
+          "fractionBits": "3ecffe80",
+          "inputClampBaseBits": "3f8764a6",
+          "inputClampBits": "3f92776a",
+          "sampleIndex": 19
+        },
+        {
+          "fractionBits": "3ebf48e0",
+          "inputClampBaseBits": "3f86cc9a",
+          "inputClampBits": "3f90edde",
+          "sampleIndex": 20
+        },
+        {
+          "fractionBits": "3eb000a0",
+          "inputClampBaseBits": "3f86418b",
+          "inputClampBits": "3f8f880f",
+          "sampleIndex": 21
+        },
+        {
+          "fractionBits": "3e9f5a00",
+          "inputClampBaseBits": "3f85aa06",
+          "inputClampBits": "3f8e047c",
+          "sampleIndex": 22
+        },
+        {
+          "fractionBits": "3e8febe0",
+          "inputClampBaseBits": "3f851d9e",
+          "inputClampBits": "3f8c9f7b",
+          "sampleIndex": 23
+        },
+        {
+          "fractionBits": "3e7eb8c0",
+          "inputClampBaseBits": "3f8486ed",
+          "inputClampBits": "3f8b229b",
+          "sampleIndex": 24
+        },
+        {
+          "fractionBits": "3e5fdcc0",
+          "inputClampBaseBits": "3f83fa85",
+          "inputClampBits": "3f89c1da",
+          "sampleIndex": 25
+        },
+        {
+          "fractionBits": "3e3eb400",
+          "inputClampBaseBits": "3f8363a8",
+          "inputClampBits": "3f88491c",
+          "sampleIndex": 26
+        },
+        {
+          "fractionBits": "3e1efb80",
+          "inputClampBaseBits": "3f82d356",
+          "inputClampBits": "3f86e2e9",
+          "sampleIndex": 27
+        },
+        {
+          "fractionBits": "3dff5500",
+          "inputClampBaseBits": "3f8244da",
+          "inputClampBits": "3f858362",
+          "sampleIndex": 28
+        },
+        {
+          "fractionBits": "3dbed380",
+          "inputClampBaseBits": "3f81b21c",
+          "inputClampBits": "3f841b8b",
+          "sampleIndex": 29
+        },
+        {
+          "fractionBits": "3d7da800",
+          "inputClampBaseBits": "3f812085",
+          "inputClampBits": "3f82b8b8",
+          "sampleIndex": 30
+        },
+        {
+          "fractionBits": "3cfb4e00",
+          "inputClampBaseBits": "3f808eec",
+          "inputClampBits": "3f81580f",
+          "sampleIndex": 31
+        }
+      ],
+      "structuredRecordCount": 31,
+      "timelineSHA256": "395def791d64757b1a8954f54cfad08b8398ea780a4ed90ce670ae94a21d65e9"
+    },
+    {
+      "appearance": "dark",
+      "diameter": 461,
+      "direction": "dematerialize",
+      "dynamicSampleCount": 31,
+      "fieldExactMatchCounts": {
+        "inputBleedAmount": 31,
+        "inputBleedBlurRadius": 31,
+        "inputBleedColorMatrixBlack": 31,
+        "inputBleedColorMatrixSaturation": 31,
+        "inputBleedColorMatrixWhite": 31,
+        "inputBleedDistance0": 31,
+        "inputBleedDistance1": 31,
+        "inputBleedHeight": 31,
+        "inputBleedOpacity": 31,
+        "inputBlurDistance0": 31,
+        "inputBlurDistance1": 31,
+        "inputBlurDistance2": 31,
+        "inputBlurDistance3": 31,
+        "inputBlurDistance4": 31,
+        "inputBlurOpacity0": 31,
+        "inputBlurOpacity1": 31,
+        "inputBlurOpacity2": 31,
+        "inputBlurOpacity3": 31,
+        "inputBlurOpacity4": 31,
+        "inputBlurRadius": 31,
+        "inputClamp": 31,
+        "inputFaceColorMatrixBlack": 31,
+        "inputFaceColorMatrixSaturation": 31,
+        "inputFaceColorMatrixWhite": 31,
+        "inputFaceOpacity": 31,
+        "inputInnerRefractionAmount": 31,
+        "inputInnerRefractionHeight": 31,
+        "inputMaxHeadroom": 31,
+        "inputOuterRefractionAmount": 31,
+        "inputOuterRefractionHeight": 31,
+        "inputRefractionDistance0": 31,
+        "inputRefractionDistance1": 31,
+        "inputRefractionOpacity": 31,
+        "inputSDRGradientDistance0": 31,
+        "inputSDRGradientDistance1": 31,
+        "inputSDRHoldingToneWhite": 31,
+        "inputSDRShadowOpacity": 31,
+        "inputShadowAmount": 31,
+        "inputShadowBlurRadius": 31,
+        "inputShadowColorMatrixBlack": 31,
+        "inputShadowColorMatrixSaturation": 31,
+        "inputShadowColorMatrixWhite": 31,
+        "inputShadowDistanceOffset": 31,
+        "inputShadowHeight": 31,
+        "inputShadowOpacity": 31,
+        "inputShadowRadius": 31,
+        "inputShadowVibrancyContribution": 31
+      },
+      "geometry": "circle-461-center",
+      "material": "clear",
+      "name": "clear-dark-circle461",
+      "numericComparisonCount": 1457,
+      "numericExactMatchCount": 1457,
+      "numericFieldCount": 47,
+      "records": [
+        {
+          "fractionBits": "3f77a6d0",
+          "inputClampBaseBits": "3f919b07",
+          "inputClampBits": "3fae650b",
+          "sampleIndex": 1
+        },
+        {
+          "fractionBits": "3f6fcb50",
+          "inputClampBaseBits": "3f910c07",
+          "inputClampBits": "3faccb16",
+          "sampleIndex": 2
+        },
+        {
+          "fractionBits": "3f67b100",
+          "inputClampBaseBits": "3f907890",
+          "inputClampBits": "3fab26a4",
+          "sampleIndex": 3
+        },
+        {
+          "fractionBits": "3f5f9e20",
+          "inputClampBaseBits": "3f8fe5a1",
+          "inputClampBits": "3fa9860a",
+          "sampleIndex": 4
+        },
+        {
+          "fractionBits": "3f579bc0",
+          "inputClampBaseBits": "3f8f53de",
+          "inputClampBits": "3fa7eb0d",
+          "sampleIndex": 5
+        },
+        {
+          "fractionBits": "3f4fd480",
+          "inputClampBaseBits": "3f8ec650",
+          "inputClampBits": "3fa65e1b",
+          "sampleIndex": 6
+        },
+        {
+          "fractionBits": "3f479da0",
+          "inputClampBaseBits": "3f8e30d1",
+          "inputClampBits": "3fa4bd39",
+          "sampleIndex": 7
+        },
+        {
+          "fractionBits": "3f3ff980",
+          "inputClampBaseBits": "3f8da5c2",
+          "inputClampBits": "3fa33b97",
+          "sampleIndex": 8
+        },
+        {
+          "fractionBits": "3f378b70",
+          "inputClampBaseBits": "3f8d0c57",
+          "inputClampBits": "3fa19489",
+          "sampleIndex": 9
+        },
+        {
+          "fractionBits": "3f2ff910",
+          "inputClampBaseBits": "3f8c828b",
+          "inputClampBits": "3fa01ab1",
+          "sampleIndex": 10
+        },
+        {
+          "fractionBits": "3f2801d0",
+          "inputClampBaseBits": "3f8bf192",
+          "inputClampBits": "3f9e8f5b",
+          "sampleIndex": 11
+        },
+        {
+          "fractionBits": "3f1f9cb0",
+          "inputClampBaseBits": "3f8b58ca",
+          "inputClampBits": "3f9cf125",
+          "sampleIndex": 12
+        },
+        {
+          "fractionBits": "3f17f0f0",
+          "inputClampBaseBits": "3f8acd30",
+          "inputClampBits": "3f9b78d4",
+          "sampleIndex": 13
+        },
+        {
+          "fractionBits": "3f0fe650",
+          "inputClampBaseBits": "3f8a3ad7",
+          "inputClampBits": "3f99f08b",
+          "sampleIndex": 14
+        },
+        {
+          "fractionBits": "3f0801b0",
+          "inputClampBaseBits": "3f89ab32",
+          "inputClampBits": "3f9871b5",
+          "sampleIndex": 15
+        },
+        {
+          "fractionBits": "3eff83c0",
+          "inputClampBaseBits": "3f891510",
+          "inputClampBits": "3f96e3e7",
+          "sampleIndex": 16
+        },
+        {
+          "fractionBits": "3eef96e0",
+          "inputClampBaseBits": "3f888426",
+          "inputClampBits": "3f95662f",
+          "sampleIndex": 17
+        },
+        {
+          "fractionBits": "3edfcc80",
+          "inputClampBaseBits": "3f87f477",
+          "inputClampBits": "3f93ede3",
+          "sampleIndex": 18
+        },
+        {
+          "fractionBits": "3ecfe040",
+          "inputClampBaseBits": "3f876393",
+          "inputClampBits": "3f9274a0",
+          "sampleIndex": 19
+        },
+        {
+          "fractionBits": "3ebf4c80",
+          "inputClampBaseBits": "3f86ccbb",
+          "inputClampBits": "3f90ee33",
+          "sampleIndex": 20
+        },
+        {
+          "fractionBits": "3eaf4e00",
+          "inputClampBaseBits": "3f863b31",
+          "inputClampBits": "3f8f77c3",
+          "sampleIndex": 21
+        },
+        {
+          "fractionBits": "3e9fdec0",
+          "inputClampBaseBits": "3f85aebe",
+          "inputClampBits": "3f8e1085",
+          "sampleIndex": 22
+        },
+        {
+          "fractionBits": "3e8fba60",
+          "inputClampBaseBits": "3f851bdc",
+          "inputClampBits": "3f8c9b06",
+          "sampleIndex": 23
+        },
+        {
+          "fractionBits": "3e7f9680",
+          "inputClampBaseBits": "3f848add",
+          "inputClampBits": "3f8b2c87",
+          "sampleIndex": 24
+        },
+        {
+          "fractionBits": "3e5e4cc0",
+          "inputClampBaseBits": "3f83f36a",
+          "inputClampBits": "3f89b00e",
+          "sampleIndex": 25
+        },
+        {
+          "fractionBits": "3e3fbec0",
+          "inputClampBaseBits": "3f836865",
+          "inputClampBits": "3f8854e8",
+          "sampleIndex": 26
+        },
+        {
+          "fractionBits": "3e1f0780",
+          "inputClampBaseBits": "3f82d38c",
+          "inputClampBits": "3f86e36f",
+          "sampleIndex": 27
+        },
+        {
+          "fractionBits": "3dfd3400",
+          "inputClampBaseBits": "3f824002",
+          "inputClampBits": "3f857778",
+          "sampleIndex": 28
+        },
+        {
+          "fractionBits": "3dbd7d00",
+          "inputClampBaseBits": "3f81af11",
+          "inputClampBits": "3f84141a",
+          "sampleIndex": 29
+        },
+        {
+          "fractionBits": "3d800c00",
+          "inputClampBaseBits": "3f81234b",
+          "inputClampBits": "3f82bf75",
+          "sampleIndex": 30
+        },
+        {
+          "fractionBits": "3cf4d400",
+          "inputClampBaseBits": "3f808b3e",
+          "inputClampBits": "3f814f2d",
+          "sampleIndex": 31
+        }
+      ],
+      "structuredRecordCount": 31,
+      "timelineSHA256": "17826c6d978362f048208ca663164c51e0a8a2a8a1fcf4b3cd07f90383d38be1"
+    },
+    {
+      "appearance": "light",
+      "diameter": 469,
+      "direction": "dematerialize",
+      "dynamicSampleCount": 31,
+      "fieldExactMatchCounts": {
+        "inputBleedAmount": 31,
+        "inputBleedBlurRadius": 31,
+        "inputBleedColorMatrixBlack": 31,
+        "inputBleedColorMatrixSaturation": 31,
+        "inputBleedColorMatrixWhite": 31,
+        "inputBleedDistance0": 31,
+        "inputBleedDistance1": 31,
+        "inputBleedHeight": 31,
+        "inputBleedOpacity": 31,
+        "inputBlurDistance0": 31,
+        "inputBlurDistance1": 31,
+        "inputBlurDistance2": 31,
+        "inputBlurDistance3": 31,
+        "inputBlurDistance4": 31,
+        "inputBlurOpacity0": 31,
+        "inputBlurOpacity1": 31,
+        "inputBlurOpacity2": 31,
+        "inputBlurOpacity3": 31,
+        "inputBlurOpacity4": 31,
+        "inputBlurRadius": 31,
+        "inputClamp": 31,
+        "inputFaceColorMatrixBlack": 31,
+        "inputFaceColorMatrixSaturation": 31,
+        "inputFaceColorMatrixWhite": 31,
+        "inputFaceOpacity": 31,
+        "inputInnerRefractionAmount": 31,
+        "inputInnerRefractionHeight": 31,
+        "inputMaxHeadroom": 31,
+        "inputOuterRefractionAmount": 31,
+        "inputOuterRefractionHeight": 31,
+        "inputRefractionDistance0": 31,
+        "inputRefractionDistance1": 31,
+        "inputRefractionOpacity": 31,
+        "inputSDRGradientDistance0": 31,
+        "inputSDRGradientDistance1": 31,
+        "inputSDRHoldingToneWhite": 31,
+        "inputSDRShadowOpacity": 31,
+        "inputShadowAmount": 31,
+        "inputShadowBlurRadius": 31,
+        "inputShadowColorMatrixBlack": 31,
+        "inputShadowColorMatrixSaturation": 31,
+        "inputShadowColorMatrixWhite": 31,
+        "inputShadowDistanceOffset": 31,
+        "inputShadowHeight": 31,
+        "inputShadowOpacity": 31,
+        "inputShadowRadius": 31,
+        "inputShadowVibrancyContribution": 31
+      },
+      "geometry": "circle-469-center",
+      "material": "regular",
+      "name": "regular-light-circle469",
+      "numericComparisonCount": 1457,
+      "numericExactMatchCount": 1457,
+      "numericFieldCount": 47,
+      "records": [
+        {
+          "fractionBits": "3f77f730",
+          "inputClampBaseBits": "3f83868c",
+          "inputClampBits": "3f88a007",
+          "sampleIndex": 1
+        },
+        {
+          "fractionBits": "3f6f9890",
+          "inputClampBaseBits": "3f836815",
+          "inputClampBits": "3f885420",
+          "sampleIndex": 2
+        },
+        {
+          "fractionBits": "3f67b3a0",
+          "inputClampBaseBits": "3f834b5a",
+          "inputClampBits": "3f880ca2",
+          "sampleIndex": 3
+        },
+        {
+          "fractionBits": "3f5ffbe0",
+          "inputClampBaseBits": "3f832f42",
+          "inputClampBits": "3f87c6cf",
+          "sampleIndex": 4
+        },
+        {
+          "fractionBits": "3f57b0e0",
+          "inputClampBaseBits": "3f831112",
+          "inputClampBits": "3f877bde",
+          "sampleIndex": 5
+        },
+        {
+          "fractionBits": "3f4fb2b0",
+          "inputClampBaseBits": "3f82f3fb",
+          "inputClampBits": "3f8733be",
+          "sampleIndex": 6
+        },
+        {
+          "fractionBits": "3f47a0b0",
+          "inputClampBaseBits": "3f82d69c",
+          "inputClampBits": "3f86eb03",
+          "sampleIndex": 7
+        },
+        {
+          "fractionBits": "3f3fa8a0",
+          "inputClampBaseBits": "3f82b99a",
+          "inputClampBits": "3f86a344",
+          "sampleIndex": 8
+        },
+        {
+          "fractionBits": "3f37f260",
+          "inputClampBaseBits": "3f829d88",
+          "inputClampBits": "3f865dec",
+          "sampleIndex": 9
+        },
+        {
+          "fractionBits": "3f2f9420",
+          "inputClampBaseBits": "3f827f12",
+          "inputClampBits": "3f8612c3",
+          "sampleIndex": 10
+        },
+        {
+          "fractionBits": "3f279830",
+          "inputClampBaseBits": "3f826203",
+          "inputClampBits": "3f85cb27",
+          "sampleIndex": 11
+        },
+        {
+          "fractionBits": "3f1fbbf0",
+          "inputClampBaseBits": "3f824567",
+          "inputClampBits": "3f8584bd",
+          "sampleIndex": 12
+        },
+        {
+          "fractionBits": "3f17d770",
+          "inputClampBaseBits": "3f8228ad",
+          "inputClampBits": "3f853e1e",
+          "sampleIndex": 13
+        },
+        {
+          "fractionBits": "3f0fa090",
+          "inputClampBaseBits": "3f820ac7",
+          "inputClampBits": "3f84f4b5",
+          "sampleIndex": 14
+        },
+        {
+          "fractionBits": "3f07a0b0",
+          "inputClampBaseBits": "3f81edaa",
+          "inputClampBits": "3f84ad50",
+          "sampleIndex": 15
+        },
+        {
+          "fractionBits": "3eff2fa0",
+          "inputClampBaseBits": "3f81d06a",
+          "inputClampBits": "3f8465ac",
+          "sampleIndex": 16
+        },
+        {
+          "fractionBits": "3eefd480",
+          "inputClampBaseBits": "3f81b478",
+          "inputClampBits": "3f84214f",
+          "sampleIndex": 17
+        },
+        {
+          "fractionBits": "3edf1e80",
+          "inputClampBaseBits": "3f81960f",
+          "inputClampBits": "3f83d702",
+          "sampleIndex": 18
+        },
+        {
+          "fractionBits": "3ecfd320",
+          "inputClampBaseBits": "3f817a39",
+          "inputClampBits": "3f839314",
+          "sampleIndex": 19
+        },
+        {
+          "fractionBits": "3ebfc040",
+          "inputClampBaseBits": "3f815cf8",
+          "inputClampBits": "3f834bc7",
+          "sampleIndex": 20
+        },
+        {
+          "fractionBits": "3eaff640",
+          "inputClampBaseBits": "3f81403c",
+          "inputClampBits": "3f8305d4",
+          "sampleIndex": 21
+        },
+        {
+          "fractionBits": "3e9fe5a0",
+          "inputClampBaseBits": "3f8122ff",
+          "inputClampBits": "3f82bebd",
+          "sampleIndex": 22
+        },
+        {
+          "fractionBits": "3e8f40e0",
+          "inputClampBaseBits": "3f8104b5",
+          "inputClampBits": "3f82752f",
+          "sampleIndex": 23
+        },
+        {
+          "fractionBits": "3e7e5d80",
+          "inputClampBaseBits": "3f80e776",
+          "inputClampBits": "3f822e41",
+          "sampleIndex": 24
+        },
+        {
+          "fractionBits": "3e5fc680",
+          "inputClampBaseBits": "3f80cba0",
+          "inputClampBits": "3f81ead4",
+          "sampleIndex": 25
+        },
+        {
+          "fractionBits": "3e3f5d40",
+          "inputClampBaseBits": "3f80ae22",
+          "inputClampBits": "3f81a379",
+          "sampleIndex": 26
+        },
+        {
+          "fractionBits": "3e1fbac0",
+          "inputClampBaseBits": "3f809159",
+          "inputClampBits": "3f815deb",
+          "sampleIndex": 27
+        },
+        {
+          "fractionBits": "3dffe380",
+          "inputClampBaseBits": "3f80746d",
+          "inputClampBits": "3f81181e",
+          "sampleIndex": 28
+        },
+        {
+          "fractionBits": "3dbfe400",
+          "inputClampBaseBits": "3f80574f",
+          "inputClampBits": "3f80d1ee",
+          "sampleIndex": 29
+        },
+        {
+          "fractionBits": "3d7bbb00",
+          "inputClampBaseBits": "3f803944",
+          "inputClampBits": "3f80899b",
+          "sampleIndex": 30
+        },
+        {
+          "fractionBits": "3cff7600",
+          "inputClampBaseBits": "3f801d0f",
+          "inputClampBits": "3f8045c9",
+          "sampleIndex": 31
+        }
+      ],
+      "structuredRecordCount": 31,
+      "timelineSHA256": "297305a3dd4dc5f65679e7a11144a6ddb91a25eea64670419b6739a82e6ff9f8"
+    },
+    {
+      "appearance": "dark",
+      "diameter": 477,
+      "direction": "dematerialize",
+      "dynamicSampleCount": 31,
+      "fieldExactMatchCounts": {
+        "inputBleedAmount": 31,
+        "inputBleedBlurRadius": 31,
+        "inputBleedColorMatrixBlack": 31,
+        "inputBleedColorMatrixSaturation": 31,
+        "inputBleedColorMatrixWhite": 31,
+        "inputBleedDistance0": 31,
+        "inputBleedDistance1": 31,
+        "inputBleedHeight": 31,
+        "inputBleedOpacity": 31,
+        "inputBlurDistance0": 31,
+        "inputBlurDistance1": 31,
+        "inputBlurDistance2": 31,
+        "inputBlurDistance3": 31,
+        "inputBlurDistance4": 31,
+        "inputBlurOpacity0": 31,
+        "inputBlurOpacity1": 31,
+        "inputBlurOpacity2": 31,
+        "inputBlurOpacity3": 31,
+        "inputBlurOpacity4": 31,
+        "inputBlurRadius": 31,
+        "inputClamp": 31,
+        "inputFaceColorMatrixBlack": 31,
+        "inputFaceColorMatrixSaturation": 31,
+        "inputFaceColorMatrixWhite": 31,
+        "inputFaceOpacity": 31,
+        "inputInnerRefractionAmount": 31,
+        "inputInnerRefractionHeight": 31,
+        "inputMaxHeadroom": 31,
+        "inputOuterRefractionAmount": 31,
+        "inputOuterRefractionHeight": 31,
+        "inputRefractionDistance0": 31,
+        "inputRefractionDistance1": 31,
+        "inputRefractionOpacity": 31,
+        "inputSDRGradientDistance0": 31,
+        "inputSDRGradientDistance1": 31,
+        "inputSDRHoldingToneWhite": 31,
+        "inputSDRShadowOpacity": 31,
+        "inputShadowAmount": 31,
+        "inputShadowBlurRadius": 31,
+        "inputShadowColorMatrixBlack": 31,
+        "inputShadowColorMatrixSaturation": 31,
+        "inputShadowColorMatrixWhite": 31,
+        "inputShadowDistanceOffset": 31,
+        "inputShadowHeight": 31,
+        "inputShadowOpacity": 31,
+        "inputShadowRadius": 31,
+        "inputShadowVibrancyContribution": 31
+      },
+      "geometry": "circle-477-center",
+      "material": "regular",
+      "name": "regular-dark-circle477",
+      "numericComparisonCount": 1457,
+      "numericExactMatchCount": 1457,
+      "numericFieldCount": 47,
+      "records": [
+        {
+          "fractionBits": "3f779330",
+          "inputClampBaseBits": "3f2221fb",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 1
+        },
+        {
+          "fractionBits": "3f6ff720",
+          "inputClampBaseBits": "3f250495",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 2
+        },
+        {
+          "fractionBits": "3f67c200",
+          "inputClampBaseBits": "3f282137",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 3
+        },
+        {
+          "fractionBits": "3f600090",
+          "inputClampBaseBits": "3f2b11fd",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 4
+        },
+        {
+          "fractionBits": "3f579370",
+          "inputClampBaseBits": "3f2e43dc",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 5
+        },
+        {
+          "fractionBits": "3f4ff840",
+          "inputClampBaseBits": "3f312620",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 6
+        },
+        {
+          "fractionBits": "3f47dc30",
+          "inputClampBaseBits": "3f343943",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 7
+        },
+        {
+          "fractionBits": "3f400050",
+          "inputClampBaseBits": "3f37340f",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 8
+        },
+        {
+          "fractionBits": "3f378e80",
+          "inputClampBaseBits": "3f3a67b3",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 9
+        },
+        {
+          "fractionBits": "3f2fdc80",
+          "inputClampBaseBits": "3f3d529f",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 10
+        },
+        {
+          "fractionBits": "3f278a70",
+          "inputClampBaseBits": "3f407a3b",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 11
+        },
+        {
+          "fractionBits": "3f1fe540",
+          "inputClampBaseBits": "3f43604a",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 12
+        },
+        {
+          "fractionBits": "3f17ee60",
+          "inputClampBaseBits": "3f466552",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 13
+        },
+        {
+          "fractionBits": "3f0fdd00",
+          "inputClampBaseBits": "3f497466",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 14
+        },
+        {
+          "fractionBits": "3f080080",
+          "inputClampBaseBits": "3f4c6f6f",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 15
+        },
+        {
+          "fractionBits": "3eff6a40",
+          "inputClampBaseBits": "3f4f9481",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 16
+        },
+        {
+          "fractionBits": "3ef00360",
+          "inputClampBaseBits": "3f527ff9",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 17
+        },
+        {
+          "fractionBits": "3edf15a0",
+          "inputClampBaseBits": "3f55b58a",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 18
+        },
+        {
+          "fractionBits": "3ecfdde0",
+          "inputClampBaseBits": "3f589811",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 19
+        },
+        {
+          "fractionBits": "3ebfa660",
+          "inputClampBaseBits": "3f5bab14",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 20
+        },
+        {
+          "fractionBits": "3eaf3aa0",
+          "inputClampBaseBits": "3f5ec7ff",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 21
+        },
+        {
+          "fractionBits": "3e9fb8c0",
+          "inputClampBaseBits": "3f61b895",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 22
+        },
+        {
+          "fractionBits": "3e8ff080",
+          "inputClampBaseBits": "3f64b682",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 23
+        },
+        {
+          "fractionBits": "3e7f4b80",
+          "inputClampBaseBits": "3f67cd2b",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 24
+        },
+        {
+          "fractionBits": "3e5ede80",
+          "inputClampBaseBits": "3f6adfff",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 25
+        },
+        {
+          "fractionBits": "3e3eba80",
+          "inputClampBaseBits": "3f6debe7",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 26
+        },
+        {
+          "fractionBits": "3e1f0400",
+          "inputClampBaseBits": "3f70ed6d",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 27
+        },
+        {
+          "fractionBits": "3dfe9e80",
+          "inputClampBaseBits": "3f73eec9",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 28
+        },
+        {
+          "fractionBits": "3dbf3180",
+          "inputClampBaseBits": "3f76f050",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 29
+        },
+        {
+          "fractionBits": "3d7b6700",
+          "inputClampBaseBits": "3f7a0ae8",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 30
+        },
+        {
+          "fractionBits": "3cf20c00",
+          "inputClampBaseBits": "3f7d21d5",
+          "inputClampBits": "3f800000",
+          "sampleIndex": 31
+        }
+      ],
+      "structuredRecordCount": 31,
+      "timelineSHA256": "888568d228ee967a7525a1febf833bb1411757599d58362efd7635fabbb864df"
+    }
+  ],
+  "classification": "opened four-profile dematerialize calibration of the complete numeric glassBackground input model; no prospective transfer authority",
+  "conclusion": {
+    "independentWalleZeroByteFrameEstablished": false,
+    "liquidGlassParityEstablished": false,
+    "openedCalibrationExact": true,
+    "physicalPixelParityEstablished": false,
+    "productionShaderChangeAuthorized": false,
+    "prospectiveDematerializeTransferEstablished": false,
+    "sameLawAsFunctionOfRemainingFraction": true
+  },
+  "model": {
+    "comparisonPrecision": "IEEE-754 binary32 words",
+    "directionLaw": "the materialize 47-field model evaluated at the exact captured binary32 remaining fraction k",
+    "nativeDarwinPowfField": "inputClamp",
+    "numericFieldCount": 47,
+    "pythonPredictedFieldCount": 46
+  },
+  "nativeClampResult": {
+    "comparisonCount": 124,
+    "path": "transition_uniform_dematerialize_clamp_local_macos_26_6_1_calibration_result.json",
+    "sha256": "cc0dfe2c7ab932bfc84de8a830ec329dbbdd30d15dcfa92a3a3bc47ae02f77b7",
+    "sourceSHA256": "c6ade2038ce727da44a978869d3f6407a156c8f9d0db8f2fb0aa22d7b984cba2"
+  },
+  "target": {
+    "architecture": "arm64",
+    "build": "25G76",
+    "captureBinarySHA256": "6711ec851453405e2c19a1f731465f1f40b1db1b05f1bd5cd3835a3974cc351d",
+    "display": "built-in Retina 3456x2234 physical, 1728x1117 points, 2x",
+    "os": "macOS 26.6.1"
+  },
+  "transitionUniformDematerializeCalibrationAnalysisSchemaVersion": 1
+}

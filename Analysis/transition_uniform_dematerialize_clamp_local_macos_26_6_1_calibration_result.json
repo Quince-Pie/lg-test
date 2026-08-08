@@ -1,0 +1,1080 @@
+{
+  "allCandidateWordsExact" : true,
+  "arithmetic" : {
+    "base" : "Float(encoded*inverse + offset), separate multiply\/add",
+    "clamp" : "max(Float(1), decoded)",
+    "decoded" : "Darwin.powf(base, Float(2.4))",
+    "encoded" : "Float((1-k)*1 + k*faceWhite), separate multiply\/add",
+    "inverse" : "Float(1)\/Float(1.055)",
+    "offset" : "Float(0.055)\/Float(1.055)"
+  },
+  "cases" : [
+    {
+      "appearance" : "light",
+      "comparisonCount" : 31,
+      "diameter" : 453,
+      "direction" : "dematerialize",
+      "exactMatchCount" : 31,
+      "faceWhiteBits" : "3f933333",
+      "geometry" : "circle-453-center",
+      "material" : "clear",
+      "name" : "clear-light-circle453",
+      "records" : [
+        {
+          "baseBits" : "3f9197ff",
+          "candidateBits" : "3fae5c54",
+          "exact" : true,
+          "fractionBits" : "3f777c30",
+          "observedBits" : "3fae5c54",
+          "sampleIndex" : 1
+        },
+        {
+          "baseBits" : "3f910e61",
+          "candidateBits" : "3facd1cf",
+          "exact" : true,
+          "fractionBits" : "3f6fec60",
+          "observedBits" : "3facd1cf",
+          "sampleIndex" : 2
+        },
+        {
+          "baseBits" : "3f907d7c",
+          "candidateBits" : "3fab34a3",
+          "exact" : true,
+          "fractionBits" : "3f67f630",
+          "observedBits" : "3fab34a3",
+          "sampleIndex" : 3
+        },
+        {
+          "baseBits" : "3f8feb35",
+          "candidateBits" : "3fa995d0",
+          "exact" : true,
+          "fractionBits" : "3f5fec90",
+          "observedBits" : "3fa995d0",
+          "sampleIndex" : 4
+        },
+        {
+          "baseBits" : "3f8f5a4c",
+          "candidateBits" : "3fa7fd22",
+          "exact" : true,
+          "fractionBits" : "3f57f630",
+          "observedBits" : "3fa7fd22",
+          "sampleIndex" : 5
+        },
+        {
+          "baseBits" : "3f8ec4de",
+          "candidateBits" : "3fa65a10",
+          "exact" : true,
+          "fractionBits" : "3f4fc030",
+          "observedBits" : "3fa65a10",
+          "sampleIndex" : 6
+        },
+        {
+          "baseBits" : "3f8e352b",
+          "candidateBits" : "3fa4c953",
+          "exact" : true,
+          "fractionBits" : "3f47dad0",
+          "observedBits" : "3fa4c953",
+          "sampleIndex" : 7
+        },
+        {
+          "baseBits" : "3f8da436",
+          "candidateBits" : "3fa33750",
+          "exact" : true,
+          "fractionBits" : "3f3fe3c0",
+          "observedBits" : "3fa33750",
+          "sampleIndex" : 8
+        },
+        {
+          "baseBits" : "3f8d0f67",
+          "candidateBits" : "3fa19cf5",
+          "exact" : true,
+          "fractionBits" : "3f37b690",
+          "observedBits" : "3fa19cf5",
+          "sampleIndex" : 9
+        },
+        {
+          "baseBits" : "3f8c806d",
+          "candidateBits" : "3fa014e7",
+          "exact" : true,
+          "fractionBits" : "3f2fdb40",
+          "observedBits" : "3fa014e7",
+          "sampleIndex" : 10
+        },
+        {
+          "baseBits" : "3f8bf0bc",
+          "candidateBits" : "3f9e8d15",
+          "exact" : true,
+          "fractionBits" : "3f27f600",
+          "observedBits" : "3f9e8d15",
+          "sampleIndex" : 11
+        },
+        {
+          "baseBits" : "3f8b5e85",
+          "candidateBits" : "3f9d00a2",
+          "exact" : true,
+          "fractionBits" : "3f1fed50",
+          "observedBits" : "3f9d00a2",
+          "sampleIndex" : 12
+        },
+        {
+          "baseBits" : "3f8acc42",
+          "candidateBits" : "3f9b7654",
+          "exact" : true,
+          "fractionBits" : "3f17e3e0",
+          "observedBits" : "3f9b7654",
+          "sampleIndex" : 13
+        },
+        {
+          "baseBits" : "3f8a3ac2",
+          "candidateBits" : "3f99f053",
+          "exact" : true,
+          "fractionBits" : "3f0fe530",
+          "observedBits" : "3f99f053",
+          "sampleIndex" : 14
+        },
+        {
+          "baseBits" : "3f89a3ee",
+          "candidateBits" : "3f985e66",
+          "exact" : true,
+          "fractionBits" : "3f079b90",
+          "observedBits" : "3f985e66",
+          "sampleIndex" : 15
+        },
+        {
+          "baseBits" : "3f89139e",
+          "candidateBits" : "3f96e016",
+          "exact" : true,
+          "fractionBits" : "3eff5b20",
+          "observedBits" : "3f96e016",
+          "sampleIndex" : 16
+        },
+        {
+          "baseBits" : "3f8885e0",
+          "candidateBits" : "3f956ab8",
+          "exact" : true,
+          "fractionBits" : "3eefc760",
+          "observedBits" : "3f956ab8",
+          "sampleIndex" : 17
+        },
+        {
+          "baseBits" : "3f87f1bc",
+          "candidateBits" : "3f93e6c2",
+          "exact" : true,
+          "fractionBits" : "3edf7fa0",
+          "observedBits" : "3f93e6c2",
+          "sampleIndex" : 18
+        },
+        {
+          "baseBits" : "3f8764a6",
+          "candidateBits" : "3f92776a",
+          "exact" : true,
+          "fractionBits" : "3ecffe80",
+          "observedBits" : "3f92776a",
+          "sampleIndex" : 19
+        },
+        {
+          "baseBits" : "3f86cc9a",
+          "candidateBits" : "3f90edde",
+          "exact" : true,
+          "fractionBits" : "3ebf48e0",
+          "observedBits" : "3f90edde",
+          "sampleIndex" : 20
+        },
+        {
+          "baseBits" : "3f86418b",
+          "candidateBits" : "3f8f880f",
+          "exact" : true,
+          "fractionBits" : "3eb000a0",
+          "observedBits" : "3f8f880f",
+          "sampleIndex" : 21
+        },
+        {
+          "baseBits" : "3f85aa06",
+          "candidateBits" : "3f8e047c",
+          "exact" : true,
+          "fractionBits" : "3e9f5a00",
+          "observedBits" : "3f8e047c",
+          "sampleIndex" : 22
+        },
+        {
+          "baseBits" : "3f851d9e",
+          "candidateBits" : "3f8c9f7b",
+          "exact" : true,
+          "fractionBits" : "3e8febe0",
+          "observedBits" : "3f8c9f7b",
+          "sampleIndex" : 23
+        },
+        {
+          "baseBits" : "3f8486ed",
+          "candidateBits" : "3f8b229b",
+          "exact" : true,
+          "fractionBits" : "3e7eb8c0",
+          "observedBits" : "3f8b229b",
+          "sampleIndex" : 24
+        },
+        {
+          "baseBits" : "3f83fa85",
+          "candidateBits" : "3f89c1da",
+          "exact" : true,
+          "fractionBits" : "3e5fdcc0",
+          "observedBits" : "3f89c1da",
+          "sampleIndex" : 25
+        },
+        {
+          "baseBits" : "3f8363a8",
+          "candidateBits" : "3f88491c",
+          "exact" : true,
+          "fractionBits" : "3e3eb400",
+          "observedBits" : "3f88491c",
+          "sampleIndex" : 26
+        },
+        {
+          "baseBits" : "3f82d356",
+          "candidateBits" : "3f86e2e9",
+          "exact" : true,
+          "fractionBits" : "3e1efb80",
+          "observedBits" : "3f86e2e9",
+          "sampleIndex" : 27
+        },
+        {
+          "baseBits" : "3f8244da",
+          "candidateBits" : "3f858362",
+          "exact" : true,
+          "fractionBits" : "3dff5500",
+          "observedBits" : "3f858362",
+          "sampleIndex" : 28
+        },
+        {
+          "baseBits" : "3f81b21c",
+          "candidateBits" : "3f841b8b",
+          "exact" : true,
+          "fractionBits" : "3dbed380",
+          "observedBits" : "3f841b8b",
+          "sampleIndex" : 29
+        },
+        {
+          "baseBits" : "3f812085",
+          "candidateBits" : "3f82b8b8",
+          "exact" : true,
+          "fractionBits" : "3d7da800",
+          "observedBits" : "3f82b8b8",
+          "sampleIndex" : 30
+        },
+        {
+          "baseBits" : "3f808eec",
+          "candidateBits" : "3f81580f",
+          "exact" : true,
+          "fractionBits" : "3cfb4e00",
+          "observedBits" : "3f81580f",
+          "sampleIndex" : 31
+        }
+      ],
+      "timeline" : "transition-timeline.json",
+      "timelineSHA256" : "395def791d64757b1a8954f54cfad08b8398ea780a4ed90ce670ae94a21d65e9"
+    },
+    {
+      "appearance" : "dark",
+      "comparisonCount" : 31,
+      "diameter" : 461,
+      "direction" : "dematerialize",
+      "exactMatchCount" : 31,
+      "faceWhiteBits" : "3f933333",
+      "geometry" : "circle-461-center",
+      "material" : "clear",
+      "name" : "clear-dark-circle461",
+      "records" : [
+        {
+          "baseBits" : "3f919b07",
+          "candidateBits" : "3fae650b",
+          "exact" : true,
+          "fractionBits" : "3f77a6d0",
+          "observedBits" : "3fae650b",
+          "sampleIndex" : 1
+        },
+        {
+          "baseBits" : "3f910c07",
+          "candidateBits" : "3faccb16",
+          "exact" : true,
+          "fractionBits" : "3f6fcb50",
+          "observedBits" : "3faccb16",
+          "sampleIndex" : 2
+        },
+        {
+          "baseBits" : "3f907890",
+          "candidateBits" : "3fab26a4",
+          "exact" : true,
+          "fractionBits" : "3f67b100",
+          "observedBits" : "3fab26a4",
+          "sampleIndex" : 3
+        },
+        {
+          "baseBits" : "3f8fe5a1",
+          "candidateBits" : "3fa9860a",
+          "exact" : true,
+          "fractionBits" : "3f5f9e20",
+          "observedBits" : "3fa9860a",
+          "sampleIndex" : 4
+        },
+        {
+          "baseBits" : "3f8f53de",
+          "candidateBits" : "3fa7eb0d",
+          "exact" : true,
+          "fractionBits" : "3f579bc0",
+          "observedBits" : "3fa7eb0d",
+          "sampleIndex" : 5
+        },
+        {
+          "baseBits" : "3f8ec650",
+          "candidateBits" : "3fa65e1b",
+          "exact" : true,
+          "fractionBits" : "3f4fd480",
+          "observedBits" : "3fa65e1b",
+          "sampleIndex" : 6
+        },
+        {
+          "baseBits" : "3f8e30d1",
+          "candidateBits" : "3fa4bd39",
+          "exact" : true,
+          "fractionBits" : "3f479da0",
+          "observedBits" : "3fa4bd39",
+          "sampleIndex" : 7
+        },
+        {
+          "baseBits" : "3f8da5c2",
+          "candidateBits" : "3fa33b97",
+          "exact" : true,
+          "fractionBits" : "3f3ff980",
+          "observedBits" : "3fa33b97",
+          "sampleIndex" : 8
+        },
+        {
+          "baseBits" : "3f8d0c57",
+          "candidateBits" : "3fa19489",
+          "exact" : true,
+          "fractionBits" : "3f378b70",
+          "observedBits" : "3fa19489",
+          "sampleIndex" : 9
+        },
+        {
+          "baseBits" : "3f8c828b",
+          "candidateBits" : "3fa01ab1",
+          "exact" : true,
+          "fractionBits" : "3f2ff910",
+          "observedBits" : "3fa01ab1",
+          "sampleIndex" : 10
+        },
+        {
+          "baseBits" : "3f8bf192",
+          "candidateBits" : "3f9e8f5b",
+          "exact" : true,
+          "fractionBits" : "3f2801d0",
+          "observedBits" : "3f9e8f5b",
+          "sampleIndex" : 11
+        },
+        {
+          "baseBits" : "3f8b58ca",
+          "candidateBits" : "3f9cf125",
+          "exact" : true,
+          "fractionBits" : "3f1f9cb0",
+          "observedBits" : "3f9cf125",
+          "sampleIndex" : 12
+        },
+        {
+          "baseBits" : "3f8acd30",
+          "candidateBits" : "3f9b78d4",
+          "exact" : true,
+          "fractionBits" : "3f17f0f0",
+          "observedBits" : "3f9b78d4",
+          "sampleIndex" : 13
+        },
+        {
+          "baseBits" : "3f8a3ad7",
+          "candidateBits" : "3f99f08b",
+          "exact" : true,
+          "fractionBits" : "3f0fe650",
+          "observedBits" : "3f99f08b",
+          "sampleIndex" : 14
+        },
+        {
+          "baseBits" : "3f89ab32",
+          "candidateBits" : "3f9871b5",
+          "exact" : true,
+          "fractionBits" : "3f0801b0",
+          "observedBits" : "3f9871b5",
+          "sampleIndex" : 15
+        },
+        {
+          "baseBits" : "3f891510",
+          "candidateBits" : "3f96e3e7",
+          "exact" : true,
+          "fractionBits" : "3eff83c0",
+          "observedBits" : "3f96e3e7",
+          "sampleIndex" : 16
+        },
+        {
+          "baseBits" : "3f888426",
+          "candidateBits" : "3f95662f",
+          "exact" : true,
+          "fractionBits" : "3eef96e0",
+          "observedBits" : "3f95662f",
+          "sampleIndex" : 17
+        },
+        {
+          "baseBits" : "3f87f477",
+          "candidateBits" : "3f93ede3",
+          "exact" : true,
+          "fractionBits" : "3edfcc80",
+          "observedBits" : "3f93ede3",
+          "sampleIndex" : 18
+        },
+        {
+          "baseBits" : "3f876393",
+          "candidateBits" : "3f9274a0",
+          "exact" : true,
+          "fractionBits" : "3ecfe040",
+          "observedBits" : "3f9274a0",
+          "sampleIndex" : 19
+        },
+        {
+          "baseBits" : "3f86ccbb",
+          "candidateBits" : "3f90ee33",
+          "exact" : true,
+          "fractionBits" : "3ebf4c80",
+          "observedBits" : "3f90ee33",
+          "sampleIndex" : 20
+        },
+        {
+          "baseBits" : "3f863b31",
+          "candidateBits" : "3f8f77c3",
+          "exact" : true,
+          "fractionBits" : "3eaf4e00",
+          "observedBits" : "3f8f77c3",
+          "sampleIndex" : 21
+        },
+        {
+          "baseBits" : "3f85aebe",
+          "candidateBits" : "3f8e1085",
+          "exact" : true,
+          "fractionBits" : "3e9fdec0",
+          "observedBits" : "3f8e1085",
+          "sampleIndex" : 22
+        },
+        {
+          "baseBits" : "3f851bdc",
+          "candidateBits" : "3f8c9b06",
+          "exact" : true,
+          "fractionBits" : "3e8fba60",
+          "observedBits" : "3f8c9b06",
+          "sampleIndex" : 23
+        },
+        {
+          "baseBits" : "3f848add",
+          "candidateBits" : "3f8b2c87",
+          "exact" : true,
+          "fractionBits" : "3e7f9680",
+          "observedBits" : "3f8b2c87",
+          "sampleIndex" : 24
+        },
+        {
+          "baseBits" : "3f83f36a",
+          "candidateBits" : "3f89b00e",
+          "exact" : true,
+          "fractionBits" : "3e5e4cc0",
+          "observedBits" : "3f89b00e",
+          "sampleIndex" : 25
+        },
+        {
+          "baseBits" : "3f836865",
+          "candidateBits" : "3f8854e8",
+          "exact" : true,
+          "fractionBits" : "3e3fbec0",
+          "observedBits" : "3f8854e8",
+          "sampleIndex" : 26
+        },
+        {
+          "baseBits" : "3f82d38c",
+          "candidateBits" : "3f86e36f",
+          "exact" : true,
+          "fractionBits" : "3e1f0780",
+          "observedBits" : "3f86e36f",
+          "sampleIndex" : 27
+        },
+        {
+          "baseBits" : "3f824002",
+          "candidateBits" : "3f857778",
+          "exact" : true,
+          "fractionBits" : "3dfd3400",
+          "observedBits" : "3f857778",
+          "sampleIndex" : 28
+        },
+        {
+          "baseBits" : "3f81af11",
+          "candidateBits" : "3f84141a",
+          "exact" : true,
+          "fractionBits" : "3dbd7d00",
+          "observedBits" : "3f84141a",
+          "sampleIndex" : 29
+        },
+        {
+          "baseBits" : "3f81234b",
+          "candidateBits" : "3f82bf75",
+          "exact" : true,
+          "fractionBits" : "3d800c00",
+          "observedBits" : "3f82bf75",
+          "sampleIndex" : 30
+        },
+        {
+          "baseBits" : "3f808b3e",
+          "candidateBits" : "3f814f2d",
+          "exact" : true,
+          "fractionBits" : "3cf4d400",
+          "observedBits" : "3f814f2d",
+          "sampleIndex" : 31
+        }
+      ],
+      "timeline" : "transition-timeline.json",
+      "timelineSHA256" : "17826c6d978362f048208ca663164c51e0a8a2a8a1fcf4b3cd07f90383d38be1"
+    },
+    {
+      "appearance" : "light",
+      "comparisonCount" : 31,
+      "diameter" : 469,
+      "direction" : "dematerialize",
+      "exactMatchCount" : 31,
+      "faceWhiteBits" : "3f83d70a",
+      "geometry" : "circle-469-center",
+      "material" : "regular",
+      "name" : "regular-light-circle469",
+      "records" : [
+        {
+          "baseBits" : "3f83868c",
+          "candidateBits" : "3f88a007",
+          "exact" : true,
+          "fractionBits" : "3f77f730",
+          "observedBits" : "3f88a007",
+          "sampleIndex" : 1
+        },
+        {
+          "baseBits" : "3f836815",
+          "candidateBits" : "3f885420",
+          "exact" : true,
+          "fractionBits" : "3f6f9890",
+          "observedBits" : "3f885420",
+          "sampleIndex" : 2
+        },
+        {
+          "baseBits" : "3f834b5a",
+          "candidateBits" : "3f880ca2",
+          "exact" : true,
+          "fractionBits" : "3f67b3a0",
+          "observedBits" : "3f880ca2",
+          "sampleIndex" : 3
+        },
+        {
+          "baseBits" : "3f832f42",
+          "candidateBits" : "3f87c6cf",
+          "exact" : true,
+          "fractionBits" : "3f5ffbe0",
+          "observedBits" : "3f87c6cf",
+          "sampleIndex" : 4
+        },
+        {
+          "baseBits" : "3f831112",
+          "candidateBits" : "3f877bde",
+          "exact" : true,
+          "fractionBits" : "3f57b0e0",
+          "observedBits" : "3f877bde",
+          "sampleIndex" : 5
+        },
+        {
+          "baseBits" : "3f82f3fb",
+          "candidateBits" : "3f8733be",
+          "exact" : true,
+          "fractionBits" : "3f4fb2b0",
+          "observedBits" : "3f8733be",
+          "sampleIndex" : 6
+        },
+        {
+          "baseBits" : "3f82d69c",
+          "candidateBits" : "3f86eb03",
+          "exact" : true,
+          "fractionBits" : "3f47a0b0",
+          "observedBits" : "3f86eb03",
+          "sampleIndex" : 7
+        },
+        {
+          "baseBits" : "3f82b99a",
+          "candidateBits" : "3f86a344",
+          "exact" : true,
+          "fractionBits" : "3f3fa8a0",
+          "observedBits" : "3f86a344",
+          "sampleIndex" : 8
+        },
+        {
+          "baseBits" : "3f829d88",
+          "candidateBits" : "3f865dec",
+          "exact" : true,
+          "fractionBits" : "3f37f260",
+          "observedBits" : "3f865dec",
+          "sampleIndex" : 9
+        },
+        {
+          "baseBits" : "3f827f12",
+          "candidateBits" : "3f8612c3",
+          "exact" : true,
+          "fractionBits" : "3f2f9420",
+          "observedBits" : "3f8612c3",
+          "sampleIndex" : 10
+        },
+        {
+          "baseBits" : "3f826203",
+          "candidateBits" : "3f85cb27",
+          "exact" : true,
+          "fractionBits" : "3f279830",
+          "observedBits" : "3f85cb27",
+          "sampleIndex" : 11
+        },
+        {
+          "baseBits" : "3f824567",
+          "candidateBits" : "3f8584bd",
+          "exact" : true,
+          "fractionBits" : "3f1fbbf0",
+          "observedBits" : "3f8584bd",
+          "sampleIndex" : 12
+        },
+        {
+          "baseBits" : "3f8228ad",
+          "candidateBits" : "3f853e1e",
+          "exact" : true,
+          "fractionBits" : "3f17d770",
+          "observedBits" : "3f853e1e",
+          "sampleIndex" : 13
+        },
+        {
+          "baseBits" : "3f820ac7",
+          "candidateBits" : "3f84f4b5",
+          "exact" : true,
+          "fractionBits" : "3f0fa090",
+          "observedBits" : "3f84f4b5",
+          "sampleIndex" : 14
+        },
+        {
+          "baseBits" : "3f81edaa",
+          "candidateBits" : "3f84ad50",
+          "exact" : true,
+          "fractionBits" : "3f07a0b0",
+          "observedBits" : "3f84ad50",
+          "sampleIndex" : 15
+        },
+        {
+          "baseBits" : "3f81d06a",
+          "candidateBits" : "3f8465ac",
+          "exact" : true,
+          "fractionBits" : "3eff2fa0",
+          "observedBits" : "3f8465ac",
+          "sampleIndex" : 16
+        },
+        {
+          "baseBits" : "3f81b478",
+          "candidateBits" : "3f84214f",
+          "exact" : true,
+          "fractionBits" : "3eefd480",
+          "observedBits" : "3f84214f",
+          "sampleIndex" : 17
+        },
+        {
+          "baseBits" : "3f81960f",
+          "candidateBits" : "3f83d702",
+          "exact" : true,
+          "fractionBits" : "3edf1e80",
+          "observedBits" : "3f83d702",
+          "sampleIndex" : 18
+        },
+        {
+          "baseBits" : "3f817a39",
+          "candidateBits" : "3f839314",
+          "exact" : true,
+          "fractionBits" : "3ecfd320",
+          "observedBits" : "3f839314",
+          "sampleIndex" : 19
+        },
+        {
+          "baseBits" : "3f815cf8",
+          "candidateBits" : "3f834bc7",
+          "exact" : true,
+          "fractionBits" : "3ebfc040",
+          "observedBits" : "3f834bc7",
+          "sampleIndex" : 20
+        },
+        {
+          "baseBits" : "3f81403c",
+          "candidateBits" : "3f8305d4",
+          "exact" : true,
+          "fractionBits" : "3eaff640",
+          "observedBits" : "3f8305d4",
+          "sampleIndex" : 21
+        },
+        {
+          "baseBits" : "3f8122ff",
+          "candidateBits" : "3f82bebd",
+          "exact" : true,
+          "fractionBits" : "3e9fe5a0",
+          "observedBits" : "3f82bebd",
+          "sampleIndex" : 22
+        },
+        {
+          "baseBits" : "3f8104b5",
+          "candidateBits" : "3f82752f",
+          "exact" : true,
+          "fractionBits" : "3e8f40e0",
+          "observedBits" : "3f82752f",
+          "sampleIndex" : 23
+        },
+        {
+          "baseBits" : "3f80e776",
+          "candidateBits" : "3f822e41",
+          "exact" : true,
+          "fractionBits" : "3e7e5d80",
+          "observedBits" : "3f822e41",
+          "sampleIndex" : 24
+        },
+        {
+          "baseBits" : "3f80cba0",
+          "candidateBits" : "3f81ead4",
+          "exact" : true,
+          "fractionBits" : "3e5fc680",
+          "observedBits" : "3f81ead4",
+          "sampleIndex" : 25
+        },
+        {
+          "baseBits" : "3f80ae22",
+          "candidateBits" : "3f81a379",
+          "exact" : true,
+          "fractionBits" : "3e3f5d40",
+          "observedBits" : "3f81a379",
+          "sampleIndex" : 26
+        },
+        {
+          "baseBits" : "3f809159",
+          "candidateBits" : "3f815deb",
+          "exact" : true,
+          "fractionBits" : "3e1fbac0",
+          "observedBits" : "3f815deb",
+          "sampleIndex" : 27
+        },
+        {
+          "baseBits" : "3f80746d",
+          "candidateBits" : "3f81181e",
+          "exact" : true,
+          "fractionBits" : "3dffe380",
+          "observedBits" : "3f81181e",
+          "sampleIndex" : 28
+        },
+        {
+          "baseBits" : "3f80574f",
+          "candidateBits" : "3f80d1ee",
+          "exact" : true,
+          "fractionBits" : "3dbfe400",
+          "observedBits" : "3f80d1ee",
+          "sampleIndex" : 29
+        },
+        {
+          "baseBits" : "3f803944",
+          "candidateBits" : "3f80899b",
+          "exact" : true,
+          "fractionBits" : "3d7bbb00",
+          "observedBits" : "3f80899b",
+          "sampleIndex" : 30
+        },
+        {
+          "baseBits" : "3f801d0f",
+          "candidateBits" : "3f8045c9",
+          "exact" : true,
+          "fractionBits" : "3cff7600",
+          "observedBits" : "3f8045c9",
+          "sampleIndex" : 31
+        }
+      ],
+      "timeline" : "transition-timeline.json",
+      "timelineSHA256" : "297305a3dd4dc5f65679e7a11144a6ddb91a25eea64670419b6739a82e6ff9f8"
+    },
+    {
+      "appearance" : "dark",
+      "comparisonCount" : 31,
+      "diameter" : 477,
+      "direction" : "dematerialize",
+      "exactMatchCount" : 31,
+      "faceWhiteBits" : "3f19999a",
+      "geometry" : "circle-477-center",
+      "material" : "regular",
+      "name" : "regular-dark-circle477",
+      "records" : [
+        {
+          "baseBits" : "3f2221fb",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f779330",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 1
+        },
+        {
+          "baseBits" : "3f250495",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f6ff720",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 2
+        },
+        {
+          "baseBits" : "3f282137",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f67c200",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 3
+        },
+        {
+          "baseBits" : "3f2b11fd",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f600090",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 4
+        },
+        {
+          "baseBits" : "3f2e43dc",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f579370",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 5
+        },
+        {
+          "baseBits" : "3f312620",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f4ff840",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 6
+        },
+        {
+          "baseBits" : "3f343943",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f47dc30",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 7
+        },
+        {
+          "baseBits" : "3f37340f",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f400050",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 8
+        },
+        {
+          "baseBits" : "3f3a67b3",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f378e80",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 9
+        },
+        {
+          "baseBits" : "3f3d529f",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f2fdc80",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 10
+        },
+        {
+          "baseBits" : "3f407a3b",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f278a70",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 11
+        },
+        {
+          "baseBits" : "3f43604a",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f1fe540",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 12
+        },
+        {
+          "baseBits" : "3f466552",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f17ee60",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 13
+        },
+        {
+          "baseBits" : "3f497466",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f0fdd00",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 14
+        },
+        {
+          "baseBits" : "3f4c6f6f",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3f080080",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 15
+        },
+        {
+          "baseBits" : "3f4f9481",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3eff6a40",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 16
+        },
+        {
+          "baseBits" : "3f527ff9",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3ef00360",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 17
+        },
+        {
+          "baseBits" : "3f55b58a",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3edf15a0",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 18
+        },
+        {
+          "baseBits" : "3f589811",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3ecfdde0",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 19
+        },
+        {
+          "baseBits" : "3f5bab14",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3ebfa660",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 20
+        },
+        {
+          "baseBits" : "3f5ec7ff",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3eaf3aa0",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 21
+        },
+        {
+          "baseBits" : "3f61b895",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3e9fb8c0",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 22
+        },
+        {
+          "baseBits" : "3f64b682",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3e8ff080",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 23
+        },
+        {
+          "baseBits" : "3f67cd2b",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3e7f4b80",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 24
+        },
+        {
+          "baseBits" : "3f6adfff",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3e5ede80",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 25
+        },
+        {
+          "baseBits" : "3f6debe7",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3e3eba80",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 26
+        },
+        {
+          "baseBits" : "3f70ed6d",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3e1f0400",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 27
+        },
+        {
+          "baseBits" : "3f73eec9",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3dfe9e80",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 28
+        },
+        {
+          "baseBits" : "3f76f050",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3dbf3180",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 29
+        },
+        {
+          "baseBits" : "3f7a0ae8",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3d7b6700",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 30
+        },
+        {
+          "baseBits" : "3f7d21d5",
+          "candidateBits" : "3f800000",
+          "exact" : true,
+          "fractionBits" : "3cf20c00",
+          "observedBits" : "3f800000",
+          "sampleIndex" : 31
+        }
+      ],
+      "timeline" : "transition-timeline.json",
+      "timelineSHA256" : "888568d228ee967a7525a1febf833bb1411757599d58362efd7635fabbb864df"
+    }
+  ],
+  "classification" : "native Darwin.powf four-profile dematerialize opened calibration; no prospective transfer authority",
+  "comparisonCount" : 124,
+  "conclusion" : {
+    "openedCalibrationExact" : true,
+    "productionShaderChangeAuthorized" : false,
+    "prospectiveDematerializeTransferEstablished" : false
+  },
+  "exactMatchCount" : 124,
+  "platform" : {
+    "architecture" : "arm64",
+    "operatingSystemVersion" : "Version 26.6.1 (Build 25G76)"
+  },
+  "source" : "analyze_transition_uniform_dematerialize_clamp_local_macos_26_6_1.swift",
+  "sourceSHA256" : "c6ade2038ce727da44a978869d3f6407a156c8f9d0db8f2fb0aa22d7b984cba2",
+  "transitionUniformDematerializeClampCalibrationSchemaVersion" : 1
+}
