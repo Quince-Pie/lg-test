@@ -142,23 +142,8 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
 
     @staticmethod
     def transport_states() -> list[dict[str, object]]:
-        bounds = [
-            validator.TRANSPORT_ORIGIN,
-            validator.TRANSPORT_ORIGIN,
-            validator.TRANSPORT_EXTENT,
-            validator.TRANSPORT_EXTENT,
-        ]
         position = [validator.TRANSPORT_ORIGIN, validator.TRANSPORT_ORIGIN]
-        states = [
-            {
-                "path": list(path),
-                "bounds": bounds,
-                "position": position,
-                "cornerRadius": 0,
-            }
-            for path in validator.TRANSPORT_OUTER_PATHS
-        ]
-        states.append(
+        return [
             {
                 "path": list(validator.TRANSPORT_ELEMENT_PATH),
                 "bounds": [
@@ -170,8 +155,18 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
                 "position": position,
                 "cornerRadius": validator.TRANSPORT_RADIUS,
             }
-        )
-        return states
+        ]
+
+    @classmethod
+    def live_carrier_states(cls) -> list[dict[str, object]]:
+        return cls.transport_states() + [
+            {
+                "path": list(path),
+                "bounds": [0, 0, 480, 480],
+                "position": [0, 0],
+            }
+            for path in validator.TRANSPORT_CARRIER_OUTER_PATHS
+        ]
 
     def test_accepts_two_exact_nontrivial_mutations(self) -> None:
         for sample in validator.CANDIDATE_SAMPLES:
@@ -221,6 +216,12 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "element radius differs"):
             validator.validate_transport_geometry(states, "transport")
 
+    def test_accepts_normalized_live_carrier_geometry(self) -> None:
+        validator.validate_live_carrier_geometry(
+            self.live_carrier_states(),
+            "carrier",
+        )
+
     def test_selection_requires_the_first_eligible_candidate(self) -> None:
         records = {record["sampleIndex"]: record for record in self.records()}
         records[27] = self.skipped(27, 28)
@@ -269,7 +270,7 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
         preregistration.write_text(
             json.dumps(
                 {
-                    "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 4,
+                    "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 5,
                     "sourceSHA256": {},
                 }
             ),

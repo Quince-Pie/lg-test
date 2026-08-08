@@ -1,7 +1,7 @@
 {
-  "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 4,
+  "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 5,
   "authority": "prospective current-build pixel-influence intervention",
-  "captureStatusAtFreeze": "one opened geometry-transport diagnostic executed both interventions and observed exact outputs, but its schema-3 validator rejected the run because three requested foreground portal paths do not exist on the fresh carrier; that pixel result has no promotion authority. This revision prospectively freezes only the five installed and live-read-back geometry paths before an independent replication",
+  "captureStatusAtFreeze": "two opened geometry-transport diagnostics executed both interventions and observed exact outputs, but their schema-3 and schema-4 validators rejected them before promotion: the first requested absent foreground portals, and the second proved Core Animation normalizes the four installed outer carrier layers to 480x480 before rendering. Neither pixel result has promotion authority. This revision prospectively transports only the preserved CASDFElementLayer state and separately freezes the normalized carrier invariant before an independent replication",
   "question": "Do the eight bytes at offset 32 interpreted as vertex attribute 3 affect the Irsd border draw's BGRA8 output?",
   "captureHost": {
     "architecture": "arm64",
@@ -73,15 +73,17 @@
     "sourceTimelineSHA256": "17a69db193892e7e30c6069e88a63a4a3badfd23e93916d91b10b126a67c8e7c",
     "sourceSampleIndex": 28,
     "sourceRemainingFloat32Bits": "3dfdf500",
-    "outerOriginFloat32Bits": "c359020b",
+    "elementPositionFloat32Bits": ["c359020b", "c359020b"],
     "extentFloat32Bits": "43f7020b",
     "radiusFloat32Bits": "4377020b",
-    "outerPaths": [
+    "carrierOuterPaths": [
       [1, 0, 1],
       [1, 0, 1, 0],
       [1, 0, 1, 0, 0],
       [1, 0, 1, 2]
     ],
+    "carrierOuterBoundsFloat32Bits": ["00000000", "00000000", "43f00000", "43f00000"],
+    "carrierOuterPositionFloat32Bits": ["00000000", "00000000"],
     "elementPath": [1, 0, 1, 0, 0, 0, 0],
     "elementBoundsOriginFloat32Bits": ["00000000", "00000000"],
     "liveLayerStateReadbackRequiredBeforeAndAfterRender": true,
@@ -119,16 +121,16 @@
     "validatorMustIndependentlyReadAndCompareEveryRawReplay": true
   },
   "sourceSHA256": {
-    "Sources/GlassIntrospect/main.swift": "56c34b540559ee625b34614ff16ae49bfa2b0cffd4266682501bd4c61b33f2d5",
+    "Sources/GlassIntrospect/main.swift": "241e8093a76466575cc9e8e8065430046947464209a8c59d440b3f22e5ad3ad9",
     "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
     "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
     "Sources/GlassIntrospect/HalfBlendProbe.swift": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263",
     "Sources/GlassIntrospect/HalfDotProbe.swift": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0",
     "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
     "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208",
-    "Analysis/validate_final_highlight_vertex_tail_intervention.py": "b478b01f878517f16a410c1f3c9f4af08257f62e69020d8168b956018653fe53",
-    "Analysis/test_validate_final_highlight_vertex_tail_intervention.py": "48d434aa734721216148db71f5c78805b3609e16e43c59e2cd2258cb42abd944",
+    "Analysis/validate_final_highlight_vertex_tail_intervention.py": "c92800c09a7338ce8872e9a1fe8c8117f9de50a95122556184db40545592f138",
+    "Analysis/test_validate_final_highlight_vertex_tail_intervention.py": "aac379da27a2a5e614c0f0a06a7ac25745dbc1427c7361d1dfebd3b2addd5bee",
     "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1"
   },
-  "promotionRule": "Every candidate must reproduce the frozen Apple Irsd geometry in live pre-render and post-render readback, the first topology-eligible candidate must be selected before intervention pixels exist, and both independent replay comparisons for that candidate must be byte-identical across all 8,388,608 checked bytes before bytes 32 through 39 can be classified as observationally irrelevant for this current-build Irsd branch. This result cannot establish unseen-geometry transfer, physical-compositor parity, or complete Walle parity."
+  "promotionRule": "Every candidate must preserve the transported Apple CASDFElementLayer geometry and the normalized 480x480 carrier invariant in live pre-render and post-render readback, the first topology-eligible candidate must be selected before intervention pixels exist, and both independent replay comparisons for that candidate must be byte-identical across all 8,388,608 checked bytes before bytes 32 through 39 can be classified as observationally irrelevant for this current-build Irsd branch. This result cannot establish unseen-geometry transfer, physical-compositor parity, or complete Walle parity."
 }

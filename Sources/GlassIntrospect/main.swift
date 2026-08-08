@@ -17729,7 +17729,7 @@ private func translatedTransitionLayerStates(
     }
 }
 
-private let finalHighlightVertexTailTransportOuterPaths = Set([
+private let finalHighlightVertexTailCarrierOuterPaths = Set([
     [1, 0, 1],
     [1, 0, 1, 0],
     [1, 0, 1, 0, 0],
@@ -17752,19 +17752,7 @@ private func finalHighlightVertexTailTransportLayerStates(
         var bounds = state.bounds
         var position = state.position
         var cornerRadius = state.cornerRadius
-        if finalHighlightVertexTailTransportOuterPaths.contains(
-            state.path)
-        {
-            bounds = CGRect(
-                x: finalHighlightVertexTailTransportOrigin,
-                y: finalHighlightVertexTailTransportOrigin,
-                width: finalHighlightVertexTailTransportExtent,
-                height: finalHighlightVertexTailTransportExtent)
-            position = CGPoint(
-                x: finalHighlightVertexTailTransportOrigin,
-                y: finalHighlightVertexTailTransportOrigin)
-        } else if state.path
-                    == finalHighlightVertexTailTransportElementPath
+        if state.path == finalHighlightVertexTailTransportElementPath
         {
             bounds = CGRect(
                 x: 0,
@@ -19924,18 +19912,22 @@ private func transitionBackgroundUniformEvidence(
                     "17a69db193892e7e30c6069e88a63a4a3badfd23e93916d91b10b126a67c8e7c",
                 "sourceSampleIndex": 28,
                 "sourceRemainingFloat32Bits": "3dfdf500",
-                "outerOriginFloat32Bits": "c359020b",
+                "elementPositionFloat32Bits": [
+                    "c359020b", "c359020b",
+                ],
                 "extentFloat32Bits": "43f7020b",
                 "radiusFloat32Bits": "4377020b",
-                "outerPaths":
-                    finalHighlightVertexTailTransportOuterPaths
+                "carrierOuterPaths":
+                    finalHighlightVertexTailCarrierOuterPaths
                         .sorted { $0.lexicographicallyPrecedes($1) },
+                "carrierOuterBoundsFloat32Bits": [
+                    "00000000", "00000000",
+                    "43f00000", "43f00000",
+                ],
                 "elementPath":
                     finalHighlightVertexTailTransportElementPath,
                 "requestedLayerStates": requestedLayerStates.filter {
-                    finalHighlightVertexTailTransportOuterPaths.contains(
-                        $0.path)
-                    || $0.path
+                    $0.path
                         == finalHighlightVertexTailTransportElementPath
                 }.map(transitionLayerStateEvidence),
             ]

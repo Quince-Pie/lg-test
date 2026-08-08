@@ -16,7 +16,7 @@ EXPECTED_PATTERNS = {
     "finite-asymmetric-half4": "003c003800bc0040",
 }
 EXPECTED_RENDER_BYTES = 1024 * 1024 * 4
-TRANSPORT_OUTER_PATHS = (
+TRANSPORT_CARRIER_OUTER_PATHS = (
     (1, 0, 1),
     (1, 0, 1, 0),
     (1, 0, 1, 0, 0),
@@ -256,32 +256,41 @@ def indexed_layer_states(
 
 def validate_transport_geometry(value: object, label: str) -> None:
     states = indexed_layer_states(value, label)
-    required_paths = set(TRANSPORT_OUTER_PATHS) | {TRANSPORT_ELEMENT_PATH}
     require(
-        required_paths.issubset(states),
-        f"{label}: transported layer paths are incomplete",
+        TRANSPORT_ELEMENT_PATH in states,
+        f"{label}: transported element path is absent",
     )
-    outer_bounds = [
-        TRANSPORT_ORIGIN,
-        TRANSPORT_ORIGIN,
-        TRANSPORT_EXTENT,
-        TRANSPORT_EXTENT,
-    ]
-    position = [TRANSPORT_ORIGIN, TRANSPORT_ORIGIN]
-    for path in TRANSPORT_OUTER_PATHS:
-        state = states[path]
-        require(state.get("bounds") == outer_bounds, f"{label}: outer bounds differ")
-        require(state.get("position") == position, f"{label}: outer position differs")
     element = states[TRANSPORT_ELEMENT_PATH]
     require(
         element.get("bounds") == [0, 0, TRANSPORT_EXTENT, TRANSPORT_EXTENT],
         f"{label}: element bounds differ",
     )
-    require(element.get("position") == position, f"{label}: element position differs")
+    require(
+        element.get("position") == [TRANSPORT_ORIGIN, TRANSPORT_ORIGIN],
+        f"{label}: element position differs",
+    )
     require(
         element.get("cornerRadius") == TRANSPORT_RADIUS,
         f"{label}: element radius differs",
     )
+
+
+def validate_live_carrier_geometry(value: object, label: str) -> None:
+    states = indexed_layer_states(value, label)
+    require(
+        set(TRANSPORT_CARRIER_OUTER_PATHS).issubset(states),
+        f"{label}: carrier outer paths are incomplete",
+    )
+    for path in TRANSPORT_CARRIER_OUTER_PATHS:
+        state = states[path]
+        require(
+            state.get("bounds") == [0, 0, 480, 480],
+            f"{label}: carrier outer bounds differ",
+        )
+        require(
+            state.get("position") == [0, 0],
+            f"{label}: carrier outer position differs",
+        )
 
 
 def validate_geometry_transport(record: dict[str, Any]) -> None:
@@ -297,10 +306,16 @@ def validate_geometry_transport(record: dict[str, Any]) -> None:
         ),
         "sourceSampleIndex": 28,
         "sourceRemainingFloat32Bits": "3dfdf500",
-        "outerOriginFloat32Bits": "c359020b",
+        "elementPositionFloat32Bits": ["c359020b", "c359020b"],
         "extentFloat32Bits": "43f7020b",
         "radiusFloat32Bits": "4377020b",
-        "outerPaths": [list(path) for path in TRANSPORT_OUTER_PATHS],
+        "carrierOuterPaths": [list(path) for path in TRANSPORT_CARRIER_OUTER_PATHS],
+        "carrierOuterBoundsFloat32Bits": [
+            "00000000",
+            "00000000",
+            "43f00000",
+            "43f00000",
+        ],
         "elementPath": list(TRANSPORT_ELEMENT_PATH),
     }
     for field, value in expected.items():
@@ -311,7 +326,7 @@ def validate_geometry_transport(record: dict[str, Any]) -> None:
     requested = transport.get("requestedLayerStates")
     validate_transport_geometry(requested, f"sample {sample} requested transport")
     require(
-        isinstance(requested, list) and len(requested) == 5,
+        isinstance(requested, list) and len(requested) == 1,
         f"sample {sample}: requested transport cardinality differs",
     )
 
@@ -330,9 +345,17 @@ def validate_geometry_transport(record: dict[str, Any]) -> None:
         before.get("layerStates"),
         f"sample {sample} pre-render transport",
     )
+    validate_live_carrier_geometry(
+        before.get("layerStates"),
+        f"sample {sample} pre-render carrier",
+    )
     validate_transport_geometry(
         after.get("layerStates"),
         f"sample {sample} post-render transport",
+    )
+    validate_live_carrier_geometry(
+        after.get("layerStates"),
+        f"sample {sample} post-render carrier",
     )
     require(
         before.get("layerStatesSHA256") == after.get("layerStatesSHA256"),
@@ -428,7 +451,7 @@ def validate(
         preregistration.get(
             "finalHighlightVertexTailInterventionPreregistrationSchemaVersion"
         )
-        == 4,
+        == 5,
         "preregistration schema differs",
     )
     validate_sources(preregistration)
@@ -500,7 +523,7 @@ def validate(
         target_records[selected_sample],
     )
     return {
-        "schemaVersion": 4,
+        "schemaVersion": 5,
         "passed": True,
         "authority": (
             "current-build observational irrelevance of generated vertex "
