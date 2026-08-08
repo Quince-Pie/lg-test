@@ -14242,11 +14242,26 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "LG_TRANSITION_FINAL_SOURCE_TRACE"
             ] == "1"
             && capture.hasPrefix("transition-background-uniform-")
-        let selectedPass = sourceInterventionRequested
-            ? passes.last(where: {
+        let smallClearColorInterventionRequested =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_SMALL_CLEAR_FINAL_COLOR_TRACE"
+            ] == "1"
+            && capture.hasPrefix("transition-background-uniform-")
+            && smallClearFinalColorCandidateSampleIndices.contains {
+                capture.hasSuffix(String(format: "-%02d", $0))
+            }
+        let selectedPass: ReplayPass?
+        if sourceInterventionRequested {
+            selectedPass = passes.last(where: {
                 finalHighlightSourceSelection(in: $0.commands) != nil
             })
-            : passes.last(where: containsGlassPipeline)
+        } else if smallClearColorInterventionRequested {
+            selectedPass = passes.last(where: {
+                finalHighlightVertexTailSelection(in: $0.commands) != nil
+            }) ?? passes.last(where: containsGlassPipeline)
+        } else {
+            selectedPass = passes.last(where: containsGlassPipeline)
+        }
         guard let pass = selectedPass else {
             return [
                 "executed": false,
@@ -14428,13 +14443,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             && finalHighlightVertexTailCandidateSampleIndices.contains {
                 capture.hasSuffix(String(format: "-%02d", $0))
             })
-            || (ProcessInfo.processInfo.environment[
-                "LG_TRANSITION_SMALL_CLEAR_FINAL_COLOR_TRACE"
-            ] == "1"
-            && capture.hasPrefix("transition-background-uniform-")
-            && smallClearFinalColorCandidateSampleIndices.contains {
-                capture.hasSuffix(String(format: "-%02d", $0))
-            })
+            || smallClearColorInterventionRequested
         let dynamicHighlightSourceTraceRequested =
             ProcessInfo.processInfo.environment[
                 "LG_TRANSITION_FINAL_SOURCE_TRACE"

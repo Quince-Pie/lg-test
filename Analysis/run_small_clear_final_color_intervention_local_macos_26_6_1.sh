@@ -14,6 +14,7 @@ readonly repository=$(cd "$(dirname "$0")/.." && pwd -P)
 readonly preregistration=Analysis/small_clear_final_color_intervention_preregistration.json
 readonly transport_amendment=Analysis/small_clear_final_color_intervention_transport_amendment.json
 readonly quad_fallback_amendment=Analysis/small_clear_final_color_intervention_quad_fallback_amendment.json
+readonly pass_selection_amendment=Analysis/small_clear_final_color_intervention_pass_selection_amendment.json
 readonly validator=Analysis/validate_small_clear_final_color_intervention.py
 readonly validator_test=Analysis/test_validate_small_clear_final_color_intervention.py
 readonly preflight=Analysis/check_local_retina_capture_session_v2.swift
@@ -65,13 +66,14 @@ if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
     exit 1
 fi
 
-require_sha256 "$probe" 32c67e2e5ca822824b4efce48db7e6240d769d40c7370211889b9e8f7e1b010a
-require_sha256 "$validator" 91bfb34b04cad223f97c2e4a413e66077705a7c61025756fba261310e4bff19a
-require_sha256 "$validator_test" bc5374deefd6f9409488366266bb3daaad074c67421c8fee531c2de66f37bae5
+require_sha256 "$probe" 480b5dfe7cb43ee7d138e65cb35a3567c85f8f72ec051ed805d2ddd226f9e5ee
+require_sha256 "$validator" 498d4c8b7076741d549d73cc80a2e112e3027d65fae150575d3118162c46d485
+require_sha256 "$validator_test" a51a8d1d5b42b36560aad5cc58a7f5d2e1efd4b78bc78fb6e9d8dd0b650dc51b
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
 require_sha256 "$preregistration" 8609133e2306ca7ff575fc136d6ae125c00d7de922385de106ecb27d6075d604
 require_sha256 "$transport_amendment" a86b3adb3e6f50eca0ab71ce7f0bdb5871f381cc4b9e3547230644321768e769
 require_sha256 "$quad_fallback_amendment" 2baa14d43ed0954d6c19388814eb9df4a192fb1c0fec015b947350a1098130cb
+require_sha256 "$pass_selection_amendment" e0f05c35d77794458576c7f9f3726f41fc64ff4a24e3cdac02435cb979337a2a
 require_sha256 Analysis/small_clear_final_geometry_result.json 8600d81d693c316408064a868f100a3ead403e51c68aa994e10a8e154027ae00
 require_sha256 Sources/GlassIntrospect/MatrixBridge.c 841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057
 require_sha256 Sources/GlassIntrospect/MatrixBridge.h a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c
@@ -211,6 +213,7 @@ readonly -a capture_environment=(
         "$probe" "$validator" "$validator_test" \
         "$preflight" "$preregistration" "$transport_amendment" \
         "$quad_fallback_amendment" \
+        "$pass_selection_amendment" \
         Analysis/small_clear_final_geometry_result.json \
         Sources/GlassIntrospect/MatrixBridge.c \
         Sources/GlassIntrospect/MatrixBridge.h \
@@ -242,6 +245,7 @@ if [[ "$capture_status" -eq 0 ]]; then
         --preregistration "$preregistration" \
         --transport-amendment "$transport_amendment" \
         --quad-fallback-amendment "$quad_fallback_amendment" \
+        --pass-selection-amendment "$pass_selection_amendment" \
         --preflight "$output_directory/capture-session-preflight.json" \
         --output "$validation_output" \
         >"$output_directory/validation-stdout.log" \

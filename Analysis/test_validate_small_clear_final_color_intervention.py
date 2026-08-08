@@ -20,6 +20,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
         self.preregistration = self.root / "preregistration.json"
         self.amendment = self.root / "amendment.json"
         self.quad_fallback_amendment = self.root / "quad-fallback-amendment.json"
+        self.pass_selection_amendment = self.root / "pass-selection-amendment.json"
         self.preflight = self.root / "preflight.json"
         self.timeline = self.capture / "transition-timeline.json"
         self.render_payload = bytes([0x5A]) * validator.EXPECTED_RENDER_BYTES
@@ -54,6 +55,22 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                         self.preregistration
                     ),
                     "transportAmendmentSHA256": validator.sha256_file(self.amendment),
+                    "sourceSHA256": {},
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.pass_selection_amendment.write_text(
+            json.dumps(
+                {
+                    "smallClearFinalColorPassSelectionAmendmentSchemaVersion": 1,
+                    "basePreregistrationSHA256": validator.sha256_file(
+                        self.preregistration
+                    ),
+                    "transportAmendmentSHA256": validator.sha256_file(self.amendment),
+                    "quadFallbackAmendmentSHA256": validator.sha256_file(
+                        self.quad_fallback_amendment
+                    ),
                     "sourceSHA256": {},
                 }
             ),
@@ -323,6 +340,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
             self.preregistration,
             self.amendment,
             self.quad_fallback_amendment,
+            self.pass_selection_amendment,
             self.preflight,
         )
         self.assertTrue(result["passed"])
@@ -345,6 +363,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.preregistration,
                 self.amendment,
                 self.quad_fallback_amendment,
+                self.pass_selection_amendment,
                 self.preflight,
             )
 
@@ -364,6 +383,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.preregistration,
                 self.amendment,
                 self.quad_fallback_amendment,
+                self.pass_selection_amendment,
                 self.preflight,
             )
 
@@ -377,6 +397,7 @@ class SmallClearFinalColorInterventionTests(unittest.TestCase):
                 self.preregistration,
                 self.amendment,
                 self.quad_fallback_amendment,
+                self.pass_selection_amendment,
                 self.preflight,
             )
 

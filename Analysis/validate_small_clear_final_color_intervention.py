@@ -406,6 +406,7 @@ def validate(
     preregistration_path: Path,
     amendment_path: Path,
     quad_fallback_amendment_path: Path,
+    pass_selection_amendment_path: Path,
     preflight_path: Path,
 ) -> JsonObject:
     preregistration = load_json(preregistration_path)
@@ -437,7 +438,27 @@ def validate(
         quad_fallback.get("transportAmendmentSHA256") == sha256_file(amendment_path),
         "transport amendment SHA-256 differs",
     )
-    validate_sources(quad_fallback)
+    pass_selection = load_json(pass_selection_amendment_path)
+    require(
+        pass_selection.get("smallClearFinalColorPassSelectionAmendmentSchemaVersion")
+        == 1,
+        "pass selection amendment schema differs",
+    )
+    require(
+        pass_selection.get("basePreregistrationSHA256")
+        == sha256_file(preregistration_path),
+        "pass selection base preregistration SHA-256 differs",
+    )
+    require(
+        pass_selection.get("transportAmendmentSHA256") == sha256_file(amendment_path),
+        "pass selection transport amendment SHA-256 differs",
+    )
+    require(
+        pass_selection.get("quadFallbackAmendmentSHA256")
+        == sha256_file(quad_fallback_amendment_path),
+        "quad fallback amendment SHA-256 differs",
+    )
+    validate_sources(pass_selection)
     preflight = load_json(preflight_path)
     require(preflight.get("passed") is True, "Retina preflight did not pass")
     require(preflight.get("backingScaleFactor") == 2, "Retina scale differs")
@@ -515,6 +536,7 @@ def validate(
         "preregistrationSHA256": sha256_file(preregistration_path),
         "transportAmendmentSHA256": sha256_file(amendment_path),
         "quadFallbackAmendmentSHA256": sha256_file(quad_fallback_amendment_path),
+        "passSelectionAmendmentSHA256": sha256_file(pass_selection_amendment_path),
         "candidateSampleIndices": list(CANDIDATE_SAMPLES),
         "selectedSampleIndex": selected,
         "intervention": intervention,
@@ -527,6 +549,7 @@ def main() -> int:
     parser.add_argument("--preregistration", required=True, type=Path)
     parser.add_argument("--transport-amendment", required=True, type=Path)
     parser.add_argument("--quad-fallback-amendment", required=True, type=Path)
+    parser.add_argument("--pass-selection-amendment", required=True, type=Path)
     parser.add_argument("--preflight", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     arguments = parser.parse_args()
@@ -535,6 +558,7 @@ def main() -> int:
         arguments.preregistration,
         arguments.transport_amendment,
         arguments.quad_fallback_amendment,
+        arguments.pass_selection_amendment,
         arguments.preflight,
     )
     arguments.output.write_text(
