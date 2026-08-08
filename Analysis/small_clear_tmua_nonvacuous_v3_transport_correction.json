@@ -1,0 +1,42 @@
+{
+  "smallClearTmuaNonvacuousV3TransportCorrectionSchemaVersion": 1,
+  "status": "post-capture structural validator correction",
+  "authority": "answer-bearing outputs are known; correction is limited to the observed allocation-height schedule and leaves every selection, mutation, comparison, and tolerance frozen",
+  "captureCommit": "f61fce54fc00edfd80068906951be209c9909405",
+  "timelineSHA256": "0cc93958a8466ac8d7fe267ad74091e1798aea0b2ffcdedda3fc8f42b542d983",
+  "preflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+  "frozenPreregistration": "Analysis/small_clear_tmua_nonvacuous_v3_preregistration.json",
+  "frozenPreregistrationSHA256": "50498266d289b50f2537a2c0cf61922f8563099167698e9122ed7db6f12c9de9",
+  "frozenValidator": "Analysis/validate_small_clear_tmua_nonvacuous_v3.py",
+  "frozenValidatorSHA256": "54e69a2906693a59ab0792901d720bc02ea3ad3986f74d33dcf9ac68c10c9bb0",
+  "correctedValidator": "Analysis/validate_small_clear_tmua_nonvacuous_v3_transport_correction.py",
+  "correctedValidatorSHA256": "12db0ab312602c5dc5a5a75f287216301a6392db763e20863adf620a01222fbf",
+  "correctedValidatorTests": "Analysis/test_validate_small_clear_tmua_nonvacuous_v3_transport_correction.py",
+  "correctedValidatorTestsSHA256": "f3de5b7fbf9991a2b5044f13425b37bc32f829e5f7508bb4967ab6e75b2d89bd",
+  "frozenFailure": {
+    "captureExitStatus": 0,
+    "validatorExitStatus": 1,
+    "firstRejectedState": 10,
+    "reason": "sample 10 final input dimensions differ",
+    "states3Through9FullyValidatedBeforeFailure": true,
+    "candidateSelectionChanged": false,
+    "candidateMutationChanged": false,
+    "targetComparisonChanged": false,
+    "toleranceChanged": false
+  },
+  "frozenIncorrectAssumption": {
+    "field": "controlled final-input texture dimensions",
+    "assumedEveryBranchState": [576, 448]
+  },
+  "correctedFinalInputDimensionSchedule": {
+    "samples3Through9": [576, 448],
+    "samples10Through31": [576, 384]
+  },
+  "correctionMechanism": {
+    "scope": "intercept only the frozen controlled-pattern validator call whose complete label is 'sample N final input'",
+    "unchangedLabels": "every destination, backdrop, source, replay, comparison, topology, profile, vertex, and final-source check delegates byte-for-byte to the original validator",
+    "patternRule": "the original validator still reconstructs and compares every byte using the same salt 0x0f1e2d3c; only expected height changes",
+    "allowedSamples": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+  },
+  "promotionRule": "A corrected validator pass may promote the original schema-3 result only because no pixel rule changes: every finite-source path control, captured-versus-zero comparison, active residual control, and residual candidate remains governed by the original zero-tolerance validator. The result must record that answer pixels were known when this structural correction was written."
+}
