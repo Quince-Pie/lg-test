@@ -15003,6 +15003,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
             let sourcePathSensitive =
                 sourcePathMismatchedBytes > 0
                 && sourcePathMismatchedPixels > 0
+            let sourcePathInvariant =
+                sourcePathMismatchedBytes == 0
+                && sourcePathMismatchedPixels == 0
             var nonzeroAlphaPixels = 0
             var alphaChannelMismatchPixels = 0
             var nonUnitOutputAlphaPixels = 0
@@ -15129,31 +15132,31 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         straight.b,
                         parameters.matrix2.r,
                         fma(
-                            straight.g,
-                            parameters.matrix1.r,
+                            straight.r,
+                            parameters.matrix0.r,
                             fma(
-                                straight.r,
-                                parameters.matrix0.r,
+                                straight.g,
+                                parameters.matrix1.r,
                                 parameters.matrix4.r)));
                     mapped.g = fma(
                         straight.b,
                         parameters.matrix2.g,
                         fma(
-                            straight.g,
-                            parameters.matrix1.g,
+                            straight.r,
+                            parameters.matrix0.g,
                             fma(
-                                straight.r,
-                                parameters.matrix0.g,
+                                straight.g,
+                                parameters.matrix1.g,
                                 parameters.matrix4.g)));
                     mapped.b = fma(
                         straight.b,
                         parameters.matrix2.b,
                         fma(
-                            straight.g,
-                            parameters.matrix1.b,
+                            straight.r,
+                            parameters.matrix0.b,
                             fma(
-                                straight.r,
-                                parameters.matrix0.b,
+                                straight.g,
+                                parameters.matrix1.b,
                                 parameters.matrix4.b)));
                     mapped.a = fma(
                         destinationColor.a,
@@ -15236,7 +15239,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     ]
                 }
                 candidateDescriptor.label =
-                    "lg.current-compositor-independent-mode9"
+                    "lg.current-compositor-independent-g-r-b"
                 candidateDescriptor.vertexFunction = vertex
                 candidateDescriptor.fragmentFunction = fragment
                 candidateDescriptor.colorAttachments[0]?.pixelFormat =
@@ -15502,10 +15505,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && comparison["maximumChannelDelta"] as? Int == 0
             }
             return [
-                "schemaVersion": 5,
+                "schemaVersion": 6,
                 "executed":
                     casesExecuted
-                    && sourcePathSensitive
+                    && sourcePathInvariant
                     && nonzeroAlphaPixels > 0
                     && alphaChannelMismatchPixels == 0
                     && nonUnitOutputAlphaPixels == 0,
@@ -15557,6 +15560,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         sourcePathMismatchedBytes == 0,
                 ],
                 "sourcePathSensitive": sourcePathSensitive,
+                "sourcePathInvariant": sourcePathInvariant,
                 "alphaOracleHalfWords": alphaOracleWords.map {
                     String(
                         format: "0x%04x",
@@ -15580,7 +15584,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 ],
                 "candidate": [
                     "classification":
-                        "independent recovered mode-9 binary16 compositor",
+                        "independent recovered current binary16 compositor",
                     "capturedAppleFunctionUnmodified": false,
                     "fastMathEnabled": false,
                     "sourceSHA256": transitionSHA256(
@@ -15588,7 +15592,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     "pipelineDescriptor":
                         pipelineDescriptorRecord(candidateDescriptor),
                     "destinationDivisionMode": 0,
-                    "vibrantArithmeticMode": 9,
+                    "vibrantArithmeticMode": 10,
+                    "vibrantFMAAccumulationOrder": "g-r-b",
                     "sourceConstructionMode": 1,
                     "sourceDivisionMode": 0,
                 ],
@@ -16029,7 +16034,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && $0["candidatesExact"] as? Bool == true
             }
         return [
-            "schemaVersion": 5,
+            "schemaVersion": 6,
             "executed": executed,
             "selectionPolicy":
                 "exactly one current Iscd and one immediately later "

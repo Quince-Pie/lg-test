@@ -14126,3 +14126,74 @@ and
 `0659b7da57e2d45fd32a30f5feb1f5ce80da098540ee2535af4da7bf1241da20`,
 respectively. The v5 probe type-checks natively against Apple's 26.5 SDK on
 the M1 Max.
+
+### Answer-bearing v5 rejection and prospective `g-r-b` v6 holdout
+
+The v5 run at commit
+`48adfc0dae65874e4edbd872efbc480f3a68cbba` passes the corrected geometry
+transport but fails the frozen all-or-nothing validator. The native physical-
+Retina capture exits zero and both Apple draws are active: `Iscd` has 131,072
+nonzero-alpha pixels and widened `Irsd` has 14,336. Every one of the 14 Apple
+matrix cases changes the independently reconstructed destination.
+
+The system-specialization result is decisive but is not promoted from this
+failed all-or-nothing run. Across both roles and all seven cases, the
+statically reconstructed QuartzCore functions equal their captured Apple
+pipelines in all 58,720,256 BGRA8 bytes, with zero unequal pixels and maximum
+channel delta zero. The decoded selectors and constants therefore survive an
+active runtime comparison; v6 repeats this requirement unchanged as a fresh
+holdout.
+
+The old independent candidate passes 12 of 14 comparisons exactly. Only the
+natural matrix differs: `Iscd` has 4,098 unequal bytes across 4,054 pixels and
+`Irsd` has 673 unequal bytes across 664 pixels. Every delta is exactly one
+BGRA8 code value. The zero, unit, identity, permutation, destination-alpha,
+and asymmetric-constant matrices are byte-exact for both roles. The captured-
+source and finite-source alpha traces are also byte-identical for both roles;
+nonzero alpha and changed destination bytes independently prove that this is
+texture-3 invariance rather than an inactive draw.
+
+The timeline SHA-256 is
+`76b92efc5f89774e98ddcc4f4fa313fa8b79b153106273c86340ea441c0d8535`.
+The compact rejected result is
+`Analysis/current_final_compositor_transfer_48adfc0_v5_failure_result.json`,
+SHA-256
+`3041bcc94b0d070a7d0e03f9882eb48a8f7446afa2ec3dca098a3e61fec4de62`.
+Because the frozen validator failed, it closes no construction question and
+is used only to select the next prospective candidate.
+
+A byte-exact CPU replica first reproduces the old Metal candidate over all
+131,072 active `Iscd` pixels with zero unequal bytes. Exhaustively changing
+only the order of the three nested binary16 fused multiply-adds then gives:
+
+```text
+accumulation     Iscd unequal bytes     Irsd unequal bytes
+r-g-b                         4,098                   673
+r-b-g                         5,999                   970
+g-r-b                             0                     0
+g-b-r                         3,173                   497
+b-r-g                         6,071                 1,003
+b-g-r                         5,331                   850
+```
+
+Thus `g-r-b` is the unique exact opened-data hypothesis. It is not
+retrospectively relabelled as a holdout. V6 freezes that order before a fresh
+capture, changes no matrix case, geometry, selector, source, activity rule,
+composition step, or tolerance, and requires the same 14 exact system and 14
+exact independent comparisons. The texture control is corrected to require
+the observed alpha invariance while the nonzero-alpha and changed-destination
+controls remain mandatory. Only a complete v6 pass may reduce the remaining
+Apple construction count from one to zero and authorize the Walle-shaped
+Retina product gate.
+
+The v6 preregistration, validator, ten tests, native runner, Swift probe, and
+candidate Metal source have SHA-256 values
+`433b8aad0e98aee0bbb55376bef026b685c0cf9017cbce0c428c9c336e4de178`,
+`34809e00b7a4dc1cc2f88406ea0a51bc37e12db408ddceaeec1597f128f81481`,
+`55098af98a943fd85aa90ed718225de9a19e20fdf9a94ce256e91f1f24c46f14`,
+`0c40d7fcebe48d7e756ba39212c5bc0e29d44f69cea70c1a6fd62b6a6cdc225d`,
+`90332bd51bf5b05026a287fd2cd9e651515d5ec977a8ec2fe7447b5253b56c88`,
+and
+`dc3d5f24d77518c7d5c7cbac6f3e2bf9a6d355d3bab16c0cbe61b239612d8e00`,
+respectively. The v6 probe type-checks natively against Apple's 26.5 SDK on
+the M1 Max.

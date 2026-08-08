@@ -707,9 +707,10 @@ def validate_source_intervention(
         bytes_per_pixel=8,
     )
     require(
-        comparison["mismatchedByteCount"] > 0
-        and comparison["mismatchedPixelCount"] > 0,
-        f"{role} texture-3 path-sensitivity control is inactive",
+        comparison["exactByteMatch"] is True
+        and comparison["mismatchedByteCount"] == 0
+        and comparison["mismatchedPixelCount"] == 0,
+        f"{role} texture-3 alpha invariance differs",
     )
     reported = mapping(
         record.get("sourcePathSensitivityComparison"),
@@ -725,15 +726,16 @@ def validate_source_intervention(
         label=f"{role} source path comparison",
     )
     require(
-        record.get("sourcePathSensitive") is True,
-        f"{role} sourcePathSensitive differs",
+        record.get("sourcePathSensitive") is False
+        and record.get("sourcePathInvariant") is True,
+        f"{role} source path classification differs",
     )
     return {
         "capturedSourceSHA256": sha256_bytes(b"".join(captured_mips)),
         "finiteSourceSHA256": sha256_bytes(b"".join(finite_mips)),
         "mipmapLevelCount": SOURCE_MIP_COUNT,
-        "pathSensitivityUnequalBytes": comparison["mismatchedByteCount"],
-        "pathSensitivityUnequalPixels": comparison["mismatchedPixelCount"],
+        "pathInvariantUnequalBytes": comparison["mismatchedByteCount"],
+        "pathInvariantUnequalPixels": comparison["mismatchedPixelCount"],
     }
 
 
@@ -747,7 +749,7 @@ def validate_role(
 ) -> JSONObject:
     record = mapping(untyped, f"{role} record")
     expected_scalars = {
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "executed": True,
         "role": role,
         "pipelineLabel": PIPELINES[role],
@@ -815,12 +817,13 @@ def validate_role(
 
     candidate = mapping(record.get("candidate"), f"{role} candidate")
     candidate_expected = {
-        "classification": "independent recovered mode-9 binary16 compositor",
+        "classification": "independent recovered current binary16 compositor",
         "capturedAppleFunctionUnmodified": False,
         "fastMathEnabled": False,
         "sourceSHA256": candidate_source_sha256,
         "destinationDivisionMode": 0,
-        "vibrantArithmeticMode": 9,
+        "vibrantArithmeticMode": 10,
+        "vibrantFMAAccumulationOrder": "g-r-b",
         "sourceConstructionMode": 1,
         "sourceDivisionMode": 0,
     }
@@ -831,7 +834,7 @@ def validate_role(
         f"{role} candidate descriptor",
     )
     require(
-        descriptor.get("label") == "lg.current-compositor-independent-mode9"
+        descriptor.get("label") == "lg.current-compositor-independent-g-r-b"
         and descriptor.get("vertexFunction") == "current_compositor_vertex"
         and descriptor.get("fragmentFunction") == "current_compositor_fragment",
         f"{role} candidate pipeline differs",
@@ -969,7 +972,7 @@ def validate(
         preregistration.get(
             "currentFinalCompositorTransferPreregistrationSchemaVersion"
         )
-        == 5,
+        == 6,
         "preregistration schema differs",
     )
     descriptor_capture = mapping(
@@ -1090,6 +1093,39 @@ def validate(
         and observed_v4.get("staleAbsoluteVertexHashRejectedBothRoles") is True,
         "failed-v4 amendment differs",
     )
+    superseded_v5 = mapping(
+        preregistration.get("supersedesFailedV5Run"),
+        "supersedesFailedV5Run",
+    )
+    observed_v5 = mapping(
+        superseded_v5.get("observedComparisons"),
+        "v5 observed comparisons",
+    )
+    order_census = mapping(
+        superseded_v5.get("retrospectiveFMAOrderCensus"),
+        "v5 FMA order census",
+    )
+    require(
+        superseded_v5.get("captureCommit") == "48adfc0dae65874e4edbd872efbc480f3a68cbba"
+        and superseded_v5.get("timelineSHA256")
+        == "76b92efc5f89774e98ddcc4f4fa313fa8b79b153106273c86340ea441c0d8535"
+        and superseded_v5.get("nativeCaptureExitStatus") == 0
+        and superseded_v5.get("frozenValidatorExitStatus") == 1
+        and superseded_v5.get("promotedEvidence") is False
+        and superseded_v5.get("arithmeticCasesChanged") is False
+        and superseded_v5.get("candidateChanged") is True
+        and superseded_v5.get("toleranceChanged") is False
+        and observed_v5.get("activeAppleMatrixCases") == 14
+        and observed_v5.get("exactSystemSpecializationComparisons") == 14
+        and observed_v5.get("exactIndependentCandidateComparisons") == 12
+        and observed_v5.get("naturalIscdUnequalBytes") == 4098
+        and observed_v5.get("naturalIrsdUnequalBytes") == 673
+        and observed_v5.get("maximumCandidateChannelDelta") == 1
+        and observed_v5.get("capturedVsFiniteAlphaUnequalBytes") == 0
+        and order_census.get("g-r-b") == {"IscdUnequalBytes": 0, "IrsdUnequalBytes": 0}
+        and superseded_v5.get("selectedProspectiveCandidate") == "g-r-b",
+        "failed-v5 amendment differs",
+    )
     specialization = mapping(
         preregistration.get("systemSpecialization"),
         "systemSpecialization",
@@ -1122,11 +1158,10 @@ def validate(
             "word=u32(x*0x045d9f3b ^ y*0x0119de1f ^ level*0x9e3779b9) "
             "^ 0x6d2b79f5; bgra=(word[7:0],word[15:8],word[23:16],0xff)"
         )
-        and nonvacuity.get("sourcePathSensitivityRequirement")
+        and nonvacuity.get("sourcePathInvarianceRequirement")
         == (
             "the captured-source and finite-source RGBA16Float alpha-oracle "
-            "outputs must differ by at least one byte and one 8-byte pixel for "
-            "each current function"
+            "outputs must be byte-for-byte identical for each current function"
         ),
         "finite-source preregistration differs",
     )
@@ -1146,11 +1181,29 @@ def validate(
         and geometry_activity.get("liveAppleFrameChanged") is False,
         "geometry-activity preregistration differs",
     )
+    independent_candidate = mapping(
+        preregistration.get("independentCandidate"),
+        "independentCandidate",
+    )
+    require(
+        independent_candidate.get("fastMathEnabled") is False
+        and independent_candidate.get("destinationDivisionMode") == 0
+        and independent_candidate.get("vibrantArithmeticMode") == 10
+        and independent_candidate.get("vibrantFMAAccumulationOrder") == "g-r-b"
+        and independent_candidate.get("sourceConstructionMode") == 1
+        and independent_candidate.get("sourceDivisionMode") == 0,
+        "independent-candidate preregistration differs",
+    )
     validate_sources(preregistration)
     candidate_source_sha256 = preregistration.get("candidateMetalSourceSHA256")
     require(
         isinstance(candidate_source_sha256, str) and len(candidate_source_sha256) == 64,
         "candidate Metal source hash is malformed",
+    )
+    require(
+        independent_candidate.get("candidateMetalSourceSHA256")
+        == candidate_source_sha256,
+        "candidate Metal source hashes differ",
     )
 
     preflight = load_json(preflight_path)
@@ -1212,7 +1265,7 @@ def validate(
         "currentFinalCompositorTransfer",
     )
     expected_transfer = {
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "executed": True,
         "selectionPolicy": (
             "exactly one current Iscd and one immediately later current Irsd draw "
@@ -1267,7 +1320,7 @@ def validate(
         "current Iscd/Irsd captured vertex streams differ",
     )
     return {
-        "currentFinalCompositorTransferResultSchemaVersion": 5,
+        "currentFinalCompositorTransferResultSchemaVersion": 6,
         "accepted": True,
         "captureDirectory": capture_directory.name,
         "sampleIndex": SAMPLE,

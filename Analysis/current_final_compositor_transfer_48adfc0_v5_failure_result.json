@@ -1,0 +1,76 @@
+{
+  "currentFinalCompositorTransferFailureResultSchemaVersion": 5,
+  "status": "rejected-after-answer-bearing-current-function-comparisons",
+  "captureCommit": "48adfc0dae65874e4edbd872efbc480f3a68cbba",
+  "captureDirectory": "local-current-final-compositor-transfer-48adfc0-v5",
+  "timelineSHA256": "76b92efc5f89774e98ddcc4f4fa313fa8b79b153106273c86340ea441c0d8535",
+  "nativeCaptureExitStatus": 0,
+  "frozenValidatorExitStatus": 1,
+  "physicalRetinaPreflightPassed": true,
+  "physicalPixels": [3456, 2234],
+  "backingScaleFactor": 2,
+  "observations": {
+    "capturedVertexStreamsEqual": true,
+    "geometryActivityControlsValid": true,
+    "activeApplePixels": {
+      "Iscd": 131072,
+      "Irsd": 14336
+    },
+    "positiveAppleMatrixCases": 14,
+    "capturedVsSystemSpecialization": {
+      "comparisonCount": 14,
+      "comparedBytes": 58720256,
+      "unequalBytes": 0,
+      "unequalPixels": 0,
+      "maximumChannelDelta": 0
+    },
+    "capturedVsIndependentCandidate": {
+      "exactCaseCount": 12,
+      "failedCases": [
+        {
+          "role": "Iscd",
+          "case": "natural-rgb-unit-alpha",
+          "mismatchedBytes": 4098,
+          "mismatchedPixels": 4054,
+          "maximumChannelDelta": 1
+        },
+        {
+          "role": "Irsd",
+          "case": "natural-rgb-unit-alpha",
+          "mismatchedBytes": 673,
+          "mismatchedPixels": 664,
+          "maximumChannelDelta": 1
+        }
+      ]
+    },
+    "capturedVsFiniteSourceAlpha": {
+      "IscdUnequalBytes": 0,
+      "IrsdUnequalBytes": 0,
+      "interpretation": "the current highlight-alpha result is texture-3 invariant under the frozen captured and finite sources; nonzero alpha and destination changes independently prove draw activity"
+    }
+  },
+  "retrospectiveDiscoveryNotPromotedAsHoldout": {
+    "cpuReplicaMatchesCurrentGpuCandidate": {
+      "activeIscdPixels": 131072,
+      "unequalBytes": 0
+    },
+    "binary16FMAOrderCensus": {
+      "r-g-b": {"IscdUnequalBytes": 4098, "IrsdUnequalBytes": 673},
+      "r-b-g": {"IscdUnequalBytes": 5999, "IrsdUnequalBytes": 970},
+      "g-r-b": {"IscdUnequalBytes": 0, "IrsdUnequalBytes": 0},
+      "g-b-r": {"IscdUnequalBytes": 3173, "IrsdUnequalBytes": 497},
+      "b-r-g": {"IscdUnequalBytes": 6071, "IrsdUnequalBytes": 1003},
+      "b-g-r": {"IscdUnequalBytes": 5331, "IrsdUnequalBytes": 850}
+    },
+    "selectedProspectiveCandidate": "g-r-b"
+  },
+  "promotedEvidence": false,
+  "remainingAppleConstructionQuestions": 1,
+  "nextCorrection": "freeze green-red-blue binary16 FMA accumulation and texture-3 alpha invariance, then require a fresh physical-Retina zero-difference holdout across both roles and all seven unchanged matrix cases",
+  "arithmeticCasesChanged": false,
+  "candidateChanged": true,
+  "toleranceChanged": false,
+  "productionParity": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

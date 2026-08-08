@@ -1,6 +1,6 @@
 {
-  "currentFinalCompositorTransferPreregistrationSchemaVersion": 5,
-  "status": "frozen-v5-before-answer-bearing-current-family-capture",
+  "currentFinalCompositorTransferPreregistrationSchemaVersion": 6,
+  "status": "frozen-v6-before-prospective-g-r-b-holdout",
   "purpose": "Decide the sole remaining Apple construction question: whether the already recovered exact binary16 vibrant-matrix/source-over compositor transfers without arithmetic change to both current macOS 26.6.1 Iscd and Irsd functions.",
   "supersedesFailedRun": {
     "captureCommit": "b838af32b291561b362bd1dc0243ac0213359978",
@@ -89,6 +89,39 @@
     "candidateChanged": false,
     "toleranceChanged": false
   },
+  "supersedesFailedV5Run": {
+    "captureCommit": "48adfc0dae65874e4edbd872efbc480f3a68cbba",
+    "captureDirectory": "local-current-final-compositor-transfer-48adfc0-v5",
+    "timelineSHA256": "76b92efc5f89774e98ddcc4f4fa313fa8b79b153106273c86340ea441c0d8535",
+    "nativeCaptureExitStatus": 0,
+    "frozenValidatorExitStatus": 1,
+    "promotedEvidence": false,
+    "observedComparisons": {
+      "activeAppleMatrixCases": 14,
+      "exactSystemSpecializationComparisons": 14,
+      "exactIndependentCandidateComparisons": 12,
+      "naturalIscdUnequalBytes": 4098,
+      "naturalIrsdUnequalBytes": 673,
+      "maximumCandidateChannelDelta": 1,
+      "capturedVsFiniteAlphaUnequalBytes": 0
+    },
+    "retrospectiveFMAOrderCensus": {
+      "r-g-b": {"IscdUnequalBytes": 4098, "IrsdUnequalBytes": 673},
+      "r-b-g": {"IscdUnequalBytes": 5999, "IrsdUnequalBytes": 970},
+      "g-r-b": {"IscdUnequalBytes": 0, "IrsdUnequalBytes": 0},
+      "g-b-r": {"IscdUnequalBytes": 3173, "IrsdUnequalBytes": 497},
+      "b-r-g": {"IscdUnequalBytes": 6071, "IrsdUnequalBytes": 1003},
+      "b-g-r": {"IscdUnequalBytes": 5331, "IrsdUnequalBytes": 850}
+    },
+    "selectedProspectiveCandidate": "g-r-b",
+    "corrections": [
+      "change only the nested binary16 vibrant-matrix accumulation from r-g-b to the uniquely exact retrospective g-r-b hypothesis",
+      "require captured-source and finite-source alpha traces to be exactly equal, while retaining independent nonzero-alpha and changed-destination activity gates"
+    ],
+    "arithmeticCasesChanged": false,
+    "candidateChanged": true,
+    "toleranceChanged": false
+  },
   "host": {
     "transport": "local SSH only",
     "machine": "physical M1 Max Mac",
@@ -165,7 +198,7 @@
     "coverageIntervention": "positive-normal-x",
     "sourceIntervention": "replace inherited texture 3 immediately before only the isolated selected draw with the frozen opaque six-mip BGRA8 coordinate pattern",
     "sourceTopology": "each current draw must inherit the same 768x768 six-mip BGRA8Unorm 2D texture observed at render-command sequence 37 in the rejected v2 capture",
-    "sourcePathSensitivityRequirement": "the captured-source and finite-source RGBA16Float alpha-oracle outputs must differ by at least one byte and one 8-byte pixel for each current function",
+    "sourcePathInvarianceRequirement": "the captured-source and finite-source RGBA16Float alpha-oracle outputs must be byte-for-byte identical for each current function",
     "geometryActivity": {
       "IscdMethod": "captured-Iscd-geometry",
       "IrsdMethod": "widen-Irsd-center-seams-v1",
@@ -218,14 +251,15 @@
     "rasterization": "full-target three-vertex triangle with integer pixel reads",
     "fastMathEnabled": false,
     "destinationDivisionMode": 0,
-    "vibrantArithmeticMode": 9,
+    "vibrantArithmeticMode": 10,
+    "vibrantFMAAccumulationOrder": "g-r-b",
     "sourceConstructionMode": 1,
     "sourceDivisionMode": 0,
-    "matrixArithmetic": "nested binary16 fused multiply-add in the already recovered channel order",
+    "matrixArithmetic": "nested binary16 fused multiply-add in green-red-blue accumulation order, prospectively selected from the exhaustive v5 six-order census",
     "composition": "binary16 premultiplied source-over",
-    "candidateMetalSourceSHA256": "5f824e69b37ec3093658c5bc54cb8860fcccc5f65ef8d4877463bc5d017bebf6"
+    "candidateMetalSourceSHA256": "dc3d5f24d77518c7d5c7cbac6f3e2bf9a6d355d3bab16c0cbe61b239612d8e00"
   },
-  "candidateMetalSourceSHA256": "5f824e69b37ec3093658c5bc54cb8860fcccc5f65ef8d4877463bc5d017bebf6",
+  "candidateMetalSourceSHA256": "dc3d5f24d77518c7d5c7cbac6f3e2bf9a6d355d3bab16c0cbe61b239612d8e00",
   "matrixCases": [
     "zero-rgb-unit-alpha",
     "unit-rgb-unit-alpha",
@@ -239,7 +273,7 @@
     "pipelineCount": 2,
     "matrixCasesPerPipeline": 7,
     "positiveControlCount": 14,
-    "sourcePathSensitivityControlCount": 2,
+    "sourcePathInvarianceControlCount": 2,
     "systemSpecializationComparisonCount": 14,
     "systemSpecializationComparedBytes": 58720256,
     "requiredUnequalSystemSpecializationBytes": 0,
@@ -254,9 +288,9 @@
     "arithmeticModeChangeAfterCapturePermitted": false
   },
   "sourceSHA256": {
-    "Sources/GlassIntrospect/main.swift": "0659b7da57e2d45fd32a30f5feb1f5ce80da098540ee2535af4da7bf1241da20",
-    "Analysis/validate_current_final_compositor_transfer.py": "35f3019c9d40d5e1b02c91f489e5b58bef045ebe44b70037d6b88876b56cb0ca",
-    "Analysis/test_validate_current_final_compositor_transfer.py": "b0db809fde4283f721858416d5981c9687b6b38b9e67bbb80e5ce7d89b2d10f9",
+    "Sources/GlassIntrospect/main.swift": "90332bd51bf5b05026a287fd2cd9e651515d5ec977a8ec2fe7447b5253b56c88",
+    "Analysis/validate_current_final_compositor_transfer.py": "34809e00b7a4dc1cc2f88406ea0a51bc37e12db408ddceaeec1597f128f81481",
+    "Analysis/test_validate_current_final_compositor_transfer.py": "55098af98a943fd85aa90ed718225de9a19e20fdf9a94ce256e91f1f24c46f14",
     "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
     "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
     "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
