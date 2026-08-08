@@ -4358,6 +4358,10 @@ private let glassBackgroundFragment26_6_1 =
     "TghzA2Xhf_Isrc"
 private let glassBackgroundPipelineLabel26_6_1 =
     "com.apple.coreanimation.PBGRABsovXm_TghzA2Xhf_Isrc"
+private let finalHighlightShapePipelineLabel26_6_1 =
+    "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd"
+private let finalHighlightRemainderPipelineLabel26_6_1 =
+    "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Irsd"
 
 private func isGlassBackgroundFragment(_ fragment: String) -> Bool {
     fragment.hasPrefix("glass_background")
@@ -9024,6 +9028,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             MTLRenderPipelineState? = nil,
         glassFragmentTextureOverrides:
             [Int: MTLTexture] = [:],
+        vertexBufferOverrides:
+            [ObjectIdentifier: MTLBuffer] = [:],
         stopAfterGlass: Bool = false
     ) -> ReplayEncodingSummary {
         var encodedCommandCount = 0
@@ -9109,8 +9115,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 let offset,
                 let index
             ):
+                let replayBuffer = buffer.flatMap {
+                    vertexBufferOverrides[ObjectIdentifier($0)]
+                } ?? buffer
                 encoder.setVertexBuffer(
-                    buffer,
+                    replayBuffer,
                     offset: offset,
                     index: index)
             case .vertexBufferOffset(let offset, let index):
@@ -9928,6 +9937,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         stopAfterGlass: Bool = true,
         glassFragmentTextureOverrides:
             [Int: MTLTexture] = [:],
+        vertexBufferOverrides:
+            [ObjectIdentifier: MTLBuffer] = [:],
         capture: String,
         suffix: String,
         outputDirectory: URL
@@ -10034,6 +10045,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             replacingGlassPipeline: replacement,
             glassFragmentTextureOverrides:
                 glassFragmentTextureOverrides,
+            vertexBufferOverrides: vertexBufferOverrides,
             stopAfterGlass: stopAfterGlass)
         writeIndependentGlassProgress(
             capture: capture,
@@ -10567,7 +10579,18 @@ private final class MetalUniformProbe: @unchecked Sendable {
     private func isFinalHighlightPipeline(
         _ state: MTLRenderPipelineState
     ) -> Bool {
-        state.label?.contains("_A2Xghfc") == true
+        guard let label = state.label else {
+            return false
+        }
+        return label.contains("_A2Xghfc")
+            || label == finalHighlightShapePipelineLabel26_6_1
+            || label == finalHighlightRemainderPipelineLabel26_6_1
+    }
+
+    private func isFinalHighlightRemainderPipeline(
+        _ state: MTLRenderPipelineState
+    ) -> Bool {
+        state.label == finalHighlightRemainderPipelineLabel26_6_1
     }
 
     private struct FinalHighlightSelection {
@@ -10620,6 +10643,234 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 uniformOffset: activeUniformOffset)
         }
         return selection
+    }
+
+    private struct FinalHighlightVertexTailSelection {
+        let pipeline: MTLRenderPipelineState
+        let vertexBuffer: MTLBuffer
+        let vertexOffset: Int
+        let indexCount: Int
+    }
+
+    private func finalHighlightVertexTailSelection(
+        in commands: [ReplayCommand]
+    ) -> FinalHighlightVertexTailSelection? {
+        var currentPipeline: MTLRenderPipelineState?
+        var activeVertexBuffer: MTLBuffer?
+        var activeVertexOffset = 0
+        var selection: FinalHighlightVertexTailSelection?
+
+        for command in commands {
+            switch command {
+            case .pipeline(let pipeline):
+                currentPipeline = pipeline
+            case .vertexBuffer(
+                let buffer,
+                let offset,
+                let bufferIndex
+            ):
+                if bufferIndex == 1 {
+                    activeVertexBuffer = buffer
+                    activeVertexOffset = offset
+                }
+            case .vertexBufferOffset(let offset, let bufferIndex):
+                if bufferIndex == 1 {
+                    activeVertexOffset = offset
+                }
+            case .drawIndexedPrimitives(
+                _,
+                let indexCount,
+                let indexType,
+                _,
+                _
+            ):
+                guard indexType == .uint16,
+                      indexCount == 24,
+                      let currentPipeline,
+                      isFinalHighlightRemainderPipeline(currentPipeline),
+                      let activeVertexBuffer
+                else {
+                    continue
+                }
+                selection = FinalHighlightVertexTailSelection(
+                    pipeline: currentPipeline,
+                    vertexBuffer: activeVertexBuffer,
+                    vertexOffset: activeVertexOffset,
+                    indexCount: indexCount)
+            default:
+                break
+            }
+        }
+        return selection
+    }
+
+    private func replayFinalHighlightVertexTailIntervention(
+        pass: ReplayPass,
+        preColor0: MTLTexture,
+        queue: MTLCommandQueue,
+        exactReplay: [String: Any],
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let selection = finalHighlightVertexTailSelection(
+                in: pass.commands)
+        else {
+            return [
+                "executed": false,
+                "reason": "current Irsd border draw is unavailable",
+            ]
+        }
+        guard selection.vertexBuffer.storageMode != .private else {
+            return [
+                "executed": false,
+                "reason": "Irsd vertex buffer is private",
+            ]
+        }
+
+        lock.lock()
+        let descriptor = pipelineDescriptors[
+            ObjectIdentifier(selection.pipeline)
+        ]?.copy() as? MTLRenderPipelineDescriptor
+        lock.unlock()
+        guard let vertexDescriptor = descriptor?.vertexDescriptor,
+              vertexDescriptor.layouts[1].stride == 48,
+              vertexDescriptor.layouts[1].stepFunction == .perVertex,
+              vertexDescriptor.attributes[3].bufferIndex == 1,
+              vertexDescriptor.attributes[3].offset == 32,
+              vertexDescriptor.attributes[3].format == .half4
+        else {
+            return [
+                "executed": false,
+                "reason": "Irsd vertex layout differs",
+            ]
+        }
+
+        let vertexCount = 16
+        let stride = 48
+        let attributeOffset = 32
+        let attributeByteCount = 8
+        let finalByte = selection.vertexOffset
+            + (vertexCount - 1) * stride
+            + attributeOffset
+            + attributeByteCount
+        guard selection.vertexOffset >= 0,
+              finalByte <= selection.vertexBuffer.length
+        else {
+            return [
+                "executed": false,
+                "reason": "Irsd vertex attribute range exceeds buffer",
+            ]
+        }
+
+        func attributeStream(_ buffer: MTLBuffer) -> Data {
+            var stream = Data(capacity: vertexCount * attributeByteCount)
+            for vertex in 0..<vertexCount {
+                stream.append(Data(
+                    bytes: buffer.contents().advanced(
+                        by: selection.vertexOffset
+                            + vertex * stride
+                            + attributeOffset),
+                    count: attributeByteCount))
+            }
+            return stream
+        }
+
+        let interventions: [(
+            name: String,
+            half4: [UInt16]
+        )] = [
+            ("zero-half4", [0x0000, 0x0000, 0x0000, 0x0000]),
+            ("finite-asymmetric-half4", [
+                0x3c00, 0x3800, 0xbc00, 0x4000,
+            ]),
+        ]
+        var records: [[String: Any]] = []
+        for intervention in interventions {
+            guard let clone = preColor0.device.makeBuffer(
+                    length: selection.vertexBuffer.length,
+                    options: .storageModeShared)
+            else {
+                return [
+                    "executed": false,
+                    "reason": "Irsd vertex clone failed",
+                    "intervention": intervention.name,
+                ]
+            }
+            memcpy(
+                clone.contents(),
+                selection.vertexBuffer.contents(),
+                selection.vertexBuffer.length)
+            let littleEndianWords = intervention.half4.map {
+                $0.littleEndian
+            }
+            littleEndianWords.withUnsafeBytes { bytes in
+                for vertex in 0..<vertexCount {
+                    memcpy(
+                        clone.contents().advanced(
+                            by: selection.vertexOffset
+                                + vertex * stride
+                                + attributeOffset),
+                        bytes.baseAddress!,
+                        attributeByteCount)
+                }
+            }
+            let replay = replayGlassPrefix(
+                pass: pass,
+                preColor0: preColor0,
+                queue: queue,
+                replacingGlassPipeline: nil,
+                stopAfterGlass: false,
+                vertexBufferOverrides: [
+                    ObjectIdentifier(selection.vertexBuffer): clone,
+                ],
+                capture: capture,
+                suffix:
+                    "final-highlight-vertex-tail-"
+                    + intervention.name,
+                outputDirectory: outputDirectory)
+            records.append([
+                "name": intervention.name,
+                "half4LittleEndianHex": littleEndianWords.withUnsafeBytes {
+                    Data($0).map { String(format: "%02x", $0) }.joined()
+                },
+                "mutatedAttributeStreamSHA256":
+                    transitionSHA256(attributeStream(clone)),
+                "replay": replay,
+                "comparison": compareReplaySnapshots(
+                    reference: exactReplay,
+                    candidate: replay,
+                    outputDirectory: outputDirectory),
+            ])
+        }
+        let exact = records.allSatisfy { record in
+            guard let comparison = record["comparison"]
+                    as? [String: Any]
+            else {
+                return false
+            }
+            return comparison["compared"] as? Bool == true
+                && comparison["exactByteMatch"] as? Bool == true
+        }
+        return [
+            "schemaVersion": 1,
+            "executed": true,
+            "classification":
+                "captured Apple Irsd pixel-influence intervention",
+            "liveAppleFrameMutated": false,
+            "capturedApplePipelinesUnmodified": true,
+            "pipelineLabel": selection.pipeline.label ?? "",
+            "indexCount": selection.indexCount,
+            "vertexCount": vertexCount,
+            "stride": stride,
+            "attributeIndex": 3,
+            "attributeOffset": attributeOffset,
+            "attributeFormat": "half4",
+            "originalAttributeStreamSHA256":
+                transitionSHA256(attributeStream(selection.vertexBuffer)),
+            "interventionCount": records.count,
+            "allInterventionsExact": exact,
+            "interventions": records,
+        ]
     }
 
     private func isolatedFinalHighlightCommands(
@@ -13676,6 +13927,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
             && (capture.hasSuffix("-01")
                 || capture.hasSuffix("-12")
                 || capture.hasSuffix("-32"))
+        let dynamicHighlightVertexTailTraceRequested =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_HIGHLIGHT_VERTEX_TAIL_TRACE"
+            ] == "1"
+            && capture.hasPrefix("transition-background-uniform-")
+            && (capture.hasSuffix("-28")
+                || capture.hasSuffix("-29")
+                || capture.hasSuffix("-30"))
         let glassPrefixReference = replayGlassPrefix(
             pass: pass,
             preColor0: preColor0,
@@ -13708,6 +13967,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
         }
         result["finalHighlightInputReference"] =
             finalHighlightInputReference
+        if dynamicHighlightVertexTailTraceRequested {
+            result["finalHighlightVertexTailIntervention"] =
+                replayFinalHighlightVertexTailIntervention(
+                    pass: pass,
+                    preColor0: preColor0,
+                    queue: queue,
+                    exactReplay: ["output": replaySnapshot],
+                    capture: capture,
+                    outputDirectory: outputDirectory)
+        }
         if dynamicInterpolantTraceRequested {
             do {
                 let arithmeticTraceSpecifications: [(
