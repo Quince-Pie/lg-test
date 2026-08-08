@@ -14,7 +14,7 @@ from typing import Any, TypedDict
 import validate_variable_blur_selected_region_origin as selected
 
 
-RESULT_SCHEMA_VERSION = 3
+RESULT_SCHEMA_VERSION = 4
 TIMELINE_SCHEMA_VERSION = 5
 DYNAMIC_UNIFORM_SCHEMA_VERSION = 9
 EXPECTED_CAPTURE_METHOD = (
@@ -98,6 +98,27 @@ SHADOW_INDICES = (
 )
 FINAL_QUAD_INDICES = (0, 1, 2, 2, 3, 0)
 FINAL_BORDER_INDICES = SHADOW_INDICES[:24]
+FOREGROUND_NUMERIC_INPUT_NAMES = (
+    "inputAberrationAmount",
+    "inputAberrationAngle",
+    "inputAberrationHeight",
+    "inputAberrationOffset",
+    "inputEdgeEnd",
+    "inputEdgeOpacityEnd",
+    "inputEdgeOpacityStart",
+    "inputEdgeStart",
+    "inputRefractionAmount",
+    "inputRefractionHeight",
+    "inputRefractionOffset",
+)
+FOREGROUND_OBJECT_INPUT_NAMES = (
+    "inputRefractionAngle",
+    "inputSourceSublayerName",
+)
+FOREGROUND_INPUT_NAMES = (
+    *FOREGROUND_NUMERIC_INPUT_NAMES,
+    *FOREGROUND_OBJECT_INPUT_NAMES,
+)
 
 type JsonObject = dict[str, Any]
 type Vertex = tuple[float, float, float, float, float, float, float, float]
@@ -259,6 +280,48 @@ def expected_backdrop_scale(material: str, remaining: float) -> float:
     if float32_bits(remaining) != float32_bits(remaining32):
         raise ValueError("remaining is not representable as captured binary32")
     return float32(1.0 - coefficient * remaining32)
+
+
+def expected_foreground_filter_inputs(
+    remaining: float,
+) -> dict[str, float | str | None]:
+    """Construct the public transition glassForeground input dictionary."""
+    remaining32 = float32(remaining)
+    if remaining != remaining32 or not 0.0 < remaining32 < 1.0:
+        raise ValueError("live foreground remaining value differs")
+    progress = 1.0 - remaining32
+    return {
+        "inputAberrationAmount": -5.0 * progress,
+        "inputAberrationAngle": 0.5 * math.pi * progress,
+        "inputAberrationHeight": 0.0,
+        "inputAberrationOffset": 0.0,
+        "inputEdgeEnd": 0.0,
+        "inputEdgeOpacityEnd": progress,
+        "inputEdgeOpacityStart": 0.0,
+        "inputEdgeStart": 0.0,
+        "inputRefractionAmount": 0.0,
+        "inputRefractionAngle": None,
+        "inputRefractionHeight": 16.0 * progress,
+        "inputRefractionOffset": float32(float32(-3.3) * progress),
+        "inputSourceSublayerName": "@0",
+    }
+
+
+def foreground_input_stream(values: Mapping[str, Any]) -> bytes:
+    """Encode public foreground inputs without losing numeric bit patterns."""
+    if set(values) != set(FOREGROUND_INPUT_NAMES):
+        raise ValueError("foreground input key set differs")
+    encoded = bytearray()
+    for name in FOREGROUND_NUMERIC_INPUT_NAMES:
+        encoded.extend(struct.pack("<d", finite(values.get(name), name)))
+    if values.get("inputRefractionAngle") is not None:
+        raise ValueError("foreground refraction angle differs")
+    source = values.get("inputSourceSublayerName")
+    if not isinstance(source, str):
+        raise ValueError("foreground source sublayer name differs")
+    encoded.extend(source.encode("utf-8"))
+    encoded.append(0)
+    return bytes(encoded)
 
 
 def expected_producer_crop(
@@ -856,6 +919,21 @@ def add_integer_metric(
     )
 
 
+def add_exact_metric(
+    metrics: dict[str, Counter[str]],
+    name: str,
+    observed: Sequence[object],
+    predicted: Sequence[object],
+) -> None:
+    if len(observed) != len(predicted):
+        raise ValueError(f"{name} component count differs")
+    metric = metrics.setdefault(name, Counter())
+    metric["componentCount"] += len(observed)
+    metric["mismatchedComponents"] += sum(
+        left != right for left, right in zip(observed, predicted, strict=True)
+    )
+
+
 def metric_result(counter: Counter[str]) -> dict[str, Any]:
     component_count = counter["componentCount"]
     mismatches = counter["mismatchedComponents"]
@@ -928,6 +1006,8 @@ def analyze(artifact_root: Path) -> JsonObject:
     predicted_uv_digest = hashlib.sha256()
     actual_producer_crop_digest = hashlib.sha256()
     predicted_producer_crop_digest = hashlib.sha256()
+    actual_foreground_input_digest = hashlib.sha256()
+    predicted_foreground_input_digest = hashlib.sha256()
     final_fragment_digest = hashlib.sha256()
     final_vertex_digest = hashlib.sha256()
     final_index_digest = hashlib.sha256()
@@ -1215,8 +1295,46 @@ def analyze(artifact_root: Path) -> JsonObject:
 
             foreground = mapping(record.get("foregroundFilter"), "foreground filter")
             if "inputValues" in foreground:
+                inputs = mapping(
+                    foreground.get("inputValues"), "foreground filter inputs"
+                )
+                predicted_inputs = expected_foreground_filter_inputs(remaining)
+                add_float64_metric(
+                    metrics,
+                    "transitionForegroundNumericInputs",
+                    [
+                        finite(inputs.get(name), f"foreground {name}")
+                        for name in FOREGROUND_NUMERIC_INPUT_NAMES
+                    ],
+                    [
+                        finite(predicted_inputs.get(name), f"predicted {name}")
+                        for name in FOREGROUND_NUMERIC_INPUT_NAMES
+                    ],
+                )
+                add_exact_metric(
+                    metrics,
+                    "transitionForegroundObjectInputs",
+                    [inputs.get(name) for name in FOREGROUND_OBJECT_INPUT_NAMES],
+                    [
+                        predicted_inputs.get(name)
+                        for name in FOREGROUND_OBJECT_INPUT_NAMES
+                    ],
+                )
+                actual_foreground_input_digest.update(foreground_input_stream(inputs))
+                predicted_foreground_input_digest.update(
+                    foreground_input_stream(predicted_inputs)
+                )
                 foreground_filter_states += 1
-            elif foreground.get("filterPresent") is False:
+            elif (
+                foreground
+                == {
+                    "filterPresent": False,
+                    "replayedOnCarrier": False,
+                    "source": "static-glass-endpoint",
+                }
+                and remaining == 1.0
+                and expected["direction"] == "materialize"
+            ):
                 foreground_endpoint_states += 1
             else:
                 raise ValueError("foreground-filter retained state differs")
@@ -1266,6 +1384,11 @@ def analyze(artifact_root: Path) -> JsonObject:
         raise ValueError("background source-coordinate streams differ")
     if actual_producer_crop_digest.digest() != predicted_producer_crop_digest.digest():
         raise ValueError("producer crop streams differ")
+    if (
+        actual_foreground_input_digest.digest()
+        != predicted_foreground_input_digest.digest()
+    ):
+        raise ValueError("foreground input streams differ")
     if foreground_filter_states != 248 or foreground_endpoint_states != 4:
         raise ValueError("foreground-filter branch counts differ")
 
@@ -1321,6 +1444,12 @@ def analyze(artifact_root: Path) -> JsonObject:
                 "binary32(binary32(binary64(position)*binary64(scale) - cropOrigin "
                 "- copyOffset) * binary32(1/allocationExtent))"
             ),
+            "transitionForegroundInputs": (
+                "for binary32 remaining k and progress p=1-k: aberration amount "
+                "-5*p, aberration angle (pi/2)*p, edge opacity end p, refraction "
+                "height 16*p, refraction offset binary32(binary32(-3.3)*p), "
+                "all other scalar inputs zero, null refraction angle, and source @0"
+            ),
         },
         "metrics": metric_results,
         "streamSHA256": {
@@ -1332,6 +1461,8 @@ def analyze(artifact_root: Path) -> JsonObject:
             "sourceCoordinatesPredicted": predicted_uv_digest.hexdigest(),
             "producerCropObserved": actual_producer_crop_digest.hexdigest(),
             "producerCropPredicted": predicted_producer_crop_digest.hexdigest(),
+            "foregroundInputsObserved": actual_foreground_input_digest.hexdigest(),
+            "foregroundInputsPredicted": predicted_foreground_input_digest.hexdigest(),
         },
         "producerBranchInventory": {
             "fragmentFunctions": dict(sorted(producer_fragments.items())),
@@ -1350,10 +1481,11 @@ def analyze(artifact_root: Path) -> JsonObject:
             "fragment248BytePrefixStreamSHA256": final_fragment_digest.hexdigest(),
             "vertexStreamSHA256": final_vertex_digest.hexdigest(),
             "indexStreamSHA256": final_index_digest.hexdigest(),
-            "constructionLawExact": False,
+            "publicFilterInputConstructionExact": True,
+            "finalHighlightConstructionLawExact": False,
         },
         "remainingAlgorithmBoundaries": [
-            "transition foreground and final-highlight production",
+            "transition final-highlight fragment payload and mesh production",
         ],
         "prospectiveUnseenGeometryTransferPassed": False,
         "physicalRetinaColorCompositorTransferPassed": False,

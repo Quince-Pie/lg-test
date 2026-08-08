@@ -7,7 +7,8 @@
     "mainGeometry": "independently constructed dynamic carrier and CASDFElementLayer state transformed to six vertices in Apple's binary64 grouping, then binary32",
     "producerCrop": "full requested circle at the independently constructed carrier position, expanded by zero for clear or binary32(0.35*diameter) for regular, clipped in window space, scaled by the predicted material backdrop scale, then X-lower floor-plus-one and Metal-Y-lower ceil with floor upper-exclusive edges",
     "selectedRegion": "authenticated variable-blur helper radius/mip/integer-bounds replay composed with producer crop, copy-base offset, 64-pixel allocation, and destination mip count",
-    "shadowGeometry": "captured public layer state plus material shadow margin transformed to a four-by-four grid; outer bounds round to binary32 before binary64 deltas from the unrounded inner bounds adjust binary32 SDF coordinates"
+    "shadowGeometry": "captured public layer state plus material shadow margin transformed to a four-by-four grid; outer bounds round to binary32 before binary64 deltas from the unrounded inner bounds adjust binary32 SDF coordinates",
+    "transitionForegroundInputs": "for binary32 remaining k and progress p=1-k: aberration amount -5*p, aberration angle (pi/2)*p, edge opacity end p, refraction height 16*p, refraction offset binary32(binary32(-3.3)*p), all other scalar inputs zero, null refraction angle, and source @0"
   },
   "independentFreshWalleZeroByteFramePassed": false,
   "inputCount": 8,
@@ -227,6 +228,16 @@
       "componentCount": 16128,
       "exact": true,
       "mismatchedComponents": 0
+    },
+    "transitionForegroundNumericInputs": {
+      "componentCount": 2728,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "transitionForegroundObjectInputs": {
+      "componentCount": 496,
+      "exact": true,
+      "mismatchedComponents": 0
     }
   },
   "physicalRetinaColorCompositorTransferPassed": false,
@@ -251,11 +262,11 @@
   "productionShaderChanged": false,
   "prospectiveUnseenGeometryTransferPassed": false,
   "remainingAlgorithmBoundaries": [
-    "transition foreground and final-highlight production"
+    "transition final-highlight fragment payload and mesh production"
   ],
   "retainedTransitionForeground": {
-    "constructionLawExact": false,
     "endpointWithoutFilterStateCount": 4,
+    "finalHighlightConstructionLawExact": false,
     "finalHighlightStateCount": 252,
     "finalHighlightTopologies": {
       "24-indices/16-vertices": 3,
@@ -264,11 +275,14 @@
     "fragment248BytePrefixStreamSHA256": "e4197dc49a6d1c3055d3f05888d6442f0eb377ed63aba57b68f840883b524ccd",
     "indexStreamSHA256": "cf2a446a6394d8574a821e1ecfa79b66c82dcad7349bba966e4e13fb5f14aa74",
     "inputFilterStateCount": 248,
+    "publicFilterInputConstructionExact": true,
     "vertexStreamSHA256": "27d614daa906439cb366b60138664c8f284c3b2240d018f11ec5ef439b74e1ed"
   },
   "stateCount": 252,
   "status": "passed",
   "streamSHA256": {
+    "foregroundInputsObserved": "a3c33b03f3d57b46221ff5270b13a7c23883e0b1a3ff5c6fe70e6c54026bd31e",
+    "foregroundInputsPredicted": "a3c33b03f3d57b46221ff5270b13a7c23883e0b1a3ff5c6fe70e6c54026bd31e",
     "mainObserved": "94dca2d87b4c7e0615e31dfc9bcabdbdccd4dba25ded8c868469bbe8d76b9427",
     "mainPredicted": "94dca2d87b4c7e0615e31dfc9bcabdbdccd4dba25ded8c868469bbe8d76b9427",
     "producerCropObserved": "14f306f5e8466534cf0b735333f0ed9e39f21d67d7b87dde534276b7bee00310",
@@ -278,5 +292,5 @@
     "sourceCoordinatesObserved": "dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0",
     "sourceCoordinatesPredicted": "dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0"
   },
-  "transitionGeometryCorpusLocalMacOS2661ResultSchemaVersion": 3
+  "transitionGeometryCorpusLocalMacOS2661ResultSchemaVersion": 4
 }

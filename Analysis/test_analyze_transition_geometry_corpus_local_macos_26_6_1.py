@@ -34,6 +34,38 @@ class BackdropScaleTests(unittest.TestCase):
             corpus.expected_backdrop_scale("approximate", 0.5)
 
 
+class ForegroundFilterTests(unittest.TestCase):
+    def test_current_live_state_is_bit_exact(self) -> None:
+        values = corpus.expected_foreground_filter_inputs(0.033249855041503906)
+        self.assertEqual(
+            corpus.float64_bits(float(values["inputAberrationAmount"])),
+            0xC01355C2C0000000,
+        )
+        self.assertEqual(
+            corpus.float64_bits(float(values["inputAberrationAngle"])),
+            0x3FF84C0D83E63788,
+        )
+        self.assertEqual(
+            corpus.float64_bits(float(values["inputRefractionHeight"])),
+            0x402EEF9E00000000,
+        )
+        self.assertEqual(values["inputRefractionAngle"], None)
+        self.assertEqual(values["inputSourceSublayerName"], "@0")
+
+    def test_refraction_offset_rounds_constant_before_multiply(self) -> None:
+        remaining = 0.9685440063476562
+        values = corpus.expected_foreground_filter_inputs(remaining)
+        observed = float(values["inputRefractionOffset"])
+        naive = float32(-3.3 * (1.0 - remaining))
+        self.assertEqual(float32_bits(observed), 0xBDD49799)
+        self.assertEqual(float32_bits(naive), 0xBDD4979A)
+        self.assertNotEqual(float32_bits(observed), float32_bits(naive))
+
+    def test_static_endpoint_is_not_a_live_filter_state(self) -> None:
+        with self.assertRaisesRegex(ValueError, "live foreground remaining"):
+            corpus.expected_foreground_filter_inputs(1.0)
+
+
 class ProducerCropTests(unittest.TestCase):
     @staticmethod
     def geometry(diameter: int) -> dict[str, object]:

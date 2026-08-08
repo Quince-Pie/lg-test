@@ -12438,6 +12438,30 @@ components exactly across all 252 states. The naive reassociation is one ULP
 wrong in real states. This closes retained layer-state-to-shadow-grid transfer;
 independent production of the upstream dynamic layer state remains separate.
 
+The public transition `glassForeground` input construction is now closed too.
+Let `p = 1-k`, where `k` is the exact captured binary32 remaining value promoted
+to binary64. In every one of the 248 live-filter states Apple constructs:
+
+```text
+inputAberrationAmount = -5*p
+inputAberrationAngle  = (pi/2)*p
+inputEdgeOpacityEnd   = p
+inputRefractionHeight = 16*p
+inputRefractionOffset = binary32(binary32(-3.3)*p)
+```
+
+Aberration height/offset, edge start/end/opacity-start, and refraction amount
+are exact zero; refraction angle is null and the source sublayer is exactly
+`@0`. The two-stage binary32 refraction-offset expression matters: rounding
+only after `-3.3*p` is one ULP wrong in retained states. The independent replay
+matches all 2,728 numeric components by binary64 bit pattern and all 496
+null/string components exactly. Its observed and predicted streams share
+SHA-256
+`a3c33b03f3d57b46221ff5270b13a7c23883e0b1a3ff5c6fe70e6c54026bd31e`.
+The four `k=1` materialize endpoints independently take the exact absent-filter
+branch. This closes public foreground-filter inputs, not the downstream
+final-highlight fragment payload or mesh constructor.
+
 All 252 final-highlight draws retain a complete fragment payload prefix, vertex
 stream, and index stream. The inventory exposes a parity-critical branch that
 the earlier summary missed: 249 states use the ordinary four-vertex/six-index
@@ -12446,18 +12470,21 @@ sixteen-vertex/twenty-four-index border mesh. This is retained evidence, not yet
 an independent final-highlight construction law.
 
 The reproducible gate is
-`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its seventeen
+`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its twenty
 unit discriminators cover material scale, full-shape producer crop construction,
 dynamic-state construction and operation order, source-coordinate staging,
-main/shadow mesh association, complete matrix cardinality, and fail-closed
-envelope mutation.
+main/shadow mesh association, public foreground construction and its binary32
+rounding boundary, complete matrix cardinality, and fail-closed envelope
+mutation.
 The compact canonical result is
 `Analysis/transition_geometry_corpus_local_macos_26_6_1_result.json`, SHA-256
-`32bd55346220a0b1f1d638dda1cde209a8ea32aeb8cbef2342ced8ab54c9f20e`.
+`468eea5cd66abf8e08b8ac3e4059da66ab474f38a2864926c89a18cc0b48b6b8`.
 
 This is a hash-pinned retrospective corpus gate, not an unseen prospective
 geometry holdout and not formal Liquid Glass parity. One concrete construction
-boundary remains: transition foreground/final-highlight production.
+boundary remains: transition final-highlight fragment-payload and mesh
+production. Public transition-foreground inputs are no longer an algorithm
+unknown.
 The crop and dynamic-layer laws still require a preregistered unseen-geometry
 transfer before their domain can be widened.
 Physical Retina color/compositor transfer and a fresh production-Walle frame
