@@ -1,0 +1,113 @@
+{
+  "walleRetinaTransferPreregistrationSchemaVersion": 1,
+  "status": "frozen-v1-before-prospective-physical-retina-capture",
+  "purpose": "Decide the first remaining product proof: whether a flat opaque CALayer framebuffer carrying the exact same final Apple-rendered BGRA8 frame traverses the physical Retina color and WindowServer capture path identically to the original layered Apple window.",
+  "dependsOnAcceptedAppleConstruction": {
+    "captureCommit": "5d0e8de277c7cf09a5ef7c9da69eb64831c3597b",
+    "acceptedRecord": "Analysis/current_final_compositor_transfer_5d0e8de_v7_result.json",
+    "acceptedRecordSHA256": "72043d18ff0e9d11d81abe8963b898deb27b7c48d2667ce97ff64bacdf483057",
+    "remainingAppleConstructionQuestions": 0,
+    "candidateAndSystemComparedBytes": 117440512,
+    "unequalBytes": 0,
+    "maximumChannelDelta": 0
+  },
+  "scientificScope": {
+    "question": "Does physical Retina/WindowServer transfer depend on the layered Apple producer when final pre-transfer frame bytes are held fixed?",
+    "appleFrameRole": "controlled transfer stimulus only",
+    "flatProducer": "opaque 1024-point CALayer with the captured 2048-pixel frame as contents at contentsScale 2",
+    "walleShaped": true,
+    "independentWalleFrame": false,
+    "appleConstructionReopened": false,
+    "algorithmFittingPermitted": false,
+    "postCaptureCaseExclusionPermitted": false,
+    "outputTolerance": 0
+  },
+  "host": {
+    "transport": "local SSH only",
+    "machine": "physical M1 Max Mac",
+    "architecture": "arm64",
+    "macOSProductVersion": "26.6.1",
+    "macOSBuildVersion": "25G76",
+    "nativeSDKVersion": "26.5",
+    "displayPixels": [3456, 2234],
+    "backingScaleFactor": 2,
+    "githubActionsUsed": false,
+    "debuggerUsed": false,
+    "nativeNixStorePathPermitted": false,
+    "nixScope": "validator tests and post-capture validation only"
+  },
+  "frozenGeometry": {
+    "name": "circle-800-center",
+    "shape": "circle",
+    "widthPoints": 800,
+    "heightPoints": 800,
+    "centerPoints": [512, 512],
+    "windowPoints": [1024, 1024],
+    "windowPixels": [2048, 2048],
+    "backingScaleFactor": 2,
+    "diagnosticBackground": "coordinate-hash-rgb-1x1-cells-v1"
+  },
+  "cases": [
+    {"label": "clear-light", "material": "clear", "appearance": "light"},
+    {"label": "clear-dark", "material": "clear", "appearance": "dark"},
+    {"label": "regular-light", "material": "regular", "appearance": "light"},
+    {"label": "regular-dark", "material": "regular", "appearance": "dark"}
+  ],
+  "captureProtocol": {
+    "nativeCaptureBackend": "CGWindowListCreateImage",
+    "canonicalCaptureEncoding": "RGBA8 premultiplied-last sRGB top-left",
+    "offscreenStimulusBackend": "CARenderer to private BGRA8Unorm Metal texture",
+    "offscreenStimulusEncoding": "BGRA8 premultiplied-first sRGB top-left",
+    "flatWindow": {
+      "opaque": true,
+      "colorSpace": "sRGB",
+      "contentsScale": 2,
+      "contentsGravity": "resize",
+      "minificationFilter": "nearest",
+      "magnificationFilter": "nearest",
+      "allowsEdgeAntialiasing": false
+    },
+    "duplicateNativeCaptures": 2,
+    "duplicateStimulusFrames": 2,
+    "duplicateFlatCaptures": 2,
+    "settleBeforeProbeSeconds": 2.25,
+    "settleBeforeFlatCaptureSeconds": 0.25
+  },
+  "nonvacuity": {
+    "allCapturedFramesMustBeOpaque": true,
+    "allFourNativeEndpointHashesMustDiffer": true,
+    "allFourStimulusEndpointHashesMustDiffer": true,
+    "materialPairsMustDifferWithinEachAppearance": true,
+    "appearancePairsMustDifferWithinEachMaterial": true,
+    "comparisonRecomputedFromPNGAndRawFiles": true,
+    "reportedHashesRecomputed": true
+  },
+  "acceptance": {
+    "caseCount": 4,
+    "bytesPerFrame": 16777216,
+    "nativeStabilityComparisonCount": 4,
+    "stimulusStabilityComparisonCount": 4,
+    "flatStabilityComparisonCount": 4,
+    "transferComparisonCount": 4,
+    "comparedTransferBytes": 67108864,
+    "comparedStabilityBytes": 201326592,
+    "totalComparedBytes": 268435456,
+    "requiredUnequalBytes": 0,
+    "requiredUnequalPixels": 0,
+    "requiredMaximumChannelDelta": 0,
+    "tolerance": 0
+  },
+  "sourceSHA256": {
+    "Sources/GlassIntrospect/main.swift": "f12d4cc2c6f4889d044e954bd83a7cf5d892dfa40e6a19e87e33781b8fb86767",
+    "Analysis/validate_walle_retina_transfer.py": "e518bd30c3281ea4801e3ca6ba466df132b78da8a46f7b62e9779179e4a5def2",
+    "Analysis/test_validate_walle_retina_transfer.py": "7a996d0b0f22d17341c9c84ce7fcfe8b033591080769dde4eca47bac2c0957e1",
+    "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
+    "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
+    "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
+    "Sources/GlassIntrospect/HalfBlendProbe.swift": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263",
+    "Sources/GlassIntrospect/HalfDotProbe.swift": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0",
+    "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
+    "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208"
+  },
+  "promotionRule": "Only a frozen-validator pass over all four preregistered endpoints, with independently recomputed duplicate stability, exact native-versus-flat transfer, opaque nonvacuous pixels, distinct material/appearance endpoints, and zero unequal bytes may close the physical Retina transfer product gate. A pass authorizes the independent production-Walle frame gate; it does not itself claim production parity or authorize an approximate shader."
+}

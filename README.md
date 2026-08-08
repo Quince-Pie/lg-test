@@ -14297,3 +14297,54 @@ proofs remain before production parity: a Walle-shaped physical-Retina
 color/compositor transfer, then a fresh production-Walle frame with zero
 unequal bytes. This acceptance does not itself modify or authorize an
 approximate production shader or `flake.nix`; output tolerance remains zero.
+
+### Frozen v1 Walle-shaped physical-Retina transfer gate
+
+The first product proof is now preregistered independently of the Apple
+construction work. It asks one narrowly defined question: when the exact same
+final Apple-rendered frame is carried by a flat opaque `CALayer` framebuffer,
+does the physical Retina color and WindowServer capture path produce the same
+canonical pixels as the original layered Apple window? The Apple frame is a
+controlled transfer stimulus only. It is not treated as an independent Walle
+render, and the accepted Apple construction result is not reopened.
+
+The frozen matrix covers all four static endpoints, `clear`/`regular` crossed
+with `light`/`dark`, at `circle-800-center`. Each case uses a 1024-point window
+on the physical 2x Retina display and compares 2048-by-2048 frames. The probe
+captures the native layered window twice, renders its layer tree through
+`CARenderer` to private BGRA8 twice, presents that exact frame through a flat
+opaque sRGB layer at `contentsScale = 2`, and captures the flat window twice.
+The validator independently decodes the canonical PNGs and raw stimulus files,
+recomputes all hashes and mismatch metrics, requires every frame to be opaque,
+and requires all four material/appearance endpoint hashes to be distinct.
+
+Promotion requires exact duplicate stability for the native capture, stimulus,
+and flat capture in every case, plus exact native-versus-flat equality in every
+case. The four transfer comparisons cover 67,108,864 bytes; the twelve
+stability comparisons cover another 201,326,592 bytes. All 268,435,456 bytes
+are governed by zero unequal bytes, zero unequal pixels, maximum channel delta
+zero, and no case exclusion after capture.
+
+The v1 preregistration, validator, eight tests, native runner, and Swift probe
+have SHA-256 values
+`7f595478a591735279e589b8bc85a95cb865fcd63da484ff8cb8ddba091fc01b`,
+`e518bd30c3281ea4801e3ca6ba466df132b78da8a46f7b62e9779179e4a5def2`,
+`7a996d0b0f22d17341c9c84ce7fcfe8b033591080769dde4eca47bac2c0957e1`,
+`626dd1b8875a137a6fede8c8575c79273bf00bb4ca520d499a84b0796d591fd3`,
+and
+`f12d4cc2c6f4889d044e954bd83a7cf5d892dfa40e6a19e87e33781b8fb86767`,
+respectively. Native Swift type-checking against Apple's 26.5 SDK passes on
+the M1 Max. Native capture and rendering use no Nix store path; Nix is used
+only for the Python tests and frozen post-capture validator.
+
+The exact ledger before this run is:
+
+1. **Apple construction unknowns: zero.** The admitted constructors and
+   current compositor law are already byte-exact.
+2. **Product proof gates: two.** This physical transfer gate is first; a fresh
+   independent production-Walle frame is second.
+3. **Production parity: not yet claimed.** A transfer pass reduces the product
+   boundary to the single Walle-frame gate; it does not authorize an
+   approximate shader.
+4. **Quality and comparison tolerance: zero.** Walle's protected production
+   shader and `flake.nix` remain unchanged by this experiment.

@@ -24216,6 +24216,239 @@ private func transitionWindowCaptureEvidence(
     ]
 }
 
+private struct TransitionRetinaFrame {
+    let image: CGImage
+    let bgra: Data
+    let evidence: [String: Any]
+}
+
+private func transitionRGBA8Comparison(
+    _ reference: Data,
+    _ candidate: Data
+) -> [String: Any] {
+    guard reference.count == candidate.count,
+          reference.count.isMultiple(of: 4)
+    else {
+        return [
+            "compared": false,
+            "referenceByteCount": reference.count,
+            "candidateByteCount": candidate.count,
+        ]
+    }
+    let referenceBytes = [UInt8](reference)
+    let candidateBytes = [UInt8](candidate)
+    var mismatchedBytes = 0
+    var mismatchedPixels = 0
+    var maximumChannelDelta = 0
+    var firstMismatchedByte = -1
+    for pixel in 0..<(referenceBytes.count / 4) {
+        var pixelDiffers = false
+        for channel in 0..<4 {
+            let offset = pixel * 4 + channel
+            let delta = abs(
+                Int(referenceBytes[offset])
+                    - Int(candidateBytes[offset]))
+            if delta != 0 {
+                mismatchedBytes += 1
+                pixelDiffers = true
+                maximumChannelDelta = max(
+                    maximumChannelDelta,
+                    delta)
+                if firstMismatchedByte < 0 {
+                    firstMismatchedByte = offset
+                }
+            }
+        }
+        if pixelDiffers {
+            mismatchedPixels += 1
+        }
+    }
+    return [
+        "compared": true,
+        "byteCount": referenceBytes.count,
+        "pixelCount": referenceBytes.count / 4,
+        "mismatchedByteCount": mismatchedBytes,
+        "mismatchedPixelCount": mismatchedPixels,
+        "maximumChannelDelta": maximumChannelDelta,
+        "firstMismatchedByte": firstMismatchedByte,
+        "exactByteMatch": mismatchedBytes == 0,
+        "referenceSHA256": transitionSHA256(reference),
+        "candidateSHA256": transitionSHA256(candidate),
+    ]
+}
+
+private func transitionRetinaCARendererFrame(
+    rootLayer: CALayer,
+    device: MTLDevice,
+    capture: String,
+    outputDirectory: URL
+) throws -> TransitionRetinaFrame {
+    let bounds = rootLayer.bounds.standardized
+    guard bounds == CGRect(x: 0, y: 0, width: 1024, height: 1024)
+    else {
+        throw NSError(
+            domain: "LiquidGlassRetinaTransfer",
+            code: 1,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "Retina transfer requires exact 1024-point root bounds",
+            ])
+    }
+    let scale = 2
+    let width = Int(bounds.width) * scale
+    let height = Int(bounds.height) * scale
+    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .bgra8Unorm,
+        width: width,
+        height: height,
+        mipmapped: false)
+    descriptor.storageMode = .private
+    descriptor.usage = [.renderTarget, .shaderRead]
+    guard let texture = device.makeTexture(descriptor: descriptor),
+          let queue = device.makeCommandQueue(),
+          let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
+    else {
+        throw NSError(
+            domain: "LiquidGlassRetinaTransfer",
+            code: 2,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "Retina CARenderer resources are unavailable",
+            ])
+    }
+    let renderer = CARenderer(
+        mtlTexture: texture,
+        options: [
+            kCARendererColorSpace: colorSpace,
+            kCARendererMetalCommandQueue: queue,
+        ])
+    renderer.layer = rootLayer
+    renderer.bounds = bounds
+    CATransaction.flush()
+    renderer.beginFrame(
+        atTime: CACurrentMediaTime(),
+        timeStamp: nil)
+    renderer.addUpdate(bounds)
+    renderer.render()
+    renderer.endFrame()
+    guard let completion = queue.makeCommandBuffer() else {
+        throw NSError(
+            domain: "LiquidGlassRetinaTransfer",
+            code: 3,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "Retina CARenderer completion command is unavailable",
+            ])
+    }
+    completion.commit()
+    completion.waitUntilCompleted()
+    guard completion.status == .completed else {
+        throw NSError(
+            domain: "LiquidGlassRetinaTransfer",
+            code: 4,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    completion.error?.localizedDescription
+                        ?? "Retina CARenderer command failed",
+            ])
+    }
+
+    let tightBytesPerRow = width * 4
+    let alignedBytesPerRow = (tightBytesPerRow + 255) & ~255
+    let bufferBytes = alignedBytesPerRow * height
+    guard let buffer = device.makeBuffer(
+            length: bufferBytes,
+            options: .storageModeShared),
+          let readback = queue.makeCommandBuffer(),
+          let blit = readback.makeBlitCommandEncoder()
+    else {
+        throw NSError(
+            domain: "LiquidGlassRetinaTransfer",
+            code: 5,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "Retina CARenderer readback resources are unavailable",
+            ])
+    }
+    blit.copy(
+        from: texture,
+        sourceSlice: 0,
+        sourceLevel: 0,
+        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+        sourceSize: MTLSize(
+            width: width,
+            height: height,
+            depth: 1),
+        to: buffer,
+        destinationOffset: 0,
+        destinationBytesPerRow: alignedBytesPerRow,
+        destinationBytesPerImage: bufferBytes)
+    blit.endEncoding()
+    readback.commit()
+    readback.waitUntilCompleted()
+    guard readback.status == .completed else {
+        throw NSError(
+            domain: "LiquidGlassRetinaTransfer",
+            code: 6,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    readback.error?.localizedDescription
+                        ?? "Retina CARenderer readback failed",
+            ])
+    }
+    var bgra = Data(capacity: tightBytesPerRow * height)
+    for row in 0..<height {
+        bgra.append(Data(
+            bytes: buffer.contents().advanced(
+                by: row * alignedBytesPerRow),
+            count: tightBytesPerRow))
+    }
+    let rawFilename = "\(capture)-bgra8.raw"
+    try bgra.write(
+        to: outputDirectory.appendingPathComponent(rawFilename),
+        options: .atomic)
+    guard let provider = CGDataProvider(data: bgra as CFData),
+          let image = CGImage(
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bitsPerPixel: 32,
+            bytesPerRow: tightBytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGBitmapInfo(
+                rawValue:
+                    CGImageAlphaInfo.premultipliedFirst.rawValue
+                    | CGBitmapInfo.byteOrder32Little.rawValue),
+            provider: provider,
+            decode: nil,
+            shouldInterpolate: false,
+            intent: .defaultIntent)
+    else {
+        throw NSError(
+            domain: "LiquidGlassRetinaTransfer",
+            code: 7,
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "Retina CARenderer CGImage construction failed",
+            ])
+    }
+    return TransitionRetinaFrame(
+        image: image,
+        bgra: bgra,
+        evidence: [
+            "width": width,
+            "height": height,
+            "scale": scale,
+            "bounds": NSStringFromRect(bounds),
+            "pixelFormat": "BGRA8 premultiplied-first sRGB top-left",
+            "byteCount": bgra.count,
+            "rawFile": rawFilename,
+            "rawSHA256": transitionSHA256(bgra),
+            "capturedApplePixelsUsedAsTransferStimulus": true,
+            "renderConstructionAuthorityClaimed": false,
+        ])
+}
+
 private func writeTransitionProbeProgress(
     outputDirectory: URL,
     capture: String,
@@ -24486,6 +24719,7 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
     private let transitionTimelineEnabled: Bool
     private let geometryPolicyEnabled: Bool
     private let case22ProviderFieldProbeEnabled: Bool
+    private let walleRetinaTransferEnabled: Bool
     private let transitionModel: TransitionProbeModel
     private var window: ProbeWindow!
     private var captureStarted = false
@@ -24516,6 +24750,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             ProcessInfo.processInfo.environment[
                 "LG_CASE22_PROVIDER_FIELD_PROBE"
             ] == "1"
+        walleRetinaTransferEnabled =
+            ProcessInfo.processInfo.environment[
+                "LG_WALLE_RETINA_TRANSFER_TRACE"
+            ] == "1"
         transitionModel = TransitionProbeModel()
     }
 
@@ -24526,19 +24764,24 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 withIntermediateDirectories: true)
 
             _ = MetalUniformProbe.shared.install()
-            if case22ProviderFieldProbeEnabled
-                && (transitionTimelineEnabled || geometryPolicyEnabled)
+            if [
+                transitionTimelineEnabled,
+                geometryPolicyEnabled,
+                case22ProviderFieldProbeEnabled,
+                walleRetinaTransferEnabled,
+            ].filter({ $0 }).count > 1
             {
                 throw NSError(
-                    domain: "LiquidGlassCase22ProviderProbe",
+                    domain: "LiquidGlassExclusiveProbe",
                     code: 1,
                     userInfo: [
                         NSLocalizedDescriptionKey:
-                            "case-22 provider field probe must run alone"
+                            "targeted probe modes must run alone"
                     ])
             }
             if !transitionTimelineEnabled && !geometryPolicyEnabled
                 && !case22ProviderFieldProbeEnabled
+                && !walleRetinaTransferEnabled
             {
                 let manager = MTLCaptureManager.shared()
                 if manager.supportsDestination(.gpuTraceDocument),
@@ -24595,6 +24838,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                     finishGeometryPolicy()
                 } else if case22ProviderFieldProbeEnabled {
                     finishCase22ProviderFieldProbe()
+                } else if walleRetinaTransferEnabled {
+                    await finishWalleRetinaTransfer()
                 } else {
                     finish()
                 }
@@ -24602,6 +24847,247 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
         } catch {
             FileHandle.standardError.write(
                 Data("introspection setup failed: \(error)\n".utf8))
+            exit(1)
+        }
+    }
+
+    private func finishWalleRetinaTransfer() async {
+        let reportURL = outputDirectory.appendingPathComponent(
+            "walle-retina-transfer.json")
+        do {
+            guard geometry.rawValue == "circle-800-center",
+                  window.backingScaleFactor == 2,
+                  let rootLayer = window.contentView?.layer,
+                  let device = MTLCreateSystemDefaultDevice()
+            else {
+                throw NSError(
+                    domain: "LiquidGlassRetinaTransfer",
+                    code: 20,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "Retina transfer requires circle-800-center, "
+                            + "a 2x window, root layer, and Metal device",
+                    ])
+            }
+
+            let nativeRaw0 = try transitionRawWindowCapture(
+                windowNumber: window.windowNumber)
+            guard let nativeCanonical0 = transitionCanonicalRGBA8(
+                    nativeRaw0.image)
+            else {
+                throw NSError(
+                    domain: "LiquidGlassRetinaTransfer",
+                    code: 21,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "first native window capture normalization failed",
+                    ])
+            }
+            let nativeEvidence0 = try transitionWindowCaptureEvidence(
+                nativeRaw0,
+                capture: "retina-native-0",
+                outputDirectory: outputDirectory)
+            try? await Task.sleep(for: .milliseconds(16))
+            let nativeRaw1 = try transitionRawWindowCapture(
+                windowNumber: window.windowNumber)
+            guard let nativeCanonical1 = transitionCanonicalRGBA8(
+                    nativeRaw1.image)
+            else {
+                throw NSError(
+                    domain: "LiquidGlassRetinaTransfer",
+                    code: 22,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "second native window capture normalization failed",
+                    ])
+            }
+            let nativeEvidence1 = try transitionWindowCaptureEvidence(
+                nativeRaw1,
+                capture: "retina-native-1",
+                outputDirectory: outputDirectory)
+
+            let stimulus0 = try transitionRetinaCARendererFrame(
+                rootLayer: rootLayer,
+                device: device,
+                capture: "retina-transfer-stimulus-0",
+                outputDirectory: outputDirectory)
+            let stimulus1 = try transitionRetinaCARendererFrame(
+                rootLayer: rootLayer,
+                device: device,
+                capture: "retina-transfer-stimulus-1",
+                outputDirectory: outputDirectory)
+
+            let flatWindow = ProbeWindow(
+                contentRect: NSRect(
+                    x: 0,
+                    y: 0,
+                    width: 1024,
+                    height: 1024),
+                styleMask: [.borderless],
+                backing: .buffered,
+                defer: false)
+            flatWindow.hasShadow = false
+            flatWindow.isOpaque = true
+            flatWindow.backgroundColor = .black
+            flatWindow.colorSpace = .sRGB
+            flatWindow.appearance = window.appearance
+            let flatView = NSView(
+                frame: NSRect(
+                    x: 0,
+                    y: 0,
+                    width: 1024,
+                    height: 1024))
+            flatView.wantsLayer = true
+            guard let flatLayer = flatView.layer else {
+                throw NSError(
+                    domain: "LiquidGlassRetinaTransfer",
+                    code: 23,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "flat framebuffer layer is unavailable",
+                    ])
+            }
+            flatLayer.contents = stimulus0.image
+            flatLayer.contentsScale = 2
+            flatLayer.contentsGravity = .resize
+            flatLayer.minificationFilter = .nearest
+            flatLayer.magnificationFilter = .nearest
+            flatLayer.backgroundColor = NSColor.black.cgColor
+            flatLayer.isOpaque = true
+            flatLayer.allowsEdgeAntialiasing = false
+            flatWindow.contentView = flatView
+            flatWindow.setFrameOrigin(.zero)
+
+            window.orderOut(nil)
+            flatWindow.makeKeyAndOrderFront(nil)
+            flatWindow.makeMain()
+            flatWindow.displayIfNeeded()
+            CATransaction.flush()
+            try? await Task.sleep(for: .milliseconds(250))
+
+            let flatRaw0 = try transitionRawWindowCapture(
+                windowNumber: flatWindow.windowNumber)
+            guard let flatCanonical0 = transitionCanonicalRGBA8(
+                    flatRaw0.image)
+            else {
+                throw NSError(
+                    domain: "LiquidGlassRetinaTransfer",
+                    code: 24,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "first flat window capture normalization failed",
+                    ])
+            }
+            let flatEvidence0 = try transitionWindowCaptureEvidence(
+                flatRaw0,
+                capture: "retina-flat-0",
+                outputDirectory: outputDirectory)
+            try? await Task.sleep(for: .milliseconds(16))
+            let flatRaw1 = try transitionRawWindowCapture(
+                windowNumber: flatWindow.windowNumber)
+            guard let flatCanonical1 = transitionCanonicalRGBA8(
+                    flatRaw1.image)
+            else {
+                throw NSError(
+                    domain: "LiquidGlassRetinaTransfer",
+                    code: 25,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "second flat window capture normalization failed",
+                    ])
+            }
+            let flatEvidence1 = try transitionWindowCaptureEvidence(
+                flatRaw1,
+                capture: "retina-flat-1",
+                outputDirectory: outputDirectory)
+            let flatColorSpaces = colorSpaceEvidence(
+                window: flatWindow,
+                outputDirectory: outputDirectory)
+            flatWindow.orderOut(nil)
+
+            let nativeStability = transitionRGBA8Comparison(
+                nativeCanonical0.pixels,
+                nativeCanonical1.pixels)
+            let stimulusStability = transitionRGBA8Comparison(
+                stimulus0.bgra,
+                stimulus1.bgra)
+            let flatStability = transitionRGBA8Comparison(
+                flatCanonical0.pixels,
+                flatCanonical1.pixels)
+            let transfer = transitionRGBA8Comparison(
+                nativeCanonical0.pixels,
+                flatCanonical0.pixels)
+            let exact =
+                nativeStability["exactByteMatch"] as? Bool == true
+                && stimulusStability["exactByteMatch"] as? Bool == true
+                && flatStability["exactByteMatch"] as? Bool == true
+                && transfer["exactByteMatch"] as? Bool == true
+            let report: [String: Any] = [
+                "schemaVersion": 1,
+                "executed": true,
+                "accepted": exact,
+                "scope":
+                    "physical Retina color and WindowServer transfer only",
+                "material": material.rawValue,
+                "appearance": appearance.rawValue,
+                "geometry": geometry.evidence,
+                "windowPoints": [1024, 1024],
+                "windowPixels": [2048, 2048],
+                "windowBackingScaleFactor":
+                    window.backingScaleFactor,
+                "nativeWindowCaptures": [
+                    nativeEvidence0,
+                    nativeEvidence1,
+                ],
+                "flatWindowCaptures": [
+                    flatEvidence0,
+                    flatEvidence1,
+                ],
+                "stimulusFrames": [
+                    stimulus0.evidence,
+                    stimulus1.evidence,
+                ],
+                "nativeCaptureStability": nativeStability,
+                "stimulusStability": stimulusStability,
+                "flatCaptureStability": flatStability,
+                "nativeVsFlatTransfer": transfer,
+                "candidatePresentation": [
+                    "producer": "flat opaque CALayer framebuffer",
+                    "contentsScale": 2,
+                    "contentsGravity": "resize",
+                    "minificationFilter": "nearest",
+                    "magnificationFilter": "nearest",
+                    "sourceColorSpace": "sRGB",
+                    "windowColorSpace": "sRGB",
+                    "walleShaped": true,
+                ],
+                "capturedApplePixelsUsedOnlyAsTransferStimulus": true,
+                "appleConstructionReopened": false,
+                "independentWalleFrameClaimed": false,
+                "outputTolerance": 0,
+                "colorSpaces": flatColorSpaces,
+            ]
+            try writeJSON(report, to: reportURL)
+            exit(exact ? 0 : 1)
+        } catch {
+            try? writeJSON(
+                [
+                    "schemaVersion": 1,
+                    "executed": false,
+                    "accepted": false,
+                    "material": material.rawValue,
+                    "appearance": appearance.rawValue,
+                    "geometry": geometry.evidence,
+                    "error": error.localizedDescription,
+                ],
+                to: reportURL)
+            FileHandle.standardError.write(
+                Data(
+                    (
+                        "Walle Retina transfer failed: "
+                        + error.localizedDescription
+                        + "\n"
+                    ).utf8))
             exit(1)
         }
     }
