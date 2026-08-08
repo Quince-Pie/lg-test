@@ -1,0 +1,118 @@
+{
+  "appleUnknownsBlockingGatedWalleIntegration": 0,
+  "classification": "hash-pinned retrospective exact geometry closure with a separately preregistered identity-transform witness",
+  "geometryFamilyClosed": true,
+  "identityTransformWitness": {
+    "backgroundCallCount": 32,
+    "exact": true,
+    "finalCallCount": 32,
+    "functionCodeSHA256": "22273ad45369658b8e97b91893a488071a049d0bbdb6cdd7353a69355a1e83d3",
+    "nullTransformCount": 64,
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "recordCount": 64,
+    "shapeHalfExtentComponents": 32,
+    "shapeHalfExtentMismatches": 0
+  },
+  "metrics": {
+    "indices": {
+      "componentCount": 1350,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "9ea689884a5dd4edc347006526a7916fe6484f2e98c4c12fbd849d760c889b05",
+      "predictedSHA256": "9ea689884a5dd4edc347006526a7916fe6484f2e98c4c12fbd849d760c889b05"
+    },
+    "positionAndSDFGeometry": {
+      "componentCount": 5400,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedSHA256": "2f1c70191dbe0d7b5e3b06c6f087c433ed262df5a026e8263bead4497a6dd623",
+      "predictedSHA256": "2f1c70191dbe0d7b5e3b06c6f087c433ed262df5a026e8263bead4497a6dd623"
+    }
+  },
+  "pipeline": "com.apple.coreanimation.PBGRAXm_TkfhA2Xhfc_Iscd",
+  "productionFlakeChanged": false,
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "radiusDiscrimination": {
+    "directHalfMatchCount": 60,
+    "exactLaw": "binary32(binary32((extent+18)/2)-9)",
+    "expandedBeforeHalfMatchCount": 123,
+    "halfBeforeExpandMatchCount": 91,
+    "stateCount": 123
+  },
+  "remainingAppleAlgorithmFamilies": [
+    "small-clear Tghn/Tmua/Tkfh/A2Xghfc active shader, background, producer, composition, and pixel semantics"
+  ],
+  "remainingProductProofs": [
+    "Walle-shaped physical Retina color/compositor transfer",
+    "fresh production-Walle frame with zero unequal bytes"
+  ],
+  "remainingSmallClearSubBoundaries": [
+    "Tkfh/A2Xghfc active half4 color, fragment uniforms, and exact pixel influence",
+    "Tghn background construction and pixels",
+    "Tmua/A2Xghfc producer/composition construction and pixels"
+  ],
+  "smallClearFamilyClosed": false,
+  "smallClearFinalGeometryResultSchemaVersion": 1,
+  "sources": [
+    {
+      "name": "clear-dark-dematerialize-06",
+      "smallClearStateCount": 30,
+      "timelineSHA256": "0fb1572ce1822fa3a00da0cf37357ba7d923d60d21da85b6a14207bf20c3fe31",
+      "topologyInventory": {
+        "border": 6,
+        "quad": 24
+      }
+    },
+    {
+      "name": "clear-light-materialize-01",
+      "smallClearStateCount": 31,
+      "timelineSHA256": "85dc1f54a54f86852ee46b1c611f8968b470c0551a4647c0f7b8a59030ccb016",
+      "topologyInventory": {
+        "border": 9,
+        "quad": 22
+      }
+    },
+    {
+      "name": "local-small-clear-trace-v1",
+      "smallClearStateCount": 31,
+      "timelineSHA256": "1a8f841c09505c2917333cbfbb59d575951ddcb7307809a5361c262babf2154c",
+      "topologyInventory": {
+        "border": 12,
+        "quad": 19
+      }
+    },
+    {
+      "name": "local-small-clear-sdf-transform-v1",
+      "smallClearStateCount": 31,
+      "timelineSHA256": "616f1f8c55efd12edfa600a6b018f773438895984cd9bd03339e2638627e356c",
+      "topologyInventory": {
+        "border": 7,
+        "quad": 24
+      }
+    }
+  ],
+  "stateCount": 123,
+  "status": "exact-small-clear-final-geometry-closure",
+  "topology": {
+    "borderStateCount": 34,
+    "exact": true,
+    "predicate": "binary32(binary32((extent+18)/2)-9) > binary32(extent/2)",
+    "predicateComponents": 123,
+    "predicateMismatches": 0,
+    "quadStateCount": 89
+  },
+  "universalCircleDomainParity": false,
+  "vertexLayout": {
+    "activeColorHalf4Offset": 32,
+    "activeColorHalfComponentCount": 3600,
+    "activeColorObservedSHA256": "24c7df696c37ce8b275e103882be22ac71440873909e6aa3be330e3905997645",
+    "activeColorPixelSemanticsClosed": false,
+    "inactiveTexcoord1Float2Offset": 24,
+    "positionFloat4Offset": 0,
+    "quadAllZeroColorStateCount": 89,
+    "sdfFloat2Offset": 16,
+    "strideBytes": 48
+  },
+  "walleIntegrationMayBeginBehindGates": true
+}

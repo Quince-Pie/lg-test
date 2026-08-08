@@ -12918,3 +12918,93 @@ This is not yet universal Liquid Glass parity because Walle's wipe crosses the
 small-clear range. It also does not rewrite the original red prospective
 combined holdout as a pass. Walle's protected production shader and
 `flake.nix` remain byte-identical; no rendering-quality change was made.
+
+### Exact small-clear final topology and geometry closure
+
+The geometric part of the remaining small-clear family is now closed
+retrospectively and bitwise. The evidence set contains 123 executing
+`PBGRAXm_TkfhA2Xhfc_Iscd` states: the 61 states in the immutable opened
+combined holdout, 31 states from the centered 47-point exact call-site trace,
+and 31 states from the independently preregistered transform retry. It spans
+clear light and dark, materialize and dematerialize, centered and off-center
+placement, and both horizontal viewport edges. There are 89 four-vertex/six-
+index quads and 34 sixteen-vertex/twenty-four-index borders.
+
+Let `d` be either binary64 element extent. Apple expands the extent in
+binary64 before rounding the expanded half to binary32:
+
+```text
+h = binary32(d / 2)
+o = binary32((d + 18) / 2)
+r = binary32(o - 9)
+i = binary32(h + 9)
+border = r > h
+```
+
+This operation order is discriminated rather than algebraically assumed. The
+exact `r` law matches 123/123 states. Expanding an already rounded `h` matches
+only 91/123, and using `h` directly matches only 60/123. The border predicate
+has zero disagreements in all 123 states.
+
+For a border axis with raw expanded binary64 edges `L,H`, Apple stores
+positions
+`binary32(L), binary32(L+i), binary32(H-i), binary32(H)` and SDF coordinates
+`-o,-z,+z,+o`, where `z = binary32(o-i)`. When `z` is zero, both inner values
+are positive zero; synthesizing the first one with unary minus would produce
+the wrong sign bit. Border geometry is left to viewport rasterization. Quad
+geometry uses the raw `origin-9` and `(origin+extent)+9` edges and the already
+proved binary64-fraction/binary32-FMA `ClippedArray` law.
+
+The resulting constructor matches all 5,400/5,400 position/SDF binary32
+components and all 1,350/1,350 uint16 indices with zero mismatches:
+
+```text
+position/SDF observed and predicted SHA-256
+  2f1c70191dbe0d7b5e3b06c6f087c433ed262df5a026e8263bead4497a6dd623
+index observed and predicted SHA-256
+  9ea689884a5dd4edc347006526a7916fe6484f2e98c4c12fbd849d760c889b05
+```
+
+The narrow preregistered LLDB retry independently removes a hidden-transform
+alternative. It records every invocation of the exact 2,932-byte
+`emit_sdf_bounds_internal` implementation: 32 final calls with entry scalar
+9, 32 background calls with entry scalar 4,096, one breakpoint location, and
+zero failures. All 64 transform pointers are null. The binary32 word at
+`shape+0x100` matches `binary32(elementExtent/2)` in all 32 final calls. The
+QuartzCore UUID is `F1BA3189-E95A-3ECA-B59A-5A6872754484`; the function code
+SHA-256 is
+`22273ad45369658b8e97b91893a488071a049d0bbdb6cdd7353a69355a1e83d3`.
+
+The exact 48-byte legacy vertex layout also sharpens what remains. Position is
+float4 at offset 0, SDF is float2 at offset 16, and texcoord1 at offset 24 is
+explicitly inactive. The half4 color at offset 32 is explicitly active. It is
+all-zero in every quad state, but its border streams are not yet independently
+constructed or proven pixel-irrelevant. Those bytes are therefore kept open;
+they are not called padding or discarded as garbage.
+
+The reproducible analyzer is
+`Analysis/analyze_small_clear_final_geometry.py`, SHA-256
+`222844d661ada1c47fc55065c962a96b17385d2c071fdd0bba543c7f42ef0995`.
+Its seven discriminator tests are
+`Analysis/test_analyze_small_clear_final_geometry.py`, SHA-256
+`c7866f33a7f49f450e934ced0de76a1c253f9dc513a0fd0e02af1053d18d89b0`.
+The compact result is `Analysis/small_clear_final_geometry_result.json`,
+SHA-256
+`8600d81d693c316408064a868f100a3ead403e51c68aa994e10a8e154027ae00`.
+
+The current boundary count is now:
+
+1. **Apple unknowns blocking gated Walle integration: zero.** Current-family
+   integration may proceed behind immutable gates.
+2. **Apple algorithm families before universal circle-domain parity: one.**
+   Small-clear geometry is closed; its three remaining sub-boundaries are the
+   `Tkfh/A2Xghfc` active half4/uniform/pixel semantics, `Tghn` background
+   construction and pixels, and `Tmua/A2Xghfc` producer/composition
+   construction and pixels.
+3. **Product proofs after construction: two.** A Walle-shaped physical Retina
+   color/compositor transfer and a fresh production-Walle frame with zero
+   unequal bytes remain mandatory.
+
+This closure modified `lg-test` analysis, tests, results, and this README. It
+did not modify Walle's production shader or `flake.nix`, does not authorize a
+quality-changing shortcut, and does not claim universal parity.
