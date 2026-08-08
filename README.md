@@ -12559,3 +12559,41 @@ mesh/coordinates, foreground inputs, and final-highlight construction.
 Physical Retina color/compositor transfer and a fresh production-Walle frame
 with zero unequal bytes remain final product proofs. No production shader or
 Walle `flake.nix` change is authorized by this result alone.
+
+### Prospective combined transition-geometry transfer
+
+The single pre-Walle transfer gate is now frozen before any new Apple output.
+`Analysis/combined_transition_geometry_holdout_preregistration.json` defines
+eight fresh geometries over the complete clear/regular, light/dark, and
+materialize/dematerialize matrix. Diameters range from 51 to 607 points;
+fractional centers, four fractional phases, small-radius highlight topology,
+interior placement, and clipping against multiple window edges are represented.
+No timeline hash, stream hash, topology result, mismatch count, or pass result
+was available at freeze.
+
+The source-built native probe records every genuine state: 32 states for each
+materialize case and 31 for each dematerialize case, 252 states total. All eight
+cases execute even if an earlier capture fails. Each case requires a fresh
+unlocked/on-console/active 2x Retina preflight, one common clean commit and
+binary, no debugger, no GitHub Actions, no `MTL_CAPTURE_ENABLED`, and no Nix
+store path in the native environment. Nix is used only for Python 3.14 tests
+and post-capture validation. The SDK-26.5 load-command correction is retained
+because that declared SDK is part of the already established SwiftUI
+presentation behavior.
+
+The frozen validator is
+`Analysis/validate_combined_transition_geometry_holdout_local_macos_26_6_1.py`.
+It first authenticates each requested geometry independently of its timeline,
+then applies the unchanged constructor to dynamic layer state, backdrop scale,
+producer crop/allocation, selected-region/copy/mip policy, main and shadow
+meshes, source coordinates, public foreground inputs, and final-highlight
+payload/geometry/topology. Acceptance is binary: every integer, binary32,
+binary64, and retained byte component across all 252 states must match exactly.
+No observed value may tune the prediction or exclude a state.
+
+An exact pass closes the one remaining pre-Walle evidence boundary and
+authorizes production dynamic integration for this circle domain. A mismatch
+opens one concrete boundary at the first failed metric; it cannot be rounded or
+relabelled. Physical Retina compositor transfer and a fresh production-Walle
+zero-unequal-byte frame remain later product proofs, not Apple-algorithm
+unknowns.

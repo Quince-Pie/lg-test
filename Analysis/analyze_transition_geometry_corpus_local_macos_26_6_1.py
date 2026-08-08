@@ -1504,7 +1504,12 @@ def validate_envelope(
     return records
 
 
-def analyze(artifact_root: Path) -> JsonObject:
+def analyze(
+    artifact_root: Path,
+    *,
+    expected_inputs: Mapping[str, Mapping[str, Any]] | None = None,
+) -> JsonObject:
+    inputs = EXPECTED_INPUTS if expected_inputs is None else expected_inputs
     metrics: dict[str, Counter[str]] = {}
     producer_fragments: Counter[str] = Counter()
     producer_vertex_counts: Counter[int] = Counter()
@@ -1533,7 +1538,7 @@ def analyze(artifact_root: Path) -> JsonObject:
     predicted_final_index_digest = hashlib.sha256()
     state_count = 0
 
-    for filename, expected in EXPECTED_INPUTS.items():
+    for filename, expected in inputs.items():
         path = artifact_root / filename
         if not path.is_file():
             raise ValueError(f"missing pinned transition timeline: {path}")

@@ -2313,6 +2313,38 @@ private struct ProbeGeometry {
             Specification(
                 width: 377,
                 center: CGPoint(x: 301.25, y: 699.75)),
+        "circle-combined-holdout-01":
+            Specification(
+                width: 53,
+                center: CGPoint(x: 11.25, y: 211.75)),
+        "circle-combined-holdout-02":
+            Specification(
+                width: 389,
+                center: CGPoint(x: 151.5, y: 302.25)),
+        "circle-combined-holdout-03":
+            Specification(
+                width: 541,
+                center: CGPoint(x: 772.75, y: 296.5)),
+        "circle-combined-holdout-04":
+            Specification(
+                width: 317,
+                center: CGPoint(x: 243.125, y: 850.875)),
+        "circle-combined-holdout-05":
+            Specification(
+                width: 607,
+                center: CGPoint(x: 689.625, y: 608.375)),
+        "circle-combined-holdout-06":
+            Specification(
+                width: 51,
+                center: CGPoint(x: 1002.75, y: 475.5)),
+        "circle-combined-holdout-07":
+            Specification(
+                width: 457,
+                center: CGPoint(x: 271.375, y: 217.625)),
+        "circle-combined-holdout-08":
+            Specification(
+                width: 523,
+                center: CGPoint(x: 755.5, y: 786.25)),
         "circle-408-center":
             Specification(width: 408, center: CGPoint(x: 512, y: 512)),
         "circle-409-center":
