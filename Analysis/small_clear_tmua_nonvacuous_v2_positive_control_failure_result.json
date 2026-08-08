@@ -1,0 +1,81 @@
+{
+  "smallClearTmuaNonvacuousV2PositiveControlFailureResultSchemaVersion": 1,
+  "status": "rejected-inactive-captured-Tmua-positive-control",
+  "classification": "the all-state populated-target capture and every candidate comparison executed, but captured Tmua never made Tghn change the target, so the frozen promotion rule rejected the result",
+  "captureCommit": "31575e0d4ba1212ca99e68ffabde23205d74e69a",
+  "captureDirectory": "local-small-clear-tmua-nonvacuous-v2-retina1",
+  "timelineSHA256": "e0a824320b9f88fb77becf8a7805e5f05037c6af6df3010779713e6b9a429d35",
+  "preflightSHA256": "a424b3c50899149ba79ef5e70687a01f896e8fbf058da5437a5a564c71a14034",
+  "nativeCapture": {
+    "captureExitStatus": 0,
+    "validatorExitStatus": 1,
+    "validatorFailure": "sample 3 Tghn control is vacuous",
+    "architecture": "arm64",
+    "metalDevice": "Apple M1 Max",
+    "operatingSystem": "macOS 26.6.1",
+    "operatingSystemBuild": "25G76",
+    "physicalPixels": [3456, 2234],
+    "backingScaleFactor": 2,
+    "githubActionsUsed": false,
+    "debuggerUsed": false,
+    "nativeBinaryContainsNixStorePath": false
+  },
+  "sampleAccounting": {
+    "candidateSamples": 30,
+    "absentBranchSamples": [2],
+    "branchBearingStates": 29,
+    "nonzeroTmuaSourceSamples": [3, 4, 5, 6, 7, 8, 9],
+    "nonzeroTmuaSourceSHA256": "7db629a886e5cd6982b3e23b2170681194cf9956d97de086754e68598b705c3e",
+    "zeroTmuaSourceStateCount": 22,
+    "zeroTmuaSourceSHA256": "fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471"
+  },
+  "TmuaComparisons": {
+    "executedStateCount": 29,
+    "capturedVersusZeroComparisonCount": 29,
+    "comparedTargetByteCount": 121634816,
+    "unequalTargetByteCount": 0,
+    "unequalTargetPixelCount": 0,
+    "maximumChannelDelta": 0,
+    "capturedSourceTghnActivityStateCount": 0,
+    "capturedSourceTghnActivityUnequalByteCount": 0,
+    "frozenAcceptancePassed": false,
+    "reasonNotPromoted": "the frozen rule required captured-source Tghn to differ from the populated before-draw target in every branch-bearing state; all 29 controls were exact instead"
+  },
+  "IrsdObservations": {
+    "explicitDistinctOnePixelSourceValidatedInEveryState": true,
+    "activityStateCount": 29,
+    "activityUnequalByteCountMinimum": 585966,
+    "activityUnequalByteCountMaximum": 657928,
+    "activityUnequalByteCountTotal": 18018094,
+    "activityUnequalPixelCountMinimum": 196559,
+    "activityUnequalPixelCountMaximum": 220695,
+    "activityUnequalPixelCountTotal": 6044036
+  },
+  "TghnResidual": {
+    "selectedSample": 4,
+    "capturedSourcePositiveControlUnequalByteCount": 0,
+    "candidateComparisonCount": 3,
+    "candidateComparedByteCount": 12582912,
+    "candidateUnequalByteCount": 0,
+    "frozenAcceptancePassed": false,
+    "reasonNotPromoted": "the three mutations matched a Tghn reference that itself made no target change"
+  },
+  "evidenceRetained": {
+    "allSampleBranchesAccountedFor": true,
+    "allControlledDestinationAndBackdropPatternsReadBack": true,
+    "allCapturedAndZeroSourcesReadBack": true,
+    "capturedVersusZeroReplicationIsExact": true,
+    "currentIrsdIsActiveAndDoesNotBindTmua": true,
+    "TghnCoordinateAndTailStreamsAreDistinct": true
+  },
+  "prospectiveCorrection": {
+    "selectionChanges": false,
+    "capturedVersusZeroComparisonChanges": false,
+    "newPositiveControl": "bind a deterministic finite RGBA16Float texture with alpha one at Tghn texture 4 and require zero-source versus finite-source output to differ",
+    "TghnResidualCorrection": "run the same three frozen vertex mutations with that finite source bound, so the unmodified Tghn reference is active",
+    "whyThisSeparatesTheQuestion": "finite-versus-zero proves the exact captured Apple pipeline and resource slot can affect output, while unchanged captured-versus-zero tests whether Apple's actual Tmua payload is observationally equivalent to zero"
+  },
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

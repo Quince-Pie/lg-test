@@ -11111,6 +11111,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let drawIndex: Int
         let pipeline: MTLRenderPipelineState
         let backdropTexture: MTLTexture
+        let sourceTexture: MTLTexture
         let fragmentBuffer: MTLBuffer
         let fragmentOffset: Int
         let vertexBuffer: MTLBuffer
@@ -11182,6 +11183,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         == smallClearBackgroundPipelineLabel26_6_1,
                       let currentPipelineCommandIndex,
                       let backdropTexture = fragmentTextures[3],
+                      let sourceTexture = fragmentTextures[4],
                       let fragmentBuffer,
                       let vertexBuffer
                 else {
@@ -11192,6 +11194,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     drawIndex: drawIndex,
                     pipeline: currentPipeline,
                     backdropTexture: backdropTexture,
+                    sourceTexture: sourceTexture,
                     fragmentBuffer: fragmentBuffer,
                     fragmentOffset: fragmentOffset,
                     vertexBuffer: vertexBuffer,
@@ -11566,10 +11569,68 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return texture
         }
 
+        func makeFiniteSourceTexture(
+            like template: MTLTexture
+        ) -> MTLTexture? {
+            guard template.textureType == .type2D,
+                  template.depth == 1,
+                  template.arrayLength == 1,
+                  template.sampleCount == 1,
+                  template.mipmapLevelCount == 1,
+                  template.pixelFormat == .rgba16Float
+            else {
+                return nil
+            }
+            let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: template.pixelFormat,
+                width: template.width,
+                height: template.height,
+                mipmapped: false)
+            descriptor.storageMode = .shared
+            descriptor.usage = [.shaderRead]
+            guard let texture = template.device.makeTexture(
+                    descriptor: descriptor)
+            else {
+                return nil
+            }
+            let bytesPerRow = template.width * 8
+            var payload = Data(count: bytesPerRow * template.height)
+            payload.withUnsafeMutableBytes {
+                (raw: UnsafeMutableRawBufferPointer) in
+                let words = raw.bindMemory(to: UInt16.self)
+                for y in 0..<template.height {
+                    for x in 0..<template.width {
+                        let offset = (y * template.width + x) * 4
+                        words[offset] = UInt16(
+                            x.isMultiple(of: 2) ? 0x3400 : 0x3c00
+                        ).littleEndian
+                        words[offset + 1] = UInt16(
+                            y.isMultiple(of: 2) ? 0x3c00 : 0x3800
+                        ).littleEndian
+                        words[offset + 2] = UInt16(
+                            (x ^ y).isMultiple(of: 2) ? 0x3000 : 0x3a00
+                        ).littleEndian
+                        words[offset + 3] = UInt16(0x3c00).littleEndian
+                    }
+                }
+            }
+            payload.withUnsafeBytes {
+                (raw: UnsafeRawBufferPointer) in
+                texture.replace(
+                    region: MTLRegionMake2D(
+                        0, 0, template.width, template.height),
+                    mipmapLevel: 0,
+                    withBytes: raw.baseAddress!,
+                    bytesPerRow: bytesPerRow)
+            }
+            return texture
+        }
+
         var replayPreColor0 = preColor0
         var replayTextureOverrides: [Int: [Int: MTLTexture]] = [:]
         var controlledDestinationSnapshot: [String: Any]?
         var controlledBackdropSnapshot: [String: Any]?
+        var controlledSourceSnapshot: [String: Any]?
         if nonvacuous {
             guard let originalTarget =
                     pass.descriptor.colorAttachments[0]?.texture,
@@ -11578,7 +11639,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     salt: 0x13579bdf),
                   let controlledBackdrop = makePatternTexture(
                     like: selection.backdropTexture,
-                    salt: 0x2468ace0)
+                    salt: 0x2468ace0),
+                  let controlledSource = makeFiniteSourceTexture(
+                    like: selection.sourceTexture)
             else {
                 return [
                     "schemaVersion": 2,
@@ -11591,7 +11654,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
             }
             replayPreColor0 = controlledDestination
             replayTextureOverrides = [
-                selection.pipelineCommandIndex: [3: controlledBackdrop],
+                selection.pipelineCommandIndex: [
+                    3: controlledBackdrop,
+                    4: controlledSource,
+                ],
             ]
             controlledDestinationSnapshot = carendererOutputSnapshot(
                 controlledDestination,
@@ -11605,9 +11671,17 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 capture:
                     capture + "-small-clear-background-nonvacuous-backdrop",
                 outputDirectory: outputDirectory)
+            controlledSourceSnapshot = carendererOutputSnapshot(
+                controlledSource,
+                commandQueue: queue,
+                capture:
+                    capture + "-small-clear-background-nonvacuous-source",
+                outputDirectory: outputDirectory)
             guard controlledDestinationSnapshot?["rawCapture"] as? Bool
                     == true,
                   controlledBackdropSnapshot?["rawCapture"] as? Bool
+                    == true,
+                  controlledSourceSnapshot?["rawCapture"] as? Bool
                     == true
             else {
                 return [
@@ -11850,6 +11924,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             result["destinationSeed"] = controlledDestinationSnapshot
             result["controlledTghnBackdrop"] =
                 controlledBackdropSnapshot
+            result["controlledTghnSource"] = controlledSourceSnapshot
             result["before"] = beforeDraw
             result["activityComparison"] = activityComparison
             result["positiveControlPassed"] = positiveControlPassed
@@ -12271,6 +12346,54 @@ private final class MetalUniformProbe: @unchecked Sendable {
             return texture
         }
 
+        func makeFiniteSourceTexture(
+            like template: MTLTexture
+        ) -> MTLTexture? {
+            let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: template.pixelFormat,
+                width: template.width,
+                height: template.height,
+                mipmapped: false)
+            descriptor.storageMode = .shared
+            descriptor.usage = [.shaderRead]
+            guard let texture = template.device.makeTexture(
+                    descriptor: descriptor)
+            else {
+                return nil
+            }
+            let bytesPerRow = template.width * 8
+            var payload = Data(count: bytesPerRow * template.height)
+            payload.withUnsafeMutableBytes {
+                (raw: UnsafeMutableRawBufferPointer) in
+                let words = raw.bindMemory(to: UInt16.self)
+                for y in 0..<template.height {
+                    for x in 0..<template.width {
+                        let offset = (y * template.width + x) * 4
+                        words[offset] = UInt16(
+                            x.isMultiple(of: 2) ? 0x3400 : 0x3c00
+                        ).littleEndian
+                        words[offset + 1] = UInt16(
+                            y.isMultiple(of: 2) ? 0x3c00 : 0x3800
+                        ).littleEndian
+                        words[offset + 2] = UInt16(
+                            (x ^ y).isMultiple(of: 2) ? 0x3000 : 0x3a00
+                        ).littleEndian
+                        words[offset + 3] = UInt16(0x3c00).littleEndian
+                    }
+                }
+            }
+            payload.withUnsafeBytes {
+                (raw: UnsafeRawBufferPointer) in
+                texture.replace(
+                    region: MTLRegionMake2D(
+                        0, 0, template.width, template.height),
+                    mipmapLevel: 0,
+                    withBytes: raw.baseAddress!,
+                    bytesPerRow: bytesPerRow)
+            }
+            return texture
+        }
+
         let zeroDescriptor = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: source.pixelFormat,
             width: source.width,
@@ -12309,6 +12432,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         clearCommandBuffer.commit()
         clearCommandBuffer.waitUntilCompleted()
         guard clearCommandBuffer.status == .completed,
+              let finiteControlSource = makeFiniteSourceTexture(
+                like: source),
               let destinationSeed = makePatternTexture(
                 like: originalTarget,
                 salt: 0x13579bdf),
@@ -12338,6 +12463,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             commandQueue: queue,
             capture: capture + "-nonvacuous-tmua-zero",
             outputDirectory: outputDirectory)
+        let finiteControlSourceSnapshot = carendererOutputSnapshot(
+            finiteControlSource,
+            commandQueue: queue,
+            capture: capture + "-nonvacuous-tmua-finite-control",
+            outputDirectory: outputDirectory)
         let destinationSnapshot = carendererOutputSnapshot(
             destinationSeed,
             commandQueue: queue,
@@ -12361,6 +12491,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         guard [
                   sourceSnapshot,
                   zeroSnapshot,
+                  finiteControlSourceSnapshot,
                   destinationSnapshot,
                   backdropSnapshot,
                   finalInputSnapshot,
@@ -12414,6 +12545,15 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     4: zeroTexture,
                 ],
             ])
+        let tghnFiniteControlSource = replay(
+            name: "Tghn-finite-control-source",
+            through: selection.tghnDrawIndex + 1,
+            overrides: [
+                selection.tghnPipelineCommandIndex: [
+                    3: tghnBackdrop,
+                    4: finiteControlSource,
+                ],
+            ])
 
         let finalOverrides = [
             selection.tghnPipelineCommandIndex: [3: tghnBackdrop],
@@ -12435,13 +12575,17 @@ private final class MetalUniformProbe: @unchecked Sendable {
             reference: tghnReference,
             candidate: tghnZeroSource,
             outputDirectory: outputDirectory)
+        let tghnPathSensitivity = compareReplaySnapshots(
+            reference: tghnZeroSource,
+            candidate: tghnFiniteControlSource,
+            outputDirectory: outputDirectory)
         let finalActivity = compareReplaySnapshots(
             reference: beforeFinal,
             candidate: finalReference,
             outputDirectory: outputDirectory)
         let tghnPositiveControlPassed =
-            tghnActivity["compared"] as? Bool == true
-            && tghnActivity["exactByteMatch"] as? Bool == false
+            tghnPathSensitivity["compared"] as? Bool == true
+            && tghnPathSensitivity["exactByteMatch"] as? Bool == false
         let IrsdActivityObserved =
             finalActivity["compared"] as? Bool == true
             && finalActivity["exactByteMatch"] as? Bool == false
@@ -12451,11 +12595,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
             tghnSourceComparison["compared"] as? Bool == true
             && tghnSourceComparison["exactByteMatch"] as? Bool == true
         return [
-            "schemaVersion": 2,
+            "schemaVersion": 3,
             "executed": true,
             "eligible": true,
             "classification":
-                "nonvacuous controlled-target Tmua/Tghn influence "
+                "finite-source-positive-control Tmua/Tghn influence "
                 + "and explicit-Irsd-source replay",
             "liveAppleFrameMutated": false,
             "capturedApplePipelinesUnmodified": true,
@@ -12469,6 +12613,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "finalDrawIndex": selection.finalDrawIndex,
             "sourceTexture": sourceSnapshot,
             "zeroTexture": zeroSnapshot,
+            "finiteControlSource": finiteControlSourceSnapshot,
             "destinationSeed": destinationSnapshot,
             "controlledTghnBackdrop": backdropSnapshot,
             "controlledFinalInput": finalInputSnapshot,
@@ -12482,8 +12627,10 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "before": beforeTghn,
                 "reference": tghnReference,
                 "zeroSource": tghnZeroSource,
+                "finiteControlSource": tghnFiniteControlSource,
                 "activityComparison": tghnActivity,
                 "sourceComparison": tghnSourceComparison,
+                "pathSensitivityComparison": tghnPathSensitivity,
             ],
             "Irsd": [
                 "before": beforeFinal,

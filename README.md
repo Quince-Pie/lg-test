@@ -13716,3 +13716,72 @@ The exact ledger before this corrected run is:
 This correction modified only `lg-test`. It did not modify Walle's protected
 production shader or `flake.nix`, weaken a comparison, or authorize a parity
 claim before the corrected evidence exists.
+
+### Inactive captured-source control and finite-source discriminator
+
+The corrected all-state capture from commit
+`31575e0d4ba1212ca99e68ffabde23205d74e69a` executed every planned replay,
+but the frozen validator rejected it at the first positive control. Sample 2
+was the only absent branch. Samples 3 through 31 produced 29 complete
+populated-target comparisons: seven captured `Tmua` sources had the known
+nonzero SHA-256
+`7db629a886e5cd6982b3e23b2170681194cf9956d97de086754e68598b705c3e`,
+and the remaining 22 were exactly zero with SHA-256
+`fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471`.
+
+Captured `Tmua` versus zero matched all 121,634,816 BGRA8 target bytes, but
+the before-draw target versus captured-source `Tghn` reference also matched
+exactly in all 29 states. The preregistered rule required every captured
+source reference to change at least one byte, so no irrelevance result is
+promoted. The selected Tghn residual at sample 4 likewise produced three
+exact candidates against an inactive reference and remains unclosed. In
+contrast, the adjacent current `Irsd` draw was active in all 29 states: it
+changed between 585,966 and 657,928 bytes per state, 18,018,094 bytes in
+total, while retaining its explicit distinct one-pixel source.
+
+The rejected result is recorded in
+`Analysis/small_clear_tmua_nonvacuous_v2_positive_control_failure_result.json`,
+SHA-256
+`21ddcd90f86ecde0a90390f7875d03a542694c43a58d1f173e80e503a33bd3d0`.
+The complete timeline SHA-256 is
+`e0a824320b9f88fb77becf8a7805e5f05037c6af6df3010779713e6b9a429d35`.
+The all-state accounting, controlled readbacks, exact captured-versus-zero
+replication, and active `Irsd` evidence remain valid; the two inactive
+`Tghn` conclusions do not.
+
+The next discriminator changes neither state selection nor an acceptance
+tolerance. It adds a separately allocated finite RGBA16Float texture at
+`Tghn` texture 4. Its exact binary16 values vary among 0.125, 0.25, 0.5,
+0.75, and 1.0, with alpha exactly 1. The 64-by-128 and 128-by-128 byte streams
+have frozen SHA-256 values
+`b666b1596ea83c07a2eff81bca339446af7a8377e475a00458ce35c71fd56419`
+and
+`fd3ff58e12b11badb18b4ddac67b98bbf88006c3f76d8fbddb436dd8c8013689`.
+The validator compares zero versus this finite source to prove that the exact
+Apple pipeline/resource path can expose a source difference. At least one
+path-sensitive state, including one state whose captured source is nonzero,
+is mandatory. The unchanged captured-versus-zero comparison must still
+repeat exactly over every branch-bearing state.
+
+The selected halfway/tail residual uses the same finite source. Its
+unmodified reference must now change the populated destination before any of
+the three vertex candidates can be called exact. This directly separates
+"Apple's actual `Tmua` payload is equivalent to zero" from "the experiment
+cannot observe texture 4 at all."
+
+The schema-3 preregistration is
+`Analysis/small_clear_tmua_nonvacuous_v3_preregistration.json`, SHA-256
+`50498266d289b50f2537a2c0cf61922f8563099167698e9122ed7db6f12c9de9`.
+Its validator and five tests have SHA-256 values
+`54e69a2906693a59ab0792901d720bc02ea3ad3986f74d33dcf9ac68c10c9bb0`
+and
+`1e05589ce132be4c3669ac675bff7056a1ab6cec85e81468a043821d44226410`.
+The native runner has SHA-256
+`ad77b232c75ba37a0527ee245bd48f3995b5a2e930ed363c40749b9bea6cfa34`;
+the Swift probe SHA-256 is
+`2d11eaf955feece023111a6056555da9e1777f54d1617b60b9a79e81d29c0f32`.
+
+The ledger remains unchanged until this new control passes: zero unknowns
+block gated Walle integration; three Apple-side exact questions remain, with
+this run addressing two; and the two Walle product proofs remain. The
+protected shader and `flake.nix` are unchanged.
