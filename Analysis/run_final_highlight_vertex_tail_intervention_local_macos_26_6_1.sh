@@ -21,7 +21,10 @@ readonly validation_output="$output_directory/validation.json"
 readonly swift=/Library/Developer/CommandLineTools/usr/bin/swift
 readonly swiftc=/Library/Developer/CommandLineTools/usr/bin/swiftc
 readonly clang=/usr/bin/xcrun
+readonly vtool=/Library/Developer/CommandLineTools/usr/bin/vtool
+readonly codesign=/usr/bin/codesign
 readonly macos_sdk=$(/usr/bin/xcrun --show-sdk-path)
+readonly macos_sdk_version=$(/usr/bin/xcrun --show-sdk-version)
 readonly nix=/nix/var/nix/profiles/default/bin/nix
 
 cd "$repository" || exit 1
@@ -51,16 +54,20 @@ if [[ ! -x "$nix" ]]; then
     echo "Nix profile command is unavailable" >&2
     exit 1
 fi
+if [[ "$macos_sdk_version" != 26.5 ]]; then
+    echo "native capture SDK is not macOS 26.5" >&2
+    exit 1
+fi
 if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
     echo "native capture environment contains a Nix store path" >&2
     exit 1
 fi
 
-require_sha256 "$probe" cc71753954fe6e1a2d368d49ba57461fed6be290419d2d7b5d9e732e1f86307a
-require_sha256 "$validator" d7a3e9e930e145bf77b23793775d80945626e3d5e20f7b6066955deb438acf72
-require_sha256 "$validator_test" 0674a6dd0bee494015e6fee442a4dd63f1c31b83c06941f83c0bcacda03dc739
+require_sha256 "$probe" e745a805d53079f5f0356f3444e5d7970168483330a4a074bfabd2e784170386
+require_sha256 "$validator" 6a66e112c658769b26f98da62de220bff08b92023852aff300060a8b8d10c01f
+require_sha256 "$validator_test" f0579dc4510fbf0b2a87edc8ea9c273150fb43358635a84cf219dc9cedce7c81
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
-require_sha256 "$preregistration" cd6fa5ed5ea7c6adc83f886e855c339592d98983b9d0e27552c6ec0c61089289
+require_sha256 "$preregistration" 8a665e7636c153216994005d04a974d00b2b87a42633e30de5a12f4156a7449f
 require_sha256 Sources/GlassIntrospect/MatrixBridge.c 841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057
 require_sha256 Sources/GlassIntrospect/MatrixBridge.h a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c
 require_sha256 Sources/GlassIntrospect/HalfBlendProbe.swift 6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263
@@ -118,12 +125,44 @@ fi
     Sources/GlassIntrospect/SDFStageProbe.swift \
     Sources/GlassIntrospect/main.swift \
     "$build_directory/MatrixBridge.o" \
-    -o "$build_directory/glassintrospect" \
+    -o "$build_directory/glassintrospect-unlinked" \
     >"$output_directory/swiftc-stdout.log" \
     2>"$output_directory/swiftc-stderr.log"
 swiftc_status=$?
 if [[ "$swiftc_status" -ne 0 ]]; then
     echo "native Swift probe build failed" >&2
+    exit 3
+fi
+
+# Swift 6.3.3 currently emits an LC_BUILD_VERSION SDK of 26.0 even when the
+# selected native SDK is 26.5. SwiftUI uses this link-time SDK value for
+# compatibility behavior: the 26.0 executable loses the presentation glass
+# filter at sample 1, while the otherwise identical 26.5-linked executable
+# retains the complete timeline. Declare the SDK that actually supplied the
+# headers/frameworks, then restore the ad-hoc signature invalidated by vtool.
+"$vtool" \
+    -set-build-version macos 26.0 26.5 \
+    -replace \
+    -output "$build_directory/glassintrospect" \
+    "$build_directory/glassintrospect-unlinked" \
+    >"$output_directory/vtool-stdout.log" \
+    2>"$output_directory/vtool-stderr.log"
+vtool_status=$?
+if [[ "$vtool_status" -ne 0 ]]; then
+    echo "native SDK load-command correction failed" >&2
+    exit 3
+fi
+"$codesign" --force --sign - "$build_directory/glassintrospect" \
+    >"$output_directory/codesign-stdout.log" \
+    2>"$output_directory/codesign-stderr.log"
+codesign_status=$?
+if [[ "$codesign_status" -ne 0 ]]; then
+    echo "native probe ad-hoc signing failed" >&2
+    exit 3
+fi
+if ! "$vtool" -show-build "$build_directory/glassintrospect" \
+        | /usr/bin/grep -Eq 'sdk[[:space:]]+26\.5$'; then
+    echo "native probe does not declare SDK 26.5" >&2
     exit 3
 fi
 
@@ -140,10 +179,10 @@ readonly -a capture_environment=(
     LG_GLASS_GEOMETRY=circle-480-center
     LG_GLASS_MATERIAL=regular
     LG_TRANSITION_ALLOCATION_CALIBRATION=0
-    LG_TRANSITION_ALLOCATION_DENSE=1
+    LG_TRANSITION_ALLOCATION_DENSE=0
     LG_TRANSITION_ALLOCATION_FIXED_STATE=0
     LG_TRANSITION_ALLOCATION_MESH_CALIBRATION=0
-    LG_TRANSITION_ALLOCATION_ONLY=1
+    LG_TRANSITION_ALLOCATION_ONLY=0
     LG_TRANSITION_ALLOCATION_PATH_ISOLATION=0
     LG_TRANSITION_CONTROLLED_BACKDROP=0
     LG_TRANSITION_DIRECTION=dematerialize
@@ -161,6 +200,8 @@ readonly -a capture_environment=(
     printf '%s\n' TRACKED_DIRTY_STATE_PERMITTED_WITH_PINNED_BUILD_INPUTS=1
     /usr/bin/sw_vers
     /usr/bin/uname -m
+    printf 'NATIVE_SDK_PATH=%s\n' "$macos_sdk"
+    printf 'NATIVE_SDK_VERSION=%s\n' "$macos_sdk_version"
     /usr/sbin/system_profiler SPDisplaysDataType
     /usr/bin/shasum -a 256 \
         "$probe" "$validator" "$validator_test" \
@@ -171,7 +212,10 @@ readonly -a capture_environment=(
         Sources/GlassIntrospect/HalfDotProbe.swift \
         Sources/GlassIntrospect/HalfIntrinsicProbe.swift \
         Sources/GlassIntrospect/SDFStageProbe.swift \
+        "$build_directory/glassintrospect-unlinked" \
         "$build_directory/glassintrospect"
+    "$vtool" -show-build "$build_directory/glassintrospect-unlinked"
+    "$vtool" -show-build "$build_directory/glassintrospect"
     printf '%s\n' "${capture_environment[@]}" | LC_ALL=C sort
     git status --short --untracked-files=no
 } >"$output_directory/capture-context.txt"

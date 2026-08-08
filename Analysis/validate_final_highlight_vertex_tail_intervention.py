@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Validate the frozen current-build Irsd vertex-tail intervention."""
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import json
@@ -249,7 +247,7 @@ def validate(
         "Retina backing scale differs",
     )
 
-    runtime_path = capture_directory / "runtime.json"
+    runtime_path = capture_directory / "transition-timeline.json"
     runtime = load_json(runtime_path)
     expected_runtime = {
         "material": "regular",
@@ -257,6 +255,8 @@ def validate(
         "direction": "dematerialize",
         "sampleCount": 33,
         "windowBackingScaleFactor": 2,
+        "failedSamples": 0,
+        "expectedWindowPixels": [2048, 2048],
     }
     for field, expected in expected_runtime.items():
         require(runtime.get(field) == expected, f"runtime {field} differs")
@@ -270,14 +270,32 @@ def validate(
     )
     uniforms = runtime.get("dynamicBackgroundUniforms")
     require(isinstance(uniforms, dict), "dynamic records are absent")
-    records = uniforms.get("records")
-    require(isinstance(records, list), "dynamic record list is absent")
-    target_records = {
-        record.get("sampleIndex"): record
-        for record in records
-        if isinstance(record, dict)
-        and record.get("sampleIndex") in TARGET_SAMPLES
+    expected_uniforms = {
+        "schemaVersion": 9,
+        "requested": True,
+        "executed": True,
+        "evidenceMode": "controlled-replay-v1",
+        "sampleIndices": list(TARGET_SAMPLES),
+        "sampleCount": len(TARGET_SAMPLES),
+        "executedSampleCount": len(TARGET_SAMPLES),
+        "presentationLayerReplayed": True,
+        "presentationLayerAssignedToCARenderer": False,
+        "freshStaticCarrier": True,
+        "detachedLayerTreeCopies": False,
     }
+    for field, expected in expected_uniforms.items():
+        require(
+            uniforms.get(field) == expected,
+            f"dynamic uniforms {field} differs",
+        )
+    records = uniforms.get("records")
+    require(
+        isinstance(records, list)
+        and len(records) == len(TARGET_SAMPLES)
+        and all(isinstance(record, dict) for record in records),
+        "dynamic record list differs",
+    )
+    target_records = {record.get("sampleIndex"): record for record in records}
     require(
         set(target_records) == set(TARGET_SAMPLES),
         "target sample set differs",

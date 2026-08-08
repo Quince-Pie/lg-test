@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import hashlib
 import json
 import tempfile
@@ -128,26 +126,52 @@ class FinalHighlightVertexTailInterventionTests(unittest.TestCase):
             "direction": "dematerialize",
             "sampleCount": 33,
             "windowBackingScaleFactor": 2,
+            "failedSamples": 0,
+            "expectedWindowPixels": [2048, 2048],
             "geometry": {
                 "name": "circle-480-center",
                 "width": 480,
                 "height": 480,
             },
             "dynamicBackgroundUniforms": {
-                "records": [self.trace(28), self.trace(29)],
+                "schemaVersion": 9,
+                "requested": True,
+                "executed": True,
+                "evidenceMode": "controlled-replay-v1",
+                "sampleIndices": list(validator.TARGET_SAMPLES),
+                "sampleCount": len(validator.TARGET_SAMPLES),
+                "executedSampleCount": len(validator.TARGET_SAMPLES),
+                "presentationLayerReplayed": True,
+                "presentationLayerAssignedToCARenderer": False,
+                "freshStaticCarrier": True,
+                "detachedLayerTreeCopies": False,
+                "records": [
+                    self.trace(28),
+                    self.trace(29),
+                    self.trace(29),
+                ],
             },
         }
-        (self.directory / "runtime.json").write_text(json.dumps(runtime))
+        (self.directory / "transition-timeline.json").write_text(
+            json.dumps(runtime),
+            encoding="utf-8",
+        )
         preregistration = self.directory / "preregistration.json"
-        preregistration.write_text(json.dumps({
-            "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 1,
-            "sourceSHA256": {},
-        }))
+        preregistration.write_text(
+            json.dumps({
+                "finalHighlightVertexTailInterventionPreregistrationSchemaVersion": 1,
+                "sourceSHA256": {},
+            }),
+            encoding="utf-8",
+        )
         preflight = self.directory / "preflight.json"
-        preflight.write_text(json.dumps({
-            "passed": True,
-            "backingScaleFactor": 2,
-        }))
+        preflight.write_text(
+            json.dumps({
+                "passed": True,
+                "backingScaleFactor": 2,
+            }),
+            encoding="utf-8",
+        )
         with mock.patch.object(validator, "validate_sources"):
             with self.assertRaisesRegex(ValueError, "sample set differs"):
                 validator.validate(

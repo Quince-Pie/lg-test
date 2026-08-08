@@ -20686,6 +20686,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_ALLOCATION_PATH_ISOLATION"
                 ] == "1"
+            let highlightVertexTailTraceRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_HIGHLIGHT_VERTEX_TAIL_TRACE"
+                ] == "1"
             if matrixUniformBasisRequested,
                !dynamicUniformsRequested
             {
@@ -20803,12 +20807,61 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "the centered 640-point source geometry",
                     ])
             }
+            if highlightVertexTailTraceRequested,
+               !dynamicUniformsRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 18,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "highlight vertex-tail trace requires "
+                            + "dynamic uniform capture",
+                    ])
+            }
+            if highlightVertexTailTraceRequested,
+               allocationOnlyRequested
+                    || denseAllocationRequested
+                    || matrixUniformBasisRequested
+                    || fixedStateAllocationRequested
+                    || pathIsolationAllocationRequested
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 19,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "highlight vertex-tail trace requires "
+                            + "targeted controlled replay",
+                    ])
+            }
+            if highlightVertexTailTraceRequested,
+               direction != .dematerialize
+                    || material != .regular
+                    || appearance != .dark
+                    || geometry.rawValue != "circle-480-center"
+            {
+                throw NSError(
+                    domain:
+                        "LiquidGlassTransitionProbe",
+                    code: 20,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "highlight vertex-tail trace requires the "
+                            + "frozen regular/dark dematerialize "
+                            + "circle-480-center case",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
             let endpointTopologyDeadlineSeconds = 1.0
             let dynamicUniformSampleIndices = Set(
-                denseAllocationRequested
+                highlightVertexTailTraceRequested
+                    ? [28, 29, 30]
+                    : denseAllocationRequested
                     ? Array(1..<sampleCount)
                     : allocationOnlyRequested
                     ? [
