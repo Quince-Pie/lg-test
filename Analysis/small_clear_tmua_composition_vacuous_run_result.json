@@ -1,0 +1,75 @@
+{
+  "smallClearTmuaCompositionVacuousRunResultSchemaVersion": 1,
+  "status": "rejected-vacuous-transparent-target",
+  "classification": "prospective transport succeeded but cannot promote Tmua source irrelevance because every reference target is transparent zero",
+  "captureCommit": "2592002bb1415391fb94b73df3992ee292652604",
+  "captureDirectory": "local-small-clear-tmua-composition-retina1",
+  "captureArchive": {
+    "path": "artifacts/local-small-clear-tmua-composition-retina1.tar.gz",
+    "bytes": 241245375,
+    "sha256": "35a8c7db7116694557d04d90095e8eccc7e8f6becc81e5469351c0dc1243f2fc"
+  },
+  "nativeCapture": {
+    "captureExitStatus": 0,
+    "validatorExitStatusUnderFrozenRules": 0,
+    "architecture": "arm64",
+    "metalDevice": "Apple M1 Max",
+    "operatingSystem": "macOS 26.6.1",
+    "operatingSystemBuild": "25G76",
+    "physicalPixels": [3456, 2234],
+    "backingScaleFactor": 2,
+    "githubActionsUsed": false,
+    "debuggerUsed": false,
+    "nativeBinaryContainsNixStorePath": false
+  },
+  "frozenValidatorOutput": {
+    "sha256": "461e307f87ed5a4fb00a1cec5c8975acdb630ad1658c5d044768eaed3e0cb16e",
+    "caseCount": 2,
+    "eligibleStateCount": 58,
+    "interventionComparisonCount": 174,
+    "comparedTargetByteCount": 729808896,
+    "reportedUnequalTargetByteCount": 0,
+    "nonzeroSourceStateCount": 7
+  },
+  "cases": [
+    {
+      "caseId": "clear-light-materialize-01",
+      "timelineSHA256": "5050d8488e4e9ee659be7eb802c16ac9e46bf2524372b91bb406c24d3eda07b0",
+      "eligibleStateCount": 29,
+      "absentBranchSamples": [2],
+      "nonzeroTmuaSourceSamples": [3, 4, 5, 6, 7, 8, 9],
+      "nonzeroTmuaSourceSHA256": "7db629a886e5cd6982b3e23b2170681194cf9956d97de086754e68598b705c3e"
+    },
+    {
+      "caseId": "clear-dark-dematerialize-06",
+      "timelineSHA256": "69773740769ddc4d32500b5213efd6b9dc5a8222a87ffe215778eaa5e4995cf1",
+      "eligibleStateCount": 29,
+      "absentBranchSamples": [2],
+      "nonzeroTmuaSourceSamples": []
+    }
+  ],
+  "fatalAuditFinding": {
+    "referenceTargetBytesPerState": 4194304,
+    "referenceTargetSHA256EveryState": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+    "sha256Of4194304ZeroBytes": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+    "referenceTargetNonzeroByteCountEveryState": 0,
+    "reasonPromotionIsDenied": "zero-versus-zero equality cannot establish that either captured Apple consumer ignores a resource; the Apple draw must first have a measured nonzero effect on a populated controlled target"
+  },
+  "evidenceStillAccepted": {
+    "commandScopedOverrideTransportExecuted": true,
+    "replacementTextureReadBackAsAllZero": true,
+    "capturedTmuaSourceReadBack": true,
+    "capturedNonzeroSourceMutationProvedForSevenStates": true,
+    "completeRawTargetBytesRetained": true
+  },
+  "promotion": {
+    "TmuaSourceIrrelevanceEstablished": false,
+    "TmuaProducerMayBeOmitted": false,
+    "remainingAppleConstructionBoundaryCount": 1,
+    "requiredCorrection": "repeat against a deterministic populated destination and controlled nonzero texture-3 input, require each Apple consumer itself to change target bytes, then compare captured versus zero Tmua source with literal zero tolerance"
+  },
+  "appleUnknownsBlockingGatedWalleIntegration": 0,
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

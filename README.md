@@ -13545,3 +13545,100 @@ This preregistration modified `lg-test` replay transport, analysis, tests, and
 this README. It did not modify Walle's protected production shader or
 `flake.nix`, weaken a tolerance, or authorize a parity claim before the new
 evidence exists.
+
+### Rejected transparent-target `Tmua` run and nonvacuous replacement
+
+The first prospective `Tmua` run completed successfully at the transport and
+frozen-validator levels, but a post-run audit found that its conclusion was
+not admissible. Native capture from commit
+`2592002bb1415391fb94b73df3992ee292652604` exited zero on the physical M1
+Max Retina host, and the frozen validator reported zero unequal bytes across
+58 eligible states, 174 interventions, and 729,808,896 target bytes. However,
+every 4,194,304-byte unmodified reference target was transparent zero, with
+SHA-256
+`bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8`.
+That is exactly the SHA-256 of 4,194,304 zero bytes. Equality between two
+transparent outputs cannot prove that either Apple consumer ignores the
+resource.
+
+No part of that target-equality result is promoted. The rejected run is
+recorded in
+`Analysis/small_clear_tmua_composition_vacuous_run_result.json`, SHA-256
+`9dc98f4a46dd3df26ab0980d27690696ac7e78af48722bbce27aaf7d0ed55ca9`.
+Its source readbacks remain valid selection evidence: all and only light
+materialize samples 3 through 9 contain a nonzero 128-by-128 RGBA16Float
+`Tmua` source, and all seven have SHA-256
+`7db629a886e5cd6982b3e23b2170681194cf9956d97de086754e68598b705c3e`.
+Every other eligible source in both cases is bytewise zero. The run also
+proves that command-index-scoped replacement and private-zero-texture
+readback transport execute, but not that the source is irrelevant.
+
+The same audit criterion also corrects the earlier `Tghn` coordinate/tail
+intervention. Its reference and all three candidates have that identical
+transparent-zero hash. The coordinate reconstruction, distinct mutated
+vertex streams, and replay transport remain valid, but the claims that the
+halfway choice and unclassified tail are pixel-irrelevant are withdrawn until
+they pass the same populated-target positive control. This correction is
+recorded in
+`Analysis/small_clear_background_intervention_vacuous_correction.json`,
+SHA-256
+`83916af8e5ea73b4e37c78c731be433d3ec9dc228f2c4dea1dc4c7f58eb051ce`.
+The independently exact 210-byte fragment constructor and the already exact
+position, backdrop-coordinate, and scissor laws are unaffected.
+
+A replacement experiment is now frozen before any output under its new
+environment switch exists. It executes every one of those seven nonzero
+source states. Each replay starts with a deterministic opaque 1024-by-1024
+BGRA8 destination and supplies deterministic nonzero texture-3 inputs to the
+exact captured Apple `Tghn` and current `Irsd` pipelines. The byte pattern is
+independently reconstructible: each BGRA word derives from the coordinates,
+mip level, and a separately frozen salt; alpha is `0xff`. No captured buffer,
+texture, pipeline, or live frame is modified.
+
+For each state, the validator applies two gates to each Apple consumer:
+
+1. the output immediately before the draw must differ from the unmodified
+   output through the draw by at least one independently read BGRA8 byte;
+2. only after that positive control passes may the unmodified output be
+   compared with the output that substitutes the verified all-zero `Tmua`
+   source.
+
+This creates 14 mandatory non-vacuity controls and 14 source comparisons over
+58,720,256 candidate bytes. Promotion requires every Apple draw to have a
+measured effect and every source comparison to have exactly zero unequal
+bytes, zero unequal pixels, and maximum channel delta zero. One failed
+positive control rejects the experiment rather than being interpreted as
+source irrelevance. One unequal source byte identifies the consumer that
+still requires `Tmua`.
+
+The new preregistration is
+`Analysis/small_clear_tmua_nonvacuous_intervention_preregistration.json`,
+SHA-256
+`f55fa3ad5811d627f59c6ec5e4d30d0db2f1fc7c1323de82bf0ce2a8f191c722`.
+The validator and its seven tests have SHA-256 values
+`aed1fd8c158d1e83f6d7ea31d58dc97874a320714ce08f35086e821ace42490c`
+and
+`37da3cf2c66354469e30a2ded94a5e90aa1d69b84b06a09d6362aa2c66299906`.
+The native local runner has SHA-256
+`9a387dff862c4e45e058020e43104006130ff2ce5aecac15cc651e8b8e60b372`.
+The source-built Swift probe type-checks natively against Apple's 26.5 SDK;
+its frozen SHA-256 is
+`9487c05b59a438c346ec4acc2a8e76b477b32df30789df0472f8d132c18b0cd2`.
+
+The exact ledger while this replacement remains unrun is:
+
+1. **Unknowns blocking gated Walle work: zero.** The exact `Tghn`
+   constructor may be integrated behind immutable comparison gates now.
+2. **Remaining Apple exact questions: three.** This experiment decides
+   `Tmua` source influence. A populated-target rerun must re-establish the
+   `Tghn` halfway/tail irrelevance claim, and bit-exact transfer of the
+   recovered compositor arithmetic to the current small-clear `Iscd/Irsd`
+   pair remains.
+3. **Remaining product proofs: two.** Walle-shaped physical Retina transfer
+   and a fresh production-Walle frame with zero unequal bytes remain
+   mandatory.
+
+This correction and replacement modified only `lg-test` capture transport,
+analysis, tests, runner, result ledger, and this README. Walle's protected
+production shader and `flake.nix` remain byte-identical; no quality tolerance
+was introduced and production parity is not yet authorized.

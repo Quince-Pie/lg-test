@@ -5495,6 +5495,7 @@ private let finalHighlightSourceCandidateSampleIndices = Array(1...31)
 private let smallClearFinalColorCandidateSampleIndices = Array(2...31)
 private let smallClearBackgroundCandidateSampleIndices = Array(2...31)
 private let smallClearTmuaCompositionCandidateSampleIndices = Array(2...31)
+private let smallClearTmuaNonvacuousCandidateSampleIndices = Array(3...9)
 
 private final class MetalUniformProbe: @unchecked Sendable {
     private struct TextureBinding {
@@ -10037,6 +10038,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
             [Int: MTLTexture] = [:],
         fragmentTextureOverridesByPipelineCommand:
             [Int: [Int: MTLTexture]] = [:],
+        forceColor0Load: Bool = false,
         vertexBufferOverrides:
             [ObjectIdentifier: MTLBuffer] = [:],
         capture: String,
@@ -10098,7 +10100,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
             targets[index] = target
             let replay = descriptor.colorAttachments[index]
             replay?.texture = target
-            replay?.loadAction = original.loadAction
+            replay?.loadAction = index == 0 && forceColor0Load
+                ? .load
+                : original.loadAction
             replay?.storeAction =
                 index == 0 ? .store : original.storeAction
             replay?.storeActionOptions =
@@ -10115,6 +10119,12 @@ private final class MetalUniformProbe: @unchecked Sendable {
             pass.descriptor.renderTargetArrayLength
         descriptor.defaultRasterSampleCount =
             pass.descriptor.defaultRasterSampleCount
+        if forceColor0Load && preColor0 == nil {
+            return [
+                "executed": false,
+                "reason": "forced-load replay has no pre-pass texture",
+            ]
+        }
         if let preColor0 {
             guard let blit = commandBuffer.makeBlitCommandEncoder()
             else {
@@ -11677,6 +11687,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
         let finalDrawIndex: Int
         let tghnPipeline: MTLRenderPipelineState
         let finalPipeline: MTLRenderPipelineState
+        let tghnBackdropTexture: MTLTexture
+        let finalInputTexture: MTLTexture
         let sourceTexture: MTLTexture
     }
 
@@ -11689,6 +11701,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
         var tghnPipelineCommandIndex: Int?
         var tghnDrawIndex: Int?
         var tghnPipeline: MTLRenderPipelineState?
+        var tghnBackdropTexture: MTLTexture?
         var sourceTexture: MTLTexture?
 
         for (commandIndex, command) in commands.enumerated() {
@@ -11721,6 +11734,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                           indexCount == 6,
                           indexType == .uint16,
                           tghnDrawIndex == nil,
+                          let backdropTexture = fragmentTextures[3],
                           let texture = fragmentTextures[4]
                     else {
                         return nil
@@ -11728,6 +11742,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     tghnPipelineCommandIndex = currentPipelineCommandIndex
                     tghnDrawIndex = commandIndex
                     tghnPipeline = currentPipeline
+                    tghnBackdropTexture = backdropTexture
                     sourceTexture = texture
                     continue
                 }
@@ -11740,7 +11755,13 @@ private final class MetalUniformProbe: @unchecked Sendable {
                           let retainedTghnPipelineCommandIndex =
                             tghnPipelineCommandIndex,
                           let retainedTghnPipeline = tghnPipeline,
-                          let retainedSourceTexture = sourceTexture
+                          let retainedTghnBackdropTexture =
+                            tghnBackdropTexture,
+                          let retainedFinalInputTexture = fragmentTextures[3],
+                          let retainedFinalSourceTexture = fragmentTextures[4],
+                          let retainedSourceTexture = sourceTexture,
+                          ObjectIdentifier(retainedFinalSourceTexture)
+                            == ObjectIdentifier(retainedSourceTexture)
                     else {
                         return nil
                     }
@@ -11753,6 +11774,9 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         finalDrawIndex: commandIndex,
                         tghnPipeline: retainedTghnPipeline,
                         finalPipeline: currentPipeline,
+                        tghnBackdropTexture:
+                            retainedTghnBackdropTexture,
+                        finalInputTexture: retainedFinalInputTexture,
                         sourceTexture: retainedSourceTexture)
                 }
             default:
@@ -11957,6 +11981,332 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "interventionCount": records.count,
             "allInterventionsExact": allExact,
             "interventions": records,
+        ]
+    }
+
+    private func replaySmallClearTmuaNonvacuousIntervention(
+        pass: ReplayPass,
+        queue: MTLCommandQueue,
+        capture: String,
+        outputDirectory: URL
+    ) -> [String: Any] {
+        guard let selection = smallClearTmuaCompositionSelection(
+                in: pass.commands),
+              let originalTarget =
+                pass.descriptor.colorAttachments[0]?.texture
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "reason": "adjacent small-clear Tghn/Irsd draws are unavailable",
+            ]
+        }
+        let source = selection.sourceTexture
+        guard source.textureType == .type2D,
+              source.depth == 1,
+              source.arrayLength == 1,
+              source.sampleCount == 1,
+              source.mipmapLevelCount == 1,
+              source.pixelFormat == .rgba16Float,
+              source.width == 128,
+              source.height == 128
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": false,
+                "reason": "selected nonvacuous Tmua source layout differs",
+            ]
+        }
+
+        func makePatternTexture(
+            like template: MTLTexture,
+            salt: UInt32
+        ) -> MTLTexture? {
+            guard template.textureType == .type2D,
+                  template.depth == 1,
+                  template.arrayLength == 1,
+                  template.sampleCount == 1,
+                  template.pixelFormat == .bgra8Unorm
+                    || template.pixelFormat == .bgra8Unorm_srgb
+            else {
+                return nil
+            }
+            let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: template.pixelFormat,
+                width: template.width,
+                height: template.height,
+                mipmapped: template.mipmapLevelCount > 1)
+            descriptor.mipmapLevelCount = template.mipmapLevelCount
+            descriptor.storageMode = .shared
+            descriptor.usage = [.shaderRead]
+            guard let texture = template.device.makeTexture(
+                    descriptor: descriptor)
+            else {
+                return nil
+            }
+            for level in 0..<template.mipmapLevelCount {
+                let width = max(1, template.width >> level)
+                let height = max(1, template.height >> level)
+                let bytesPerRow = width * 4
+                var payload = Data(count: bytesPerRow * height)
+                payload.withUnsafeMutableBytes {
+                    (raw: UnsafeMutableRawBufferPointer) in
+                    let bytes = raw.bindMemory(to: UInt8.self)
+                    for y in 0..<height {
+                        for x in 0..<width {
+                            let offset = y * bytesPerRow + x * 4
+                            let word = UInt32(truncatingIfNeeded:
+                                x &* 0x45d9f3b
+                                ^ y &* 0x119de1f
+                                ^ level &* 0x9e3779b9)
+                                ^ salt
+                            bytes[offset] = UInt8(truncatingIfNeeded: word)
+                            bytes[offset + 1] =
+                                UInt8(truncatingIfNeeded: word >> 8)
+                            bytes[offset + 2] =
+                                UInt8(truncatingIfNeeded: word >> 16)
+                            bytes[offset + 3] = 0xff
+                        }
+                    }
+                }
+                payload.withUnsafeBytes {
+                    (raw: UnsafeRawBufferPointer) in
+                    texture.replace(
+                        region: MTLRegionMake2D(0, 0, width, height),
+                        mipmapLevel: level,
+                        withBytes: raw.baseAddress!,
+                        bytesPerRow: bytesPerRow)
+                }
+            }
+            return texture
+        }
+
+        let zeroDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: source.pixelFormat,
+            width: source.width,
+            height: source.height,
+            mipmapped: false)
+        zeroDescriptor.storageMode = .private
+        zeroDescriptor.usage = [.renderTarget, .shaderRead]
+        guard let zeroTexture = source.device.makeTexture(
+                descriptor: zeroDescriptor),
+              let clearCommandBuffer = queue.makeCommandBuffer()
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": true,
+                "reason": "nonvacuous zero texture allocation failed",
+            ]
+        }
+        let clearDescriptor = MTLRenderPassDescriptor()
+        clearDescriptor.colorAttachments[0]?.texture = zeroTexture
+        clearDescriptor.colorAttachments[0]?.loadAction = .clear
+        clearDescriptor.colorAttachments[0]?.storeAction = .store
+        clearDescriptor.colorAttachments[0]?.clearColor =
+            MTLClearColorMake(0.0, 0.0, 0.0, 0.0)
+        guard let clearEncoder = clearCommandBuffer.makeRenderCommandEncoder(
+                descriptor: clearDescriptor)
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": true,
+                "reason": "nonvacuous zero clear encoder unavailable",
+            ]
+        }
+        clearEncoder.endEncoding()
+        clearCommandBuffer.commit()
+        clearCommandBuffer.waitUntilCompleted()
+        guard clearCommandBuffer.status == .completed,
+              let destinationSeed = makePatternTexture(
+                like: originalTarget,
+                salt: 0x13579bdf),
+              let tghnBackdrop = makePatternTexture(
+                like: selection.tghnBackdropTexture,
+                salt: 0x2468ace0),
+              let finalInput = makePatternTexture(
+                like: selection.finalInputTexture,
+                salt: 0x0f1e2d3c)
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": true,
+                "reason": clearCommandBuffer.error?.localizedDescription
+                    ?? "controlled replay texture construction failed",
+            ]
+        }
+
+        let sourceSnapshot = carendererOutputSnapshot(
+            source,
+            commandQueue: queue,
+            capture: capture + "-nonvacuous-tmua-source",
+            outputDirectory: outputDirectory)
+        let zeroSnapshot = carendererOutputSnapshot(
+            zeroTexture,
+            commandQueue: queue,
+            capture: capture + "-nonvacuous-tmua-zero",
+            outputDirectory: outputDirectory)
+        let destinationSnapshot = carendererOutputSnapshot(
+            destinationSeed,
+            commandQueue: queue,
+            capture: capture + "-nonvacuous-destination-seed",
+            outputDirectory: outputDirectory)
+        let backdropSnapshot = carendererOutputSnapshot(
+            tghnBackdrop,
+            commandQueue: queue,
+            capture: capture + "-nonvacuous-tghn-backdrop",
+            outputDirectory: outputDirectory)
+        let finalInputSnapshot = carendererOutputSnapshot(
+            finalInput,
+            commandQueue: queue,
+            capture: capture + "-nonvacuous-final-input",
+            outputDirectory: outputDirectory)
+        guard [
+                  sourceSnapshot,
+                  zeroSnapshot,
+                  destinationSnapshot,
+                  backdropSnapshot,
+                  finalInputSnapshot,
+              ].allSatisfy({ $0["rawCapture"] as? Bool == true })
+        else {
+            return [
+                "schemaVersion": 1,
+                "executed": false,
+                "eligible": true,
+                "reason": "controlled replay texture readback failed",
+            ]
+        }
+
+        func replay(
+            name: String,
+            through commandCount: Int,
+            overrides: [Int: [Int: MTLTexture]]
+        ) -> [String: Any] {
+            replayGlassPrefix(
+                pass: pass,
+                preColor0: destinationSeed,
+                queue: queue,
+                commands: Array(pass.commands.prefix(commandCount)),
+                replacingGlassPipeline: nil,
+                stopAfterGlass: false,
+                fragmentTextureOverridesByPipelineCommand: overrides,
+                forceColor0Load: true,
+                capture: capture,
+                suffix: "small-clear-tmua-nonvacuous-" + name,
+                outputDirectory: outputDirectory)
+        }
+
+        let tghnOverrides = [
+            selection.tghnPipelineCommandIndex: [3: tghnBackdrop],
+        ]
+        let beforeTghn = replay(
+            name: "before-Tghn",
+            through: selection.tghnDrawIndex,
+            overrides: tghnOverrides)
+        let tghnReference = replay(
+            name: "Tghn-reference",
+            through: selection.tghnDrawIndex + 1,
+            overrides: tghnOverrides)
+        let tghnZeroSource = replay(
+            name: "Tghn-zero-source",
+            through: selection.tghnDrawIndex + 1,
+            overrides: [
+                selection.tghnPipelineCommandIndex: [
+                    3: tghnBackdrop,
+                    4: zeroTexture,
+                ],
+            ])
+
+        let finalOverrides = [
+            selection.tghnPipelineCommandIndex: [3: tghnBackdrop],
+            selection.finalPipelineCommandIndex: [3: finalInput],
+        ]
+        let beforeFinal = replay(
+            name: "before-Irsd",
+            through: selection.finalDrawIndex,
+            overrides: finalOverrides)
+        let finalReference = replay(
+            name: "Irsd-reference",
+            through: selection.finalDrawIndex + 1,
+            overrides: finalOverrides)
+        let finalZeroSource = replay(
+            name: "Irsd-zero-source",
+            through: selection.finalDrawIndex + 1,
+            overrides: [
+                selection.tghnPipelineCommandIndex: [3: tghnBackdrop],
+                selection.finalPipelineCommandIndex: [
+                    3: finalInput,
+                    4: zeroTexture,
+                ],
+            ])
+
+        let tghnActivity = compareReplaySnapshots(
+            reference: beforeTghn,
+            candidate: tghnReference,
+            outputDirectory: outputDirectory)
+        let tghnSourceComparison = compareReplaySnapshots(
+            reference: tghnReference,
+            candidate: tghnZeroSource,
+            outputDirectory: outputDirectory)
+        let finalActivity = compareReplaySnapshots(
+            reference: beforeFinal,
+            candidate: finalReference,
+            outputDirectory: outputDirectory)
+        let finalSourceComparison = compareReplaySnapshots(
+            reference: finalReference,
+            candidate: finalZeroSource,
+            outputDirectory: outputDirectory)
+        let positiveControlsPassed =
+            tghnActivity["compared"] as? Bool == true
+            && tghnActivity["exactByteMatch"] as? Bool == false
+            && finalActivity["compared"] as? Bool == true
+            && finalActivity["exactByteMatch"] as? Bool == false
+        let sourceComparisonsExact =
+            tghnSourceComparison["compared"] as? Bool == true
+            && tghnSourceComparison["exactByteMatch"] as? Bool == true
+            && finalSourceComparison["compared"] as? Bool == true
+            && finalSourceComparison["exactByteMatch"] as? Bool == true
+        return [
+            "schemaVersion": 1,
+            "executed": true,
+            "eligible": true,
+            "classification":
+                "nonvacuous controlled-target Tmua source influence replay",
+            "liveAppleFrameMutated": false,
+            "capturedApplePipelinesUnmodified": true,
+            "tghnPipelineLabel": selection.tghnPipeline.label ?? "",
+            "finalPipelineLabel": selection.finalPipeline.label ?? "",
+            "tghnPipelineCommandIndex":
+                selection.tghnPipelineCommandIndex,
+            "tghnDrawIndex": selection.tghnDrawIndex,
+            "finalPipelineCommandIndex":
+                selection.finalPipelineCommandIndex,
+            "finalDrawIndex": selection.finalDrawIndex,
+            "sourceTexture": sourceSnapshot,
+            "zeroTexture": zeroSnapshot,
+            "destinationSeed": destinationSnapshot,
+            "controlledTghnBackdrop": backdropSnapshot,
+            "controlledFinalInput": finalInputSnapshot,
+            "positiveControlsPassed": positiveControlsPassed,
+            "sourceComparisonsExact": sourceComparisonsExact,
+            "Tghn": [
+                "before": beforeTghn,
+                "reference": tghnReference,
+                "zeroSource": tghnZeroSource,
+                "activityComparison": tghnActivity,
+                "sourceComparison": tghnSourceComparison,
+            ],
+            "Irsd": [
+                "before": beforeFinal,
+                "reference": finalReference,
+                "zeroSource": finalZeroSource,
+                "activityComparison": finalActivity,
+                "sourceComparison": finalSourceComparison,
+            ],
         ]
     }
 
@@ -15166,8 +15516,20 @@ private final class MetalUniformProbe: @unchecked Sendable {
             && smallClearTmuaCompositionCandidateSampleIndices.contains {
                 capture.hasSuffix(String(format: "-%02d", $0))
             }
+        let smallClearTmuaNonvacuousInterventionRequested =
+            ProcessInfo.processInfo.environment[
+                "LG_TRANSITION_SMALL_CLEAR_TMUA_NONVACUOUS_TRACE"
+            ] == "1"
+            && capture.hasPrefix("transition-background-uniform-")
+            && smallClearTmuaNonvacuousCandidateSampleIndices.contains {
+                capture.hasSuffix(String(format: "-%02d", $0))
+            }
         let selectedPass: ReplayPass?
-        if smallClearTmuaCompositionInterventionRequested {
+        if smallClearTmuaNonvacuousInterventionRequested {
+            selectedPass = passes.last(where: {
+                smallClearTmuaCompositionSelection(in: $0.commands) != nil
+            })
+        } else if smallClearTmuaCompositionInterventionRequested {
             selectedPass = passes.last(where: {
                 smallClearTmuaCompositionSelection(in: $0.commands) != nil
             })
@@ -15191,6 +15553,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "executed": false,
                 "reason": sourceInterventionRequested
                     ? "captured no-background Iscd render pass unavailable"
+                    : smallClearTmuaNonvacuousInterventionRequested
+                    ? "captured nonvacuous small-clear Tghn/Irsd pass unavailable"
                     : smallClearTmuaCompositionInterventionRequested
                     ? "captured adjacent small-clear Tghn/Irsd pass unavailable"
                     : smallClearBackgroundInterventionRequested
@@ -15472,6 +15836,14 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     preColor0: preColor0,
                     queue: queue,
                     exactReplay: ["output": replaySnapshot],
+                    capture: capture,
+                    outputDirectory: outputDirectory)
+        }
+        if smallClearTmuaNonvacuousInterventionRequested {
+            result["smallClearTmuaNonvacuousIntervention"] =
+                replaySmallClearTmuaNonvacuousIntervention(
+                    pass: pass,
+                    queue: queue,
                     capture: capture,
                     outputDirectory: outputDirectory)
         }
@@ -22296,6 +22668,10 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                 ProcessInfo.processInfo.environment[
                     "LG_TRANSITION_SMALL_CLEAR_TMUA_COMPOSITION_TRACE"
                 ] == "1"
+            let smallClearTmuaNonvacuousTraceRequested =
+                ProcessInfo.processInfo.environment[
+                    "LG_TRANSITION_SMALL_CLEAR_TMUA_NONVACUOUS_TRACE"
+                ] == "1"
             if matrixUniformBasisRequested,
                !dynamicUniformsRequested
             {
@@ -22662,6 +23038,50 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
                             + "one of the two frozen clear holdout cases",
                     ])
             }
+            if smallClearTmuaNonvacuousTraceRequested,
+               !dynamicUniformsRequested
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 33,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "nonvacuous Tmua trace requires dynamic uniforms",
+                    ])
+            }
+            if smallClearTmuaNonvacuousTraceRequested,
+               allocationOnlyRequested
+                    || denseAllocationRequested
+                    || matrixUniformBasisRequested
+                    || fixedStateAllocationRequested
+                    || pathIsolationAllocationRequested
+                    || highlightVertexTailTraceRequested
+                    || highlightSourceTraceRequested
+                    || smallClearFinalColorTraceRequested
+                    || smallClearBackgroundTraceRequested
+                    || smallClearTmuaCompositionTraceRequested
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 34,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "nonvacuous Tmua trace requires exclusive replay",
+                    ])
+            }
+            if smallClearTmuaNonvacuousTraceRequested,
+               material != .clear
+                    || !smallClearTmuaLightCase
+            {
+                throw NSError(
+                    domain: "LiquidGlassTransitionProbe",
+                    code: 35,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "nonvacuous Tmua trace requires the frozen "
+                            + "clear/light holdout case",
+                    ])
+            }
 
             let duration = 60.0
             let sampleCount = 33
@@ -22669,6 +23089,8 @@ private final class ProbeDelegate: NSObject, NSApplicationDelegate {
             let dynamicUniformSampleIndices = Set(
                 highlightSourceTraceRequested
                     ? finalHighlightSourceCandidateSampleIndices
+                    : smallClearTmuaNonvacuousTraceRequested
+                    ? smallClearTmuaNonvacuousCandidateSampleIndices
                     : smallClearTmuaCompositionTraceRequested
                     ? smallClearTmuaCompositionCandidateSampleIndices
                     : smallClearBackgroundTraceRequested

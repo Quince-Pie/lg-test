@@ -1,0 +1,43 @@
+{
+  "smallClearBackgroundInterventionVacuousCorrectionSchemaVersion": 1,
+  "status": "prior-pixel-irrelevance-conclusion-withdrawn",
+  "classification": "the prospective Tghn coordinate/tail transport and byte reconstruction succeeded, but its transparent-zero target made pixel irrelevance non-identifiable",
+  "priorResult": "Analysis/small_clear_background_intervention_result.json",
+  "priorResultSHA256": "50a9c78541d9953eda3e2d1ab51e7d84be9636df0b7fd5bc4910edab64d3ae18",
+  "captureCommit": "3da5acecb71351ddecc82bb4a9fd1a429c3e4d1d",
+  "fatalAuditFinding": {
+    "referenceTargetBytes": 4194304,
+    "referenceTargetSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+    "sha256Of4194304ZeroBytes": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+    "referenceTargetNonzeroByteCount": 0,
+    "candidateCount": 3,
+    "reason": "equality after mutating a draw that produces no observable byte on a transparent target cannot establish that the mutated coordinate or vertex tail is irrelevant"
+  },
+  "conclusionsWithdrawn": {
+    "secondaryCoordinateHalfwayChoiceIsPixelIrrelevant": true,
+    "unclassifiedVertexTailIsPixelIrrelevant": true,
+    "priorRunClosesTghnPixelInfluence": true
+  },
+  "evidenceRetained": {
+    "selectedSample": 14,
+    "capturedAndCandidateVertexStreamsAreDistinct": true,
+    "coordinateReconstructionAndExactHalfwayClassificationRemainValid": true,
+    "commandReplayAndVertexOverrideTransportExecuted": true,
+    "fragmentProfileConstructorClosureUnaffected": true,
+    "knownPositionBackdropCoordinateAndScissorLawsUnaffected": true
+  },
+  "requiredCorrection": "repeat the three frozen vertex mutations over a deterministic populated destination and controlled nonzero Tghn inputs, require the unmodified Apple draw itself to change target bytes, then compare each mutation with literal zero tolerance",
+  "appleUnknownsBlockingGatedWalleIntegration": 0,
+  "remainingAppleExactQuestions": [
+    "nonvacuous Tghn secondary-coordinate halfway and vertex-tail influence",
+    "nonvacuous Tmua source influence through Tghn and current Irsd",
+    "bit-exact transfer of recovered compositor arithmetic to the current small-clear Iscd/Irsd pair"
+  ],
+  "remainingProductProofs": [
+    "Walle-shaped physical Retina color/compositor transfer",
+    "fresh production-Walle frame with zero unequal bytes"
+  ],
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}
