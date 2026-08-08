@@ -1,0 +1,112 @@
+{
+  "captureBinary": {
+    "architecture": "arm64",
+    "containsNixStorePath": false,
+    "declaredSDK": "26.5",
+    "minimumOS": "26.0"
+  },
+  "captureBinarySHA256": "bb445ce4debad491f4ec9c7862200e09acd932be224b20ab57c125e798c1c4fb",
+  "capturePlatform": {
+    "activeUnlockedOnConsole": true,
+    "backingScaleFactor": 2,
+    "device": "Apple M1 Max",
+    "logicalPoints": [
+      1728,
+      1117
+    ],
+    "operatingSystem": "macOS 26.6.1 build 25G76",
+    "physicalPixels": [
+      3456,
+      2234
+    ]
+  },
+  "classification": "prospective exact complete-frame pixel-influence intervention",
+  "closedAlgorithmBoundary": "current Iscd no-background attribute-2 bytes 24..31 are observationally pixel-irrelevant",
+  "finalHighlightSourceInterventionResultSchemaVersion": 1,
+  "independentRawComparisons": [
+    {
+      "candidateSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+      "comparedBytes": 4194304,
+      "exact": true,
+      "maximumChannelDelta": 0,
+      "name": "zero-float2",
+      "referenceSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+      "unequalBytes": 0,
+      "unequalPixels": 0
+    },
+    {
+      "candidateSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+      "comparedBytes": 4194304,
+      "exact": true,
+      "maximumChannelDelta": 0,
+      "name": "finite-asymmetric-float2",
+      "referenceSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+      "unequalBytes": 0,
+      "unequalPixels": 0
+    }
+  ],
+  "interventions": [
+    {
+      "comparedBytes": 4194304,
+      "maximumChannelDelta": 0,
+      "mutatedAttributeStreamSHA256": "66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925",
+      "name": "zero-float2",
+      "rawFile": "transition-background-uniform-01-final-highlight-source-zero-float2-bgra8.raw",
+      "replacementLittleEndianHex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "unequalBytes": 0,
+      "unequalPixels": 0
+    },
+    {
+      "comparedBytes": 4194304,
+      "maximumChannelDelta": 0,
+      "mutatedAttributeStreamSHA256": "3a6adc6d309e496fa0228867f34c7691ec8193d089c9fbec54b3e2bc6141bc19",
+      "name": "finite-asymmetric-float2",
+      "rawFile": "transition-background-uniform-01-final-highlight-source-finite-asymmetric-float2-bgra8.raw",
+      "replacementLittleEndianHex": "0000003e000080be0000003f0000403f000080bf0000c03f00000040000020c0",
+      "unequalBytes": 0,
+      "unequalPixels": 0
+    }
+  ],
+  "maximumChannelDelta": 0,
+  "originalAttributeStreamSHA256": "c2ac2a828040438c6ae75420022d8f2fcd9856c4883c56826428dc1824e8b866",
+  "pipeline": "com.apple.coreanimation.PBGRAXm_TkfhBvcmA2Xhfc_Iscd",
+  "preregistrationSHA256": "fd33002fa5e1f8ba87cf62da5f7568b63fbb9ceee1c942d5422d1202a70200c7",
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "remainingAppleAlgorithmBoundaries": [
+    "small-clear Tghn/Tmua/Tkfh/A2Xghfc construction and pixels"
+  ],
+  "selection": {
+    "candidateSampleCount": 31,
+    "eligibleSampleCount": 27,
+    "ineligibleSampleCount": 4,
+    "selectedSampleIndex": 1
+  },
+  "sourceSHA256": {
+    "Analysis/check_local_retina_capture_session_v2.swift": "f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1",
+    "Sources/GlassIntrospect/HalfBlendProbe.swift": "6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263",
+    "Sources/GlassIntrospect/HalfDotProbe.swift": "f27844610b4c051cd99ac474e48c05b7d40240782573d8040819411e7eadd1f0",
+    "Sources/GlassIntrospect/HalfIntrinsicProbe.swift": "ae8c28a4dbbf440c79adce3d63586b2a5087a181329414a00ff557115e280a41",
+    "Sources/GlassIntrospect/MatrixBridge.c": "841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057",
+    "Sources/GlassIntrospect/MatrixBridge.h": "a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c",
+    "Sources/GlassIntrospect/SDFStageProbe.swift": "12d300f75ae875366e850c02d63ceadee72b3ee4f155e4a65f4b0585514b0208",
+    "Sources/GlassIntrospect/main.swift": "759741d7c923620be55601515f4967b7eaf62cb516a7b65706b2b1f2529d313d"
+  },
+  "status": "exact-pixel-noninfluence",
+  "timelineSHA256": "232122b1e486d90d888efb982e7b8effbd3db9dbe631b80cd717a190229dd06d",
+  "tolerance": 0,
+  "totalComparedBytes": 8388608,
+  "totalUnequalBytes": 0,
+  "totalUnequalPixels": 0,
+  "vertexLayout": {
+    "attributeFormat": "float2",
+    "attributeIndex": 2,
+    "attributeOffset": 24,
+    "authority": "frozen previously decoded current Iscd layout",
+    "bufferIndex": 1,
+    "pipelineDescriptorAvailableInCapture": false,
+    "stride": 48,
+    "vertexCount": 4
+  },
+  "walleIntegrationMayBeginBehindGates": true
+}

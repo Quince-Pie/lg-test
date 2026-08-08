@@ -1,0 +1,188 @@
+{
+  "appleUnknownsBlockingGatedWalleIntegration": 0,
+  "captureBinarySHA256": "9f48afc4c7ee44417db3ed1f6f733b742d9df2e69d8500c082ccc2026294ed0c",
+  "captureCommit": "7432ffa54d530acf98ffc827c4588df94a1a5419",
+  "cases": [
+    {
+      "caseId": "clear-dark-dematerialize-06",
+      "currentBackgroundStateCount": 0,
+      "currentFinalStateCount": 1,
+      "timelineSHA256": "0fb1572ce1822fa3a00da0cf37357ba7d923d60d21da85b6a14207bf20c3fe31"
+    },
+    {
+      "caseId": "clear-dark-materialize-02",
+      "currentBackgroundStateCount": 5,
+      "currentFinalStateCount": 32,
+      "timelineSHA256": "af9ba643aa1572bdd39fb55b7f7484ae5317a70509321086638bf3176ceefe9d"
+    },
+    {
+      "caseId": "clear-light-dematerialize-05",
+      "currentBackgroundStateCount": 31,
+      "currentFinalStateCount": 31,
+      "timelineSHA256": "bb6ab00d00712abe3e3e3016387f268c77581ef52beb5ebc480dfb4258c90c46"
+    },
+    {
+      "caseId": "clear-light-materialize-01",
+      "currentBackgroundStateCount": 1,
+      "currentFinalStateCount": 1,
+      "timelineSHA256": "85dc1f54a54f86852ee46b1c611f8968b470c0551a4647c0f7b8a59030ccb016"
+    },
+    {
+      "caseId": "regular-dark-dematerialize-08",
+      "currentBackgroundStateCount": 31,
+      "currentFinalStateCount": 31,
+      "timelineSHA256": "9c2c56d949dd7fff27e7583a2cf4b91e0d574033682275b553bcc8c60df0e58f"
+    },
+    {
+      "caseId": "regular-dark-materialize-04",
+      "currentBackgroundStateCount": 32,
+      "currentFinalStateCount": 32,
+      "timelineSHA256": "9e712a68193876937fa6001137a649d48802700d91b1afd955fc38625c759ded"
+    },
+    {
+      "caseId": "regular-light-dematerialize-07",
+      "currentBackgroundStateCount": 31,
+      "currentFinalStateCount": 31,
+      "timelineSHA256": "1a4129540e0e2c495a506de25e488d6b76479d9e4804beb8595158b2c75fe45b"
+    },
+    {
+      "caseId": "regular-light-materialize-03",
+      "currentBackgroundStateCount": 32,
+      "currentFinalStateCount": 32,
+      "timelineSHA256": "f5f8065c97375f2c545838d3bd28eab1f256c96330c5d1646f172cfa99b37068"
+    }
+  ],
+  "classification": "retrospective bitwise closure chained to prospective pixel-influence evidence",
+  "closedAlgorithmBoundary": "current Tghz/Tghs split meshes and current TkfhBvcm topology, general-transform clipping, geometry, indices, and pixel-influential source",
+  "currentBackgroundTopology": {
+    "exact": true,
+    "mismatchedStates": 0,
+    "ordinarySixVertexStateCount": 161,
+    "predicate": "binary32(width / 2) != binary32(height / 2)",
+    "splitTwentyFourVertexStateCount": 2,
+    "stateCount": 163
+  },
+  "currentCircleTopologyAndClippingResultSchemaVersion": 1,
+  "currentFinalTopology": {
+    "borderStateCount": 5,
+    "exact": true,
+    "mismatchedStates": 0,
+    "predicate": "rX=b32(b32(b32(width/2)+9)-9), rY=b32(b32(b32(height/2)+9)-9); border iff rX!=b32(width/2) or rY!=b32(height/2) or rX!=rY",
+    "quadStateCount": 186,
+    "stateCount": 191
+  },
+  "endpointInventory": {
+    "clear/with-background": 1,
+    "regular/with-background": 2
+  },
+  "excludedNoBackgroundSource": {
+    "componentCount": 304,
+    "interventionResultSHA256": "5f9525ab234c90ff7f7d0b3446726e90461b9bd0611cc523a938e7ad5d8a5748",
+    "observedStreamSHA256": "71f95a2cb95998fb9cb308ed01c02bcf5fd7416ade3321bc3c8307a4e9630f82",
+    "reason": "the preregistered complete-frame intervention proves current Iscd attribute-2 source bytes are pixel-irrelevant when no current background draw exists"
+  },
+  "familyInventory": {
+    "with-current-background/border": 2,
+    "with-current-background/quad": 160,
+    "without-current-background/border": 3,
+    "without-current-background/quad": 26
+  },
+  "generalTransformClippingLaw": {
+    "callPath": [
+      "CA::OGL::emit_sdf_bounds_internal",
+      "CA::OGL::emit_one_part_rect",
+      "CA::OGL::Context::ClippedArray::next_rect",
+      "CA::OGL::emit_quad"
+    ],
+    "edgeOrder": "clip the low edge first; the high-edge fraction and interpolation consume the updated low position and varying",
+    "fractionStore": "round division result once to binary32",
+    "positionArithmetic": "raw transformed bounds and clip division are binary64",
+    "positionStore": "replace clipped positions by the integer edge, then binary32",
+    "varyingArithmetic": "round high-minus-low to binary32, then use one binary32 FMA"
+  },
+  "liveGeneralTransformTrace": {
+    "artifactSHA256": {
+      "emit-one-exact-7432ffa-live-trace.txt": "1cdc810dec30f95494b1a8bd38cd4f112ccb34ff34a68517746ae307207fc5db",
+      "emit-one-exact-7432ffa-transition-timeline.json": "e5f36f5b8e40bb85ae51f362a4a806898e93749835f4d39039ee93e598cf7d07",
+      "emit-one-part-helper-disassembly.txt": "8109f32d9d8aa3f226a57c635c22ba37156ffaf427de165e4e648177cf67d758",
+      "emit-one-part-rect-disassembly.txt": "7c9fd60a2b45f8de2673d5ef84c8e625baf555049e086d26d092b837590ec538",
+      "emit-sdf-bounds-disassembly.txt": "4faa520cce7b378c70f08812777115300bb4a3a93ca720e3cda941c4f0d7108a"
+    },
+    "exact": true,
+    "geometryComponents": 768,
+    "geometryMismatches": 0,
+    "publicOuterComponents": 64,
+    "publicOuterMismatches": 0,
+    "publicRawComponents": 128,
+    "publicRawMismatches": 0,
+    "recordCount": 32
+  },
+  "metrics": {
+    "finalGeometry": {
+      "componentCount": 4944,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedStreamSHA256": "a9a99b8249b251893cc7d8af16fae0a8af40dd3d87ddc18e7fe16bf465b9a9e6",
+      "predictedStreamSHA256": "a9a99b8249b251893cc7d8af16fae0a8af40dd3d87ddc18e7fe16bf465b9a9e6"
+    },
+    "finalIndices": {
+      "componentCount": 1236,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedStreamSHA256": "533c1b73c479e185565fc6753f1bf18253bd9fe44bf03f6ad73b18c2e9630121",
+      "predictedStreamSHA256": "533c1b73c479e185565fc6753f1bf18253bd9fe44bf03f6ad73b18c2e9630121"
+    },
+    "finalPixelInfluentialSource": {
+      "componentCount": 1344,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedStreamSHA256": "002f503c7eb3364ba9851a3fe1bb8426682ebba27b7eaef8fcd4fb6aee190ce9",
+      "predictedStreamSHA256": "002f503c7eb3364ba9851a3fe1bb8426682ebba27b7eaef8fcd4fb6aee190ce9"
+    },
+    "splitBackgroundIndices": {
+      "componentCount": 192,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedStreamSHA256": "3e68886fce8d5de241728b812053840022237769ad094a47c63ea28a9f96248d",
+      "predictedStreamSHA256": "3e68886fce8d5de241728b812053840022237769ad094a47c63ea28a9f96248d"
+    },
+    "splitBackgroundVertices": {
+      "componentCount": 1440,
+      "exact": true,
+      "mismatchedComponents": 0,
+      "observedStreamSHA256": "08707a91592850d37baea7fff80552bf844923b595c629b2c54d590b0007f61b",
+      "predictedStreamSHA256": "08707a91592850d37baea7fff80552bf844923b595c629b2c54d590b0007f61b"
+    }
+  },
+  "preregistrationSHA256": "b942bb532449998d8bca2c9be6a61397d73edcd221f244c73ca96d108745c2aa",
+  "prerequisites": {
+    "offcenterCircleElementStaging": {
+      "path": "Analysis/offcenter_circle_element_staging_result.json",
+      "sha256": "d396ee0f72cda4c8e787ee8cd3be9e9cde567a8c24a4a141fa4e84c34acbcfad",
+      "status": "exact-retrospective-closure"
+    },
+    "openedCombinedHoldout": {
+      "path": "Analysis/combined_transition_geometry_holdout_7432ffa_falsification_result.json",
+      "sha256": "a70ce8c2880def7df27f7dc298487676a3e083d45feb1cadad33f86d21a6555d",
+      "status": "prospectively-falsified"
+    },
+    "sourcePixelInfluence": {
+      "path": "Analysis/final_highlight_source_intervention_local_macos_26_6_1_result.json",
+      "sha256": "5f9525ab234c90ff7f7d0b3446726e90461b9bd0611cc523a938e7ad5d8a5748",
+      "status": "exact-pixel-noninfluence"
+    }
+  },
+  "productionFlakeChanged": false,
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "remainingAppleAlgorithmBoundaries": [
+    "small-clear Tghn/Tmua/Tkfh/A2Xghfc construction and pixels"
+  ],
+  "remainingProductProofs": [
+    "Walle-shaped physical Retina color/compositor transfer",
+    "fresh production-Walle frame with zero unequal bytes"
+  ],
+  "status": "exact-current-family-closure",
+  "timelineCount": 8,
+  "walleIntegrationMayBeginBehindGates": true
+}

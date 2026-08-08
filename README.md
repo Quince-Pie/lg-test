@@ -12757,3 +12757,164 @@ current branches. Universal parity and an unrestricted production rollout
 still require both boundaries, a Walle-shaped Retina transfer, and a fresh
 zero-unequal-byte Walle frame. This closure did not modify Walle's production
 shader or `flake.nix`.
+
+### Exact current-circle topology and clipping closure
+
+The first of those two boundaries is now closed. This section supersedes the
+two-boundary count immediately above: only the small-clear family remains as
+an Apple-renderer algorithm boundary. The closure is retrospective because it
+uses the already opened, prospectively falsified eight-case corpus, but its one
+otherwise unmodelled source stream is excluded only through a separately
+preregistered prospective pixel-influence intervention.
+
+The current `Tghz`/`Tghs` background topology switch is exact in all 163
+executing states. Apple uses the ordinary six-vertex main draw unless the two
+element half-extents differ after their independent binary32 conversions:
+
+```text
+split = binary32(width / 2) != binary32(height / 2)
+```
+
+There are 161 ordinary states and two split states. Each split state contains
+the reconstructed 24-vertex main corners, 36-vertex shadow grid, 30-vertex
+center/seam repair, and fixed 96-component uint16 shadow index stream. Across
+both states, 1,440/1,440 vertex components and 192/192 indices are bitwise
+equal. Their observed and predicted stream SHA-256 values are respectively
+`08707a91592850d37baea7fff80552bf844923b595c629b2c54d590b0007f61b`
+and
+`3e68886fce8d5de241728b812053840022237769ad094a47c63ea28a9f96248d`.
+
+The current `TkfhBvcm...Iscd` final topology is also exact in all 191 states:
+186 four-vertex/six-index quads and five sixteen-vertex/twenty-four-index
+borders. Let `hx = binary32(width/2)`, `hy = binary32(height/2)`,
+`rx = binary32(binary32(hx+9)-9)`, and
+`ry = binary32(binary32(hy+9)-9)`. Apple selects the border exactly when
+`rx != hx || ry != hy || rx != ry`. This predicate has zero disagreements in
+the corpus, including three border states without a current background draw.
+
+The apparently alternating one-ULP clipping residual was caused by using the
+wrong precision boundary. The executing call path on macOS 26.6.1 is
+`CA::OGL::emit_sdf_bounds_internal` -> `CA::OGL::emit_one_part_rect` ->
+`CA::OGL::Context::ClippedArray::next_rect` -> `CA::OGL::emit_quad`. For each
+axis, the raw transformed positions and clip fraction remain binary64; only
+the fraction is then rounded to binary32, and each binary32 varying is updated
+with one binary32 FMA:
+
+```text
+t       = binary32((double(lowEdge) - low64) / (high64 - low64))
+lowV    = fmaf(binary32(highV - lowV), t, lowV)
+low64   = double(lowEdge)
+
+t       = binary32((high64 - double(highEdge)) / (high64 - low64))
+highV   = fmaf(binary32(lowV - highV), t, highV)
+high64  = double(highEdge)
+```
+
+The upper edge is deliberately sequential: it consumes the already clipped
+lower position and varying. Clipped positions become the integer edge and are
+then stored as binary32. Pre-rounding either position before the division is
+one ULP wrong in discriminator states. A live exact-binary trace over 32 Retina
+states reproduces 768/768 final geometry components, 128/128 public raw-bound
+components, and 64/64 public outer-radius components with zero mismatches.
+
+Applying that law to every current final draw in the immutable 252-state corpus
+gives zero mismatches in all pixel-influential streams:
+
+```text
+final indices                       1,236 / 1,236 uint16
+final position/SDF geometry         4,944 / 4,944 binary32
+source with current background      1,344 / 1,344 binary32
+
+index stream SHA-256     533c1b73c479e185565fc6753f1bf18253bd9fe44bf03f6ad73b18c2e9630121
+geometry stream SHA-256  a9a99b8249b251893cc7d8af16fae0a8af40dd3d87ddc18e7fe16bf465b9a9e6
+source stream SHA-256    002f503c7eb3364ba9851a3fe1bb8426682ebba27b7eaef8fcd4fb6aee190ce9
+```
+
+The source endpoint branch is not shared between materials. At `k=1`, regular
+uses exactly `(-1.5,-1.5), (0,-1.5), (0,-1.5), (1.5,-1.5)` for its four quad
+vertices; clear retains the producer/copy-derived coordinates. Both branches
+are included in the exact source stream above.
+
+Twenty-nine no-current-background states contain 304 attribute-2 components
+whose captured bytes do not follow that producer-coordinate stream. They are
+not guessed or silently ignored. Before intervention output existed,
+`Analysis/final_highlight_source_intervention_preregistration.json`, SHA-256
+`fd33002fa5e1f8ba87cf62da5f7568b63fbb9ceee1c942d5422d1202a70200c7`,
+froze the first-eligible-sample rule, exact current pipeline, vertex layout,
+two replacement streams, and a literal zero-difference acceptance gate. The
+first attempt produced no intervention image because the retained-pass
+selector still required a background draw; that transport-only failure and
+the unchanged amendment are recorded in the preregistration.
+
+The answer-bearing local run used the physical M1 Max, active unlocked
+3456-by-2234 Retina display at 2x, macOS 26.6.1 build 25G76, and a source-built
+arm64 binary with SHA-256
+`bb445ce4debad491f4ec9c7862200e09acd932be224b20ab57c125e798c1c4fb`.
+Its Mach-O declares SDK 26.5 and contains no Nix-store path. Sample 1 was the
+first eligible no-background current `Iscd` quad; samples 2 through 27 reported
+eligible-but-already-selected, and 28 through 31 reported that no qualifying
+pass existed. The cached pipeline descriptor was unavailable, so this run does
+not falsely claim to have observed it; the layout authority is the frozen,
+previously decoded 48-byte current `Iscd` layout.
+
+Only attribute-2 bytes 24 through 31 in each of four cloned vertices changed.
+One clone used all-zero float2 values. The other used finite asymmetric values
+`(0.125,-0.25), (0.5,0.75), (-1,1.5), (2,-2.5)`. Both mutated streams differ
+from the original stream, yet each complete 1024-by-1024 BGRA8 result is
+byte-for-byte identical to the unmodified exact-pass replay:
+
+```text
+comparisons                    2
+bytes per comparison           4,194,304
+total compared bytes           8,388,608
+unequal bytes                  0
+unequal pixels                 0
+maximum channel delta          0
+reference/candidate SHA-256    bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8
+```
+
+The frozen interpretation therefore applies: those no-background attribute-2
+bytes are observationally pixel-irrelevant for the current `Iscd` branch and
+Walle need not reproduce their garbage contents. The timeline SHA-256 is
+`232122b1e486d90d888efb982e7b8effbd3db9dbe631b80cd717a190229dd06d`.
+The raw-file validator is
+`Analysis/validate_final_highlight_source_intervention.py`, SHA-256
+`a613373664594e898e218b84388a4263b031c579ec16747435850cb6c94421f7`;
+its tests have SHA-256
+`cb8ff9822998634bfbac2e3031c7909aeef010ae2fabf27d4d3a05b019811d37`.
+The compact result is
+`Analysis/final_highlight_source_intervention_local_macos_26_6_1_result.json`,
+SHA-256
+`5f9525ab234c90ff7f7d0b3446726e90461b9bd0611cc523a938e7ad5d8a5748`.
+
+The chained corpus/live-trace analyzer is
+`Analysis/analyze_current_circle_topology_and_clipping.py`, SHA-256
+`bdc131ef784a131060a157ce3016c1589feff7493f088f8c78568dc7ca86af34`;
+its six discriminating tests have SHA-256
+`5fc627ee697c6da41386d7321bab8b697578d56fc66b07104d2ba249c7fd9099`.
+The compact result is
+`Analysis/current_circle_topology_and_clipping_result.json`, SHA-256
+`795f87b31d000e89ced56bb3df0a39f395229924266d9460f944565820df5fd0`.
+
+`Sources/GlassIntrospect/main.swift` was modified for this closure. The new
+`LG_TRANSITION_FINAL_CLIP_CALLSITE_TRACE` path records the exact current-final
+writer call site without changing render values. The new
+`LG_TRANSITION_FINAL_SOURCE_TRACE` path performs the environment-restricted,
+cloned-buffer intervention and complete-pass comparison. The source SHA-256
+used by the intervention is
+`759741d7c923620be55601515f4967b7eaf62cb516a7b65706b2b1f2529d313d`.
+
+The evidence boundary is now explicit:
+
+1. **Apple unknowns blocking gated Walle work: zero.** The exact current branch
+   can be integrated behind immutable gates now.
+2. **Apple algorithm families before universal circle-domain parity: one.** It
+   is small-clear `Tghn`/`Tmua`/`Tkfh`/`A2Xghfc` construction and pixels.
+3. **Product proofs after construction: two.** They are a Walle-shaped physical
+   Retina color/compositor transfer and a fresh production-Walle frame with
+   zero unequal bytes.
+
+This is not yet universal Liquid Glass parity because Walle's wipe crosses the
+small-clear range. It also does not rewrite the original red prospective
+combined holdout as a pass. Walle's protected production shader and
+`flake.nix` remain byte-identical; no rendering-quality change was made.
