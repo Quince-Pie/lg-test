@@ -1,0 +1,111 @@
+{
+  "smallClearTmuaNonvacuousV3CompactResultSchemaVersion": 1,
+  "status": "exact-finite-control-small-clear-Tmua-and-Tghn-residual-closure",
+  "classification": "physical-Retina finite-source path-sensitivity control, unchanged all-state captured-versus-zero replication, and active Tghn residual replay",
+  "captureCommit": "f61fce54fc00edfd80068906951be209c9909405",
+  "captureDirectory": "local-small-clear-tmua-nonvacuous-v3-retina1",
+  "timelineSHA256": "0cc93958a8466ac8d7fe267ad74091e1798aea0b2ffcdedda3fc8f42b542d983",
+  "correctedValidationSHA256": "83b2776217b6f3dc8f09c99399d0e892d6e3da8307e0d4960702e2c879a135bb",
+  "nativeCapture": {
+    "captureExitStatus": 0,
+    "originalFrozenValidatorExitStatus": 1,
+    "correctedValidatorExitStatus": 0,
+    "architecture": "arm64",
+    "metalDevice": "Apple M1 Max",
+    "operatingSystem": "macOS 26.6.1",
+    "operatingSystemBuild": "25G76",
+    "physicalPixels": [3456, 2234],
+    "backingScaleFactor": 2,
+    "githubActionsUsed": false,
+    "debuggerUsed": false,
+    "nativeBinaryContainsNixStorePath": false
+  },
+  "sampleAccounting": {
+    "candidateSampleCount": 30,
+    "branchBearingStateCount": 29,
+    "absentBranchSamples": [2],
+    "nonzeroTmuaSourceStateCount": 7,
+    "zeroTmuaSourceStateCount": 22
+  },
+  "finiteSourcePathControl": {
+    "stateCount": 29,
+    "activeStateCount": 29,
+    "unequalByteCountMinimum": 4633,
+    "unequalByteCountMaximum": 4853,
+    "unequalByteCountTotal": 137858,
+    "unequalPixelCountMinimum": 1586,
+    "unequalPixelCountMaximum": 1647,
+    "unequalPixelCountTotal": 47030,
+    "finite128x128SourceSHA256": "fd3ff58e12b11badb18b4ddac67b98bbf88006c3f76d8fbddb436dd8c8013689",
+    "conclusion": "the exact captured Apple Tghn pipeline and fragment texture-4 path can expose a source difference in every branch-bearing state"
+  },
+  "capturedTmuaSourceComparison": {
+    "comparisonCount": 29,
+    "comparedTargetByteCount": 121634816,
+    "unequalTargetByteCount": 0,
+    "unequalTargetPixelCount": 0,
+    "maximumChannelDelta": 0,
+    "capturedSourceActivityByteCountMinimum": 0,
+    "capturedSourceActivityByteCountMaximum": 0,
+    "nonzeroCapturedSourceSHA256": "7db629a886e5cd6982b3e23b2170681194cf9956d97de086754e68598b705c3e",
+    "zeroCapturedSourceSHA256": "fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471",
+    "conclusion": "Apple's actual Tmua payload is observationally equivalent to zero across the complete retained branch-bearing grid"
+  },
+  "currentIrsd": {
+    "bindsTmuaSource": false,
+    "explicitSourcePixelFormat": "BGRA8Unorm",
+    "explicitSourceDimensions": [1, 1],
+    "activityStateCount": 29,
+    "activityUnequalByteCountMinimum": 585966,
+    "activityUnequalByteCountMaximum": 657928,
+    "activityUnequalByteCountTotal": 18016891,
+    "activityUnequalPixelCountMinimum": 196559,
+    "activityUnequalPixelCountMaximum": 220695,
+    "activityUnequalPixelCountTotal": 6043634
+  },
+  "TghnResidual": {
+    "selectedSample": 6,
+    "positiveControlUnequalByteCount": 4657,
+    "positiveControlUnequalPixelCount": 1586,
+    "referenceSHA256": "3973736ca38a473b7f1ce14beb389c2a617a33792c6d85eb452e77ea7b169ad7",
+    "candidateComparisonCount": 3,
+    "comparedTargetByteCount": 12582912,
+    "unequalTargetByteCount": 0,
+    "unequalTargetPixelCount": 0,
+    "maximumChannelDelta": 0,
+    "mutatedActiveVertexSHA256": {
+      "ordinaryTiesToEvenHighCoordinate": "392f1487842adb830857b461be9858987ff8038ac159b6324d2a6d861db287ce",
+      "zeroUnclassifiedTail": "269077cad8eb10d9e081b94cfc6e27b32e581ecfd6b7a64a215eafb3a0c9dda8",
+      "finiteUnclassifiedTail": "0add4d1e264be9ef5580ff6460261d9f04e253c06d170fb8b1ed41cde8b69190"
+    },
+    "conclusion": "the exact-halfway secondary-coordinate choice and bytes 40 through 47 are output-irrelevant under an independently active exact Apple Tghn reference"
+  },
+  "transportCorrection": {
+    "amendmentSHA256": "b0dd6385c24a7941cc0ca5f2bdd09e486d671a27d3825ff2e9cf389404f783dc",
+    "answerPixelsKnownAtCorrection": true,
+    "correctedField": "controlled final-input texture height schedule only",
+    "samples3Through9Dimensions": [576, 448],
+    "samples10Through31Dimensions": [576, 384],
+    "selectionChanged": false,
+    "mutationChanged": false,
+    "comparisonChanged": false,
+    "toleranceChanged": false
+  },
+  "WalleAdmission": {
+    "TmuaProducerRequired": false,
+    "TmuaIntermediateAllocationRequired": false,
+    "TghnHalfwayLookupRequired": false,
+    "TghnVertexTailRequired": false,
+    "unknownsBlockingGatedIntegration": 0,
+    "remainingAppleConstructionQuestions": [
+      "bit-exact transfer of recovered compositor arithmetic to the current small-clear Iscd/Irsd pair"
+    ],
+    "remainingProductProofs": [
+      "Walle-shaped physical Retina color/compositor transfer",
+      "fresh production-Walle frame with zero unequal bytes"
+    ]
+  },
+  "productionParityAuthorized": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

@@ -13785,3 +13785,78 @@ The ledger remains unchanged until this new control passes: zero unknowns
 block gated Walle integration; three Apple-side exact questions remain, with
 this run addressing two; and the two Walle product proofs remain. The
 protected shader and `flake.nix` are unchanged.
+
+### Exact finite-source `Tmua` and active `Tghn` residual closure
+
+The physical-Retina capture from commit
+`f61fce54fc00edfd80068906951be209c9909405` completed natively on the
+M1 Max under macOS 26.6.1 (25G76), at 3456-by-2234 physical pixels and a
+2.0 backing scale. GitHub Actions and a debugger were not used, and the
+native binary contained no Nix-store path. The complete timeline SHA-256 is
+`0cc93958a8466ac8d7fe267ad74091e1798aea0b2ffcdedda3fc8f42b542d983`.
+
+The original frozen validator stopped at sample 10 because it assumed that
+every controlled final-input texture was 576-by-448. Inspection of the
+already captured structural records showed a single deterministic schedule:
+samples 3 through 9 are 576-by-448 and samples 10 through 31 are
+576-by-384. The answer pixels were already present when this was discovered.
+The frozen validator therefore remains unchanged; the versioned amendment
+`Analysis/small_clear_tmua_nonvacuous_v3_transport_correction.json`,
+SHA-256
+`b0dd6385c24a7941cc0ca5f2bdd09e486d671a27d3825ff2e9cf389404f783dc`,
+intercepts only that final-input dimension assertion and delegates every
+pattern byte, topology check, source check, replay, and comparison to the
+frozen validator. It changes no state selection, mutation, comparison, or
+tolerance. Its validator and three tests have SHA-256 values
+`12db0ab312602c5dc5a5a75f287216301a6392db763e20863adf620a01222fbf`
+and
+`f3de5b7fbf9991a2b5044f13425b37bc32f829e5f7508bb4967ab6e75b2d89bd`.
+The corrected validation exited zero and has SHA-256
+`83b2776217b6f3dc8f09c99399d0e892d6e3da8307e0d4960702e2c879a135bb`.
+
+All 29 branch-bearing states passed the independent finite-source control.
+Replacing zero at exact `Tghn` fragment texture 4 with the deterministic
+finite RGBA16Float source changed between 4,633 and 4,853 target bytes per
+state, 137,858 bytes and 47,030 pixels in total. The path is therefore
+observable in every retained state. Against that active path, Apple's seven
+nonzero captured `Tmua` payloads and 22 zero payloads were each replayed
+against zero. All 29 comparisons, covering 121,634,816 BGRA8 target bytes,
+had zero unequal bytes, zero unequal pixels, and maximum channel delta zero.
+The conclusion is narrow but exact: Apple's captured `Tmua` output is
+observationally equivalent to zero across the complete retained
+branch-bearing grid, so Walle does not need the `Tmua` producer or its
+intermediate allocation for this branch.
+
+The adjacent current `Irsd` draw remains separately active. In all 29 states
+it explicitly binds a distinct 1-by-1 BGRA8Unorm source rather than `Tmua`
+and changes between 585,966 and 657,928 bytes, 18,016,891 bytes in total.
+This closes the topology question without pretending that the final
+compositor itself is closed.
+
+The repaired `Tghn` residual is nonvacuous as well. At independently selected
+sample 6, the finite source makes the unmodified Apple draw change 4,657
+bytes and 1,586 pixels. The ordinary ties-to-even high coordinate, zero
+unclassified tail, and finite unclassified tail candidates then all match
+that active reference exactly: three comparisons over 12,582,912 target
+bytes, with zero unequal bytes, zero unequal pixels, and maximum channel
+delta zero. The exact-halfway secondary-coordinate choice and bytes 40
+through 47 are therefore not required for output parity under the tested
+current `Tghn` pipeline.
+
+The compact result is
+`Analysis/small_clear_tmua_nonvacuous_v3_result.json`, SHA-256
+`2860b78dd2ff1dfb21887a6307041db58958253e5c28ea599e9b3f736490711f`.
+The exact ledger is now:
+
+1. **Unknowns blocking gated Walle integration: zero.** Exact constructors
+   can be transferred behind immutable zero-difference gates now.
+2. **Remaining Apple construction questions: one.** Bit-exact transfer of
+   the recovered compositor arithmetic to the current small-clear
+   `Iscd/Irsd` pair remains.
+3. **Remaining product proofs: two.** A Walle-shaped physical-Retina
+   color/compositor transfer and a fresh production-Walle frame with zero
+   unequal bytes remain mandatory before a parity claim.
+
+This closure modifies only `lg-test`. Walle's protected production shader
+and `flake.nix` remain byte-identical, no tolerance or quality concession was
+introduced, and production parity is not yet authorized.
