@@ -1,0 +1,82 @@
+{
+  "smallClearSDFEntryPreregistrationSchemaVersion": 1,
+  "status": "frozen-before-entry-trace-output",
+  "classification": "output-blind exhaustive live SDF-emitter input discovery; not optical, production-shader, or product-parity authority",
+  "frozenDate": "2026-08-08",
+  "host": {
+    "architecture": "arm64",
+    "hardware": "Apple M1 Max",
+    "macOSBuild": "25G76",
+    "macOSVersion": "26.6.1",
+    "requiredBackingScale": 2,
+    "requiredDisplay": "built-in 3456x2234 Retina display active and unlocked"
+  },
+  "nativeProbe": {
+    "path": "/private/tmp/lg-final-clip-callsite-fbe1b19/output/glassintrospect",
+    "sha256": "643c3095b36a6614ee10dc01563ca2a67ee72fb15bcc33c8826b9ff2da79249e",
+    "minimumMacOS": "26.0",
+    "sdk": "26.5",
+    "nixStorePathForbidden": true
+  },
+  "lldbProbe": {
+    "path": "Analysis/capture_small_clear_sdf_entry_local_macos_26_6_1_lldb.py",
+    "sha256": "7ee4921b9d0a5ba7580becb3d18f74ce3efa0cd8b69d038d5572f7a1af635772",
+    "embeddedInterpreterCompatibility": "macOS LLDB Python",
+    "function": "_ZN2CA3OGLL24emit_sdf_bounds_internalERNS0_7ContextEPKNS0_5LayerEfffNS_4Vec2IfEEPNS0_7SurfaceEffb",
+    "functionByteCount": 2932,
+    "maximumRecordCount": 256,
+    "maximumStackFrameCount": 16,
+    "layerPrefixByteCount": 176,
+    "layerStatePrefixByteCount": 288,
+    "shapePrefixByteCount": 320,
+    "breakpointSelection": "every invocation of the exact function symbol",
+    "capturedValueUsedForSelection": false,
+    "capturedGeometryUsedForSelection": false,
+    "capturedImageUsedForSelection": false,
+    "capturedPixelUsedForSelection": false
+  },
+  "appleInputs": {
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-047-center",
+    "material": "clear",
+    "transitionTimeline": true,
+    "uniformCapture": true,
+    "allocationOnly": true,
+    "denseAllocation": true
+  },
+  "capturedPerInvocation": [
+    "raw v0 through v7 register bytes",
+    "x0 context, x1 layer, x2 surface, and w3 boolean argument",
+    "176-byte layer prefix",
+    "288-byte layer-state prefix reached through layer+0x18",
+    "optional 320-byte shape prefix reached through layer-state+0x88",
+    "at most 16 stack frames"
+  ],
+  "frozenQuestions": [
+    "Does the small-clear path consume a finite shape+0x100 binary32 value where the current path uses the bounds-derived fallback?",
+    "Which exact entry operand and instruction sequence produces the small-clear fragment radius and the one-part versus 16-vertex topology decision?",
+    "Can every small-clear final geometry component be reconstructed bitwise from the captured entry operands plus the already exact general-transform clipping law?"
+  ],
+  "acceptance": {
+    "discoveryOnly": true,
+    "requiredBreakpointLocationCount": 1,
+    "requiredFailureCount": 0,
+    "requiredCodeGate": true,
+    "requiredMinimumRecordCount": 1,
+    "numericalTolerance": null,
+    "pixelThreshold": null
+  },
+  "retrospectivePrecursor": {
+    "classification": "opened diagnostic only; excluded from prospective authority",
+    "lldbStdoutSHA256": "2d723395b3161644a8e0aecff60ad4c28c926d19d6957cfe1dc1eab25c7117d6",
+    "timelineSHA256": "1a8f841c09505c2917333cbfbb59d575951ddcb7307809a5361c262babf2154c",
+    "observedOnePartCallCount": 20
+  },
+  "forbiddenConclusions": [
+    "The trace alone proves optical or pixel parity.",
+    "The trace authorizes a production shader or flake.nix change.",
+    "A missing invocation or partial memory read may be excluded after opening output.",
+    "A numerical fit may replace an exact instruction-derived construction law."
+  ]
+}
