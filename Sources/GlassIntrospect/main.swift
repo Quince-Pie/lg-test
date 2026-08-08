@@ -14588,17 +14588,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 bytes: selection.vertexBuffer.contents().advanced(
                     by: selection.vertexOffset),
                 count: activeVertexBytes)
-            let expectedVertexStreamSHA256 =
-                "9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b"
-            guard transitionSHA256(originalVertexStream)
-                    == expectedVertexStreamSHA256
-            else {
-                return [
-                    "executed": false,
-                    "reason":
-                        "current compositor captured vertex stream differs",
-                ]
-            }
+            let originalVertexStreamSHA256 =
+                transitionSHA256(originalVertexStream)
+            let originalVertexStreamHex = originalVertexStream.map {
+                String(format: "%02x", $0)
+            }.joined()
             var currentVertexOverride: MTLBuffer?
             var geometryActivityControl: [String: Any] = [
                 "schemaVersion": 1,
@@ -14607,7 +14601,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 "vertexStride": vertexStride,
                 "positionOffsets": [0, 4],
                 "capturedVertexStreamSHA256":
-                    expectedVertexStreamSHA256,
+                    originalVertexStreamSHA256,
+                "capturedVertexStreamHex": originalVertexStreamHex,
                 "vertexStreamMutated": false,
                 "capturedApplePipelineMutated": false,
                 "liveAppleFrameMutated": false,
@@ -14720,16 +14715,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 let widenedVertexStream = Data(
                     bytes: base,
                     count: activeVertexBytes)
-                let expectedWidenedVertexStreamSHA256 =
-                    "736890b297ce90ad499ca3e6c010d3667cd09db70806d1f044d9c6314f258afd"
-                guard widenedVertexStream != originalVertexStream,
-                      transitionSHA256(widenedVertexStream)
-                        == expectedWidenedVertexStreamSHA256
-                else {
+                guard widenedVertexStream != originalVertexStream else {
                     return [
                         "executed": false,
                         "reason":
-                            "current Irsd seam expansion differs",
+                            "current Irsd seam expansion did not mutate",
                     ]
                 }
                 currentVertexOverride = clone
@@ -14753,9 +14743,11 @@ private final class MetalUniformProbe: @unchecked Sendable {
                         String(format: "%08x", $0.bitPattern)
                     },
                     "capturedVertexStreamSHA256":
-                        expectedVertexStreamSHA256,
+                        originalVertexStreamSHA256,
+                    "capturedVertexStreamHex":
+                        originalVertexStreamHex,
                     "widenedVertexStreamSHA256":
-                        expectedWidenedVertexStreamSHA256,
+                        transitionSHA256(widenedVertexStream),
                     "vertexStreamMutated": true,
                     "capturedApplePipelineMutated": false,
                     "liveAppleFrameMutated": false,
@@ -15510,7 +15502,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && comparison["maximumChannelDelta"] as? Int == 0
             }
             return [
-                "schemaVersion": 4,
+                "schemaVersion": 5,
                 "executed":
                     casesExecuted
                     && sourcePathSensitive
@@ -16020,7 +16012,16 @@ private final class MetalUniformProbe: @unchecked Sendable {
                 selectionOverride: selection,
                 currentCompositorTransfer: true)
         }
+        let capturedVertexStreams = records.compactMap { record in
+            let geometry = record["geometryActivityControl"]
+                as? [String: Any]
+            return geometry?["capturedVertexStreamHex"] as? String
+        }
+        let capturedVertexStreamsEqual =
+            capturedVertexStreams.count == labels.count
+            && Set(capturedVertexStreams).count == 1
         let executed = records.count == labels.count
+            && capturedVertexStreamsEqual
             && records.allSatisfy {
                 $0["executed"] as? Bool == true
                     && $0["positiveControlsPassed"] as? Bool == true
@@ -16028,7 +16029,7 @@ private final class MetalUniformProbe: @unchecked Sendable {
                     && $0["candidatesExact"] as? Bool == true
             }
         return [
-            "schemaVersion": 4,
+            "schemaVersion": 5,
             "executed": executed,
             "selectionPolicy":
                 "exactly one current Iscd and one immediately later "
@@ -16046,6 +16047,8 @@ private final class MetalUniformProbe: @unchecked Sendable {
             "capturedAppleFunctionsUnmodified": true,
             "capturedAppleResourcesMutated": false,
             "liveAppleFrameMutated": false,
+            "capturedVertexStreamsEqual":
+                capturedVertexStreamsEqual,
             "pipelineLabels": labels,
             "recordCount": records.count,
             "records": records,

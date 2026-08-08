@@ -4,6 +4,8 @@
 import argparse
 import hashlib
 import json
+import math
+import struct
 import sys
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -30,12 +32,6 @@ QUARTZCORE_LIBRARY_SHA256 = (
 )
 QUARTZCORE_G13G_SLICE_SHA256 = (
     "5566617c9a00a05fb768d3e659308288e17e6b21c3dc8df903e99a7c914ef119"
-)
-CAPTURED_VERTEX_STREAM_SHA256 = (
-    "9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b"
-)
-WIDENED_IRSD_VERTEX_STREAM_SHA256 = (
-    "736890b297ce90ad499ca3e6c010d3667cd09db70806d1f044d9c6314f258afd"
 )
 IMAGE_FUNCTION = {"Iscd": 21, "Irsd": 20}
 PIPELINES = {
@@ -349,14 +345,13 @@ def validate_geometry_activity_control(
     untyped: object,
     *,
     role: str,
-) -> None:
+) -> str:
     control = mapping(untyped, f"{role} geometry activity control")
     common = {
         "schemaVersion": 1,
         "vertexCount": 16,
         "vertexStride": 48,
         "positionOffsets": [0, 4],
-        "capturedVertexStreamSHA256": CAPTURED_VERTEX_STREAM_SHA256,
         "capturedApplePipelineMutated": False,
         "liveAppleFrameMutated": False,
     }
@@ -365,40 +360,98 @@ def validate_geometry_activity_control(
             control.get(field) == value,
             f"{role} geometry activity {field} differs",
         )
+    encoded = control.get("capturedVertexStreamHex")
+    require(
+        isinstance(encoded, str) and len(encoded) == 16 * 48 * 2,
+        f"{role} captured vertex stream encoding differs",
+    )
+    try:
+        captured = bytes.fromhex(encoded)
+    except ValueError as error:
+        fail(f"{role} captured vertex stream is not hexadecimal: {error}")
+    captured_sha256 = sha256_bytes(captured)
+    require(
+        control.get("capturedVertexStreamSHA256") == captured_sha256,
+        f"{role} captured vertex stream hash differs",
+    )
+
+    def f32(value: float) -> float:
+        return struct.unpack("<f", struct.pack("<f", value))[0]
+
+    def bits(value: float) -> int:
+        return struct.unpack("<I", struct.pack("<f", value))[0]
+
+    columns = [
+        struct.unpack_from("<f", captured, column * 48)[0] for column in range(4)
+    ]
+    rows = [struct.unpack_from("<f", captured, row * 4 * 48 + 4)[0] for row in range(4)]
+    require(
+        all(math.isfinite(value) and value > 0 for value in (*columns, *rows)),
+        f"{role} captured grid positions are not positive finite binary32",
+    )
+    for row in range(4):
+        for column in range(4):
+            vertex = row * 4 + column
+            require(
+                struct.unpack_from("<f", captured, vertex * 48)[0] == columns[column]
+                and struct.unpack_from("<f", captured, vertex * 48 + 4)[0] == rows[row],
+                f"{role} captured four-by-four grid differs",
+            )
+    require(
+        columns[0] < columns[1]
+        and columns[2] < columns[3]
+        and rows[0] > rows[1]
+        and rows[2] > rows[3]
+        and abs(bits(columns[1]) - bits(columns[2])) <= 1
+        and abs(bits(rows[1]) - bits(rows[2])) <= 1,
+        f"{role} captured center-seam topology differs",
+    )
     if role == "Iscd":
         expected = {
             "method": "captured-Iscd-geometry",
             "vertexStreamMutated": False,
         }
     else:
+        center_x = f32(f32(columns[1] + columns[2]) * f32(0.5))
+        center_y = f32(f32(rows[1] + rows[2]) * f32(0.5))
+        widened_columns = [
+            columns[0],
+            f32(center_x - f32(32.0)),
+            f32(center_x + f32(32.0)),
+            columns[3],
+        ]
+        widened_rows = [
+            rows[0],
+            f32(center_y + f32(32.0)),
+            f32(center_y - f32(32.0)),
+            rows[3],
+        ]
+        require(
+            widened_columns[0]
+            < widened_columns[1]
+            < widened_columns[2]
+            < widened_columns[3]
+            and widened_rows[0] > widened_rows[1] > widened_rows[2] > widened_rows[3],
+            f"{role} reconstructed seam expansion exceeds grid",
+        )
+        widened = bytearray(captured)
+        for row in range(4):
+            for column in range(4):
+                vertex = row * 4 + column
+                struct.pack_into("<f", widened, vertex * 48, widened_columns[column])
+                struct.pack_into("<f", widened, vertex * 48 + 4, widened_rows[row])
+
+        def bit_strings(values: list[float]) -> list[str]:
+            return [f"{bits(value):08x}" for value in values]
+
         expected = {
             "method": "widen-Irsd-center-seams-v1",
             "halfExpansionPixels": 32,
-            "capturedColumnXFloat32Bits": [
-                "436212e0",
-                "43f10a76",
-                "43f10a75",
-                "443885be",
-            ],
-            "capturedRowYFloat32Bits": [
-                "44477b48",
-                "44077ac5",
-                "44077ac6",
-                "438ef485",
-            ],
-            "widenedColumnXFloat32Bits": [
-                "436212e0",
-                "43e10a76",
-                "4400853b",
-                "443885be",
-            ],
-            "widenedRowYFloat32Bits": [
-                "44477b48",
-                "440f7ac6",
-                "43fef58c",
-                "438ef485",
-            ],
-            "widenedVertexStreamSHA256": WIDENED_IRSD_VERTEX_STREAM_SHA256,
+            "capturedColumnXFloat32Bits": bit_strings(columns),
+            "capturedRowYFloat32Bits": bit_strings(rows),
+            "widenedColumnXFloat32Bits": bit_strings(widened_columns),
+            "widenedRowYFloat32Bits": bit_strings(widened_rows),
+            "widenedVertexStreamSHA256": sha256_bytes(widened),
             "vertexStreamMutated": True,
         }
     for field, value in expected.items():
@@ -406,6 +459,7 @@ def validate_geometry_activity_control(
             control.get(field) == value,
             f"{role} geometry activity {field} differs",
         )
+    return captured_sha256
 
 
 def indexed_layer_states(
@@ -693,7 +747,7 @@ def validate_role(
 ) -> JSONObject:
     record = mapping(untyped, f"{role} record")
     expected_scalars = {
-        "schemaVersion": 4,
+        "schemaVersion": 5,
         "executed": True,
         "role": role,
         "pipelineLabel": PIPELINES[role],
@@ -720,7 +774,7 @@ def validate_role(
         record.get("systemSpecialization"),
         role=role,
     )
-    validate_geometry_activity_control(
+    captured_vertex_stream_sha256 = validate_geometry_activity_control(
         record.get("geometryActivityControl"),
         role=role,
     )
@@ -893,6 +947,7 @@ def validate_role(
         "role": role,
         "pipelineLabel": PIPELINES[role],
         "drawIndex": draw_index,
+        "capturedVertexStreamSHA256": captured_vertex_stream_sha256,
         "nonzeroAlphaPixels": nonzero_alpha,
         "matrixCaseCount": len(MATRIX_CASES),
         "positiveControlUnequalBytes": total_activity_bytes,
@@ -914,7 +969,7 @@ def validate(
         preregistration.get(
             "currentFinalCompositorTransferPreregistrationSchemaVersion"
         )
-        == 4,
+        == 5,
         "preregistration schema differs",
     )
     descriptor_capture = mapping(
@@ -1008,8 +1063,32 @@ def validate(
         and observed_v3.get("IrsdPixelSampleCoverage") == 0
         and observed_v3.get("IrsdPositiveMatrixCaseCount") == 0
         and observed_v3.get("capturedVertexStreamSHA256")
-        == CAPTURED_VERTEX_STREAM_SHA256,
+        == "9c11e428af9990dc729caa8936f17e25f53a488e5ad8e38dda11550b3d081d3b",
         "failed-v3 amendment differs",
+    )
+    superseded_v4 = mapping(
+        preregistration.get("supersedesFailedV4Run"),
+        "supersedesFailedV4Run",
+    )
+    observed_v4 = mapping(
+        superseded_v4.get("observedTransport"),
+        "v4 observed transport",
+    )
+    require(
+        superseded_v4.get("captureCommit") == "de175e4675efbe6f8df980ffd8d2a98324eb124f"
+        and superseded_v4.get("timelineSHA256")
+        == "2beef52edaf62899139e1cfe345ce2d84f1f576612adf685d2ac43ab4d5e759d"
+        and superseded_v4.get("nativeCaptureExitStatus") == 0
+        and superseded_v4.get("frozenValidatorExitStatus") == 1
+        and superseded_v4.get("promotedEvidence") is False
+        and superseded_v4.get("arithmeticCasesChanged") is False
+        and superseded_v4.get("candidateChanged") is False
+        and superseded_v4.get("toleranceChanged") is False
+        and observed_v4.get("IscdAndIrsdVertexStreamsEqual") is True
+        and observed_v4.get("capturedVertexStreamSHA256")
+        == "3105efb352673686b9617ec9ef37f868b12cad00375752811c70a906b62c0a9e"
+        and observed_v4.get("staleAbsoluteVertexHashRejectedBothRoles") is True,
+        "failed-v4 amendment differs",
     )
     specialization = mapping(
         preregistration.get("systemSpecialization"),
@@ -1059,10 +1138,10 @@ def validate(
         geometry_activity.get("IscdMethod") == "captured-Iscd-geometry"
         and geometry_activity.get("IrsdMethod") == "widen-Irsd-center-seams-v1"
         and geometry_activity.get("IrsdHalfExpansionPixels") == 32
-        and geometry_activity.get("capturedVertexStreamSHA256")
-        == CAPTURED_VERTEX_STREAM_SHA256
-        and geometry_activity.get("widenedIrsdVertexStreamSHA256")
-        == WIDENED_IRSD_VERTEX_STREAM_SHA256
+        and geometry_activity.get("capturedVertexBytes") == 768
+        and geometry_activity.get("capturedRoleStreamsMustBeEqual") is True
+        and geometry_activity.get("maximumCenterSeamULPs") == 1
+        and geometry_activity.get("validatorReconstructsMutation") is True
         and geometry_activity.get("capturedApplePipelineChanged") is False
         and geometry_activity.get("liveAppleFrameChanged") is False,
         "geometry-activity preregistration differs",
@@ -1133,7 +1212,7 @@ def validate(
         "currentFinalCompositorTransfer",
     )
     expected_transfer = {
-        "schemaVersion": 4,
+        "schemaVersion": 5,
         "executed": True,
         "selectionPolicy": (
             "exactly one current Iscd and one immediately later current Irsd draw "
@@ -1154,6 +1233,7 @@ def validate(
         "capturedAppleFunctionsUnmodified": True,
         "capturedAppleResourcesMutated": False,
         "liveAppleFrameMutated": False,
+        "capturedVertexStreamsEqual": True,
         "pipelineLabels": list(PIPELINES.values()),
         "recordCount": 2,
     }
@@ -1181,8 +1261,13 @@ def validate(
         int(summaries[0]["drawIndex"]) < int(summaries[1]["drawIndex"]),
         "current Iscd/Irsd draw order differs",
     )
+    require(
+        summaries[0]["capturedVertexStreamSHA256"]
+        == summaries[1]["capturedVertexStreamSHA256"],
+        "current Iscd/Irsd captured vertex streams differ",
+    )
     return {
-        "currentFinalCompositorTransferResultSchemaVersion": 4,
+        "currentFinalCompositorTransferResultSchemaVersion": 5,
         "accepted": True,
         "captureDirectory": capture_directory.name,
         "sampleIndex": SAMPLE,

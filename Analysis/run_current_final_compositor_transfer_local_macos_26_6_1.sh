@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Execute the frozen v4 current Iscd/Irsd transfer on physical Retina.
+# Execute the frozen v5 current Iscd/Irsd transfer on physical Retina.
 
 set -uo pipefail
 
@@ -16,7 +16,7 @@ readonly validator=Analysis/validate_current_final_compositor_transfer.py
 readonly validator_test=Analysis/test_validate_current_final_compositor_transfer.py
 readonly preflight=Analysis/check_local_retina_capture_session_v2.swift
 readonly probe=Sources/GlassIntrospect/main.swift
-readonly output_directory="local-current-final-compositor-transfer-${run_label}-v4"
+readonly output_directory="local-current-final-compositor-transfer-${run_label}-v5"
 readonly validation_output="$output_directory/validation.json"
 readonly swift=/Library/Developer/CommandLineTools/usr/bin/swift
 readonly swiftc=/Library/Developer/CommandLineTools/usr/bin/swiftc
@@ -63,11 +63,11 @@ if /usr/bin/env | /usr/bin/grep -Fq '/nix/store/'; then
     exit 1
 fi
 
-require_sha256 "$probe" ad81eb9b9b935a46565e01c32486a8804c9b85f77eacc0d44d00210606b653a3
-require_sha256 "$validator" db7c449e7f2e5b74e8eca7faeb23d69bee0e24a225a93384a66fb9eac5cb4c3e
-require_sha256 "$validator_test" 09baab573ea9af991f04c5cd5715ee92bb9624012a2b848b067bbd22f2b9774b
+require_sha256 "$probe" 0659b7da57e2d45fd32a30f5feb1f5ce80da098540ee2535af4da7bf1241da20
+require_sha256 "$validator" 35f3019c9d40d5e1b02c91f489e5b58bef045ebe44b70037d6b88876b56cb0ca
+require_sha256 "$validator_test" b0db809fde4283f721858416d5981c9687b6b38b9e67bbb80e5ce7d89b2d10f9
 require_sha256 "$preflight" f12a1cbe29629dc843cc3250a46fa686225f3c08bcf1bf1dbdf50aea913926f1
-require_sha256 "$preregistration" 21c744fc2e5647e180bd791e2afd370af4fb04398d1959fe842beaecb4721b49
+require_sha256 "$preregistration" c9327500d6162d5b28ff9f62f12df5bd4ffbf2d4c5d833919601ddf91c3b03e8
 require_sha256 Sources/GlassIntrospect/MatrixBridge.c 841b30cc127582b6819ec997b99d360c9d3fc19e6bfc26cf718d402c78275057
 require_sha256 Sources/GlassIntrospect/MatrixBridge.h a7dd8dd8978dffa1b42764b19868dc5b305caa2fea4b3ab171329d15f6e91d0c
 require_sha256 Sources/GlassIntrospect/HalfBlendProbe.swift 6cadb5f286d9f97d80f40a1a8b82c2487fe660f4f2614ec0b44458f396ccb263

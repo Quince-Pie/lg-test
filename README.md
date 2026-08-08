@@ -14075,3 +14075,54 @@ The exact ledger before v4 is:
 
 This amendment again modifies only `lg-test`; Walle's protected production
 shader and `flake.nix` remain byte-identical.
+
+### Rejected v4 absolute-placement pin and frozen v5 invariant gate
+
+The v4 run at commit
+`de175e4675efbe6f8df980ffd8d2a98324eb124f` is rejected before any
+arithmetic comparison. Native capture and the physical-Retina preflight
+exited zero; the validator exited one because both roles correctly rejected
+the v3 stream's absolute screen-coordinate hash. In v4, the captured `Iscd`
+and `Irsd` streams were still byte-identical, 768 bytes each, with SHA-256
+`3105efb352673686b9617ec9ef37f868b12cad00375752811c70a906b62c0a9e`.
+They retained the exact 4-by-4 topology and had exactly duplicated center
+seams. Their center moved from approximately 482.0817/541.9183 in v3 to
+482.0037/541.9963 in v4. Absolute placement is capture-time layout state, not
+an Apple-algorithm invariant, so requiring it to equal an earlier run was an
+instrumentation error. The v4 timeline SHA-256 is
+`2beef52edaf62899139e1cfe345ce2d84f1f576612adf685d2ac43ab4d5e759d`.
+The compact failure result is
+`Analysis/current_final_compositor_transfer_de175e4_v4_failure_result.json`,
+SHA-256
+`e45a3b9e78d1435c8982874e7d5b3677ea15794169a87a377e028bf86410c7d3`.
+It promotes no equality and changes no unknown count.
+
+The v5 correction freezes relations rather than a stale placement. Each role
+serializes its complete captured 768-byte stream. The validator hashes those
+bytes independently, decodes all 16 x/y positions, requires an exact 4-by-4
+grid, requires the `Iscd` and `Irsd` streams to be byte-identical, and permits
+at most one binary32 ULP between either pair of center-seam coordinates. For
+`Irsd`, it then independently performs the same binary32 center calculation,
+widens the seams by exactly 32 pixels per side, rewrites only the 32 x/y
+words, and verifies the complete widened-stream SHA-256 reported by the
+probe. Thus no post-capture geometry choice or unchecked mutation is added,
+while harmless cross-run translation is no longer mistaken for algorithmic
+drift.
+
+No answer-bearing part of the experiment changed: the two QuartzCore
+selectors, finite six-mip source, seven matrices, independent mode-9
+candidate, activity requirements, comparison byte counts, and zero tolerance
+remain exactly the same. There is still one Apple construction question and,
+after it closes, two product proof gates. Production parity and a Walle shader
+change remain unauthorized.
+
+The v5 preregistration, validator, ten tests, native runner, and Swift probe
+have SHA-256 values
+`c9327500d6162d5b28ff9f62f12df5bd4ffbf2d4c5d833919601ddf91c3b03e8`,
+`35f3019c9d40d5e1b02c91f489e5b58bef045ebe44b70037d6b88876b56cb0ca`,
+`b0db809fde4283f721858416d5981c9687b6b38b9e67bbb80e5ce7d89b2d10f9`,
+`e5df389bfe5b2081bd676533fa6bba9919240142fcd424520842256eff5e2eae`,
+and
+`0659b7da57e2d45fd32a30f5feb1f5ce80da098540ee2535af4da7bf1241da20`,
+respectively. The v5 probe type-checks natively against Apple's 26.5 SDK on
+the M1 Max.

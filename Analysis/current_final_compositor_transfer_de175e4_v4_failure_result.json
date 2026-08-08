@@ -1,0 +1,43 @@
+{
+  "currentFinalCompositorTransferFailureResultSchemaVersion": 4,
+  "status": "rejected-before-any-current-function-arithmetic-comparison",
+  "captureCommit": "de175e4675efbe6f8df980ffd8d2a98324eb124f",
+  "captureDirectory": "local-current-final-compositor-transfer-de175e4-v4",
+  "timelineSHA256": "2beef52edaf62899139e1cfe345ce2d84f1f576612adf685d2ac43ab4d5e759d",
+  "nativeCaptureExitStatus": 0,
+  "frozenValidatorExitStatus": 1,
+  "physicalRetinaPreflightPassed": true,
+  "physicalPixels": [3456, 2234],
+  "backingScaleFactor": 2,
+  "transportFindings": {
+    "Iscd": {
+      "selected": true,
+      "executed": false,
+      "failure": "the captured vertex stream correctly differed from the stale absolute screen-coordinate hash frozen from v3"
+    },
+    "Irsd": {
+      "selected": true,
+      "executed": false,
+      "failure": "the captured vertex stream correctly differed from the stale absolute screen-coordinate hash frozen from v3"
+    },
+    "capturedVertexStreams": {
+      "IscdAndIrsdByteIdentical": true,
+      "byteCountPerRole": 768,
+      "sha256": "3105efb352673686b9617ec9ef37f868b12cad00375752811c70a906b62c0a9e",
+      "columnXFloat32Bits": ["4361fee5", "43f10078", "43f10078", "443880bf"],
+      "rowYFloat32Bits": ["44478047", "44077fc4", "44077fc4", "438efe82"],
+      "fourByFourTopologyValid": true,
+      "centerSeamsExact": true,
+      "interpretation": "absolute placement is capture-time state and is not a stable cross-run invariant; role equality, topology, and the preregistered relative seam mutation are the proof invariants"
+    }
+  },
+  "promotedEvidence": false,
+  "remainingAppleConstructionQuestions": 1,
+  "nextCorrection": "serialize each run's complete captured 768-byte vertex stream, require Iscd/Irsd byte equality and at most one ULP center seams, and have the validator independently reconstruct and hash the exact 32-pixel-per-side Irsd mutation",
+  "arithmeticCasesChanged": false,
+  "candidateChanged": false,
+  "toleranceChanged": false,
+  "productionParity": false,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}

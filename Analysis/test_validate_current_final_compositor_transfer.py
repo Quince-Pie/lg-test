@@ -2,12 +2,12 @@
 """Tests for the current Iscd/Irsd compositor transfer validator."""
 
 import hashlib
+import struct
 import unittest
 from pathlib import Path
 
 from validate_current_final_compositor_transfer import (
     BGRA_BYTES,
-    CAPTURED_VERTEX_STREAM_SHA256,
     FINITE_SOURCE_SALT,
     FORCED_COVERAGE_EDITS,
     HEIGHT,
@@ -16,7 +16,6 @@ from validate_current_final_compositor_transfer import (
     QUARTZCORE_LIBRARY_BYTES,
     QUARTZCORE_LIBRARY_PATH,
     QUARTZCORE_LIBRARY_SHA256,
-    WIDENED_IRSD_VERTEX_STREAM_SHA256,
     WIDTH,
     expected_seed,
     expected_finite_source_mips,
@@ -154,6 +153,49 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
                 validate_system_specialization(record, role=role)
 
     def test_irsd_geometry_activity_is_exactly_frozen(self) -> None:
+        def floats(encoded: list[str]) -> list[float]:
+            return [
+                struct.unpack("<f", struct.pack("<I", int(value, 16)))[0]
+                for value in encoded
+            ]
+
+        captured_column_bits = [
+            "436212e0",
+            "43f10a76",
+            "43f10a75",
+            "443885be",
+        ]
+        captured_row_bits = [
+            "44477b48",
+            "44077ac5",
+            "44077ac6",
+            "438ef485",
+        ]
+        widened_column_bits = [
+            "436212e0",
+            "43e10a76",
+            "4400853b",
+            "443885be",
+        ]
+        widened_row_bits = [
+            "44477b48",
+            "440f7ac6",
+            "43fef58c",
+            "438ef485",
+        ]
+        captured = bytearray(16 * 48)
+        widened = bytearray(captured)
+        captured_columns = floats(captured_column_bits)
+        captured_rows = floats(captured_row_bits)
+        widened_columns = floats(widened_column_bits)
+        widened_rows = floats(widened_row_bits)
+        for row in range(4):
+            for column in range(4):
+                vertex = row * 4 + column
+                struct.pack_into("<f", captured, vertex * 48, captured_columns[column])
+                struct.pack_into("<f", captured, vertex * 48 + 4, captured_rows[row])
+                struct.pack_into("<f", widened, vertex * 48, widened_columns[column])
+                struct.pack_into("<f", widened, vertex * 48 + 4, widened_rows[row])
         record = {
             "schemaVersion": 1,
             "method": "widen-Irsd-center-seams-v1",
@@ -161,37 +203,21 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
             "vertexStride": 48,
             "positionOffsets": [0, 4],
             "halfExpansionPixels": 32,
-            "capturedColumnXFloat32Bits": [
-                "436212e0",
-                "43f10a76",
-                "43f10a75",
-                "443885be",
-            ],
-            "capturedRowYFloat32Bits": [
-                "44477b48",
-                "44077ac5",
-                "44077ac6",
-                "438ef485",
-            ],
-            "widenedColumnXFloat32Bits": [
-                "436212e0",
-                "43e10a76",
-                "4400853b",
-                "443885be",
-            ],
-            "widenedRowYFloat32Bits": [
-                "44477b48",
-                "440f7ac6",
-                "43fef58c",
-                "438ef485",
-            ],
-            "capturedVertexStreamSHA256": CAPTURED_VERTEX_STREAM_SHA256,
-            "widenedVertexStreamSHA256": WIDENED_IRSD_VERTEX_STREAM_SHA256,
+            "capturedColumnXFloat32Bits": captured_column_bits,
+            "capturedRowYFloat32Bits": captured_row_bits,
+            "widenedColumnXFloat32Bits": widened_column_bits,
+            "widenedRowYFloat32Bits": widened_row_bits,
+            "capturedVertexStreamHex": captured.hex(),
+            "capturedVertexStreamSHA256": hashlib.sha256(captured).hexdigest(),
+            "widenedVertexStreamSHA256": hashlib.sha256(widened).hexdigest(),
             "vertexStreamMutated": True,
             "capturedApplePipelineMutated": False,
             "liveAppleFrameMutated": False,
         }
-        validate_geometry_activity_control(record, role="Irsd")
+        self.assertEqual(
+            validate_geometry_activity_control(record, role="Irsd"),
+            hashlib.sha256(captured).hexdigest(),
+        )
         record["halfExpansionPixels"] = 31
         with self.assertRaisesRegex(ValueError, "halfExpansionPixels differs"):
             validate_geometry_activity_control(record, role="Irsd")
@@ -213,7 +239,7 @@ class CurrentFinalCompositorTransferValidatorTests(unittest.TestCase):
             "fragmentTextureOverrides: [3: finiteSource]",
             "let finiteSourceSalt = UInt32(0x6d2b79f5)",
             '"sourcePathSensitive": sourcePathSensitive',
-            '"schemaVersion": 4',
+            '"schemaVersion": 5',
             'name: "fixed_frag_lph_cpf"',
             '"widen-Irsd-center-seams-v1"',
             "let halfExpansion = Float(32.0)",
