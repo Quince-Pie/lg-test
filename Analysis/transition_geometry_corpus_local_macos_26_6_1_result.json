@@ -1,0 +1,245 @@
+{
+  "classification": "retrospective, hash-pinned current-build transition corpus gate; no pixel, crop, copy, or final output was used to select a state",
+  "closedLaws": {
+    "backdropScale": "binary32(1 - 0.5*k) for clear; binary32(1 - 0.75*k) for regular, where k is the captured binary32 remaining value",
+    "backgroundSourceCoordinates": "binary32(binary32(binary64(position)*binary64(scale) - cropOrigin - copyOffset) * binary32(1/allocationExtent))",
+    "mainGeometry": "captured public carrier and CASDFElementLayer state transformed to six vertices in Apple's binary64 grouping, then binary32",
+    "selectedRegion": "authenticated variable-blur helper radius/mip/integer-bounds replay composed with producer crop, copy-base offset, 64-pixel allocation, and destination mip count",
+    "shadowGeometry": "captured public layer state plus material shadow margin transformed to a four-by-four grid; outer bounds round to binary32 before binary64 deltas from the unrounded inner bounds adjust binary32 SDF coordinates"
+  },
+  "independentFreshWalleZeroByteFramePassed": false,
+  "inputCount": 8,
+  "inputs": [
+    {
+      "bytes": 16928541,
+      "filename": "dematerialize-clear-dark.json",
+      "sha256": "45f912caa7f52c4e0ef7fef96ccf71726c9c5014b5c5d0386b92fab3ef11e86a"
+    },
+    {
+      "bytes": 16928646,
+      "filename": "dematerialize-clear-light.json",
+      "sha256": "8a49dee85c59135f6c63279576ad66af2b69935a0fb2a6c82a08e09b8c2c2c49"
+    },
+    {
+      "bytes": 25275502,
+      "filename": "dematerialize-regular-dark.json",
+      "sha256": "d4c4e2721003efa0e4e58712a681e6898ba60819ad3f16923d833cc7c945ae69"
+    },
+    {
+      "bytes": 25173114,
+      "filename": "dematerialize-regular-light.json",
+      "sha256": "dd28332a6fda069c3657da4d0a38e1df53d24233b8bcef68f0d39cd7f4b4d8ec"
+    },
+    {
+      "bytes": 20788202,
+      "filename": "materialize-clear-dark.json",
+      "sha256": "51be1573be9aade902a0c3630f7d1fae6a2b0d4be9f7886d28b07976fc7d2aa2"
+    },
+    {
+      "bytes": 20863602,
+      "filename": "materialize-clear-light.json",
+      "sha256": "a037ea8c762f0ba7db875a04944f50d81127e7036a6c4b2509292ee75c4ca4cd"
+    },
+    {
+      "bytes": 29326212,
+      "filename": "materialize-regular-dark.json",
+      "sha256": "2c0416417b4bc5b21752d13344a9ee44e6ceda801b2d9693e9fa0c4786282b90"
+    },
+    {
+      "bytes": 29236269,
+      "filename": "materialize-regular-light.json",
+      "sha256": "d50f0ee922edbd2e0c1c1fc03f7e0a9d4e83e05d3e3e340e92ae0ea197318c29"
+    }
+  ],
+  "liquidGlassParityEstablished": false,
+  "matrix": [
+    {
+      "appearance": "dark",
+      "direction": "dematerialize",
+      "finalHighlightTopologies": {
+        "6-indices/4-vertices": 31
+      },
+      "geometry": "circle-464-center",
+      "material": "clear",
+      "stateCount": 31
+    },
+    {
+      "appearance": "light",
+      "direction": "dematerialize",
+      "finalHighlightTopologies": {
+        "6-indices/4-vertices": 31
+      },
+      "geometry": "circle-456-center",
+      "material": "clear",
+      "stateCount": 31
+    },
+    {
+      "appearance": "dark",
+      "direction": "dematerialize",
+      "finalHighlightTopologies": {
+        "24-indices/16-vertices": 3,
+        "6-indices/4-vertices": 28
+      },
+      "geometry": "circle-480-center",
+      "material": "regular",
+      "stateCount": 31
+    },
+    {
+      "appearance": "light",
+      "direction": "dematerialize",
+      "finalHighlightTopologies": {
+        "6-indices/4-vertices": 31
+      },
+      "geometry": "circle-472-center",
+      "material": "regular",
+      "stateCount": 31
+    },
+    {
+      "appearance": "dark",
+      "direction": "materialize",
+      "finalHighlightTopologies": {
+        "6-indices/4-vertices": 32
+      },
+      "geometry": "circle-463-center",
+      "material": "clear",
+      "stateCount": 32
+    },
+    {
+      "appearance": "light",
+      "direction": "materialize",
+      "finalHighlightTopologies": {
+        "6-indices/4-vertices": 32
+      },
+      "geometry": "circle-455-center",
+      "material": "clear",
+      "stateCount": 32
+    },
+    {
+      "appearance": "dark",
+      "direction": "materialize",
+      "finalHighlightTopologies": {
+        "6-indices/4-vertices": 32
+      },
+      "geometry": "circle-479-center",
+      "material": "regular",
+      "stateCount": 32
+    },
+    {
+      "appearance": "light",
+      "direction": "materialize",
+      "finalHighlightTopologies": {
+        "6-indices/4-vertices": 32
+      },
+      "geometry": "circle-471-center",
+      "material": "regular",
+      "stateCount": 32
+    }
+  ],
+  "metrics": {
+    "backdropScale": {
+      "componentCount": 252,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "backgroundSourceCoordinates": {
+      "componentCount": 11088,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "copyBaseOriginComposition": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "destinationMipCount": {
+      "componentCount": 252,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "mainHomogeneousComponents": {
+      "componentCount": 3024,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "mainLayerStateGeometry": {
+      "componentCount": 6048,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "producerAllocationFromActiveCrop": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "selectedRegionAllocation": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "selectedRegionOrigin": {
+      "componentCount": 504,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "shadowHomogeneousComponents": {
+      "componentCount": 8064,
+      "exact": true,
+      "mismatchedComponents": 0
+    },
+    "shadowLayerStateGeometry": {
+      "componentCount": 16128,
+      "exact": true,
+      "mismatchedComponents": 0
+    }
+  },
+  "physicalRetinaColorCompositorTransferPassed": false,
+  "producerBranchInventory": {
+    "destinationMipCounts": {
+      "2": 126,
+      "3": 3,
+      "4": 5,
+      "5": 8,
+      "6": 26,
+      "7": 84
+    },
+    "fragmentFunctions": {
+      "Tds4A2Xhf_Isrc": 42,
+      "TimgA2Xhfc_Isrc": 210
+    },
+    "vertexCounts": {
+      "16": 67,
+      "4": 185
+    }
+  },
+  "productionShaderChanged": false,
+  "prospectiveUnseenGeometryTransferPassed": false,
+  "remainingAlgorithmBoundaries": [
+    "independent upstream dynamic element extent/position production",
+    "independent regular dynamic producer crop production",
+    "transition foreground and final-highlight production"
+  ],
+  "retainedTransitionForeground": {
+    "constructionLawExact": false,
+    "endpointWithoutFilterStateCount": 4,
+    "finalHighlightStateCount": 252,
+    "finalHighlightTopologies": {
+      "24-indices/16-vertices": 3,
+      "6-indices/4-vertices": 249
+    },
+    "fragment248BytePrefixStreamSHA256": "e4197dc49a6d1c3055d3f05888d6442f0eb377ed63aba57b68f840883b524ccd",
+    "indexStreamSHA256": "cf2a446a6394d8574a821e1ecfa79b66c82dcad7349bba966e4e13fb5f14aa74",
+    "inputFilterStateCount": 248,
+    "vertexStreamSHA256": "27d614daa906439cb366b60138664c8f284c3b2240d018f11ec5ef439b74e1ed"
+  },
+  "stateCount": 252,
+  "status": "passed",
+  "streamSHA256": {
+    "mainObserved": "94dca2d87b4c7e0615e31dfc9bcabdbdccd4dba25ded8c868469bbe8d76b9427",
+    "mainPredicted": "94dca2d87b4c7e0615e31dfc9bcabdbdccd4dba25ded8c868469bbe8d76b9427",
+    "shadowObserved": "5f7d8c45a49f0fc2ba0c27a859477e092514b81061d7ae3a145075c63f2b620b",
+    "shadowPredicted": "5f7d8c45a49f0fc2ba0c27a859477e092514b81061d7ae3a145075c63f2b620b",
+    "sourceCoordinatesObserved": "dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0",
+    "sourceCoordinatesPredicted": "dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0"
+  },
+  "transitionGeometryCorpusLocalMacOS2661ResultSchemaVersion": 1
+}

@@ -12308,3 +12308,100 @@ foreground/final-highlight production. Physical Retina color/compositor
 transfer and a fresh zero-unequal-byte Walle frame remain final product
 proofs. The production shader and Walle `flake.nix` are still byte-identical
 to their protected versions.
+
+### macOS 26.6.1 retained transition-geometry corpus closure
+
+The eight retained current-build timelines contain substantially more usable
+evidence than their metadata-only texture policy initially implied. They span
+clear and regular, light and dark, and materialize and dematerialize: 32 genuine
+materialize states per profile and 31 genuine dematerialize states per profile,
+252 states total. Every state retains the producer render pass, crop MVP,
+copy-base uniform, public layer state, background main and shadow buffers, and
+final-highlight buffers. The analyzer rejects any input whose pinned SHA-256,
+timeline schema, evidence mode, profile, geometry, state sequence, pipeline,
+draw topology, or buffer length differs.
+
+The material split in the executing background pipelines is explicit. Clear
+uses `PBGRABsovXm_TghzA2Xhf_Isrc`; regular uses
+`PBGRABsovXm_TghsA2Xhf_Isrc`. Let `k` be the exact captured binary32 remaining
+fraction and `s` the retained `CABackdropLayer.backdropScale`. Across all 252
+states the exact binary32 laws are:
+
+```text
+clear:   s = binary32(1 - 0.5*k),   q = 1/s = 2/(2-k)
+regular: s = binary32(1 - 0.75*k),  q = 1/s = 4/(4-3*k)
+```
+
+The previously authenticated variable-blur helper also transfers across the
+complete matrix. Starting from the observed producer crop and public blur
+inputs, its binary32 radius, mip policy, exact binary64 `-2.8`/`5.6` DOD
+arithmetic, integer alignment bounds, 64-pixel allocation, and copy-base
+composition reproduce 504/504 effective-origin components, 504/504 destination
+allocation components, and 252/252 destination mip counts. The producer
+allocation independently matches 504/504 active-crop extent components. The
+corpus exercises destination mip counts 2 through 7, both producer fragments
+`TimgA2Xhfc_Isrc` and `Tds4A2Xhf_Isrc`, and both four- and sixteen-vertex
+producer meshes.
+
+The captured public carrier and `CASDFElementLayer` states independently
+produce the six background main vertices. Apple performs the layer translation
+and extent arithmetic in binary64 with its original association, then stores
+binary32. That replay matches 6,048/6,048 position/SDF components and
+3,024/3,024 homogeneous components. Reassociating the right or bottom edge, or
+rounding the extent first, differs by one ULP in real states and is rejected.
+This closes layer-state-to-main-mesh transfer; it does not yet close independent
+upstream production of those dynamic layer states.
+
+The glass source-coordinate operation order is now exact for every retained
+main and shadow vertex. For each axis, with binary32 vertex position `p`,
+binary32 backdrop scale `s`, integer producer crop origin `C`, signed integer
+copy-base offset `B`, and destination allocation extent `N`, Apple computes:
+
+```text
+t  = binary32(binary64(p) * binary64(s) - C - B)
+uv = binary32(t * binary32(1 / N))
+```
+
+The multiply and both subtractions occur in binary64 before the first binary32
+rounding. The final multiplication uses the rounded binary32 reciprocal. The
+law matches 11,088/11,088 source-coordinate components; the observed and
+predicted streams share SHA-256
+`dd369acedd093d9edaf1199459a9bcfcaa54ef72282918fc88bac856ac2ab1a0`.
+
+The background shadow grid is also closed. Current QuartzCore constructs four
+position coordinates and four SDF coordinates per axis, then emits their
+four-by-four product. Clear has zero horizontal margin; regular has exact
+binary32 margin `m = binary32(48*k)`. The vertical margins are
+`max(m-8, 0)` above and `m+8` below. The non-obvious outer SDF rule is not
+`binary32(half+m)`: QuartzCore first rounds each extended outer bound to
+binary32, converts that rounded bound back to binary64, subtracts the original
+unrounded binary64 inner bound, adds the stored binary32 inner SDF coordinate
+in binary64, and rounds the result to binary32. This mixed-precision staging
+reproduces all 16,128 shadow position/SDF components and 8,064 homogeneous
+components exactly across all 252 states. The naive reassociation is one ULP
+wrong in real states. This closes retained layer-state-to-shadow-grid transfer;
+independent production of the upstream dynamic layer state remains separate.
+
+All 252 final-highlight draws retain a complete fragment payload prefix, vertex
+stream, and index stream. The inventory exposes a parity-critical branch that
+the earlier summary missed: 249 states use the ordinary four-vertex/six-index
+quad, while dematerialize regular/dark samples 28 through 30 use a
+sixteen-vertex/twenty-four-index border mesh. This is retained evidence, not yet
+an independent final-highlight construction law.
+
+The reproducible gate is
+`Analysis/analyze_transition_geometry_corpus_local_macos_26_6_1.py`; its seven
+unit discriminators cover material scale, source-coordinate staging, main-mesh
+association, complete matrix cardinality, and fail-closed envelope mutation.
+The compact canonical result is
+`Analysis/transition_geometry_corpus_local_macos_26_6_1_result.json`, SHA-256
+`4754f134ce1cc44039793f2ef56eaf512b7df2804a282e38467f3aa21658cb9c`.
+
+This is a hash-pinned retrospective corpus gate, not an unseen prospective
+geometry holdout and not formal Liquid Glass parity. Three concrete construction
+boundaries remain: independent dynamic element extent/position production,
+independent regular dynamic producer crop production, and transition
+foreground/final-highlight production.
+Physical Retina color/compositor transfer and a fresh production-Walle frame
+with zero unequal bytes remain final product proofs. No production shader or
+Walle `flake.nix` change is authorized by this result alone.
