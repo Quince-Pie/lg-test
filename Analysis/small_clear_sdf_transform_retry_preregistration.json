@@ -1,0 +1,72 @@
+{
+  "smallClearSDFTransformRetryPreregistrationSchemaVersion": 1,
+  "status": "frozen-before-transform-retry-output",
+  "classification": "output-blind transport-only extension of the frozen SDF-entry discovery trace; not optical, production-shader, or product-parity authority",
+  "frozenDate": "2026-08-08",
+  "originalPreregistration": {
+    "path": "Analysis/small_clear_sdf_entry_preregistration.json",
+    "sha256": "eee5f3afc2a6acd8638782b51cec0e18ba750b27be627faaa3cc98887dbc3888"
+  },
+  "openedOriginalTrace": {
+    "traceSHA256": "b4e8f25a3de5752c6f8da931358ac1747ad9993aefcbb9272b219bc99418965c",
+    "timelineSHA256": "253962fb99ce6e85932c178c0b42b1e69e40ef2eab721cb934e508ed80b0e98b",
+    "lldbStdoutSHA256": "bd879caf882542af1cf61cf5b5620a5a76c59901a80ac489cfeafb9e51a022b3",
+    "lldbStderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "recordCount": 64,
+    "failureCount": 0,
+    "functionCodeSHA256": "22273ad45369658b8e97b91893a488071a049d0bbdb6cdd7353a69355a1e83d3",
+    "quartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "transportGap": "the frozen layer prefix retained the layer+0x10 pointer but not its pointee or the transform reached through pointee+0x38"
+  },
+  "retryProbe": {
+    "path": "Analysis/capture_small_clear_sdf_transform_retry_local_macos_26_6_1_lldb.py",
+    "sha256": "f4d2238fb76db385a75046b79a48912dbab9a5cc4cd3557afdfc6f4d727bd770",
+    "baseProbePath": "Analysis/capture_small_clear_sdf_entry_local_macos_26_6_1_lldb.py",
+    "baseProbeSHA256": "7ee4921b9d0a5ba7580becb3d18f74ce3efa0cd8b69d038d5572f7a1af635772",
+    "onlyAddedCapture": [
+      "64-byte owner prefix reached through layer+0x10",
+      "160-byte transform prefix reached through owner+0x38"
+    ],
+    "transformPointerChain": "layer+0x10 -> owner+0x38",
+    "pointerChainBasis": "emit_sdf_bounds_internal instructions +0x98 through +0xb4",
+    "breakpointSelectionUnchanged": true,
+    "recordLimitUnchanged": true,
+    "capturedValueUsedForSelection": false,
+    "capturedGeometryUsedForSelection": false,
+    "capturedImageUsedForSelection": false,
+    "capturedPixelUsedForSelection": false
+  },
+  "nativeProbe": {
+    "path": "/private/tmp/lg-final-clip-callsite-fbe1b19/output/glassintrospect",
+    "sha256": "643c3095b36a6614ee10dc01563ca2a67ee72fb15bcc33c8826b9ff2da79249e",
+    "minimumMacOS": "26.0",
+    "sdk": "26.5",
+    "nixStorePathForbidden": true
+  },
+  "appleInputs": {
+    "appearance": "light",
+    "direction": "materialize",
+    "geometry": "circle-047-center",
+    "material": "clear",
+    "transitionTimeline": true,
+    "uniformCapture": true,
+    "allocationOnly": true,
+    "denseAllocation": true
+  },
+  "acceptance": {
+    "discoveryOnly": true,
+    "requiredBreakpointLocationCount": 1,
+    "requiredRecordCount": 64,
+    "requiredFailureCount": 0,
+    "requiredFunctionCodeSHA256": "22273ad45369658b8e97b91893a488071a049d0bbdb6cdd7353a69355a1e83d3",
+    "requiredQuartzCoreUUID": "F1BA3189-E95A-3ECA-B59A-5A6872754484",
+    "numericalTolerance": null,
+    "pixelThreshold": null
+  },
+  "frozenQuestion": "Does replaying QuartzCore's binary32 transform normalization and maximum-radius sequence from the newly retained matrix reproduce all final fragment-radius bits and therefore the small-clear topology split?",
+  "forbiddenChanges": [
+    "No Apple input, target function, breakpoint selection, record limit, prior prefix size, or stack limit may change.",
+    "No captured radius, topology, geometry, image, or pixel may select or exclude an invocation.",
+    "No mismatch may be converted into a tolerance or a parity claim."
+  ]
+}
