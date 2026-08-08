@@ -14348,3 +14348,42 @@ The exact ledger before this run is:
    approximate shader.
 4. **Quality and comparison tolerance: zero.** Walle's protected production
    shader and `flake.nix` remain unchanged by this experiment.
+
+### Rejected v1 Retina-transfer premise and corrected product order
+
+The physical run from commit
+`0de49705bb664af798f0fff9a901f17d5bc8dca6` is rejected as an
+instrumentation failure. All four cases executed and all twelve duplicate
+stability comparisons were exact over 201,326,592 bytes. The four
+native-versus-flat comparisons were not exact: 49,936,719 of 67,108,864 bytes
+differed, 16,777,138 pixels differed, and the maximum channel delta was 255.
+The frozen validator exited one on the first clear/light comparison exactly as
+required.
+
+The mismatch is categorical. `CARenderer` mapped the 1024-point root directly
+into only one 1024-by-1024 quarter of the 2048-by-2048 target; the remaining
+3,145,728 pixels retained its magenta clear value. Metal rows were also handed
+to the top-left `CGImage` without reversing their bottom-left order. Therefore
+v1 never held the final frame bytes fixed and cannot answer its physical-
+transfer question.
+
+A non-promoted clear/light calibration applied exactly the missing 2x root
+transform and row reversal. All three duplicate-stability checks remained
+exact, and every background pixel outside the 1600-pixel glass bounding box
+then matched the native window exactly. The residual was confined to
+`[224,224]` through `[1823,1823]`: 6,008,372 unequal bytes across 2,013,673
+pixels, maximum delta 56. This shows why the premise cannot be repaired by
+another scale tweak: offscreen `CARenderer` rerasterizes the glass subtree
+without the live WindowServer backdrop, so it is not an identical-final-frame
+producer.
+
+The compact rejected result is
+`Analysis/walle_retina_transfer_0de4970_v1_failure_result.json`, SHA-256
+`8edbcf2826c0ef58333be2c708d7d785befb86a043c84eb2b12f676bbaecf4f2`.
+It promotes no equality and reopens no Apple construction question. The
+corrected product order is now explicit: first render a fresh frame through
+Walle's admitted live path, then present those immutable Walle-produced pixels
+on the Retina Mac and compare that physical capture directly with the live
+Apple reference. No offscreen Apple glass rerasterization participates. The
+protected shader and `flake.nix` remain unchanged, and the comparison
+tolerance remains zero.

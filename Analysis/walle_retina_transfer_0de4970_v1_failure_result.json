@@ -1,0 +1,106 @@
+{
+  "walleRetinaTransferFailureResultSchemaVersion": 1,
+  "status": "rejected-instrumentation-premise",
+  "captureCommit": "0de49705bb664af798f0fff9a901f17d5bc8dca6",
+  "captureRoot": "local-walle-retina-transfer-0de4970-v1",
+  "physicalRetinaPreflightPassed": true,
+  "physicalPixels": [3456, 2234],
+  "backingScaleFactor": 2,
+  "aggregateNativeCaptureExitStatus": 1,
+  "frozenValidatorExitStatus": 1,
+  "frozenValidatorFailure": "clear-light native-vs-flat transfer is not exact: 12539503 unequal bytes, 4194302 unequal pixels, maximum delta 255",
+  "cases": [
+    {
+      "label": "clear-light",
+      "nativeCaptureStabilityUnequalBytes": 0,
+      "stimulusStabilityUnequalBytes": 0,
+      "flatCaptureStabilityUnequalBytes": 0,
+      "nativeVsFlatUnequalBytes": 12539503,
+      "nativeVsFlatUnequalPixels": 4194302,
+      "nativeVsFlatMaximumChannelDelta": 255,
+      "nativePixelSHA256": "fa0321394b4a811484374f732de0f3f6121d6ee83c6195b5d166de0117eb8e5d",
+      "flatPixelSHA256": "5ac2732c93b354a5006b7649ebf3b9656eb3db00a713167a768361c09271319d",
+      "stimulusSHA256": "bc3677d906349191f840b784d8876117d79ea918dd8ef38d2244ed7aad17b273"
+    },
+    {
+      "label": "clear-dark",
+      "nativeCaptureStabilityUnequalBytes": 0,
+      "stimulusStabilityUnequalBytes": 0,
+      "flatCaptureStabilityUnequalBytes": 0,
+      "nativeVsFlatUnequalBytes": 12539484,
+      "nativeVsFlatUnequalPixels": 4194302,
+      "nativeVsFlatMaximumChannelDelta": 255,
+      "nativePixelSHA256": "ef2e63856288267d723d0c87b6945d115405de3bc3c62bdd9752ec5487f83b97",
+      "flatPixelSHA256": "372916d45a998feac4740e66173753729a5fd97c91dd94060ebf158e10523123",
+      "stimulusSHA256": "87d73ef8c46f4958d80c4b83c64328af7014132a8b468e8e60131a085e2f6d68"
+    },
+    {
+      "label": "regular-light",
+      "nativeCaptureStabilityUnequalBytes": 0,
+      "stimulusStabilityUnequalBytes": 0,
+      "flatCaptureStabilityUnequalBytes": 0,
+      "nativeVsFlatUnequalBytes": 12445253,
+      "nativeVsFlatUnequalPixels": 4194293,
+      "nativeVsFlatMaximumChannelDelta": 255,
+      "nativePixelSHA256": "0b6fbf17cdadd2d8b828e46f9a6fb23677a5744f3376cf5236df0d4b67992027",
+      "flatPixelSHA256": "a28fa13cd3419300db0f99f45b338cb6038fbe8ebd3a7d592019a172704900e7",
+      "stimulusSHA256": "6344fd808dbda258022938c1865bcc45b94b3462a3882dbb0f70ac187ca3e3a9"
+    },
+    {
+      "label": "regular-dark",
+      "nativeCaptureStabilityUnequalBytes": 0,
+      "stimulusStabilityUnequalBytes": 0,
+      "flatCaptureStabilityUnequalBytes": 0,
+      "nativeVsFlatUnequalBytes": 12412479,
+      "nativeVsFlatUnequalPixels": 4194241,
+      "nativeVsFlatMaximumChannelDelta": 255,
+      "nativePixelSHA256": "7aeef2d3d985ab84c4c3fdc47e21b84f9d3bb8f2995b0090f817b17c796fe0b1",
+      "flatPixelSHA256": "b4d6fb556f8da92e1d673995056c4b4a78a36da75c4084bc6de23f60a6fdb4a5",
+      "stimulusSHA256": "5d5721bf1c7a9f60763f79d00b838f7e712be6d5fa15853a652c98ab96d7f36d"
+    }
+  ],
+  "aggregateComparisons": {
+    "exactStabilityComparisons": 12,
+    "comparedStabilityBytes": 201326592,
+    "unequalStabilityBytes": 0,
+    "transferComparisons": 4,
+    "comparedTransferBytes": 67108864,
+    "unequalTransferBytes": 49936719,
+    "unequalTransferPixels": 16777138,
+    "maximumTransferChannelDelta": 255
+  },
+  "instrumentationFailure": {
+    "cause": "CARenderer maps layer coordinates directly to target pixels; a 1024-point root occupied only one 1024-by-1024 quarter of the 2048-by-2048 texture, and Metal readback rows were presented without converting bottom-left order to top-left order.",
+    "clearLightMagentaUnrenderedPixels": 3145728,
+    "clearLightNonMagentaBoundingBox": [0, 0, 1023, 1023],
+    "finalFrameBytesHeldFixed": false,
+    "physicalTransferQuestionAnswered": false
+  },
+  "nonPromotedCalibration": {
+    "prospectiveEvidence": false,
+    "purpose": "separate the categorical scale/row-order defect from live-backdrop rerasterization",
+    "case": "clear-light",
+    "rootScaleApplied": 2,
+    "metalRowsReversedToTopLeft": true,
+    "nativeCaptureStabilityUnequalBytes": 0,
+    "stimulusStabilityUnequalBytes": 0,
+    "flatCaptureStabilityUnequalBytes": 0,
+    "nativeVsFlatUnequalBytes": 6008372,
+    "nativeVsFlatUnequalPixels": 2013673,
+    "nativeVsFlatMaximumChannelDelta": 56,
+    "mismatchBoundingBox": [224, 224, 1823, 1823],
+    "pixelsOutsideMismatchBoundingBoxUnequal": 0,
+    "interpretation": "After scale and row-order correction, the diagnostic background is exact and the residual is confined to the 1600-pixel glass footprint. Offscreen CARenderer rerasterizes the glass without the live WindowServer backdrop and therefore cannot supply the supposedly identical final frame required by this gate."
+  },
+  "promotedEvidence": false,
+  "remainingAppleConstructionQuestions": 0,
+  "remainingProductProofs": [
+    "physical transfer of a fresh exact Walle-produced frame through the same Retina capture path",
+    "fresh production-Walle transition frame with zero unequal bytes"
+  ],
+  "correctedExperimentOrder": "First generate a fresh exact frame through Walle's admitted live renderer. Then present those immutable Walle-produced bytes on the Retina Mac and compare the physical capture directly with the live Apple reference; do not ask CARenderer to rerasterize the glass subtree.",
+  "productionParity": false,
+  "outputTolerance": 0,
+  "productionShaderChanged": false,
+  "productionFlakeChanged": false
+}
