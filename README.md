@@ -12180,10 +12180,10 @@ given an empty capture-runtime object and no per-capture half-intrinsic table;
 the only captured image it reads is the final Apple output used as the oracle.
 
 This admits the complete canonical static input/shader path on those observed
-devices only. It does not render inside the production Walle process or its
-Wayland display context, does not cover the live transition producer, and does
-not cover physical Retina output. Formal parity therefore remains false, and
-the protected production shader remains unchanged.
+devices only. It does not render inside the production Walle process, does not
+cover the live transition producer, and does not cover physical Retina output.
+Formal parity therefore remains false, and the protected production shader
+remains unchanged.
 
 The next Walle-side boundary now passes as well. A standalone C23 renderer,
 owned by the Walle tree and using EGL plus core OpenGL, independently uploads
@@ -12196,7 +12196,14 @@ images. The first GLES retarget was rejected because replacing desktop fine
 derivatives with the GLES base derivatives changed 278 bytes in clear/light;
 the accepted core OpenGL path preserves the gated desktop semantics.
 
-This establishes Walle-owned C renderer and local AMD execution authority for
-the canonical static case. It still does not establish the production Walle
-process/Wayland-surface boundary, live-transition state production, or physical
-Retina transfer. No additional Apple capture was required for this step.
+The renderer then created a real xdg toplevel plus EGL window surface on the
+live Niri Wayland session. It blitted every admitted frame into the default
+back buffer and compared that buffer before presentation. Clear and regular
+crossed with light and dark are exact for 16,777,216/16,777,216 checked
+Wayland-buffer bytes on the RX 9070 XT, with zero unequal pixels and maximum
+channel delta zero. This closes the standalone C, driver, EGL, and
+Wayland-window pixel boundary.
+
+It still does not establish the production `walle` process/layer-shell
+boundary, live-transition state production, or physical Retina transfer. No
+additional Apple capture was required for either Walle-side rendering step.
